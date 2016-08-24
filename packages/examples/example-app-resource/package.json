@@ -1,8 +1,8 @@
 {
-  "name": "@zapier/zapier-platform-example-app-resources",
+  "name": "@zapier/zapier-platform-example-app-resource",
   "version": "1.0.0",
   "description": "An example app for the Zapier platform.",
-  "repository": "zapier/zapier-platform-example-app-resources",
+  "repository": "zapier/zapier-platform-example-app-resource",
   "homepage": "https://zapier.com/",
   "author": "Bryan Helmig <bryan@zapier.com>",
   "license": "BSD",

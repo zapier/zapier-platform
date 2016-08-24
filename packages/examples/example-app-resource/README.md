@@ -2,4 +2,4 @@
 
 A barebones app that has a resource defined.
 
-> We recommend using the zapier-platform-cli and `zapier init --template=resources` to create an app.
+> We recommend using the zapier-platform-cli and `zapier init --template=resource` to create an app.
