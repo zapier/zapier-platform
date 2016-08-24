@@ -1,8 +1,8 @@
 /*
-## Welcome to the Zapier example app!
+## Welcome to the Zapier middleware example app!
 
 This is a small example, all in one file. You can get a clone and start it
-from `zapier init --template=minimal`. You can of course break apart your
+from `zapier init --template=middleware`. You can of course break apart your
 example app, no reason to make it a single file. Also, we recommend taking
 a look at the automated tests you can do via `zapier test`!
 */
