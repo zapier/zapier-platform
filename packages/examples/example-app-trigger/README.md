@@ -1,5 +1,5 @@
-# "Hello World" Example App For Zapier Platform
+# "Trigger" Example App For Zapier Platform
 
-A barebones Hello World app that does a single HTTP call to mockapi.io and nothing more.
+A barebones app that has a resource defined.
 
-> We recommend using the zapier-platform-cli and `zapier init --template=helloworld` to create an app.
+> We recommend using the zapier-platform-cli and `zapier init --template=trigger` to create an app.
