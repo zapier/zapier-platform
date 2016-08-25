@@ -17,8 +17,8 @@ describe('writes', () => {
       };
 
       appTester('writes.recipe', bundle)
-        .then((resp) => {
-          resp.results.should.have.property('name');
+        .then((results) => {
+          results.should.have.property('name');
           done();
         })
         .catch(done);
