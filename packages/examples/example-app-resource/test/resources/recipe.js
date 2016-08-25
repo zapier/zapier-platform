@@ -13,9 +13,9 @@ describe('recipe resource', () => {
     };
 
     appTester('resources.recipe.get.operation.perform', bundle)
-      .then((resp) => {
-        resp.results.name.should.eql('name 1');
-        resp.results.directions.should.eql('directions 1');
+      .then((results) => {
+        results.name.should.eql('name 1');
+        results.directions.should.eql('directions 1');
         done();
       })
       .catch(done);
@@ -29,8 +29,7 @@ describe('recipe resource', () => {
     };
 
     appTester('resources.recipe.list.operation.perform', bundle)
-      .then((resp) => {
-        const results = resp.results;
+      .then((results) => {
         results.length.should.above(0);
 
         const firstRecipe = results[0];
@@ -51,8 +50,8 @@ describe('recipe resource', () => {
     };
 
     appTester('resources.recipe.create.operation.perform', bundle)
-      .then((resp) => {
-        resp.results.should.have.property('name');
+      .then((results) => {
+        results.should.have.property('name');
         done();
       })
       .catch(done);
