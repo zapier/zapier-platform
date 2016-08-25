@@ -15,8 +15,7 @@ describe('triggers', () => {
       };
 
       appTester('searches.search-recipes', bundle)
-        .then((resp) => {
-          const results = resp.results;
+        .then(results => {
           results.length.should.eql(1);
 
           const firstRecipe = results[0];
