@@ -1,5 +1,41 @@
 const baseURL = 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
 
+const getRecipe = (z, bundle) => {
+  const promise = z.request({
+    url: `${baseURL}/recipes/${bundle.inputData.id}`,
+  });
+
+  return promise.then((response) => JSON.parse(response.content));
+};
+
+const listRecipes = (z, bundle) => {
+  const promise = z.request({
+    url: `${baseURL}/recipes`,
+    params: {
+      style: bundle.inputData.style
+    }
+  });
+
+  return promise.then((response) => JSON.parse(response.content));
+};
+
+const createRecipe = (z, bundle) => {
+  const promise = z.request({
+    url: `${baseURL}/recipes`,
+    method: 'POST',
+    body: JSON.stringify({
+      name: bundle.inputData.name,
+      directions: bundle.inputData.directions,
+      authorId: bundle.inputData.authorId,
+    }),
+    headers: {
+      'content-type': 'application/json'
+    }
+  });
+
+  return promise.then((response) => JSON.parse(response.content));
+};
+
 // This file exports a Recipe resource. The definition below contains all of the keys available,
 // and implements the list and create methods.
 module.exports = {
@@ -17,13 +53,7 @@ module.exports = {
       inputFields: [
         {key: 'id', required: true}
       ],
-      perform: (z, bundle) => {
-        const promise = z.request({
-          url: `${baseURL}/recipes/${bundle.inputData.id}`,
-        });
-
-        return promise.then((response) => JSON.parse(response.content));
-      }
+      perform: getRecipe
     }
   },
   // The list method on this resource becomes a Trigger on the app. Zapier will use polling to watch for new records
@@ -36,16 +66,7 @@ module.exports = {
       inputFields: [
         {key: 'style', type: 'string'}
       ],
-      perform: (z, bundle) => {
-        const promise = z.request({
-          url: `${baseURL}/recipes`,
-          params: {
-            style: bundle.inputData.style
-          }
-        });
-
-        return promise.then((response) => JSON.parse(response.content));
-      }
+      perform: listRecipes
     }
   },
   // If your app supports webhooks, you can define a hook method instead of a list method.
@@ -66,22 +87,7 @@ module.exports = {
         {key: 'directions', required: true, type: 'text'},
         {key: 'authorId', required: true, type: 'integer'}
       ],
-      perform: (z, bundle) => {
-        const promise = z.request({
-          url: `${baseURL}/recipes`,
-          method: 'POST',
-          body: JSON.stringify({
-            name: bundle.inputData.name,
-            directions: bundle.inputData.directions,
-            authorId: bundle.inputData.authorId,
-          }),
-          headers: {
-            'content-type': 'application/json'
-          }
-        });
-
-        return promise.then((response) => JSON.parse(response.content));
-      }
+      perform: createRecipe
     }
   },
   // You could define a search method, which becomes a Search on the app
