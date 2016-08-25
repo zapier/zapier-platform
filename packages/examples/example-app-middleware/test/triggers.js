@@ -9,17 +9,10 @@ describe('triggers', () => {
   describe('new recipe trigger', () => {
     it('should load recipes', (done) => {
       appTester('triggers.new-recipe')
-        .then((resp) => {
-          const results = resp.results;
-          results.length.should.eql(10);
-
-          // Middleware should apply reverse chronological sorting, so
-          // first recipe returned should have id: '1'
+        .then(results => {
           const firstRecipe = results[0];
-          firstRecipe.id.should.eql('1');
-
-          firstRecipe.name.should.eql('name 1');
-          firstRecipe.directions.should.eql('directions 1');
+          firstRecipe.id.should.eql('20');
+          firstRecipe.name.should.eql('Smith Family Recipe');
 
           done();
         })
