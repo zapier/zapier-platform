@@ -10,18 +10,19 @@ describe('triggers', () => {
     it('should load recipes', (done) => {
       const bundle = {
         inputData: {
-          style: 'mediterranean'
+          style: 'style 10'
         }
       };
 
-      appTester('triggers.recipe', bundle)
+      appTester('searches.search-recipes', bundle)
         .then((resp) => {
           const results = resp.results;
-          results.length.should.eql(10);
+          results.length.should.eql(1);
 
           const firstRecipe = results[0];
-          firstRecipe.name.should.eql('name 1');
-          firstRecipe.directions.should.eql('directions 1');
+          firstRecipe.style.should.eql('style 10');
+          firstRecipe.name.should.eql('name 10');
+          firstRecipe.directions.should.eql('directions 10');
 
           done();
         })
