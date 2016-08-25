@@ -11,7 +11,6 @@ describe('triggers', () => {
       appTester('triggers.new-recipe')
         .then(results => {
           const firstRecipe = results[0];
-          firstRecipe.id.should.eql('20');
           firstRecipe.name.should.eql('Smith Family Recipe');
 
           done();
