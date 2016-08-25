@@ -16,8 +16,7 @@ describe('basic auth app', () => {
     };
 
     appTester('authentication.test', bundle)
-      .then((results) => {
-        const response = results.results;
+      .then((response) => {
         response.status.should.eql(200);
         response.request.headers.Authorization.should.eql('Basic dXNlcjpwYXNzd2Q=');
         done();
