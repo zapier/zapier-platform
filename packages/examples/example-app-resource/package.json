@@ -17,7 +17,7 @@
   "engineStrict": true,
   "dependencies": {
     "lodash": "4.13.1",
-    "@zapier/zapier-platform-core": "3.2.15"
+    "@zapier/zapier-platform-core": "^3.2.16"
   },
   "devDependencies": {
     "babel": "6.5.2",
