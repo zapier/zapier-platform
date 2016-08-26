@@ -1,8 +1,8 @@
 {
-  "name": "@zapier/zapier-platform-example-app",
+  "name": "@zapier/zapier-platform-example-app-trigger",
   "version": "1.0.0",
   "description": "An example app for the Zapier platform.",
-  "repository": "zapier/zapier-platform-example-app",
+  "repository": "zapier/zapier-platform-example-app-trigger",
   "homepage": "https://zapier.com/",
   "author": "Bryan Helmig <bryan@zapier.com>",
   "license": "BSD",
