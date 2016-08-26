@@ -5,8 +5,8 @@ const getAccessToken = (z, bundle) => {
     method: 'POST',
     body: {
       code: bundle.inputData.code,
-      client_id: bundle.environment.CLIENT_ID,
-      client_secret: bundle.environment.CLIENT_SECRET,
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
       grant_type: 'authorization_code'
     },
     headers: {
@@ -33,8 +33,8 @@ const refreshAccessToken = (z, bundle) => {
     method: 'POST',
     body: {
       refresh_token: bundle.authData.refresh_token,
-      client_id: bundle.environment.CLIENT_ID,
-      client_secret: bundle.environment.CLIENT_SECRET,
+      client_id: process.env.CLIENT_ID,
+      client_secret: process.env.CLIENT_SECRET,
       grant_type: 'refresh_token'
     },
     headers: {
@@ -82,7 +82,7 @@ module.exports = {
     authorizeUrl: {
       url: `${baseURL}/authorize`,
       params: {
-        client_id: '{{bundle.environment.CLIENT_ID}}',
+        client_id: '{{process.env.CLIENT_ID}}',
         state: '{{bundle.inputData.state}}',
         redirect_uri: '{{bundle.inputData.redirect_uri}}',
         response_type: 'code'
