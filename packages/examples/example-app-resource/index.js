@@ -9,7 +9,7 @@ const App = {
   // This is just shorthand to reference the installed dependencies you have. Zapier will
   // need to know these before we can upload
   version: require('./package.json').version,
-  platformVersion: require('./package.json').dependencies['@zapier/zapier-platform-core'],
+  platformVersion: require('@zapier/zapier-platform-core').version,
 
   beforeRequest: [
 
