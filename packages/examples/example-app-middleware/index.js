@@ -12,7 +12,7 @@ const baseURL = 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
 
 // New recipe trigger
 const newRecipe = {
-  key: 'new-recipe',
+  key: 'new_recipe',
 
   // You'll want to provide some helpful display labels and descriptions
   // for users. Zapier will put them into the UX.
@@ -32,7 +32,7 @@ const newRecipe = {
 
 // New movie trigger
 const newMovie = {
-  key: 'new-movie',
+  key: 'new_movie',
 
   noun: 'Movie',
   display: {
@@ -72,7 +72,7 @@ const App = {
   // This is just shorthand to reference the installed dependencies you have. Zapier will
   // need to know these before we can upload
   version: require('./package.json').version,
-  platformVersion: require('./package.json').dependencies['@zapier/zapier-platform-core'],
+  platformVersion: require('@zapier/zapier-platform-core').version,
 
   beforeRequest: [
     // add our before middlewares
