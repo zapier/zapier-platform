@@ -10,7 +10,7 @@ a look at the automated tests you can do via `zapier test`!
 const baseURL = 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
 
 const searchRecipes = {
-  key: 'search-recipes',
+  key: 'search_recipes',
 
   // You'll want to provide some helpful display labels and descriptions
   // for users. Zapier will put them into the UX.
@@ -55,7 +55,7 @@ const App = {
   // This is just shorthand to reference the installed dependencies you have. Zapier will
   // need to know these before we can upload
   version: require('./package.json').version,
-  platformVersion: require('./package.json').dependencies['@zapier/zapier-platform-core'],
+  platformVersion: require('@zapier/zapier-platform-core').version,
 
   beforeRequest: [
 
