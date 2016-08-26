@@ -34,7 +34,7 @@ const App = {
     type: 'custom',
     // Define any auth fields your app requires here. The user will be prompted to enter this info when
     // they connect their account.
-    inputFields: [
+    fields: [
       {key: 'apiKey', label: 'API Key', required: true, type: 'string'}
     ],
     // The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this
