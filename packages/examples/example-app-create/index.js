@@ -6,46 +6,9 @@ example app, no reason to make it a single file. Also, we recommend taking
 a look at the automated tests you can do via `zapier test`!
 */
 
-const baseURL = 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
+process.env.BASE_URL = process.env.BASE_URL || 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
 
-// We recommend writing your writes separate like this and rolling them
-// into the App definition at the end.
-const recipe = {
-  key: 'recipe',
-
-  // You'll want to provide some helpful display labels and descriptions
-  // for users. Zapier will put them into the UX.
-  noun: 'Recipe',
-  display: {
-    label: 'Create Recipe',
-    description: 'Creates a new recipe.'
-  },
-
-  // `operation` is where the business logic goes.
-  operation: {
-    inputFields: [
-      {key: 'name', required: true, type: 'string'},
-      {key: 'directions', required: true, type: 'text'},
-      {key: 'authorId', required: true, type: 'integer'}
-    ],
-    perform: (z, bundle) => {
-      const promise = z.request({
-        url: `${baseURL}/recipes`,
-        method: 'POST',
-        body: JSON.stringify({
-          name: bundle.inputData.name,
-          directions: bundle.inputData.directions,
-          authorId: bundle.inputData.authorId,
-        }),
-        headers: {
-          'content-type': 'application/json'
-        }
-      });
-
-      return promise.then((response) => JSON.parse(response.content));
-    }
-  }
-};
+const recipe = require('./writes/recipe');
 
 // Now we can roll up all our behaviors in an App.
 const App = {
@@ -55,25 +18,20 @@ const App = {
   platformVersion: require('@zapier/zapier-platform-core').version,
 
   beforeRequest: [
-
   ],
 
   afterResponse: [
-
   ],
 
   resources: {
-
   },
 
   // If you want your trigger to show up, you better include it here!
   triggers: {
-
   },
 
   // If you want your searches to show up, you better include it here!
   searches: {
-
   },
 
   // If you want your writes to show up, you better include it here!
