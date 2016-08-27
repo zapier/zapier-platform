@@ -8,42 +8,11 @@ a look at the automated tests you can do via `zapier test`!
 */
 
 const _ = require('lodash');
-const baseURL = 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
 
-// New recipe trigger
-const newRecipe = {
-  key: 'new_recipe',
+process.env.BASE_URL = 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
 
-  // You'll want to provide some helpful display labels and descriptions
-  // for users. Zapier will put them into the UX.
-  noun: 'Recipe',
-  display: {
-    label: 'New Recipe',
-    description: 'Trigger when a new recipe is added.'
-  },
-
-  // `operation` is where we make the call to your API
-  operation: {
-    perform: {
-      url: `${baseURL}/recipes`
-    }
-  }
-};
-
-// New movie trigger
-const newMovie = {
-  key: 'new_movie',
-
-  noun: 'Movie',
-  display: {
-    label: 'New Movie',
-    description: 'Trigger when a new movie is added.'
-  },
-
-  operation: {
-    perform: { url: `${baseURL}/movies` }
-  }
-};
+const recipe = require('./triggers/recipe');
+const movie = require('./triggers/movie');
 
 // HTTP before middleware that adds sorting query params.
 // We want *every* request to our API to be sorted in reverse chronological order.
@@ -85,23 +54,20 @@ const App = {
   ],
 
   resources: {
-
   },
 
   // If you want your trigger to show up, you better include it here!
   triggers: {
-    [newRecipe.key]: newRecipe,
-    [newMovie.key]: newMovie
+    [recipe.key]: recipe,
+    [movie.key]: movie
   },
 
   // If you want your searches to show up, you better include it here!
   searches: {
-
   },
 
   // If you want your writes to show up, you better include it here!
   writes: {
-
   }
 };
 
