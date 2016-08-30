@@ -14,7 +14,7 @@ describe('searches', () => {
         }
       };
 
-      appTester('searches.search_recipes', bundle)
+      appTester('searches.recipe', bundle)
         .then(results => {
           results.length.should.eql(1);
 
