@@ -12,7 +12,7 @@ module.exports = {
   // `operation` is where we make the call to your API
   operation: {
     perform: {
-      url: '{{process.env.BASE_URL}/recipes'
+      url: `${process.env.BASE_URL}/recipes`
     }
   }
 };

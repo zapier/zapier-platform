@@ -8,7 +8,7 @@ describe('triggers', () => {
 
   describe('new recipe trigger', () => {
     it('should load recipes', (done) => {
-      appTester('triggers.new_recipe')
+      appTester('triggers.recipe')
         .then(results => {
           const firstRecipe = results[0];
           firstRecipe.name.should.eql('Smith Family Recipe');
