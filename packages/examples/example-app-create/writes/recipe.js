@@ -20,7 +20,7 @@ module.exports = {
     ],
     perform: (z, bundle) => {
       const promise = z.request({
-        url: `${process.env.BASE_URL}/recipes`,
+        url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes',
         method: 'POST',
         body: JSON.stringify({
           name: bundle.inputData.name,

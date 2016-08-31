@@ -6,8 +6,6 @@ example app, no reason to make it a single file. Also, we recommend taking
 a look at the automated tests you can do via `zapier test`!
 */
 
-process.env.BASE_URL = process.env.BASE_URL || 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
-
 const recipe = require('./writes/recipe');
 
 // Now we can roll up all our behaviors in an App.
