@@ -5,7 +5,7 @@ const listRecipes = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const promise = z.request({
-    url: `${process.env.BASE_URL}/recipes`,
+    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes',
     params: {
       style: bundle.inputData.style
     }
