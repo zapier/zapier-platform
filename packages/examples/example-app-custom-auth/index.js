@@ -4,8 +4,6 @@ This app showcases how to setup a custom authentication scheme.
 It also illustrates how to add the required auth details to later requests.
 */
 
-process.env.BASE_URL = process.env.BASE_URL || 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
-
 const authentication = require('./authentication');
 
 // To include the API key header on all outbound requests, simply define a function here.

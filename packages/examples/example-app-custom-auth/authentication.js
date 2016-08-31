@@ -3,7 +3,7 @@ const testAuth = (z, bundle) => {
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
   const promise = z.request({
-    url: `${process.env.BASE_URL}/recipes`,
+    url: `http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes`,
   });
 
   // This method can return any truthy value to indicate the credentials are valid.
