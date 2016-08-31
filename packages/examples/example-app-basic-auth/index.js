@@ -4,8 +4,6 @@ This app does a simple auth test to showcase how Zapier will automatically add t
 is configured to use HTTP Basic Auth.
 */
 
-process.env.BASE_URL = process.env.BASE_URL || 'http://httpbin.org';
-
 const authentication = require('./authentication');
 
 const App = {
