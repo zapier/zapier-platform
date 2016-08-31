@@ -23,7 +23,7 @@ module.exports = {
     ],
 
     perform: (z, bundle) => {
-      const url = `${process.env.BASE_URL}/recipes`;
+      const url = 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes';
 
       // Put the search value in a query param. The details of how to build
       // a search URL will depend on how your API works.
