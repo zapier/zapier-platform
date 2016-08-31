@@ -1,3 +1,20 @@
+const listRecipes = (z, bundle) => {
+  // `z.console.log()` is similar to `console.log()`.
+  z.console.log('console says hello world!');
+
+  // You can build requests and our client will helpfully inject all the variables
+  // you need to complete. You can also register middleware to control this.
+  const promise = z.request({
+    url: `${process.env.BASE_URL}/recipes`,
+    params: {
+      style: bundle.inputData.style
+    }
+  });
+
+  // You may return a promise or a normal data structure from any perform method.
+  return promise.then((response) => JSON.parse(response.content));
+};
+
 // We recommend writing your triggers separate like this and rolling them
 // into the App definition at the end.
 module.exports = {
@@ -20,21 +37,6 @@ module.exports = {
       {key: 'style', type: 'string'}
     ],
 
-    perform: (z, bundle) => {
-      // `z.console.log()` is similar to `console.log()`.
-      z.console.log('console says hello world!');
-
-      // You can build requests and our client will helpfully inject all the variables
-      // you need to complete. You can also register middleware to control this.
-      const promise = z.request({
-        url: `${process.env.BASE_URL}/recipes`,
-        params: {
-          style: bundle.inputData.style
-        }
-      });
-
-      // You may return a promise or a normal data structure from any perform method.
-      return promise.then((response) => JSON.parse(response.content));
-    }
+    perform: listRecipes
   }
 };
