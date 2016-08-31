@@ -12,7 +12,7 @@ module.exports = {
   // `operation` is where we make the call to your API
   operation: {
     perform: {
-      url: `${process.env.BASE_URL}/recipes`
+      url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes'
     }
   }
 };

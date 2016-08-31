@@ -9,8 +9,6 @@ a look at the automated tests you can do via `zapier test`!
 
 const _ = require('lodash');
 
-process.env.BASE_URL = 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
-
 const recipe = require('./triggers/recipe');
 const movie = require('./triggers/movie');
 
