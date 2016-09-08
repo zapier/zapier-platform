@@ -14,12 +14,14 @@ const App = {
   version: require('./package.json').version,
   platformVersion: require('@zapier/zapier-platform-core').version,
 
+  // beforeRequest & afterResponse are optional hooks into the provided HTTP client
   beforeRequest: [
   ],
 
   afterResponse: [
   ],
 
+  // If you want to define optional resources to simplify creation of triggers, searches, writes - do that here!
   resources: {
   },
 
