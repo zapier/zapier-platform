@@ -1,5 +1,5 @@
 {
-  "name": "@zapier/zapier-platform-example-app-resource",
+  "name": "zapier-platform-example-app-resource",
   "version": "1.0.0",
   "description": "An example app for the Zapier platform.",
   "repository": "zapier/zapier-platform-example-app-resource",
@@ -17,7 +17,7 @@
   "engineStrict": true,
   "dependencies": {
     "lodash": "4.13.1",
-    "@zapier/zapier-platform-core": "3.2.20"
+    "zapier-platform-core": "0.3.0"
   },
   "devDependencies": {
     "babel": "6.5.2",

@@ -1,6 +1,6 @@
 require('should');
 
-const zapier = require('@zapier/zapier-platform-core');
+const zapier = require('zapier-platform-core');
 
 const appTester = zapier.createAppTester(require('../../index'));
 
