@@ -1,6 +1,6 @@
 require('should');
 
-const zapier = require('zapier/zapier-platform-core');
+const zapier = require('zapier-platform-core');
 
 // Use this to make test calls into your app:
 const appTester = zapier.createAppTester(require('../index'));
