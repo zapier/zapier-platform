@@ -5,7 +5,7 @@
   "repository": "zapier/zapier-platform-example-app-resource",
   "homepage": "https://zapier.com/",
   "author": "Bryan Helmig <bryan@zapier.com>",
-  "license": "BSD",
+  "license": "BSD-3-Clause",
   "main": "index.js",
   "scripts": {
     "test": "node_modules/mocha/bin/mocha --recursive"
@@ -14,7 +14,6 @@
     "node": ">=4.3.0",
     "npm": ">=2.0.0"
   },
-  "engineStrict": true,
   "dependencies": {
     "lodash": "4.13.1",
     "zapier-platform-core": "0.3.0"
