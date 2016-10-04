@@ -4,9 +4,9 @@ const zapier = require('zapier-platform-core');
 
 const appTester = zapier.createAppTester(require('../index'));
 
-describe('writes', () => {
+describe('creates', () => {
 
-  describe('create recipe write', () => {
+  describe('create recipe create', () => {
     it('should create a new recipe', (done) => {
       const bundle = {
         inputData: {
@@ -16,7 +16,7 @@ describe('writes', () => {
         }
       };
 
-      appTester('writes.recipe', bundle)
+      appTester('creates.recipe', bundle)
         .then((result) => {
           result.should.have.property('name');
           done();

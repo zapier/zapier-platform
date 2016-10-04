@@ -1,4 +1,4 @@
-// We recommend writing your writes separate like this and rolling them
+// We recommend writing your creates separate like this and rolling them
 // into the App definition at the end.
 module.exports = {
   key: 'recipe',

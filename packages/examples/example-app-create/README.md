@@ -1,5 +1,5 @@
-# "Write" Example App For Zapier Platform
+# "Create" Example App For Zapier Platform
 
-A barebones app that has a write defined.
+A barebones app that has a create defined.
 
-> We recommend using the zapier-platform-cli and `zapier init --template=write` to create an app.
+> We recommend using the zapier-platform-cli and `zapier init --template=create` to create an app.
