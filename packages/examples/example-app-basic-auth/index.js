@@ -31,8 +31,8 @@ const App = {
   searches: {
   },
 
-  // If you want your writes to show up, you better include it here!
-  writes: {
+  // If you want your creates to show up, you better include it here!
+  creates: {
   }
 };
 
