@@ -21,7 +21,7 @@ const App = {
   afterResponse: [
   ],
 
-  // If you want to define optional resources to simplify creation of triggers, searches, writes - do that here!
+  // If you want to define optional resources to simplify creation of triggers, searches, creates - do that here!
   resources: {
   },
 
@@ -33,8 +33,8 @@ const App = {
   searches: {
   },
 
-  // If you want your writes to show up, you better include it here!
-  writes: {
+  // If you want your creates to show up, you better include it here!
+  creates: {
   }
 };
 
