@@ -1,8 +1,3 @@
-/*
-Welcome to the Zapier Custom Auth example app!
-This app showcases how to setup a custom authentication scheme.
-It also illustrates how to add the required auth details to later requests.
-*/
 
 const authentication = require('./authentication');
 
