@@ -1,8 +1,3 @@
-/*
-Welcome to the Zapier Basic Auth example app!
-This app does a simple auth test to showcase how Zapier will automatically add the authorization header if your app
-is configured to use HTTP Basic Auth.
-*/
 
 const authentication = require('./authentication');
 
