@@ -1,9 +1,3 @@
-/*
-Welcome to the Zapier OAuth2 example app!
-This app showcases the necessary methods needed to perform the OAuth2 flow.
-It also illustrates how to add the authorization header to later requests.
-*/
-
 // You'll want to set these with either `CLIENT_ID=abc zapier test` or `zapier env 1.0.0 CLIENT_ID abc`
 process.env.BASE_URL = process.env.BASE_URL || 'http://zapier.webscript.io/platform-example-app';
 process.env.CLIENT_ID = process.env.CLIENT_ID || 'abcdefabcdef';
