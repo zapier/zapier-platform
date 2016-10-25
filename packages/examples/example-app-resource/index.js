@@ -1,7 +1,3 @@
-/*
-Welcome to the Zapier Resource example app!
-*/
-
 const Recipe = require('./resources/recipe');
 
 // Now we can roll up all our behaviors in an App.
