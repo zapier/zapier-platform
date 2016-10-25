@@ -1,11 +1,3 @@
-/*
-Welcome to the Zapier Create example app!
-This is a small example, all in one file. You can get a clone and start it
-from `zapier init --template=create`. You can of course break apart your
-example app, no reason to make it a single file. Also, we recommend taking
-a look at the automated tests you can do via `zapier test`!
-*/
-
 const recipe = require('./creates/recipe');
 
 // Now we can roll up all our behaviors in an App.
