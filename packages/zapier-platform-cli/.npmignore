@@ -1,0 +1,8 @@
+.travis*
+.zapier*
+src/*
+lib/tests/*
+*.zip
+*.sh
+*.log
+README-source.md
