@@ -1,0 +1,8 @@
+.travis*
+.zapier*
+*.zip
+*.sh
+bin/upload-lambda.js
+*.log
+test/*
+integration-test/*
