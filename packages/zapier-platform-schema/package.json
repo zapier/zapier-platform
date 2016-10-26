@@ -1,0 +1,30 @@
+{
+  "name": "zapier-platform-schema",
+  "version": "0.9.0",
+  "description": "An example app for the Zapier platform.",
+  "repository": "zapier/zapier-platform-schema",
+  "homepage": "https://zapier.com/",
+  "author": "Bryan Helmig <bryan@zapier.com>",
+  "license": "UNLICENSED",
+  "main": "schema.js",
+  "scripts": {
+    "preversion": "git pull && npm test",
+    "version": "npm run export && git add exported-schema.json && npm run docs && git add README.md docs/*",
+    "postversion": "git push && git push --tags && npm publish",
+    "test": "node_modules/mocha/bin/mocha --recursive",
+    "export": "node bin/export.js",
+    "docs": "node bin/docs.js"
+  },
+  "dependencies": {
+    "jsonschema": "1.1.0",
+    "lodash": "4.15.0"
+  },
+  "devDependencies": {
+    "babel": "6.5.2",
+    "babel-eslint": "6.1.2",
+    "eslint": "3.4.0",
+    "marked-toc": "0.3.0",
+    "mocha": "3.0.2",
+    "should": "11.1.0"
+  }
+}

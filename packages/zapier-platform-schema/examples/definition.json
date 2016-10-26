@@ -1,0 +1,401 @@
+{
+  "version": "1.2.30",
+  "platformVersion": "1.2.30",
+  "beforeRequest": "$func$2$f$",
+  "afterResponse": [
+    "$func$2$f$"
+  ],
+  "requestTemplate": {
+    "headers": {
+      "X-MyCustomHeader": "my header value"
+    }
+  },
+  "authentication": {
+    "type": "oauth2",
+    "test": {
+      "url": "http://fake-crm.getsandbox.com/ping",
+      "method": "GET"
+    },
+    "fields": [
+      {
+        "key": "access_token",
+        "computed": true
+      },
+      {
+        "key": "refresh_token",
+        "computed": true
+      }
+    ],
+    "oauth2Config": {
+      "authorizeUrl": "$func$2$f$",
+      "getAccessToken": {
+          "url": "http://fake-crm.getsandbox.com/oauth/access_token",
+          "method": "POST"
+      },
+      "scope": "tags,users,contacts",
+      "autoRefresh": false
+    }
+  },
+  "resources": {
+    "tag": {
+      "key": "tag",
+      "noun": "Tag",
+      "sample": {
+        "id": 1,
+        "name": "test tag"
+      },
+      "get": {
+        "display": {
+          "label": "Get Tag by ID",
+          "description": "Grab a specific Tag by ID."
+        },
+        "operation": {
+          "perform": {
+            "url": "http://fake-crm.getsandbox.com/tags/{{inputData.id}}"
+          },
+          "inputFields": [
+            {
+              "key": "id",
+              "required": true
+            }
+          ]
+        }
+      },
+      "list": {
+        "display": {
+          "label": "New Tag",
+          "order": 3,
+          "description": "Trigger when a new Tag is created in your account."
+        },
+        "operation": {
+          "perform": {
+            "url": "http://fake-crm.getsandbox.com/tags"
+          }
+        }
+      },
+      "create": {
+        "display": {
+          "label": "Create Tag",
+          "description": "Create a new Tag in your account."
+        },
+        "operation": {
+          "perform": "$func$2$f$"
+        }
+      }
+    },
+    "user": {
+      "key": "user",
+      "noun": "User",
+      "sample": {
+        "id": 1,
+        "name": "Test McTesterson",
+        "email": "test@mctesterson.com"
+      },
+      "get": {
+        "display": {
+          "order": 4,
+          "label": "Get User by ID",
+          "description": "Grab a specific User by ID."
+        },
+        "operation": {
+          "perform": {
+            "url": "http://fake-crm.getsandbox.com/users/{{inputData.id}}"
+          },
+          "inputFields": [
+            {
+              "key": "id",
+              "required": true
+            }
+          ]
+        }
+      },
+      "list": {
+        "display": {
+          "label": "New User",
+          "description": "Trigger when a new User is created in your account."
+        },
+        "operation": {
+          "perform": {
+            "url": "http://fake-crm.getsandbox.com/users"
+          }
+        }
+      }
+    },
+    "contact": {
+      "key": "contact",
+      "noun": "Contact",
+      "sample": {
+        "id": 1,
+        "name": "Test Contact",
+        "company": "Test Inc",
+        "email": "test@example.com.com",
+        "phone": "1-111-555-7000",
+        "address": "1234 Test Canyon",
+        "owner_id": 1,
+        "tag_ids": [
+          1,
+          2,
+          3
+        ]
+      },
+      "get": {
+        "display": {
+          "order": 1,
+          "label": "Get Contact by ID",
+          "description": "Grab a specific Contact by ID."
+        },
+        "operation": {
+          "perform": {
+            "url": "http://fake-crm.getsandbox.com/contacts/{{inputData.id}}"
+          },
+          "inputFields": [
+            {
+              "key": "id",
+              "required": true
+            }
+          ]
+        }
+      },
+      "list": {
+        "display": {
+          "label": "New Contact",
+          "description": "Trigger when a new Contact is created in your account."
+        },
+        "operation": {
+          "perform": {
+            "url": "http://fake-crm.getsandbox.com/contacts"
+          }
+        }
+      },
+      "create": {
+        "display": {
+          "label": "Create Contact",
+          "description": "Create a new Contact in your account."
+        },
+        "operation": {
+          "perform": "$func$2$f$",
+          "inputFields": [
+            {
+              "key": "email",
+              "label": "Email",
+              "type": "string",
+              "required": true
+            },
+            {
+              "key": "name",
+              "label": "Name",
+              "type": "string"
+            },
+            {
+              "key": "company",
+              "label": "Company",
+              "type": "string"
+            },
+            {
+              "key": "phone",
+              "label": "Phone",
+              "type": "string"
+            },
+            {
+              "key": "address",
+              "label": "Address",
+              "type": "text"
+            },
+            {
+              "key": "owner_id",
+              "label": "Owner",
+              "type": "integer",
+              "dynamic": "user"
+            },
+            {
+              "key": "tag_id",
+              "label": "Tag",
+              "type": "integer",
+              "dynamic": "tag"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "triggers": {
+    "contact_by_tag": {
+      "key": "contact_by_tag",
+      "noun": "Contact",
+      "display": {
+        "order": 2,
+        "label": "New Tagged Contact",
+        "description": "Trigger when a new Contact is tagged in your account."
+      },
+      "operation": {
+        "resource": "contact",
+        "perform": {
+          "url": "http://fake-crm.getsandbox.com/contacts?tag_id={{inputData.tagId}}"
+        },
+        "inputFields": [
+          {
+            "key": "tagId",
+            "label": "Tag",
+            "type": "integer",
+            "dynamic": "tag"
+          }
+        ],
+        "sample": {
+          "id": 1,
+          "name": "Test Contact",
+          "company": "Test Inc",
+          "email": "test@example.com.com",
+          "phone": "1-111-555-7000",
+          "address": "1234 Test Canyon",
+          "owner_id": 1,
+          "tag_ids": [
+            1,
+            2,
+            3
+          ]
+        }
+      }
+    },
+    "tag_list": {
+      "display": {
+        "label": "New Tag",
+        "order": 3,
+        "description": "Trigger when a new Tag is created in your account."
+      },
+      "operation": {
+        "perform": {
+          "url": "http://fake-crm.getsandbox.com/tags"
+        },
+        "resource": "tag",
+        "type": "polling"
+      },
+      "key": "tag_list",
+      "noun": "Tag"
+    },
+    "user_list": {
+      "display": {
+        "label": "New User",
+        "description": "Trigger when a new User is created in your account."
+      },
+      "operation": {
+        "perform": {
+          "url": "http://fake-crm.getsandbox.com/users"
+        },
+        "resource": "user",
+        "type": "polling"
+      },
+      "key": "user_list",
+      "noun": "User"
+    },
+    "contact_list": {
+      "display": {
+        "label": "New Contact",
+        "description": "Trigger when a new Contact is created in your account."
+      },
+      "operation": {
+        "perform": {
+          "url": "http://fake-crm.getsandbox.com/contacts"
+        },
+        "resource": "contact",
+        "type": "polling",
+        "sample": {
+          "id": 1,
+          "name": "Test Contact",
+          "company": "Test Inc",
+          "email": "test@example.com.com",
+          "phone": "1-111-555-7000",
+          "address": "1234 Test Canyon",
+          "owner_id": 1,
+          "tag_ids": [
+            1,
+            2,
+            3
+          ]
+        }
+      },
+      "key": "contact_list",
+      "noun": "Contact"
+    }
+  },
+  "searches": {},
+  "creates": {
+    "tag_create": {
+      "display": {
+        "label": "Create Tag",
+        "description": "Create a new Tag in your account."
+      },
+      "operation": {
+        "perform": "$func$2$f$",
+        "resource": "tag"
+      },
+      "key": "tag_create",
+      "noun": "Tag"
+    },
+    "contact_create": {
+      "display": {
+        "label": "Create Contact",
+        "description": "Create a new Contact in your account."
+      },
+      "operation": {
+        "perform": "$func$2$f$",
+        "inputFields": [
+          {
+            "key": "email",
+            "label": "Email",
+            "type": "string",
+            "required": true
+          },
+          {
+            "key": "name",
+            "label": "Name",
+            "type": "string"
+          },
+          {
+            "key": "company",
+            "label": "Company",
+            "type": "string"
+          },
+          {
+            "key": "phone",
+            "label": "Phone",
+            "type": "string"
+          },
+          {
+            "key": "address",
+            "label": "Address",
+            "type": "text"
+          },
+          {
+            "key": "owner_id",
+            "label": "Owner",
+            "type": "integer",
+            "dynamic": "user"
+          },
+          {
+            "key": "tag_id",
+            "label": "Tag",
+            "type": "integer",
+            "dynamic": "tag"
+          }
+        ],
+        "resource": "contact",
+        "sample": {
+          "id": 1,
+          "name": "Test Contact",
+          "company": "Test Inc",
+          "email": "test@example.com.com",
+          "phone": "1-111-555-7000",
+          "address": "1234 Test Canyon",
+          "owner_id": 1,
+          "tag_ids": [
+            1,
+            2,
+            3
+          ]
+        }
+      },
+      "key": "contact_create",
+      "noun": "Contact"
+    }
+  }
+}
