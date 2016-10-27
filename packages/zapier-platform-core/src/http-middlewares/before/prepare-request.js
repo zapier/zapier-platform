@@ -7,14 +7,31 @@ const querystring = require('querystring');
 const cleaner = require('../../tools/cleaner');
 const requestMerge = require('../../tools/request-merge');
 
+const FORM_TYPE = 'application/x-www-form-urlencoded';
+const JSON_TYPE = 'application/json; charset=utf-8';
+
 const isStream = (obj) => obj instanceof stream.Stream;
 const isPromise = (obj) => obj && typeof obj.then === 'function';
 
 // Be careful not to JSONify a stream or buffer, stuff like that
 const coerceBody = (req) => {
+  if (!req.body && req.form) {
+    // TODO: use const FormData = require('form-data'); instead?
+    req.body = querystring.stringify(req.body);
+    req.headers['content-type'] = FORM_TYPE;
+    delete req.form;
+  }
+
+  if (!req.body && req.json) {
+    req.body = JSON.stringify(req.body);
+    req.headers['content-type'] = JSON_TYPE;
+    delete req.json;
+  }
+
   const contentType = (req.headers || {})['content-type'] || '';
 
-  if (contentType === 'application/x-www-form-urlencoded' && req.body && !_.isString(req.body)) {
+  // auto coerce form if header says so
+  if (contentType === FORM_TYPE && req.body && !_.isString(req.body)) {
     req.body = querystring.stringify(req.body);
   }
 
@@ -27,7 +44,7 @@ const coerceBody = (req) => {
   } else if (req.body && !_.isString(req.body)) {
     // this is a general - popular fallback
     req.body = JSON.stringify(req.body);
-    req.headers['content-type'] = 'application/json; charset=utf-8';
+    req.headers['content-type'] = JSON_TYPE;
   }
 
   return req;
