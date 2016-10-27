@@ -1467,7 +1467,9 @@ Shorthand requests and manual `z.request([url], options)` calls support the foll
 * `method`: HTTP method, default is `GET`.
 * `headers`: request headers object, format `{'header-key': 'header-value'}`.
 * `params`: URL query params object, format `{'query-key': 'query-value'}`.
-* `body`: request body, can be a string, buffer, or readable stream.
+* `body`: request body, can be a string, buffer, or readable stream. Default is `null`.
+* `json`: shortcut object/array/etc. you want to JSON encode into body. Default is `null`.
+* `form`: shortcut object. you want to form encode into body. Default is `null`.
 * `raw`: set this to stream the response instead of consuming it immediately. Default is `false`.
 * `redirect`: set to `manual` to extract redirect headers, `error` to reject redirect, default is `follow`.
 * `follow`: maximum redirect count, set to `0` to not follow redirects. default is `20`.

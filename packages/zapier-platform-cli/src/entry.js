@@ -54,7 +54,7 @@ module.exports = (argv) => {
 
   let commandFunc = commands[command];
   if (!commandFunc) {
-    context.line(`${command} not a command! Try running \`zapier help\`?`);
+    context.line(`\`zapier ${command}\` is not a command! Try running \`zapier help\`?`);
     return;
   }
 

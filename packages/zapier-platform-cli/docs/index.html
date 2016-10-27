@@ -2534,7 +2534,9 @@ zapier env 1.0.0
 <li><code>method</code>: HTTP method, default is <code>GET</code>.</li>
 <li><code>headers</code>: request headers object, format <code>{&apos;header-key&apos;: &apos;header-value&apos;}</code>.</li>
 <li><code>params</code>: URL query params object, format <code>{&apos;query-key&apos;: &apos;query-value&apos;}</code>.</li>
-<li><code>body</code>: request body, can be a string, buffer, or readable stream.</li>
+<li><code>body</code>: request body, can be a string, buffer, or readable stream. Default is <code>null</code>.</li>
+<li><code>json</code>: shortcut object/array/etc. you want to JSON encode into body. Default is <code>null</code>.</li>
+<li><code>form</code>: shortcut object. you want to form encode into body. Default is <code>null</code>.</li>
 <li><code>raw</code>: set this to stream the response instead of consuming it immediately. Default is <code>false</code>.</li>
 <li><code>redirect</code>: set to <code>manual</code> to extract redirect headers, <code>error</code> to reject redirect, default is <code>follow</code>.</li>
 <li><code>follow</code>: maximum redirect count, set to <code>0</code> to not follow redirects. default is <code>20</code>.</li>
