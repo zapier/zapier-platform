@@ -5,7 +5,7 @@ const _ = require('lodash');
 const injectInput = require('./http-middlewares/before/inject-input');
 const prepareRequest = require('./http-middlewares/before/prepare-request');
 const addQueryParams = require('./http-middlewares/before/add-query-params');
-const raiseForStatus = require('./http-middlewares/after/raise-for-status');
+const throwForStatus = require('./http-middlewares/after/throw-for-status');
 const createJSONtool = require('./tools/create-json-tool');
 const ensureArray = require('./tools/ensure-array');
 const ZapierPromise = require('./tools/promise');
@@ -15,7 +15,7 @@ const constants = require('./constants');
 const executeHttpRequest = (input, options) => {
   options = _.extend({}, options, constants.REQUEST_OBJECT_SHORTHAND_OPTIONS);
   return input.z.request(options)
-    .then(raiseForStatus)
+    .then(throwForStatus)
     .then(resp => createJSONtool().parse(resp.content));
 };
 

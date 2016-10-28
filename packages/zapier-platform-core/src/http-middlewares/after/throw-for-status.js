@@ -2,7 +2,7 @@
 
 const errors = require('../../errors');
 
-const raiseForStatus = (resp) => {
+const throwForStatus = (resp) => {
   if (resp.status > 300) {
     const message = `Got ${resp.status} calling ${resp.request.method} ${resp.request.url}, expected 2xx.`;
 
@@ -15,4 +15,4 @@ const raiseForStatus = (resp) => {
   return resp;
 };
 
-module.exports = raiseForStatus;
+module.exports = throwForStatus;
