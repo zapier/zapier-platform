@@ -1462,7 +1462,7 @@ Middleware functions can be asynchronous - just return a promise from the middle
 
 ### HTTP Request Options
 
-Shorthand requests and manual `z.request([url], options)` calls support the following HTTP options:
+Shorthand requests and manual `z.request([url], options)` calls support the following HTTP `options`:
 
 * `url`: HTTP url, you can provide it both `z.request(url, options)` or `z.request({url: url, ...})`.
 * `method`: HTTP method, default is `GET`.
@@ -1479,16 +1479,58 @@ Shorthand requests and manual `z.request([url], options)` calls support the foll
 * `timeout`: request / response timeout in ms. Set to `0` to disable (OS limit still applies), timeout reset on `redirect`. Default is `0` (disabled).
 * `size`: maximum response body size in bytes. Set to `0`` to disable. Default is `0` (disabled).
 
+```javascript
+z.request({
+  url: 'http://example.com',
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  // only provide body, json or form...
+  body: '{"hello":"world"}', // or 'hello=world'
+  json: {hello: 'world'},
+  form: {hello: 'world'},
+  // access node-fetch style response.body
+  raw: false,
+  redirect: 'follow',
+  follow: 20,
+  compress: true,
+  agent: null,
+  timeout: 0,
+  size: 0,
+})
+```
+
 ### HTTP Response Object
 
 The response object returned by `z.request([url], options)` supports the following fields and methods:
 
 * `status`: The response status code, i.e. `200`, `404`, etc.
-* `content`: The raw response body. For JSON you need to call `JSON.parse(response.content)`.
+* `content`: The response content as a String. For Buffer, try `options.raw = true`.
+* `json`: The response content as an object (or `undefined`). If `options.raw = true` - is a promise.
 * `body`: A stream available only if you provide `options.raw = true`.
 * `headers`: Response headers object. The header keys are all lower case.
 * `getHeader`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
 * `options`: The original request options object (see above).
+
+```javascript
+z.request({
+  // ..
+}).then((response) => {
+  response.status;
+  response.headers['Content-Type'];
+  response.getHeader('content-type');
+  response.options; // original request options
+  // if options.raw === false (default)...
+  JSON.parse(response.content);
+  response.json;
+  // if options.raw === true...
+  response.buffer().then(buf => buf.toString());
+  response.text().then(content => content);
+  response.json().then(json => json);
+  response.body.pipe(otherStream);
+});
+```
 
 
 ## Dehydration

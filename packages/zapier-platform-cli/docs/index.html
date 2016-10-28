@@ -2531,7 +2531,7 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Shorthand requests and manual <code>z.request([url], options)</code> calls support the following HTTP options:</p><ul>
+      <p>Shorthand requests and manual <code>z.request([url], options)</code> calls support the following HTTP <code>options</code>:</p><ul>
 <li><code>url</code>: HTTP url, you can provide it both <code>z.request(url, options)</code> or <code>z.request({url: url, ...})</code>.</li>
 <li><code>method</code>: HTTP method, default is <code>GET</code>.</li>
 <li><code>headers</code>: request headers object, format <code>{&apos;header-key&apos;: &apos;header-value&apos;}</code>.</li>
@@ -2548,8 +2548,27 @@ zapier env 1.0.0
 <li><code>size</code>: maximum response body size in bytes. Set to <code>0`` to disable. Default is</code>0` (disabled).</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript">z.request({
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;http://example.com&apos;</span>,
+  <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
+  <span class="hljs-attr">headers</span>: {
+    <span class="hljs-string">&apos;Content-Type&apos;</span>: <span class="hljs-string">&apos;application/json&apos;</span>
+  },
+  <span class="hljs-comment">// only provide body, json or form...</span>
+  body: <span class="hljs-string">&apos;{&quot;hello&quot;:&quot;world&quot;}&apos;</span>, <span class="hljs-comment">// or &apos;hello=world&apos;</span>
+  json: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>},
+  <span class="hljs-attr">form</span>: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>},
+  <span class="hljs-comment">// access node-fetch style response.body</span>
+  raw: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">redirect</span>: <span class="hljs-string">&apos;follow&apos;</span>,
+  <span class="hljs-attr">follow</span>: <span class="hljs-number">20</span>,
+  <span class="hljs-attr">compress</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">agent</span>: <span class="hljs-literal">null</span>,
+  <span class="hljs-attr">timeout</span>: <span class="hljs-number">0</span>,
+  <span class="hljs-attr">size</span>: <span class="hljs-number">0</span>,
+})
+</code></pre>
     </div>
   </div>
 </div><div class="row">
@@ -2566,15 +2585,32 @@ zapier env 1.0.0
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>The response object returned by <code>z.request([url], options)</code> supports the following fields and methods:</p><ul>
 <li><code>status</code>: The response status code, i.e. <code>200</code>, <code>404</code>, etc.</li>
-<li><code>content</code>: The raw response body. For JSON you need to call <code>JSON.parse(response.content)</code>.</li>
+<li><code>content</code>: The response content as a String. For Buffer, try <code>options.raw = true</code>.</li>
+<li><code>json</code>: The response content as an object (or <code>undefined</code>). If <code>options.raw = true</code> - is a promise.</li>
 <li><code>body</code>: A stream available only if you provide <code>options.raw = true</code>.</li>
 <li><code>headers</code>: Response headers object. The header keys are all lower case.</li>
 <li><code>getHeader</code>: Retrieve response header, case insensitive: <code>response.getHeader(&apos;My-Header&apos;)</code></li>
 <li><code>options</code>: The original request options object (see above).</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript">z.request({
+  <span class="hljs-comment">// ..</span>
+}).then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
+  response.status;
+  response.headers[<span class="hljs-string">&apos;Content-Type&apos;</span>];
+  response.getHeader(<span class="hljs-string">&apos;content-type&apos;</span>);
+  response.options; <span class="hljs-comment">// original request options</span>
+  <span class="hljs-comment">// if options.raw === false (default)...</span>
+  <span class="hljs-built_in">JSON</span>.parse(response.content);
+  response.json;
+  <span class="hljs-comment">// if options.raw === true...</span>
+  response.buffer().then(<span class="hljs-function"><span class="hljs-params">buf</span> =&gt;</span> buf.toString());
+  response.text().then(<span class="hljs-function"><span class="hljs-params">content</span> =&gt;</span> content);
+  response.json().then(<span class="hljs-function"><span class="hljs-params">json</span> =&gt;</span> json);
+  response.body.pipe(otherStream);
+});
+</code></pre>
     </div>
   </div>
 </div><div class="row">
