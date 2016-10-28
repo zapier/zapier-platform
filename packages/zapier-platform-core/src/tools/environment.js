@@ -1,6 +1,9 @@
 'use strict';
 
 const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
+
 const ensurePath = require('./ensure-path');
 
 // Copy bundle environment into process.env, and vice versa,
@@ -25,7 +28,28 @@ const cleanEnvironment = () => {
   }
 };
 
+const readEnvironmentFile = () => {
+  const data = {};
+  try {
+    const content = fs.readFileSync(path.join(process.cwd(), '.environment'));
+    _.split(content, '\n').map(line => {
+      const parts = _.split(line, '=');
+      const key = parts.shift();
+      const value = parts.join('=');
+      data[key] = value;
+    });
+    return data;
+  } catch(err) {
+    return data;
+  }
+};
+
+const injectEnvironmentFile = () => {
+  _.extend(process.env, readEnvironmentFile());
+};
+
 module.exports = {
   applyEnvironment,
-  cleanEnvironment
+  cleanEnvironment,
+  injectEnvironmentFile
 };
