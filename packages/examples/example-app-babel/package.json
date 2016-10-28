@@ -1,0 +1,35 @@
+{
+  "name": "zapier-platform-example-app-babel",
+  "version": "1.0.0",
+  "description": "An example app for the Zapier platform.",
+  "repository": "zapier/zapier-platform-example-app-babel",
+  "homepage": "https://zapier.com/",
+  "author": "Bryan Helmig <bryan@zapier.com>",
+  "license": "UNLICENSED",
+  "main": "index.js",
+  "scripts": {
+    "zapier-dev": "rm -rf lib && node_modules/babel-cli/bin/babel.js src --out-dir lib --watch",
+    "zapier-push": "rm -rf lib && node_modules/babel-cli/bin/babel.js src --out-dir lib && zapier push",
+    "test": "node node_modules/mocha/bin/mocha --recursive lib"
+  },
+  "engines": {
+    "node": ">=4.3.0",
+    "npm": ">=2.0.0"
+  },
+  "dependencies": {
+    "babel-core": "6.18.0",
+    "babel-polyfill": "6.16.0",
+    "lodash": "4.15.0",
+    "zapier-platform-core": "0.9.3"
+  },
+  "devDependencies": {
+    "babel": "6.5.2",
+    "babel-cli": "6.18.0",
+    "babel-eslint": "6.1.2",
+    "babel-plugin-add-module-exports": "0.2.1",
+    "babel-plugin-transform-regenerator": "6.16.1",
+    "babel-preset-es2015-node4": "2.1.0",
+    "mocha": "2.5.3",
+    "should": "9.0.2"
+  }
+}
