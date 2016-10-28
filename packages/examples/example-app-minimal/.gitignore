@@ -2,3 +2,4 @@ build
 docs
 node_modules
 *.log
+.environment
