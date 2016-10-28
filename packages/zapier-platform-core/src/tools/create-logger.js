@@ -56,7 +56,7 @@ const toStdout = (event, msg, data) => {
   }
 };
 
-const censorSensitiveData = (data, event) => {
+const makeSensitiveBank = (event) => {
   const bundle = event.bundle || {};
   const sensitiveData = _.extend(
     {},
@@ -66,14 +66,13 @@ const censorSensitiveData = (data, event) => {
       process.env || {}
     )
   );
-  const sensitiveBank = _.values(sensitiveData)
-        .reduce((bank, val) => {
-          if (val && String(val).length > 5) {
-            bank[val] = hashing.snipify(val);
-          }
-          return bank;
-        }, {});
-  return cleaner.recurseReplaceBank(data, sensitiveBank);
+  return _.values(sensitiveData)
+    .reduce((bank, val) => {
+      if (val && String(val).length > 5) {
+        bank[val] = hashing.snipify(val);
+      }
+      return bank;
+    }, {});
 };
 
 const sendLog = (options, event, message, data) => {
@@ -83,11 +82,14 @@ const sendLog = (options, event, message, data) => {
     event.logExtra || {}
   );
   data.log_type = data.log_type || 'console';
-  data = censorSensitiveData(data, event);
+
+  const sensitiveBank = makeSensitiveBank(event);
+  message = truncate(cleaner.recurseReplaceBank(message, sensitiveBank));
+  data = cleaner.recurseReplaceBank(data, sensitiveBank);
   data = dataTools.recurseReplace(data, truncate);
 
   const body = {
-    message: truncate(message),
+    message,
     data,
     token: options.token,
   };
