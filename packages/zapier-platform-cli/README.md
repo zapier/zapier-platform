@@ -1510,8 +1510,9 @@ The response object returned by `z.request([url], options)` supports the followi
 * `json`: The response content as an object (or `undefined`). If `options.raw = true` - is a promise.
 * `body`: A stream available only if you provide `options.raw = true`.
 * `headers`: Response headers object. The header keys are all lower case.
-* `getHeader`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
-* `options`: The original request options object (see above).
+* `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
+* `throwForStatus()`: Throw error if final `response.status > 300`. Will throw `z.error.RefreshAuthError` if 401.
+* `request`: The original request options object (see above).
 
 ```javascript
 z.request({
@@ -1520,7 +1521,8 @@ z.request({
   response.status;
   response.headers['Content-Type'];
   response.getHeader('content-type');
-  response.options; // original request options
+  response.request; // original request options
+  response.throwForStatus();
   // if options.raw === false (default)...
   JSON.parse(response.content);
   response.json;

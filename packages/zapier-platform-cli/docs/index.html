@@ -2589,8 +2589,9 @@ zapier env 1.0.0
 <li><code>json</code>: The response content as an object (or <code>undefined</code>). If <code>options.raw = true</code> - is a promise.</li>
 <li><code>body</code>: A stream available only if you provide <code>options.raw = true</code>.</li>
 <li><code>headers</code>: Response headers object. The header keys are all lower case.</li>
-<li><code>getHeader</code>: Retrieve response header, case insensitive: <code>response.getHeader(&apos;My-Header&apos;)</code></li>
-<li><code>options</code>: The original request options object (see above).</li>
+<li><code>getHeader(key)</code>: Retrieve response header, case insensitive: <code>response.getHeader(&apos;My-Header&apos;)</code></li>
+<li><code>throwForStatus()</code>: Throw error if final <code>response.status &gt; 300</code>. Will throw <code>z.error.RefreshAuthError</code> if 401.</li>
+<li><code>request</code>: The original request options object (see above).</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -2600,7 +2601,8 @@ zapier env 1.0.0
   response.status;
   response.headers[<span class="hljs-string">&apos;Content-Type&apos;</span>];
   response.getHeader(<span class="hljs-string">&apos;content-type&apos;</span>);
-  response.options; <span class="hljs-comment">// original request options</span>
+  response.request; <span class="hljs-comment">// original request options</span>
+  response.throwForStatus();
   <span class="hljs-comment">// if options.raw === false (default)...</span>
   <span class="hljs-built_in">JSON</span>.parse(response.content);
   response.json;
