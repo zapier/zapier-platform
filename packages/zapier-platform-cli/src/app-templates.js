@@ -1,5 +1,5 @@
 // list of template (example) apps
-
+// https://github.com/zapier/zapier-platform-example-app-*
 module.exports = [
   'minimal',
   'resource',
@@ -9,5 +9,7 @@ module.exports = [
   'middleware',
   'basic-auth',
   'custom-auth',
-  'oauth2'
+  'oauth2',
+  'session-auth',
+  'babel'
 ];

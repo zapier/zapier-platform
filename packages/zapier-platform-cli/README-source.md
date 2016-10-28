@@ -858,6 +858,17 @@ This object holds the user's auth details and the data to for the API requests.
 }
 ```
 
+### `bundle.meta`
+
+`bundle.meta` is kind of like `inputData`, but before rendering `{{curlies}}`:
+
+```javascript
+{
+  createdBy: '{{chef_name}}'
+  style: '{{style}}'
+}
+```
+
 
 ## Environment
 
