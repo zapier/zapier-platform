@@ -1245,6 +1245,27 @@ You will likely also want to set the value locally for testing.
 export MY_SECRET_VALUE=1234
 ```
 
+Alternatively, we provide some extra tooling to work with an `.environment` that looks like this:
+
+```
+MY_SECRET_VALUE=1234
+```
+
+And then in your `test/index.js` file:
+
+```javascript
+const zapier = require('zapier-platform-core');
+
+should('some tests', () => {
+  zapier.tools.env.inject();
+  console.log(process.env.MY_SECRET_VALUE);
+  // should print '1234'
+});
+```
+
+> This is a popular way to provide `process.env.ACCESS_TOKEN || bundle.authData.access_token` for convenient testing.
+
+
 ### Accessing Environment Variables
 
 To view existing environment variables, use the `env` command.
