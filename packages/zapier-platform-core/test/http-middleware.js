@@ -139,6 +139,41 @@ describe('http prepareRequest', () => {
     goodReq.url.should.eql('http://example.com/bar');
   });
 
+  const input = {
+    _zapier: {
+      event: {},
+      app: {}
+    }
+  };
+
+  it('should coerce "json" into the body', () => {
+    const origReq = {
+      method: 'POST',
+      url: 'http://example.com',
+      json: {hello: 'world'},
+      input
+    };
+
+    const fixedReq = prepareRequest(origReq);
+    should(fixedReq.json).eql(undefined);
+    should(fixedReq.body).eql('{"hello":"world"}');
+    should(fixedReq.headers['content-type']).eql('application/json; charset=utf-8');
+  });
+
+  it('should coerce "form" into the body', () => {
+    const origReq = {
+      method: 'POST',
+      url: 'http://example.com',
+      form: {hello: 'world'},
+      input
+    };
+
+    const fixedReq = prepareRequest(origReq);
+    should(fixedReq.form).eql(undefined);
+    should(fixedReq.body).eql('hello=world');
+    should(fixedReq.headers['content-type']).eql('application/x-www-form-urlencoded');
+  });
+
 });
 
 describe('http addBasicAuthHeader before middelware', () => {

@@ -13,25 +13,33 @@ const JSON_TYPE = 'application/json; charset=utf-8';
 const isStream = (obj) => obj instanceof stream.Stream;
 const isPromise = (obj) => obj && typeof obj.then === 'function';
 
-// Be careful not to JSONify a stream or buffer, stuff like that
-const coerceBody = (req) => {
+const sugarBody = (req) => {
+  // move into the body as raw, set headers for coerce, merge to work
+
+  req.headers = req.headers || {};
+
   if (!req.body && req.form) {
-    // TODO: use const FormData = require('form-data'); instead?
-    req.body = querystring.stringify(req.body);
+    req.body = req.form;
     req.headers['content-type'] = FORM_TYPE;
     delete req.form;
   }
 
   if (!req.body && req.json) {
-    req.body = JSON.stringify(req.body);
+    req.body = req.json;
     req.headers['content-type'] = JSON_TYPE;
     delete req.json;
   }
 
+  return req;
+};
+
+// Be careful not to JSONify a stream or buffer, stuff like that
+const coerceBody = (req) => {
   const contentType = (req.headers || {})['content-type'] || '';
 
   // auto coerce form if header says so
   if (contentType === FORM_TYPE && req.body && !_.isString(req.body)) {
+    // TODO: use const FormData = require('form-data'); instead?
     req.body = querystring.stringify(req.body);
   }
 
@@ -82,6 +90,8 @@ const prepareRequest = function(req) {
     prune: false, // TODO: do we prune empty {{missing}} vars?,
     _addContext: () => {}
   });
+
+  req = sugarBody(req);
 
   // apply app requestTemplate to request
   if (req.merge) {
