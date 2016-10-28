@@ -1243,6 +1243,8 @@ zapier test
 npm run zapier-push
 ```
 
+There are a lot of details left out - check out the full example app at https://github.com/zapier/zapier-platform-example-app-babel for a working setup.
+
 
 ## Example Apps
 
@@ -1283,6 +1285,10 @@ https://github.com/zapier/zapier-platform-example-app-oauth2 - `zapier init . --
 ### Session Auth Example App
 
 https://github.com/zapier/zapier-platform-example-app-session-auth - `zapier init . --template=session-auth`
+
+### Babel Example App
+
+https://github.com/zapier/zapier-platform-example-app-babel - `zapier init . --template=babel`
 
 
 ## Get Help!

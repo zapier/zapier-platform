@@ -86,6 +86,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [Custom Auth Example App](#custom-auth-example-app)
   * [OAuth2 Example App](#oauth2-example-app)
   * [Session Auth Example App](#session-auth-example-app)
+  * [Babel Example App](#babel-example-app)
 - [Get Help!](#get-help)
 
 <!-- tocstop -->
@@ -1866,6 +1867,8 @@ zapier test
 npm run zapier-push
 ```
 
+There are a lot of details left out - check out the full example app at https://github.com/zapier/zapier-platform-example-app-babel for a working setup.
+
 
 ## Example Apps
 
@@ -1906,6 +1909,10 @@ https://github.com/zapier/zapier-platform-example-app-oauth2 - `zapier init . --
 ### Session Auth Example App
 
 https://github.com/zapier/zapier-platform-example-app-session-auth - `zapier init . --template=session-auth`
+
+### Babel Example App
+
+https://github.com/zapier/zapier-platform-example-app-babel - `zapier init . --template=babel`
 
 
 ## Get Help!
