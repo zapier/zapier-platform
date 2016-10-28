@@ -53,8 +53,15 @@ const prepareResponse = (resp) => {
     return resp.text()
       .then((content) => {
         // trim down the response signature a ton for simplicity
+        let json;
+        try {
+          json = JSON.parse(content);
+        } catch(err) {
+          json = undefined;
+        }
         const preppedResp = {
           status: resp.status,
+          json: json,
           content: content,
           request: request,
         };
