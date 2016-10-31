@@ -80,7 +80,7 @@ const isValidNodeVersion = () => {
 };
 
 const isValidAppInstall = (command) => {
-  if (command === 'help' || command === 'init' || command === 'auth' || command === 'apps' || command === 'convert') {
+  if (command === 'help' || command === 'init' || command === 'login' || command === 'apps' || command === 'convert') {
     return true;
   }
 
