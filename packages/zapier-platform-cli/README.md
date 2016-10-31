@@ -51,6 +51,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [`bundle.authData`](#bundleauthdata)
   * [`bundle.inputData`](#bundleinputdata)
   * [`bundle.inputDataRaw`](#bundleinputdataraw)
+  * [`bundle.meta`](#bundlemeta)
 - [Environment](#environment)
   * [Defining Environment Variables](#defining-environment-variables)
   * [Accessing Environment Variables](#accessing-environment-variables)
@@ -179,7 +180,7 @@ Open `triggers/recipe.js` and **replace** it with:
 const listRecipes = (z, bundle) => {
   z.console.log('hello from a console log!');
   const promise = z.request('http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes');
-  return promise.then((response) => z.JSON.parse(response.content));
+  return promise.then((response) => response.json);
 };
 
 module.exports = {
@@ -1216,6 +1217,38 @@ This object holds the user's auth details and the data to for the API requests.
   createdBy: '{{chef_name}}'
   style: '{{style}}'
 }
+```
+
+### `bundle.meta`
+
+`bundle.meta` is extra information useful for doing advanced behaviors depending on what the user is doing. It looks something like this:
+
+```javascript
+{
+  frontend: false,
+  prefill: false,
+  hydrate: true,
+  test_poll: false,
+  standard_poll: true,
+  first_poll: false,
+  limit: -1,
+  page: 0,
+}
+```
+
+For example - if you want to do pagination - you could do:
+
+```javascript
+const getList = (z, bundle) => {
+  const promise = z.request({
+    url: 'http://example.com/api/list.json',
+    params: {
+      limit: 100,
+      offset: 100 * bundle.meta.page
+    }
+  });
+  return promise.then((response) => response.json);
+};
 ```
 
 

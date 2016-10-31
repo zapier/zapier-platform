@@ -100,7 +100,7 @@ Open `triggers/recipe.js` and **replace** it with:
 const listRecipes = (z, bundle) => {
   z.console.log('hello from a console log!');
   const promise = z.request('http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes');
-  return promise.then((response) => z.JSON.parse(response.content));
+  return promise.then((response) => response.json);
 };
 
 module.exports = {
@@ -860,13 +860,34 @@ This object holds the user's auth details and the data to for the API requests.
 
 ### `bundle.meta`
 
-`bundle.meta` is kind of like `inputData`, but before rendering `{{curlies}}`:
+`bundle.meta` is extra information useful for doing advanced behaviors depending on what the user is doing. It looks something like this:
 
 ```javascript
 {
-  createdBy: '{{chef_name}}'
-  style: '{{style}}'
+  frontend: false,
+  prefill: false,
+  hydrate: true,
+  test_poll: false,
+  standard_poll: true,
+  first_poll: false,
+  limit: -1,
+  page: 0,
 }
+```
+
+For example - if you want to do pagination - you could do:
+
+```javascript
+const getList = (z, bundle) => {
+  const promise = z.request({
+    url: 'http://example.com/api/list.json',
+    params: {
+      limit: 100,
+      offset: 100 * bundle.meta.page
+    }
+  });
+  return promise.then((response) => response.json);
+};
 ```
 
 

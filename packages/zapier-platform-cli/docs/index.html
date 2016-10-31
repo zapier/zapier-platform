@@ -255,6 +255,7 @@ a code {
 <li><a href="#bundleauthdata"><code>bundle.authData</code></a></li>
 <li><a href="#bundleinputdata"><code>bundle.inputData</code></a></li>
 <li><a href="#bundleinputdataraw"><code>bundle.inputDataRaw</code></a></li>
+<li><a href="#bundlemeta"><code>bundle.meta</code></a></li>
 </ul>
 </li>
 <li><a href="#environment">Environment</a><ul>
@@ -399,6 +400,7 @@ a code {
 <li><a href="#bundleauthdata"><code>bundle.authData</code></a></li>
 <li><a href="#bundleinputdata"><code>bundle.inputData</code></a></li>
 <li><a href="#bundleinputdataraw"><code>bundle.inputDataRaw</code></a></li>
+<li><a href="#bundlemeta"><code>bundle.meta</code></a></li>
 </ul>
 </li>
 <li><a href="#environment">Environment</a><ul>
@@ -623,7 +625,7 @@ touch triggers/recipe.js
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> listRecipes = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   z.console.log(<span class="hljs-string">&apos;hello from a console log!&apos;</span>);
   <span class="hljs-keyword">const</span> promise = z.request(<span class="hljs-string">&apos;http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes&apos;</span>);
-  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> z.JSON.parse(response.content));
+  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json);
 };
 
 <span class="hljs-built_in">module</span>.exports = {
@@ -2170,6 +2172,53 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;{{chef_name}}&apos;</span>
   style: <span class="hljs-string">&apos;{{style}}&apos;</span>
 }
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="-bundle-meta-"><code>bundle.meta</code></h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p><code>bundle.meta</code> is extra information useful for doing advanced behaviors depending on what the user is doing. It looks something like this:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript">{
+  <span class="hljs-attr">frontend</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">prefill</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">hydrate</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">test_poll</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">standard_poll</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">first_poll</span>: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">limit</span>: <span class="hljs-number">-1</span>,
+  <span class="hljs-attr">page</span>: <span class="hljs-number">0</span>,
+}
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>For example - if you want to do pagination - you could do:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> getList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> promise = z.request({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;http://example.com/api/list.json&apos;</span>,
+    <span class="hljs-attr">params</span>: {
+      <span class="hljs-attr">limit</span>: <span class="hljs-number">100</span>,
+      <span class="hljs-attr">offset</span>: <span class="hljs-number">100</span> * bundle.meta.page
+    }
+  });
+  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json);
+};
 </code></pre>
     </div>
   </div>
