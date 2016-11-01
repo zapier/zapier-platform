@@ -11,7 +11,7 @@ const test = (context) => {
     extraEnv.DETAILED_LOG_TO_STDOUT = 'true';
   }
 
-  return utils.readCredentials()
+  return utils.readCredentials(undefined, false)
     .then((credentials) => {
       extraEnv.ZAPIER_DEPLOY_KEY = credentials.deployKey;
     })

@@ -22,12 +22,19 @@ const {
 
 
 // Reads the JSON file at ~/.zapierrc (AUTH_LOCATION).
-const readCredentials = (credentials) => {
+const readCredentials = (credentials, explodeIfMissing = true) => {
   return Promise.resolve(
     credentials ||
     readFile(constants.AUTH_LOCATION, 'Please run `zapier login`.')
       .then((buf) => {
         return JSON.parse(buf.toString());
+      })
+      .catch(err => {
+        if (explodeIfMissing) {
+          throw err;
+        } else {
+          return {};
+        }
       })
   );
 };
