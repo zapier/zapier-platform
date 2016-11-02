@@ -64,6 +64,7 @@ It does the following steps:
 
 
 * `--disable-dependency-detection` -- _optional_, disables walking required files to slim the build
+* `--include-js-map` -- _optional_, include .js.map files (usually source maps
 
 ```bash
 $ zapier build
