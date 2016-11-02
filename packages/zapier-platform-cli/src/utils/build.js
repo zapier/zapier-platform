@@ -109,8 +109,11 @@ const listFiles = (dir) => {
 
 const forceIncludeDumbPath = (filePath/*, smartPaths*/) => {
   // we include smartPaths just incase you want to check the inclusion of some library
-  return filePath.endsWith('package.json') || filePath.endsWith('definition.json')
-    || filePath.match(/aws-sdk\/apis\/.*\.json/);
+  return (
+    (filePath.endsWith('package.json') || filePath.endsWith('definition.json'))
+    || filePath.match(/aws-sdk\/apis\/.*\.json/)
+    || (global.argOpts['include-js-map'] && filePath.endsWith('.js.map'))
+  );
 };
 
 const makeZip = (dir, zipPath) => {

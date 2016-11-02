@@ -10,7 +10,8 @@ const build = (context) => {
 };
 build.argsSpec = [];
 build.argOptsSpec = {
-  'disable-dependency-detection': {flag: true, help: 'disables walking required files to slim the build'}
+  'disable-dependency-detection': {flag: true, help: 'disables walking required files to slim the build'},
+  'include-js-map': {flag: true, help: 'include .js.map files (usually source maps'}
 };
 build.help = 'Builds a pushable zip from the current directory.';
 build.example = 'zapier build';
