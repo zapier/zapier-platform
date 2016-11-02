@@ -2,9 +2,11 @@
 
 const ZapierPromise = require('bluebird').getNewLibraryCopy();
 
-ZapierPromise.config({
-  longStackTraces: true
-});
+if (!process.env.DISABLE_LONG_STACK_TRACES) {
+  ZapierPromise.config({
+    longStackTraces: true
+  });
+}
 
 // Make a pretty message for your error using the frameStack. Must mutate
 const enrichErrorMessage = (err, frameStack) => {
