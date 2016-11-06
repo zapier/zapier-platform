@@ -233,6 +233,7 @@ const finalTransition = '-'; // spinTransitions[0];
 const clearSpinner = () => {
   process.stdout.write('\x1b[?25h'); // set cursor to white...
   clearInterval(spinner);
+  spinner = undefined;
 };
 
 const writeNextSpinnerTick = (final = false, _finalTransition = finalTransition) => {
@@ -258,6 +259,7 @@ const endSpinner = (_finalTransition) => {
 };
 
 const printStarting = (msg) => {
+  if (spinner) { return; }
   if (msg) {
     msg = '  ' + msg + ' ';
   } else {
@@ -268,6 +270,7 @@ const printStarting = (msg) => {
 };
 
 const printDone = (success = true, message) => {
+  if (!spinner) { return; }
   endSpinner();
 
   if (message) {
