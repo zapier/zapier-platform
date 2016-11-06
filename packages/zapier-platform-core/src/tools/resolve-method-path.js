@@ -62,7 +62,8 @@ const isRequestMethod = (needleOrFunc) => {
 const resolveMethodPath = (app, needleOrFunc) => {
   let possibilities;
 
-  if (typeof needleOrFunc === 'function' || isRequestMethod(needleOrFunc)) {
+  // can be a function (directly callable), an array (like inputFields) or a path itself
+  if (typeof needleOrFunc === 'function' || _.isArray(needleOrFunc) || isRequestMethod(needleOrFunc)) {
     const path = dataTools.findMapDeep(app, needleOrFunc);
     if (!path) {
       throw new Error('We could not find your function, is it registered somewhere on your app?');
@@ -71,7 +72,7 @@ const resolveMethodPath = (app, needleOrFunc) => {
   } else if (typeof needleOrFunc === 'string') {
     possibilities = enumeratePossibilities(needleOrFunc);
   } else {
-    throw new Error('You must pass in a string or a registered function.');
+    throw new Error('You must pass in a string or a registered function/array.');
   }
 
   const paths = possibilities.filter(path => _.get(app, path) !== undefined);
