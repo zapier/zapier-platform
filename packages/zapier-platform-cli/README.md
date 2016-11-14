@@ -530,7 +530,7 @@ zapier logs --type=http --detailed --limit=1
 # └─────────────────────┴────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-You can see from the detailed log that the request included our auth header. The value appears as `:censored:6:b1af149262:`, which is intentional. Zapier does not log authentincation credentials in plain text.
+You can see from the detailed log that the request included our auth header. The value appears as `:censored:6:b1af149262:`, which is intentional. Zapier does not log authentication credentials in plain text.
 
 With that, we've successfully added authentication to our app!
 
@@ -1867,7 +1867,7 @@ These work much like normal environment variables - for example:
 CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
 
-Or, `export` them explictly and place them into the environment:
+Or, `export` them explicitly and place them into the environment:
 
 ```bash
 export CLIENT_ID=1234
