@@ -1290,7 +1290,7 @@ And then in your `test/index.js` file:
 const zapier = require('zapier-platform-core');
 
 should('some tests', () => {
-  zapier.tools.env.inject();
+  zapier.tools.env.inject(); // testing only!
   console.log(process.env.MY_SECRET_VALUE);
   // should print '1234'
 });
@@ -1336,6 +1336,8 @@ const App = {
 };
 
 ```
+
+> Note! Be sure to lazily access your environment variables - we generally set the environment variables after your code is already loaded.
 
 
 ## Making HTTP Requests

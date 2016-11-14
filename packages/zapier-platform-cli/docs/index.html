@@ -2294,7 +2294,7 @@ zapier env 1.0.0 MY_SECRET_VALUE 1234
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
 
 should(<span class="hljs-string">&apos;some tests&apos;</span>, () =&gt; {
-  zapier.tools.env.inject();
+  zapier.tools.env.inject(); <span class="hljs-comment">// testing only!</span>
   <span class="hljs-built_in">console</span>.log(process.env.MY_SECRET_VALUE);
   <span class="hljs-comment">// should print &apos;1234&apos;</span>
 });
@@ -2360,6 +2360,17 @@ zapier env 1.0.0
   }
 };
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Note! Be sure to lazily access your environment variables - we generally set the environment variables after your code is already loaded.</p>
+</blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
