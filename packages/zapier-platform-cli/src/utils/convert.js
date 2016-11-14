@@ -230,7 +230,8 @@ const writeIndex = (legacyApp, newAppDir) => {
 const renderPackageJson = (legacyApp) => {
   const templateContext = {
     NAME: _.kebabCase(legacyApp.general.title),
-    DESCRIPTION: legacyApp.general.description
+    DESCRIPTION: legacyApp.general.description,
+    ZAPIER_CORE_VERSION: require('../../package.json').version
   };
 
   const templateFile = path.join(TEMPLATE_DIR, '/package.template.json');
