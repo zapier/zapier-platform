@@ -57,12 +57,13 @@ const createLambdaHandler = (appRawOrPath) => {
       // strictly necessary because callbacksWaitsForEmptyLoop is
       // the default behavior with callbacks anyway, but don't want
       // to rely on that.
-      logger(logMsg, logData).then(() => {
-        if (!constants.IS_TESTING) {
-          err.message += '\n\nConsole logs:\n' + logBuffer.map(s => `  ${s.message}`).join('');
-        }
-        callbackOnce(err);
-      });
+      logger(logMsg, logData)
+        .then(() => {
+          if (!constants.IS_TESTING) {
+            err.message += '\n\nConsole logs:\n' + logBuffer.map(s => `  ${s.message}`).join('');
+          }
+          callbackOnce(err);
+        });
     };
 
     const handlerDomain = domain.create();
