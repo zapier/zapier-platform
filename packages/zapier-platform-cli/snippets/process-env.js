@@ -4,7 +4,8 @@ const listExample = (z, bundle) => {
       'my-header': process.env.MY_SECRET_VALUE
     }
   };
-  return z.request('http://example.com/api/v2/recipes.json', httpOptions);
+  const response = z.request('http://example.com/api/v2/recipes.json', httpOptions);
+  return response.then(res => res.json);
 };
 
 const App = {

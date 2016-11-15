@@ -39,6 +39,9 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 - [Resources](#resources)
   * [Resource Definition](#resource-definition)
 - [Triggers/Searches/Creates](#triggerssearchescreates)
+- [Fields](#fields)
+  * [Custom/Dynamic Fields](#customdynamic-fields)
+  * [Dynamic Dropdowns](#dynamic-dropdowns)
 - [Z Object](#z-object)
   * [`z.request([url], options)`](#zrequesturl-options)
   * [`z.console(message)`](#zconsolemessage)
@@ -1152,6 +1155,113 @@ You can find more details on the definition for each by looking at the [Trigger 
 [Search Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#searchschema), and [Create Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#createschema).
 
 
+## Fields
+
+On each trigger, search or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Fields are what your users would see in the main Zapier user interface. For example, you might have a "create contact" action with fields like "First name", "Last name", "Email", etc.
+
+Those fields have various options you can provide, here is a succinct example:
+
+```javascript
+const App = {
+  //...
+  creates: {
+    create_recipe: {
+      key: 'create_recipe',
+      noun: 'Recipe',
+      display: {
+        label: 'Create Recipe',
+        helpText: 'Create a new recipe.'
+      },
+      operation: {
+        // an array of objects is the simplest way
+        inputFields: [
+          {key: 'title', required: true, label: 'Title of Recipe', helpText: 'Name your recipe!'},
+          {key: 'style', required: true, choices: {mexican: 'Mexican', italian: 'Italian'}}
+        ],
+        perform: () => {}
+      }
+    }
+  }
+};
+
+```
+
+You can find more details on each and every field type at [Field Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#fieldschema).
+
+### Custom/Dynamic Fields
+
+In some cases, it might be necessary to provide fields that are dynamically generated - especially for custom fields. This is a common pattern for CRMs, form software, databases and more. Basically - you can provide a function instead of a field and we'll evaluate that function - merging the dynamic fields with the static fields.
+
+```javascript
+const recipeFields = (z, bundle) => {
+  const response = z.request('http://example.com/api/v2/fields.json');
+  // json is is [{"key":"field_1"},{"key":"field_2"}]
+  return response.then(res => res.json);
+};
+
+const App = {
+  //...
+  creates: {
+    create_recipe: {
+      key: 'create_recipe',
+      noun: 'Recipe',
+      display: {
+        label: 'Create Recipe',
+        helpText: 'Create a new recipe.'
+      },
+      operation: {
+        // an array of objects is the simplest way
+        inputFields: [
+          {key: 'title', required: true, label: 'Title of Recipe', helpText: 'Name your recipe!'},
+          {key: 'style', required: true, choices: {mexican: 'Mexican', italian: 'Italian'}},
+          recipeFields // provide a function inline - we'll merge the results!
+        ],
+        perform: () => {}
+      }
+    }
+  }
+};
+
+```
+
+> You should see `bundle.inputData` partially filled in as users provide data - even in field retreival. This allows you to build heirarchical relationships into fields.
+
+### Dynamic Dropdowns
+
+You can provide a `resource` directive on your field which will point to a resource's key and will use the list directive to put down the options dynamically. For example:
+
+const App = {
+  //...
+  resources: {
+    project: {
+      key: 'project',
+      //...
+      list: {
+        //...
+        operation: {
+          perform: () => {} // called for project_id dropdown
+        }
+      }
+    },
+    issue: {
+      key: 'issue',
+      //...
+      create: {
+        //...
+        operation: {
+          inputFields: [
+            {key: 'project_id', required: true, label: 'Project', resource: 'project'}, // calls project.list
+            {key: 'title', required: true, label: 'Title', helpText: 'What is the name of the issue?'},
+          ],
+          perform: () => {}
+        }
+      }
+    }
+  }
+};
+
+
+
 ## Z Object
 
 We provide several methods off of the `z` object, which is provided as the first argument to all function calls in your app.
@@ -1319,7 +1429,8 @@ const listExample = (z, bundle) => {
       'my-header': process.env.MY_SECRET_VALUE
     }
   };
-  return z.request('http://example.com/api/v2/recipes.json', httpOptions);
+  const response = z.request('http://example.com/api/v2/recipes.json', httpOptions);
+  return response.then(res => res.json);
 };
 
 const App = {
