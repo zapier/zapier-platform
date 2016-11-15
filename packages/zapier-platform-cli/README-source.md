@@ -817,7 +817,9 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 
 You can provide a `resource` directive on your field which will point to a resource's key and will use the list directive to put down the options dynamically. For example:
 
+```javascript
 [insert-file:./snippets/dynamic-dropdowns.js]
+```
 
 
 ## Z Object

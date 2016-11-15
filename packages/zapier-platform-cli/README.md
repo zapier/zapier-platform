@@ -1220,6 +1220,7 @@ const App = {
 
 You can provide a `resource` directive on your field which will point to a resource's key and will use the list directive to put down the options dynamically. For example:
 
+```javascript
 const App = {
   //...
   resources: {
@@ -1250,6 +1251,7 @@ const App = {
   }
 };
 
+```
 
 
 ## Z Object

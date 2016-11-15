@@ -2064,38 +2064,39 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can provide a <code>resource</code> directive on your field which will point to a resource&apos;s key and will use the list directive to put down the options dynamically. For example:</p><p>const App = {
-  //...
+      <p>You can provide a <code>resource</code> directive on your field which will point to a resource&apos;s key and will use the list directive to put down the options dynamically. For example:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">//...</span>
   resources: {
-    project: {
-      key: &apos;project&apos;,
-      //...
+    <span class="hljs-attr">project</span>: {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project&apos;</span>,
+      <span class="hljs-comment">//...</span>
       list: {
-        //...
+        <span class="hljs-comment">//...</span>
         operation: {
-          perform: () =&gt; {} // called for project_id dropdown
+          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {} <span class="hljs-comment">// called for project_id dropdown</span>
         }
       }
     },
-    issue: {
-      key: &apos;issue&apos;,
-      //...
+    <span class="hljs-attr">issue</span>: {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
+      <span class="hljs-comment">//...</span>
       create: {
-        //...
+        <span class="hljs-comment">//...</span>
         operation: {
-          inputFields: [
-            {key: &apos;project_id&apos;, required: true, label: &apos;Project&apos;, resource: &apos;project&apos;}, // calls project.list
-            {key: &apos;title&apos;, required: true, label: &apos;Title&apos;, helpText: &apos;What is the name of the issue?&apos;},
+          <span class="hljs-attr">inputFields</span>: [
+            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>, <span class="hljs-attr">resource</span>: <span class="hljs-string">&apos;project&apos;</span>}, <span class="hljs-comment">// calls project.list</span>
+            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>},
           ],
-          perform: () =&gt; {}
+          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {}
         }
       }
     }
   }
-};</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
+};
+</code></pre>
     </div>
   </div>
 </div><div class="row">
