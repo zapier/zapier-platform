@@ -1166,12 +1166,7 @@ const App = {
   //...
   creates: {
     create_recipe: {
-      key: 'create_recipe',
-      noun: 'Recipe',
-      display: {
-        label: 'Create Recipe',
-        helpText: 'Create a new recipe.'
-      },
+      //...
       operation: {
         // an array of objects is the simplest way
         inputFields: [
@@ -1203,12 +1198,7 @@ const App = {
   //...
   creates: {
     create_recipe: {
-      key: 'create_recipe',
-      noun: 'Recipe',
-      display: {
-        label: 'Create Recipe',
-        helpText: 'Create a new recipe.'
-      },
+      //...
       operation: {
         // an array of objects is the simplest way
         inputFields: [
