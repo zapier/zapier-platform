@@ -1187,7 +1187,7 @@ You can find more details on each and every field type at [Field Schema](https:/
 
 In some cases, it might be necessary to provide fields that are dynamically generated - especially for custom fields. This is a common pattern for CRMs, form software, databases and more. Basically - you can provide a function instead of a field and we'll evaluate that function - merging the dynamic fields with the static fields.
 
-> You should see `bundle.inputData` partially filled in as users provide data - even in field retreival. This allows you to build heirarchical relationships into fields.
+> You should see `bundle.inputData` partially filled in as users provide data - even in field retreival. This allows you to build heirarchical relationships into fields (EG: only show issues from the previously selected project).
 
 ```javascript
 const recipeFields = (z, bundle) => {
