@@ -1969,7 +1969,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>On each trigger, search or create in the <code>operation</code> directive - you can provide an array of objects as fields under the <code>inputFields</code>. Fields are what your users would see in the main Zapier user interface. For example, you might have a &quot;create contact&quot; action with fields like &quot;First name&quot;, &quot;Last name&quot;, &quot;Email&quot;, etc.</p><p>Those fields have various options you can provide, here is a succinct example:</p>
+      <p>On each trigger, search or create in the <code>operation</code> directive - you can provide an array of objects as fields under the <code>inputFields</code>. Fields are what your users would see in the main Zapier user interface. For example, you might have a &quot;create contact&quot; action with fields like &quot;First name&quot;, &quot;Last name&quot;, &quot;Email&quot;, etc.</p><p>You can find more details on each and every field option at <a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#fieldschema">Field Schema</a>.</p><p>Those fields have various options you can provide, here is a succinct example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> App = {
@@ -1994,15 +1994,6 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can find more details on each and every field type at <a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#fieldschema">Field Schema</a>.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h3 id="custom-dynamic-fields">Custom/Dynamic Fields</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -2013,7 +2004,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>In some cases, it might be necessary to provide fields that are dynamically generated - especially for custom fields. This is a common pattern for CRMs, form software, databases and more. Basically - you can provide a function instead of a field and we&apos;ll evaluate that function - merging the dynamic fields with the static fields.</p><blockquote>
-<p>You should see <code>bundle.inputData</code> partially filled in as users provide data - even in field retreival. This allows you to build heirarchical relationships into fields (EG: only show issues from the previously selected project).</p>
+<p>You should see <code>bundle.inputData</code> partially filled in as users provide data - even in field retrieval. This allows you to build hierarchical relationships into fields (EG: only show issues from the previously selected project).</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -2056,7 +2047,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>You can provide a <code>resource</code> directive on your field which will point to a resource&apos;s key and will use the list directive to put down the options dynamically.</p><blockquote>
-<p>Dynamic dropdowns are one of the few fields that &quot;automatically&quot; invalidates our field cache.</p>
+<p>Dynamic dropdowns are one of the few fields that &quot;automatically&quot; invalidates our field cache when relying on custom fields.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">

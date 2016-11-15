@@ -795,19 +795,19 @@ You can find more details on the definition for each by looking at the [Trigger 
 
 On each trigger, search or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Fields are what your users would see in the main Zapier user interface. For example, you might have a "create contact" action with fields like "First name", "Last name", "Email", etc.
 
+You can find more details on each and every field option at [Field Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#fieldschema).
+
 Those fields have various options you can provide, here is a succinct example:
 
 ```javascript
 [insert-file:./snippets/fields.js]
 ```
 
-You can find more details on each and every field type at [Field Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#fieldschema).
-
 ### Custom/Dynamic Fields
 
 In some cases, it might be necessary to provide fields that are dynamically generated - especially for custom fields. This is a common pattern for CRMs, form software, databases and more. Basically - you can provide a function instead of a field and we'll evaluate that function - merging the dynamic fields with the static fields.
 
-> You should see `bundle.inputData` partially filled in as users provide data - even in field retreival. This allows you to build heirarchical relationships into fields (EG: only show issues from the previously selected project).
+> You should see `bundle.inputData` partially filled in as users provide data - even in field retrieval. This allows you to build hierarchical relationships into fields (EG: only show issues from the previously selected project).
 
 ```javascript
 [insert-file:./snippets/custom-fields.js]
@@ -817,7 +817,7 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 
 You can provide a `resource` directive on your field which will point to a resource's key and will use the list directive to put down the options dynamically.
 
-> Dynamic dropdowns are one of the few fields that "automatically" invalidates our field cache.
+> Dynamic dropdowns are one of the few fields that "automatically" invalidates our field cache when relying on custom fields.
 
 ```javascript
 [insert-file:./snippets/dynamic-dropdowns.js]
