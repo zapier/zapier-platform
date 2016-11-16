@@ -399,10 +399,10 @@ zapier push
 #   Cleaning up temp directory - done!
 #   Uploading version 1.0.0 - done!
 #
-# Build and upload complete! You should see it in your Zapier editor at https://testing.zapier.com/app/editor now!
+# Build and upload complete! You should see it in your Zapier editor at https://zapier.com/app/editor now!
 ```
 
-Now that your app version is properly pushed, log in and visit [https://testing.zapier.com/app/editor](https://testing.zapier.com/app/editor) to create a Zap and check our progress.
+Now that your app version is properly pushed, log in and visit [https://zapier.com/app/editor](https://zapier.com/app/editor) to create a Zap and check our progress.
 
 You'll see the app listed as an available option for the first step. Selecting it, you'll see the "New Recipe" trigger. At this point, we've come full circle on the trigger definition from earlier. Remember that, as part of the metadata, we defined a `display` property with a label and help text. Those properties control the info you see inside the Zapier UI.
 
@@ -495,7 +495,7 @@ To check our progress, we need to re-push our app.
 zapier push
 ```
 
-Go back to your Zap at `https://testing.zapier.com`. You'll see a new 'Connect Account' item in your 'New Recipe' trigger. Add an account for our app (enter any value you like for the API key, the mock API does not care).
+Go back to your Zap at `https://zapier.com`. You'll see a new 'Connect Account' item in your 'New Recipe' trigger. Add an account for our app (enter any value you like for the API key, the mock API does not care).
 
 As soon as you add the account, Zapier will run our app's `authentication.test` function to confirm the credentials are valid.
 
@@ -546,7 +546,7 @@ Congrats, you've completed the tutorial! At this point we recommend reading up o
 
 > Be sure to check the [Requirements](#requirements) before you start! Also, we recommend the [Tutorial](#tutorial) for a more thorough introduction.
 
-First up is installing the CLI and setting up your auth to create a working "Zapier Example" application. It will be private to you and visible in your live [Zap editor](https://testing.zapier.com/app/editor).
+First up is installing the CLI and setting up your auth to create a working "Zapier Example" application. It will be private to you and visible in your live [Zap editor](https://zapier.com/app/editor).
 
 ```bash
 # install the CLI globally

@@ -882,14 +882,14 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 <span class="hljs-comment">#   Cleaning up temp directory - done!</span>
 <span class="hljs-comment">#   Uploading version 1.0.0 - done!</span>
 <span class="hljs-comment">#</span>
-<span class="hljs-comment"># Build and upload complete! You should see it in your Zapier editor at https://testing.zapier.com/app/editor now!</span>
+<span class="hljs-comment"># Build and upload complete! You should see it in your Zapier editor at https://zapier.com/app/editor now!</span>
 </code></pre>
     </div>
   </div>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Now that your app version is properly pushed, log in and visit <a href="https://testing.zapier.com/app/editor">https://testing.zapier.com/app/editor</a> to create a Zap and check our progress.</p><p>You&apos;ll see the app listed as an available option for the first step. Selecting it, you&apos;ll see the &quot;New Recipe&quot; trigger. At this point, we&apos;ve come full circle on the trigger definition from earlier. Remember that, as part of the metadata, we defined a <code>display</code> property with a label and help text. Those properties control the info you see inside the Zapier UI.</p><p>As you click through, you&apos;ll see our input field &quot;style&quot; appear, which you can fill out. Once you finish setting up the step and test it, Zapier will run the <code>listReceipes</code> function associated with the trigger, which will make the API request and return the result to Zapier. If you are curious to see what HTTP requests Zapier makes at any point, you can use the <code>zapier logs</code> command to find out.</p>
+      <p>Now that your app version is properly pushed, log in and visit <a href="https://zapier.com/app/editor">https://zapier.com/app/editor</a> to create a Zap and check our progress.</p><p>You&apos;ll see the app listed as an available option for the first step. Selecting it, you&apos;ll see the &quot;New Recipe&quot; trigger. At this point, we&apos;ve come full circle on the trigger definition from earlier. Remember that, as part of the metadata, we defined a <code>display</code> property with a label and help text. Those properties control the info you see inside the Zapier UI.</p><p>As you click through, you&apos;ll see our input field &quot;style&quot; appear, which you can fill out. Once you finish setting up the step and test it, Zapier will run the <code>listReceipes</code> function associated with the trigger, which will make the API request and return the result to Zapier. If you are curious to see what HTTP requests Zapier makes at any point, you can use the <code>zapier logs</code> command to find out.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier logs --type=http
@@ -998,7 +998,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Go back to your Zap at <code>https://testing.zapier.com</code>. You&apos;ll see a new &apos;Connect Account&apos; item in your &apos;New Recipe&apos; trigger. Add an account for our app (enter any value you like for the API key, the mock API does not care).</p><p>As soon as you add the account, Zapier will run our app&apos;s <code>authentication.test</code> function to confirm the credentials are valid.</p><p>We can verify the header is present in the request by looking at the logs again.</p>
+      <p>Go back to your Zap at <code>https://zapier.com</code>. You&apos;ll see a new &apos;Connect Account&apos; item in your &apos;New Recipe&apos; trigger. Add an account for our app (enter any value you like for the API key, the mock API does not care).</p><p>As soon as you add the account, Zapier will run our app&apos;s <code>authentication.test</code> function to confirm the credentials are valid.</p><p>We can verify the header is present in the request by looking at the logs again.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier logs --type=http --detailed --limit=1
@@ -1074,7 +1074,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Be sure to check the <a href="#requirements">Requirements</a> before you start! Also, we recommend the <a href="#tutorial">Tutorial</a> for a more thorough introduction.</p>
-</blockquote><p>First up is installing the CLI and setting up your auth to create a working &quot;Zapier Example&quot; application. It will be private to you and visible in your live <a href="https://testing.zapier.com/app/editor">Zap editor</a>.</p>
+</blockquote><p>First up is installing the CLI and setting up your auth to create a working &quot;Zapier Example&quot; application. It will be private to you and visible in your live <a href="https://zapier.com/app/editor">Zap editor</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># install the CLI globally</span>
