@@ -531,6 +531,7 @@ $ zapier collaborate user@example.com --remove
 <li><code>version [1.0.0]</code> -- <strong>required</strong>, the app version&apos;s environment to work on</li>
 <li><code>key [CLIENT_SECRET]</code> -- <em>optional</em>, the uppercase key of the environment variable to set</li>
 <li><code>value [12345]</code> -- <em>optional</em>, the raw value to set to the key</li>
+<li><code>--remove</code> -- <em>optional</em>, optionally remove environment variable with this key</li>
 <li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
 <li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
@@ -552,6 +553,13 @@ $ zapier env 1.0.0 CLIENT_SECRET 12345
 <span class="hljs-comment"># Preparing to set environment CLIENT_SECRET for your 1.0.0 &quot;Example&quot;.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment">#   Setting CLIENT_SECRET to &quot;12345&quot; - done!</span>
+<span class="hljs-comment">#</span>
+<span class="hljs-comment"># Environment updated! Try viewing it with `zapier env 1.0.0`.</span>
+
+$ zapier env 1.0.0 CLIENT_SECRET --remove
+<span class="hljs-comment"># Preparing to remove environment CLIENT_SECRET for your 1.0.0 &quot;Example&quot;.</span>
+<span class="hljs-comment">#</span>
+<span class="hljs-comment">#   Deleting CLIENT_SECRET - done!</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment"># Environment updated! Try viewing it with `zapier env 1.0.0`.</span>
 </code></pre>

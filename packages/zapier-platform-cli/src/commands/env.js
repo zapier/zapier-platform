@@ -65,6 +65,7 @@ Manage the environment of your app so that \`process.env\` has the necessary var
 **Arguments**
 
 ${utils.argsFragment(env.argsSpec)}
+${utils.argOptsFragment(env.argOptsSpec)}
 ${utils.defaultArgOptsFragment()}
 
 ${'```'}bash
@@ -83,6 +84,13 @@ $ zapier env 1.0.0 CLIENT_SECRET 12345
 # Preparing to set environment CLIENT_SECRET for your 1.0.0 "Example".
 #
 #   Setting CLIENT_SECRET to "12345" - done!
+#
+# Environment updated! Try viewing it with \`zapier env 1.0.0\`.
+
+$ zapier env 1.0.0 CLIENT_SECRET --remove
+# Preparing to remove environment CLIENT_SECRET for your 1.0.0 "Example".
+#
+#   Deleting CLIENT_SECRET - done!
 #
 # Environment updated! Try viewing it with \`zapier env 1.0.0\`.
 ${'```'}

@@ -246,6 +246,7 @@ $ zapier describe
 * `version [1.0.0]` -- **required**, the app version's environment to work on
 * `key [CLIENT_SECRET]` -- _optional_, the uppercase key of the environment variable to set
 * `value [12345]` -- _optional_, the raw value to set to the key
+* `--remove` -- _optional_, optionally remove environment variable with this key
 * `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
 * `--help` -- _optional_, prints this help text
 * `--debug` -- _optional_, print debug API calls and tracebacks
@@ -266,6 +267,13 @@ $ zapier env 1.0.0 CLIENT_SECRET 12345
 # Preparing to set environment CLIENT_SECRET for your 1.0.0 "Example".
 #
 #   Setting CLIENT_SECRET to "12345" - done!
+#
+# Environment updated! Try viewing it with `zapier env 1.0.0`.
+
+$ zapier env 1.0.0 CLIENT_SECRET --remove
+# Preparing to remove environment CLIENT_SECRET for your 1.0.0 "Example".
+#
+#   Deleting CLIENT_SECRET - done!
 #
 # Environment updated! Try viewing it with `zapier env 1.0.0`.
 ```
