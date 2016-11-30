@@ -2,7 +2,8 @@ require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('searches', () => {
 
@@ -14,7 +15,7 @@ describe('searches', () => {
         }
       };
 
-      appTester('searches.recipe', bundle)
+      appTester(App.searches.recipe.operation.perform, bundle)
         .then(results => {
           results.length.should.eql(1);
 
