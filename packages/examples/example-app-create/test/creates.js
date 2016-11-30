@@ -2,7 +2,8 @@ require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('creates', () => {
 
@@ -16,7 +17,7 @@ describe('creates', () => {
         }
       };
 
-      appTester('creates.recipe', bundle)
+      appTester(App.creates.recipe.operation.perform, bundle)
         .then((result) => {
           result.should.have.property('name');
           done();
