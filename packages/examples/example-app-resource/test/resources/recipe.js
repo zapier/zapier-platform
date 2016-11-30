@@ -2,7 +2,8 @@ require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../../index'));
+const App = require('../../index');
+const appTester = zapier.createAppTester(App);
 
 describe('recipe resource', () => {
   it('should get an existing recipes', (done) => {
@@ -12,7 +13,7 @@ describe('recipe resource', () => {
       }
     };
 
-    appTester('resources.recipe.get.operation.perform', bundle)
+    appTester(App.resources.recipe.get.operation.perform, bundle)
       .then((results) => {
         results.name.should.eql('name 1');
         results.directions.should.eql('directions 1');
@@ -28,7 +29,7 @@ describe('recipe resource', () => {
       }
     };
 
-    appTester('resources.recipe.list.operation.perform', bundle)
+    appTester(App.resources.recipe.list.operation.perform, bundle)
       .then((results) => {
         results.length.should.above(0);
 
@@ -49,7 +50,7 @@ describe('recipe resource', () => {
       }
     };
 
-    appTester('resources.recipe.create.operation.perform', bundle)
+    appTester(App.resources.recipe.create.operation.perform, bundle)
       .then((results) => {
         results.should.have.property('name');
         done();
