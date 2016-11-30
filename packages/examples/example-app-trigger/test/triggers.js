@@ -2,7 +2,8 @@ require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
 
@@ -14,7 +15,7 @@ describe('triggers', () => {
         }
       };
 
-      appTester('triggers.recipe', bundle)
+      appTester(App.triggers.recipe.operation.perform, bundle)
         .then(results => {
           results.length.should.above(1);
 
