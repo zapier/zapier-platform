@@ -1,5 +1,6 @@
 const path = require('path');
 const _ = require('lodash');
+const colors = require('colors');
 
 const utils = require('../utils');
 
@@ -13,7 +14,8 @@ const scaffold = (context, type, name) => {
     CAMEL: utils.camelCase(name),
     KEY: utils.snakeCase(name),
     NOUN: _.capitalize(name),
-    LOWER_NOUN: name.toLowerCase()
+    LOWER_NOUN: name.toLowerCase(),
+    INPUT_FIELDS: '',
   };
 
   // what is the `resources: {}` app definition point?
@@ -74,7 +76,8 @@ const scaffold = (context, type, name) => {
       const linesDefIndex = _.findIndex(lines, (line) => _.endsWith(line, injectAfter));
       if (linesDefIndex === -1) {
         utils.printDone(false);
-        context.line(`\nOops, we could not reliably rewrite your ${entry}. Please add:`);
+        context.line();
+        context.line(colors.bold(`Oops, we could not reliably rewrite your ${entry}.`) + ' Please add:');
         context.line(` * \`${importerLine}\` to the top`);
         context.line(` * \`${injectAfter} ${injectorLine} },\` in your app definition`);
         return Promise.resolve();
