@@ -6,7 +6,7 @@ const FlatObjectSchema = require('./FlatObjectSchema');
 
 module.exports = makeSchema({
   id: '/RedirectRequestSchema',
-  description: 'A representation of a HTTP redirect - you can use the `{{syntax}}`` to inject authentication, field or global variables.',
+  description: 'A representation of a HTTP redirect - you can use the `{{syntax}}` to inject authentication, field or global variables.',
   type: 'object',
   properties: {
     method: {
