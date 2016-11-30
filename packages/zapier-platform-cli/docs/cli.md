@@ -215,11 +215,14 @@ $ zapier describe
 # 
 # Triggers
 # 
-# ┌─────────────┬──────────┬───────────────┬────────────────────┬───────────────────┐
-# │ key         │ noun     │ display.label │ operation.resource │ operation.perform │
-# ├─────────────┼──────────┼───────────────┼────────────────────┼───────────────────┤
-# │ hello_world │ Greeting │ New Greeting  │ n/a                │ $func$2$f$        │
-# └─────────────┴──────────┴───────────────┴────────────────────┴───────────────────┘
+# ┌────────────┬────────────────────┬──────────────┬───────────────────────────────────────────────┐
+# │ Noun       │ Label              │ Resource Ref │ Available Methods                             │
+# ├────────────┼────────────────────┼──────────────┼───────────────────────────────────────────────┤
+# │ Member     │ Updated Subscriber │ member       │ triggers.updated_member.operation.perform     │
+# │            │                    │              │ triggers.updated_member.operation.inputFields │
+# │            │                    │              │ resources.member.list.operation.perform       │
+# │            │                    │              │ resources.member.list.operation.inputFields   │
+# └────────────┴────────────────────┴──────────────┴───────────────────────────────────────────────┘
 # 
 # Searches
 # 

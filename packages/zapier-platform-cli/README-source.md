@@ -162,15 +162,15 @@ const should = require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('My App', () => {
 
   it('should load recipes', (done) => {
-    const triggerPointer = 'triggers.recipe';
     const bundle = {};
 
-    appTester(triggerPointer, bundle)
+    appTester(App.triggers.recipe.operation.perform, bundle)
       .then(results => {
         should(results.length).above(1);
 
@@ -250,7 +250,8 @@ const should = require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('My App', () => {
 
@@ -263,7 +264,7 @@ describe('My App', () => {
       }
     };
 
-    appTester(triggerPointer, bundle)
+    appTester(App.triggers.recipe.operation.perform, bundle)
       .then(results => {
         should(results.length).above(1);
 
@@ -838,9 +839,9 @@ We provide several methods off of the `z` object, which is provided as the first
 
 `z.console(message)` is a logging console, similar to Node.js `console` but logs remotely, as well as to stdout in tests. See [Log Statements](#console-logging)
 
-### `z.dehydrate(methodOrFunc, inputData)`
+### `z.dehydrate(func, inputData)`
 
-`z.dehydrate(methodOrFunc, inputData)` is used to lazily evaluate a function, perfect to avoid API calls during polling or for reuse. See [Dehydration](#dehydration).
+`z.dehydrate(func, inputData)` is used to lazily evaluate a function, perfect to avoid API calls during polling or for reuse. See [Dehydration](#dehydration).
 
 ### `z.stashFile(bufferStringStream, [knownLength], [filename])`
 
@@ -1135,14 +1136,14 @@ z.request({
 
 Dehydration, and it's counterpart Hydration, is a tool that can lazily load data that might be otherwise expensive to retrieve aggressively.
 
-* **Dehydration** - think of this as "make a pointer", you control the creation of pointers with `z.dehydrate(methodOrFunc, inputData)`
+* **Dehydration** - think of this as "make a pointer", you control the creation of pointers with `z.dehydrate(func, inputData)`
 * **Hydration** - think of this as an automatic step that "consumes a pointer" and "returns some data", Zapier does this automatically behind the the scenes
 
 > This is very common when [Stashing Files](#stashing-files) - but that isn't their only use!
 
-The interface `z.dehydrate(methodOrFunc, inputData)` has two required arguments:
+The interface `z.dehydrate(func, inputData)` has two required arguments:
 
-* `methodOrFunc` - this can either be a string method of something that can be found in the root `hydrators` mapping, or any raw `function` that be found _anywhere_ in your app definition
+* `func` - this should any raw `function` that be found _anywhere_ in your app definition (though usually in the root `hydrators` mapping)
 * `inputData` - this is an object that contains things like a `path` or `id` - whatever you need to load data on the other side
 
 This example that pulls in extra data for a movie:
@@ -1151,7 +1152,7 @@ This example that pulls in extra data for a movie:
 [insert-file:./snippets/dehydration.js]
 ```
 
-And in future steps of the Zap - if Zapier encounters a pointer as returned by `z.dehydrate(methodOrFunc, inputData)` - Zapier will tie it back to your app and pull in the data lazily.
+And in future steps of the Zap - if Zapier encounters a pointer as returned by `z.dehydrate(func, inputData)` - Zapier will tie it back to your app and pull in the data lazily.
 
 > **Wait, but why?** Isn't it just easier to load the data immediately? In some cases it can - but imagine an API that returns 100 records when polling - doing 100x `GET /id.json` aggressive inline HTTP calls when 99% of the time Zapier doesn't _need_ the data yet is wasteful.
 

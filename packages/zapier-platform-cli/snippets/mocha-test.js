@@ -4,7 +4,8 @@ const zapier = require('zapier-platform-core');
 
 // createAppTester() makes it easier to test your app. It takes your
 // raw app definition, and returns a function that will test you app.
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
 
@@ -20,7 +21,7 @@ describe('triggers', () => {
 
       // Pass appTester the path to the trigger you want to call,
       // and the input bundle. appTester returns a promise for results.
-      appTester('triggers.recipe', bundle)
+      appTester(App.App.triggers.recipe.operation.perform, bundle)
         .then(results => {
           // Make assertions
 

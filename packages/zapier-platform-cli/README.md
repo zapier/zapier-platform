@@ -45,7 +45,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 - [Z Object](#z-object)
   * [`z.request([url], options)`](#zrequesturl-options)
   * [`z.console(message)`](#zconsolemessage)
-  * [`z.dehydrate(methodOrFunc, inputData)`](#zdehydratemethodorfunc-inputdata)
+  * [`z.dehydrate(func, inputData)`](#zdehydratefunc-inputdata)
   * [`z.stashFile(bufferStringStream, [knownLength], [filename])`](#zstashfilebufferstringstream-knownlength-filename)
   * [`z.JSON`](#zjson)
   * [`z.hash()`](#zhash)
@@ -245,15 +245,15 @@ const should = require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('My App', () => {
 
   it('should load recipes', (done) => {
-    const triggerPointer = 'triggers.recipe';
     const bundle = {};
 
-    appTester(triggerPointer, bundle)
+    appTester(App.triggers.recipe.operation.perform, bundle)
       .then(results => {
         should(results.length).above(1);
 
@@ -333,7 +333,8 @@ const should = require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('My App', () => {
 
@@ -346,7 +347,7 @@ describe('My App', () => {
       }
     };
 
-    appTester(triggerPointer, bundle)
+    appTester(App.triggers.recipe.operation.perform, bundle)
       .then(results => {
         should(results.length).above(1);
 
@@ -1270,9 +1271,9 @@ We provide several methods off of the `z` object, which is provided as the first
 
 `z.console(message)` is a logging console, similar to Node.js `console` but logs remotely, as well as to stdout in tests. See [Log Statements](#console-logging)
 
-### `z.dehydrate(methodOrFunc, inputData)`
+### `z.dehydrate(func, inputData)`
 
-`z.dehydrate(methodOrFunc, inputData)` is used to lazily evaluate a function, perfect to avoid API calls during polling or for reuse. See [Dehydration](#dehydration).
+`z.dehydrate(func, inputData)` is used to lazily evaluate a function, perfect to avoid API calls during polling or for reuse. See [Dehydration](#dehydration).
 
 ### `z.stashFile(bufferStringStream, [knownLength], [filename])`
 
@@ -1700,14 +1701,14 @@ z.request({
 
 Dehydration, and it's counterpart Hydration, is a tool that can lazily load data that might be otherwise expensive to retrieve aggressively.
 
-* **Dehydration** - think of this as "make a pointer", you control the creation of pointers with `z.dehydrate(methodOrFunc, inputData)`
+* **Dehydration** - think of this as "make a pointer", you control the creation of pointers with `z.dehydrate(func, inputData)`
 * **Hydration** - think of this as an automatic step that "consumes a pointer" and "returns some data", Zapier does this automatically behind the the scenes
 
 > This is very common when [Stashing Files](#stashing-files) - but that isn't their only use!
 
-The interface `z.dehydrate(methodOrFunc, inputData)` has two required arguments:
+The interface `z.dehydrate(func, inputData)` has two required arguments:
 
-* `methodOrFunc` - this can either be a string method of something that can be found in the root `hydrators` mapping, or any raw `function` that be found _anywhere_ in your app definition
+* `func` - this should any raw `function` that be found _anywhere_ in your app definition (though usually in the root `hydrators` mapping)
 * `inputData` - this is an object that contains things like a `path` or `id` - whatever you need to load data on the other side
 
 This example that pulls in extra data for a movie:
@@ -1726,7 +1727,7 @@ const movieList = (z, bundle) => {
       return results.map(result => {
         // so maybe /movies.json is thin content but
         // /movies/:id.json has more details we want...
-        result.moreData = z.dehydrate('getExtraData', {
+        result.moreData = z.dehydrate(getExtraDataFunction, {
           id: result.id
         });
         return result;
@@ -1761,7 +1762,7 @@ module.exports = App;
 
 ```
 
-And in future steps of the Zap - if Zapier encounters a pointer as returned by `z.dehydrate(methodOrFunc, inputData)` - Zapier will tie it back to your app and pull in the data lazily.
+And in future steps of the Zap - if Zapier encounters a pointer as returned by `z.dehydrate(func, inputData)` - Zapier will tie it back to your app and pull in the data lazily.
 
 > **Wait, but why?** Isn't it just easier to load the data immediately? In some cases it can - but imagine an API that returns 100 records when polling - doing 100x `GET /id.json` aggressive inline HTTP calls when 99% of the time Zapier doesn't _need_ the data yet is wasteful.
 
@@ -1810,7 +1811,7 @@ const pdfList = (z, bundle) => {
       return results.map(result => {
         // lazily convert a secret_download_url to a stashed url
         // zapier won't do this until we need it
-        result.file = z.dehydrate('stashPDF', {
+        result.file = z.dehydrate(stashPDFfunction, {
           downloadUrl: result.secret_download_url
         });
         delete result.secret_download_url;
@@ -1919,7 +1920,8 @@ const zapier = require('zapier-platform-core');
 
 // createAppTester() makes it easier to test your app. It takes your
 // raw app definition, and returns a function that will test you app.
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
 
@@ -1935,7 +1937,7 @@ describe('triggers', () => {
 
       // Pass appTester the path to the trigger you want to call,
       // and the input bundle. appTester returns a promise for results.
-      appTester('triggers.recipe', bundle)
+      appTester(App.App.triggers.recipe.operation.perform, bundle)
         .then(results => {
           // Make assertions
 

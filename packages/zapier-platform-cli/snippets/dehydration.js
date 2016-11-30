@@ -11,7 +11,7 @@ const movieList = (z, bundle) => {
       return results.map(result => {
         // so maybe /movies.json is thin content but
         // /movies/:id.json has more details we want...
-        result.moreData = z.dehydrate('getExtraData', {
+        result.moreData = z.dehydrate(getExtraDataFunction, {
           id: result.id
         });
         return result;

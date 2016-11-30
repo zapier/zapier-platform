@@ -249,7 +249,7 @@ a code {
 <li><a href="#z-object">Z Object</a><ul>
 <li><a href="#zrequesturl-options"><code>z.request([url], options)</code></a></li>
 <li><a href="#zconsolemessage"><code>z.console(message)</code></a></li>
-<li><a href="#zdehydratemethodorfunc-inputdata"><code>z.dehydrate(methodOrFunc, inputData)</code></a></li>
+<li><a href="#zdehydratefunc-inputdata"><code>z.dehydrate(func, inputData)</code></a></li>
 <li><a href="#zstashfilebufferstringstream-knownlength-filename"><code>z.stashFile(bufferStringStream, [knownLength], [filename])</code></a></li>
 <li><a href="#zjson"><code>z.JSON</code></a></li>
 <li><a href="#zhash"><code>z.hash()</code></a></li>
@@ -399,7 +399,7 @@ a code {
 <li><a href="#z-object">Z Object</a><ul>
 <li><a href="#zrequesturl-options"><code>z.request([url], options)</code></a></li>
 <li><a href="#zconsolemessage"><code>z.console(message)</code></a></li>
-<li><a href="#zdehydratemethodorfunc-inputdata"><code>z.dehydrate(methodOrFunc, inputData)</code></a></li>
+<li><a href="#zdehydratefunc-inputdata"><code>z.dehydrate(func, inputData)</code></a></li>
 <li><a href="#zstashfilebufferstringstream-knownlength-filename"><code>z.stashFile(bufferStringStream, [knownLength], [filename])</code></a></li>
 <li><a href="#zjson"><code>z.JSON</code></a></li>
 <li><a href="#zhash"><code>z.hash()</code></a></li>
@@ -695,15 +695,15 @@ touch triggers/recipe.js
 
 <span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
 
-<span class="hljs-keyword">const</span> appTester = zapier.createAppTester(<span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../index&apos;</span>));
+<span class="hljs-keyword">const</span> App = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../index&apos;</span>);
+<span class="hljs-keyword">const</span> appTester = zapier.createAppTester(App);
 
 describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 
   it(<span class="hljs-string">&apos;should load recipes&apos;</span>, (done) =&gt; {
-    <span class="hljs-keyword">const</span> triggerPointer = <span class="hljs-string">&apos;triggers.recipe&apos;</span>;
     <span class="hljs-keyword">const</span> bundle = {};
 
-    appTester(triggerPointer, bundle)
+    appTester(App.triggers.recipe.operation.perform, bundle)
       .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
         should(results.length).above(<span class="hljs-number">1</span>);
 
@@ -796,7 +796,8 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 
 <span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
 
-<span class="hljs-keyword">const</span> appTester = zapier.createAppTester(<span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../index&apos;</span>));
+<span class="hljs-keyword">const</span> App = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../index&apos;</span>);
+<span class="hljs-keyword">const</span> appTester = zapier.createAppTester(App);
 
 describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 
@@ -809,7 +810,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
       }
     };
 
-    appTester(triggerPointer, bundle)
+    appTester(App.triggers.recipe.operation.perform, bundle)
       .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
         should(results.length).above(<span class="hljs-number">1</span>);
 
@@ -2142,7 +2143,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-dehydrate-methodorfunc-inputdata-"><code>z.dehydrate(methodOrFunc, inputData)</code></h3>
+      <h3 id="-z-dehydrate-func-inputdata-"><code>z.dehydrate(func, inputData)</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2151,7 +2152,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>z.dehydrate(methodOrFunc, inputData)</code> is used to lazily evaluate a function, perfect to avoid API calls during polling or for reuse. See <a href="#dehydration">Dehydration</a>.</p>
+      <p><code>z.dehydrate(func, inputData)</code> is used to lazily evaluate a function, perfect to avoid API calls during polling or for reuse. See <a href="#dehydration">Dehydration</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2862,12 +2863,12 @@ zapier env 1.0.0
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Dehydration, and it&apos;s counterpart Hydration, is a tool that can lazily load data that might be otherwise expensive to retrieve aggressively.</p><ul>
-<li><strong>Dehydration</strong> - think of this as &quot;make a pointer&quot;, you control the creation of pointers with <code>z.dehydrate(methodOrFunc, inputData)</code></li>
+<li><strong>Dehydration</strong> - think of this as &quot;make a pointer&quot;, you control the creation of pointers with <code>z.dehydrate(func, inputData)</code></li>
 <li><strong>Hydration</strong> - think of this as an automatic step that &quot;consumes a pointer&quot; and &quot;returns some data&quot;, Zapier does this automatically behind the the scenes</li>
 </ul><blockquote>
 <p>This is very common when <a href="#stashing-files">Stashing Files</a> - but that isn&apos;t their only use!</p>
-</blockquote><p>The interface <code>z.dehydrate(methodOrFunc, inputData)</code> has two required arguments:</p><ul>
-<li><code>methodOrFunc</code> - this can either be a string method of something that can be found in the root <code>hydrators</code> mapping, or any raw <code>function</code> that be found <em>anywhere</em> in your app definition</li>
+</blockquote><p>The interface <code>z.dehydrate(func, inputData)</code> has two required arguments:</p><ul>
+<li><code>func</code> - this should any raw <code>function</code> that be found <em>anywhere</em> in your app definition (though usually in the root <code>hydrators</code> mapping)</li>
 <li><code>inputData</code> - this is an object that contains things like a <code>path</code> or <code>id</code> - whatever you need to load data on the other side</li>
 </ul><p>This example that pulls in extra data for a movie:</p>
     </div>
@@ -2885,7 +2886,7 @@ zapier env 1.0.0
       <span class="hljs-keyword">return</span> results.map(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
         <span class="hljs-comment">// so maybe /movies.json is thin content but</span>
         <span class="hljs-comment">// /movies/:id.json has more details we want...</span>
-        result.moreData = z.dehydrate(<span class="hljs-string">&apos;getExtraData&apos;</span>, {
+        result.moreData = z.dehydrate(getExtraDataFunction, {
           <span class="hljs-attr">id</span>: result.id
         });
         <span class="hljs-keyword">return</span> result;
@@ -2923,7 +2924,7 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>And in future steps of the Zap - if Zapier encounters a pointer as returned by <code>z.dehydrate(methodOrFunc, inputData)</code> - Zapier will tie it back to your app and pull in the data lazily.</p><blockquote>
+      <p>And in future steps of the Zap - if Zapier encounters a pointer as returned by <code>z.dehydrate(func, inputData)</code> - Zapier will tie it back to your app and pull in the data lazily.</p><blockquote>
 <p><strong>Wait, but why?</strong> Isn&apos;t it just easier to load the data immediately? In some cases it can - but imagine an API that returns 100 records when polling - doing 100x <code>GET /id.json</code> aggressive inline HTTP calls when 99% of the time Zapier doesn&apos;t <em>need</em> the data yet is wasteful.</p>
 </blockquote>
     </div>
@@ -2991,7 +2992,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <span class="hljs-keyword">return</span> results.map(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
         <span class="hljs-comment">// lazily convert a secret_download_url to a stashed url</span>
         <span class="hljs-comment">// zapier won&apos;t do this until we need it</span>
-        result.file = z.dehydrate(<span class="hljs-string">&apos;stashPDF&apos;</span>, {
+        result.file = z.dehydrate(stashPDFfunction, {
           <span class="hljs-attr">downloadUrl</span>: result.secret_download_url
         });
         <span class="hljs-keyword">delete</span> result.secret_download_url;
@@ -3185,7 +3186,8 @@ You can run these tests in a CI tool like <a href="https://travis-ci.com/">Travi
 
 <span class="hljs-comment">// createAppTester() makes it easier to test your app. It takes your</span>
 <span class="hljs-comment">// raw app definition, and returns a function that will test you app.</span>
-<span class="hljs-keyword">const</span> appTester = zapier.createAppTester(<span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../index&apos;</span>));
+<span class="hljs-keyword">const</span> App = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../index&apos;</span>);
+<span class="hljs-keyword">const</span> appTester = zapier.createAppTester(App);
 
 describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
 
@@ -3201,7 +3203,7 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
 
       <span class="hljs-comment">// Pass appTester the path to the trigger you want to call,</span>
       <span class="hljs-comment">// and the input bundle. appTester returns a promise for results.</span>
-      appTester(<span class="hljs-string">&apos;triggers.recipe&apos;</span>, bundle)
+      appTester(App.App.triggers.recipe.operation.perform, bundle)
         .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
           <span class="hljs-comment">// Make assertions</span>
 
