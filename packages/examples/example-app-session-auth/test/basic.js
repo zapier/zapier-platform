@@ -2,7 +2,8 @@ require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('session auth app', () => {
   it('has an exchange for username/password', (done) => {
@@ -14,7 +15,7 @@ describe('session auth app', () => {
       }
     };
 
-    appTester('authentication.sessionConfig.perform', bundle)
+    appTester(App.authentication.sessionConfig.perform, bundle)
       .then((newAuthData) => {
         newAuthData.sessionKey.should.eql('helloworld!');
         done();
@@ -30,7 +31,7 @@ describe('session auth app', () => {
       }
     };
 
-    appTester('authentication.test', bundle)
+    appTester(App.authentication.test, bundle)
       .then((response) => {
         response.status.should.eql(200);
         response.request.headers['X-Session-Key'].should.eql('my session key');
