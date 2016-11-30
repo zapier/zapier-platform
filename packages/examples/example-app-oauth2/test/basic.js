@@ -2,7 +2,8 @@ require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('oauth2 app', () => {
   before(() => {
@@ -28,7 +29,7 @@ describe('oauth2 app', () => {
       }
     };
 
-    appTester('authentication.oauth2Config.authorizeUrl', bundle)
+    appTester(App.authentication.oauth2Config.authorizeUrl, bundle)
       .then((authorizeUrl) => {
         authorizeUrl.should.eql('http://zapier.webscript.io/platform-example-app/authorize?client_id=1234&state=4444&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code');
         done();
@@ -49,7 +50,7 @@ describe('oauth2 app', () => {
       }
     };
 
-    appTester('authentication.oauth2Config.getAccessToken', bundle)
+    appTester(App.authentication.oauth2Config.getAccessToken, bundle)
       .then((result) => {
         result.access_token.should.eql('a_token');
         result.refresh_token.should.eql('a_refresh_token');
@@ -72,7 +73,7 @@ describe('oauth2 app', () => {
       }
     };
 
-    appTester('authentication.oauth2Config.refreshAccessToken', bundle)
+    appTester(App.authentication.oauth2Config.refreshAccessToken, bundle)
       .then((result) => {
         result.access_token.should.eql('a_new_token');
         done();
@@ -88,7 +89,7 @@ describe('oauth2 app', () => {
       },
     };
 
-    appTester('authentication.test', bundle)
+    appTester(App.authentication.test, bundle)
       .then((response) => {
         response.status.should.eql(200);
         done();
