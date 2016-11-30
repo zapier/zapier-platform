@@ -2,7 +2,8 @@ require('should');
 
 const zapier = require('zapier-platform-core');
 
-const appTester = zapier.createAppTester(require('../index'));
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('basic auth app', () => {
 
@@ -15,7 +16,7 @@ describe('basic auth app', () => {
       }
     };
 
-    appTester('authentication.test', bundle)
+    appTester(App.authentication.test, bundle)
       .then((response) => {
         response.status.should.eql(200);
         response.request.headers.Authorization.should.eql('Basic dXNlcjpwYXNzd2Q=');
