@@ -124,7 +124,7 @@ const getLinkedAppConfig = (appDir) => {
   const file = path.resolve(appDir, constants.CURRENT_APP_FILE);
   return readFile(file)
     .then((buf) => {
-      return JSON.parse(buf.toString()).id;
+      return JSON.parse(buf.toString());
     });
 };
 
@@ -142,11 +142,11 @@ const writeLinkedAppConfig = (app, appDir) => {
 // Loads the linked app from the API.
 const getLinkedApp = (appDir) => {
   return getLinkedAppConfig(appDir)
-    .then((appId) => {
-      if (!appId) {
+    .then((app) => {
+      if (!app) {
         return {};
       }
-      return callAPI('/apps/' + appId);
+      return callAPI('/apps/' + app.id);
     })
     .catch(() => {
       throw new Error(`Warning! ${constants.CURRENT_APP_FILE} seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`);
@@ -254,6 +254,7 @@ module.exports = {
   callAPI,
   createCredentials,
   writeLinkedAppConfig,
+  getLinkedAppConfig,
   getLinkedApp,
   checkCredentials,
   listApps,

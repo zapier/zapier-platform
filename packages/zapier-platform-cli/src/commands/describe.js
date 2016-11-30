@@ -3,41 +3,150 @@ const _ = require('lodash');
 
 const utils = require('../utils');
 
-const possibleMethods = [
+const authenticationPaths = [
+  'authentication.test',
+  'authentication.oauth2Config.getAccessToken',
+  'authentication.oauth2Config.refreshAccessToken',
+  'authentication.sessionConfig.perform',
+];
+
+// {type:triggers}.{key:lead}.operation.perform
+const actionTemplates = [
   '<%= type %>.<%= key %>.operation.perform',
   '<%= type %>.<%= key %>.operation.performSubscribe',
   '<%= type %>.<%= key %>.operation.performUnsubscribe',
   '<%= type %>.<%= key %>.operation.inputFields',
   '<%= type %>.<%= key %>.operation.outputFields',
-].map(method => _.template(method));
+].map(template => _.template(template));
+
+const hydrateTemplate = _.template('hydrators.<%= key %>');
+
+const inlineResourceMethods = [
+  'get',
+  'hook',
+  'list',
+  'search',
+  'create',
+  'searchOrCreate',
+];
+
+// resources.{key:lead}.get.operation.perform
+const makeResourceTemplates = (methods) =>
+  methods
+  .reduce((acc, method) => {
+    return acc.concat([
+      `resources.<%= key %>.${method}.operation.perform`,
+      `resources.<%= key %>.${method}.operation.performSubscribe`,
+      `resources.<%= key %>.${method}.operation.performUnsubscribe`,
+      `resources.<%= key %>.${method}.operation.inputFields`,
+      `resources.<%= key %>.${method}.operation.outputFields`,
+    ]);
+  }, [])
+  .map(template => _.template(template));
+
+const allResourceTemplates = makeResourceTemplates(inlineResourceMethods);
+
+const typeMap = {
+  triggers: ['list', 'hook'],
+  searches: ['search'],
+  creates: ['create'],
+};
 
 const describe = (context) => {
   return Promise.resolve()
-    .then(() => utils.localAppCommand({command: 'definition'}))
-    .then((definition) => {
+    .then(() => Promise.all([
+      utils.getLinkedAppConfig().catch(() => null),
+      utils.localAppCommand({command: 'definition'})
+    ]))
+    .then(([appConfig, definition]) => {
       context.line(`A description of your app listed below.\n`);
 
       // context.line(utils.prettyJSONstringify(definition));
       // TODO: auth and app title/description
+      context.line(colors.bold('Authentication') + '\n');
+      let authRows = [];
+      if (definition.authentication) {
+        const authentication = _.assign({}, definition.authentication);
+        authentication.paths = authenticationPaths
+          .filter(path => _.has(definition, path))
+          .join('\n');
+        if (authentication.type === 'oauth2') {
+          if (appConfig) {
+            // TODO: might be nice to move this to pulling from the GET /apps/123 endpoint
+            authentication.redirect_uri = `https://zapier.com/dashboard/auth/oauth/return/${appConfig.key}CLIAPI/`;
+          } else {
+            authentication.redirect_uri = colors.grey('do zapier push to see redirect_uri!');
+          }
+        }
+        authRows = [authentication];
+      }
+      const authHeaders = [
+        ['Type', 'type'],
+        ['Redirect URI', 'redirect_uri', colors.grey('n/a')],
+        ['Available Methods', 'paths', colors.grey('n/a')],
+      ];
+      const authIfEmpty = colors.grey('Nothing found for authentication.');
+      utils.printData(authRows, authHeaders, authIfEmpty);
+      context.line();
 
-      // resources.form.list.operation.perform
+      context.line(colors.bold('Hydrators') + '\n');
+      let hydratorRows = _.map(definition.hydrators, (val, key) => {
+        return {
+          key,
+          paths: hydrateTemplate({key})
+        };
+      });
+      const hydratorHeaders = [
+        ['Key', 'key'],
+        ['Method', 'paths', colors.grey('n/a')],
+      ];
+      const hydratorIfEmpty = colors.grey('Nothing found for hydrators.');
+      utils.printData(hydratorRows, hydratorHeaders, hydratorIfEmpty);
+      context.line();
 
-      const types = ['triggers', 'searches', 'creates'];
+      const resourceRows = _.values(definition.resources || {}).map((resource) => {
+        resource = _.assign({}, resource);
+        resource.paths = allResourceTemplates
+          .map(method => method({key: resource.key}))
+          .filter(path => _.has(definition, path))
+          .join('\n');
+        return resource;
+      });
+      context.line(colors.bold('Resources') + '\n');
+      const resourceHeaders = [
+        ['Noun', 'noun'],
+        ['Ref', 'key'],
+        ['Available Methods', 'paths', colors.grey('n/a')],
+      ];
+      const resourceIfEmpty = colors.grey('Nothing found for resources, maybe try the `zapier scaffold` command?');
+      utils.printData(resourceRows, resourceHeaders, resourceIfEmpty);
+      context.line();
 
-      types.forEach((type) => {
+      Object.keys(typeMap).forEach((type) => {
         context.line(colors.bold(_.capitalize(type)) + '\n');
         const rows = _.values(definition[type]).map(row => {
-          row.methods = possibleMethods
-            .map(method => method({type, key: row.key}))
-            .filter(path => _.has(definition, path))
-            .join('\n');
+          row = _.assign({}, row);
+
+          row.paths = [];
+
+          // add possible action paths
+          row.paths = row.paths.concat(actionTemplates.map(method => method({type, key: row.key})));
+
+          // add possible resource paths
+          if (row.operation.resource) {
+            const key = row.operation.resource.split('.')[0];
+            const resourceTemplates = makeResourceTemplates(typeMap[type]);
+            row.paths = row.paths.concat(resourceTemplates.map(method => method({key})));
+          }
+
+          row.paths = row.paths.filter(path => _.has(definition, path)).join('\n');
           return row;
         });
         const headers = [
           ['Noun', 'noun'],
           ['Label', 'display.label'],
-          ['Resource', 'operation.resource', colors.grey('n/a')],
-          ['Available Methods', 'methods', colors.grey('n/a')],
+          ['Resource Ref', 'operation.resource', colors.grey('n/a')],
+          ['Available Methods', 'paths', colors.grey('n/a')],
         ];
         const ifEmpty = colors.grey(`Nothing found for ${type}, maybe try the \`zapier scaffold\` command?`);
         utils.printData(rows, headers, ifEmpty);
@@ -72,11 +181,14 @@ $ zapier describe
 # 
 # Triggers
 # 
-# ┌─────────────┬──────────┬───────────────┬────────────────────┬───────────────────┐
-# │ key         │ noun     │ display.label │ operation.resource │ operation.perform │
-# ├─────────────┼──────────┼───────────────┼────────────────────┼───────────────────┤
-# │ hello_world │ Greeting │ New Greeting  │ n/a                │ $func$2$f$        │
-# └─────────────┴──────────┴───────────────┴────────────────────┴───────────────────┘
+# ┌────────────┬────────────────────┬──────────────┬───────────────────────────────────────────────┐
+# │ Noun       │ Label              │ Resource Ref │ Available Methods                             │
+# ├────────────┼────────────────────┼──────────────┼───────────────────────────────────────────────┤
+# │ Member     │ Updated Subscriber │ member       │ triggers.updated_member.operation.perform     │
+# │            │                    │              │ triggers.updated_member.operation.inputFields │
+# │            │                    │              │ resources.member.list.operation.perform       │
+# │            │                    │              │ resources.member.list.operation.inputFields   │
+# └────────────┴────────────────────┴──────────────┴───────────────────────────────────────────────┘
 # 
 # Searches
 # 
