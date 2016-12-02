@@ -373,7 +373,7 @@ const HonkerDonker = {
       perform: (z, bundle) => {
         const honkerIds = [1, 2, 3];
         return honkerIds.map(id => {
-          return z.dehydrate('resources.honkerdonker.get.operation.perform', {honkerId: id});
+          return z.dehydrate(HonkerDonker.get.operation.perform, {honkerId: id});
         });
       }
     }

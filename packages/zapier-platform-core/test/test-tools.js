@@ -9,16 +9,7 @@ describe('test-tools', () => {
   const appTester = createAppTester(appDefinition);
 
   it('should run explicit path', (done) => {
-    appTester('resources.list.list.operation.perform')
-      .then(results => {
-        results.should.eql([{id: 1234}, {id: 5678}]);
-        done();
-      })
-      .catch(done);
-  });
-
-  it('should understand shorthand', (done) => {
-    appTester('list.list') // Resource.list
+    appTester(appDefinition.resources.list.list.operation.perform)
       .then(results => {
         results.should.eql([{id: 1234}, {id: 5678}]);
         done();

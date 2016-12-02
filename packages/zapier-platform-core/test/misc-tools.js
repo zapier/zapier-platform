@@ -22,6 +22,12 @@ describe('Tools', () => {
 
     const path = dataTools.findMapDeep(haystack, 123);
     path.should.eql('a.b.c');
+
+    const path2 = dataTools.memoizedFindMapDeep(haystack, 123);
+    path2.should.eql('a.b.c');
+
+    const path3 = dataTools.memoizedFindMapDeep(haystack, 123);
+    path3.should.eql('a.b.c');
   });
 
   it('should deep search and find something (arrays)', () => {

@@ -10,7 +10,7 @@ const wrapHydrate = (s) => `hydrate|||${JSON.stringify(s)}|||hydrate`;
 const createDehydrator = (input) => {
   const app = _.get(input, '_zapier.app');
 
-  return (methodOrFunc, inputData) => {
+  return (func, inputData) => {
     inputData = inputData || {};
     if (inputData.inputData) {
       throw new Error('Oops! You passed a full `bundle` - really you should pass what you want under `inputData`!');
@@ -21,7 +21,7 @@ const createDehydrator = (input) => {
     }
     return wrapHydrate({
       'type': 'method',
-      'method': resolveMethodPath(app, methodOrFunc),
+      'method': resolveMethodPath(app, func),
       // inputData vs. bundle is a legacy oddity
       'bundle': _.omit(inputData, 'environment') // don't leak the environment
     });
