@@ -262,5 +262,6 @@ module.exports = {
   renderSample,
   renderAuth,
   renderStep,
-  convertApp
+  convertApp,
+  renderTemplate
 };

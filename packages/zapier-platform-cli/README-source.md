@@ -423,7 +423,7 @@ We can verify the header is present in the request by looking at the logs again.
 zapier logs --type=http --detailed --limit=1
 
 # The logs of your app "Example App" listed below.
-# 
+#
 # ┌─────────────────────┬────────────────────────────────────────────────────────────────────────────────────────┐
 # │ Status              │ 200                                                                                    │
 # │ Method              │ GET                                                                                    │
@@ -870,7 +870,7 @@ This object holds the user's auth details and the data to for the API requests.
 
 `bundle.authData` is user-provided authentication data, like `api_key` or `access_token`. [Read more on authentication.](#authentication)
 
-### `bundle.inputData` 
+### `bundle.inputData`
 
 `bundle.inputData` is user-provided data for this particular run of the trigger/search/create, as defined by the inputFields. For example:
 
@@ -1179,7 +1179,7 @@ z.stashFile(fileRequest) // knownLength and filename will be sniffed from the re
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7
 ```
 
-> Note: you should only be using `z.stashFile()` in a hydration method - otherwise it can be very expensive to stash dozens of files in a polling call - for example! 
+> Note: you should only be using `z.stashFile()` in a hydration method - otherwise it can be very expensive to stash dozens of files in a polling call - for example!
 
 See a full example with dehydration/hydration wired in correctly:
 
@@ -1423,6 +1423,48 @@ https://github.com/zapier/zapier-platform-example-app-session-auth - `zapier ini
 
 https://github.com/zapier/zapier-platform-example-app-babel - `zapier init . --template=babel`
 
+## Command line Tab Completion
+
+We have provided two tab completion scripts to make it easier to use the Zapier Platform CLI, for zsh and bash.
+
+### Zsh Completion Script
+
+To use the zsh completion script, first setup support for completion, if you haven't already done so. This example assumes your completion scripts are in `~/.zsh/completion`. Adjust accordingly if you put them somewhere else:
+
+```zsh
+# add custom completion scripts
+fpath=(~/.zsh/completion $fpath)
+
+# compsys initialization
+autoload -U compinit
+compinit
+```
+
+Next download our completion script to your completions directory:
+
+```zsh
+cd ~/.zsh/completion
+curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies/zsh/_zapier -O
+```
+
+Finally, restart your shell and start hitting TAB with the `zapier` command!
+
+### Bash Completion Script
+
+To use the bash completion script, first download the completion script. The example assumes your completion scripts are in `~/.bash_completion.d` directory. Adjust accordingly if you put them somewhere else.
+
+```bash
+cd ~/.bash_completion.d
+curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies/bash/_zapier -O
+```
+
+Next source the script from your `~/.bash_profile`:
+
+```bash
+source ~/.bash_completion.d/_zapier
+```
+
+Finally, restart your shell and start hitting TAB with the `zapier` command!
 
 ## Get Help!
 

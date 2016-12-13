@@ -23,7 +23,8 @@
     "test": "npm run build && node_modules/mocha/bin/mocha -t 15000 --recursive lib/tests && npm run lint && npm run lint-snippets",
     "zapier": "zapier.js",
     "validate-templates": "./scripts/validate-app-templates.js",
-    "set-template-versions": "./scripts/set-app-template-versions.js"
+    "set-template-versions": "./scripts/set-app-template-versions.js",
+    "gen-completions": "./scripts/gen-zsh-completions.js > ./goodies/zsh/_zapier && ./scripts/gen-bash-completions.js > ./goodies/bash/_zapier"
   },
   "dependencies": {
     "adm-zip": "0.4.7",

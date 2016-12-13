@@ -1,0 +1,40 @@
+_zapier() {
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    local cmd=${COMP_WORDS[1]}
+
+    if [ $COMP_CWORD -eq 1 ]; then
+        COMPREPLY=( $(compgen -W "--help help login logout init register scaffold describe test link apps versions validate build upload push promote migrate deprecate collaborate invite history logs env convert" -- $cur) )
+    elif [[ "$cur" == -* ]] || [ -z "$cur" ]; then
+        case "$cmd" in
+            init)
+                COMPREPLY=( $( compgen -W "--template" -- $cur ) )
+               ;;
+            scaffold)
+                COMPREPLY=( $( compgen -W "--dest --entry" -- $cur ) )
+               ;;
+            test)
+                COMPREPLY=( $( compgen -W "--quiet --very-quiet" -- $cur ) )
+               ;;
+            build)
+                COMPREPLY=( $( compgen -W "--disable-dependency-detection --include-js-map" -- $cur ) )
+               ;;
+            push)
+                COMPREPLY=( $( compgen -W "--disable-dependency-detection --include-js-map" -- $cur ) )
+               ;;
+            collaborate)
+                COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
+               ;;
+            invite)
+                COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
+               ;;
+            logs)
+                COMPREPLY=( $( compgen -W "--version --status --type --detailed --user --limit" -- $cur ) )
+               ;;
+            env)
+                COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
+               ;;
+        esac
+    fi
+}
+complete -F _zapier zapier
+

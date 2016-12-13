@@ -311,6 +311,11 @@ a code {
 <li><a href="#babel-example-app">Babel Example App</a></li>
 </ul>
 </li>
+<li><a href="#command-line-tab-completion">Command line Tab Completion</a><ul>
+<li><a href="#zsh-completion-script">Zsh Completion Script</a></li>
+<li><a href="#bash-completion-script">Bash Completion Script</a></li>
+</ul>
+</li>
 <li><a href="#get-help">Get Help!</a></li>
 </ul>
 
@@ -459,6 +464,11 @@ a code {
 <li><a href="#oauth2-example-app">OAuth2 Example App</a></li>
 <li><a href="#session-auth-example-app">Session Auth Example App</a></li>
 <li><a href="#babel-example-app">Babel Example App</a></li>
+</ul>
+</li>
+<li><a href="#command-line-tab-completion">Command line Tab Completion</a><ul>
+<li><a href="#zsh-completion-script">Zsh Completion Script</a></li>
+<li><a href="#bash-completion-script">Bash Completion Script</a></li>
 </ul>
 </li>
 <li><a href="#get-help">Get Help!</a></li>
@@ -1005,7 +1015,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
       <pre><code class="lang-bash">zapier logs --type=http --detailed --limit=1
 
 <span class="hljs-comment"># The logs of your app &quot;Example App&quot; listed below.</span>
-<span class="hljs-comment"># </span>
+<span class="hljs-comment">#</span>
 <span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
 <span class="hljs-comment"># &#x2502; Status              &#x2502; 200                                                                                    &#x2502;</span>
 <span class="hljs-comment"># &#x2502; Method              &#x2502; GET                                                                                    &#x2502;</span>
@@ -2971,7 +2981,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note: you should only be using <code>z.stashFile()</code> in a hydration method - otherwise it can be very expensive to stash dozens of files in a polling call - for example! </p>
+<p>Note: you should only be using <code>z.stashFile()</code> in a hydration method - otherwise it can be very expensive to stash dozens of files in a polling call - for example!</p>
 </blockquote><p>See a full example with dehydration/hydration wired in correctly:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -3648,6 +3658,107 @@ npm run zapier-push
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p><a href="https://github.com/zapier/zapier-platform-example-app-babel">https://github.com/zapier/zapier-platform-example-app-babel</a> - <code>zapier init . --template=babel</code></p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="command-line-tab-completion">Command line Tab Completion</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>We have provided two tab completion scripts to make it easier to use the Zapier Platform CLI, for zsh and bash.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="zsh-completion-script">Zsh Completion Script</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>To use the zsh completion script, first setup support for completion, if you haven&apos;t already done so. This example assumes your completion scripts are in <code>~/.zsh/completion</code>. Adjust accordingly if you put them somewhere else:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-zsh"><span class="hljs-comment"># add custom completion scripts</span>
+fpath=(~/.zsh/completion <span class="hljs-variable">$fpath</span>)
+
+<span class="hljs-comment"># compsys initialization</span>
+<span class="hljs-built_in">autoload</span> -U compinit
+compinit
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Next download our completion script to your completions directory:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-zsh"><span class="hljs-built_in">cd</span> ~/.zsh/completion
+curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies/zsh/_zapier -O
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Finally, restart your shell and start hitting TAB with the <code>zapier</code> command!</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="bash-completion-script">Bash Completion Script</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>To use the bash completion script, first download the completion script. The example assumes your completion scripts are in <code>~/.bash_completion.d</code> directory. Adjust accordingly if you put them somewhere else.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-bash"><span class="hljs-built_in">cd</span> ~/.bash_completion.d
+curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies/bash/_zapier -O
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Next source the script from your <code>~/.bash_profile</code>:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-bash"><span class="hljs-built_in">source</span> ~/.bash_completion.d/_zapier
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Finally, restart your shell and start hitting TAB with the <code>zapier</code> command!</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

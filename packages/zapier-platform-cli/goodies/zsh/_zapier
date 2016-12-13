@@ -1,0 +1,53 @@
+#compdef zapier
+
+getOptions() {
+    local initOpts=("--template:'select a starting app template'")
+    local scaffoldOpts=("--dest:'sets the new files path'" "--entry:'where to import the new file'")
+    local testOpts=("--quiet:'do not print zapier detailed logs to standard out'" "--very-quiet:'do not print zapier summary or detail logs to standard out'")
+    local buildOpts=("--disable-dependency-detection:'disables walking required files to slim the build'" "--include-js-map:'include .js.map files (usually source maps'")
+    local pushOpts=("--disable-dependency-detection:'disables walking required files to slim the build'" "--include-js-map:'include .js.map files (usually source maps'")
+    local collaborateOpts=("--remove:'elect to remove this user'")
+    local inviteOpts=("--remove:'elect to remove this user'")
+    local logsOpts=("--version:'display only this versions logs (default is all versions)'" "--status:'display only success logs (status code < 400 / info) or error (status code > 400 / tracebacks)'" "--type:'display only console or http logs'" "--detailed:'show detailed logs (like request/response body and headers)'" "--user:'display only this users logs'" "--limit:'control the maximum result size'")
+    local envOpts=("--remove:'optionally remove environment variable with this key'")
+
+    local cmd=$words[2]
+    case $cmd in
+        init)
+               _describe 'options' initOpts
+               ;;
+        scaffold)
+               _describe 'options' scaffoldOpts
+               ;;
+        test)
+               _describe 'options' testOpts
+               ;;
+        build)
+               _describe 'options' buildOpts
+               ;;
+        push)
+               _describe 'options' pushOpts
+               ;;
+        collaborate)
+               _describe 'options' collaborateOpts
+               ;;
+        invite)
+               _describe 'options' inviteOpts
+               ;;
+        logs)
+               _describe 'options' logsOpts
+               ;;
+        env)
+               _describe 'options' envOpts
+               ;;
+    esac
+}
+
+getCommands() {
+    local -a options
+    options=("help:'Lists all the commands you can use.'" "login:'Configure your ~/.zapierrc with a deploy key.'" "logout:'Deactivates all your personal deploy keys and resets ~/.zapierrc.'" "init:'Initializes a new Zapier app in a directory.'" "register:'Registers a new app in your account.'" "scaffold:'Adds a starting resource, trigger, action or search to your app.'" "describe:'Describes the current app.'" "test:'Tests your app via npm test.'" "link:'Link the current directory to an app you have access to.'" "apps:'Lists all the apps you can access.'" "versions:'Lists all the versions of the current app.'" "validate:'Validates the current app.'" "build:'Builds a pushable zip from the current directory.'" "upload:'Upload the last build as a version.'" "push:'Build and upload the current app - does not promote.'" "promote:'Promotes a specific version to global access.'" "migrate:'Migrate users from one version of your app to another.'" "deprecate:'Mark a non-production version of your app as deprecated, with removal by a certain date.'" "collaborate:'Manage the collaborators on your project. Can optionally --remove.'" "invite:'Manage the invitees/testers on your project. Can optionally --remove.'" "history:'Prints all edit history for your app.'" "logs:'Prints recent logs. See help for filter arguments.'" "env:'Read and write environment variables.'" "convert:'Converts a Zapier Platform app to a CLI app, stubs only.'")
+    _describe 'commands' options
+}
+
+_arguments "--help[show help]" "1:command:getCommands" "2:arg:getOptions" "3:arg:getOptions" "4:arg:getOptions" "5:arg:getOptions"
+
