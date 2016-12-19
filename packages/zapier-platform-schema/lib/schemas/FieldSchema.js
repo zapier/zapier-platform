@@ -93,6 +93,10 @@ module.exports = makeSchema({
     computed: {
       description: 'Is this field automatically populated (and hidden from the user)?',
       type: 'boolean'
+    },
+    altersDynamicFields: {
+      description: 'Does the value of this field affect the definitions of other fields in the set?',
+      type: 'boolean'
     }
   },
   additionalProperties: false,
