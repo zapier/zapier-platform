@@ -1,5 +1,5 @@
 {
-  "version": "0.9.10",
+  "version": "0.9.11",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -137,6 +137,10 @@
         },
         "computed": {
           "description": "Is this field automatically populated (and hidden from the user)?",
+          "type": "boolean"
+        },
+        "altersDynamicFields": {
+          "description": "Does the value of this field affect the definitions of other fields in the set?",
           "type": "boolean"
         }
       },
@@ -496,8 +500,19 @@
           "$ref": "/RefResourceSchema"
         },
         "perform": {
-          "description": "How will we get the data from an inbound request?",
+          "description": "A function that processes the inbound webhook request. Generally would not make outbound traffic.",
           "$ref": "/FunctionSchema"
+        },
+        "performList": {
+          "description": "Can get \"live\" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods.",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
         },
         "performSubscribe": {
           "description": "Takes a URL and any necessary data from the user and subscribes.",
