@@ -24,8 +24,15 @@ BasicHookOperationSchema.properties = {
   },
   resource: BasicHookOperationSchema.properties.resource,
   perform: {
-    description: 'How will we get the data from an inbound request?',
+    description: 'A function that processes the inbound webhook request. Generally would not make outbound traffic.',
     $ref: FunctionSchema.id
+  },
+  performList: {
+    description: 'Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods.',
+    oneOf: [
+      {$ref: RequestSchema.id},
+      {$ref: FunctionSchema.id},
+    ]
   },
   performSubscribe: {
     description: 'Takes a URL and any necessary data from the user and subscribes.',

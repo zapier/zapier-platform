@@ -253,7 +253,8 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `type` | no | `string` in (`'hook'`) | Clarify how this operation works (polling == pull or hook == push).
 `resource` | no | [/RefResourceSchema](#refresourceschema) | Optionally reference and extends a resource. Allows us to automatically tie together samples, lists and hooks greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
-`perform` | **yes** | [/FunctionSchema](#functionschema) | How will we get the data from an inbound request?
+`perform` | **yes** | [/FunctionSchema](#functionschema) | A function that processes the inbound webhook request. Generally would not make outbound traffic.
+`performList` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods.
 `performSubscribe` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Takes a URL and any necessary data from the user and subscribes.
 `performUnsubscribe` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Takes a URL and data from a previous subscribe call and unsubscribes.
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
@@ -424,6 +425,7 @@ Key | Required | Type | Description
 `list` | no | `boolean` | Can a user provide multiples of this field?
 `children` | no | _n/a_ | Can a user provide multiples of this field?
 `computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)?
+`altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?
 
 -----
 
