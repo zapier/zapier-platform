@@ -5,20 +5,17 @@ const cleaner = require('./cleaner');
 const dataTools = require('./data');
 const zapierSchema = require('zapier-platform-schema');
 
-// Take a resource list/hook and turn it into triggers, etc.
+// Take a resource with methods like list/hook and turn it into triggers, etc.
 const convertResourceDos = (appRaw) => {
-  appRaw = dataTools.deepCopy(appRaw);
-
   let triggers = {}, searches = {}, creates = {};
 
   _.each(appRaw.resources, (resource) => {
     if (resource.hook && resource.hook.operation) {
-      let trigger = resource.hook;
+      let trigger = dataTools.deepCopy(resource.hook);
       trigger.key = `${resource.key}Hook`;
       trigger.noun = resource.noun;
       trigger.operation.resource = resource.key;
       trigger.operation.type = 'hook';
-      trigger.operation.outputFields = trigger.operation.outputFields || resource.outputFields;
       triggers[trigger.key] = trigger;
     }
 
@@ -28,7 +25,6 @@ const convertResourceDos = (appRaw) => {
       trigger.noun = resource.noun;
       trigger.operation.resource = resource.key;
       trigger.operation.type = 'polling';
-      trigger.operation.outputFields = trigger.operation.outputFields || resource.outputFields;
       triggers[trigger.key] = trigger;
     }
 
@@ -37,7 +33,6 @@ const convertResourceDos = (appRaw) => {
       search.key = `${resource.key}Search`;
       search.noun = resource.noun;
       search.operation.resource = resource.key;
-      search.operation.outputFields = search.operation.outputFields || resource.outputFields;
       searches[search.key] = search;
     }
 
@@ -46,23 +41,59 @@ const convertResourceDos = (appRaw) => {
       create.key = `${resource.key}Create`;
       create.noun = resource.noun;
       create.operation.resource = resource.key;
-      create.operation.outputFields = create.operation.outputFields || resource.outputFields;
       creates[create.key] = create;
     }
 
     // TODO: search or create?
   });
 
-  return dataTools.deepCopy({ triggers, searches, creates });
+  return { triggers, searches, creates };
+};
+
+/* When a trigger/search/create (action) links to a resource, we walk up to
+ * the resource and copy missing properties from resource to the action.
+ */
+const copyPropertiesFromResource = (type, action, appRaw) => {
+  if (appRaw.resources && action.operation && appRaw.resources[action.operation.resource]) {
+    const copyableProperties = ['outputFields', 'sample'];
+    const resource = appRaw.resources[action.operation.resource];
+
+    if (type === 'trigger' && action.operation.type === 'hook') {
+      if (_.get(resource, 'list.operation.perform')) {
+        action.operation.performList = action.operation.performList || resource.list.operation.perform;
+      }
+    } else if (type === 'search' || type === 'create') {
+      if (_.get(resource, 'get.operation.perform')) {
+        action.operation.performGet = action.operation.performGet || resource.get.operation.perform;
+      }
+    }
+
+    _.extend(action.operation, _.pick(resource, copyableProperties));
+  }
+
+  return action;
 };
 
 const compileApp = (appRaw) => {
   appRaw = dataTools.deepCopy(appRaw);
   const extras = convertResourceDos(appRaw);
 
-  appRaw.triggers = _.extend({}, appRaw.triggers || {}, extras.triggers);
-  appRaw.searches = _.extend({}, appRaw.searches || {}, extras.searches);
-  appRaw.creates = _.extend({}, appRaw.creates || {}, extras.creates);
+  appRaw.triggers = _.extend({}, extras.triggers, appRaw.triggers || {});
+  appRaw.searches = _.extend({}, extras.searches, appRaw.searches || {});
+  appRaw.creates = _.extend({}, extras.creates, appRaw.creates || {});
+
+  _.each(appRaw.triggers, (trigger) => {
+    appRaw.triggers[trigger.key] = copyPropertiesFromResource('trigger', trigger, appRaw);
+  });
+
+  _.each(appRaw.searches, (search) => {
+    appRaw.searches[search.key] = copyPropertiesFromResource('search', search, appRaw);
+  });
+
+  _.each(appRaw.creates, (create) => {
+    appRaw.creates[create.key] = copyPropertiesFromResource('create', create, appRaw);
+  });
+
   return appRaw;
 };
 
@@ -85,7 +116,6 @@ const prepareApp = (appRaw) => {
 module.exports = {
   compileApp,
   validateApp,
-  convertResourceDos,
   serializeApp,
   prepareApp
 };
