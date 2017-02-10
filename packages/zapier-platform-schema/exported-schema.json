@@ -603,6 +603,56 @@
       },
       "additionalProperties": false
     },
+    "BasicActionOperationSchema": {
+      "id": "/BasicActionOperationSchema",
+      "description": "Represents the fundamental mechanics of triggers, searches, or creates.",
+      "type": "object",
+      "required": [
+        "perform"
+      ],
+      "properties": {
+        "resource": {
+          "description": "Optionally reference and extends a resource. Allows us to automatically tie together samples, lists and hooks greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "$ref": "/RefResourceSchema"
+        },
+        "perform": {
+          "description": "How will we get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "performGet": {
+          "description": "How will we get a single bit of rich data? If you find yourself reaching for this - consider resources and their built-in get methods.",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "inputFields": {
+          "description": "What should the form a user sees and configures look like?",
+          "$ref": "/DynamicFieldsSchema"
+        },
+        "outputFields": {
+          "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
+          "$ref": "/DynamicFieldsSchema"
+        },
+        "sample": {
+          "description": "What does a sample of data look like? Will use resource sample if missing.",
+          "type": "object",
+          "minProperties": 1
+        }
+      },
+      "additionalProperties": false
+    },
     "ResourceMethodGetSchema": {
       "id": "/ResourceMethodGetSchema",
       "description": "How will we get a single object given a unique identifier/id?",
@@ -678,7 +728,7 @@
         },
         "operation": {
           "description": "Define how this search method will work.",
-          "$ref": "/BasicOperationSchema"
+          "$ref": "/BasicActionOperationSchema"
         }
       },
       "additionalProperties": false
@@ -698,7 +748,7 @@
         },
         "operation": {
           "description": "Define how this create method will work.",
-          "$ref": "/BasicOperationSchema"
+          "$ref": "/BasicActionOperationSchema"
         }
       },
       "additionalProperties": false
@@ -851,11 +901,7 @@
         },
         "operation": {
           "description": "Powers the functionality for this search.",
-          "$ref": "/BasicOperationSchema"
-        },
-        "getResourceOperation": {
-          "description": "How to take a skinny search result and fetch the complete record. Use when the returned results only contain a subset of the data or when pairing the search with a create for searchOrCreate.",
-          "$ref": "/BasicOperationSchema"
+          "$ref": "/BasicActionOperationSchema"
         }
       },
       "additionalProperties": false
@@ -887,11 +933,7 @@
         },
         "operation": {
           "description": "Powers the functionality for this create.",
-          "$ref": "/BasicOperationSchema"
-        },
-        "getResourceOperation": {
-          "description": "How to take a skinny create result and fetch the complete record. Use when the returned result only contains a subset of the data or when pairing the create with a search for searchOrCreate.",
-          "$ref": "/BasicOperationSchema"
+          "$ref": "/BasicActionOperationSchema"
         }
       },
       "additionalProperties": false

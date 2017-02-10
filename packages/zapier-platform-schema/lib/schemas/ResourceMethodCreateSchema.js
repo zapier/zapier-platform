@@ -3,7 +3,7 @@
 const makeSchema = require('../utils/makeSchema');
 
 const BasicDisplaySchema = require('./BasicDisplaySchema');
-const BasicOperationSchema = require('./BasicOperationSchema');
+const BasicActionOperationSchema = require('./BasicActionOperationSchema');
 
 module.exports = makeSchema({
   id: '/ResourceMethodCreateSchema',
@@ -17,11 +17,11 @@ module.exports = makeSchema({
     },
     operation: {
       description: 'Define how this create method will work.',
-      $ref: BasicOperationSchema.id
+      $ref: BasicActionOperationSchema.id
     }
   },
   additionalProperties: false
 }, [
   BasicDisplaySchema,
-  BasicOperationSchema
+  BasicActionOperationSchema
 ]);

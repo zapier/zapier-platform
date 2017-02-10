@@ -3,7 +3,7 @@
 const makeSchema = require('../utils/makeSchema');
 
 const BasicDisplaySchema = require('./BasicDisplaySchema');
-const BasicOperationSchema = require('./BasicOperationSchema');
+const BasicActionOperationSchema = require('./BasicActionOperationSchema');
 const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema({
@@ -28,16 +28,12 @@ module.exports = makeSchema({
     },
     operation: {
       description: 'Powers the functionality for this search.',
-      $ref: BasicOperationSchema.id
-    },
-    getResourceOperation: {
-      description: 'How to take a skinny search result and fetch the complete record. Use when the returned results only contain a subset of the data or when pairing the search with a create for searchOrCreate.',
-      $ref: BasicOperationSchema.id
+      $ref: BasicActionOperationSchema.id
     }
   },
   additionalProperties: false
 }, [
   BasicDisplaySchema,
-  BasicOperationSchema,
+  BasicActionOperationSchema,
   KeySchema,
 ]);
