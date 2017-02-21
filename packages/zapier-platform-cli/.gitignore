@@ -4,3 +4,4 @@ node_modules
 .zapier-*
 scratch/*
 lib/*
+.DS_Store

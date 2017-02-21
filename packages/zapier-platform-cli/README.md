@@ -94,6 +94,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 - [Command line Tab Completion](#command-line-tab-completion)
   * [Zsh Completion Script](#zsh-completion-script)
   * [Bash Completion Script](#bash-completion-script)
+- [Development of the CLI](#development-of-the-cli)
 - [Get Help!](#get-help)
 
 <!-- tocstop -->
@@ -2166,6 +2167,15 @@ source ~/.bash_completion.d/_zapier
 ```
 
 Finally, restart your shell and start hitting TAB with the `zapier` command!
+
+## Development of the CLI
+
+- `npm install` for getting started
+- `npm test` for running tests
+- `npm run validate-templates` for validating the templates (even if only the version changes)
+- `npm run docs` for updating docs (even if only the version changes)
+- `npm run gen-completions` for updating the auto complete scripts (even if only the version changes)
+- `npm run set-template-versions VERSION` for updating the platform-cli version in the example app repos to `VERSION`
 
 ## Get Help!
 
