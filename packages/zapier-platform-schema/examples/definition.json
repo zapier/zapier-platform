@@ -211,7 +211,8 @@
               "key": "tag_id",
               "label": "Tag",
               "type": "integer",
-              "dynamic": "tag"
+              "dynamic": "tag.id.name",
+              "search": "tag.id"
             }
           ]
         }
@@ -317,7 +318,33 @@
       "noun": "Contact"
     }
   },
-  "searches": {},
+  "searches": {
+    "tag": {
+      "display": {
+        "label": "Find Tag",
+        "description": "Finds a Tag."
+      },
+      "operation": {
+        "perform": {
+          "url": "http://fake-crm.getsandbox.com/tags?name={{inputData.name}}"
+        },
+        "resource": "tag",
+        "inputFields": [
+          {
+            "key": "name",
+            "label": "Tag Name",
+            "type": "string"
+          }
+        ],
+        "sample": {
+          "id": 1,
+          "name": "test tag"
+        }
+      },
+      "key": "tag",
+      "noun": "Tag"
+    }
+  },
   "creates": {
     "tag_create": {
       "display": {

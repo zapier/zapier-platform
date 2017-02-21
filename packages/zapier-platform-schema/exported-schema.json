@@ -1,5 +1,5 @@
 {
-  "version": "0.9.12",
+  "version": "0.10.1",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -121,6 +121,10 @@
         },
         "dynamic": {
           "description": "A reference to another resource or trigger that will power a dynamic dropdown.",
+          "$ref": "/RefResourceSchema"
+        },
+        "search": {
+          "description": "A reference to another resource or search that will allow adding a search for this field.",
           "$ref": "/RefResourceSchema"
         },
         "choices": {

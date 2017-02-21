@@ -70,6 +70,10 @@ module.exports = makeSchema({
       description: 'A reference to another resource or trigger that will power a dynamic dropdown.',
       $ref: RefResourceSchema.id,
     },
+    search: {
+      description: 'A reference to another resource or search that will allow adding a search for this field.',
+      $ref: RefResourceSchema.id,
+    },
     choices: {
       description: 'A list of machine keys and human values to power a static dropdown.',
       type: 'object',
