@@ -1,6 +1,10 @@
+## 0.10.1
+
+* Added `search` property for `inputFields`, to allow linking a search connector.
+
 ## 0.10.0
 
-* **BREAKING CHANGE** Removed getResourceOperation in creates/searches in favor of performGet.
+* **BREAKING CHANGE** Removed `getResourceOperation` in creates/searches in favor of `performGet`.
 
 * Added support for `performList` in webhook triggers
 * Fixed: Now correctly copy outputFields and samples to a trigger/search/create operation that links to a resource
@@ -13,4 +17,4 @@
 
 ## 0.9.9
 
-Initial release to public. Read docs here https://github.com/zapier/zapier-platform-cli.
+Initial public release. Read docs: https://github.com/zapier/zapier-platform-cli.
