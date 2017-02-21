@@ -95,6 +95,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [Zsh Completion Script](#zsh-completion-script)
   * [Bash Completion Script](#bash-completion-script)
 - [Development of the CLI](#development-of-the-cli)
+- [Publishing of the CLI (after merging)](#publishing-of-the-cli-after-merging)
 - [Get Help!](#get-help)
 
 <!-- tocstop -->
@@ -2172,10 +2173,14 @@ Finally, restart your shell and start hitting TAB with the `zapier` command!
 
 - `npm install` for getting started
 - `npm test` for running tests
-- `npm run validate-templates` for validating the templates (even if only the version changes)
-- `npm run docs` for updating docs (even if only the version changes)
-- `npm run gen-completions` for updating the auto complete scripts (even if only the version changes)
-- `npm run set-template-versions VERSION` for updating the platform-cli version in the example app repos to `VERSION`
+- `npm run docs` for updating docs
+- `npm run gen-completions` for updating the auto complete scripts
+
+## Publishing of the CLI (after merging)
+
+- `npm version [patch|minor|major]` will pull, test, update docs, increment version in package.json, push tags, and publish to npm
+- `npm run validate-templates` for validating the example apps
+- `npm run set-template-versions VERSION` for updating the platform-core version in the example app repos to `VERSION`
 
 ## Get Help!
 

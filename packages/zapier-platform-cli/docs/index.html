@@ -317,6 +317,7 @@ a code {
 </ul>
 </li>
 <li><a href="#development-of-the-cli">Development of the CLI</a></li>
+<li><a href="#publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</a></li>
 <li><a href="#get-help">Get Help!</a></li>
 </ul>
 
@@ -473,6 +474,7 @@ a code {
 </ul>
 </li>
 <li><a href="#development-of-the-cli">Development of the CLI</a></li>
+<li><a href="#publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</a></li>
 <li><a href="#get-help">Get Help!</a></li>
 </ul>
     </div>
@@ -3781,10 +3783,30 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
       <ul>
 <li><code>npm install</code> for getting started</li>
 <li><code>npm test</code> for running tests</li>
-<li><code>npm run validate-templates</code> for validating the templates (even if only the version changes)</li>
-<li><code>npm run docs</code> for updating docs (even if only the version changes)</li>
-<li><code>npm run gen-completions</code> for updating the auto complete scripts (even if only the version changes)</li>
-<li><code>npm run set-template-versions VERSION</code> for updating the platform-cli version in the example app repos to <code>VERSION</code></li>
+<li><code>npm run docs</code> for updating docs</li>
+<li><code>npm run gen-completions</code> for updating the auto complete scripts</li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="publishing-of-the-cli-after-merging-">Publishing of the CLI (after merging)</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <ul>
+<li><code>npm version [patch|minor|major]</code> will pull, test, update docs, increment version in package.json, push tags, and publish to npm</li>
+<li><code>npm run validate-templates</code> for validating the example apps</li>
+<li><code>npm run set-template-versions VERSION</code> for updating the platform-core version in the example app repos to <code>VERSION</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
