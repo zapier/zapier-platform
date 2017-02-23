@@ -80,28 +80,26 @@ module.exports = makeSchema({
       minProperties: 1,
     },
     list: {
-      // if true:
-      //   same as parentKey/line items if children
-      //   flat array if no children
-      // if false:
-      //   means type=dict if children
-      //   regular field if no children
       description: 'Can a user provide multiples of this field?',
       type: 'boolean',
     },
     children: {
-      description: 'Can a user provide multiples of this field?',
+      description: 'Can a user provide multiples of this field? A.K.A. Line Items.',
       // TODO: don't allow deep nesting?
       // $ref: FieldsSchema.id,
     },
+    dict: {
+      description: 'Is this field a key/value input?',
+      type: 'boolean',
+    },
     computed: {
       description: 'Is this field automatically populated (and hidden from the user)?',
-      type: 'boolean'
+      type: 'boolean',
     },
     altersDynamicFields: {
       description: 'Does the value of this field affect the definitions of other fields in the set?',
-      type: 'boolean'
-    }
+      type: 'boolean',
+    },
   },
   additionalProperties: false,
 }, [

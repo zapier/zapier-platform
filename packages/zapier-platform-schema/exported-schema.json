@@ -137,7 +137,11 @@
           "type": "boolean"
         },
         "children": {
-          "description": "Can a user provide multiples of this field?"
+          "description": "Can a user provide multiples of this field? A.K.A. Line Items."
+        },
+        "dict": {
+          "description": "Is this field a key/value input?",
+          "type": "boolean"
         },
         "computed": {
           "description": "Is this field automatically populated (and hidden from the user)?",
