@@ -1,3 +1,9 @@
+## 0.10.2
+
+* Added `dict` property for `inputFields`, to allow asking for a dictionary (key/value pair) input.
+* Added new REST Hooks example app with `zapier init . --template=rest-hooks`.
+* Fixed: Now correctly ask for line items when `children` is set.
+
 ## 0.10.1
 
 * Added `search` property for `inputFields`, to allow linking a search connector.
@@ -8,6 +14,10 @@
 
 * Added support for `performList` in webhook triggers
 * Fixed: Now correctly copy outputFields and samples to a trigger/search/create operation that links to a resource
+
+## 0.9.12
+
+* Added `performList` to hook operations.
 
 ## 0.9.10
 

@@ -91,6 +91,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [OAuth2 Example App](#oauth2-example-app)
   * [Session Auth Example App](#session-auth-example-app)
   * [Babel Example App](#babel-example-app)
+  * [REST Hooks Example App](#rest-hooks-example-app)
 - [Command line Tab Completion](#command-line-tab-completion)
   * [Zsh Completion Script](#zsh-completion-script)
   * [Bash Completion Script](#bash-completion-script)
@@ -2125,6 +2126,10 @@ https://github.com/zapier/zapier-platform-example-app-session-auth - `zapier ini
 ### Babel Example App
 
 https://github.com/zapier/zapier-platform-example-app-babel - `zapier init . --template=babel`
+
+### REST Hooks Example App
+
+https://github.com/zapier/zapier-platform-example-app-rest-hooks - `zapier init . --template=rest-hooks`
 
 ## Command line Tab Completion
 

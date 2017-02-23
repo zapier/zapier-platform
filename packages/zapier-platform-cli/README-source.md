@@ -1423,6 +1423,10 @@ https://github.com/zapier/zapier-platform-example-app-session-auth - `zapier ini
 
 https://github.com/zapier/zapier-platform-example-app-babel - `zapier init . --template=babel`
 
+### REST Hooks Example App
+
+https://github.com/zapier/zapier-platform-example-app-rest-hooks - `zapier init . --template=rest-hooks`
+
 ## Command line Tab Completion
 
 We have provided two tab completion scripts to make it easier to use the Zapier Platform CLI, for zsh and bash.

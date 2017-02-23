@@ -11,5 +11,6 @@ module.exports = [
   'custom-auth',
   'oauth2',
   'session-auth',
-  'babel'
+  'babel',
+  'rest-hooks',
 ];
