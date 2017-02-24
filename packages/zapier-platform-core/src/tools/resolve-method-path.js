@@ -19,7 +19,7 @@ const resolveMethodPath = (app, needle) => {
   }
 
   if (!(typeof needle === 'function' || _.isArray(needle) || isRequestMethod(needle))) {
-    throw new Error('You must pass in a function/array/object.');
+    throw new Error('You must pass in a function/array/object. We got ' + typeof needle + ' instead.');
   }
 
   // incurs roughly ~10ms penalty for _.isEqual fallback on a === miss on an averagish app
