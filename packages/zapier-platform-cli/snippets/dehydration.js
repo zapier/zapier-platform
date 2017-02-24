@@ -24,6 +24,7 @@ const App = {
   platformVersion: require('zapier-platform-core').version,
 
   // don't forget to register hydrators here!
+  // it can be imported from any module
   hydrators: {
     getExtraData: getExtraDataFunction
   },

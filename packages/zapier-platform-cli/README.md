@@ -1686,6 +1686,7 @@ The response object returned by `z.request([url], options)` supports the followi
 z.request({
   // ..
 }).then((response) => {
+  // a bunch of examples lines for cherry picking
   response.status;
   response.headers['Content-Type'];
   response.getHeader('content-type');
@@ -1717,6 +1718,8 @@ The interface `z.dehydrate(func, inputData)` has two required arguments:
 * `func` - this should any raw `function` that be found _anywhere_ in your app definition (though usually in the root `hydrators` mapping)
 * `inputData` - this is an object that contains things like a `path` or `id` - whatever you need to load data on the other side
 
+> **Why do I need to register my functions?** Because of how Javascript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to "automatically" (and sometimes incorrectly) infer code locations.
+
 This example that pulls in extra data for a movie:
 
 ```javascript
@@ -1746,6 +1749,7 @@ const App = {
   platformVersion: require('zapier-platform-core').version,
 
   // don't forget to register hydrators here!
+  // it can be imported from any module
   hydrators: {
     getExtraData: getExtraDataFunction
   },
@@ -1770,7 +1774,7 @@ module.exports = App;
 
 And in future steps of the Zap - if Zapier encounters a pointer as returned by `z.dehydrate(func, inputData)` - Zapier will tie it back to your app and pull in the data lazily.
 
-> **Wait, but why?** Isn't it just easier to load the data immediately? In some cases it can - but imagine an API that returns 100 records when polling - doing 100x `GET /id.json` aggressive inline HTTP calls when 99% of the time Zapier doesn't _need_ the data yet is wasteful.
+> **Why can't I just load the data immediately?** Isn't it easier? In some cases it can be - but imagine an API that returns 100 records when polling - doing 100x `GET /id.json` aggressive inline HTTP calls when 99% of the time Zapier doesn't _need_ the data yet is wasteful.
 
 
 ## Stashing Files

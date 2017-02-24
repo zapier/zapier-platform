@@ -2849,6 +2849,7 @@ zapier env 1.0.0
       <pre><code class="lang-javascript">z.request({
   <span class="hljs-comment">// ..</span>
 }).then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
+  <span class="hljs-comment">// a bunch of examples lines for cherry picking</span>
   response.status;
   response.headers[<span class="hljs-string">&apos;Content-Type&apos;</span>];
   response.getHeader(<span class="hljs-string">&apos;content-type&apos;</span>);
@@ -2886,7 +2887,9 @@ zapier env 1.0.0
 </blockquote><p>The interface <code>z.dehydrate(func, inputData)</code> has two required arguments:</p><ul>
 <li><code>func</code> - this should any raw <code>function</code> that be found <em>anywhere</em> in your app definition (though usually in the root <code>hydrators</code> mapping)</li>
 <li><code>inputData</code> - this is an object that contains things like a <code>path</code> or <code>id</code> - whatever you need to load data on the other side</li>
-</ul><p>This example that pulls in extra data for a movie:</p>
+</ul><blockquote>
+<p><strong>Why do I need to register my functions?</strong> Because of how Javascript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to &quot;automatically&quot; (and sometimes incorrectly) infer code locations.</p>
+</blockquote><p>This example that pulls in extra data for a movie:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> getExtraDataFunction = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
@@ -2915,6 +2918,7 @@ zapier env 1.0.0
   <span class="hljs-attr">platformVersion</span>: <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>).version,
 
   <span class="hljs-comment">// don&apos;t forget to register hydrators here!</span>
+  <span class="hljs-comment">// it can be imported from any module</span>
   hydrators: {
     <span class="hljs-attr">getExtraData</span>: getExtraDataFunction
   },
@@ -2941,7 +2945,7 @@ zapier env 1.0.0
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>And in future steps of the Zap - if Zapier encounters a pointer as returned by <code>z.dehydrate(func, inputData)</code> - Zapier will tie it back to your app and pull in the data lazily.</p><blockquote>
-<p><strong>Wait, but why?</strong> Isn&apos;t it just easier to load the data immediately? In some cases it can - but imagine an API that returns 100 records when polling - doing 100x <code>GET /id.json</code> aggressive inline HTTP calls when 99% of the time Zapier doesn&apos;t <em>need</em> the data yet is wasteful.</p>
+<p><strong>Why can&apos;t I just load the data immediately?</strong> Isn&apos;t it easier? In some cases it can be - but imagine an API that returns 100 records when polling - doing 100x <code>GET /id.json</code> aggressive inline HTTP calls when 99% of the time Zapier doesn&apos;t <em>need</em> the data yet is wasteful.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
