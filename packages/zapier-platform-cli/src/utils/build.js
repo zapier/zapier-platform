@@ -5,7 +5,8 @@ const path = require('path');
 const browserify = require('browserify');
 const through = require('through2');
 const _ = require('lodash');
-const AdmZip = require('adm-zip');
+const archiver = require('archiver');
+const fs = require('fs');
 const fse = require('fs-extra');
 
 const constants = require('../constants');
@@ -142,17 +143,34 @@ const makeZip = (dir, zipPath) => {
       return finalPaths;
     })
     .then((paths) => {
-      return new Promise((resolve) => {
-        const zip = new AdmZip();
-        paths.forEach((filePath) => {
-          let basePath = path.dirname(filePath);
+      return new Promise((resolve, reject) => {
+        const output = fs.createWriteStream(zipPath);
+        const zip = archiver('zip', {
+          store: true // Sets the compression method to STORE.
+        });
+
+        // listen for all archive data to be written
+        output.on('close', function() {
+          resolve();
+        });
+
+        zip.on('error', function(err) {
+          reject(err);
+        });
+
+        // pipe archive data to the file
+        zip.pipe(output);
+
+        paths.forEach(function (filePath) {
+          var basePath = path.dirname(filePath);
           if (basePath === '.') {
             basePath = undefined;
           }
-          zip.addLocalFile(path.join(dir, filePath), basePath);
+          var name = path.join(dir, filePath);
+          zip.file(name, {name: filePath});
         });
-        zip.writeZip(zipPath);
-        resolve();
+
+        zip.finalize();
       });
     });
 };

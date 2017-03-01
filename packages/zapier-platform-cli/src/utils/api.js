@@ -5,6 +5,7 @@ const constants = require('../constants');
 
 const qs = require('querystring');
 
+const fs = require('fs');
 const AdmZip = require('adm-zip');
 const fetch = require('node-fetch');
 const path = require('path');
@@ -236,11 +237,14 @@ const upload = (zipPath, appDir) => {
       }
       const definition = JSON.parse(definitionJson);
 
+      const binaryZip = fs.readFileSync(fullZipPath);
+      const buffer = new Buffer(binaryZip).toString('base64');
+
       printStarting('Uploading version ' + definition.version);
       return callAPI(`/apps/${app.id}/versions/${definition.version}`, {
         method: 'PUT',
         body: {
-          zip_file: zip.toBuffer().toString('base64')
+          zip_file: buffer
         }
       });
     })
