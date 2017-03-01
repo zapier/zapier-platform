@@ -6,7 +6,7 @@ const fse = promisifyAll(require('fs-extra'));
 
 const fixHome = (dir) => {
   const home = process.env.HOME || process.env.USERPROFILE;
-  return dir.replace('~', home);
+  return dir.replace(/^~/, home);
 };
 
 const fileExistsSync = (fileName) => {
