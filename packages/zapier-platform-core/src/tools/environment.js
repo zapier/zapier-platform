@@ -1,8 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
-const fs = require('fs');
 const path = require('path');
+const dotenv = require('dotenv');
 
 const ensurePath = require('./ensure-path');
 
@@ -28,24 +28,10 @@ const cleanEnvironment = () => {
   }
 };
 
-const readEnvironmentFile = () => {
-  const data = {};
-  try {
-    const content = fs.readFileSync(path.join(process.cwd(), '.environment'));
-    _.split(content, '\n').map(line => {
-      const parts = _.split(line, '=');
-      const key = parts.shift();
-      const value = parts.join('=');
-      data[key] = value;
-    });
-    return data;
-  } catch(err) {
-    return data;
-  }
-};
-
-const injectEnvironmentFile = () => {
-  _.extend(process.env, readEnvironmentFile());
+const injectEnvironmentFile = (filename) => {
+  filename = filename || '.environment';
+  const filepath = path.join(process.cwd(), filename);
+  dotenv.load({path: filepath});
 };
 
 module.exports = {
