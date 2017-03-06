@@ -6,7 +6,7 @@ const requestMerge = require('../src/tools/request-merge');
 describe('request tools', () => {
   it('should merge requests', () => {
     var request = requestMerge(
-      {params: {'api-key': 'dcba'}, headers: {'api-key': 'abcd'}},
+      {params: {'api-key': 'dcba'}, headers: {'ApI-kEy': 'abcd'}},
       {url: 'http://example.com?cat=mouse', params: {hello: 'world'}}
     );
     var expected = {
@@ -19,7 +19,7 @@ describe('request tools', () => {
       },
       headers: {
         'user-agent': 'Zapier',
-        'api-key': 'abcd'
+        'ApI-kEy': 'abcd'
       }
     };
     request.should.eql(expected);

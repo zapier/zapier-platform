@@ -45,7 +45,7 @@ const requestClean = (request) => {
     if (!val) {
       val = DROP_DIRECTIVE;
     }
-    coll[String(key).toLowerCase()] = val;
+    coll[String(key)] = val;
     return coll;
   }, {});
 
