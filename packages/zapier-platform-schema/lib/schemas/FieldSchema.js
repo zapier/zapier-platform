@@ -2,6 +2,8 @@
 
 const makeSchema = require('../utils/makeSchema');
 
+const FieldsSchema = require('./FieldsSchema');
+
 const RefResourceSchema = require('./RefResourceSchema');
 
 module.exports = makeSchema({
@@ -85,8 +87,7 @@ module.exports = makeSchema({
     },
     children: {
       description: 'Can a user provide multiples of this field? A.K.A. Line Items.',
-      // TODO: don't allow deep nesting?
-      // $ref: FieldsSchema.id,
+      $ref: FieldsSchema.id,
     },
     dict: {
       description: 'Is this field a key/value input?',

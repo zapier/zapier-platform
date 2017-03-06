@@ -11,7 +11,8 @@
  *   );
 */
 const checks = [
-  require('./searchOrCreateKeys')
+  require('./searchOrCreateKeys'),
+  require('./deepNestedFields')
 ];
 
 const runFunctionalConstraints = (definition) => {
