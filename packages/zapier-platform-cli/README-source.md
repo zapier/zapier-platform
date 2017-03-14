@@ -1476,7 +1476,8 @@ Finally, restart your shell and start hitting TAB with the `zapier` command!
 ## Development of the CLI
 
 - `npm install` for getting started
-- `npm test` for running tests
+- `npm run build` for updating `./lib` from `./src`
+- `npm test` for running tests (also runs `npm run build`)
 - `npm run docs` for updating docs
 - `npm run gen-completions` for updating the auto complete scripts
 

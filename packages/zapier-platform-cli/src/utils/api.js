@@ -21,6 +21,10 @@ const {
   printDone,
 } = require('./display');
 
+const {
+  localAppCommand,
+} = require('./local');
+
 
 // Reads the JSON file at ~/.zapierrc (AUTH_LOCATION).
 const readCredentials = (credentials, explodeIfMissing = true) => {
@@ -154,6 +158,17 @@ const getLinkedApp = (appDir) => {
     });
 };
 
+// Loads the linked app version from the API
+const getVersionInfo = () => {
+  return Promise.all([
+    getLinkedApp(),
+    localAppCommand({command: 'definition'})
+  ])
+  .then(([app, definition]) => {
+    return callAPI(`/apps/${app.id}/versions/${definition.version}`);
+  });
+};
+
 const checkCredentials = () => {
   return callAPI('/check');
 };
@@ -181,7 +196,7 @@ const listApps = () => {
     });
 };
 
-const listEndoint = (endpoint, keyOverride) => {
+const listEndpoint = (endpoint, keyOverride) => {
   return checkCredentials()
     .then(() => getLinkedApp())
     .then((app) => {
@@ -199,19 +214,19 @@ const listEndoint = (endpoint, keyOverride) => {
 };
 
 const listVersions = () => {
-  return listEndoint('versions');
+  return listEndpoint('versions');
 };
 
 const listHistory = () => {
-  return listEndoint('history');
+  return listEndpoint('history');
 };
 
 const listInvitees = () => {
-  return listEndoint('invitees');
+  return listEndpoint('invitees');
 };
 
 const listLogs = (opts) => {
-  return listEndoint(`logs?${qs.stringify(opts)}`, 'logs');
+  return listEndpoint(`logs?${qs.stringify(opts)}`, 'logs');
 };
 
 const listEnv = (version) => {
@@ -221,7 +236,7 @@ const listEnv = (version) => {
   } else {
     endpoint = 'environment';
   }
-  return listEndoint(endpoint, 'environment');
+  return listEndpoint(endpoint, 'environment');
 };
 
 const upload = (zipPath, appDir) => {
@@ -260,9 +275,10 @@ module.exports = {
   writeLinkedAppConfig,
   getLinkedAppConfig,
   getLinkedApp,
+  getVersionInfo,
   checkCredentials,
   listApps,
-  listEndoint,
+  listEndpoint,
   listVersions,
   listHistory,
   listInvitees,

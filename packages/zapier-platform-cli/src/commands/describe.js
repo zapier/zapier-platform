@@ -55,14 +55,30 @@ const typeMap = {
 const describe = (context) => {
   return Promise.resolve()
     .then(() => Promise.all([
+      utils.getLinkedApp().catch(() => null),
       utils.getLinkedAppConfig().catch(() => null),
-      utils.localAppCommand({command: 'definition'})
+      utils.getVersionInfo().catch(() => null),
+      utils.localAppCommand({command: 'definition'}),
     ]))
-    .then(([appConfig, definition]) => {
+    .then(([app, appConfig, version, definition]) => {
       context.line(`A description of your app listed below.\n`);
 
-      // context.line(utils.prettyJSONstringify(definition));
-      // TODO: auth and app title/description
+      if (app) {
+        context.line(colors.bold('Title') + '\n');
+
+        context.line(app.title);
+
+        context.line();
+
+        if (app.description) {
+          context.line(colors.bold('Description') + '\n');
+
+          context.line(app.description);
+
+          context.line();
+        }
+      }
+
       context.line(colors.bold('Authentication') + '\n');
       let authRows = [];
       if (definition.authentication) {
@@ -71,9 +87,8 @@ const describe = (context) => {
           .filter(path => _.has(definition, path))
           .join('\n');
         if (authentication.type === 'oauth2') {
-          if (appConfig) {
-            // TODO: might be nice to move this to pulling from the GET /apps/123 endpoint
-            authentication.redirect_uri = `https://zapier.com/dashboard/auth/oauth/return/${appConfig.key}CLIAPI/`;
+          if (appConfig && version) {
+            authentication.redirect_uri = version.oauth_redirect_uri;
           } else {
             authentication.redirect_uri = colors.grey('do zapier push to see redirect_uri!');
           }
@@ -178,9 +193,9 @@ ${utils.defaultArgOptsFragment()}
 ${'```'}bash
 $ zapier describe
 # A description of your app "Example" listed below.
-# 
+#
 # Triggers
-# 
+#
 # ┌────────────┬────────────────────┬──────────────┬───────────────────────────────────────────────┐
 # │ Noun       │ Label              │ Resource Ref │ Available Methods                             │
 # ├────────────┼────────────────────┼──────────────┼───────────────────────────────────────────────┤
@@ -189,15 +204,15 @@ $ zapier describe
 # │            │                    │              │ resources.member.list.operation.perform       │
 # │            │                    │              │ resources.member.list.operation.inputFields   │
 # └────────────┴────────────────────┴──────────────┴───────────────────────────────────────────────┘
-# 
+#
 # Searches
-# 
+#
 #  Nothing found for searches, maybe try the \`zapier scaffold\` command?
-# 
+#
 # Creates
-# 
+#
 #  Nothing found for creates, maybe try the \`zapier scaffold\` command?
-# 
+#
 # If you'd like to add more, try the \`zapier scaffold\` command to kickstart!
 ${'```'}
 `;

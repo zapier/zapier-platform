@@ -212,9 +212,9 @@ $ zapier deprecate 1.0.0 2017-01-20
 ```bash
 $ zapier describe
 # A description of your app "Example" listed below.
-# 
+#
 # Triggers
-# 
+#
 # ┌────────────┬────────────────────┬──────────────┬───────────────────────────────────────────────┐
 # │ Noun       │ Label              │ Resource Ref │ Available Methods                             │
 # ├────────────┼────────────────────┼──────────────┼───────────────────────────────────────────────┤
@@ -223,15 +223,15 @@ $ zapier describe
 # │            │                    │              │ resources.member.list.operation.perform       │
 # │            │                    │              │ resources.member.list.operation.inputFields   │
 # └────────────┴────────────────────┴──────────────┴───────────────────────────────────────────────┘
-# 
+#
 # Searches
-# 
+#
 #  Nothing found for searches, maybe try the `zapier scaffold` command?
-# 
+#
 # Creates
-# 
+#
 #  Nothing found for creates, maybe try the `zapier scaffold` command?
-# 
+#
 # If you'd like to add more, try the `zapier scaffold` command to kickstart!
 ```
 

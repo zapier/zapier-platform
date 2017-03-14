@@ -28,7 +28,7 @@ const makeAccess = (command, recordType) => {
           context.line(`\n${_.capitalize(recordTypePlural)} updated! Try viewing them with \`zapier ${command}\`.`);
         });
     } else {
-      return utils.listEndoint(recordTypePlural)
+      return utils.listEndpoint(recordTypePlural)
         .then((data) => {
           context.line(`The ${recordTypePlural} on your app "${data.app.title}" listed below.\n`);
           const ifEmpty = colors.grey(`${_.capitalize(recordTypePlural)} not found. Try adding one with \`zapier ${command} user@example.com\`.`);
