@@ -2,6 +2,7 @@
 
 process.env.BASE_URL = 'http://zapier-httpbin.herokuapp.com';
 
+const _ = require('lodash');
 const helpers = require('./helpers');
 
 const List = {
@@ -380,6 +381,48 @@ const HonkerDonker = {
   }
 };
 
+const ExecuteRequestAsFunc = {
+  key: 'executeRequestAsFunc',
+  noun: 'Request',
+  list: {
+    display: {
+      label: 'Configurable Request (func)',
+      description: 'Used for one-offs in the tests.'
+    },
+    operation: {
+      perform: (z, bundle) => {
+        const req = _.defaults({}, bundle.inputData.options);
+        return z.request(req).then((resp) => {
+          return bundle.inputData.returnValue || JSON.parse(resp.content);
+        });
+      },
+      inputFields: [
+        {key: 'options', dict: true},
+        {key: 'returnValue', list: true}
+      ]
+    }
+  }
+};
+
+const ExecuteRequestAsShorthand = {
+  key: 'executeRequestAsShorthand',
+  noun: 'Request',
+  list: {
+    display: {
+      label: 'Configurable Request (shorthand)',
+      description: 'Used for one-offs in the tests.'
+    },
+    operation: {
+      perform: {
+        url: '{{bundle.inputData.url}}',
+      },
+      inputFields: [
+        {key: 'url', 'default': 'http://zapier-httpbin.herokuapp.com/status/403'},
+      ]
+    }
+  }
+};
+
 
 // custom HTTP middlewares /////
 
@@ -398,7 +441,12 @@ const addRequestHeader = (request, z, bundle) => {
   could be useful for APIs that always return 200 even on errors.
  */
 const changeStatusOnErrorResponses = (response) => {
-  const isJsonResponse = response.getHeader('Content-Type').match(/^application\/json/);
+  const contentType = response.getHeader('Content-Type');
+  if (!contentType) {
+    return response;
+  }
+
+  const isJsonResponse = contentType.match(/^application\/json/);
   if (!isJsonResponse) {
     return response;
   }
@@ -436,7 +484,9 @@ const App = {
     [DynamicSyncInputFields.key]: DynamicSyncInputFields,
     [DynamicAsyncInputFields.key]: DynamicAsyncInputFields,
     [MixedInputFields.key]: MixedInputFields,
-    [HonkerDonker.key]: HonkerDonker
+    [HonkerDonker.key]: HonkerDonker,
+    [ExecuteRequestAsFunc.key]: ExecuteRequestAsFunc,
+    [ExecuteRequestAsShorthand.key]: ExecuteRequestAsShorthand
   },
   hydrators: {
     getBigStuff: () => {}

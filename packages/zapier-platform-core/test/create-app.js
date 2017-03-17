@@ -254,6 +254,70 @@ describe('create-app', () => {
     }).catch(done);
   });
 
+  describe('HTTP after middleware for auth refresh', () => {
+    it('should be applied to OAuth2 refresh app on shorthand requests', (done) => {
+      const oauth2AppDefinition = dataTools.deepCopy(appDefinition);
+      oauth2AppDefinition.authentication = {
+        type: 'oauth2',
+        test: {},
+        oauth2Config: {
+          authorizeUrl: {}, // stub, not needed for this test
+          getAccessToken: {},  // stub, not needed for this test
+          autoRefresh: true
+        }
+      };
+      const oauth2App = createApp(oauth2AppDefinition);
+
+      const event = {
+        command: 'execute',
+        bundle: {
+          inputData: {
+            url: 'http://zapier-httpbin.herokuapp.com/status/401',
+          }
+        },
+        method: 'resources.executeRequestAsShorthand.list.operation.perform'
+      };
+      oauth2App(createInput(oauth2AppDefinition, event, testLogger)).then(() => {
+        done('expected an error, got success');
+      }).catch(error => {
+        error.name.should.eql('RefreshAuthError');
+        done();
+      });
+    });
+
+    it('should be applied to OAuth2 refresh app on z.request in functions', (done) => {
+      const oauth2AppDefinition = dataTools.deepCopy(appDefinition);
+      oauth2AppDefinition.authentication = {
+        type: 'oauth2',
+        test: {},
+        oauth2Config: {
+          authorizeUrl: {}, // stub, not needed for this test
+          getAccessToken: {},  // stub, not needed for this test
+          autoRefresh: true
+        }
+      };
+      const oauth2App = createApp(oauth2AppDefinition);
+
+      const event = {
+        command: 'execute',
+        bundle: {
+          inputData: {
+            options: {
+              url: 'http://zapier-httpbin.herokuapp.com/status/401',
+            }
+          }
+        },
+        method: 'resources.executeRequestAsFunc.list.operation.perform'
+      };
+      oauth2App(createInput(oauth2AppDefinition, event, testLogger)).then(() => {
+        done('expected an error, got success');
+      }).catch(error => {
+        error.name.should.eql('RefreshAuthError');
+        done();
+      });
+    });
+  });
+
   describe('inputFields', () => {
     const testInputOutputFields = (desc, method) => {
       it(desc, (done) => {

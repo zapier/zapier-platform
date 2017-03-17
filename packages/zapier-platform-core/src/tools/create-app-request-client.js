@@ -15,6 +15,7 @@ const addBasicAuthHeader = require('../http-middlewares/before/add-basic-auth-he
 // after middles
 const prepareResponse = require('../http-middlewares/after/prepare-response');
 const logResponse = require('../http-middlewares/after/log-response');
+const throwForStaleAuth = require('../http-middlewares/after/throw-for-stale-auth');
 
 const createAppRequestClient = (input, options) => {
   input = ensurePath(input, '_zapier.app');
@@ -43,7 +44,15 @@ const createAppRequestClient = (input, options) => {
   const httpAfters = [
     prepareResponse,
     logResponse
-  ].concat(ensureArray(app.afterResponse));
+  ];
+
+  if (app.authentication) {
+    if (app.authentication.type === 'oauth2' && _.get(app, 'authentication.oauth2Config.autoRefresh')) {
+      httpAfters.push(throwForStaleAuth);
+    }
+  }
+
+  httpAfters.concat(ensureArray(app.afterResponse));
 
   return createRequestClient(httpBefores, httpAfters, options);
 };
