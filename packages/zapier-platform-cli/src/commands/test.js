@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const constants = require('../constants');
 const utils = require('../utils');
 
 const test = (context) => {
@@ -13,6 +14,7 @@ const test = (context) => {
 
   return utils.readCredentials(undefined, false)
     .then((credentials) => {
+      context.line('Adding ' + constants.AUTH_LOCATION + ' to environment as ZAPIER_DEPLOY_KEY...');
       extraEnv.ZAPIER_DEPLOY_KEY = credentials.deployKey;
     })
     .then(() => {
