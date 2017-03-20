@@ -2,9 +2,10 @@
 
 const _ = require('lodash');
 
+const constants = require('../constants');
 const request = require('./request-client-internal');
 
-const FALLBACK_RPC = 'http://localhost:8000/platform/rpc/cli';
+const FALLBACK_RPC = process.env.ZAPIER_BASE_ENDPOINT + '/platform/rpc/cli';
 
 const createRpcClient = (event) => {
   return function(method) {
@@ -18,10 +19,6 @@ const createRpcClient = (event) => {
       params
     });
 
-    // if (event.rpc_base) {
-    //   throw new Error('No `event.rpc_base` provided - cannot call RPC');
-    // }
-
     const req = {
       method: 'POST',
       url: `${event.rpc_base || FALLBACK_RPC}`,
@@ -34,7 +31,14 @@ const createRpcClient = (event) => {
     } else if (process.env.ZAPIER_DEPLOY_KEY) {
       req.headers['X-Deploy-Key'] = process.env.ZAPIER_DEPLOY_KEY;
     } else {
-      throw new Error('No token or deploy key found - cannot call RPC');
+      if (constants.IS_TESTING) {
+        throw new Error(
+          'No deploy key found. Make sure you set the `ZAPIER_DEPLOY_KEY` environment variable ' +
+          'to write tests that rely on the RPC API (i.e. z.stashFile)'
+        );
+      } else {
+        throw new Error('No token found - cannot call RPC');
+      }
     }
 
     return request(req)
