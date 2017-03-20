@@ -517,7 +517,7 @@ nvm use v4.3.2
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Welcome to the Zapier Platform! In this tutorial, we&apos;ll walk you through the process of building, testing, and pushing an examples app that talks to a fake/mock API to Zapier. We&apos;ll start with a minimal template with just the basics.</p>
+      <p>Welcome to the Zapier Platform! In this tutorial, we&apos;ll walk you through the process of building, testing, and pushing an example app to Zapier. We&apos;ll use a fake/mock API for recipes in this example, but for production Zapier apps, you&apos;d want to connect to a real API.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -557,7 +557,7 @@ zapier login
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Now your CLI is installed and ready to go!</p>
+      <p>Now your CLI is installed and ready to go! Zapier writes your deploy key to <code>~/.zapierrc</code>. You&apos;ll want to keep that file safe and not check it into source control.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -575,7 +575,7 @@ zapier login
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To begin building an app, use the <code>init</code> command to setup the needed structure.</p>
+      <p>To begin building an app, use the <code>init</code> command to setup the <a href="https://github.com/zapier/zapier-platform-example-app-minimal">needed structure</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># create a directory with the minimum required files</span>
@@ -607,13 +607,13 @@ zapier init example-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Right next to <code>package.json</code> should be <code>index.js</code>, which is the entry point to your app. This is where the Platform will look for your app definition. Open it up in your editor of choice and let&apos;s take a look!</p><p>You&apos;ll see a few things in <code>index.js</code>:</p><ul>
+      <p>Right next to <code>package.json</code> should be <code>index.js</code>, which is the entry point to your app. This is where the Platform will look to understand how your app will interact with Zapier. Open it up in your editor of choice and let&apos;s take a look!</p><p>You&apos;ll see a few things in <code>index.js</code>:</p><ul>
 <li>we export a single <code>App</code> definition which will be interpreted by Zapier</li>
-<li>in <code>App</code> definition, <code>beforeRequest</code> &amp; <code>afterResponse</code> are hooks into the HTTP client</li>
+<li>in <code>App</code> definition, <code>beforeRequest</code> &amp; <code>afterResponse</code> are hooks into the HTTP client to manipulate the request/response on every call</li>
 <li>in <code>App</code> definition, <code>triggers</code> will describe ways to trigger off of data in your app</li>
 <li>in <code>App</code> definition, <code>searches</code> will describe ways to find data in your app</li>
 <li>in <code>App</code> definition, <code>creates</code> will describe ways to create data in your app</li>
-<li>in <code>App</code> definition, <code>resources</code> are purely optional but convenient ways to describe CRUD-like objects in your app</li>
+<li>in <code>App</code> definition, <code>resources</code> are purely optional but convenient ways to describe CRUD-like objects in your app (see <a href="https://github.com/zapier/zapier-platform-example-app-resource">example resources app</a>)</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -632,7 +632,7 @@ zapier init example-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Let&apos;s start by adding a <strong>trigger.</strong> We will configure it to read data from a mocked API (in the future - your real app will use a real API, of course :-):</p>
+      <p>Let&apos;s start by adding a <a href="https://zapier.com/developer/documentation/v2/triggers/"><strong>trigger</strong></a>. We will configure it to read data from a mocked API (in the future - your real app will use a real API, of course :-):</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">mkdir triggers
@@ -644,8 +644,8 @@ touch triggers/recipe.js
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note: The <code>triggers</code> folder is simply a convention - we recommend it as our tools support it. Also, <code>recipe.js</code> is just an example name of a model - maybe you&apos;ll eventually make a <code>contact.js</code>, <code>lead.js</code> or <code>order.js</code>.</p>
-</blockquote><p>Open <code>triggers/recipe.js</code> and <strong>replace</strong> it with:</p>
+<p>Note: The <code>triggers</code> folder is simply a convention - we recommend it. Also, <code>recipe.js</code> is just an example name of a model - maybe you&apos;ll eventually make a <code>contact.js</code>, <code>lead.js</code> or <code>order.js</code>.</p>
+</blockquote><p>Open <code>triggers/recipe.js</code> (file created by <code>zapier init</code>) and <strong>replace</strong> it with:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> listRecipes = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
@@ -671,12 +671,14 @@ touch triggers/recipe.js
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Let&apos;s break down what is happening in this snippet!</p><p>First, look first at the function definition for <code>listRecipes</code>. You see that it handles the API work, making the HTTP request and returning a promise that will eventually yield a result.</p><p>It receives two arguments, a <code>z</code> object and a <code>bundle</code> object.</p><ul>
+      <p>Let&apos;s break down what is happening in this snippet!</p><p>First, look first at the function definition for <code>listRecipes</code>. You see that it handles the API work, making the HTTP request and returning a promise that will eventually yield a result.</p><blockquote>
+<p><em>Note</em>: If you&apos;re new to promises, they are essentially synchronous callbacks. The equivalent content of a callback should go inside the <code>.then()</code> portion of a promise.</p>
+</blockquote><p>The <code>listReceipes</code> function receives two arguments, a <code>z</code> object and a <code>bundle</code> object.</p><ul>
 <li>The <a href="#z-object">Z Object</a> is a collection of utilities needed when working with APIs. In our snippet, we use <code>z.request</code> to make the HTTP call and <code>z.JSON</code> to parse the response.</li>
 <li>The <a href="#bundle-object">Bundle Object</a> contains any data needed to make API calls, like authentication credentials or data for a POST body. In our snippet the Bundle is not used, since we don&apos;t require any of those to make our simple GET request.</li>
 </ul><blockquote>
 <p>Note about Z Object: While it is possible to accomplish the same tasks using alternate Node.js libraries, it&apos;s preferable to use the <code>z</code> object as there are features built into these utilities that augment the Zapier experience. For example, logging of HTTP calls and better handling of JSON parsing failures. <a href="#z-object">Read the docs</a> for more info.</p>
-</blockquote><p>Second, look at the second part of our snippet; the export. Essentially, we export some metadata plus our <code>listRecipes</code> function. We&apos;ll explain later how Zapier uses this metadata. For now, know that it satisfies the minimum info required to define a trigger.</p><p>With our trigger defined, we need to incorporate it into our app.</p><p>In <code>index.js</code>, <strong>edit</strong> the file to include:</p>
+</blockquote><p>Second, look at the second part of our snippet; the export. Essentially, we export some metadata plus our <code>listRecipes</code> function. We&apos;ll explain later how Zapier uses this metadata and exposes it to the end user. For now, know that it satisfies the minimum info required to define a trigger.</p><p>With our trigger defined, we need to incorporate it into our app.</p><p>In <code>index.js</code>, <strong>edit</strong> the file to include:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-comment">// Place this at the top of index.js</span>
@@ -752,6 +754,15 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 <span class="hljs-comment">#   1 passing (312ms)</span>
 <span class="hljs-comment">#</span>
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>For this example, we&apos;ll stick to a single test, but you can see what multiple tests look like in our <a href="https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/test/triggers.js">this example</a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -906,7 +917,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Now that your app version is properly pushed, log in and visit <a href="https://zapier.com/app/editor">https://zapier.com/app/editor</a> to create a Zap and check our progress.</p><p>You&apos;ll see the app listed as an available option for the first step. Selecting it, you&apos;ll see the &quot;New Recipe&quot; trigger. At this point, we&apos;ve come full circle on the trigger definition from earlier. Remember that, as part of the metadata, we defined a <code>display</code> property with a label and help text. Those properties control the info you see inside the Zapier UI.</p><p>As you click through, you&apos;ll see our input field &quot;style&quot; appear, which you can fill out. Once you finish setting up the step and test it, Zapier will run the <code>listReceipes</code> function associated with the trigger, which will make the API request and return the result to Zapier. If you are curious to see what HTTP requests Zapier makes at any point, you can use the <code>zapier logs</code> command to find out.</p>
+      <p>Now that your app version is properly pushed, log in and visit <a href="https://zapier.com/app/editor">https://zapier.com/app/editor</a> to create a Zap and check our progress.</p><p>You&apos;ll see the app listed as an available option for the first step. Selecting it, you&apos;ll see the &quot;New Recipe&quot; trigger. At this point, we&apos;ve come full circle on the trigger definition from earlier. Remember that, as part of the metadata, we defined a <code>display</code> property with a label and help text. Those properties control the info you see inside the Zapier UI.</p><p>As you click through, you&apos;ll see our input field &quot;style&quot; appear, which you can fill out. Once you finish setting up the step and test it, Zapier will run the <code>listRecipes</code> function associated with the trigger, which will make the API request and return the result to Zapier. If you are curious to see what HTTP requests Zapier makes at any point, you can use the <code>zapier logs</code> command to find out.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier logs --type=http
@@ -943,7 +954,12 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Up to this point we&apos;ve ignored something that is usually crucial to APIs: authentication. Zapier supports a number of different <a href="#authentication">authentication schemes</a>. For our app, we are going to set it up to include an API Key in a header.</p><p>The first thing we need to do is define the <code>authentication</code> section on the app.</p><p>In <code>index.js</code>, <strong>edit</strong> <code>App</code> to include:</p>
+      <p>Up to this point we&apos;ve ignored something that is usually crucial to APIs: authentication. Zapier supports a number of different <a href="#authentication">authentication schemes</a>. For our app, we are going to set it up to include an API Key in a header.</p><p>For different types of authentication, see these example apps:</p><ul>
+<li><a href="https://github.com/zapier/zapier-platform-example-app-oauth2">OAuth 2</a></li>
+<li><a href="https://github.com/zapier/zapier-platform-example-app-basic-auth">Basic Auth</a></li>
+<li><a href="https://github.com/zapier/zapier-platform-example-app-session-auth">Session Auth</a></li>
+<li><a href="https://github.com/zapier/zapier-platform-example-app-custom-auth">API Key in query string</a></li>
+</ul><p>For this app, our API Key will go in the header. The first thing we need to do is define the <code>authentication</code> section on the app.</p><p>In <code>index.js</code>, <strong>edit</strong> <code>App</code> to include:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> App = {
@@ -971,8 +987,8 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>In the above snippet, we define the two required properties of <code>authentication</code>:</p><ul>
-<li><code>fields</code> is where we define our auth fields. This works similar to the <code>inputFields</code> of triggers. When users connect their account to Zapier, they&apos;ll be prompted to fill in this field, and the value they enter becomes available in the <code>bundle</code>.</li>
-<li><code>test</code> is a function used during the account connection process to verify that the user entered valid credentials. The goal of the function is to make an authenticated API request whose response indicates if the credentials are correct. If valid, the test function can return anything. On invalid credentials, the test needs to raise an error.</li>
+<li><code>fields</code> is where we define our auth fields. This works similar to the <code>inputFields</code> of triggers. When users connect their account to Zapier, they&apos;ll be prompted to fill in this field, and the value they enter becomes available in the <code>bundle</code>. Not every authentication type will include <code>inputFields</code>.</li>
+<li><code>test</code> is a function used during the account connection process to verify that the user entered valid credentials. The goal of the function is to make an authenticated API request whose response indicates if the credentials are correct. A profile for the user, such as a <code>/me</code> endpoint, is a common choice. If valid, the test function can return anything. On invalid credentials, the test needs to raise an error.</li>
 </ul><p>With that setup, we now need to make sure that our API key is included in all the requests our app makes.</p><p>In <code>index.js</code>, <strong>edit</strong> the file to include:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -989,7 +1005,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Above we define a helper function, <code>addApiKeyToHeader</code>, that puts the user-provided API key in a request header called <code>MY-AUTH-HEADER</code>. The name chosen is illustrative, it can be whatever the API you are integrating with requires. Alternatively, you could put it in a query parameter instead of a header, and/or encoded it first.</p><p>To make our helper function take effect, we need to register it on our app.</p><p>In <code>index.js</code>, <strong>edit</strong> <code>App</code> to include:</p>
+      <p>Above we define a helper function, <code>addApiKeyToHeader</code>, that puts the user-provided API key in a request header called <code>MY-AUTH-HEADER</code>. The name chosen is illustrative, it can be whatever the API you are integrating with requires. Alternatively, you could put it in a query parameter instead of a header, and/or encode it first.</p><p>To make our helper function take effect, we need to register it on our app.</p><p>In <code>index.js</code>, <strong>edit</strong> <code>App</code> to include:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> App = {
@@ -1005,7 +1021,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>beforeRequest</code> is a list of functions that are called before every HTTP request, letting you add headers, query params, etc. to all outbound requests. In our case, every HTTP request will now have the API key added in a header.</p><p>To check our progress, we need to re-push our app.</p>
+      <p><code>beforeRequest</code> is a list of functions that are called before every HTTP request that uses <code>z.request</code> or the default <code>perform</code> function. This lets you add headers, query params, or whatever is needed to be within <em>all outbound requests</em>. In our case, every HTTP request will now have the API key added in a header.</p><p>To check our progress, we need to re-push our app.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier push
@@ -3357,11 +3373,11 @@ zapier <span class="hljs-built_in">test</span>
       <p>Behind the scenes <code>zapier test</code> doing pretty standard <code>npm test</code> with <a href="https://www.npmjs.com/package/mocha">mocha</a> as the backend.</p><p>This makes it pretty straightforward to integrate into your testing interface. If you&apos;d like to test with <a href="https://travis-ci.com/">Travis CI</a> for example - the <code>.travis.yml</code> would look something like this:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-yaml"><span class="hljs-attr">language:</span> node_js
+      <pre><code class="lang-yaml"><span class="hljs-attr">language:</span> <span class="hljs-string">node_js</span>
 <span class="hljs-attr">node_js:</span>
 <span class="hljs-bullet">  -</span> <span class="hljs-string">&quot;4.3.2&quot;</span>
-<span class="hljs-attr">before_script:</span> npm install -g zapier-platform-cli
-<span class="hljs-attr">script:</span> CLIENT_ID=<span class="hljs-number">1234</span> CLIENT_SECRET=abcd zapier test
+<span class="hljs-attr">before_script:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span> <span class="hljs-bullet">-g</span> <span class="hljs-string">zapier-platform-cli</span>
+<span class="hljs-attr">script:</span> <span class="hljs-string">CLIENT_ID=1234</span> <span class="hljs-string">CLIENT_SECRET=abcd</span> <span class="hljs-string">zapier</span> <span class="hljs-string">test</span>
 </code></pre>
     </div>
   </div>

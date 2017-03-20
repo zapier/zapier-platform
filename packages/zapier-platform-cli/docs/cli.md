@@ -139,7 +139,7 @@ After running this, you'll have a new app in your directory, with stubs for your
 
 **Arguments**
 
-* `appid [value]` -- _optional_, Get the appid from https://zapier.com/developer/builder/ (check the URL)
+* `appid [value]` -- **required**, Get the appid from https://zapier.com/developer/builder/ (check the URL)
 * `location [value]` -- **required**, Relative to your current path - IE: `.` for current directory
 
 
