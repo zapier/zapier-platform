@@ -27,8 +27,7 @@ nvm use v4.3.2
 
 ## Tutorial
 
-Welcome to the Zapier Platform! In this tutorial, we'll walk you through the process of building, testing, and pushing an examples app that talks to a fake/mock API to Zapier. We'll start with a minimal template with just the basics.
-
+Welcome to the Zapier Platform! In this tutorial, we'll walk you through the process of building, testing, and pushing an example app to Zapier. We'll use a fake/mock API for recipes in this example, but for production Zapier apps, you'd want to connect to a real API.
 
 ### Installing the CLI
 
@@ -48,12 +47,11 @@ Now that your CLI is installed - you'll need to identify yourself via the CLI.
 zapier login
 ```
 
-Now your CLI is installed and ready to go!
-
+Now your CLI is installed and ready to go! Zapier writes your deploy key to `~/.zapierrc`. You'll want to keep that file safe and not check it into source control.
 
 ### Starting an App
 
-To begin building an app, use the `init` command to setup the needed structure.
+To begin building an app, use the `init` command to setup the [needed structure](https://github.com/zapier/zapier-platform-example-app-minimal).
 
 ```bash
 # create a directory with the minimum required files
@@ -72,29 +70,29 @@ npm install
 
 ### Your `index.js`
 
-Right next to `package.json` should be `index.js`, which is the entry point to your app. This is where the Platform will look for your app definition. Open it up in your editor of choice and let's take a look!
+Right next to `package.json` should be `index.js`, which is the entry point to your app. This is where the Platform will look to understand how your app will interact with Zapier. Open it up in your editor of choice and let's take a look!
 
 You'll see a few things in `index.js`:
 
  * we export a single `App` definition which will be interpreted by Zapier
- * in `App` definition, `beforeRequest` & `afterResponse` are hooks into the HTTP client
+ * in `App` definition, `beforeRequest` & `afterResponse` are hooks into the HTTP client to manipulate the request/response on every call
  * in `App` definition, `triggers` will describe ways to trigger off of data in your app
  * in `App` definition, `searches` will describe ways to find data in your app
  * in `App` definition, `creates` will describe ways to create data in your app
- * in `App` definition, `resources` are purely optional but convenient ways to describe CRUD-like objects in your app
+ * in `App` definition, `resources` are purely optional but convenient ways to describe CRUD-like objects in your app (see [example resources app](https://github.com/zapier/zapier-platform-example-app-resource))
 
 ### Adding a Trigger
 
-Let's start by adding a **trigger.** We will configure it to read data from a mocked API (in the future - your real app will use a real API, of course :-):
+Let's start by adding a [**trigger**](https://zapier.com/developer/documentation/v2/triggers/). We will configure it to read data from a mocked API (in the future - your real app will use a real API, of course :-):
 
 ```bash
 mkdir triggers
 touch triggers/recipe.js
 ```
 
-> Note: The `triggers` folder is simply a convention - we recommend it as our tools support it. Also, `recipe.js` is just an example name of a model - maybe you'll eventually make a `contact.js`, `lead.js` or `order.js`.
+> Note: The `triggers` folder is simply a convention - we recommend it. Also, `recipe.js` is just an example name of a model - maybe you'll eventually make a `contact.js`, `lead.js` or `order.js`.
 
-Open `triggers/recipe.js` and **replace** it with:
+Open `triggers/recipe.js` (file created by `zapier init`) and **replace** it with:
 
 ```javascript
 const listRecipes = (z, bundle) => {
@@ -120,14 +118,16 @@ Let's break down what is happening in this snippet!
 
 First, look first at the function definition for `listRecipes`. You see that it handles the API work, making the HTTP request and returning a promise that will eventually yield a result.
 
-It receives two arguments, a `z` object and a `bundle` object.
+> *Note*: If you're new to promises, they are essentially synchronous callbacks. The equivalent content of a callback should go inside the `.then()` portion of a promise.
+
+The `listReceipes` function receives two arguments, a `z` object and a `bundle` object.
 
 * The [Z Object](#z-object) is a collection of utilities needed when working with APIs. In our snippet, we use `z.request` to make the HTTP call and `z.JSON` to parse the response.
 * The [Bundle Object](#bundle-object) contains any data needed to make API calls, like authentication credentials or data for a POST body. In our snippet the Bundle is not used, since we don't require any of those to make our simple GET request.
 
 > Note about Z Object: While it is possible to accomplish the same tasks using alternate Node.js libraries, it's preferable to use the `z` object as there are features built into these utilities that augment the Zapier experience. For example, logging of HTTP calls and better handling of JSON parsing failures. [Read the docs](#z-object) for more info.
 
-Second, look at the second part of our snippet; the export. Essentially, we export some metadata plus our `listRecipes` function. We'll explain later how Zapier uses this metadata. For now, know that it satisfies the minimum info required to define a trigger.
+Second, look at the second part of our snippet; the export. Essentially, we export some metadata plus our `listRecipes` function. We'll explain later how Zapier uses this metadata and exposes it to the end user. For now, know that it satisfies the minimum info required to define a trigger.
 
 With our trigger defined, we need to incorporate it into our app.
 
@@ -199,6 +199,8 @@ zapier test
 #   1 passing (312ms)
 #
 ```
+
+For this example, we'll stick to a single test, but you can see what multiple tests look like in our [this example](https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/test/triggers.js).
 
 ### Modifying a Trigger
 
@@ -324,7 +326,7 @@ Now that your app version is properly pushed, log in and visit [https://zapier.c
 
 You'll see the app listed as an available option for the first step. Selecting it, you'll see the "New Recipe" trigger. At this point, we've come full circle on the trigger definition from earlier. Remember that, as part of the metadata, we defined a `display` property with a label and help text. Those properties control the info you see inside the Zapier UI.
 
-As you click through, you'll see our input field "style" appear, which you can fill out. Once you finish setting up the step and test it, Zapier will run the `listReceipes` function associated with the trigger, which will make the API request and return the result to Zapier. If you are curious to see what HTTP requests Zapier makes at any point, you can use the `zapier logs` command to find out.
+As you click through, you'll see our input field "style" appear, which you can fill out. Once you finish setting up the step and test it, Zapier will run the `listRecipes` function associated with the trigger, which will make the API request and return the result to Zapier. If you are curious to see what HTTP requests Zapier makes at any point, you can use the `zapier logs` command to find out.
 
 ```bash
 zapier logs --type=http
@@ -345,7 +347,14 @@ Good work, we've built a trigger locally and pushed it to Zapier.
 
 Up to this point we've ignored something that is usually crucial to APIs: authentication. Zapier supports a number of different [authentication schemes](#authentication). For our app, we are going to set it up to include an API Key in a header.
 
-The first thing we need to do is define the `authentication` section on the app.
+For different types of authentication, see these example apps:
+
+* [OAuth 2](https://github.com/zapier/zapier-platform-example-app-oauth2)
+* [Basic Auth](https://github.com/zapier/zapier-platform-example-app-basic-auth)
+* [Session Auth](https://github.com/zapier/zapier-platform-example-app-session-auth)
+* [API Key in query string](https://github.com/zapier/zapier-platform-example-app-custom-auth)
+
+For this app, our API Key will go in the header. The first thing we need to do is define the `authentication` section on the app.
 
 In `index.js`, **edit** `App` to include:
 
@@ -372,8 +381,8 @@ const App = {
 
 In the above snippet, we define the two required properties of `authentication`:
 
-* `fields` is where we define our auth fields. This works similar to the `inputFields` of triggers. When users connect their account to Zapier, they'll be prompted to fill in this field, and the value they enter becomes available in the `bundle`.
-* `test` is a function used during the account connection process to verify that the user entered valid credentials. The goal of the function is to make an authenticated API request whose response indicates if the credentials are correct. If valid, the test function can return anything. On invalid credentials, the test needs to raise an error.
+* `fields` is where we define our auth fields. This works similar to the `inputFields` of triggers. When users connect their account to Zapier, they'll be prompted to fill in this field, and the value they enter becomes available in the `bundle`. Not every authentication type will include `inputFields`.
+* `test` is a function used during the account connection process to verify that the user entered valid credentials. The goal of the function is to make an authenticated API request whose response indicates if the credentials are correct. A profile for the user, such as a `/me` endpoint, is a common choice. If valid, the test function can return anything. On invalid credentials, the test needs to raise an error.
 
 With that setup, we now need to make sure that our API key is included in all the requests our app makes.
 
@@ -389,7 +398,7 @@ const addApiKeyToHeader = (request, z, bundle) => {
 // const App = ...
 ```
 
-Above we define a helper function, `addApiKeyToHeader`, that puts the user-provided API key in a request header called `MY-AUTH-HEADER`. The name chosen is illustrative, it can be whatever the API you are integrating with requires. Alternatively, you could put it in a query parameter instead of a header, and/or encoded it first.
+Above we define a helper function, `addApiKeyToHeader`, that puts the user-provided API key in a request header called `MY-AUTH-HEADER`. The name chosen is illustrative, it can be whatever the API you are integrating with requires. Alternatively, you could put it in a query parameter instead of a header, and/or encode it first.
 
 To make our helper function take effect, we need to register it on our app.
 
@@ -405,7 +414,7 @@ const App = {
 };
 ```
 
-`beforeRequest` is a list of functions that are called before every HTTP request, letting you add headers, query params, etc. to all outbound requests. In our case, every HTTP request will now have the API key added in a header.
+`beforeRequest` is a list of functions that are called before every HTTP request that uses `z.request` or the default `perform` function. This lets you add headers, query params, or whatever is needed to be within *all outbound requests*. In our case, every HTTP request will now have the API key added in a header.
 
 To check our progress, we need to re-push our app.
 
