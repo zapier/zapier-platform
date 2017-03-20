@@ -33,7 +33,7 @@ const convert = (context, appid, location) => {
     });
 };
 convert.argsSpec = [
-  {name: 'appid', require: true, help: 'Get the appid from https://zapier.com/developer/builder/ (check the URL)'},
+  {name: 'appid', required: true, help: 'Get the appid from https://zapier.com/developer/builder/ (check the URL)'},
   {name: 'location', required: true, help: 'Relative to your current path - IE: `.` for current directory'},
 ];
 convert.help = 'Converts a Zapier Platform app to a CLI app, stubs only.';
