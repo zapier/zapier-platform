@@ -9,7 +9,7 @@ const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema({
   id: '/TriggerSchema',
-  description: 'How will we get a notified of new objects?',
+  description: 'How will Zapier get notified of new objects?',
   type: 'object',
   required: ['key', 'noun', 'display', 'operation'],
   properties: {

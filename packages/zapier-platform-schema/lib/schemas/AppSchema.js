@@ -49,7 +49,7 @@ module.exports = makeSchema({
       $ref: HydratorsSchema.id
     },
     resources: {
-      description: 'All the resources for your app. Zapier will take these and create the relevent triggers/searches/creates automatically.',
+      description: 'All the resources for your app. Zapier will take these and generate the relevent triggers/searches/creates automatically.',
       $ref: ResourcesSchema.id
     },
     triggers: {

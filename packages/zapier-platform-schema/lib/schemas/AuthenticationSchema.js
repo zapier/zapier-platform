@@ -36,7 +36,7 @@ module.exports = makeSchema({
       ]
     },
     fields: {
-      description: 'Fields you can request of the user before they connect your app to Zapier.',
+      description: 'Fields you can request from the user before they connect your app to Zapier.',
       $ref: FieldsSchema.id // TODO: can this be DynamicFieldsSchema?
     },
     // this is preferred to laying out config: anyOf: [...]

@@ -8,7 +8,7 @@ const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema({
   id: '/SearchSchema',
-  description: 'How will we search for new objects?',
+  description: 'How will Zapier search for existing objects?',
   type: 'object',
   required: ['key', 'noun', 'display', 'operation'],
   properties: {

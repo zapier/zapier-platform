@@ -5,7 +5,7 @@ const FunctionSchema = require('./FunctionSchema');
 
 module.exports = makeSchema({
   id: '/MiddlewaresSchema',
-  description: 'List of HTTP before or after middlewares. Can be array of functions or single function',
+  description: 'List of HTTP before or after middlewares. Can be an array of functions or a single function',
   oneOf: [
     {
       type: 'array',

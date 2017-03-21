@@ -23,7 +23,7 @@ module.exports = makeSchema({
       maxLength: 64
     },
     description: {
-      description: 'A should description of what this trigger, search, or create does.',
+      description: 'A description of what this trigger, search, or create does.',
       type: 'string',
       minLength: 12,
       maxLength: 1000
@@ -35,7 +35,7 @@ module.exports = makeSchema({
       maxLength: 1000
     },
     important: {
-      description: 'Should this operation be visible by default (is it popular)?',
+      description: 'Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.',
       type: 'boolean'
     },
     hidden: {
@@ -43,7 +43,7 @@ module.exports = makeSchema({
       type: 'boolean'
     },
     order: {
-      description: 'Should this operation precede or follow other operations in the UI?',
+      description: 'Should this operation precede or follow other operations when displayed in the UI?',
       type: 'number',
     },
   },

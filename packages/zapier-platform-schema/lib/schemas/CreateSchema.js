@@ -8,7 +8,7 @@ const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema({
   id: '/CreateSchema',
-  description: 'How will we get a create new objects?',
+  description: 'How will Zapier create a new object?',
   type: 'object',
   required: ['key', 'noun', 'display', 'operation'],
   properties: {

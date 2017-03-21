@@ -15,11 +15,11 @@ module.exports = makeSchema({
   required: ['perform'],
   properties: {
     resource: {
-      description: 'Optionally reference and extends a resource. Allows us to automatically tie together samples, lists and hooks greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.',
+      description: 'Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.',
       $ref: RefResourceSchema.id
     },
     perform: {
-      description: 'How will we get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: \'http...\'}`.',
+      description: 'How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: \'http...\'}`.',
       oneOf: [
         {$ref: RequestSchema.id},
         {$ref: FunctionSchema.id}

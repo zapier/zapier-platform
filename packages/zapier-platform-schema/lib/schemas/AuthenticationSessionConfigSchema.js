@@ -7,12 +7,12 @@ const FunctionSchema = require('./FunctionSchema');
 
 module.exports = makeSchema({
   id: '/AuthenticationSessionConfigSchema',
-  description: 'Config for session authentication schema.',
+  description: 'Config for session authentication.',
   type: 'object',
   required: ['perform'],
   properties: {
     perform: {
-      description: 'How will we get additional authData?',
+      description: 'Define how Zapier fetches the additional authData needed to make API calls.',
       oneOf: [
         {$ref: RequestSchema.id},
         {$ref: FunctionSchema.id}

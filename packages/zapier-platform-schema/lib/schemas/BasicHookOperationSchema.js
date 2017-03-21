@@ -24,7 +24,7 @@ BasicHookOperationSchema.properties = {
   },
   resource: BasicHookOperationSchema.properties.resource,
   perform: {
-    description: 'A function that processes the inbound webhook request. Generally would not make outbound traffic.',
+    description: 'A function that processes the inbound webhook request.',
     $ref: FunctionSchema.id
   },
   performList: {

@@ -59,25 +59,25 @@ module.exports = makeSchema({
       type: 'boolean',
     },
     placeholder: {
-      description: 'An purely example value that is not saved.',
+      description: 'An example value that is not saved.',
       type: 'string',
       minLength: 1,
     },
     'default': {
-      description: 'A default value that is saved the first time.',
+      description: 'A default value that is saved the first time a Zap is created.',
       type: 'string',
       minLength: 1,
     },
     dynamic: {
-      description: 'A reference to another resource or trigger that will power a dynamic dropdown.',
+      description: 'A reference to a trigger that will power a dynamic dropdown.',
       $ref: RefResourceSchema.id,
     },
     search: {
-      description: 'A reference to another resource or search that will allow adding a search for this field.',
+      description: 'A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.',
       $ref: RefResourceSchema.id,
     },
     choices: {
-      description: 'A list of machine keys and human values to power a static dropdown.',
+      description: 'An object of machine keys and human values to populate a static dropdown.',
       type: 'object',
       minProperties: 1,
     },
@@ -86,7 +86,7 @@ module.exports = makeSchema({
       type: 'boolean',
     },
     children: {
-      description: 'Can a user provide multiples of this field? A.K.A. Line Items.',
+      description: 'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
       $ref: FieldsSchema.id,
     },
     dict: {

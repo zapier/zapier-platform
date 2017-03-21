@@ -9,6 +9,7 @@ const BasicOperationSchema = require('./BasicOperationSchema');
 const BasicPollingOperationSchema = JSON.parse(JSON.stringify(BasicOperationSchema.schema));
 
 BasicPollingOperationSchema.id = '/BasicPollingOperationSchema';
+BasicPollingOperationSchema.description = 'Represents the fundamental mechanics of a trigger.';
 
 BasicPollingOperationSchema.properties = {
   type: {

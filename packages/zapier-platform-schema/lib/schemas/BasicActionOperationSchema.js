@@ -11,12 +11,13 @@ const RequestSchema = require('./RequestSchema');
 const BasicActionOperationSchema = JSON.parse(JSON.stringify(BasicOperationSchema.schema));
 
 BasicActionOperationSchema.id = '/BasicActionOperationSchema';
+BasicActionOperationSchema.description = 'Represents the fundamental mechanics of a search/create.';
 
 BasicActionOperationSchema.properties = {
   resource: BasicActionOperationSchema.properties.resource,
   perform: BasicActionOperationSchema.properties.perform,
   performGet: {
-    description: 'How will we get a single bit of rich data? If you find yourself reaching for this - consider resources and their built-in get methods.',
+    description: 'How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.',
     oneOf: [
       {$ref: RequestSchema.id},
       {$ref: FunctionSchema.id}

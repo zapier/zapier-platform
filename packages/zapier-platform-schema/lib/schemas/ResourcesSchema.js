@@ -5,7 +5,7 @@ const ResourceSchema = require('./ResourceSchema');
 
 module.exports = makeSchema({
   id: '/ResourcesSchema',
-  description: 'All the resources that underly common CRUD methods powering automatically handled triggers, actions and searches for your app. Zapier will break these apart for you.',
+  description: 'All the resources that underlie common CRUD methods powering automatically handled triggers, creates, and searches for your app. Zapier will break these apart for you.',
   type: 'object',
   patternProperties: {
     '^[a-zA-Z]+[a-zA-Z0-9_]*$': {
