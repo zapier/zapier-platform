@@ -6,7 +6,7 @@ const movie = require('./triggers/movie');
 // HTTP before middleware that adds sorting query params.
 // We want *every* request to our API to be sorted in reverse chronological order.
 // Applying this middleware guarantees this.
-const addSortingParams = (request) => {
+const addSortingParams = (request /*, z*/) => {
   request.params = _.extend({}, request.params, {
     sortBy: 'createdAt',
     order: 'desc'
