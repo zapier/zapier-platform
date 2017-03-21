@@ -1,8 +1,6 @@
 # Core for Zapier CLI Platform
 
-> Warning - this is currently beta software!
-
-[Visit the CLI for basic temporary documentation.](https://www.npmjs.com/package/zapier-platform-cli)
+This is the code that powers our [Zapier Platform CLI](https://github.com/zapier/zapier-platform-cli). You'll want to head to that repo to see how it's used.
 
 ## Development
 
