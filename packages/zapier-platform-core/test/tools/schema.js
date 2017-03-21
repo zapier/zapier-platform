@@ -64,6 +64,44 @@ describe('schema', () => {
       compiledApp.creates.fooCreate.operation.sample.should.have.keys('id', 'name');
     });
 
+    it('should populate generated searchOrCreate from resource', () => {
+      const dummyMethod = {
+        operation: {
+          perform: () => {return {};}
+        }
+      };
+
+      const appRaw = {
+        resources: {
+          foo: {
+            key: 'foo',
+            noun: 'Foo',
+            search: dummyMethod,
+            create: dummyMethod,
+            outputFields: [
+              {key: 'id', type: 'integer'},
+              {key: 'name', type: 'string'},
+            ],
+            sample: {
+              id: 123,
+              name: 'John Doe'
+            }
+          }
+        }
+      };
+      const compiledApp = schema.compileApp(appRaw);
+      compiledApp.searchOrCreates.should.have.keys('fooSearchOrCreate');
+      compiledApp.searchOrCreates.fooSearchOrCreate.should.eql({
+        key: 'fooSearchOrCreate',
+        display: {
+          label: 'Find or Create Foo',
+          description: ''
+        },
+        search: 'fooSearch',
+        create: 'fooCreate'
+      });
+    });
+
     it("should populate hook's performList from list method if available", () => {
       const appRaw = {
         resources: {

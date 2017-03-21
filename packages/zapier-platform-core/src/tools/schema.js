@@ -7,9 +7,11 @@ const zapierSchema = require('zapier-platform-schema');
 
 // Take a resource with methods like list/hook and turn it into triggers, etc.
 const convertResourceDos = (appRaw) => {
-  let triggers = {}, searches = {}, creates = {};
+  let triggers = {}, searches = {}, creates = {}, searchOrCreates = {};
 
   _.each(appRaw.resources, (resource) => {
+    let search, create;
+
     if (resource.hook && resource.hook.operation) {
       let trigger = dataTools.deepCopy(resource.hook);
       trigger.key = `${resource.key}Hook`;
@@ -29,7 +31,7 @@ const convertResourceDos = (appRaw) => {
     }
 
     if (resource.search && resource.search.operation) {
-      let search = dataTools.deepCopy(resource.search);
+      search = dataTools.deepCopy(resource.search);
       search.key = `${resource.key}Search`;
       search.noun = resource.noun;
       search.operation.resource = resource.key;
@@ -37,17 +39,29 @@ const convertResourceDos = (appRaw) => {
     }
 
     if (resource.create && resource.create.operation) {
-      let create = dataTools.deepCopy(resource.create);
+      create = dataTools.deepCopy(resource.create);
       create.key = `${resource.key}Create`;
       create.noun = resource.noun;
       create.operation.resource = resource.key;
       creates[create.key] = create;
     }
 
-    // TODO: search or create?
+    if (search && create) {
+      let searchOrCreate = {
+        key: `${resource.key}SearchOrCreate`,
+        display: {
+          label: `Find or Create ${resource.noun}`,
+          description: '' // Leave blank to get the default from Zapier UI
+        },
+        search: search.key,
+        create: create.key
+      };
+      searchOrCreates[searchOrCreate.key] = searchOrCreate;
+    }
+
   });
 
-  return { triggers, searches, creates };
+  return { triggers, searches, creates, searchOrCreates };
 };
 
 /* When a trigger/search/create (action) links to a resource, we walk up to
@@ -81,6 +95,7 @@ const compileApp = (appRaw) => {
   appRaw.triggers = _.extend({}, extras.triggers, appRaw.triggers || {});
   appRaw.searches = _.extend({}, extras.searches, appRaw.searches || {});
   appRaw.creates = _.extend({}, extras.creates, appRaw.creates || {});
+  appRaw.searchOrCreates = _.extend({}, extras.searchOrCreates, appRaw.searchOrCreates || {});
 
   _.each(appRaw.triggers, (trigger) => {
     appRaw.triggers[trigger.key] = copyPropertiesFromResource('trigger', trigger, appRaw);
