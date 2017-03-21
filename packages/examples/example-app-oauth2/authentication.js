@@ -8,7 +8,7 @@ const getAccessToken = (z, bundle) => {
       grant_type: 'authorization_code'
     },
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'content-type': 'application/x-www-form-urlencoded'
     }
   });
 
@@ -36,7 +36,7 @@ const refreshAccessToken = (z, bundle) => {
       grant_type: 'refresh_token'
     },
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'content-type': 'application/x-www-form-urlencoded'
     }
   });
 
@@ -54,7 +54,7 @@ const refreshAccessToken = (z, bundle) => {
   });
 };
 
-const testAuth = (z, bundle) => {
+const testAuth = (z /*, bundle*/) => {
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
   // every user will have access to, such as an account or profile endpoint like /me.
   const promise = z.request({
@@ -92,6 +92,7 @@ module.exports = {
     // (Optional) If the access token expires after a pre-defined amount of time, you can implement
     // this method to tell Zapier how to refresh it.
     refreshAccessToken: refreshAccessToken,
+    // If you want Zapier to automatically invoke `refreshAccessToken` on a 401 response, set to true
     autoRefresh: true
     // If there is a specific scope you want to limit your Zapier app to, you can define it here.
     // Will get passed along to the authorizeUrl
