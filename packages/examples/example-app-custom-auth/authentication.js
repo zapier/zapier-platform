@@ -1,9 +1,9 @@
-const testAuth = (z, bundle) => {
+const testAuth = (z /*, bundle*/) => {
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
   const promise = z.request({
-    url: `http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes`,
+    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes',
   });
 
   // This method can return any truthy value to indicate the credentials are valid.
