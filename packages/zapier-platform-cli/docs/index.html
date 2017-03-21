@@ -2353,20 +2353,20 @@ zapier env 1.0.0
       <p>If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions, by putting them in your app definition:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> addHeader = <span class="hljs-function">(<span class="hljs-params">request</span>) =&gt;</span> {
+      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> addHeader = <span class="hljs-function">(<span class="hljs-params">request, <span class="hljs-regexp">/*z*/</span></span>) =&gt;</span> {
   request.headers[<span class="hljs-string">&apos;my-header&apos;</span>] = <span class="hljs-string">&apos;from zapier&apos;</span>;
   <span class="hljs-keyword">return</span> request;
 };
 
-<span class="hljs-keyword">const</span> mustBe200 = <span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
+<span class="hljs-keyword">const</span> mustBe200 = <span class="hljs-function">(<span class="hljs-params">response, <span class="hljs-regexp">/*z*/</span></span>) =&gt;</span> {
   <span class="hljs-keyword">if</span> (response.status !== <span class="hljs-number">200</span>) {
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`Unexpected status code <span class="hljs-subst">${response.status}</span>`</span>);
   }
   <span class="hljs-keyword">return</span> response;
 };
 
-<span class="hljs-keyword">const</span> autoParseJson = <span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
-  response.json = <span class="hljs-built_in">JSON</span>.parse(response.content);
+<span class="hljs-keyword">const</span> autoParseJson = <span class="hljs-function">(<span class="hljs-params">response, z</span>) =&gt;</span> {
+  response.json = z.JSON.parse(response.content);
   <span class="hljs-keyword">return</span> response;
 };
 

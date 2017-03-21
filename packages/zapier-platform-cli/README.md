@@ -1287,20 +1287,20 @@ const App = {
 If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions, by putting them in your app definition:
 
 ```javascript
-const addHeader = (request) => {
+const addHeader = (request, /*z*/) => {
   request.headers['my-header'] = 'from zapier';
   return request;
 };
 
-const mustBe200 = (response) => {
+const mustBe200 = (response, /*z*/) => {
   if (response.status !== 200) {
     throw new Error(`Unexpected status code ${response.status}`);
   }
   return response;
 };
 
-const autoParseJson = (response) => {
-  response.json = JSON.parse(response.content);
+const autoParseJson = (response, z) => {
+  response.json = z.JSON.parse(response.content);
   return response;
 };
 
