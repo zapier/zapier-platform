@@ -17,7 +17,7 @@ describe('session auth app', () => {
 
     appTester(App.authentication.sessionConfig.perform, bundle)
       .then((newAuthData) => {
-        newAuthData.sessionKey.should.eql('helloworld!');
+        newAuthData.sessionKey.should.eql('new session key!');
         done();
       })
       .catch(done);
@@ -39,5 +39,4 @@ describe('session auth app', () => {
       })
       .catch(done);
   });
-
 });

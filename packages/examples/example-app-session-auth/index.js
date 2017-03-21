@@ -41,6 +41,21 @@ const App = {
 
   // If you want your trigger to show up, you better include it here!
   triggers: {
+    recipe: {
+      key: 'recipe',
+      noun: 'Recipe',
+      display: {
+        label: 'New Recipe',
+        description: 'Trigger when a new recipe is added.'
+      },
+      operation: {
+        inputFields: [
+          {key: 'style', type: 'string'}
+        ],
+        perform: function() { return [{id: 1, name: 'A food!'}] }
+      }
+
+    }
   },
 
   // If you want your searches to show up, you better include it here!
