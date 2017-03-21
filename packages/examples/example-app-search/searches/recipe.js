@@ -5,8 +5,8 @@ module.exports = {
   // for users. Zapier will put them into the UX.
   noun: 'Recipe',
   display: {
-    label: 'Search Recipes',
-    description: 'Search for recipes.'
+    label: 'Find a Recipe',
+    description: 'Search for recipe by cuisine style.'
   },
 
   // `operation` is where we make the call to your API to do the search
@@ -18,7 +18,7 @@ module.exports = {
         key: 'style',
         type: 'string',
         label: 'Style',
-        helpText: 'Recipe style - mediterranean, italian, etc'
+        helpText: 'Cuisine style to limit to the search to (i.e. mediterranean or italian).'
       }
     ],
 
