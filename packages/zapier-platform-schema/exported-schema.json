@@ -1,5 +1,5 @@
 {
-  "version": "0.10.2",
+  "version": "1.0.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -39,7 +39,7 @@
           "$ref": "/HydratorsSchema"
         },
         "resources": {
-          "description": "All the resources for your app. Zapier will take these and create the relevent triggers/searches/creates automatically.",
+          "description": "All the resources for your app. Zapier will take these and generate the relevent triggers/searches/creates automatically.",
           "$ref": "/ResourcesSchema"
         },
         "triggers": {
@@ -110,25 +110,25 @@
           "type": "boolean"
         },
         "placeholder": {
-          "description": "An purely example value that is not saved.",
+          "description": "An example value that is not saved.",
           "type": "string",
           "minLength": 1
         },
         "default": {
-          "description": "A default value that is saved the first time.",
+          "description": "A default value that is saved the first time a Zap is created.",
           "type": "string",
           "minLength": 1
         },
         "dynamic": {
-          "description": "A reference to another resource or trigger that will power a dynamic dropdown.",
+          "description": "A reference to a trigger that will power a dynamic dropdown.",
           "$ref": "/RefResourceSchema"
         },
         "search": {
-          "description": "A reference to another resource or search that will allow adding a search for this field.",
+          "description": "A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.",
           "$ref": "/RefResourceSchema"
         },
         "choices": {
-          "description": "A list of machine keys and human values to power a static dropdown.",
+          "description": "An object of machine keys and human values to populate a static dropdown.",
           "type": "object",
           "minProperties": 1
         },
@@ -137,7 +137,7 @@
           "type": "boolean"
         },
         "children": {
-          "description": "Can a user provide multiples of this field? A.K.A. Line Items."
+          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items."
         },
         "dict": {
           "description": "Is this field a key/value input?",
@@ -214,7 +214,7 @@
     },
     "RequestSchema": {
       "id": "/RequestSchema",
-      "description": "A representation of a HTTP request - you can use the `{{syntax}}`` to inject authentication, field or global variables.",
+      "description": "A representation of a HTTP request - you can use the `{{syntax}}` to inject authentication, field or global variables.",
       "type": "object",
       "properties": {
         "method": {
@@ -281,28 +281,28 @@
     },
     "AuthenticationBasicConfigSchema": {
       "id": "/AuthenticationBasicConfigSchema",
-      "description": "Config for basic authentication schema.",
+      "description": "Config for Basic Authentication. No extra properties are required to setup Basic Auth, so you can leave this empty if your app uses Basic Auth.",
       "type": "object",
       "properties": {},
       "additionalProperties": false
     },
     "AuthenticationCustomConfigSchema": {
       "id": "/AuthenticationCustomConfigSchema",
-      "description": "Config for custom authentication schema.",
+      "description": "Config for custom authentication (like API keys). No extra properties are required to setup this auth type, so you can leave this empty if your app uses a custom auth method.",
       "type": "object",
       "properties": {},
       "additionalProperties": false
     },
     "AuthenticationDigestConfigSchema": {
       "id": "/AuthenticationDigestConfigSchema",
-      "description": "Config for digest authentication schema.",
+      "description": "Config for Digest Authentication. No extra properties are required to setup Digest Auth, so you can leave this empty if your app uses Digets Auth.",
       "type": "object",
       "properties": {},
       "additionalProperties": false
     },
     "AuthenticationOAuth2ConfigSchema": {
       "id": "/AuthenticationOAuth2ConfigSchema",
-      "description": "Config for OAuth2 authentication schema.",
+      "description": "Config for OAuth2 authentication.",
       "type": "object",
       "required": [
         "authorizeUrl",
@@ -310,7 +310,7 @@
       ],
       "properties": {
         "authorizeUrl": {
-          "description": "Where will we redirect the user to authorize our app? Note: we append the redirect URL and state parameters to return value of this function.",
+          "description": "Define where Zapier will redirect the user to authorize our app. Note: we append the redirect URL and state parameters to return value of this function.",
           "oneOf": [
             {
               "$ref": "/RedirectRequestSchema"
@@ -321,7 +321,7 @@
           ]
         },
         "getAccessToken": {
-          "description": "How will we get the access token?",
+          "description": "Define how Zapier fetches an access token from the API",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -332,7 +332,7 @@
           ]
         },
         "refreshAccessToken": {
-          "description": "How will we refresh the access token?",
+          "description": "Define how Zapier will refresh the access token from the API",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -343,11 +343,11 @@
           ]
         },
         "scope": {
-          "description": "What scope should we request?",
+          "description": "What scope should Zapier request?",
           "type": "string"
         },
         "autoRefresh": {
-          "description": "Should we refresh the access token?",
+          "description": "Should Zapier include a pre-built afterResponse middleware that invokes `refreshAccessToken` when we receive a 401 response?",
           "type": "boolean"
         }
       },
@@ -355,14 +355,14 @@
     },
     "AuthenticationSessionConfigSchema": {
       "id": "/AuthenticationSessionConfigSchema",
-      "description": "Config for session authentication schema.",
+      "description": "Config for session authentication.",
       "type": "object",
       "required": [
         "perform"
       ],
       "properties": {
         "perform": {
-          "description": "How will we get additional authData?",
+          "description": "Define how Zapier fetches the additional authData needed to make API calls.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -422,7 +422,7 @@
           "maxLength": 64
         },
         "description": {
-          "description": "A should description of what this trigger, search, or create does.",
+          "description": "A description of what this trigger, search, or create does.",
           "type": "string",
           "minLength": 12,
           "maxLength": 1000
@@ -434,7 +434,7 @@
           "maxLength": 1000
         },
         "important": {
-          "description": "Should this operation be visible by default (is it popular)?",
+          "description": "Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.",
           "type": "boolean"
         },
         "hidden": {
@@ -442,7 +442,7 @@
           "type": "boolean"
         },
         "order": {
-          "description": "Should this operation precede or follow other operations in the UI?",
+          "description": "Should this operation precede or follow other operations when displayed in the UI?",
           "type": "number"
         }
       },
@@ -457,11 +457,11 @@
       ],
       "properties": {
         "resource": {
-          "description": "Optionally reference and extends a resource. Allows us to automatically tie together samples, lists and hooks greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/RefResourceSchema"
         },
         "perform": {
-          "description": "How will we get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -504,11 +504,11 @@
           ]
         },
         "resource": {
-          "description": "Optionally reference and extends a resource. Allows us to automatically tie together samples, lists and hooks greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/RefResourceSchema"
         },
         "perform": {
-          "description": "A function that processes the inbound webhook request. Generally would not make outbound traffic.",
+          "description": "A function that processes the inbound webhook request.",
           "$ref": "/FunctionSchema"
         },
         "performList": {
@@ -562,7 +562,7 @@
     },
     "BasicPollingOperationSchema": {
       "id": "/BasicPollingOperationSchema",
-      "description": "Represents the fundamental mechanics of triggers, searches, or creates.",
+      "description": "Represents the fundamental mechanics of a trigger.",
       "type": "object",
       "required": [
         "perform"
@@ -577,11 +577,11 @@
           ]
         },
         "resource": {
-          "description": "Optionally reference and extends a resource. Allows us to automatically tie together samples, lists and hooks greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/RefResourceSchema"
         },
         "perform": {
-          "description": "How will we get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -613,18 +613,18 @@
     },
     "BasicActionOperationSchema": {
       "id": "/BasicActionOperationSchema",
-      "description": "Represents the fundamental mechanics of triggers, searches, or creates.",
+      "description": "Represents the fundamental mechanics of a search/create.",
       "type": "object",
       "required": [
         "perform"
       ],
       "properties": {
         "resource": {
-          "description": "Optionally reference and extends a resource. Allows us to automatically tie together samples, lists and hooks greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/RefResourceSchema"
         },
         "perform": {
-          "description": "How will we get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -635,7 +635,7 @@
           ]
         },
         "performGet": {
-          "description": "How will we get a single bit of rich data? If you find yourself reaching for this - consider resources and their built-in get methods.",
+          "description": "How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -845,7 +845,7 @@
     },
     "TriggerSchema": {
       "id": "/TriggerSchema",
-      "description": "How will we get a notified of new objects?",
+      "description": "How will Zapier get notified of new objects?",
       "type": "object",
       "required": [
         "key",
@@ -884,7 +884,7 @@
     },
     "SearchSchema": {
       "id": "/SearchSchema",
-      "description": "How will we search for new objects?",
+      "description": "How will Zapier search for existing objects?",
       "type": "object",
       "required": [
         "key",
@@ -916,7 +916,7 @@
     },
     "CreateSchema": {
       "id": "/CreateSchema",
-      "description": "How will we get a create new objects?",
+      "description": "How will Zapier create a new object?",
       "type": "object",
       "required": [
         "key",
@@ -1008,7 +1008,7 @@
           ]
         },
         "fields": {
-          "description": "Fields you can request of the user before they connect your app to Zapier.",
+          "description": "Fields you can request from the user before they connect your app to Zapier.",
           "$ref": "/FieldsSchema"
         },
         "basicConfig": {
@@ -1031,7 +1031,7 @@
     },
     "ResourcesSchema": {
       "id": "/ResourcesSchema",
-      "description": "All the resources that underly common CRUD methods powering automatically handled triggers, actions and searches for your app. Zapier will break these apart for you.",
+      "description": "All the resources that underlie common CRUD methods powering automatically handled triggers, creates, and searches for your app. Zapier will break these apart for you.",
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z]+[a-zA-Z0-9_]*$": {
@@ -1094,7 +1094,7 @@
     },
     "MiddlewaresSchema": {
       "id": "/MiddlewaresSchema",
-      "description": "List of HTTP before or after middlewares. Can be array of functions or single function",
+      "description": "List of HTTP before or after middlewares. Can be an array of functions or a single function",
       "oneOf": [
         {
           "type": "array",
