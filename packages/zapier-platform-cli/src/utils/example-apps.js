@@ -6,6 +6,7 @@ const fse = promisifyAll(require('fs-extra'));
 const AdmZip = require('adm-zip');
 
 const {writeFile, copyDir} = require('./files');
+const LAMBDA_VERSION = 'v4.3.2';
 
 const downloadAndUnzipTo = (key, destDir) => {
   const fragment = `zapier-platform-example-app-${key}`;
@@ -25,6 +26,7 @@ const downloadAndUnzipTo = (key, destDir) => {
       return path.join(tempDir, folderInZip);
     })
     .then((currPath) => copyDir(currPath, destDir))
+    .then(() => fse.writeFile(path.join(destDir, '.nvmrc'), `${LAMBDA_VERSION}\n`))
     .then(() => fse.removeAsync(tempDir));
 };
 

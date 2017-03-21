@@ -14,16 +14,11 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 
 ## Requirements
 
-The Zapier CLI and Platform require Node.js `v4.3.2`. We recommend using [nvm](https://github.com/creationix/nvm) to manage your Node.js installation.
+All Zapier CLI apps are run using Node.js `LAMBDA_VERSION`.
 
-On Mac (via [homebrew](http://brew.sh/)):
+You can develop using any version of Node you'd like, but your code has to run on Node `LAMBDA_VERSION`. Most developers will accomplish this by developing on their preferred version and then transpiling their with [Babel](https://babeljs.io/) (or similar).
 
-```bash
-brew install nvm
-nvm install v4.3.2
-nvm use v4.3.2
-```
-
+To ensure stability for our users, we also require that you run your tests on `LAMBDA_VERSION` as well. If you don't have it available, we recommend using either [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation) to install `LAMBDA_VERSION` and run the tests locally. In the case of NVM, you can use `nvm exec LAMBDA_VERSION zapier test` so you can run passing tests without having to switch versions while developing.
 
 ## Tutorial
 
