@@ -79,25 +79,37 @@ const createFileStasher = (input) => {
       .then(result => {
         if (isPromise(bufferStringStream)) {
           return bufferStringStream.then((maybeResponse) => {
-            let newBufferStringStream;
-            if (_.isString(maybeResponse)) {
-              newBufferStringStream = maybeResponse;
-            } else if (maybeResponse && maybeResponse.headers) {
-              if (maybeResponse.body && typeof maybeResponse.body.pipe === 'function') {
-                newBufferStringStream = maybeResponse.body;
-              } else {
-                newBufferStringStream = maybeResponse.content;
-              }
+            const isStreamed = _.get(maybeResponse, 'request.raw', false);
 
-              knownLength = knownLength || maybeResponse.getHeader('content-length');
-              const cd = maybeResponse.getHeader('content-disposition');
-              if (cd) {
-                filename = filename || contentDisposition.parse(cd).parameters.filename;
+            const parseFinalResponse = (response) => {
+              let newBufferStringStream = response;
+              if (_.isString(response)) {
+                newBufferStringStream = response;
+              } else if (response && response.headers) {
+                if (response.body && typeof response.body.pipe === 'function') {
+                  newBufferStringStream = response.body;
+                } else {
+                  newBufferStringStream = response.content;
+                }
+
+                knownLength = knownLength || response.getHeader('content-length');
+                const cd = response.getHeader('content-disposition');
+                if (cd) {
+                  filename = filename || contentDisposition.parse(cd).parameters.filename;
+                }
+              } else if (Buffer.isBuffer(response)) {
+                newBufferStringStream = response;
+              } else {
+                throw new Error('Cannot stash a Promise wrapped file of unknown type.');
               }
+              return uploader(result, newBufferStringStream, knownLength, filename);
+            };
+
+            if (isStreamed) {
+              return maybeResponse.buffer().then(parseFinalResponse);
             } else {
-              throw new Error('Cannot stash a Promise wrapped file of unknown type.');
+              return parseFinalResponse(maybeResponse);
             }
-            return uploader(result, newBufferStringStream, knownLength, filename);
           });
         } else {
           return uploader(result, bufferStringStream, knownLength, filename);

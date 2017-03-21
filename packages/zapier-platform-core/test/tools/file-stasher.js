@@ -88,4 +88,19 @@ describe('file upload', () => {
       .catch(done);
   });
 
+  it('should upload a resolved buffer', (done) => {
+    mocky.mockRpcCall(mocky.fakeSignedPostData);
+    mocky.mockUpload();
+
+    const file = Promise.resolve()
+      .then(() => new Buffer('7468697320697320612074c3a97374', 'hex'));
+
+    stashFile(file)
+      .then((url) => {
+        should(url).eql(`${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`);
+        done();
+      })
+      .catch(done);
+  });
+
 });
