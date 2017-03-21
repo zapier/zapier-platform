@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://travis-ci.org/zapier/zapier-platform-cli"><img src="https://img.shields.io/travis/zapier/zapier-platform-cli/master.svg" alt="Travis"></a>
-  <a href="https://www.npmjs.com/package/zapier-platform-cli"><img src="ttps://img.shields.io/npm/v/zapier-platform-cli.svg" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/zapier-platform-cli"><img src="https://img.shields.io/npm/v/zapier-platform-cli.svg" alt="npm version"></a>
   <!--possible downloads badge too, once that's good-->
 </p>
 
