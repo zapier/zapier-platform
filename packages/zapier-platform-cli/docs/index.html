@@ -202,19 +202,15 @@ a code {
   <body>
     <div class="docs-toc">
       <ul>
+<li><a href="#getting-started">Getting Started</a><ul>
+<li><a href="#what-is-an-app">What is an App?</a></li>
+<li><a href="#how-does-the-cli-platform-work">How does the CLI Platform Work</a></li>
+<li><a href="#cli-vs-the-web-builder-platform">CLI vs the Web Builder Platform</a></li>
 <li><a href="#requirements">Requirements</a></li>
-<li><a href="#tutorial">Tutorial</a><ul>
-<li><a href="#installing-the-cli">Installing the CLI</a></li>
-<li><a href="#starting-an-app">Starting an App</a></li>
-<li><a href="#your-indexjs">Your <code>index.js</code></a></li>
-<li><a href="#adding-a-trigger">Adding a Trigger</a></li>
-<li><a href="#modifying-a-trigger">Modifying a Trigger</a></li>
-<li><a href="#deploying-an-app">Deploying an App</a></li>
-<li><a href="#adding-authentication">Adding Authentication</a></li>
-<li><a href="#tutorial-next-steps">Tutorial Next Steps</a></li>
+<li><a href="#quick-setup-guide">Quick Setup Guide</a></li>
+<li><a href="#tutorial">Tutorial</a></li>
 </ul>
 </li>
-<li><a href="#quickstart">Quickstart</a></li>
 <li><a href="#creating-a-local-app">Creating a Local App</a><ul>
 <li><a href="#local-project-structure">Local Project Structure</a></li>
 <li><a href="#local-app-definition">Local App Definition</a></li>
@@ -244,6 +240,7 @@ a code {
 <li><a href="#fields">Fields</a><ul>
 <li><a href="#customdynamic-fields">Custom/Dynamic Fields</a></li>
 <li><a href="#dynamic-dropdowns">Dynamic Dropdowns</a></li>
+<li><a href="#search-powered-fields">Search-Powered Fields</a></li>
 </ul>
 </li>
 <li><a href="#z-object">Z Object</a><ul>
@@ -288,6 +285,12 @@ a code {
 <li><a href="#viewing-http-logs">Viewing HTTP Logs</a></li>
 </ul>
 </li>
+<li><a href="#error-handling">Error Handling</a><ul>
+<li><a href="#general-errors">General Errors</a></li>
+<li><a href="#halting-execution">Halting Execution</a></li>
+<li><a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+</ul>
+</li>
 <li><a href="#testing">Testing</a><ul>
 <li><a href="#writing-unit-tests">Writing Unit Tests</a></li>
 <li><a href="#running-unit-tests">Running Unit Tests</a></li>
@@ -298,20 +301,7 @@ a code {
 </li>
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
 <li><a href="#using-transpilers">Using Transpilers</a></li>
-<li><a href="#example-apps">Example Apps</a><ul>
-<li><a href="#resource-example-app">Resource Example App</a></li>
-<li><a href="#trigger-example-app">Trigger Example App</a></li>
-<li><a href="#search-example-app">Search Example App</a></li>
-<li><a href="#create-example-app">Create Example App</a></li>
-<li><a href="#middleware-example-app">Middleware Example App</a></li>
-<li><a href="#basic-auth-example-app">Basic Auth Example App</a></li>
-<li><a href="#custom-auth-example-app">Custom Auth Example App</a></li>
-<li><a href="#oauth2-example-app">OAuth2 Example App</a></li>
-<li><a href="#session-auth-example-app">Session Auth Example App</a></li>
-<li><a href="#babel-example-app">Babel Example App</a></li>
-<li><a href="#rest-hooks-example-app">REST Hooks Example App</a></li>
-</ul>
-</li>
+<li><a href="#example-apps">Example Apps</a></li>
 <li><a href="#command-line-tab-completion">Command line Tab Completion</a><ul>
 <li><a href="#zsh-completion-script">Zsh Completion Script</a></li>
 <li><a href="#bash-completion-script">Bash Completion Script</a></li>
@@ -330,7 +320,13 @@ a code {
       <div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h1 id="zapier-platform-cli">Zapier Platform CLI</h1>
+      <h1 align="center">
+  <a href="https://zapier.com"><img src="https://cdn.rawgit.com/zapier/zapier-platform-cli/master/goodies/zapier-logomark.png" alt="Zapier" width="200"></a>
+  <br>
+  Zapier Platform CLI
+  <br>
+  <br>
+</h1>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -339,9 +335,11 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <blockquote>
-<p>Warning - this is currently beta software! Join our beta Slack channel <a href="https://zapier-platform-slack.herokuapp.com">https://zapier-platform-slack.herokuapp.com</a>.</p>
-</blockquote><p>Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.</p><p><a href="http://zapier.github.io/zapier-platform-cli/">These docs are available here</a> and the <a href="http://zapier.github.io/zapier-platform-cli/cli.html">CLI docs are available here</a>.</p>
+      <p align="center">
+  <a href="https://travis-ci.org/zapier/zapier-platform-cli"><img src="https://img.shields.io/travis/zapier/zapier-platform-cli/master.svg" alt="Travis"></a>
+  <a href="https://www.npmjs.com/package/zapier-platform-cli"><img src="ttps://img.shields.io/npm/v/zapier-platform-cli.svg" alt="npm version"></a>
+  <!--possible downloads badge too, once that's good-->
+</p><p>Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.</p><p><a href="http://zapier.github.io/zapier-platform-cli/">These docs are available here</a> and the <a href="http://zapier.github.io/zapier-platform-cli/cli.html">CLI docs are available here</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -360,19 +358,15 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <ul>
+<li><a href="#getting-started">Getting Started</a><ul>
+<li><a href="#what-is-an-app">What is an App?</a></li>
+<li><a href="#how-does-the-cli-platform-work">How does the CLI Platform Work</a></li>
+<li><a href="#cli-vs-the-web-builder-platform">CLI vs the Web Builder Platform</a></li>
 <li><a href="#requirements">Requirements</a></li>
-<li><a href="#tutorial">Tutorial</a><ul>
-<li><a href="#installing-the-cli">Installing the CLI</a></li>
-<li><a href="#starting-an-app">Starting an App</a></li>
-<li><a href="#your-indexjs">Your <code>index.js</code></a></li>
-<li><a href="#adding-a-trigger">Adding a Trigger</a></li>
-<li><a href="#modifying-a-trigger">Modifying a Trigger</a></li>
-<li><a href="#deploying-an-app">Deploying an App</a></li>
-<li><a href="#adding-authentication">Adding Authentication</a></li>
-<li><a href="#tutorial-next-steps">Tutorial Next Steps</a></li>
+<li><a href="#quick-setup-guide">Quick Setup Guide</a></li>
+<li><a href="#tutorial">Tutorial</a></li>
 </ul>
 </li>
-<li><a href="#quickstart">Quickstart</a></li>
 <li><a href="#creating-a-local-app">Creating a Local App</a><ul>
 <li><a href="#local-project-structure">Local Project Structure</a></li>
 <li><a href="#local-app-definition">Local App Definition</a></li>
@@ -402,6 +396,7 @@ a code {
 <li><a href="#fields">Fields</a><ul>
 <li><a href="#customdynamic-fields">Custom/Dynamic Fields</a></li>
 <li><a href="#dynamic-dropdowns">Dynamic Dropdowns</a></li>
+<li><a href="#search-powered-fields">Search-Powered Fields</a></li>
 </ul>
 </li>
 <li><a href="#z-object">Z Object</a><ul>
@@ -446,6 +441,12 @@ a code {
 <li><a href="#viewing-http-logs">Viewing HTTP Logs</a></li>
 </ul>
 </li>
+<li><a href="#error-handling">Error Handling</a><ul>
+<li><a href="#general-errors">General Errors</a></li>
+<li><a href="#halting-execution">Halting Execution</a></li>
+<li><a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+</ul>
+</li>
 <li><a href="#testing">Testing</a><ul>
 <li><a href="#writing-unit-tests">Writing Unit Tests</a></li>
 <li><a href="#running-unit-tests">Running Unit Tests</a></li>
@@ -456,20 +457,7 @@ a code {
 </li>
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
 <li><a href="#using-transpilers">Using Transpilers</a></li>
-<li><a href="#example-apps">Example Apps</a><ul>
-<li><a href="#resource-example-app">Resource Example App</a></li>
-<li><a href="#trigger-example-app">Trigger Example App</a></li>
-<li><a href="#search-example-app">Search Example App</a></li>
-<li><a href="#create-example-app">Create Example App</a></li>
-<li><a href="#middleware-example-app">Middleware Example App</a></li>
-<li><a href="#basic-auth-example-app">Basic Auth Example App</a></li>
-<li><a href="#custom-auth-example-app">Custom Auth Example App</a></li>
-<li><a href="#oauth2-example-app">OAuth2 Example App</a></li>
-<li><a href="#session-auth-example-app">Session Auth Example App</a></li>
-<li><a href="#babel-example-app">Babel Example App</a></li>
-<li><a href="#rest-hooks-example-app">REST Hooks Example App</a></li>
-</ul>
-</li>
+<li><a href="#example-apps">Example Apps</a></li>
 <li><a href="#command-line-tab-completion">Command line Tab Completion</a><ul>
 <li><a href="#zsh-completion-script">Zsh Completion Script</a></li>
 <li><a href="#bash-completion-script">Bash Completion Script</a></li>
@@ -487,7 +475,7 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="requirements">Requirements</h2>
+      <h2 id="getting-started">Getting Started</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -496,7 +484,7 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>All Zapier CLI apps are run using Node.js <code>v4.3.2</code>.</p><p>You can develop using any version of Node you&apos;d like, but your code has to run on Node <code>v4.3.2</code>. Most developers will accomplish this by developing on their preferred version and then transpiling their with <a href="https://babeljs.io/">Babel</a> (or similar).</p><p>To ensure stability for our users, we also require that you run your tests on <code>v4.3.2</code> as well. If you don&apos;t have it available, we recommend using either <a href="https://github.com/creationix/nvm#installation">nvm</a> or <a href="https://github.com/tj/n#installation">n</a> to install <code>v4.3.2</code> and run the tests locally. In the case of NVM, you can use <code>nvm exec v4.3.2 zapier test</code> so you can run passing tests without having to switch versions while developing.</p>
+      <h3 id="what-is-an-app">What is an App?</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -505,112 +493,17 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="tutorial">Tutorial</h2>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Welcome to the Zapier Platform! In this tutorial, we&apos;ll walk you through the process of building, testing, and pushing an example app to Zapier. We&apos;ll use a fake/mock API for recipes in this example, but for production Zapier apps, you&apos;d want to connect to a real API.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="installing-the-cli">Installing the CLI</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To get started, first make sure that your dev environment meets the <a href="#requirements">requirements</a> for running the the platform. Once you have the proper version of Node.js, install the Zapier CLI tool.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash"><span class="hljs-comment"># install the CLI globally</span>
-npm install -g zapier-platform-cli
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The CLI is the primary tool for managing your apps. With it, you can validate and test apps locally, push apps so they are available on Zapier, and view logs for debugging. To see a list of all the available commands, try <code>zapier help</code>.</p><p>Now that your CLI is installed - you&apos;ll need to identify yourself via the CLI.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash"><span class="hljs-comment"># setup auth to Zapier&apos;s platform with a deploy key</span>
-zapier login
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Now your CLI is installed and ready to go! Zapier writes your deploy key to <code>~/.zapierrc</code>. You&apos;ll want to keep that file safe and not check it into source control.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="starting-an-app">Starting an App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To begin building an app, use the <code>init</code> command to setup the <a href="https://github.com/zapier/zapier-platform-example-app-minimal">needed structure</a>.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash"><span class="hljs-comment"># create a directory with the minimum required files</span>
-zapier init example-app
-<span class="hljs-comment"># move into the new directory</span>
-<span class="hljs-built_in">cd</span> example-app
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Inside the directory, you&apos;ll see a few files. <code>package.json</code> is a typical requirements file of any Node.js application. It&apos;s pre-populated with a few dependencies, most notably the <code>zapier-platform-core</code>, which is what makes your app work with the Zapier Platform. There is also an <code>index.js</code> file and a test directory (more on those later).</p><p>Before we go any further, we need to install the dependencies for our app:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">npm install
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="your-index-js-">Your <code>index.js</code></h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Right next to <code>package.json</code> should be <code>index.js</code>, which is the entry point to your app. This is where the Platform will look to understand how your app will interact with Zapier. Open it up in your editor of choice and let&apos;s take a look!</p><p>You&apos;ll see a few things in <code>index.js</code>:</p><ul>
-<li>we export a single <code>App</code> definition which will be interpreted by Zapier</li>
-<li>in <code>App</code> definition, <code>beforeRequest</code> &amp; <code>afterResponse</code> are hooks into the HTTP client to manipulate the request/response on every call</li>
-<li>in <code>App</code> definition, <code>triggers</code> will describe ways to trigger off of data in your app</li>
-<li>in <code>App</code> definition, <code>searches</code> will describe ways to find data in your app</li>
-<li>in <code>App</code> definition, <code>creates</code> will describe ways to create data in your app</li>
-<li>in <code>App</code> definition, <code>resources</code> are purely optional but convenient ways to describe CRUD-like objects in your app (see <a href="https://github.com/zapier/zapier-platform-example-app-resource">example resources app</a>)</li>
+      <p>A CLI App is an implementation of your app&apos;s API. You build a Node.js application
+that exports a sinlge object (<a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#appschema">JSON Schema</a>) and upload it to Zapier.
+Zapier introspects that definition to find out what your app is capable of and
+what options to present end users in the Zap Editor.</p><p>For those not familiar with Zapier terminology, here is how concepts in the CLI
+map to the end user experience:</p><ul>
+<li><a href="#authentication">Authentication</a>, (usually) which lets us know what credentials to ask users
+for. This is used during the &quot;Connect Accounts&quot; section of the Zap Editor.</li>
+<li><a href="#triggerssearchescreates">Triggers</a>, which read data <em>from</em> your API. These have theior own section in the Zap Editor.</li>
+<li><a href="#triggerssearchescreates">Creates</a>, which send data <em>to</em> your API to create new records. These are listed under &quot;Actions&quot; in the Zap Editor.</li>
+<li><a href="#triggerssearchescreates">Searches</a>, which find specific records <em>in</em> your system. These are also listed under &quot;Actions&quot; in the Zap Editor.</li>
+<li><a href="#resources">Resources</a>, which define an object type in your API (say a contact) and the operations available to perform on it. Tehse are automatically extracted into Triggers, Searches, and Creates.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -620,7 +513,7 @@ zapier init example-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="adding-a-trigger">Adding a Trigger</h3>
+      <h3 id="how-does-the-cli-platform-work">How does the CLI Platform Work</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -629,134 +522,10 @@ zapier init example-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Let&apos;s start by adding a <a href="https://zapier.com/developer/documentation/v2/triggers/"><strong>trigger</strong></a>. We will configure it to read data from a mocked API (in the future - your real app will use a real API, of course :-):</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">mkdir triggers
-touch triggers/recipe.js
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <blockquote>
-<p>Note: The <code>triggers</code> folder is simply a convention - we recommend it. Also, <code>recipe.js</code> is just an example name of a model - maybe you&apos;ll eventually make a <code>contact.js</code>, <code>lead.js</code> or <code>order.js</code>.</p>
-</blockquote><p>Open <code>triggers/recipe.js</code> (file created by <code>zapier init</code>) and <strong>replace</strong> it with:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> listRecipes = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  z.console.log(<span class="hljs-string">&apos;hello from a console log!&apos;</span>);
-  <span class="hljs-keyword">const</span> promise = z.request(<span class="hljs-string">&apos;http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes&apos;</span>);
-  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json);
-};
-
-<span class="hljs-built_in">module</span>.exports = {
-  <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;recipe&apos;</span>,
-  <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Recipe&apos;</span>,
-  <span class="hljs-attr">display</span>: {
-    <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Recipe&apos;</span>,
-    <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Trigger when a new recipe is added.&apos;</span>
-  },
-  <span class="hljs-attr">operation</span>: {
-    <span class="hljs-attr">perform</span>: listRecipes
-  }
-};
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Let&apos;s break down what is happening in this snippet!</p><p>First, look first at the function definition for <code>listRecipes</code>. You see that it handles the API work, making the HTTP request and returning a promise that will eventually yield a result.</p><blockquote>
-<p><em>Note</em>: If you&apos;re new to promises, they are essentially synchronous callbacks. The equivalent content of a callback should go inside the <code>.then()</code> portion of a promise.</p>
-</blockquote><p>The <code>listReceipes</code> function receives two arguments, a <code>z</code> object and a <code>bundle</code> object.</p><ul>
-<li>The <a href="#z-object">Z Object</a> is a collection of utilities needed when working with APIs. In our snippet, we use <code>z.request</code> to make the HTTP call and <code>z.JSON</code> to parse the response.</li>
-<li>The <a href="#bundle-object">Bundle Object</a> contains any data needed to make API calls, like authentication credentials or data for a POST body. In our snippet the Bundle is not used, since we don&apos;t require any of those to make our simple GET request.</li>
-</ul><blockquote>
-<p>Note about Z Object: While it is possible to accomplish the same tasks using alternate Node.js libraries, it&apos;s preferable to use the <code>z</code> object as there are features built into these utilities that augment the Zapier experience. For example, logging of HTTP calls and better handling of JSON parsing failures. <a href="#z-object">Read the docs</a> for more info.</p>
-</blockquote><p>Second, look at the second part of our snippet; the export. Essentially, we export some metadata plus our <code>listRecipes</code> function. We&apos;ll explain later how Zapier uses this metadata and exposes it to the end user. For now, know that it satisfies the minimum info required to define a trigger.</p><p>With our trigger defined, we need to incorporate it into our app.</p><p>In <code>index.js</code>, <strong>edit</strong> the file to include:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-comment">// Place this at the top of index.js</span>
-<span class="hljs-keyword">const</span> recipe = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;./triggers/recipe&apos;</span>);
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>With the trigger imported, we need to register it on our app by editing the existing <code>triggers</code> property.</p><p>In <code>index.js</code>, <strong>edit</strong> the <code>App</code>&apos;s <code>triggers</code> section to include:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-comment">// Edit the App definition to register our trigger</span>
-<span class="hljs-keyword">const</span> App = {
-  <span class="hljs-comment">// ...</span>
-  triggers: {
-    [recipe.key]: recipe <span class="hljs-comment">// new line of code</span>
-  },
-  <span class="hljs-comment">// ...</span>
-};
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Now, let&apos;s add a test to make sure our code is working properly.</p><p>In <code>test/index.js</code>, <strong>replace</strong> the file with:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> should = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;should&apos;</span>);
-
-<span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
-
-<span class="hljs-keyword">const</span> App = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../index&apos;</span>);
-<span class="hljs-keyword">const</span> appTester = zapier.createAppTester(App);
-
-describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
-
-  it(<span class="hljs-string">&apos;should load recipes&apos;</span>, (done) =&gt; {
-    <span class="hljs-keyword">const</span> bundle = {};
-
-    appTester(App.triggers.recipe.operation.perform, bundle)
-      .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
-        should(results.length).above(<span class="hljs-number">1</span>);
-
-        <span class="hljs-keyword">const</span> firstResult = results[<span class="hljs-number">0</span>];
-        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&apos;test result: &apos;</span>, firstResult)
-        should(firstResult.name).eql(<span class="hljs-string">&apos;name 1&apos;</span>);
-        should(firstResult.directions).eql(<span class="hljs-string">&apos;directions 1&apos;</span>);
-
-        done();
-      })
-      .catch(done);
-  });
-
-});
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You should be able to run the test with <code>zapier test</code> and see it pass:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier <span class="hljs-built_in">test</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   triggers</span>
-<span class="hljs-comment"># 200 GET http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes</span>
-<span class="hljs-comment">#     &#x2713; should load recipes (312ms)</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   1 passing (312ms)</span>
-<span class="hljs-comment">#</span>
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For this example, we&apos;ll stick to a single test, but you can see what multiple tests look like in our <a href="https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/test/triggers.js">this example</a>.</p>
+      <p>Zapier takes the App you upload and sends it over to Amazon Web Service&apos;s Lambda.
+We then make calls to execute the operations your App defines as we execute Zaps.
+Your App takes the input data we provide (if any), makes the necessary HTTP calls,
+and returns the relevant data, which gets fed back into Zapier.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -765,7 +534,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="modifying-a-trigger">Modifying a Trigger</h3>
+      <h3 id="cli-vs-the-web-builder-platform">CLI vs the Web Builder Platform</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -774,105 +543,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Let&apos;s say we want to let our users tweak the cuisine style of recipes they are triggering on. A classic way to do that with Zapier is to provide an input field a user can fill out.</p><p>In <code>triggers/recipe.js</code>, <strong>replace</strong> the file with:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> listRecipes = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  z.console.log(<span class="hljs-string">&apos;hello from a console log!&apos;</span>);
-  <span class="hljs-keyword">const</span> promise = z.request(<span class="hljs-string">&apos;http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes&apos;</span>, {
-    <span class="hljs-comment">// NEW CODE</span>
-    params: {
-      <span class="hljs-attr">style</span>: bundle.inputData.style
-    }
-  });
-  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> <span class="hljs-built_in">JSON</span>.parse(response.content));
-};
-
-<span class="hljs-built_in">module</span>.exports = {
-  <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;recipe&apos;</span>,
-  <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Recipe&apos;</span>,
-  <span class="hljs-attr">display</span>: {
-    <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Recipe&apos;</span>,
-    <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Trigger when a new recipe is added.&apos;</span>
-  },
-  <span class="hljs-attr">operation</span>: {
-    <span class="hljs-comment">// NEW CODE</span>
-    inputFields: [
-      {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;style&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">false</span>}
-    ],
-    <span class="hljs-attr">perform</span>: listRecipes
-  }
-};
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Notice that we now include and use an input field keyed <code>&quot;style&quot;</code>. We have to add it in two places:</p><ul>
-<li>In the <code>inputFields</code> on <code>operation</code> - this defines the field as exposed in the Zapier UI.</li>
-<li>In the <code>listRecipes</code> function - we use the provided style via the bundle <code>bundle.inputData.style</code>. Since the field is not required - it could be null!</li>
-</ul><p>Since we are developing locally, let&apos;s tweak the test to verify everything still works.</p><p>In <code>test/index.js</code>, <strong>replace</strong> the file with:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript">
-<span class="hljs-keyword">const</span> should = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;should&apos;</span>);
-
-<span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
-
-<span class="hljs-keyword">const</span> App = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../index&apos;</span>);
-<span class="hljs-keyword">const</span> appTester = zapier.createAppTester(App);
-
-describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
-
-  it(<span class="hljs-string">&apos;should load recipes&apos;</span>, (done) =&gt; {
-    <span class="hljs-keyword">const</span> triggerPointer = <span class="hljs-string">&apos;triggers.recipe&apos;</span>;
-    <span class="hljs-keyword">const</span> bundle = {
-      <span class="hljs-comment">// NEW CODE</span>
-      inputData: {
-        <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;mediterranean&apos;</span>
-      }
-    };
-
-    appTester(App.triggers.recipe.operation.perform, bundle)
-      .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
-        should(results.length).above(<span class="hljs-number">1</span>);
-
-        <span class="hljs-keyword">const</span> firstResult = results[<span class="hljs-number">0</span>];
-        <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&apos;test result: &apos;</span>, firstResult)
-        should(firstResult.name).eql(<span class="hljs-string">&apos;name 1&apos;</span>);
-        should(firstResult.directions).eql(<span class="hljs-string">&apos;directions 1&apos;</span>);
-
-        done();
-      })
-      .catch(done);
-  });
-
-});
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can run your test again and make sure everything still works:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier <span class="hljs-built_in">test</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   triggers</span>
-<span class="hljs-comment"># 200 GET http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes</span>
-<span class="hljs-comment">#     &#x2713; should load recipes (312ms)</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   1 passing (312ms)</span>
-<span class="hljs-comment">#</span>
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Looking good locally! Let&apos;s move on.</p>
+      <p>From a user perspective, both the CLI and the existing web builder platform offer the same experience. The biggest difference is how they&apos;re developed. The CLI takes a much more code-first approach, allowing you develop your Zapier app just like you would any other programming project. The web builder, on the other hand, is much better for folks who want to make an app with minimal coding involved. Both will continue to coexist, so pick whichever fits your needs best!</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -881,7 +552,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="deploying-an-app">Deploying an App</h3>
+      <h3 id="requirements">Requirements</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -890,50 +561,18 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>So far, everything we have done has been local, on your machine. It&apos;s been fun, but we want our app on Zapier.com so we can use it with the thousands of other integrations! To do so, we need to take our working local app and push it to Zapier.</p><p>Let&apos;s push a version of your app! You can can have many versions of an app, which simplifies making breaking changes and testing in the future. For now, we just need a single version pushed.</p><blockquote>
-<p>If this is your first time pushing your app version - we will ask you to provide a name so we can register your app - this is a one time thing!</p>
-</blockquote>
+      <p>All Zapier CLI apps are run using Node.js <code>v4.3.2</code>.</p><p>You can develop using any version of Node you&apos;d like, but your code has to run on Node <code>v4.3.2</code>. You can accomplish this by developing on your preferred version and then transpiling with <a href="https://babeljs.io/">Babel</a> (or similar).</p><p>To ensure stability for our users, we also require that you run your tests on <code>v4.3.2</code> as well. If you don&apos;t have it available, we recommend using either <a href="https://github.com/creationix/nvm#installation">nvm</a> or <a href="https://github.com/tj/n#installation">n</a> to install <code>v4.3.2</code> and run the tests locally.</p><p>For NVM on Mac (via <a href="http://brew.sh/">homebrew</a>):</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier push
-<span class="hljs-comment"># Preparing to build and upload your app.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Copying project to temp directory - done!</span>
-<span class="hljs-comment">#   Installing project dependencies - done!</span>
-<span class="hljs-comment">#   Applying entry point file - done!</span>
-<span class="hljs-comment">#   Validating project - done!</span>
-<span class="hljs-comment">#   Building app definition.json - done!</span>
-<span class="hljs-comment">#   Zipping project and dependencies - done!</span>
-<span class="hljs-comment">#   Cleaning up temp directory - done!</span>
-<span class="hljs-comment">#   Uploading version 1.0.0 - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Build and upload complete! You should see it in your Zapier editor at https://zapier.com/app/editor now!</span>
+      <pre><code class="lang-bash">brew install nvm
+nvm install v4.3.2
 </code></pre>
     </div>
   </div>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Now that your app version is properly pushed, log in and visit <a href="https://zapier.com/app/editor">https://zapier.com/app/editor</a> to create a Zap and check our progress.</p><p>You&apos;ll see the app listed as an available option for the first step. Selecting it, you&apos;ll see the &quot;New Recipe&quot; trigger. At this point, we&apos;ve come full circle on the trigger definition from earlier. Remember that, as part of the metadata, we defined a <code>display</code> property with a label and help text. Those properties control the info you see inside the Zapier UI.</p><p>As you click through, you&apos;ll see our input field &quot;style&quot; appear, which you can fill out. Once you finish setting up the step and test it, Zapier will run the <code>listRecipes</code> function associated with the trigger, which will make the API request and return the result to Zapier. If you are curious to see what HTTP requests Zapier makes at any point, you can use the <code>zapier logs</code> command to find out.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=http
-
-<span class="hljs-comment"># The logs of your app &quot;Example App&quot; listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; Status &#x2502; Method &#x2502; URL                                                    &#x2502; Querystring   &#x2502; Version &#x2502; Step                                 &#x2502; Timestamp                 &#x2502;</span>
-<span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
-<span class="hljs-comment"># &#x2502; 200    &#x2502; GET    &#x2502; http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes &#x2502; style=italian &#x2502; 1.0.0   &#x2502; a9055e16-fc0d-4fb2-a3e6-9d442d1f70e8 &#x2502; 2016-09-13T15:11:30-05:00 &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-<span class="hljs-comment">#   Most recent logs near the bottom.</span>
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Good work, we&apos;ve built a trigger locally and pushed it to Zapier.</p>
+      <p>You can then either swap to that version with <code>nvm use v4.3.2</code>, or do <code>nvm exec v4.3.2 zapier test</code> so you can run tests without having to switch versions while developing.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -942,158 +581,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="adding-authentication">Adding Authentication</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Up to this point we&apos;ve ignored something that is usually crucial to APIs: authentication. Zapier supports a number of different <a href="#authentication">authentication schemes</a>. For our app, we are going to set it up to include an API Key in a header.</p><p>For different types of authentication, see these example apps:</p><ul>
-<li><a href="https://github.com/zapier/zapier-platform-example-app-oauth2">OAuth 2</a></li>
-<li><a href="https://github.com/zapier/zapier-platform-example-app-basic-auth">Basic Auth</a></li>
-<li><a href="https://github.com/zapier/zapier-platform-example-app-session-auth">Session Auth</a></li>
-<li><a href="https://github.com/zapier/zapier-platform-example-app-custom-auth">API Key in query string</a></li>
-</ul><p>For this app, our API Key will go in the header. The first thing we need to do is define the <code>authentication</code> section on the app.</p><p>In <code>index.js</code>, <strong>edit</strong> <code>App</code> to include:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> App = {
-  <span class="hljs-comment">// ...</span>
-  authentication: {
-    <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;custom&apos;</span>,
-    <span class="hljs-attr">fields</span>: [
-      {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;apiKey&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>}
-    ],
-    <span class="hljs-attr">test</span>: <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-      <span class="hljs-keyword">const</span> promise = z.request(<span class="hljs-string">&apos;http://57b20fb546b57d1100a3c405.mockapi.io/api/me&apos;</span>);
-      <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
-        <span class="hljs-keyword">if</span> (response.status !== <span class="hljs-number">200</span>) {
-          <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&apos;Invalid API Key&apos;</span>);
-        }
-      });
-    }
-  },
-  <span class="hljs-comment">// ...</span>
-};
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>In the above snippet, we define the two required properties of <code>authentication</code>:</p><ul>
-<li><code>fields</code> is where we define our auth fields. This works similar to the <code>inputFields</code> of triggers. When users connect their account to Zapier, they&apos;ll be prompted to fill in this field, and the value they enter becomes available in the <code>bundle</code>. Not every authentication type will include <code>inputFields</code>.</li>
-<li><code>test</code> is a function used during the account connection process to verify that the user entered valid credentials. The goal of the function is to make an authenticated API request whose response indicates if the credentials are correct. A profile for the user, such as a <code>/me</code> endpoint, is a common choice. If valid, the test function can return anything. On invalid credentials, the test needs to raise an error.</li>
-</ul><p>With that setup, we now need to make sure that our API key is included in all the requests our app makes.</p><p>In <code>index.js</code>, <strong>edit</strong> the file to include:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-comment">// Add this helper function above the App definition</span>
-<span class="hljs-keyword">const</span> addApiKeyToHeader = <span class="hljs-function">(<span class="hljs-params">request, z, bundle</span>) =&gt;</span> {
-  request.headers[<span class="hljs-string">&apos;MY-AUTH-HEADER&apos;</span>] = bundle.authData.apiKey;
-  <span class="hljs-keyword">return</span> request;
-};
-
-<span class="hljs-comment">// const App = ...</span>
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Above we define a helper function, <code>addApiKeyToHeader</code>, that puts the user-provided API key in a request header called <code>MY-AUTH-HEADER</code>. The name chosen is illustrative, it can be whatever the API you are integrating with requires. Alternatively, you could put it in a query parameter instead of a header, and/or encode it first.</p><p>To make our helper function take effect, we need to register it on our app.</p><p>In <code>index.js</code>, <strong>edit</strong> <code>App</code> to include:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> App = {
-  <span class="hljs-comment">// ...</span>
-  beforeRequest: [
-    addApiKeyToHeader <span class="hljs-comment">// new line of code</span>
-  ],
-  <span class="hljs-comment">// ...</span>
-};
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>beforeRequest</code> is a list of functions that are called before every HTTP request that uses <code>z.request</code> or the default <code>perform</code> function. This lets you add headers, query params, or whatever is needed to be within <em>all outbound requests</em>. In our case, every HTTP request will now have the API key added in a header.</p><p>To check our progress, we need to re-push our app.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier push
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Go back to your Zap at <code>https://zapier.com</code>. You&apos;ll see a new &apos;Connect Account&apos; item in your &apos;New Recipe&apos; trigger. Add an account for our app (enter any value you like for the API key, the mock API does not care).</p><p>As soon as you add the account, Zapier will run our app&apos;s <code>authentication.test</code> function to confirm the credentials are valid.</p><p>We can verify the header is present in the request by looking at the logs again.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=http --detailed --limit=1
-
-<span class="hljs-comment"># The logs of your app &quot;Example App&quot; listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; Status              &#x2502; 200                                                                                    &#x2502;</span>
-<span class="hljs-comment"># &#x2502; Method              &#x2502; GET                                                                                    &#x2502;</span>
-<span class="hljs-comment"># &#x2502; URL                 &#x2502; http://57b20fb546b57d1100a3c405.mockapi.io/api/me                                      &#x2502;</span>
-<span class="hljs-comment"># &#x2502; Querystring         &#x2502;                                                                                        &#x2502;</span>
-<span class="hljs-comment"># &#x2502; Version             &#x2502; 1.0.0                                                                                  &#x2502;</span>
-<span class="hljs-comment"># &#x2502; Step                &#x2502;                                                                                        &#x2502;</span>
-<span class="hljs-comment"># &#x2502; Timestamp           &#x2502; 2016-09-16T15:57:51-05:00                                                              &#x2502;</span>
-<span class="hljs-comment"># &#x2502; Request Headers     &#x2502; user-agent: Zapier                                                                     &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; MY-AUTH-HEADER: :censored:6:b1af149262:                                                &#x2502;</span>
-<span class="hljs-comment"># &#x2502; Request Body        &#x2502;                                                                                        &#x2502;</span>
-<span class="hljs-comment"># &#x2502; Response Headers    &#x2502; server: Cowboy                                                                         &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; connection: close                                                                      &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; x-powered-by: Express                                                                  &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; access-control-allow-origin: *                                                         &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; access-control-allow-methods: GET,PUT,POST,DELETE,OPTIONS                              &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; access-control-allow-headers: X-Requested-With,Content-Type,Cache-Control,access_token &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; content-type: application/json                                                         &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; content-length: 59                                                                     &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; etag: &quot;-80491811&quot;                                                                      &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; vary: Accept-Encoding                                                                  &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; date: Fri, 16 Sep 2016 20:57:51 GMT                                                    &#x2502;</span>
-<span class="hljs-comment"># &#x2502;                     &#x2502; via: 1.1 vegur                                                                         &#x2502;</span>
-<span class="hljs-comment"># &#x2502; Response Body       &#x2502; [{&quot;id&quot;:&quot;1&quot;,&quot;createdAt&quot;:1473801403,&quot;userName&quot;:&quot;userName 1&quot;}]                            &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can see from the detailed log that the request included our auth header. The value appears as <code>:censored:6:b1af149262:</code>, which is intentional. Zapier does not log authentication credentials in plain text.</p><p>With that, we&apos;ve successfully added authentication to our app!</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="tutorial-next-steps">Tutorial Next Steps</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Congrats, you&apos;ve completed the tutorial! At this point we recommend reading up on the <a href="#z-object">Z Object</a> and <a href="#bundle-object">Bundle Object</a> to get a better idea of what is possible within the <code>perform</code> functions. You can also check out the other <a href="#example-apps">example apps</a> to see how to incorporate different authentication schemes into your app and how to implement things like searches and creates.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="quickstart">Quickstart</h2>
+      <h3 id="quick-setup-guide">Quick Setup Guide</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1103,7 +591,7 @@ describe(<span class="hljs-string">&apos;My App&apos;</span>, () =&gt; {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Be sure to check the <a href="#requirements">Requirements</a> before you start! Also, we recommend the <a href="#tutorial">Tutorial</a> for a more thorough introduction.</p>
+<p>Be sure to check the <a href="#requirements">Requirements</a> before you start! Also, we recommend the <a href="https://github.com/zapier/zapier-platform-cli/wiki/Tutorial">Tutorial</a> for a more thorough introduction.</p>
 </blockquote><p>First up is installing the CLI and setting up your auth to create a working &quot;Zapier Example&quot; application. It will be private to you and visible in your live <a href="https://zapier.com/app/editor">Zap editor</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1141,7 +629,7 @@ npm install
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># run the local tests</span>
-<span class="hljs-comment"># the same as npm test</span>
+<span class="hljs-comment"># the same as npm test, but adds some extra things to the environment</span>
 zapier <span class="hljs-built_in">test</span>
 </code></pre>
     </div>
@@ -1171,6 +659,24 @@ zapier push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="tutorial">Tutorial</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>For a full tutorial, head over to our <a href="https://github.com/zapier/zapier-platform-cli/wiki/Tutorial">wiki</a> for a comprehensive walkthrough for creating your first app. If this isn&apos;t your first rodeo, read on!</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h2 id="creating-a-local-app">Creating a Local App</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1181,7 +687,7 @@ zapier push
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Tip: check the <a href="#quickstart">Quickstart</a> if this is your first time using the platform!</p>
+<p>Tip: check the <a href="#quick-setup-guide">Quick Setup</a> if this is your first time using the platform!</p>
 </blockquote><p>Creating an App can be done entirely locally and they are fairly simple Node.js apps using the standard Node environment and should be completely testable. However, a local app stays local until you <code>zapier register</code>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1396,7 +902,7 @@ zapier versions
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="private-app-version-default-">Private App Version (default)</h3>
+      <h3 id="private-app-version-default">Private App Version (default)</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1726,7 +1232,13 @@ zapier convert 1234 .
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Zapier will handle most of the logic around the 3 step OAuth flow, but you&apos;ll be required to define how the steps work on your own. You&apos;ll also likely want to set your <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> as environment variables:</p>
+      <p>Zapier&apos;s OAuth2 implementation is based on the the <code>authorization_code</code> flow, similar to <a href="http://developer.github.com/v3/oauth/">GitHub</a> and <a href="https://developers.facebook.com/docs/authentication/server-side/">Facebook</a>. It looks like this:</p><ol>
+<li>Zapier sends the user to the authorization URL defined by your App</li>
+<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided (<code>zapier describe</code> to find out what it is)</li>
+<li>Zapier makes a call on the backend to your API to exchange the <code>code</code> for an <code>access_token</code></li>
+<li>Zapier remembers the <code>access_token</code> and makes calls on behalf of the user</li>
+<li>(Optionally) Zapier can refresh the token if it expires</li>
+</ol><p>You are required to define the authorization URL and the API call to fetch the access token. You&apos;ll also likely want to set your <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> as environment variables:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># setting the environment variables on Zapier.com</span>
@@ -1794,6 +1306,8 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   ]
   <span class="hljs-comment">// ...</span>
 };
+
+<span class="hljs-built_in">module</span>.exports = App;
 </code></pre>
     </div>
   </div>
@@ -1935,7 +1449,7 @@ above would result in an app with a New Recipe Trigger and an Add Recipe Create.
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="triggers-searches-creates">Triggers/Searches/Creates</h2>
+      <h2 id="triggerssearchescreates">Triggers/Searches/Creates</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1999,7 +1513,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>On each trigger, search or create in the <code>operation</code> directive - you can provide an array of objects as fields under the <code>inputFields</code>. Fields are what your users would see in the main Zapier user interface. For example, you might have a &quot;create contact&quot; action with fields like &quot;First name&quot;, &quot;Last name&quot;, &quot;Email&quot;, etc.</p><p>You can find more details on each and every field option at <a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#fieldschema">Field Schema</a>.</p><p>Those fields have various options you can provide, here is a succinct example:</p>
+      <p>On each trigger, search, or create in the <code>operation</code> directive - you can provide an array of objects as fields under the <code>inputFields</code>. Fields are what your users would see in the main Zapier user interface. For example, you might have a &quot;create contact&quot; action with fields like &quot;First name&quot;, &quot;Last name&quot;, &quot;Email&quot;, etc.</p><p>You can find more details on each and every field option at <a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#fieldschema">Field Schema</a>.</p><p>Those fields have various options you can provide, here is a succinct example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> App = {
@@ -2024,7 +1538,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="custom-dynamic-fields">Custom/Dynamic Fields</h3>
+      <h3 id="customdynamic-fields">Custom/Dynamic Fields</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2067,6 +1581,35 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Additionally, if there is a field that affects the generation of dynamic fields, you can set the <code>altersDynamicFields: true</code> property. This informs the Zapier UI that whenver the value of that field changes, fields need to be recomputed. An example could be a static dropdown of &quot;dessert type&quot; that will change whether the function that generates dynamic fields includes a field &quot;with sprinkles.&quot;</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;dessert&apos;</span>,
+  <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Dessert&apos;</span>,
+  <span class="hljs-attr">display</span>: {
+    <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Order Dessert&apos;</span>,
+    <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Orders a dessert.&apos;</span>
+  },
+  <span class="hljs-attr">operation</span>: {
+    <span class="hljs-attr">inputFields</span>: [
+      {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;type&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">choices</span>: {<span class="hljs-number">1</span>: <span class="hljs-string">&apos;cake&apos;</span>, <span class="hljs-number">2</span>: <span class="hljs-string">&apos;ice cream&apos;</span>, <span class="hljs-number">3</span>: <span class="hljs-string">&apos;cookie&apos;</span>}, <span class="hljs-attr">altersDynamicFields</span>: <span class="hljs-literal">true</span>},
+      <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">z, bundle</span>) </span>{
+        <span class="hljs-keyword">if</span> (bundle.inputData.type === <span class="hljs-string">&apos;2&apos;</span>) {
+          <span class="hljs-keyword">return</span> [{<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;with_sprinkles&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;boolean&apos;</span>}];
+        }
+        <span class="hljs-keyword">return</span> [];
+      }
+    ],
+    <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">z, bundle</span>) </span>{<span class="hljs-comment">/* ... */</span>}
+  }
+};
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h3 id="dynamic-dropdowns">Dynamic Dropdowns</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -2076,9 +1619,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can provide a <code>resource</code> directive on your field which will point to a resource&apos;s key and will use the list directive to put down the options dynamically.</p><blockquote>
-<p>Dynamic dropdowns are one of the few fields that &quot;automatically&quot; invalidates our field cache when relying on custom fields.</p>
-</blockquote>
+      <p>Sometimes, API endpoints require clients to specify a parent object in order to create or access the child resources. Imagine having to specify a company id in order to get a list of employees for that company. Since people don&apos;t speak in auto-incremented ID&apos;s, it is necessary that Zapier offer a simple way to select that parent using human readable handles.</p><p>Our solution is to present users a dropdown that is populated by making a live API call to fetch a list of parent objects. We call these special dropdowns &quot;dynamic dropdowns.&quot;</p><p>To define one, you can provide the <code>dynamic</code> property on your field to specify the trigger that should be used to populate the options for the dropdown. The value for the property is a dot-seperated concatination of a trigger&apos;s key, the field to use for the value, and the field to use for the label.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> App = {
@@ -2090,7 +1631,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       list: {
         <span class="hljs-comment">//...</span>
         operation: {
-          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {} <span class="hljs-comment">// called for project_id dropdown</span>
+          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> { <span class="hljs-keyword">return</span> [{<span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span>}]; } <span class="hljs-comment">// called for project_id dropdown</span>
         }
       }
     },
@@ -2101,16 +1642,81 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         <span class="hljs-comment">//...</span>
         operation: {
           <span class="hljs-attr">inputFields</span>: [
-            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>, <span class="hljs-attr">resource</span>: <span class="hljs-string">&apos;project&apos;</span>}, <span class="hljs-comment">// calls project.list</span>
+            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>, <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>}, <span class="hljs-comment">// calls project.list</span>
             {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>},
           ],
-          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {}
         }
       }
     }
   }
 };
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>In the UI, users will see something like this:</p><p><img src="https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png" alt="screenshot of dynamic dropdown in Zap Editor"></p><blockquote>
+<p>Dynamic dropdowns are one of the few fields that automatically invalidate Zapier&apos;s field cache, so it is not necessary to set <code>altersDynamicFields</code> to true for these fields.</p>
+</blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="search-powered-fields">Search-Powered Fields</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>For fields that take id of another object to create a relationship between the two (EG: a project id for a ticket), you can specify the <code>search</code> property on the field to indicate that Zapier needs to prompt the user to setup a Search step to populate the value for this field. Similar to dynamic dropdowns, the value for this property is a dot-seperated concatination of a search&apos;s key and the field to use for the value.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">//...</span>
+  resources: {
+    <span class="hljs-attr">project</span>: {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project&apos;</span>,
+      <span class="hljs-comment">//...</span>
+      search: {
+        <span class="hljs-comment">//...</span>
+        operation: {
+          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> { <span class="hljs-keyword">return</span> [{<span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span>}]; } <span class="hljs-comment">// called for project_id</span>
+        }
+      }
+    },
+    <span class="hljs-attr">issue</span>: {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
+      <span class="hljs-comment">//...</span>
+      create: {
+        <span class="hljs-comment">//...</span>
+        operation: {
+          <span class="hljs-attr">inputFields</span>: [
+            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>, <span class="hljs-attr">search</span>: <span class="hljs-string">&apos;projectSearch.id&apos;</span>}, <span class="hljs-comment">// calls project.search</span>
+            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>},
+          ],
+        }
+      }
+    }
+  }
+};
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>This can be combined with the <code>dynamic</code> property to give the user a guided experience when setting up a Zap.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -2136,7 +1742,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-request-url-options-"><code>z.request([url], options)</code></h3>
+      <h3 id="zrequesturl-options"><code>z.request([url], options)</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2154,7 +1760,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-console-message-"><code>z.console(message)</code></h3>
+      <h3 id="zconsolemessage"><code>z.console(message)</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2172,7 +1778,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-dehydrate-func-inputdata-"><code>z.dehydrate(func, inputData)</code></h3>
+      <h3 id="zdehydratefunc-inputdata"><code>z.dehydrate(func, inputData)</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2190,7 +1796,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-stashfile-bufferstringstream-knownlength-filename-"><code>z.stashFile(bufferStringStream, [knownLength], [filename])</code></h3>
+      <h3 id="zstashfilebufferstringstream-knownlength-filename"><code>z.stashFile(bufferStringStream, [knownLength], [filename])</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2208,7 +1814,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-json-"><code>z.JSON</code></h3>
+      <h3 id="zjson"><code>z.JSON</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2226,7 +1832,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-hash-"><code>z.hash()</code></h3>
+      <h3 id="zhash"><code>z.hash()</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2244,7 +1850,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-errors-"><code>z.errors</code></h3>
+      <h3 id="zerrors"><code>z.errors</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2253,7 +1859,11 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>z.errors</code> is a collection error classes that you can throw in your code, like <code>throw new z.errors.HaltedError(&apos;...&apos;)</code></p>
+      <p><code>z.errors</code> is a collection error classes that you can throw in your code, like <code>throw new z.errors.HaltedError(&apos;...&apos;)</code>.</p><p>The available errors are:</p><ul>
+<li>HaltedError - Stops current operation, but will never turn off Zap. Read more on <a href="#halting-execution">Halting Execution</a></li>
+<li>ExpiredAuthError - Turns of Zap and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+<li>RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+</ul><p>For more details on error handling in general, see <a href="#error-handling">here</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2282,7 +1892,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-bundle-authdata-"><code>bundle.authData</code></h3>
+      <h3 id="bundleauthdata"><code>bundle.authData</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2300,7 +1910,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-bundle-inputdata-"><code>bundle.inputData</code></h3>
+      <h3 id="bundleinputdata"><code>bundle.inputData</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2322,7 +1932,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-bundle-inputdataraw-"><code>bundle.inputDataRaw</code></h3>
+      <h3 id="bundleinputdataraw"><code>bundle.inputDataRaw</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2344,7 +1954,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-bundle-meta-"><code>bundle.meta</code></h3>
+      <h3 id="bundlemeta"><code>bundle.meta</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3181,6 +2791,106 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="error-handling">Error Handling</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>APIs are not always available. Users do not always input data correctly to
+formulate valid requests. Thus, it is a good idea to write apps defensively and
+plan for 4xx and 5xx responses from APIs. Without proper handling, errors often
+have incomprehensible messages for end users, or possibly go uncaught.</p><p>Zapier provides a couple tools to help with error handling. First is the <code>afterResponse</code>
+middleware (<a href="#using-http-middleware">docs</a>), which provides a hook for processing
+all responses from HTTP calls. The other tool is the collection of errors in
+<code>z.errors</code> (<a href="#zerrors">docs</a>), which control the behavior of Zaps when
+various kinds of errors occurr.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="general-errors">General Errors</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Errors due to a misconfiguration in a user&apos;s Zap should be handled in your app
+by throwing a standard JavaScript <code>Error</code> with a user-friendly message.
+Typically, this will be prettifying 4xx responses or API&apos;s that return errors as
+200s with a payload that describes the error.</p><p>Example: <code>throw new Error(&apos;Your error message.&apos;);</code></p><p>A couple best practices to keep in mind:</p><ul>
+<li>Elaborate on terse messages. &quot;not_authenticated&quot; -&gt; &quot;Your API Key is invalid. Please reconnect your account.&quot;</li>
+<li>If the error calls out a specific field, surface that information to the user. &quot;Invald Request&quot; -&gt; &quot;contact name is invalid&quot;</li>
+<li>If the error provides details about why a field is invalid, add that in too! &quot;contact name is invalid&quot; -&gt; &quot;contact name is too long&quot;</li>
+</ul><p>Note that if a Zap raises too many error messages it will be automatically
+turned off, so only use these if the scenario is truly an error that needs to
+be fixed.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="halting-execution">Halting Execution</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Any operation can be interrupted or &quot;halted&quot; (not success, not error, but
+stopped for some specific reason) with a <code>HaltedError</code>. You might find yourself
+using this error in cases where a required pre-condition is not met. For instance,
+in a create to add an email address to a list where duplicates are not allowed,
+you would want to throw a <code>HaltedError</code> if the Zap attempted to add a duplicate.
+This would indicate failure, but it would be treated as a soft failure.</p><p>Unlike throwing <code>Error</code>, a Zap will never by turned off when this error is thrown
+(even if it is raised more often than not).</p><p>Example: <code>throw new HaltedError(&apos;Your reason.&apos;);</code></p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="stale-authentication-credentials">Stale Authentication Credentials</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>For apps that require manual refresh of authorization on a regular basis, Zapier
+provides a mechanism to notify users of expired credentials. With the
+<code>ExpiredAuthError</code>, the current operation is interrupted, the Zap is turned off
+(to prevent more calls with expired credentials), and a predefined email is sent
+out informing the user to refresh the credentials.</p><p>Example: <code>throw new ExpiredAuthError(&apos;Your message.&apos;);</code></p><p>For apps that use OAuth2 + refresh or Session Auth, you can use the
+<code>RefreshAuthError</code>. This will signal Zapier to refresh the credentials and then
+repeat the failed operation.</p><p>Example: <code>throw new RefreshAuthError();</code></p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h2 id="testing">Testing</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -3288,7 +2998,7 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="testing-environment-variables">Testing &amp; Environment Variables</h3>
+      <h3 id="testing--environment-variables">Testing &amp; Environment Variables</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3358,7 +3068,7 @@ zapier <span class="hljs-built_in">test</span>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="testing-in-your-ci-jenkins-travis-etc-">Testing in your CI (Jenkins/Travis/etc.)</h3>
+      <h3 id="testing-in-your-ci-jenkinstravisetc">Testing in your CI (Jenkins/Travis/etc.)</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3500,205 +3210,7 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Check out the following example applications to help you get started:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="resource-example-app">Resource Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-resource">https://github.com/zapier/zapier-platform-example-app-resource</a> - <code>zapier init . --template=resource</code></p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="trigger-example-app">Trigger Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-trigger">https://github.com/zapier/zapier-platform-example-app-trigger</a> - <code>zapier init . --template=trigger</code></p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="search-example-app">Search Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-search">https://github.com/zapier/zapier-platform-example-app-search</a> - <code>zapier init . --template=search</code></p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="create-example-app">Create Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-create">https://github.com/zapier/zapier-platform-example-app-create</a> - <code>zapier init . --template=create</code></p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="middleware-example-app">Middleware Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-middleware">https://github.com/zapier/zapier-platform-example-app-middleware</a> - <code>zapier init . --template=middleware</code></p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="basic-auth-example-app">Basic Auth Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-basic-auth">https://github.com/zapier/zapier-platform-example-app-basic-auth</a> - <code>zapier init . --template=basic-auth</code></p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="custom-auth-example-app">Custom Auth Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-custom-auth">https://github.com/zapier/zapier-platform-example-app-custom-auth</a> - <code>zapier init . --template=custom-auth</code></p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="oauth2-example-app">OAuth2 Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-oauth2">https://github.com/zapier/zapier-platform-example-app-oauth2</a> - <code>zapier init . --template=oauth2</code></p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="session-auth-example-app">Session Auth Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-session-auth">https://github.com/zapier/zapier-platform-example-app-session-auth</a> - <code>zapier init . --template=session-auth</code></p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="babel-example-app">Babel Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-babel">https://github.com/zapier/zapier-platform-example-app-babel</a> - <code>zapier init . --template=babel</code></p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="rest-hooks-example-app">REST Hooks Example App</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><a href="https://github.com/zapier/zapier-platform-example-app-rest-hooks">https://github.com/zapier/zapier-platform-example-app-rest-hooks</a> - <code>zapier init . --template=rest-hooks</code></p>
+      <p>See <a href="https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps">the wiki</a> for a full list of working examples (and installation instructions).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3832,7 +3344,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="publishing-of-the-cli-after-merging-">Publishing of the CLI (after merging)</h2>
+      <h2 id="publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3854,7 +3366,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="get-help-">Get Help!</h2>
+      <h2 id="get-help">Get Help!</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3863,7 +3375,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can get help by either emailing partners@zapier.com or by joining our beta Slack channel <a href="https://zapier-platform-slack.herokuapp.com">https://zapier-platform-slack.herokuapp.com</a>.</p>
+      <p>You can get help by either emailing partners@zapier.com or by joining our Slack channel <a href="https://zapier-platform-slack.herokuapp.com">https://zapier-platform-slack.herokuapp.com</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

@@ -1,6 +1,16 @@
-# Zapier Platform CLI
+<h1 align="center">
+  <a href="https://zapier.com"><img src="https://cdn.rawgit.com/zapier/zapier-platform-cli/master/goodies/zapier-logomark.png" alt="Zapier" width="200"></a>
+  <br>
+  Zapier Platform CLI
+  <br>
+  <br>
+</h1>
 
-> Warning - this is currently beta software! Join our beta Slack channel https://zapier-platform-slack.herokuapp.com.
+<p align="center">
+  <a href="https://travis-ci.org/zapier/zapier-platform-cli"><img src="https://img.shields.io/travis/zapier/zapier-platform-cli/master.svg" alt="Travis"></a>
+  <a href="https://www.npmjs.com/package/zapier-platform-cli"><img src="ttps://img.shields.io/npm/v/zapier-platform-cli.svg" alt="npm version"></a>
+  <!--possible downloads badge too, once that's good-->
+</p>
 
 Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.
 
@@ -12,461 +22,57 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 <!-- tocstop -->
 
 
-## Requirements
+## Getting Started
+
+### What is an App?
+
+A CLI App is an implementation of your app's API. You build a Node.js application
+that exports a sinlge object ([JSON Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#appschema)) and upload it to Zapier.
+Zapier introspects that definition to find out what your app is capable of and
+what options to present end users in the Zap Editor.
+
+For those not familiar with Zapier terminology, here is how concepts in the CLI
+map to the end user experience:
+
+ * [Authentication](#authentication), (usually) which lets us know what credentials to ask users
+   for. This is used during the "Connect Accounts" section of the Zap Editor.
+ * [Triggers](#triggerssearchescreates), which read data *from* your API. These have theior own section in the Zap Editor.
+ * [Creates](#triggerssearchescreates), which send data *to* your API to create new records. These are listed under "Actions" in the Zap Editor.
+ * [Searches](#triggerssearchescreates), which find specific records *in* your system. These are also listed under "Actions" in the Zap Editor.
+ * [Resources](#resources), which define an object type in your API (say a contact) and the operations available to perform on it. Tehse are automatically extracted into Triggers, Searches, and Creates.
+
+### How does the CLI Platform Work
+
+Zapier takes the App you upload and sends it over to Amazon Web Service's Lambda.
+We then make calls to execute the operations your App defines as we execute Zaps.
+Your App takes the input data we provide (if any), makes the necessary HTTP calls,
+and returns the relevant data, which gets fed back into Zapier.
+
+### CLI vs the Web Builder Platform
+
+From a user perspective, both the CLI and the existing web builder platform offer the same experience. The biggest difference is how they're developed. The CLI takes a much more code-first approach, allowing you develop your Zapier app just like you would any other programming project. The web builder, on the other hand, is much better for folks who want to make an app with minimal coding involved. Both will continue to coexist, so pick whichever fits your needs best!
+
+### Requirements
 
 All Zapier CLI apps are run using Node.js `LAMBDA_VERSION`.
 
-You can develop using any version of Node you'd like, but your code has to run on Node `LAMBDA_VERSION`. Most developers will accomplish this by developing on their preferred version and then transpiling their with [Babel](https://babeljs.io/) (or similar).
+You can develop using any version of Node you'd like, but your code has to run on Node `LAMBDA_VERSION`. You can accomplish this by developing on your preferred version and then transpiling with [Babel](https://babeljs.io/) (or similar).
 
-To ensure stability for our users, we also require that you run your tests on `LAMBDA_VERSION` as well. If you don't have it available, we recommend using either [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation) to install `LAMBDA_VERSION` and run the tests locally. In the case of NVM, you can use `nvm exec LAMBDA_VERSION zapier test` so you can run passing tests without having to switch versions while developing.
+To ensure stability for our users, we also require that you run your tests on `LAMBDA_VERSION` as well. If you don't have it available, we recommend using either [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation) to install `LAMBDA_VERSION` and run the tests locally.
 
-## Tutorial
-
-Welcome to the Zapier Platform! In this tutorial, we'll walk you through the process of building, testing, and pushing an example app to Zapier. We'll use a fake/mock API for recipes in this example, but for production Zapier apps, you'd want to connect to a real API.
-
-### Installing the CLI
-
-To get started, first make sure that your dev environment meets the [requirements](#requirements) for running the the platform. Once you have the proper version of Node.js, install the Zapier CLI tool.
+For NVM on Mac (via [homebrew](http://brew.sh/)):
 
 ```bash
-# install the CLI globally
-npm install -g zapier-platform-cli
+brew install nvm
+nvm install v4.3.2
 ```
 
-The CLI is the primary tool for managing your apps. With it, you can validate and test apps locally, push apps so they are available on Zapier, and view logs for debugging. To see a list of all the available commands, try `zapier help`.
+You can then either swap to that version with `nvm use v4.3.2`, or do `nvm exec LAMBDA_VERSION zapier test` so you can run tests without having to switch versions while developing.
 
-Now that your CLI is installed - you'll need to identify yourself via the CLI.
 
-```bash
-# setup auth to Zapier's platform with a deploy key
-zapier login
-```
+### Quick Setup Guide
 
-Now your CLI is installed and ready to go! Zapier writes your deploy key to `~/.zapierrc`. You'll want to keep that file safe and not check it into source control.
-
-### Starting an App
-
-To begin building an app, use the `init` command to setup the [needed structure](https://github.com/zapier/zapier-platform-example-app-minimal).
-
-```bash
-# create a directory with the minimum required files
-zapier init example-app
-# move into the new directory
-cd example-app
-```
-
-Inside the directory, you'll see a few files. `package.json` is a typical requirements file of any Node.js application. It's pre-populated with a few dependencies, most notably the `zapier-platform-core`, which is what makes your app work with the Zapier Platform. There is also an `index.js` file and a test directory (more on those later).
-
-Before we go any further, we need to install the dependencies for our app:
-
-```bash
-npm install
-```
-
-### Your `index.js`
-
-Right next to `package.json` should be `index.js`, which is the entry point to your app. This is where the Platform will look to understand how your app will interact with Zapier. Open it up in your editor of choice and let's take a look!
-
-You'll see a few things in `index.js`:
-
- * we export a single `App` definition which will be interpreted by Zapier
- * in `App` definition, `beforeRequest` & `afterResponse` are hooks into the HTTP client to manipulate the request/response on every call
- * in `App` definition, `triggers` will describe ways to trigger off of data in your app
- * in `App` definition, `searches` will describe ways to find data in your app
- * in `App` definition, `creates` will describe ways to create data in your app
- * in `App` definition, `resources` are purely optional but convenient ways to describe CRUD-like objects in your app (see [example resources app](https://github.com/zapier/zapier-platform-example-app-resource))
-
-### Adding a Trigger
-
-Let's start by adding a [**trigger**](https://zapier.com/developer/documentation/v2/triggers/). We will configure it to read data from a mocked API (in the future - your real app will use a real API, of course :-):
-
-```bash
-mkdir triggers
-touch triggers/recipe.js
-```
-
-> Note: The `triggers` folder is simply a convention - we recommend it. Also, `recipe.js` is just an example name of a model - maybe you'll eventually make a `contact.js`, `lead.js` or `order.js`.
-
-Open `triggers/recipe.js` (file created by `zapier init`) and **replace** it with:
-
-```javascript
-const listRecipes = (z, bundle) => {
-  z.console.log('hello from a console log!');
-  const promise = z.request('http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes');
-  return promise.then((response) => response.json);
-};
-
-module.exports = {
-  key: 'recipe',
-  noun: 'Recipe',
-  display: {
-    label: 'New Recipe',
-    description: 'Trigger when a new recipe is added.'
-  },
-  operation: {
-    perform: listRecipes
-  }
-};
-```
-
-Let's break down what is happening in this snippet!
-
-First, look first at the function definition for `listRecipes`. You see that it handles the API work, making the HTTP request and returning a promise that will eventually yield a result.
-
-> *Note*: If you're new to promises, they are essentially synchronous callbacks. The equivalent content of a callback should go inside the `.then()` portion of a promise.
-
-The `listReceipes` function receives two arguments, a `z` object and a `bundle` object.
-
-* The [Z Object](#z-object) is a collection of utilities needed when working with APIs. In our snippet, we use `z.request` to make the HTTP call and `z.JSON` to parse the response.
-* The [Bundle Object](#bundle-object) contains any data needed to make API calls, like authentication credentials or data for a POST body. In our snippet the Bundle is not used, since we don't require any of those to make our simple GET request.
-
-> Note about Z Object: While it is possible to accomplish the same tasks using alternate Node.js libraries, it's preferable to use the `z` object as there are features built into these utilities that augment the Zapier experience. For example, logging of HTTP calls and better handling of JSON parsing failures. [Read the docs](#z-object) for more info.
-
-Second, look at the second part of our snippet; the export. Essentially, we export some metadata plus our `listRecipes` function. We'll explain later how Zapier uses this metadata and exposes it to the end user. For now, know that it satisfies the minimum info required to define a trigger.
-
-With our trigger defined, we need to incorporate it into our app.
-
-In `index.js`, **edit** the file to include:
-
-```javascript
-// Place this at the top of index.js
-const recipe = require('./triggers/recipe');
-```
-
-With the trigger imported, we need to register it on our app by editing the existing `triggers` property.
-
-In `index.js`, **edit** the `App`'s `triggers` section to include:
-
-```javascript
-// Edit the App definition to register our trigger
-const App = {
-  // ...
-  triggers: {
-    [recipe.key]: recipe // new line of code
-  },
-  // ...
-};
-```
-
-Now, let's add a test to make sure our code is working properly.
-
-In `test/index.js`, **replace** the file with:
-
-```javascript
-const should = require('should');
-
-const zapier = require('zapier-platform-core');
-
-const App = require('../index');
-const appTester = zapier.createAppTester(App);
-
-describe('My App', () => {
-
-  it('should load recipes', (done) => {
-    const bundle = {};
-
-    appTester(App.triggers.recipe.operation.perform, bundle)
-      .then(results => {
-        should(results.length).above(1);
-
-        const firstResult = results[0];
-        console.log('test result: ', firstResult)
-        should(firstResult.name).eql('name 1');
-        should(firstResult.directions).eql('directions 1');
-
-        done();
-      })
-      .catch(done);
-  });
-
-});
-```
-
-You should be able to run the test with `zapier test` and see it pass:
-
-```bash
-zapier test
-#
-#   triggers
-# 200 GET http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes
-#     ✓ should load recipes (312ms)
-#
-#   1 passing (312ms)
-#
-```
-
-For this example, we'll stick to a single test, but you can see what multiple tests look like in our [this example](https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/test/triggers.js).
-
-### Modifying a Trigger
-
-Let's say we want to let our users tweak the cuisine style of recipes they are triggering on. A classic way to do that with Zapier is to provide an input field a user can fill out.
-
-In `triggers/recipe.js`, **replace** the file with:
-
-```javascript
-const listRecipes = (z, bundle) => {
-  z.console.log('hello from a console log!');
-  const promise = z.request('http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes', {
-    // NEW CODE
-    params: {
-      style: bundle.inputData.style
-    }
-  });
-  return promise.then((response) => JSON.parse(response.content));
-};
-
-module.exports = {
-  key: 'recipe',
-  noun: 'Recipe',
-  display: {
-    label: 'New Recipe',
-    description: 'Trigger when a new recipe is added.'
-  },
-  operation: {
-    // NEW CODE
-    inputFields: [
-      {key: 'style', type: 'string', required: false}
-    ],
-    perform: listRecipes
-  }
-};
-```
-
-Notice that we now include and use an input field keyed `"style"`. We have to add it in two places:
-
-* In the `inputFields` on `operation` - this defines the field as exposed in the Zapier UI.
-* In the `listRecipes` function - we use the provided style via the bundle `bundle.inputData.style`. Since the field is not required - it could be null!
-
-Since we are developing locally, let's tweak the test to verify everything still works.
-
-In `test/index.js`, **replace** the file with:
-
-```javascript
-
-const should = require('should');
-
-const zapier = require('zapier-platform-core');
-
-const App = require('../index');
-const appTester = zapier.createAppTester(App);
-
-describe('My App', () => {
-
-  it('should load recipes', (done) => {
-    const triggerPointer = 'triggers.recipe';
-    const bundle = {
-      // NEW CODE
-      inputData: {
-        style: 'mediterranean'
-      }
-    };
-
-    appTester(App.triggers.recipe.operation.perform, bundle)
-      .then(results => {
-        should(results.length).above(1);
-
-        const firstResult = results[0];
-        console.log('test result: ', firstResult)
-        should(firstResult.name).eql('name 1');
-        should(firstResult.directions).eql('directions 1');
-
-        done();
-      })
-      .catch(done);
-  });
-
-});
-```
-
-You can run your test again and make sure everything still works:
-
-```bash
-zapier test
-#
-#   triggers
-# 200 GET http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes
-#     ✓ should load recipes (312ms)
-#
-#   1 passing (312ms)
-#
-```
-
-Looking good locally! Let's move on.
-
-### Deploying an App
-
-So far, everything we have done has been local, on your machine. It's been fun, but we want our app on Zapier.com so we can use it with the thousands of other integrations! To do so, we need to take our working local app and push it to Zapier.
-
-Let's push a version of your app! You can can have many versions of an app, which simplifies making breaking changes and testing in the future. For now, we just need a single version pushed.
-
-> If this is your first time pushing your app version - we will ask you to provide a name so we can register your app - this is a one time thing!
-
-```bash
-zapier push
-# Preparing to build and upload your app.
-#
-#   Copying project to temp directory - done!
-#   Installing project dependencies - done!
-#   Applying entry point file - done!
-#   Validating project - done!
-#   Building app definition.json - done!
-#   Zipping project and dependencies - done!
-#   Cleaning up temp directory - done!
-#   Uploading version 1.0.0 - done!
-#
-# Build and upload complete! You should see it in your Zapier editor at https://zapier.com/app/editor now!
-```
-
-Now that your app version is properly pushed, log in and visit [https://zapier.com/app/editor](https://zapier.com/app/editor) to create a Zap and check our progress.
-
-You'll see the app listed as an available option for the first step. Selecting it, you'll see the "New Recipe" trigger. At this point, we've come full circle on the trigger definition from earlier. Remember that, as part of the metadata, we defined a `display` property with a label and help text. Those properties control the info you see inside the Zapier UI.
-
-As you click through, you'll see our input field "style" appear, which you can fill out. Once you finish setting up the step and test it, Zapier will run the `listRecipes` function associated with the trigger, which will make the API request and return the result to Zapier. If you are curious to see what HTTP requests Zapier makes at any point, you can use the `zapier logs` command to find out.
-
-```bash
-zapier logs --type=http
-
-# The logs of your app "Example App" listed below.
-#
-# ┌────────┬────────┬────────────────────────────────────────────────────────┬───────────────┬─────────┬──────────────────────────────────────┬───────────────────────────┐
-# │ Status │ Method │ URL                                                    │ Querystring   │ Version │ Step                                 │ Timestamp                 │
-# ├────────┼────────┼────────────────────────────────────────────────────────┼───────────────┼─────────┼──────────────────────────────────────┼───────────────────────────┤
-# │ 200    │ GET    │ http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes │ style=italian │ 1.0.0   │ a9055e16-fc0d-4fb2-a3e6-9d442d1f70e8 │ 2016-09-13T15:11:30-05:00 │
-# └────────┴────────┴────────────────────────────────────────────────────────┴───────────────┴─────────┴──────────────────────────────────────┴───────────────────────────┘
-#   Most recent logs near the bottom.
-```
-
-Good work, we've built a trigger locally and pushed it to Zapier.
-
-### Adding Authentication
-
-Up to this point we've ignored something that is usually crucial to APIs: authentication. Zapier supports a number of different [authentication schemes](#authentication). For our app, we are going to set it up to include an API Key in a header.
-
-For different types of authentication, see these example apps:
-
-* [OAuth 2](https://github.com/zapier/zapier-platform-example-app-oauth2)
-* [Basic Auth](https://github.com/zapier/zapier-platform-example-app-basic-auth)
-* [Session Auth](https://github.com/zapier/zapier-platform-example-app-session-auth)
-* [API Key in query string](https://github.com/zapier/zapier-platform-example-app-custom-auth)
-
-For this app, our API Key will go in the header. The first thing we need to do is define the `authentication` section on the app.
-
-In `index.js`, **edit** `App` to include:
-
-```javascript
-const App = {
-  // ...
-  authentication: {
-    type: 'custom',
-    fields: [
-      {key: 'apiKey', type: 'string'}
-    ],
-    test: (z, bundle) => {
-      const promise = z.request('http://57b20fb546b57d1100a3c405.mockapi.io/api/me');
-      return promise.then((response) => {
-        if (response.status !== 200) {
-          throw new Error('Invalid API Key');
-        }
-      });
-    }
-  },
-  // ...
-};
-```
-
-In the above snippet, we define the two required properties of `authentication`:
-
-* `fields` is where we define our auth fields. This works similar to the `inputFields` of triggers. When users connect their account to Zapier, they'll be prompted to fill in this field, and the value they enter becomes available in the `bundle`. Not every authentication type will include `inputFields`.
-* `test` is a function used during the account connection process to verify that the user entered valid credentials. The goal of the function is to make an authenticated API request whose response indicates if the credentials are correct. A profile for the user, such as a `/me` endpoint, is a common choice. If valid, the test function can return anything. On invalid credentials, the test needs to raise an error.
-
-With that setup, we now need to make sure that our API key is included in all the requests our app makes.
-
-In `index.js`, **edit** the file to include:
-
-```javascript
-// Add this helper function above the App definition
-const addApiKeyToHeader = (request, z, bundle) => {
-  request.headers['MY-AUTH-HEADER'] = bundle.authData.apiKey;
-  return request;
-};
-
-// const App = ...
-```
-
-Above we define a helper function, `addApiKeyToHeader`, that puts the user-provided API key in a request header called `MY-AUTH-HEADER`. The name chosen is illustrative, it can be whatever the API you are integrating with requires. Alternatively, you could put it in a query parameter instead of a header, and/or encode it first.
-
-To make our helper function take effect, we need to register it on our app.
-
-In `index.js`, **edit** `App` to include:
-
-```javascript
-const App = {
-  // ...
-  beforeRequest: [
-    addApiKeyToHeader // new line of code
-  ],
-  // ...
-};
-```
-
-`beforeRequest` is a list of functions that are called before every HTTP request that uses `z.request` or the default `perform` function. This lets you add headers, query params, or whatever is needed to be within *all outbound requests*. In our case, every HTTP request will now have the API key added in a header.
-
-To check our progress, we need to re-push our app.
-
-```bash
-zapier push
-```
-
-Go back to your Zap at `https://zapier.com`. You'll see a new 'Connect Account' item in your 'New Recipe' trigger. Add an account for our app (enter any value you like for the API key, the mock API does not care).
-
-As soon as you add the account, Zapier will run our app's `authentication.test` function to confirm the credentials are valid.
-
-We can verify the header is present in the request by looking at the logs again.
-
-```bash
-zapier logs --type=http --detailed --limit=1
-
-# The logs of your app "Example App" listed below.
-#
-# ┌─────────────────────┬────────────────────────────────────────────────────────────────────────────────────────┐
-# │ Status              │ 200                                                                                    │
-# │ Method              │ GET                                                                                    │
-# │ URL                 │ http://57b20fb546b57d1100a3c405.mockapi.io/api/me                                      │
-# │ Querystring         │                                                                                        │
-# │ Version             │ 1.0.0                                                                                  │
-# │ Step                │                                                                                        │
-# │ Timestamp           │ 2016-09-16T15:57:51-05:00                                                              │
-# │ Request Headers     │ user-agent: Zapier                                                                     │
-# │                     │ MY-AUTH-HEADER: :censored:6:b1af149262:                                                │
-# │ Request Body        │                                                                                        │
-# │ Response Headers    │ server: Cowboy                                                                         │
-# │                     │ connection: close                                                                      │
-# │                     │ x-powered-by: Express                                                                  │
-# │                     │ access-control-allow-origin: *                                                         │
-# │                     │ access-control-allow-methods: GET,PUT,POST,DELETE,OPTIONS                              │
-# │                     │ access-control-allow-headers: X-Requested-With,Content-Type,Cache-Control,access_token │
-# │                     │ content-type: application/json                                                         │
-# │                     │ content-length: 59                                                                     │
-# │                     │ etag: "-80491811"                                                                      │
-# │                     │ vary: Accept-Encoding                                                                  │
-# │                     │ date: Fri, 16 Sep 2016 20:57:51 GMT                                                    │
-# │                     │ via: 1.1 vegur                                                                         │
-# │ Response Body       │ [{"id":"1","createdAt":1473801403,"userName":"userName 1"}]                            │
-# └─────────────────────┴────────────────────────────────────────────────────────────────────────────────────────┘
-```
-
-You can see from the detailed log that the request included our auth header. The value appears as `:censored:6:b1af149262:`, which is intentional. Zapier does not log authentication credentials in plain text.
-
-With that, we've successfully added authentication to our app!
-
-### Tutorial Next Steps
-
-Congrats, you've completed the tutorial! At this point we recommend reading up on the [Z Object](#z-object) and [Bundle Object](#bundle-object) to get a better idea of what is possible within the `perform` functions. You can also check out the other [example apps](#example-apps) to see how to incorporate different authentication schemes into your app and how to implement things like searches and creates.
-
-
-## Quickstart
-
-> Be sure to check the [Requirements](#requirements) before you start! Also, we recommend the [Tutorial](#tutorial) for a more thorough introduction.
+> Be sure to check the [Requirements](#requirements) before you start! Also, we recommend the [Tutorial](https://github.com/zapier/zapier-platform-cli/wiki/Tutorial) for a more thorough introduction.
 
 First up is installing the CLI and setting up your auth to create a working "Zapier Example" application. It will be private to you and visible in your live [Zap editor](https://zapier.com/app/editor).
 
@@ -497,7 +103,7 @@ You should now have a working local app. You can run several local commands to t
 
 ```bash
 # run the local tests
-# the same as npm test
+# the same as npm test, but adds some extra things to the environment
 zapier test
 ```
 
@@ -511,9 +117,13 @@ zapier push
 > Go check out our [full CLI reference documentation](docs/cli.md) to see all the other commands!
 
 
+### Tutorial
+
+For a full tutorial, head over to our [wiki](https://github.com/zapier/zapier-platform-cli/wiki/Tutorial) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
+
 ## Creating a Local App
 
-> Tip: check the [Quickstart](#quickstart) if this is your first time using the platform!
+> Tip: check the [Quick Setup](#quick-setup-guide) if this is your first time using the platform!
 
 Creating an App can be done entirely locally and they are fairly simple Node.js apps using the standard Node environment and should be completely testable. However, a local app stays local until you `zapier register`.
 
@@ -714,7 +324,15 @@ Probably the most "powerful" mechanism for authentication - it gives you the abi
 
 ### OAuth2
 
-Zapier will handle most of the logic around the 3 step OAuth flow, but you'll be required to define how the steps work on your own. You'll also likely want to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables:
+Zapier's OAuth2 implementation is based on the the `authorization_code` flow, similar to [GitHub](http://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/). It looks like this:
+
+ 1. Zapier sends the user to the authorization URL defined by your App
+ 1. Once authorized, your website sends the user to the `redirect_uri` Zapier provided (`zapier describe` to find out what it is)
+ 1. Zapier makes a call on the backend to your API to exchange the `code` for an `access_token`
+ 1. Zapier remembers the `access_token` and makes calls on behalf of the user
+ 1. (Optionally) Zapier can refresh the token if it expires
+
+You are required to define the authorization URL and the API call to fetch the access token. You'll also likely want to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables:
 
 ```bash
 # setting the environment variables on Zapier.com
@@ -730,6 +348,7 @@ Your auth definition would look something like this:
 ```javascript
 [insert-file:./snippets/oauth2.js]
 ```
+
 
 ## Resources
 
@@ -798,7 +417,7 @@ You can find more details on the definition for each by looking at the [Trigger 
 
 ## Fields
 
-On each trigger, search or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Fields are what your users would see in the main Zapier user interface. For example, you might have a "create contact" action with fields like "First name", "Last name", "Email", etc.
+On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Fields are what your users would see in the main Zapier user interface. For example, you might have a "create contact" action with fields like "First name", "Last name", "Email", etc.
 
 You can find more details on each and every field option at [Field Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#fieldschema).
 
@@ -818,15 +437,39 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 [insert-file:./snippets/custom-fields.js]
 ```
 
+Additionally, if there is a field that affects the generation of dynamic fields, you can set the `altersDynamicFields: true` property. This informs the Zapier UI that whenver the value of that field changes, fields need to be recomputed. An example could be a static dropdown of "dessert type" that will change whether the function that generates dynamic fields includes a field "with sprinkles."
+
+```javascript
+[insert-file:./snippets/alters-dynamic-fields.js]
+```
+
 ### Dynamic Dropdowns
 
-You can provide a `resource` directive on your field which will point to a resource's key and will use the list directive to put down the options dynamically.
+Sometimes, API endpoints require clients to specify a parent object in order to create or access the child resources. Imagine having to specify a company id in order to get a list of employees for that company. Since people don't speak in auto-incremented ID's, it is necessary that Zapier offer a simple way to select that parent using human readable handles.
 
-> Dynamic dropdowns are one of the few fields that "automatically" invalidates our field cache when relying on custom fields.
+Our solution is to present users a dropdown that is populated by making a live API call to fetch a list of parent objects. We call these special dropdowns "dynamic dropdowns."
+
+To define one, you can provide the `dynamic` property on your field to specify the trigger that should be used to populate the options for the dropdown. The value for the property is a dot-seperated concatination of a trigger's key, the field to use for the value, and the field to use for the label.
 
 ```javascript
 [insert-file:./snippets/dynamic-dropdowns.js]
 ```
+
+In the UI, users will see something like this:
+
+![screenshot of dynamic dropdown in Zap Editor](https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png)
+
+> Dynamic dropdowns are one of the few fields that automatically invalidate Zapier's field cache, so it is not necessary to set `altersDynamicFields` to true for these fields.
+
+### Search-Powered Fields
+
+For fields that take id of another object to create a relationship between the two (EG: a project id for a ticket), you can specify the `search` property on the field to indicate that Zapier needs to prompt the user to setup a Search step to populate the value for this field. Similar to dynamic dropdowns, the value for this property is a dot-seperated concatination of a search's key and the field to use for the value.
+
+```javascript
+[insert-file:./snippets/search-field.js]
+```
+
+This can be combined with the `dynamic` property to give the user a guided experience when setting up a Zap.
 
 
 ## Z Object
@@ -861,8 +504,16 @@ We provide several methods off of the `z` object, which is provided as the first
 
 ### `z.errors`
 
-`z.errors` is a collection error classes that you can throw in your code, like `throw new z.errors.HaltedError('...')`
+`z.errors` is a collection error classes that you can throw in your code, like `throw new z.errors.HaltedError('...')`.
 
+The available errors are:
+
+  * HaltedError - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
+  * ExpiredAuthError - Turns of Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
+  * RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
+
+
+For more details on error handling in general, see [here](#error-handling).
 
 ## Bundle Object
 
@@ -1251,6 +902,69 @@ zapier logs --type=http --detailed
 ```
 
 
+## Error Handling
+
+APIs are not always available. Users do not always input data correctly to
+formulate valid requests. Thus, it is a good idea to write apps defensively and
+plan for 4xx and 5xx responses from APIs. Without proper handling, errors often
+have incomprehensible messages for end users, or possibly go uncaught.
+
+Zapier provides a couple tools to help with error handling. First is the `afterResponse`
+middleware ([docs](#using-http-middleware)), which provides a hook for processing
+all responses from HTTP calls. The other tool is the collection of errors in
+`z.errors` ([docs](#zerrors)), which control the behavior of Zaps when
+various kinds of errors occurr.
+
+### General Errors
+
+Errors due to a misconfiguration in a user's Zap should be handled in your app
+by throwing a standard JavaScript `Error` with a user-friendly message.
+Typically, this will be prettifying 4xx responses or API's that return errors as
+200s with a payload that describes the error.
+
+Example: `throw new Error('Your error message.');`
+
+A couple best practices to keep in mind:
+
+  * Elaborate on terse messages. "not_authenticated" -> "Your API Key is invalid. Please reconnect your account."
+  * If the error calls out a specific field, surface that information to the user. "Invald Request" -> "contact name is invalid"
+  * If the error provides details about why a field is invalid, add that in too! "contact name is invalid" -> "contact name is too long"
+
+Note that if a Zap raises too many error messages it will be automatically
+turned off, so only use these if the scenario is truly an error that needs to
+be fixed.
+
+###  Halting Execution
+
+Any operation can be interrupted or "halted" (not success, not error, but
+stopped for some specific reason) with a `HaltedError`. You might find yourself
+using this error in cases where a required pre-condition is not met. For instance,
+in a create to add an email address to a list where duplicates are not allowed,
+you would want to throw a `HaltedError` if the Zap attempted to add a duplicate.
+This would indicate failure, but it would be treated as a soft failure.
+
+Unlike throwing `Error`, a Zap will never by turned off when this error is thrown
+(even if it is raised more often than not).
+
+Example: `throw new HaltedError('Your reason.');`
+
+### Stale Authentication Credentials
+
+For apps that require manual refresh of authorization on a regular basis, Zapier
+provides a mechanism to notify users of expired credentials. With the
+`ExpiredAuthError`, the current operation is interrupted, the Zap is turned off
+(to prevent more calls with expired credentials), and a predefined email is sent
+out informing the user to refresh the credentials.
+
+Example: `throw new ExpiredAuthError('Your message.');`
+
+For apps that use OAuth2 + refresh or Session Auth, you can use the
+`RefreshAuthError`. This will signal Zapier to refresh the credentials and then
+repeat the failed operation.
+
+Example: `throw new RefreshAuthError();`
+
+
 ## Testing
 
 You can write unit tests for your Zapier app that run locally, outside of the zapier editor.
@@ -1388,51 +1102,7 @@ There are a lot of details left out - check out the full example app at https://
 
 ## Example Apps
 
-Check out the following example applications to help you get started:
-
-### Resource Example App
-
-https://github.com/zapier/zapier-platform-example-app-resource - `zapier init . --template=resource`
-
-### Trigger Example App
-
-https://github.com/zapier/zapier-platform-example-app-trigger - `zapier init . --template=trigger`
-
-### Search Example App
-
-https://github.com/zapier/zapier-platform-example-app-search - `zapier init . --template=search`
-
-### Create Example App
-
-https://github.com/zapier/zapier-platform-example-app-create - `zapier init . --template=create`
-
-### Middleware Example App
-
-https://github.com/zapier/zapier-platform-example-app-middleware - `zapier init . --template=middleware`
-
-### Basic Auth Example App
-
-https://github.com/zapier/zapier-platform-example-app-basic-auth - `zapier init . --template=basic-auth`
-
-### Custom Auth Example App
-
-https://github.com/zapier/zapier-platform-example-app-custom-auth - `zapier init . --template=custom-auth`
-
-### OAuth2 Example App
-
-https://github.com/zapier/zapier-platform-example-app-oauth2 - `zapier init . --template=oauth2`
-
-### Session Auth Example App
-
-https://github.com/zapier/zapier-platform-example-app-session-auth - `zapier init . --template=session-auth`
-
-### Babel Example App
-
-https://github.com/zapier/zapier-platform-example-app-babel - `zapier init . --template=babel`
-
-### REST Hooks Example App
-
-https://github.com/zapier/zapier-platform-example-app-rest-hooks - `zapier init . --template=rest-hooks`
+See [the wiki](https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps) for a full list of working examples (and installation instructions).
 
 ## Command line Tab Completion
 
@@ -1493,4 +1163,4 @@ Finally, restart your shell and start hitting TAB with the `zapier` command!
 
 ## Get Help!
 
-You can get help by either emailing partners@zapier.com or by joining our beta Slack channel https://zapier-platform-slack.herokuapp.com.
+You can get help by either emailing partners@zapier.com or by joining our Slack channel https://zapier-platform-slack.herokuapp.com.
