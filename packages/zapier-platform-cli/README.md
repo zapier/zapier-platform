@@ -133,11 +133,11 @@ From a user perspective, both the CLI and the existing web builder platform offe
 
 ### Requirements
 
-All Zapier CLI apps are run using Node.js `v4.3.2`.
+All Zapier CLI apps are run using Node.js `LAMBDA_VERSION`.
 
-You can develop using any version of Node you'd like, but your code has to run on Node `v4.3.2`. You can accomplish this by developing on your preferred version and then transpiling with [Babel](https://babeljs.io/) (or similar).
+You can develop using any version of Node you'd like, but your code has to run on Node `LAMBDA_VERSION`. You can accomplish this by developing on your preferred version and then transpiling with [Babel](https://babeljs.io/) (or similar).
 
-To ensure stability for our users, we also require that you run your tests on `v4.3.2` as well. If you don't have it available, we recommend using either [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation) to install `v4.3.2` and run the tests locally.
+To ensure stability for our users, we also require that you run your tests on `LAMBDA_VERSION` as well. If you don't have it available, we recommend using either [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation) to install `LAMBDA_VERSION` and run the tests locally.
 
 For NVM on Mac (via [homebrew](http://brew.sh/)):
 
@@ -146,7 +146,7 @@ brew install nvm
 nvm install v4.3.2
 ```
 
-You can then either swap to that version with `nvm use v4.3.2`, or do `nvm exec v4.3.2 zapier test` so you can run tests without having to switch versions while developing.
+You can then either swap to that version with `nvm use v4.3.2`, or do `nvm exec LAMBDA_VERSION zapier test` so you can run tests without having to switch versions while developing.
 
 
 ### Quick Setup Guide
@@ -220,7 +220,7 @@ npm install
 
 If you'd like to manage your **local App**, use these commands:
 
-* `zapier init . --template=resource` - initialize/start a local app project
+* `zapier init . --template=resource` - initialize/start a local app project ([see templates here](https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps))
 * `zapier convert 1234 .` - initialize/start from an existing app (alpha)
 * `zapier scaffold resource Contact` - auto-injects a new resource, trigger, etc.
 * `zapier test` - run the same tests as `npm test`
