@@ -1041,6 +1041,7 @@ zapier convert 1234 .
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Useful if your app requires two pieces of information to authentication: <code>username</code> and <code>password</code> which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).</p><blockquote>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-basic-auth">https://github.com/zapier/zapier-platform-example-app-basic-auth</a> for a working example app for basic auth.</p>
 <p>Note: if you do the common API Key pattern like <code>Authorization: Basic APIKEYHERE:x</code> you should look at the &quot;Custom&quot; authentication method instead.</p>
 </blockquote>
     </div>
@@ -1074,7 +1075,9 @@ zapier convert 1234 .
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>This is what most &quot;API Key&quot; driven apps should default to using. You&apos;ll likely provide some some custom <code>beforeRequest</code> middleware or a <code>requestTemplate</code> to complete the authentication by adding/computing needed headers.</p>
+      <p>This is what most &quot;API Key&quot; driven apps should default to using. You&apos;ll likely provide some some custom <code>beforeRequest</code> middleware or a <code>requestTemplate</code> to complete the authentication by adding/computing needed headers.</p><blockquote>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-custom-auth">https://github.com/zapier/zapier-platform-example-app-custom-auth</a> for a working example app for custom auth.</p>
+</blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> authentication = {
@@ -1151,7 +1154,9 @@ zapier convert 1234 .
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Probably the most &quot;powerful&quot; mechanism for authentication - it gives you the ability to exchange some user provided data for some authentication data (IE: username &amp; password for a session key).</p>
+      <p>Probably the most &quot;powerful&quot; mechanism for authentication - it gives you the ability to exchange some user provided data for some authentication data (IE: username &amp; password for a session key).</p><blockquote>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-session-auth">https://github.com/zapier/zapier-platform-example-app-session-auth</a> for a working example app for session auth.</p>
+</blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> getSessionKey = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
@@ -1232,7 +1237,9 @@ zapier convert 1234 .
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Zapier&apos;s OAuth2 implementation is based on the the <code>authorization_code</code> flow, similar to <a href="http://developer.github.com/v3/oauth/">GitHub</a> and <a href="https://developers.facebook.com/docs/authentication/server-side/">Facebook</a>. It looks like this:</p><ol>
+      <p>Zapier&apos;s OAuth2 implementation is based on the the <code>authorization_code</code> flow, similar to <a href="http://developer.github.com/v3/oauth/">GitHub</a> and <a href="https://developers.facebook.com/docs/authentication/server-side/">Facebook</a>.</p><blockquote>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-oauth2">https://github.com/zapier/zapier-platform-example-app-oauth2</a> for a working example app for oauth2.</p>
+</blockquote><p>It looks like this:</p><ol>
 <li>Zapier sends the user to the authorization URL defined by your App</li>
 <li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided (<code>zapier describe</code> to find out what it is)</li>
 <li>Zapier makes a call on the backend to your API to exchange the <code>code</code> for an <code>access_token</code></li>
@@ -1376,7 +1383,9 @@ read, and search operations on that resource.</p>
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>A resource has a few basic properties. The first is the <code>key</code>, which allows Zapier to identify the resource on our backend.
-The second is the <code>noun</code>, the user-friendly name of the resource that is presented to users throughout the Zapier UI.</p><p>After those, there is a set of optional properties that tell Zapier what methods can be performed on the resource.
+The second is the <code>noun</code>, the user-friendly name of the resource that is presented to users throughout the Zapier UI.</p><blockquote>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-resource">https://github.com/zapier/zapier-platform-example-app-resource</a> for a working example app using resources.</p>
+</blockquote><p>After those, there is a set of optional properties that tell Zapier what methods can be performed on the resource.
 The complete list of available methods can be found in the <a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#resourceschema">Resource Schema Docs</a>.
 For now, let&apos;s focus on two:</p><ul>
 <li><code>list</code> - Tells Zapier how to fetch a set of this resource. This becomes a Trigger in the Zapier Editor.</li>
@@ -1495,7 +1504,12 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>You can find more details on the definition for each by looking at the <a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#triggerschema">Trigger Schema</a>,
-<a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#searchschema">Search Schema</a>, and <a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#createschema">Create Schema</a>.</p>
+<a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#searchschema">Search Schema</a>, and <a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#createschema">Create Schema</a>.</p><blockquote>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-trigger">https://github.com/zapier/zapier-platform-example-app-trigger</a> for a working example app using triggers.</p>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-rest-hooks">https://github.com/zapier/zapier-platform-example-app-rest-hooks</a> for a working example app using REST hook triggers.</p>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-search">https://github.com/zapier/zapier-platform-example-app-search</a> for a working example app using searches.</p>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-create">https://github.com/zapier/zapier-platform-example-app-create</a> for a working example app using creates.</p>
+</blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2350,7 +2364,9 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions, by putting them in your app definition:</p>
+      <p>If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions.</p><blockquote>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-middleware">https://github.com/zapier/zapier-platform-example-app-middleware</a> for a working example app using HTTP middleware.</p>
+</blockquote><p>Try putting them in your app definition:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> addHeader = <span class="hljs-function">(<span class="hljs-params">request, <span class="hljs-regexp">/*z*/</span></span>) =&gt;</span> {
@@ -3192,7 +3208,9 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>There are a lot of details left out - check out the full example app at <a href="https://github.com/zapier/zapier-platform-example-app-babel">https://github.com/zapier/zapier-platform-example-app-babel</a> for a working setup.</p>
+      <p>There are a lot of details left out - check out the full example app for a working setup.</p><blockquote>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-babel">https://github.com/zapier/zapier-platform-example-app-babel</a> for a working example app using Babel.</p>
+</blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

@@ -292,6 +292,8 @@ Most applications require some sort of authentication - and Zapier provides a ha
 
 Useful if your app requires two pieces of information to authentication: `username` and `password` which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).
 
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-basic-auth for a working example app for basic auth.
+
 > Note: if you do the common API Key pattern like `Authorization: Basic APIKEYHERE:x` you should look at the "Custom" authentication method instead.
 
 ```javascript
@@ -301,6 +303,8 @@ Useful if your app requires two pieces of information to authentication: `userna
 ### Custom
 
 This is what most "API Key" driven apps should default to using. You'll likely provide some some custom `beforeRequest` middleware or a `requestTemplate` to complete the authentication by adding/computing needed headers.
+
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-custom-auth for a working example app for custom auth.
 
 ```javascript
 [insert-file:./snippets/custom-auth.js]
@@ -318,13 +322,19 @@ Very similar to the "Basic" authentication method above, but uses digest authent
 
 Probably the most "powerful" mechanism for authentication - it gives you the ability to exchange some user provided data for some authentication data (IE: username & password for a session key).
 
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-session-auth for a working example app for session auth.
+
 ```javascript
 [insert-file:./snippets/session-auth.js]
 ```
 
 ### OAuth2
 
-Zapier's OAuth2 implementation is based on the the `authorization_code` flow, similar to [GitHub](http://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/). It looks like this:
+Zapier's OAuth2 implementation is based on the the `authorization_code` flow, similar to [GitHub](http://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
+
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-oauth2 for a working example app for oauth2.
+
+It looks like this:
 
  1. Zapier sends the user to the authorization URL defined by your App
  1. Once authorized, your website sends the user to the `redirect_uri` Zapier provided (`zapier describe` to find out what it is)
@@ -374,6 +384,8 @@ This will generate the resource file and add the necessary statements to the `in
 A resource has a few basic properties. The first is the `key`, which allows Zapier to identify the resource on our backend.
 The second is the `noun`, the user-friendly name of the resource that is presented to users throughout the Zapier UI.
 
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-resource for a working example app using resources.
+
 After those, there is a set of optional properties that tell Zapier what methods can be performed on the resource.
 The complete list of available methods can be found in the [Resource Schema Docs](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#resourceschema).
 For now, let's focus on two:
@@ -414,6 +426,13 @@ The definition for each of these follows the same structure. Here is an example 
 You can find more details on the definition for each by looking at the [Trigger Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#triggerschema),
 [Search Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#searchschema), and [Create Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#createschema).
 
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-trigger for a working example app using triggers.
+
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-rest-hooks for a working example app using REST hook triggers.
+
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-search for a working example app using searches.
+
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-create for a working example app using creates.
 
 ## Fields
 
@@ -702,7 +721,11 @@ To POST or PUT data to your API you can do this:
 
 ### Using HTTP middleware
 
-If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions, by putting them in your app definition:
+If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions.
+
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-middleware for a working example app using HTTP middleware.
+
+Try putting them in your app definition:
 
 ```javascript
 [insert-file:./snippets/middleware.js]
@@ -1097,8 +1120,9 @@ zapier test
 npm run zapier-push
 ```
 
-There are a lot of details left out - check out the full example app at https://github.com/zapier/zapier-platform-example-app-babel for a working setup.
+There are a lot of details left out - check out the full example app for a working setup.
 
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-babel for a working example app using Babel.
 
 ## Example Apps
 
