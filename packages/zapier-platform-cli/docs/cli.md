@@ -139,7 +139,7 @@ After running this, you'll have a new app in your directory, with stubs for your
 
 **Arguments**
 
-* `appid [value]` -- _optional_, Get the appid from https://zapier.com/developer/builder/ (check the URL)
+* `appid [value]` -- **required**, Get the appid from https://zapier.com/developer/builder/ (check the URL)
 * `location [value]` -- **required**, Relative to your current path - IE: `.` for current directory
 
 
@@ -854,12 +854,12 @@ $ zapier validate
 $ zapier validate
 # Validating project locally.
 # 
-# ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
-# │ = 1 =                                                                                         │
-# │     Property │ instance                                                                       │
-# │     Message  │ requires property "platformVersion"                                            │
-# │     Links    │ https://github.com/zapier/zapier-platform-schema/blob/v3.0.0/docs.md#appschema │
-# └──────────────┴────────────────────────────────────────────────────────────────────────────────┘
+# ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+# │ = 1 =                                                                                                      │
+# │     Property │ instance                                                                                    │
+# │     Message  │ requires property "platformVersion"                                                         │
+# │     Links    │ https://github.com/zapier/zapier-platform-schema/blob/v1.0.0/docs/build/schema.md#appschema │
+# └──────────────┴─────────────────────────────────────────────────────────────────────────────────────────────┘
 # 
 # Make any changes to your project and rerun this command.
 ```

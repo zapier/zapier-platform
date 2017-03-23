@@ -484,7 +484,7 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="what-is-an-app-">What is an App?</h3>
+      <h3 id="what-is-an-app">What is an App?</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -561,7 +561,7 @@ and returns the relevant data, which gets fed back into Zapier.</p>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>All Zapier CLI apps are run using Node.js <code>LAMBDA_VERSION</code>.</p><p>You can develop using any version of Node you&apos;d like, but your code has to run on Node <code>LAMBDA_VERSION</code>. You can accomplish this by developing on your preferred version and then transpiling with <a href="https://babeljs.io/">Babel</a> (or similar).</p><p>To ensure stability for our users, we also require that you run your tests on <code>LAMBDA_VERSION</code> as well. If you don&apos;t have it available, we recommend using either <a href="https://github.com/creationix/nvm#installation">nvm</a> or <a href="https://github.com/tj/n#installation">n</a> to install <code>LAMBDA_VERSION</code> and run the tests locally.</p><p>For NVM on Mac (via <a href="http://brew.sh/">homebrew</a>):</p>
+      <p>All Zapier CLI apps are run using Node.js <code>v4.3.2</code>.</p><p>You can develop using any version of Node you&apos;d like, but your code has to run on Node <code>v4.3.2</code>. You can accomplish this by developing on your preferred version and then transpiling with <a href="https://babeljs.io/">Babel</a> (or similar).</p><p>To ensure stability for our users, we also require that you run your tests on <code>v4.3.2</code> as well. If you don&apos;t have it available, we recommend using either <a href="https://github.com/creationix/nvm#installation">nvm</a> or <a href="https://github.com/tj/n#installation">n</a> to install <code>v4.3.2</code> and run the tests locally.</p><p>For NVM on Mac (via <a href="http://brew.sh/">homebrew</a>):</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">brew install nvm
@@ -572,7 +572,7 @@ nvm install v4.3.2
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can then either swap to that version with <code>nvm use v4.3.2</code>, or do <code>nvm exec LAMBDA_VERSION zapier test</code> so you can run tests without having to switch versions while developing.</p>
+      <p>You can then either swap to that version with <code>nvm use v4.3.2</code>, or do <code>nvm exec v4.3.2 zapier test</code> so you can run tests without having to switch versions while developing.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -902,7 +902,7 @@ zapier versions
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="private-app-version-default-">Private App Version (default)</h3>
+      <h3 id="private-app-version-default">Private App Version (default)</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1458,7 +1458,7 @@ above would result in an app with a New Recipe Trigger and an Add Recipe Create.
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="triggers-searches-creates">Triggers/Searches/Creates</h2>
+      <h2 id="triggerssearchescreates">Triggers/Searches/Creates</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1552,7 +1552,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="custom-dynamic-fields">Custom/Dynamic Fields</h3>
+      <h3 id="customdynamic-fields">Custom/Dynamic Fields</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1756,7 +1756,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-request-url-options-"><code>z.request([url], options)</code></h3>
+      <h3 id="zrequesturl-options"><code>z.request([url], options)</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1774,7 +1774,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-console-message-"><code>z.console(message)</code></h3>
+      <h3 id="zconsolemessage"><code>z.console(message)</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1792,7 +1792,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-dehydrate-func-inputdata-"><code>z.dehydrate(func, inputData)</code></h3>
+      <h3 id="zdehydratefunc-inputdata"><code>z.dehydrate(func, inputData)</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1810,7 +1810,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-stashfile-bufferstringstream-knownlength-filename-"><code>z.stashFile(bufferStringStream, [knownLength], [filename])</code></h3>
+      <h3 id="zstashfilebufferstringstream-knownlength-filename"><code>z.stashFile(bufferStringStream, [knownLength], [filename])</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1828,7 +1828,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-json-"><code>z.JSON</code></h3>
+      <h3 id="zjson"><code>z.JSON</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1846,7 +1846,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-hash-"><code>z.hash()</code></h3>
+      <h3 id="zhash"><code>z.hash()</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1864,7 +1864,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-z-errors-"><code>z.errors</code></h3>
+      <h3 id="zerrors"><code>z.errors</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1906,7 +1906,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-bundle-authdata-"><code>bundle.authData</code></h3>
+      <h3 id="bundleauthdata"><code>bundle.authData</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1924,7 +1924,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-bundle-inputdata-"><code>bundle.inputData</code></h3>
+      <h3 id="bundleinputdata"><code>bundle.inputData</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1946,7 +1946,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-bundle-inputdataraw-"><code>bundle.inputDataRaw</code></h3>
+      <h3 id="bundleinputdataraw"><code>bundle.inputDataRaw</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1968,7 +1968,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="-bundle-meta-"><code>bundle.meta</code></h3>
+      <h3 id="bundlemeta"><code>bundle.meta</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3014,7 +3014,7 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="testing-environment-variables">Testing &amp; Environment Variables</h3>
+      <h3 id="testing--environment-variables">Testing &amp; Environment Variables</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3084,7 +3084,7 @@ zapier <span class="hljs-built_in">test</span>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="testing-in-your-ci-jenkins-travis-etc-">Testing in your CI (Jenkins/Travis/etc.)</h3>
+      <h3 id="testing-in-your-ci-jenkinstravisetc">Testing in your CI (Jenkins/Travis/etc.)</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3096,11 +3096,11 @@ zapier <span class="hljs-built_in">test</span>
       <p>Behind the scenes <code>zapier test</code> doing pretty standard <code>npm test</code> with <a href="https://www.npmjs.com/package/mocha">mocha</a> as the backend.</p><p>This makes it pretty straightforward to integrate into your testing interface. If you&apos;d like to test with <a href="https://travis-ci.com/">Travis CI</a> for example - the <code>.travis.yml</code> would look something like this:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-yaml"><span class="hljs-attr">language:</span> node_js
+      <pre><code class="lang-yaml"><span class="hljs-attr">language:</span> <span class="hljs-string">node_js</span>
 <span class="hljs-attr">node_js:</span>
 <span class="hljs-bullet">  -</span> <span class="hljs-string">&quot;4.3.2&quot;</span>
-<span class="hljs-attr">before_script:</span> npm install -g zapier-platform-cli
-<span class="hljs-attr">script:</span> CLIENT_ID=<span class="hljs-number">1234</span> CLIENT_SECRET=abcd zapier test
+<span class="hljs-attr">before_script:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span> <span class="hljs-bullet">-g</span> <span class="hljs-string">zapier-platform-cli</span>
+<span class="hljs-attr">script:</span> <span class="hljs-string">CLIENT_ID=1234</span> <span class="hljs-string">CLIENT_SECRET=abcd</span> <span class="hljs-string">zapier</span> <span class="hljs-string">test</span>
 </code></pre>
     </div>
   </div>
@@ -3362,7 +3362,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="publishing-of-the-cli-after-merging-">Publishing of the CLI (after merging)</h2>
+      <h2 id="publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3384,7 +3384,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="get-help-">Get Help!</h2>
+      <h2 id="get-help">Get Help!</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
