@@ -11,8 +11,9 @@ const AUTH_LOCATION_RAW = '~/.zapierrc';
 const AUTH_LOCATION = process.env.ZAPIER_AUTH_LOCATION || path.resolve(os.homedir(), '.zapierrc');
 const CURRENT_APP_FILE = process.env.ZAPIER_CURRENT_APP_FILE || '.zapierapprc';
 const PLATFORM_PACKAGE = 'zapier-platform-core';
-const DEFINITION_PATH = 'build/definition.json';
-const BUILD_PATH = 'build/build.zip';
+const BUILD_DIR = 'build';
+const DEFINITION_PATH = `${BUILD_DIR}/definition.json`;
+const BUILD_PATH = `${BUILD_DIR}/build.zip`;
 
 const ART = `\
                 zzzzzzzz
@@ -45,6 +46,7 @@ module.exports = {
   CURRENT_APP_FILE,
   PLATFORM_PACKAGE,
   DEFINITION_PATH,
+  BUILD_DIR,
   BUILD_PATH,
   ART
 };

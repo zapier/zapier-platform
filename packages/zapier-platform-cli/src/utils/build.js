@@ -200,6 +200,7 @@ const build = (zipPath, wdir) => {
   const tmpDir = path.join(osTmpDir, 'zapier-' + crypto.randomBytes(4).toString('hex'));
 
   return ensureDir(tmpDir)
+    .then(() => ensureDir(constants.BUILD_DIR))
     .then(() => {
       printStarting('Copying project to temp directory');
 
