@@ -129,7 +129,7 @@ and returns the relevant data, which gets fed back into Zapier.
 
 ### CLI vs the Web Builder Platform
 
-From a user perspective, both the CLI and the existing web builder platform offer the same experience. The biggest difference is how they're developed. The CLI takes a much more code-first approach, allowing you develop your Zapier app just like you would any other programming project. The web builder, on the other hand, is much better for folks who want to make an app with minimal coding involved. Both will continue to coexist, so pick whichever fits your needs best!
+From a user perspective, both the CLI and the existing web builder platform offer the same experience. The biggest difference is how they're developed. The CLI takes a much more code-first approach, allowing you to develop your Zapier app just like you would any other programming project. The web builder, on the other hand, is much better for folks who want to make an app with minimal coding involved. Both will continue to coexist, so pick whichever fits your needs best!
 
 ### Requirements
 
