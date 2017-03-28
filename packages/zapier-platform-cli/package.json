@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "The CLI for apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-cli",
   "homepage": "https://zapier.com/",
