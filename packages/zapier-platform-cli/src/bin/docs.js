@@ -75,7 +75,8 @@ const buildReadme = () => {
 
   const lines = fs.readFileSync(readmeSrc, 'utf8').split('\n');
   const newLines = lines.map(maybeInsertSnippet).map(fillLambdaVersion).join('\n');
-  fs.writeFileSync(readmeDst, toc.insert(newLines));
+  const tocInstered = toc.insert(newLines);
+  fs.writeFileSync(readmeDst, '<!-- GENERATED! ONLY EDIT `README-source.md` -->\n\n' + tocInstered);
 };
 
 buildReadme();

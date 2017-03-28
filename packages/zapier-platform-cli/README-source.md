@@ -58,7 +58,7 @@ All Zapier CLI apps are run using Node.js `LAMBDA_VERSION`.
 
 You can develop using any version of Node you'd like, but your code has to run on Node `LAMBDA_VERSION`. You can accomplish this by developing on your preferred version and then transpiling with [Babel](https://babeljs.io/) (or similar).
 
-To ensure stability for our users, we also require that you run your tests on `LAMBDA_VERSION` as well. If you don't have it available, we recommend using either [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation) to install `LAMBDA_VERSION` and run the tests locally.
+To ensure stability for our users, we also require that you run your tests on `LAMBDA_VERSION` as well. If you don't have it available, we recommend using either [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation) to install `LAMBDA_VERSION` and run the tests locally. On Windows you can use [nvm-windows](https://github.com/coreybutler/nvm-windows#installation--upgrades) or [nodist](https://github.com/marcelklehr/nodist#installation).
 
 For NVM on Mac (via [homebrew](http://brew.sh/)):
 
