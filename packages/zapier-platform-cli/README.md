@@ -1,5 +1,3 @@
-<!-- GENERATED! ONLY EDIT `README-source.md` -->
-
 <h1 align="center">
   <a href="https://zapier.com"><img src="https://cdn.rawgit.com/zapier/zapier-platform-cli/master/goodies/zapier-logomark.png" alt="Zapier" width="200"></a>
   <br>
@@ -1919,6 +1917,7 @@ Finally, restart your shell and start hitting TAB with the `zapier` command!
 
 ## Development of the CLI
 
+- `export ZAPIER_BASE_ENDPOINT='http://localhost:8000'` if you're building against a local dev environment
 - `npm install` for getting started
 - `npm run build` for updating `./lib` from `./src`
 - `npm test` for running tests (also runs `npm run build`)

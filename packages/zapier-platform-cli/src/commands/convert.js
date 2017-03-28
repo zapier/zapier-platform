@@ -11,12 +11,12 @@ const convert = (context, appid, location) => {
 
   appid = Number(appid);
   if (!appid) {
-    const message = 'You must provide an appid - get that from https://zapier.com/developer/builder/ (check the URL).';
+    const message = `You must provide an appid - get that from ${constants.BASE_ENDPOINT}/developer/builder/ (check the URL).`;
     return Promise.reject(new Error(message));
   }
 
   const createApp = (tempAppDir) => {
-    const url = constants.BASE_ENDPOINT + `/api/developer/v1/apps/${appid}/dump`;
+    const url = `${constants.BASE_ENDPOINT}/api/developer/v1/apps/${appid}/dump`;
 
     utils.printStarting('Downloading app from Zapier');
     return utils.callAPI(null, {url})
@@ -33,7 +33,7 @@ const convert = (context, appid, location) => {
     });
 };
 convert.argsSpec = [
-  {name: 'appid', required: true, help: 'Get the appid from https://zapier.com/developer/builder/ (check the URL)'},
+  {name: 'appid', required: true, help: `Get the appid from ${constants.BASE_ENDPOINT}/developer/builder/ (check the URL)`},
   {name: 'location', required: true, help: 'Relative to your current path - IE: `.` for current directory'},
 ];
 convert.help = 'Converts a Zapier Platform app to a CLI app, stubs only.';
@@ -53,7 +53,7 @@ ${utils.argOptsFragment(convert.argOptsSpec)}
 ${'```'}bash
 $ zapier convert 1234 .
 # Let's convert your app!
-# 
+#
 #   Downloading app from Zapier - done!
 #   Writing triggers/trigger.js - done!
 #   Writing package.json - done!
@@ -61,7 +61,7 @@ $ zapier convert 1234 .
 #   Copy ./index.js - done!
 #   Copy ./package.json - done!
 #   Copy ./triggers/trigger.js - done!
-# 
+#
 # Finished! You might need to \`npm install\` then try \`zapier test\`!
 ${'```'}
 `;

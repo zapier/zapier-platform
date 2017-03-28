@@ -21,7 +21,7 @@ const push = (context) => {
   return createIfNeeded(context)
     .then(() => utils.buildAndUploadDir())
     .then(() => {
-      context.line('\nBuild and upload complete! You should see it in your Zapier editor at https://zapier.com/app/editor now!');
+      context.line(`\nBuild and upload complete! You should see it in your Zapier editor at ${constants.BASE_ENDPOINT}/app/editor now!`);
     });
 };
 push.argsSpec = [];
