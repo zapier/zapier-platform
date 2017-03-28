@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "lodash": "4.15.0",
-    "zapier-platform-core": "1.0.2"
+    "zapier-platform-core": "1.0.5"
   },
   "devDependencies": {
     "babel": "6.5.2",
