@@ -1,3 +1,5 @@
+<!-- GENERATED! ONLY EDIT `README-source.md` -->
+
 <h1 align="center">
   <a href="https://zapier.com"><img src="https://cdn.rawgit.com/zapier/zapier-platform-cli/master/goodies/zapier-logomark.png" alt="Zapier" width="200"></a>
   <br>

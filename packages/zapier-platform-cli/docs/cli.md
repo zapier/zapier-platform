@@ -146,7 +146,7 @@ After running this, you'll have a new app in your directory, with stubs for your
 ```bash
 $ zapier convert 1234 .
 # Let's convert your app!
-# 
+#
 #   Downloading app from Zapier - done!
 #   Writing triggers/trigger.js - done!
 #   Writing package.json - done!
@@ -154,7 +154,7 @@ $ zapier convert 1234 .
 #   Copy ./index.js - done!
 #   Copy ./package.json - done!
 #   Copy ./triggers/trigger.js - done!
-# 
+#
 # Finished! You might need to `npm install` then try `zapier test`!
 ```
 
