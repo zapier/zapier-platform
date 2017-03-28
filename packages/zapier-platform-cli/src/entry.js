@@ -71,20 +71,20 @@ module.exports = (argv) => {
   };
   const errors = utils.enforceArgSpec(spec, args, argOpts);
   if (errors.length) {
-    commandFunc = commands.help;
-    args = [command];
+    utils.clearSpinner();
+    context.line();
+    context.line(colors.red('Errors running command `' + ['zapier'].concat(argv).join(' ') + '`:'));
+    context.line();
+    errors.forEach((error) => context.line(colors.red(`!!!   ${error}`)));
+    context.line();
+    context.line(`For more information, run \`zapier help ${command}\`.`);
+    context.line();
+    process.exit(1);
   }
 
   commandFunc.apply(commands, [context].concat(args))
     .then(() => {
       utils.clearSpinner();
-      context.line();
-      if (errors.length) {
-        context.line(colors.red('Errors running command `' + ['zapier'].concat(argv).join(' ') + '`:'));
-        context.line();
-        errors.forEach((error) => context.line(colors.red('!!!   ' + error)));
-        context.line();
-      }
     })
     .catch((err) => {
       utils.clearSpinner();

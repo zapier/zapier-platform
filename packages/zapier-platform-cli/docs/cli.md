@@ -310,7 +310,7 @@ $ zapier help apps
 $ zapier help scaffold
 $ zapier help
 # Usage: zapier COMMAND [command-specific-arguments] [--command-specific-options]
-# 
+#
 # ┌─────────────┬───────────────────────────────────────┬────────────────────────────────────────────────────────────────────────────┐
 # │ Command     │ Example                               │ Help                                                                       │
 # ├─────────────┼───────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────┤
@@ -323,7 +323,7 @@ $ zapier help
 # │ env         │ zapier env 1.0.0 CLIENT_SECRET 12345  │ Read and write environment variables.                                      │
 # │ help        │ zapier help [command]                 │ Lists all the commands you can use.                                        │
 # │ history     │ zapier history                        │ Prints all recent history for your app.                                    │
-# │ init        │ zapier init location                  │ Initializes a new zapier app in a directory.                               │
+# │ init        │ zapier init path                      │ Initializes a new zapier app in a directory.                               │
 # │ invite      │ zapier invite [user@example.com]      │ Manage the invitees/testers on your project. Can optionally --remove.      │
 # │ link        │ zapier link                           │ Link the current directory to an app you have access to.                   │
 # │ login       │ zapier login                          │ Configure your `~/.zapierrc` with a deploy key.                            │
@@ -386,7 +386,7 @@ After running this, you'll have a new example app in your directory. If you re-r
 
 **Arguments**
 
-* `location [value]` -- **required**,
+* `path [value]` -- **required**,
 * `--template={minimal,resource,trigger,create,search,middleware,basic-auth,custom-auth,oauth2,session-auth,babel,rest-hooks}` -- _optional_, select a starting app template. Default is `minimal`
 
 ```bash

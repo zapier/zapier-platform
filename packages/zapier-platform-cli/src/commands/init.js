@@ -27,7 +27,7 @@ const init = (context, location) => {
 };
 
 init.argsSpec = [
-  {name: 'location', required: true},
+  {name: 'path', required: true},
 ];
 init.argOptsSpec = {
   template: {help: 'select a starting app template', choices: appTemplates, 'default': 'minimal'}
