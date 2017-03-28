@@ -1,5 +1,7 @@
 const readline = require('readline');
 
+const {isWindows} = require('./misc');
+
 // could we explore https://www.npmjs.com/package/columnify
 // to simplify the columns/tables? the | - decoration is big
 const Table = require('cli-table2');
@@ -207,28 +209,29 @@ const printData = (rows, columnDefs, ifEmptyMessage = '', useRowBasedTable = fal
 
 let spinner;
 let currentIter = 0;
-const spinSpeed = 80;
-// const spinTransitions = [
-//   '   ',
-//   '.  ',
-//   '.. ',
-//   '...',
-// ];
-// const spinTransitions = [
-//   '\\',
-//   '|',
-//   '/',
-//   '-',
-// ];
-const spinTransitions = [
-  '⠃',
-  '⠉',
-  '⠘',
-  '⠰',
-  '⠤',
-  '⠆',
-];
-const finalTransition = '-'; // spinTransitions[0];
+let spinSpeed;
+let spinTransitions;
+
+if (isWindows()) {
+  spinSpeed = 240;
+  spinTransitions = [
+    '   ',
+    '.  ',
+    '.. ',
+    '...',
+  ];
+} else {
+  spinSpeed = 80;
+  spinTransitions = [
+    '⠃',
+    '⠉',
+    '⠘',
+    '⠰',
+    '⠤',
+    '⠆',
+  ];
+}
+const finalTransition = spinTransitions[0];
 
 const clearSpinner = () => {
   process.stdout.write('\x1b[?25h'); // set cursor to white...
