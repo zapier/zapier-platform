@@ -1108,7 +1108,7 @@ Alternatively, we provide some extra tooling to work with an `.environment` that
 MY_SECRET_VALUE=1234
 ```
 
-And then in your `test/index.js` file:
+And then in your `test/basic.js` file:
 
 ```javascript
 const zapier = require('zapier-platform-core');
@@ -1796,7 +1796,7 @@ zapier test --very-quiet
 
 ### Testing in your CI (Jenkins/Travis/etc.)
 
-Behind the scenes `zapier test` doing pretty standard `npm test` with [mocha](https://www.npmjs.com/package/mocha) as the backend.
+Behind the scenes `zapier test` is doing a pretty standard `npm test` with [mocha](https://www.npmjs.com/package/mocha) as the backend.
 
 This makes it pretty straightforward to integrate into your testing interface. If you'd like to test with [Travis CI](https://travis-ci.com/) for example - the `.travis.yml` would look something like this:
 

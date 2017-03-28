@@ -27,7 +27,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 ### What is an App?
 
 A CLI App is an implementation of your app's API. You build a Node.js application
-that exports a sinlge object ([JSON Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#appschema)) and upload it to Zapier.
+that exports a single object ([JSON Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#appschema)) and upload it to Zapier.
 Zapier introspects that definition to find out what your app is capable of and
 what options to present end users in the Zap Editor.
 
@@ -36,10 +36,10 @@ map to the end user experience:
 
  * [Authentication](#authentication), (usually) which lets us know what credentials to ask users
    for. This is used during the "Connect Accounts" section of the Zap Editor.
- * [Triggers](#triggerssearchescreates), which read data *from* your API. These have theior own section in the Zap Editor.
+ * [Triggers](#triggerssearchescreates), which read data *from* your API. These have their own section in the Zap Editor.
  * [Creates](#triggerssearchescreates), which send data *to* your API to create new records. These are listed under "Actions" in the Zap Editor.
  * [Searches](#triggerssearchescreates), which find specific records *in* your system. These are also listed under "Actions" in the Zap Editor.
- * [Resources](#resources), which define an object type in your API (say a contact) and the operations available to perform on it. Tehse are automatically extracted into Triggers, Searches, and Creates.
+ * [Resources](#resources), which define an object type in your API (say a contact) and the operations available to perform on it. These are automatically extracted into Triggers, Searches, and Creates.
 
 ### How does the CLI Platform Work
 
@@ -50,7 +50,7 @@ and returns the relevant data, which gets fed back into Zapier.
 
 ### CLI vs the Web Builder Platform
 
-From a user perspective, both the CLI and the existing web builder platform offer the same experience. The biggest difference is how they're developed. The CLI takes a much more code-first approach, allowing you develop your Zapier app just like you would any other programming project. The web builder, on the other hand, is much better for folks who want to make an app with minimal coding involved. Both will continue to coexist, so pick whichever fits your needs best!
+From a user perspective, both the CLI and the existing web builder platform offer the same experience. The biggest difference is how they're developed. The CLI takes a much more code-first approach, allowing you to develop your Zapier app just like you would any other programming project. The web builder, on the other hand, is much better for folks who want to make an app with minimal coding involved. Both will continue to coexist, so pick whichever fits your needs best!
 
 ### Requirements
 
@@ -302,7 +302,7 @@ Useful if your app requires two pieces of information to authentication: `userna
 
 ### Custom
 
-This is what most "API Key" driven apps should default to using. You'll likely provide some some custom `beforeRequest` middleware or a `requestTemplate` to complete the authentication by adding/computing needed headers.
+This is what most "API Key" driven apps should default to using. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` to complete the authentication by adding/computing needed headers.
 
 > Example App: check out https://github.com/zapier/zapier-platform-example-app-custom-auth for a working example app for custom auth.
 
@@ -330,7 +330,7 @@ Probably the most "powerful" mechanism for authentication - it gives you the abi
 
 ### OAuth2
 
-Zapier's OAuth2 implementation is based on the the `authorization_code` flow, similar to [GitHub](http://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
+Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](http://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
 
 > Example App: check out https://github.com/zapier/zapier-platform-example-app-oauth2 for a working example app for oauth2.
 
@@ -468,7 +468,7 @@ Sometimes, API endpoints require clients to specify a parent object in order to 
 
 Our solution is to present users a dropdown that is populated by making a live API call to fetch a list of parent objects. We call these special dropdowns "dynamic dropdowns."
 
-To define one, you can provide the `dynamic` property on your field to specify the trigger that should be used to populate the options for the dropdown. The value for the property is a dot-seperated concatination of a trigger's key, the field to use for the value, and the field to use for the label.
+To define one, you can provide the `dynamic` property on your field to specify the trigger that should be used to populate the options for the dropdown. The value for the property is a dot-separated concatenation of a trigger's key, the field to use for the value, and the field to use for the label.
 
 ```javascript
 [insert-file:./snippets/dynamic-dropdowns.js]
@@ -482,7 +482,7 @@ In the UI, users will see something like this:
 
 ### Search-Powered Fields
 
-For fields that take id of another object to create a relationship between the two (EG: a project id for a ticket), you can specify the `search` property on the field to indicate that Zapier needs to prompt the user to setup a Search step to populate the value for this field. Similar to dynamic dropdowns, the value for this property is a dot-seperated concatination of a search's key and the field to use for the value.
+For fields that take id of another object to create a relationship between the two (EG: a project id for a ticket), you can specify the `search` property on the field to indicate that Zapier needs to prompt the user to setup a Search step to populate the value for this field. Similar to dynamic dropdowns, the value for this property is a dot-separated concatenation of a search's key and the field to use for the value.
 
 ```javascript
 [insert-file:./snippets/search-field.js]
@@ -631,7 +631,7 @@ Alternatively, we provide some extra tooling to work with an `.environment` that
 MY_SECRET_VALUE=1234
 ```
 
-And then in your `test/index.js` file:
+And then in your `test/basic.js` file:
 
 ```javascript
 const zapier = require('zapier-platform-core');
@@ -816,7 +816,7 @@ z.request({
 Dehydration, and it's counterpart Hydration, is a tool that can lazily load data that might be otherwise expensive to retrieve aggressively.
 
 * **Dehydration** - think of this as "make a pointer", you control the creation of pointers with `z.dehydrate(func, inputData)`
-* **Hydration** - think of this as an automatic step that "consumes a pointer" and "returns some data", Zapier does this automatically behind the the scenes
+* **Hydration** - think of this as an automatic step that "consumes a pointer" and "returns some data", Zapier does this automatically behind the scenes
 
 > This is very common when [Stashing Files](#stashing-files) - but that isn't their only use!
 
@@ -1052,7 +1052,7 @@ zapier test --very-quiet
 
 ### Testing in your CI (Jenkins/Travis/etc.)
 
-Behind the scenes `zapier test` doing pretty standard `npm test` with [mocha](https://www.npmjs.com/package/mocha) as the backend.
+Behind the scenes `zapier test` is doing a pretty standard `npm test` with [mocha](https://www.npmjs.com/package/mocha) as the backend.
 
 This makes it pretty straightforward to integrate into your testing interface. If you'd like to test with [Travis CI](https://travis-ci.com/) for example - the `.travis.yml` would look something like this:
 
