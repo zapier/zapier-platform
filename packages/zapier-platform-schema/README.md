@@ -1,7 +1,5 @@
 # Schema For Zapier CLI Platform
 
-> Warning - this is currently beta software!
-
 [Visit the CLI for basic documentation.](https://www.npmjs.com/package/zapier-platform-cli)
 
 ## Development
