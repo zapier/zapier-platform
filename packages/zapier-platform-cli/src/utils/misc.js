@@ -65,9 +65,14 @@ const parseVersions = (versionString) => (
   versionString.split('.').map(s => parseInt(s, 10))
 );
 
-const isValidNodeVersion = () => {
+const readNvmVersion = () => {
   const nvmrc = path.resolve(__dirname, '../../.nvmrc');
   const nvmVersion = fse.readFileSync(nvmrc, 'utf8').substr(1); // strip of leading 'v'
+  return nvmVersion;
+};
+
+const isValidNodeVersion = () => {
+  const nvmVersion = readNvmVersion();
 
   const [nvmMajor, nvmMinor, nvmPatch] = parseVersions(nvmVersion);
   const [major, minor, patch] = parseVersions(process.versions.node);
@@ -151,6 +156,7 @@ module.exports = {
   camelCase,
   snakeCase,
   runCommand,
+  readNvmVersion,
   isValidNodeVersion,
   isValidAppInstall,
   npmInstall,

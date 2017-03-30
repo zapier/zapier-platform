@@ -4,7 +4,7 @@ require('babel-polyfill');
 const _ = require('lodash');
 const colors = require('colors/safe');
 
-const {DEBUG, MIN_NODE_VERSION, PLATFORM_PACKAGE} = require('./constants');
+const {DEBUG, PLATFORM_PACKAGE} = require('./constants');
 const commands = require('./commands');
 const utils = require('./utils');
 
@@ -17,7 +17,7 @@ module.exports = (argv) => {
 
   if (!utils.isValidNodeVersion()) {
     console.error(colors.red(
-      `Requires node version >= ${MIN_NODE_VERSION.major}.${MIN_NODE_VERSION.minor}.${MIN_NODE_VERSION.patch}, found ${process.versions.node}. Please upgrade node.`
+      `Requires node version >= ${utils.readNvmVersion()}, found ${process.versions.node}. Please upgrade node.`
     ));
     process.exit(1);
   }
