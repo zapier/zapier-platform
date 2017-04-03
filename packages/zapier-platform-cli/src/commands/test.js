@@ -26,7 +26,14 @@ const test = (context) => {
     })
     .then(() => {
       const env = _.extend({}, process.env, extraEnv);
-      return utils.runCommand('npm', ['run', '--silent', 'test'], {stdio: 'inherit', env})
+      const commands = ['run', '--silent', 'test'];
+
+      if (global.argOpts.timeout) {
+        commands.push('--');
+        commands.push(`--timeout=${global.argOpts.timeout}`);
+      }
+
+      return utils.runCommand('npm', commands, {stdio: 'inherit', env})
         .then((stdout) => {
           if (stdout) {
             context.line(stdout);
@@ -38,7 +45,8 @@ test.argsSpec = [
 ];
 test.argOptsSpec = {
   quiet: {flag: true, help: 'do not print zapier detailed logs to standard out'},
-  'very-quiet': {flag: true, help: 'do not print zapier summary or detail logs to standard out'}
+  'very-quiet': {flag: true, help: 'do not print zapier summary or detail logs to standard out'},
+  timeout: {help: 'add a default timeout to mocha, in milliseconds'},
 };
 test.help = 'Tests your app via `npm test`.';
 test.example = 'zapier test';

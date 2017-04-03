@@ -13,6 +13,7 @@ const appTemplates = require('../lib/app-templates');
 const validateAppTemplate = (template, rootTmpDir) => {
   //const appDir = path.resolve(rootTmpDir, template);
   const zapierCmd = path.resolve(__dirname, '../zapier.js');
+  const extraCmd = (template === 'babel') ? ' && npm run zapier-build' : '';
 
   const logFile = path.resolve(__dirname, '..', `${template}.log`);
   const logStream = fse.createWriteStream(logFile);
@@ -21,7 +22,7 @@ const validateAppTemplate = (template, rootTmpDir) => {
   return fse.ensureFileAsync(logFile)
     .then(() => {
       return new Promise((resolve, reject) => {
-        const cmd = `${zapierCmd} init ${template} --template=${template} --debug && cd ${template} && npm install && ${zapierCmd} validate && export CLIENT_ID=1234 CLIENT_SECRET=asdf && ${zapierCmd} test`;
+        const cmd = `${zapierCmd} init ${template} --template=${template} --debug && cd ${template} && npm install ${extraCmd} && ${zapierCmd} validate && export CLIENT_ID=1234 CLIENT_SECRET=asdf && ${zapierCmd} test --timeout=5000`;
         const child = childProcess.exec(cmd, {cwd: rootTmpDir}, err => {
           if (err) {
             console.log('error starting child process:', err);
