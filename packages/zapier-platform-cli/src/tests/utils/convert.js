@@ -139,4 +139,32 @@ describe('convert render functions', () => {
       done();
     });
   });
+
+  describe('render sample', () => {
+    it('should render sample output fields', () => {
+      const v2Def = {
+        sample_result_fields: [
+          { type: 'float', key: 'bounds__northeast__lat' },
+          { type: 'float', key: 'bounds__northeast__lng' },
+          { type: 'float', key: 'bounds__southwest__lat' },
+          { type: 'float', key: 'bounds__southwest__lng' },
+          { type: 'unicode', key: 'copyrights', label: 'Copyright' },
+          { type: 'unicode', key: 'legs[]duration__text', important: true, label: 'Legs Duration' },
+        ]
+      };
+
+      const string = '{' + convert.renderSample(v2Def) + '}';
+      const fields = s2js(string);
+      fields.should.eql({
+        outputFields: [
+          { type: 'number', key: 'bounds__northeast__lat' },
+          { type: 'number', key: 'bounds__northeast__lng' },
+          { type: 'number', key: 'bounds__southwest__lat' },
+          { type: 'number', key: 'bounds__southwest__lng' },
+          { type: 'string', key: 'copyrights', label: 'Copyright' },
+          { type: 'string', key: 'legs[]duration__text', label: 'Legs Duration' },
+        ]
+      });
+    });
+  });
 });

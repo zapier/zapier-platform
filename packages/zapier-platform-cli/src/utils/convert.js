@@ -83,20 +83,32 @@ ${props.join(',\n')}
 };
 
 const renderSampleField = (def) => {
-  const type = typesMap[def.type];
+  const type = typesMap[def.type] || 'string';
 
-  return `      ${def.key}: {
+  if (def.label) {
+    return `      {
+        key: ${quote(def.key)},
         type: ${quote(type)},
         label: ${quote(def.label)}
+      }`;
+  }
+
+  return `      {
+        key: ${quote(def.key)},
+        type: ${quote(type)}
       }`;
 };
 
 const renderSample = (definition) => {
   const fields = _.map(definition.sample_result_fields, renderSampleField);
 
-  return `    sample: {
+  if (!fields.length) {
+    return '';
+  }
+
+  return `    outputFields: [
 ${fields.join(',\n')}
-    }`;
+    ]`;
 };
 
 const renderBasicAuth = (definition) => {
