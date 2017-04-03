@@ -8,6 +8,7 @@
   "license": "BSD-3-Clause",
   "main": "index.js",
   "scripts": {
+    "zapier-build": "rm -rf lib && node_modules/babel-cli/bin/babel.js src --out-dir lib",
     "zapier-dev": "rm -rf lib && node_modules/babel-cli/bin/babel.js src --out-dir lib --watch",
     "zapier-push": "rm -rf lib && node_modules/babel-cli/bin/babel.js src --out-dir lib && zapier push",
     "test": "node node_modules/mocha/bin/mocha --recursive lib"

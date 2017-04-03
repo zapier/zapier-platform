@@ -6,9 +6,15 @@ const exampleFunc = async (z, bundle) => {
   return z.json.parse(response.content);
 };
 
+const Recipe = require('./resources/recipe');
+
+const authentication = require('./authentication');
+
 const App = {
   version: require('../package.json').version,
   platformVersion: require('zapier-platform-core').version,
+
+  authentication: authentication,
 
   beforeRequest: [
   ],
@@ -17,6 +23,7 @@ const App = {
   ],
 
   resources: {
+    [Recipe.key]: Recipe,
   },
 
   triggers: {

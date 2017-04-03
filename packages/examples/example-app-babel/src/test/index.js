@@ -19,8 +19,16 @@ const mochaAsync = (fn) => {
 describe('My Test', () => {
 
   it('should test the auth', mochaAsync(async () => {
-    const response = await appTester(App.authentication.test);
+    const bundle = {
+      authData: {
+        username: 'user',
+        password: 'passwd'
+      }
+    };
+
+    const response = await appTester(App.authentication.test, bundle);
     should(response.status).eql(200);
+    response.request.headers.Authorization.should.eql('Basic dXNlcjpwYXNzd2Q=');
   }));
 
 });
