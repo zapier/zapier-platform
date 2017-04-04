@@ -6,6 +6,10 @@ const hasCancelled = answer => (
 );
 
 const pickApp = (context, apps, appMap) => {
+  if (!apps.length) {
+    throw new Error('You don\'t seem to have any CLI apps. Make sure you\'re invited to one, or create one first.');
+  }
+
   utils.printData(apps, [
     ['#', 'number'],
     ['Title', 'title'],
@@ -15,7 +19,13 @@ const pickApp = (context, apps, appMap) => {
   ]);
 
   const action = () => utils.getInput('Which app number do you want to link? (Ctrl-C to cancel)\n\n');
-  const stop = (answer) => appMap[answer] || hasCancelled(answer);
+  const stop = (answer) => {
+    if (!hasCancelled(answer) && !appMap[answer]) {
+      throw new Error('That app number does not match any CLI app that you have access to.');
+    }
+
+    return appMap[answer] || hasCancelled(answer);
+  };
 
   return utils.promiseDoWhile(action, stop);
 };
