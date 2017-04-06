@@ -78,4 +78,37 @@ describe('logger', () => {
     }).catch(done);
   });
 
+  it('should replace sensitive data inside strings', (done) => {
+    const bundle = {
+      authData: {
+        password: 'secret',
+        key: 'notell'
+      },
+    };
+    const logger = createlogger({bundle}, options);
+
+    const data = {
+      response_content: `{
+        "something": "secret",
+        "somethingElse": "notell",
+      }`
+    };
+
+    logger('test', data).then(response => {
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: 'fake-token',
+        message: 'test',
+        data: {
+          response_content: `{
+        "something": ":censored:6:a5023f748d:",
+        "somethingElse": ":censored:6:8f63f9ff57:",
+      }`,
+          log_type: 'console',
+        }
+      });
+      done();
+    }).catch(done);
+  });
+
 });
