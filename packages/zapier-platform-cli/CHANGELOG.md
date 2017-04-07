@@ -1,3 +1,42 @@
+## 1.0.7
+
+* Improved `link` command UX on error/non-existing apps.
+
+## 1.0.6
+
+* Fixed `convert` command for `outputFields`.
+* Improvements on `validate-templates` and `zapier test` (now supports `--timeout=5000`).
+* Minor docs fixes.
+
+## 1.0.5
+
+* Use `ZAPIER_BASE_ENDPOINT` for `push` and `convert`.
+* Don't show command help on error.
+* Minor docs fixes.
+
+## 1.0.4
+
+* Fix issues in Windows.
+* Minor docs fixes.
+
+## 1.0.3
+
+* Fixes fatal error when `build` directory didn't exist.
+* Minor docs fixes.
+
+## 1.0.2
+
+* Minor docs fixes.
+
+## 1.0.1
+
+* Minor docs fixes.
+
+## 1.0.0
+
+* Removing beta "label".
+* Minor docs fixes.
+
 ## 0.10.2
 
 * Added `dict` property for `inputFields`, to allow asking for a dictionary (key/value pair) input.
