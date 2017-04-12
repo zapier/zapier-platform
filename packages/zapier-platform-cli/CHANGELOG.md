@@ -26,6 +26,7 @@
 
 ## 1.0.2
 
+* Support streamed non-ascii files in `z.stashFile`.
 * Minor docs fixes.
 
 ## 1.0.1
