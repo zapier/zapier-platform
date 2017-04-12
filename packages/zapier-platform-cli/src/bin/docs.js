@@ -88,7 +88,8 @@ writeCliDocs({
 litdoc({
   title: 'Zapier Platform CLI Documentation',
   markdownPath: path.join(__dirname, '../../README.md'),
-  outputPath: path.join(__dirname, '../../docs/index.html')
+  outputPath: path.join(__dirname, '../../docs/index.html'),
+  templatePath: path.join(__dirname, '../../docs/template.jst'),
 });
 
 // TODO: toc(../../docs/README.md) to ../../README.md
@@ -96,5 +97,6 @@ litdoc({
 litdoc({
   title: 'Zapier Platform CLI Reference',
   markdownPath: path.join(__dirname, '../../docs/cli.md'),
-  outputPath: path.join(__dirname, '../../docs/cli.html')
+  outputPath: path.join(__dirname, '../../docs/cli.html'),
+  templatePath: path.join(__dirname, '../../docs/template.jst'),
 });
