@@ -114,7 +114,7 @@ Next, you'll probably want to upload app to Zapier itself so you can start testi
 zapier push
 ```
 
-> Go check out our [full CLI reference documentation](docs/cli.md) to see all the other commands!
+> Go check out our [full CLI reference documentation](http://zapier.github.io/zapier-platform-cli/cli.html) to see all the other commands!
 
 
 ### Tutorial
@@ -223,7 +223,7 @@ zapier versions
 If you'd like to manage your **Version**, use these commands:
 
 * `zapier versions` - list the versions for the current directory's app
-* `zapier push` - push the current version the of current directory's app & version (read from `package.json`)
+* `zapier push` - push the current version of current directory's app & version (read from `package.json`)
 * `zapier promote [1.0.0]` - mark a version as the "production" version
 * `zapier migrate [1.0.0] [1.0.1] [100%]` - move users between versions, regardless of deployment status
 * `zapier deprecate [1.0.0] [YYYY-MM-DD]` - mark a version as deprecated, but let users continue to use it (we'll email them)
@@ -936,7 +936,7 @@ Zapier provides a couple tools to help with error handling. First is the `afterR
 middleware ([docs](#using-http-middleware)), which provides a hook for processing
 all responses from HTTP calls. The other tool is the collection of errors in
 `z.errors` ([docs](#zerrors)), which control the behavior of Zaps when
-various kinds of errors occurr.
+various kinds of errors occur.
 
 ### General Errors
 
@@ -950,7 +950,7 @@ Example: `throw new Error('Your error message.');`
 A couple best practices to keep in mind:
 
   * Elaborate on terse messages. "not_authenticated" -> "Your API Key is invalid. Please reconnect your account."
-  * If the error calls out a specific field, surface that information to the user. "Invald Request" -> "contact name is invalid"
+  * If the error calls out a specific field, surface that information to the user. "Invalid Request" -> "contact name is invalid"
   * If the error provides details about why a field is invalid, add that in too! "contact name is invalid" -> "contact name is too long"
 
 Note that if a Zap raises too many error messages it will be automatically
