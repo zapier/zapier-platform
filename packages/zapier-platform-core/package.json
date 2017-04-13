@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-core",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "The core SDK for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-core",
   "homepage": "https://zapier.com/",
@@ -32,7 +32,7 @@
     "form-data": "1.0.0",
     "lodash": "4.15.0",
     "node-fetch": "1.6.2",
-    "zapier-platform-schema": "1.0.7"
+    "zapier-platform-schema": "1.0.8"
   },
   "devDependencies": {
     "aws-sdk": "2.6.3",
