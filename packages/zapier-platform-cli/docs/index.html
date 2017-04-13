@@ -660,7 +660,7 @@ zapier push
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Go check out our <a href="docs/cli.md">full CLI reference documentation</a> to see all the other commands!</p>
+<p>Go check out our <a href="http://zapier.github.io/zapier-platform-cli/cli.html">full CLI reference documentation</a> to see all the other commands!</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -899,7 +899,7 @@ zapier versions
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>If you&apos;d like to manage your <strong>Version</strong>, use these commands:</p><ul>
 <li><code>zapier versions</code> - list the versions for the current directory&apos;s app</li>
-<li><code>zapier push</code> - push the current version the of current directory&apos;s app &amp; version (read from <code>package.json</code>)</li>
+<li><code>zapier push</code> - push the current version of current directory&apos;s app &amp; version (read from <code>package.json</code>)</li>
 <li><code>zapier promote [1.0.0]</code> - mark a version as the &quot;production&quot; version</li>
 <li><code>zapier migrate [1.0.0] [1.0.1] [100%]</code> - move users between versions, regardless of deployment status</li>
 <li><code>zapier deprecate [1.0.0] [YYYY-MM-DD]</code> - mark a version as deprecated, but let users continue to use it (we&apos;ll email them)</li>
@@ -2834,7 +2834,7 @@ have incomprehensible messages for end users, or possibly go uncaught.</p><p>Zap
 middleware (<a href="#using-http-middleware">docs</a>), which provides a hook for processing
 all responses from HTTP calls. The other tool is the collection of errors in
 <code>z.errors</code> (<a href="#zerrors">docs</a>), which control the behavior of Zaps when
-various kinds of errors occurr.</p>
+various kinds of errors occur.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2857,7 +2857,7 @@ by throwing a standard JavaScript <code>Error</code> with a user-friendly messag
 Typically, this will be prettifying 4xx responses or API&apos;s that return errors as
 200s with a payload that describes the error.</p><p>Example: <code>throw new Error(&apos;Your error message.&apos;);</code></p><p>A couple best practices to keep in mind:</p><ul>
 <li>Elaborate on terse messages. &quot;not_authenticated&quot; -&gt; &quot;Your API Key is invalid. Please reconnect your account.&quot;</li>
-<li>If the error calls out a specific field, surface that information to the user. &quot;Invald Request&quot; -&gt; &quot;contact name is invalid&quot;</li>
+<li>If the error calls out a specific field, surface that information to the user. &quot;Invalid Request&quot; -&gt; &quot;contact name is invalid&quot;</li>
 <li>If the error provides details about why a field is invalid, add that in too! &quot;contact name is invalid&quot; -&gt; &quot;contact name is too long&quot;</li>
 </ul><p>Note that if a Zap raises too many error messages it will be automatically
 turned off, so only use these if the scenario is truly an error that needs to
