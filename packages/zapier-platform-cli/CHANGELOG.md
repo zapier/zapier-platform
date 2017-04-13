@@ -62,7 +62,9 @@
 ## 0.9.10
 
 * Documentation expanded:
-  * Updated `z.dehydrate()` / `appTester()` / examples to reflect the new arguments. [See more](https://github.com/zapier/zapier-platform-core/blob/master/CHANGELOG.md#0910).
+  * Updated `z.dehydrate()` / `appTester()` / examples to reflect the new arguments.
+    * `z.dehydrate('someFunction')` must be `z.dehydrate(App.hydrators.someFunction)`
+    * `appTester('contact.list')` must be `appTester(App.resources.contact.list.operation.perform)`
   * Documented fields, custom/dynamic fields, and dynamic dropdowns plus examples.
   * `zapier env ... -remove` flag documented.
 * `zapier describe` now describes much more about the app - included auth info, redirect_uri, resources and all resource paths.
