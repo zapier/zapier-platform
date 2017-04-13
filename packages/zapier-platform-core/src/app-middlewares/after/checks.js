@@ -9,7 +9,8 @@ const checks = [
   require('../../checks/trigger-is-array'),
   require('../../checks/trigger-is-object'),
   require('../../checks/trigger-has-id'),
-  require('../../checks/trigger-has-unique-ids')
+  require('../../checks/trigger-has-unique-ids'),
+  require('../../checks/create-is-single')
 ];
 
 /*
