@@ -75,6 +75,11 @@ const createFileStasher = (input) => {
       return ZapierPromise.reject(new Error('rpc is not available'));
     }
 
+    const isRunningOnHydrator = _.get(input, '_zapier.event.method', '').indexOf('hydrators.') === 0;
+    if (!isRunningOnHydrator) {
+      return ZapierPromise.reject(new Error('Cannot stash files outside an hydration function/method.'));
+    }
+
     return rpc('get_presigned_upload_post_data')
       .then(result => {
         if (isPromise(bufferStringStream)) {

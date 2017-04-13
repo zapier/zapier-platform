@@ -16,7 +16,14 @@ describe('file upload', () => {
   const input = createInput({}, {}, testLogger);
 
   const rpc = mocky.makeRpc();
-  const stashFile = createFileStasher({ _zapier: { rpc } });
+  const stashFile = createFileStasher({
+    _zapier: {
+      rpc,
+      event: {
+        method: 'hydrators.test',
+      },
+    },
+  });
 
   it('should upload a standard blob of text', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
@@ -98,6 +105,26 @@ describe('file upload', () => {
     stashFile(file)
       .then((url) => {
         should(url).eql(`${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`);
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should fail if not being called from an hydrator event', (done) => {
+    const pollingStashFile = createFileStasher({
+      _zapier: {
+        rpc,
+        event: {
+          method: 'triggers.test.operation.perform',
+        },
+      },
+    });
+
+    const file = fs.createReadStream(path.join(__dirname, 'test.txt'));
+    pollingStashFile(file)
+      .then(() => done(new Error('this should have exploded')))
+      .catch(err => {
+        should(err.message).containEql('Cannot stash files outside an hydration function/method');
         done();
       })
       .catch(done);
