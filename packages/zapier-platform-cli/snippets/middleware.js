@@ -20,7 +20,7 @@ const App = {
   beforeRequest: [
     addHeader,
   ],
-  afterRequest: [
+  afterResponse: [
     mustBe200,
     autoParseJson,
   ]
