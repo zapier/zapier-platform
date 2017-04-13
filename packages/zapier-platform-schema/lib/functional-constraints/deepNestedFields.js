@@ -8,7 +8,7 @@ const collectErrors = (inputFields, path) => {
 
   _.each(inputFields, (inputField, index) => {
     if (inputField.children) {
-      const hasDeeplyNestedChildren = _.every(inputField.chilren, (child) => child.children);
+      const hasDeeplyNestedChildren = _.every(inputField.children, (child) => child.children);
 
       if (hasDeeplyNestedChildren) {
         errors.push(new jsonschema.ValidationError(
