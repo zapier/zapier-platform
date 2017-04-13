@@ -1,3 +1,9 @@
+## 1.0.8
+
+* `z.stashFile` is no longer allowed outside of `hydrators`.
+* Adding analytics to the web-based documentation.
+* Minor docs fixes.
+
 ## 1.0.7
 
 * Improved `link` command UX on error/non-existing apps.
