@@ -1,3 +1,10 @@
+## 1.0.9
+
+* Functions in `app.afterResponse` will now get called.
+* Add check in middleware, to make sure creates return only 1 object.
+* Fixes issue for deep object checking.
+* Minor docs fixes.
+
 ## 1.0.8
 
 * `z.stashFile` is no longer allowed outside of `hydrators`.
