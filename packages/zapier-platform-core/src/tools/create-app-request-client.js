@@ -41,18 +41,18 @@ const createAppRequestClient = (input, options) => {
 
   httpBefores.push(addQueryParams);
 
-  const httpAfters = [
+  const httpOriginalAfters = [
     prepareResponse,
     logResponse
   ];
 
   if (app.authentication) {
     if (app.authentication.type === 'oauth2' && _.get(app, 'authentication.oauth2Config.autoRefresh')) {
-      httpAfters.push(throwForStaleAuth);
+      httpOriginalAfters.push(throwForStaleAuth);
     }
   }
 
-  httpAfters.concat(ensureArray(app.afterResponse));
+  const httpAfters = httpOriginalAfters.concat(ensureArray(app.afterResponse));
 
   return createRequestClient(httpBefores, httpAfters, options);
 };

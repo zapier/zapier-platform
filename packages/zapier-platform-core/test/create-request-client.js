@@ -196,4 +196,52 @@ describe('request client', () => {
       .catch(done);
   });
 
+  it('should run any beforeRequest functions', (done) => {
+    const inputWithBeforeMiddleware = createInput({
+      beforeRequest: [
+        (request) => {
+          request.headers['X-Testing-True'] = 'Yes';
+          return request;
+        },
+      ],
+    }, {}, testLogger);
+    const request = createAppRequestClient(inputWithBeforeMiddleware);
+    request({url: 'http://zapier-httpbin.herokuapp.com/get'})
+      .then(responseBefore => {
+        const response = JSON.parse(JSON.stringify(responseBefore));
+
+        response.request.headers['X-Testing-True'].should.eql('Yes');
+        response.status.should.eql(200);
+
+        const body = JSON.parse(response.content);
+        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should run any afterResponse functions', (done) => {
+    const inputWithAfterMiddleware = createInput({
+      afterResponse: [
+        (response) => {
+          response.json = {testing: true};
+          return response;
+        },
+      ],
+    }, {}, testLogger);
+    const request = createAppRequestClient(inputWithAfterMiddleware);
+    request({url: 'http://zapier-httpbin.herokuapp.com/get'})
+      .then(responseBefore => {
+        const response = JSON.parse(JSON.stringify(responseBefore));
+
+        response.json.testing.should.eql(true);
+        response.status.should.eql(200);
+
+        const body = JSON.parse(response.content);
+        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        done();
+      })
+      .catch(done);
+  });
+
 });
