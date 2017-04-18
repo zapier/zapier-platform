@@ -1,5 +1,11 @@
 {
-  "presets": ["es2015-node4"],
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": 4
+      }
+    }]
+  ],
   "plugins": [
     "transform-regenerator",
     "add-module-exports"

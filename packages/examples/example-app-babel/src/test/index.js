@@ -18,7 +18,7 @@ const mochaAsync = (fn) => {
 
 describe('My Test', () => {
 
-  it('should test the auth', mochaAsync(async () => {
+  it('should test the auth succeeds', mochaAsync(async () => {
     const bundle = {
       authData: {
         username: 'user',
@@ -29,6 +29,21 @@ describe('My Test', () => {
     const response = await appTester(App.authentication.test, bundle);
     should(response.status).eql(200);
     response.request.headers.Authorization.should.eql('Basic dXNlcjpwYXNzd2Q=');
+  }));
+
+  it('should test the auth fails', mochaAsync(async () => {
+    const bundle = {
+      authData: {
+        username: 'user',
+        password: 'boom'
+      }
+    };
+
+    try {
+      const response = await appTester(App.authentication.test, bundle);
+    } catch(e) {
+      e.message.should.containEql('The username and/or password you supplied is incorrect');
+    }
   }));
 
 });

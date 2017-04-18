@@ -10,27 +10,26 @@
   "scripts": {
     "zapier-build": "rm -rf lib && node_modules/babel-cli/bin/babel.js src --out-dir lib",
     "zapier-dev": "rm -rf lib && node_modules/babel-cli/bin/babel.js src --out-dir lib --watch",
-    "zapier-push": "rm -rf lib && node_modules/babel-cli/bin/babel.js src --out-dir lib && zapier push",
-    "test": "node node_modules/mocha/bin/mocha --recursive lib"
+    "zapier-push": "npm run zapier-build && zapier push",
+    "test": "npm run zapier-build && node node_modules/mocha/bin/mocha --recursive lib"
   },
   "engines": {
     "node": ">=4.3.0",
     "npm": ">=2.0.0"
   },
   "dependencies": {
-    "babel-core": "6.18.0",
-    "babel-polyfill": "6.16.0",
-    "lodash": "4.15.0",
+    "babel-core": "6.24.1",
+    "babel-polyfill": "6.23.0",
+    "babel-plugin-add-module-exports": "0.2.1",
+    "babel-plugin-transform-regenerator": "6.24.1",
+    "babel-preset-env": "1.4.0",
+    "lodash": "4.17.4",
     "zapier-platform-core": "1.0.9"
   },
   "devDependencies": {
-    "babel": "6.5.2",
-    "babel-cli": "6.18.0",
-    "babel-eslint": "6.1.2",
-    "babel-plugin-add-module-exports": "0.2.1",
-    "babel-plugin-transform-regenerator": "6.16.1",
-    "babel-preset-es2015-node4": "2.1.0",
+    "babel-cli": "6.24.1",
+    "babel-eslint": "7.2.2",
     "mocha": "2.5.3",
-    "should": "9.0.2"
+    "should": "11.2.1"
   }
 }
