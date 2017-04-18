@@ -24,7 +24,7 @@
     "babel-plugin-transform-regenerator": "6.24.1",
     "babel-preset-env": "1.4.0",
     "lodash": "4.17.4",
-    "zapier-platform-core": "1.0.9"
+    "zapier-platform-core": "1.0.10"
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
