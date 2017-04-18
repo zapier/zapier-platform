@@ -65,7 +65,21 @@ describe('schema', () => {
     });
 
     it('should populate generated searchOrCreate from resource', () => {
-      const dummyMethod = {
+      const dummySearch = {
+        display: {
+          label: 'Find a Foo',
+          description: 'Finds a Foo.'
+        },
+        operation: {
+          perform: () => {return {};}
+        }
+      };
+
+      const dummyCreate = {
+        display: {
+          label: 'Create a Foo',
+          description: 'Creates a Foo.'
+        },
         operation: {
           perform: () => {return {};}
         }
@@ -76,8 +90,8 @@ describe('schema', () => {
           foo: {
             key: 'foo',
             noun: 'Foo',
-            search: dummyMethod,
-            create: dummyMethod,
+            search: dummySearch,
+            create: dummyCreate,
             outputFields: [
               {key: 'id', type: 'integer'},
               {key: 'name', type: 'string'},
@@ -95,7 +109,7 @@ describe('schema', () => {
         key: 'fooSearchOrCreate',
         display: {
           label: 'Find or Create Foo',
-          description: ''
+          description: 'Finds a Foo.'
         },
         search: 'fooSearch',
         create: 'fooCreate'
