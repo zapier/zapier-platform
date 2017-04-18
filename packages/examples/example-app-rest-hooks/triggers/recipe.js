@@ -10,14 +10,15 @@ const subscribeHook = (z, bundle) => {
 
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
-  const promise = z.request({
+  const options = {
     url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
     method: 'POST',
     body: JSON.stringify(data)
-  });
+  };
 
   // You may return a promise or a normal data structure from any perform method.
-  return promise.then((response) => JSON.parse(response.content));
+  return z.request(options)
+    .then((response) => JSON.parse(response.content));
 };
 
 const unsubscribeHook = (z, bundle) => {
@@ -27,13 +28,14 @@ const unsubscribeHook = (z, bundle) => {
 
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
-  const promise = z.request({
+  const options = {
     url: `http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks/${hookId}`,
     method: 'DELETE',
-  });
+  };
 
   // You may return a promise or a normal data structure from any perform method.
-  return promise.then((response) => JSON.parse(response.content));
+  return z.request(options)
+    .then((response) => JSON.parse(response.content));
 };
 
 const getRecipe = (z, bundle) => {
@@ -53,13 +55,15 @@ const getRecipe = (z, bundle) => {
 
 const getFallbackRealRecipe = (z, bundle) => {
   // For the test poll, you should get some real data, to aid the setup process.
-  const promise = z.request({
+  const options = {
     url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes/',
     params: {
       style: bundle.inputData.style
     }
-  });
-  return promise.then((response) => JSON.parse(response.content));
+  };
+
+  return z.request(options)
+    .then((response) => JSON.parse(response.content));
 };
 
 // We recommend writing your triggers separate like this and rolling them
@@ -81,7 +85,7 @@ module.exports = {
     // `inputFields` can define the fields a user could provide,
     // we'll pass them in as `bundle.inputData` later.
     inputFields: [
-      {key: 'style', type: 'string'}
+      {key: 'style', type: 'string', helpText: 'Which styles of cuisine this should trigger on.'}
     ],
 
     type: 'hook',
@@ -92,13 +96,29 @@ module.exports = {
     perform: getRecipe,
     performList: getFallbackRealRecipe,
 
+    // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
+    // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
+    // returned records, and have obviously dummy values that we can show to any user.
     sample: {
       id: 1,
-      name: 'Example Name',
-      directions: 'Example Directions',
-      style: 'Example Style',
+      createdAt: 1472069465,
+      name: 'Best Spagetti Ever',
       authorId: 1,
-      createdAt: 1471984229
-    }
+      directions: '1. Boil Noodles\n2.Serve with sauce',
+      style: 'italian',
+    },
+
+    // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
+    // field definitions. The result will be used to augment the sample.
+    // outputFields: () => { return []; }
+    // Alternatively, a static field definition should be provided, to specify labels for the fields
+    outputFields: [
+      {key: 'id', label: 'ID'},
+      {key: 'createdAt', label: 'Created At'},
+      {key: 'name', label: 'Name'},
+      {key: 'directions', label: 'Directions'},
+      {key: 'authorId', label: 'Author ID'},
+      {key: 'style', label: 'Style'},
+    ]
   }
 };
