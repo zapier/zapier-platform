@@ -16,7 +16,9 @@ const test = (context) => {
   }
 
   if (process.version !== LAMBDA_VERSION) {
-    throw new Error(`You're running tests on Node ${process.version}, but Zapier runs your code on ${LAMBDA_VERSION}. The version numbers must match. See https://github.com/zapier/zapier-platform-cli#requirements for more info.`);
+    context.line(`You're running tests on Node ${process.version}, but Zapier runs your code on ${LAMBDA_VERSION}. The version numbers must match. See https://github.com/zapier/zapier-platform-cli#requirements for more info.`);
+    process.exitCode = 1;
+    return new Promise(() => {});
   }
 
   return utils.readCredentials(undefined, false)
