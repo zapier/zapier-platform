@@ -1,0 +1,29 @@
+{
+  "name": "zapier-platform-example-app-files",
+  "version": "1.0.0",
+  "description": "An example app for the Zapier platform.",
+  "repository": "zapier/zapier-platform-example-app-files",
+  "homepage": "https://zapier.com/",
+  "author": "Bryan Helmig <bryan@zapier.com>",
+  "license": "BSD-3-Clause",
+  "main": "index.js",
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha --recursive --timeout=5000"
+  },
+  "engines": {
+    "node": ">=4.3.0",
+    "npm": ">=2.0.0"
+  },
+  "dependencies": {
+    "form-data": "2.1.4",
+    "lodash": "4.15.0",
+    "request": "2.81.0",
+    "zapier-platform-core": "1.0.9"
+  },
+  "devDependencies": {
+    "babel": "6.5.2",
+    "babel-eslint": "6.1.2",
+    "mocha": "2.5.3",
+    "should": "9.0.2"
+  }
+}
