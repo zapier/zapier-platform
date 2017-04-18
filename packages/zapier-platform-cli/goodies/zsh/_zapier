@@ -3,7 +3,7 @@
 getOptions() {
     local initOpts=("--template:'select a starting app template'")
     local scaffoldOpts=("--dest:'sets the new files path'" "--entry:'where to import the new file'")
-    local testOpts=("--quiet:'do not print zapier detailed logs to standard out'" "--very-quiet:'do not print zapier summary or detail logs to standard out'")
+    local testOpts=("--debug:'print zapier detailed logs to standard out'" "--timeout:'add a default timeout to mocha, in milliseconds'")
     local buildOpts=("--disable-dependency-detection:'disables walking required files to slim the build'" "--include-js-map:'include .js.map files (usually source maps'")
     local pushOpts=("--disable-dependency-detection:'disables walking required files to slim the build'" "--include-js-map:'include .js.map files (usually source maps'")
     local collaborateOpts=("--remove:'elect to remove this user'")
