@@ -104,9 +104,9 @@ describe('schema', () => {
         }
       };
       const compiledApp = schema.compileApp(appRaw);
-      compiledApp.searchOrCreates.should.have.keys('fooSearchOrCreate');
-      compiledApp.searchOrCreates.fooSearchOrCreate.should.eql({
-        key: 'fooSearchOrCreate',
+      compiledApp.searchOrCreates.should.have.keys('fooSearch');
+      compiledApp.searchOrCreates.fooSearch.should.eql({
+        key: 'fooSearch',
         display: {
           label: 'Find or Create Foo',
           description: 'Finds a Foo.'
