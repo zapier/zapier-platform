@@ -20,4 +20,17 @@ describe('triggers', () => {
     });
   });
 
+  describe('new movie trigger', () => {
+    it('should load movies', (done) => {
+      appTester(App.triggers.movie.operation.perform)
+        .then(results => {
+          const firstMovie = results[0];
+          firstMovie.title.should.eql('title 1');
+
+          done();
+        })
+        .catch(done);
+    });
+  });
+
 });
