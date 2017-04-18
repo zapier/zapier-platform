@@ -27,6 +27,22 @@ describe('triggers', () => {
         })
         .catch(done);
     });
+
+    it('should load recipes without filters', (done) => {
+      const bundle = {};
+
+      appTester(App.triggers.recipe.operation.perform, bundle)
+        .then(results => {
+          results.length.should.above(1);
+
+          const firstRecipe = results[0];
+          firstRecipe.name.should.eql('name 1');
+          firstRecipe.directions.should.eql('directions 1');
+
+          done();
+        })
+        .catch(done);
+    });
   });
 
 });
