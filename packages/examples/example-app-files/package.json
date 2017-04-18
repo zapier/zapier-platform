@@ -16,14 +16,11 @@
   },
   "dependencies": {
     "form-data": "2.1.4",
-    "lodash": "4.15.0",
     "request": "2.81.0",
     "zapier-platform-core": "1.0.9"
   },
   "devDependencies": {
-    "babel": "6.5.2",
-    "babel-eslint": "6.1.2",
     "mocha": "2.5.3",
-    "should": "9.0.2"
+    "should": "11.2.1"
   }
 }

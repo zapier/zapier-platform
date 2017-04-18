@@ -3,3 +3,5 @@ node_js:
   - "4.3.2"
 before_script: npm install -g zapier-platform-cli
 script: zapier test
+notifications:
+  email: false
