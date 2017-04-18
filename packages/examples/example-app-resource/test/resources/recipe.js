@@ -6,7 +6,7 @@ const App = require('../../index');
 const appTester = zapier.createAppTester(App);
 
 describe('recipe resource', () => {
-  it('should get an existing recipes', (done) => {
+  it('should get an existing recipe', (done) => {
     const bundle = {
       inputData: {
         id: 1
@@ -51,6 +51,21 @@ describe('recipe resource', () => {
     };
 
     appTester(App.resources.recipe.create.operation.perform, bundle)
+      .then((results) => {
+        results.should.have.property('name');
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should find a recipe', (done) => {
+    const bundle = {
+      inputData: {
+        name: 'Smith Family Recipe',
+      }
+    };
+
+    appTester(App.resources.recipe.search.operation.perform, bundle)
       .then((results) => {
         results.should.have.property('name');
         done();
