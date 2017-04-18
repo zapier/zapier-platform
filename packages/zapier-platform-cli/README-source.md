@@ -868,6 +868,8 @@ See a full example with dehydration/hydration wired in correctly:
 [insert-file:./snippets/stash-file.js]
 ```
 
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-files for a working example app using files.
+
 
 ## Logging
 

@@ -25,5 +25,15 @@ module.exports = {
       {key: 'name', required: true}
     ],
     perform: create<%= CAMEL %>
-  }
+  },
+
+  sample: {
+    id: 1,
+    name: 'Test'
+  },
+
+  outputFields: [
+    {key: 'id', label: 'ID'},
+    {key: 'name', label: 'Name'}
+  ]
 };

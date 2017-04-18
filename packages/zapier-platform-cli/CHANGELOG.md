@@ -1,3 +1,12 @@
+## 1.0.10
+
+* Added new Files example app with `zapier init . --template=files`.
+* Properly exit on node version mismatch while running `zapier test`.
+* Upgraded `node-fetch` in `core` (fixes some edge-case issues for `multipart/form-data` requests).
+* `zapier test` is now quiet by default. `zapier test --debug` will output details.
+* `zapier logs --type=http --detailed` is more clearly exposed.
+* Fixes `searchOrCreate` schema validation error for resources with `search` and `create`.
+
 ## 1.0.9
 
 * Functions in `app.afterResponse` will now get called.

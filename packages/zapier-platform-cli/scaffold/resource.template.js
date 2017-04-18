@@ -47,6 +47,7 @@ const create<%= CAMEL %> = (z, bundle) => {
 module.exports = {
   key: '<%= KEY %>',
   noun: '<%= NOUN %>',
+
   get: {
     display: {
       label: 'Get <%= NOUN %>',
@@ -59,6 +60,7 @@ module.exports = {
       perform: get<%= CAMEL %>
     }
   },
+
   list: {
     display: {
       label: 'New <%= NOUN %>',
@@ -68,6 +70,7 @@ module.exports = {
       perform: list<%= CAMEL %>s
     }
   },
+
   search: {
     display: {
       label: 'Find <%= NOUN %>',
@@ -80,6 +83,7 @@ module.exports = {
       perform: search<%= CAMEL %>s
     },
   },
+
   create: {
     display: {
       label: 'Create <%= NOUN %>',
@@ -92,7 +96,14 @@ module.exports = {
       perform: create<%= CAMEL %>
     },
   },
+
   sample: {
     id: 1,
-  }
+    name: 'Test'
+  },
+
+  outputFields: [
+    {key: 'id', label: 'ID'},
+    {key: 'name', label: 'Name'}
+  ]
 };

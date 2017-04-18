@@ -1575,6 +1575,8 @@ module.exports = App;
 
 ```
 
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-files for a working example app using files.
+
 
 ## Logging
 

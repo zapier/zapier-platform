@@ -46,6 +46,10 @@ const logs = (context) => {
       utils.printData(listLogs, columns, ifEmpty, true);
 
       context.line(colors.grey('  Most recent logs near the bottom.'));
+
+      if (type === 'http' && !global.argOpts.detailed) {
+        context.line(colors.grey('  TIP: Use `zapier logs --type=http --detailed` to include response information.'));
+      }
     });
 };
 logs.argsSpec = [];

@@ -24,5 +24,15 @@ module.exports = {
       <%= INPUT_FIELDS %>
     ],
     perform: trigger<%= CAMEL %>
-  }
+  },
+
+  sample: {
+    id: 1,
+    name: 'Test'
+  },
+
+  outputFields: [
+    {key: 'id', label: 'ID'},
+    {key: 'name', label: 'Name'}
+  ]
 };

@@ -693,7 +693,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
 <p>Note: this doesn&apos;t register or deploy the app with Zapier - try <code>zapier register &quot;Example&quot;</code> and <code>zapier push</code> for that!</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
 <li><code>path [value]</code> -- <strong>required</strong>,</li>
-<li><code>--template={minimal,resource,trigger,create,search,middleware,basic-auth,custom-auth,oauth2,session-auth,babel,rest-hooks}</code> -- <em>optional</em>, select a starting app template. Default is <code>minimal</code></li>
+<li><code>--template={minimal,resource,trigger,create,search,middleware,basic-auth,custom-auth,oauth2,session-auth,babel,rest-hooks,files}</code> -- <em>optional</em>, select a starting app template. Default is <code>minimal</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1147,8 +1147,7 @@ $ zapier scaffold resource <span class="hljs-string">&quot;Tag&quot;</span> --en
       <blockquote>
 <p>Tests your app via <code>npm test</code>.</p>
 </blockquote><p>  <strong>Usage:</strong> <code>zapier test</code></p><p>  This command is effectively the same as <code>npm test</code>, except we wire in some custom tests to validate your app. We recommend using mocha as your testing framework.</p><p><strong>Arguments</strong></p><ul>
-<li><code>--quiet</code> -- <em>optional</em>, do not print zapier detailed logs to standard out</li>
-<li><code>--very-quiet</code> -- <em>optional</em>, do not print zapier summary or detail logs to standard out</li>
+<li><code>--debug</code> -- <em>optional</em>, print zapier detailed logs to standard out</li>
 <li><code>--timeout=value</code> -- <em>optional</em>, add a default timeout to mocha, in milliseconds</li>
 </ul>
     </div>

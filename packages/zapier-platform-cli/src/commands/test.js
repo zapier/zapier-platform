@@ -8,22 +8,20 @@ const LAMBDA_VERSION = 'v4.3.2';
 const test = (context) => {
   const extraEnv = {};
 
-  if (!global.argOpts['very-quiet']) {
+  if (global.argOpts.debug) {
     extraEnv.LOG_TO_STDOUT = 'true';
-  }
-  if (!global.argOpts.quiet && !global.argOpts['very-quiet']) {
     extraEnv.DETAILED_LOG_TO_STDOUT = 'true';
   }
 
   if (process.version !== LAMBDA_VERSION) {
-    context.line(`You're running tests on Node ${process.version}, but Zapier runs your code on ${LAMBDA_VERSION}. The version numbers must match. See https://github.com/zapier/zapier-platform-cli#requirements for more info.`);
+    context.line(`You're running tests on Node ${process.version}, but Zapier runs your code on ${LAMBDA_VERSION}. The version numbers must match. See https://zapier.github.io/zapier-platform-cli/index.html#requirements for more info.`);
     process.exitCode = 1;
-    return new Promise(() => {});
+    return Promise.resolve();
   }
 
   return utils.readCredentials(undefined, false)
     .then((credentials) => {
-      context.line('Adding ' + constants.AUTH_LOCATION + ' to environment as ZAPIER_DEPLOY_KEY...');
+      context.line(`Adding ${constants.AUTH_LOCATION} to environment as ZAPIER_DEPLOY_KEY...`);
       extraEnv.ZAPIER_DEPLOY_KEY = credentials.deployKey;
     })
     .then(() => {
@@ -46,8 +44,7 @@ const test = (context) => {
 test.argsSpec = [
 ];
 test.argOptsSpec = {
-  quiet: {flag: true, help: 'do not print zapier detailed logs to standard out'},
-  'very-quiet': {flag: true, help: 'do not print zapier summary or detail logs to standard out'},
+  debug: {flag: true, help: 'print zapier detailed logs to standard out'},
   timeout: {help: 'add a default timeout to mocha, in milliseconds'},
 };
 test.help = 'Tests your app via `npm test`.';
