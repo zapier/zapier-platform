@@ -24,4 +24,23 @@ describe('basic auth app', () => {
       })
       .catch(done);
   });
+
+  it('fails on bad auth', (done) => {
+    // Try changing the values of username or password to see how the test method behaves
+    const bundle = {
+      authData: {
+        username: 'user',
+        password: 'badpwd'
+      }
+    };
+
+    appTester(App.authentication.test, bundle)
+      .then(() => {
+        done('Should not get here');
+      })
+      .catch((error) => {
+        error.message.should.containEql('The username and/or password you supplied is incorrect');
+        done();
+      });
+  });
 });
