@@ -35,13 +35,13 @@ describe('app', () => {
       results.errors.length.should.eql(1);
     });
 
-    it('should run functional constraints', function() {
+    it('should run and pass functional constraints', function() {
       const definition = {
         version: '1.0.0',
         platformVersion: '1.0.0',
         searches: {
-          foo: {
-            key: 'foo',
+          fooSearch: {
+            key: 'fooSearch',
             noun: 'Foo',
             display: {
               label: 'Find Foo',
@@ -53,8 +53,8 @@ describe('app', () => {
           }
         },
         creates: {
-          foo: {
-            key: 'foo',
+          fooCreate: {
+            key: 'fooCreate',
             noun: 'Foo',
             display: {
               label: 'Create Foo',
@@ -66,20 +66,68 @@ describe('app', () => {
           }
         },
         searchOrCreates: {
-          bar: {
-            key: 'bar',
+          fooSearchOrCreate: {
+            key: 'fooSearch',
             display: {
               label: 'Find or Create a...',
               description: 'Something Something'
             },
-            search: 'foo',
-            create: 'foo',
+            search: 'fooSearch',
+            create: 'fooCreate',
           }
         }
       };
       const results = schema.validateAppDefinition(definition);
-      results.errors.should.have.length(1);
-      results.errors[0].stack.should.eql('instance.searchOrCreates.bar.key must match a "key" from a search (options: foo)');
+      results.errors.should.have.length(0);
+    });
+
+    it('should run functional constraints with errors', function() {
+      const definition = {
+        version: '1.0.0',
+        platformVersion: '1.0.0',
+        searches: {
+          fooSearch: {
+            key: 'fooSearch',
+            noun: 'Foo',
+            display: {
+              label: 'Find Foo',
+              description: 'Find a foo...',
+            },
+            operation: {
+              perform: '$func$2$f$'
+            }
+          }
+        },
+        creates: {
+          fooCreate: {
+            key: 'fooCreate',
+            noun: 'Foo',
+            display: {
+              label: 'Create Foo',
+              description: 'Creates a...',
+            },
+            operation: {
+              perform: '$func$2$f$'
+            }
+          }
+        },
+        searchOrCreates: {
+          fooSearchOrCreate: {
+            key: 'fooSearchOrCreate',
+            display: {
+              label: 'Find or Create a...',
+              description: 'Something Something'
+            },
+            search: 'fooBad',
+            create: 'fooBad',
+          }
+        }
+      };
+      const results = schema.validateAppDefinition(definition);
+      results.errors.should.have.length(3);
+      results.errors[0].stack.should.eql('instance.searchOrCreates.fooSearchOrCreate.key must match a "key" from a search (options: fooSearch)');
+      results.errors[1].stack.should.eql('instance.searchOrCreates.fooSearchOrCreate.search must match a "key" from a search (options: fooSearch)');
+      results.errors[2].stack.should.eql('instance.searchOrCreates.fooSearchOrCreate.create must match a "key" from a create (options: fooCreate)');
     });
   });
 
