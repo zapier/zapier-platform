@@ -20,7 +20,9 @@ const uploadFile = (z, bundle) => {
     .then((response) => {
       const file = response.json;
 
-      // Make it possible to get the actual file contents if necessary (no need to make the request now)
+      // Make it possible to use the actual uploaded (or online converted)
+      // file in a subsequent action. No need to download it now, so again
+      // dehydrating like in ../triggers/newFile.js
       file.file = z.dehydrate(hydrators.downloadFile, {
         fileId: file.id,
       });
