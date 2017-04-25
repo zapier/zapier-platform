@@ -628,7 +628,9 @@ const authentication = {
 };
 
 const addBearerHeader = (request, z, bundle) => {
-  request.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+  if (bundle.authData && bundle.authData.access_token) {
+    request.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+  }
   return request;
 };
 

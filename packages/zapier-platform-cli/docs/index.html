@@ -1312,7 +1312,9 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 };
 
 <span class="hljs-keyword">const</span> addBearerHeader = <span class="hljs-function">(<span class="hljs-params">request, z, bundle</span>) =&gt;</span> {
-  request.headers.Authorization = <span class="hljs-string">`Bearer <span class="hljs-subst">${bundle.authData.access_token}</span>`</span>;
+  <span class="hljs-keyword">if</span> (bundle.authData &amp;&amp; bundle.authData.access_token) {
+    request.headers.Authorization = <span class="hljs-string">`Bearer <span class="hljs-subst">${bundle.authData.access_token}</span>`</span>;
+  }
   <span class="hljs-keyword">return</span> request;
 };
 
