@@ -593,14 +593,14 @@ Your auth definition would look something like this:
 const authentication = {
   type: 'oauth2',
   test: {
-    url: 'https://example.com/api/accounts/me.json'
+    url: 'https://{{subdomain}}.example.com/api/accounts/me.json'
   },
   // you can provide additional fields for inclusion in authData
   oauth2Config: {
     // "authorizeUrl" could also be a function returning a string url
     authorizeUrl: {
       method: 'GET',
-      url: 'https://example.com/api/oauth2/authorize',
+      url: 'https://{{subdomain}}.example.com/api/oauth2/authorize',
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
         state: '{{bundle.inputData.state}}',
@@ -612,7 +612,7 @@ const authentication = {
     // "getAccessToken" could also be a function returning an object
     getAccessToken: {
       method: 'POST',
-      url: 'https://example.com/api/v2/oauth2/token',
+      url: 'https://{{subdomain}}.example.com/api/v2/oauth2/token',
       body: {
         code: '{{bundle.inputData.code}}',
         client_id: '{{process.env.CLIENT_ID}}',
@@ -623,8 +623,13 @@ const authentication = {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
-    }
-  }
+    },
+    scope: 'read,write'
+  },
+  // If you need any fields upfront, put them here
+  fields: [
+    {key: 'subdomain', type: 'string', required: true, default: 'app'}
+  ]
 };
 
 const addBearerHeader = (request, z, bundle) => {
@@ -958,7 +963,7 @@ const App = {
         //...
         operation: {
           inputFields: [
-            {key: 'project_id', required: true, label: 'Project', search: 'projectSearch.id'}, // calls project.search
+            {key: 'project_id', required: true, label: 'Project', dynamic: 'projectList.id.name', search: 'projectSearch.id'}, // calls project.search (requires a trigger in the "dynamic" property)
             {key: 'title', required: true, label: 'Title', helpText: 'What is the name of the issue?'},
           ],
         }
@@ -969,7 +974,9 @@ const App = {
 
 ```
 
-This can be combined with the `dynamic` property to give the user a guided experience when setting up a Zap.
+**NOTE:** This has to be combined with the `dynamic` property to give the user a guided experience when setting up a Zap.
+
+If you don't define a trigger for the `dynamic` property, the search connector won't show.
 
 
 ## Z Object

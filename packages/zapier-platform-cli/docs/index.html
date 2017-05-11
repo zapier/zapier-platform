@@ -1277,14 +1277,14 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> authentication = {
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;oauth2&apos;</span>,
   <span class="hljs-attr">test</span>: {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{subdomain}}.example.com/api/accounts/me.json&apos;</span>
   },
   <span class="hljs-comment">// you can provide additional fields for inclusion in authData</span>
   oauth2Config: {
     <span class="hljs-comment">// &quot;authorizeUrl&quot; could also be a function returning a string url</span>
     authorizeUrl: {
       <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;GET&apos;</span>,
-      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/oauth2/authorize&apos;</span>,
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{subdomain}}.example.com/api/oauth2/authorize&apos;</span>,
       <span class="hljs-attr">params</span>: {
         <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
         <span class="hljs-attr">state</span>: <span class="hljs-string">&apos;{{bundle.inputData.state}}&apos;</span>,
@@ -1296,7 +1296,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
     <span class="hljs-comment">// &quot;getAccessToken&quot; could also be a function returning an object</span>
     getAccessToken: {
       <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
-      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/v2/oauth2/token&apos;</span>,
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{subdomain}}.example.com/api/v2/oauth2/token&apos;</span>,
       <span class="hljs-attr">body</span>: {
         <span class="hljs-attr">code</span>: <span class="hljs-string">&apos;{{bundle.inputData.code}}&apos;</span>,
         <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
@@ -1307,8 +1307,13 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
       <span class="hljs-attr">headers</span>: {
         <span class="hljs-string">&apos;Content-Type&apos;</span>: <span class="hljs-string">&apos;application/x-www-form-urlencoded&apos;</span>
       }
-    }
-  }
+    },
+    <span class="hljs-attr">scope</span>: <span class="hljs-string">&apos;read,write&apos;</span>
+  },
+  <span class="hljs-comment">// If you need any fields upfront, put them here</span>
+  fields: [
+    {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span>}
+  ]
 };
 
 <span class="hljs-keyword">const</span> addBearerHeader = <span class="hljs-function">(<span class="hljs-params">request, z, bundle</span>) =&gt;</span> {
@@ -1726,7 +1731,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         <span class="hljs-comment">//...</span>
         operation: {
           <span class="hljs-attr">inputFields</span>: [
-            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>, <span class="hljs-attr">search</span>: <span class="hljs-string">&apos;projectSearch.id&apos;</span>}, <span class="hljs-comment">// calls project.search</span>
+            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>, <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>, <span class="hljs-attr">search</span>: <span class="hljs-string">&apos;projectSearch.id&apos;</span>}, <span class="hljs-comment">// calls project.search (requires a trigger in the &quot;dynamic&quot; property)</span>
             {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>},
           ],
         }
@@ -1740,7 +1745,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>This can be combined with the <code>dynamic</code> property to give the user a guided experience when setting up a Zap.</p>
+      <p><strong>NOTE:</strong> This has to be combined with the <code>dynamic</code> property to give the user a guided experience when setting up a Zap.</p><p>If you don&apos;t define a trigger for the <code>dynamic</code> property, the search connector won&apos;t show.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

@@ -488,7 +488,9 @@ For fields that take id of another object to create a relationship between the t
 [insert-file:./snippets/search-field.js]
 ```
 
-This can be combined with the `dynamic` property to give the user a guided experience when setting up a Zap.
+**NOTE:** This has to be combined with the `dynamic` property to give the user a guided experience when setting up a Zap.
+
+If you don't define a trigger for the `dynamic` property, the search connector won't show.
 
 
 ## Z Object
