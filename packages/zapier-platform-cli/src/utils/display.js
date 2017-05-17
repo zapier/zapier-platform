@@ -197,7 +197,7 @@ const formatStyles = {
 };
 
 const printData = (rows, columnDefs, ifEmptyMessage = '', useRowBasedTable = false) => {
-  const formatStyle = (global.argOpts || {}).format || (useRowBasedTable ? 'row-based' : DEFAULT_STYLE);
+  const formatStyle = (global.argOpts || {}).format || (useRowBasedTable ? 'row' : DEFAULT_STYLE);
   const formatter = formatStyles[formatStyle] || formatStyles[DEFAULT_STYLE];
   if (rows && !rows.length) {
     console.log(ifEmptyMessage);
