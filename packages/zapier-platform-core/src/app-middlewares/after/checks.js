@@ -5,13 +5,7 @@ const _ = require('lodash');
 const constants = require('../../constants');
 const errors = require('../../errors');
 
-const checks = [
-  require('../../checks/trigger-is-array'),
-  require('../../checks/trigger-is-object'),
-  require('../../checks/trigger-has-id'),
-  require('../../checks/trigger-has-unique-ids'),
-  require('../../checks/create-is-single')
-];
+const checks = _.values(require('../../checks'));
 
 /*
   Take a look at our output results, run some checks on it, and depending on if we
