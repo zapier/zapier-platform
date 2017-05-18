@@ -1016,7 +1016,7 @@ We provide several methods off of the `z` object, which is provided as the first
 The available errors are:
 
   * HaltedError - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
-  * ExpiredAuthError - Turns of Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
+  * ExpiredAuthError - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
   * RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
 
 
