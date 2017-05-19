@@ -2,19 +2,14 @@
 
 require('should');
 
-const checks = require('../src/checks');
+const createIsSingle = require('../src/checks/create-is-single');
 
 describe('checks', () => {
   it('createIsSingle sees create return values with multiples', () => {
-    checks.createIsSingle.run('some.method', []).length.should.eql(0);
-    checks.createIsSingle.run('some.method', [{}]).length.should.eql(0);
-    checks.createIsSingle.run('some.method', {}).length.should.eql(0);
-
-    checks.createIsSingle.run('some.method', [{}, {}]).length.should.eql(1);
-  });
-
-  it('searchIsArray should error for objects', () => {
-    checks.searchIsArray.run('some.method', [{}, {}]).length.should.eql(0);
-    checks.searchIsArray.run('some.method', {}).length.should.eql(1);
+    createIsSingle.run('some.method', []).length.should.eql(0);
+    createIsSingle.run('some.method', [{}]).length.should.eql(0);
+    createIsSingle.run('some.method', {}).length.should.eql(0);
+    // the only error in this set:
+    createIsSingle.run('some.method', [{}, {}]).length.should.eql(1);
   });
 });
