@@ -1,3 +1,9 @@
+## 1.0.11
+
+* `zapier --validate` now includes the `--include-style` flag to validate against [style checks](https://zapier.com/developer/documentation/v2/style-checks-reference/).
+* There are extra checks around return types from triggers, searches, and creates.
+* Some doc typos were squashed.
+
 ## 1.0.10
 
 * Added new Files example app with `zapier init . --template=files`.

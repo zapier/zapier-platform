@@ -815,7 +815,7 @@ npm install
   }
 };
 
-<span class="hljs-built_in">module</span>.export = App;
+<span class="hljs-built_in">module</span>.exports = App;
 </code></pre>
     </div>
   </div>
@@ -1893,7 +1893,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p><code>z.errors</code> is a collection error classes that you can throw in your code, like <code>throw new z.errors.HaltedError(&apos;...&apos;)</code>.</p><p>The available errors are:</p><ul>
 <li>HaltedError - Stops current operation, but will never turn off Zap. Read more on <a href="#halting-execution">Halting Execution</a></li>
-<li>ExpiredAuthError - Turns of Zap and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+<li>ExpiredAuthError - Turns off Zap and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
 <li>RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
 </ul><p>For more details on error handling in general, see <a href="#error-handling">here</a>.</p>
     </div>

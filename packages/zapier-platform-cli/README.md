@@ -293,7 +293,7 @@ const App = {
   }
 };
 
-module.export = App;
+module.exports = App;
 
 ```
 

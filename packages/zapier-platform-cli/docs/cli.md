@@ -838,7 +838,7 @@ $ zapier upload
 **Arguments**
 
 
-
+* `--include-style` -- _optional_, ping the Zapier server to do a style check
 * `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
 * `--help` -- _optional_, prints this help text
 * `--debug` -- _optional_, print debug API calls and tracebacks
@@ -846,21 +846,21 @@ $ zapier upload
 ```bash
 $ zapier validate
 # Validating project locally.
-# 
+#
 # No errors found during validation routine.
-# 
-# This project looks good!
+#
+# This project is structurally sound!
 
 $ zapier validate
 # Validating project locally.
-# 
+#
 # ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 # │ = 1 =                                                                                                      │
 # │     Property │ instance                                                                                    │
 # │     Message  │ requires property "platformVersion"                                                         │
 # │     Links    │ https://github.com/zapier/zapier-platform-schema/blob/v1.0.0/docs/build/schema.md#appschema │
 # └──────────────┴─────────────────────────────────────────────────────────────────────────────────────────────┘
-# 
+#
 # Make any changes to your project and rerun this command.
 ```
 
