@@ -15,12 +15,12 @@ const triggerIsObject = {
       return []; // trigger-is-array check will catch if not array
     }
 
-    const missingIdResult = _.find(results, (result) => {
-      return !_.isObject(result);
+    const nonObjectResult = _.find(results, (result) => {
+      return !_.isPlainObject(result);
     });
 
-    if (missingIdResult) {
-      const repr = _.truncate(JSON.stringify(missingIdResult), 50);
+    if (nonObjectResult !== undefined) {
+      const repr = _.truncate(JSON.stringify(nonObjectResult), 50);
       return [
         `Got a result missing that was not an object (${repr})`
       ];
