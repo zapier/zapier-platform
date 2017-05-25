@@ -15,6 +15,9 @@ _zapier() {
             test)
                 COMPREPLY=( $( compgen -W "--debug --timeout" -- $cur ) )
                ;;
+            validate)
+                COMPREPLY=( $( compgen -W "--include-style" -- $cur ) )
+               ;;
             build)
                 COMPREPLY=( $( compgen -W "--disable-dependency-detection --include-js-map" -- $cur ) )
                ;;

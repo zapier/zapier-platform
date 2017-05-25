@@ -434,6 +434,16 @@ You can find more details on the definition for each by looking at the [Trigger 
 
 > Example App: check out https://github.com/zapier/zapier-platform-example-app-create for a working example app using creates.
 
+### Return Types
+
+Each of the 3 types of function expects a certain type of object. As of core `v1.0.11`, there are automated checks to let you know when you're trying to pass the wrong type back. There's more info in each relevant `post_X` section of the [v2 docs](https://zapier.com/developer/documentation/v2/scripting/#available-methods). For reference, each expects:
+
+| Method | Return Type | Notes |
+| --- | --- | --- |
+| Trigger | Array | 0 or more objects that will be passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) |
+| Search | Array | 0 or more objects. If len > 0, put the best match first |
+| Action | Object | Can also be [Object] |
+
 ## Fields
 
 On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Fields are what your users would see in the main Zapier user interface. For example, you might have a "create contact" action with fields like "First name", "Last name", "Email", etc.
