@@ -13,7 +13,7 @@
   "scripts": {
     "docs": "node lib/bin/docs.js",
     "preversion": "git pull && npm test",
-    "version": "npm run docs && git add docs/* README.md",
+    "version": "npm run docs && npm run gen-completions && git add docs/* goodies/* README.md",
     "postversion": "git push && git push --tags && npm publish",
     "prepublish": "npm run build",
     "build": "rm -rf lib && node_modules/babel-cli/bin/babel.js src -d lib",
