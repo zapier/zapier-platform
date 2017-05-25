@@ -47,7 +47,7 @@ const searchRecipe = (z, bundle) => {
 
       // Only return the first matching recipe
       if (matchingRecipes && matchingRecipes.length) {
-        return matchingRecipes[0];
+        return [matchingRecipes[0]];
       }
 
       return [];

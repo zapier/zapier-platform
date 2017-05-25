@@ -67,7 +67,7 @@ describe('recipe resource', () => {
 
     appTester(App.resources.recipe.search.operation.perform, bundle)
       .then((results) => {
-        results.should.have.property('name');
+        results[0].should.have.property('name');
         done();
       })
       .catch(done);
