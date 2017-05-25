@@ -11,7 +11,7 @@ describe('searches', () => {
     it('should find a recipe', (done) => {
       const bundle = {
         inputData: {
-          style: 'style 10'
+          style: 'style 11'
         }
       };
 
@@ -20,9 +20,9 @@ describe('searches', () => {
           results.length.should.eql(1);
 
           const firstRecipe = results[0];
-          firstRecipe.style.should.eql('style 10');
-          firstRecipe.name.should.eql('name 10');
-          firstRecipe.directions.should.eql('directions 10');
+          firstRecipe.style.should.eql('style 11');
+          firstRecipe.name.should.eql('Smith Family Recipe');
+          firstRecipe.directions.should.eql('1. Order out :)');
 
           done();
         })
