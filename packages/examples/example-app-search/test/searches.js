@@ -1,4 +1,4 @@
-require('should');
+const should = require('should'); // required to use .exist()
 
 const zapier = require('zapier-platform-core');
 
@@ -11,18 +11,18 @@ describe('searches', () => {
     it('should find a recipe', (done) => {
       const bundle = {
         inputData: {
-          style: 'style 11'
+          style: 'style 2'
         }
       };
 
       appTester(App.searches.recipe.operation.perform, bundle)
         .then(results => {
-          results.length.should.eql(1);
+          results.length.should.be.aboveOrEqual(1);
 
           const firstRecipe = results[0];
-          firstRecipe.style.should.eql('style 11');
-          firstRecipe.name.should.eql('Smith Family Recipe');
-          firstRecipe.directions.should.eql('1. Order out :)');
+          firstRecipe.style.should.eql('style 2');
+          should.exist(firstRecipe.name)
+          should.exist(firstRecipe.directions);
 
           done();
         })
