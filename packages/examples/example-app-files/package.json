@@ -8,7 +8,7 @@
   "license": "BSD-3-Clause",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --recursive --timeout=5000"
+    "test": "node node_modules/mocha/bin/mocha --recursive --timeout=10000"
   },
   "engines": {
     "node": ">=4.3.0",

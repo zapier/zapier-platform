@@ -1,3 +1,4 @@
+const request = require('request');
 const FormData = require('form-data');
 
 const hydrators = require('../hydrators');
@@ -6,7 +7,11 @@ const uploadFile = (z, bundle) => {
   const formData = new FormData();
 
   formData.append('filename', bundle.inputData.filename);
-  formData.append('file', bundle.inputData.file);
+
+  // file will in fact be an url where the file data can be downloaded from
+  // which we do via a stream created by NPM's request package
+  // (form-data doesn't play nicely with z.request)
+  formData.append('file', request(bundle.inputData.file));
 
   if (bundle.inputData.name) {
     formData.append('name', bundle.inputData.name);
