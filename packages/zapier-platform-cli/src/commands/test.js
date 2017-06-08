@@ -6,7 +6,9 @@ const utils = require('../utils');
 const LAMBDA_VERSION = 'v4.3.2';
 
 const test = (context) => {
-  const extraEnv = {};
+  const extraEnv = {
+    ZAPIER_BASE_ENDPOINT: constants.BASE_ENDPOINT
+  };
 
   if (global.argOpts.debug) {
     extraEnv.LOG_TO_STDOUT = 'true';
