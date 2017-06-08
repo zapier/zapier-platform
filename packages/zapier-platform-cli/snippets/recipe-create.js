@@ -8,6 +8,7 @@ const createRecipeRequest = {
 };
 
 const Recipe = {
+  key: 'recipe',
   //...
   list: {
     //...

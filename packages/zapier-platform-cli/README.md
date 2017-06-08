@@ -708,6 +708,7 @@ const listRecipesRequest = {
 };
 
 const Recipe = {
+  key: 'recipe',
   //...
   list: {
     display: {
@@ -737,6 +738,7 @@ const createRecipeRequest = {
 };
 
 const Recipe = {
+  key: 'recipe',
   //...
   list: {
     //...
@@ -756,6 +758,8 @@ const Recipe = {
 
 Every method you define on a `resource` Zapier converts to the appropriate Trigger, Create, or Search. Our examples
 above would result in an app with a New Recipe Trigger and an Add Recipe Create.
+
+Note the keys for the Trigger, Create, Search, and Search or Create are automatically generated (in case you want to use them in a dynamic dropdown), like: `{resourceName}List`, `{resourceName}Create`, `{resourceName}Search`, and `{resourceName}SearchOrCreate`; and in the examples above, `{resourceName}` would be `recipe`.
 
 
 ## Triggers/Searches/Creates

@@ -3,6 +3,7 @@ const listRecipesRequest = {
 };
 
 const Recipe = {
+  key: 'recipe',
   //...
   list: {
     display: {
