@@ -22,6 +22,8 @@ module.exports = (argv) => {
     process.exit(1);
   }
 
+  require('update-notifier')({ pkg: require('../package.json') }).notify();
+
   if (DEBUG) {
     console.log('running in:', process.cwd());
     console.log('raw argv:', argv);

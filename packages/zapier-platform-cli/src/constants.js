@@ -14,6 +14,7 @@ const PLATFORM_PACKAGE = 'zapier-platform-core';
 const BUILD_DIR = 'build';
 const DEFINITION_PATH = `${BUILD_DIR}/definition.json`;
 const BUILD_PATH = `${BUILD_DIR}/build.zip`;
+const LAMBDA_VERSION = 'v4.3.2';
 
 const ART = `\
                 zzzzzzzz
@@ -36,17 +37,18 @@ zzzzzzzzzzzzzzz          zzzzzzzzzzzzzzz
                 zzzzzzzz`;
 
 module.exports = {
-  DEBUG,
-  BASE_ENDPOINT,
   API_PATH,
-  ENDPOINT,
-  STARTER_REPO,
-  AUTH_LOCATION_RAW,
+  ART,
   AUTH_LOCATION,
-  CURRENT_APP_FILE,
-  PLATFORM_PACKAGE,
-  DEFINITION_PATH,
+  AUTH_LOCATION_RAW,
+  BASE_ENDPOINT,
   BUILD_DIR,
   BUILD_PATH,
-  ART
+  CURRENT_APP_FILE,
+  DEBUG,
+  DEFINITION_PATH,
+  ENDPOINT,
+  LAMBDA_VERSION,
+  PLATFORM_PACKAGE,
+  STARTER_REPO
 };

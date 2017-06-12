@@ -54,6 +54,11 @@ const validate = (context) => {
       }
     })
     .then(() => {
+      if (!utils.isCorrectVersion(context)) {
+        process.exitCode = 1;
+      }
+    })
+    .then(() => {
       if (global.argOpts['include-style']) {
         utils.localAppCommand({ command: 'definition' })
           .then((rawDefinition) => {
