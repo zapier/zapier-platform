@@ -139,13 +139,13 @@ const removeDir = (dir) => fse.removeAsync(dir);
 const isEmptyDir = (dir) => fse.readdirAsync(dir).then(items => _.isEmpty(items));
 
 module.exports = {
-  writeFile,
-  deleteFile,
-  readFile,
   copyDir,
+  deleteFile,
   ensureDir,
+  fileExistsSync,
+  isEmptyDir,
+  readFile,
   removeDir,
   validateFileExists,
-  fileExistsSync,
-  isEmptyDir
+  writeFile,
 };

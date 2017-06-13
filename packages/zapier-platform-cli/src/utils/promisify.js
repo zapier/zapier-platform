@@ -47,5 +47,5 @@ const promisifySome = (object, methods) => {
 module.exports = {
   promisify,
   promisifyAll,
-  promisifySome
+  promisifySome,
 };

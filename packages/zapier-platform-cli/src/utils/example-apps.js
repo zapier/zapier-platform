@@ -36,5 +36,5 @@ const removeReadme = (dir) => {
 
 module.exports = {
   downloadAndUnzipTo,
-  removeReadme
+  removeReadme,
 };

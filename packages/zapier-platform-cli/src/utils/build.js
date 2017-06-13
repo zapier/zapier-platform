@@ -287,8 +287,8 @@ const buildAndUploadDir = (zipPath, appDir) => {
 };
 
 module.exports = {
-  requiredFiles,
-  listFiles,
   build,
   buildAndUploadDir,
+  listFiles,
+  requiredFiles,
 };

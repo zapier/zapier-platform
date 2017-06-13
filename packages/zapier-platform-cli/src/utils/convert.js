@@ -270,10 +270,10 @@ const convertApp = (legacyApp, newAppDir) => {
 };
 
 module.exports = {
+  convertApp,
+  renderAuth,
   renderField,
   renderSample,
-  renderAuth,
   renderStep,
-  convertApp,
-  renderTemplate
+  renderTemplate,
 };

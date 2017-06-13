@@ -269,20 +269,20 @@ const upload = (zipPath, appDir) => {
 };
 
 module.exports = {
-  readCredentials,
   callAPI,
-  createCredentials,
-  writeLinkedAppConfig,
-  getLinkedAppConfig,
-  getLinkedApp,
-  getVersionInfo,
   checkCredentials,
+  createCredentials,
+  getLinkedApp,
+  getLinkedAppConfig,
+  getVersionInfo,
   listApps,
   listEndpoint,
-  listVersions,
+  listEnv,
   listHistory,
   listInvitees,
   listLogs,
-  listEnv,
+  listVersions,
+  readCredentials,
   upload,
+  writeLinkedAppConfig,
 };

@@ -135,10 +135,10 @@ const defaultArgOptsFragment = () => argOptsFragment(globalArgOptsSpec);
 
 
 module.exports = {
-  globalArgOptsSpec,
-  argParse,
-  enforceArgSpec,
-  argsFragment,
   argOptsFragment,
-  defaultArgOptsFragment
+  argParse,
+  argsFragment,
+  defaultArgOptsFragment,
+  enforceArgSpec,
+  globalArgOptsSpec,
 };

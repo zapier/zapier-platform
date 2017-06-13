@@ -71,6 +71,7 @@ const readNvmVersion = () => {
   return nvmVersion;
 };
 
+// verifies that the current node version is >= the version found in .nvmrc
 const isValidNodeVersion = () => {
   const nvmVersion = readNvmVersion();
 
@@ -154,14 +155,14 @@ const entryPoint = (dir) => {
 
 module.exports = {
   camelCase,
-  snakeCase,
-  runCommand,
-  readNvmVersion,
-  isValidNodeVersion,
+  entryPoint,
   isValidAppInstall,
+  isValidNodeVersion,
+  isWindows,
   npmInstall,
   promiseDoWhile,
   promiseForever,
-  entryPoint,
-  isWindows
+  readNvmVersion,
+  runCommand,
+  snakeCase,
 };

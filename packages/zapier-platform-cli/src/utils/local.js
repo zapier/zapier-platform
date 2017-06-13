@@ -107,9 +107,9 @@ const localAppTunnelServer = (options) => {
 };
 
 module.exports = {
-  nodeWatch,
-  makeTunnelUrl,
   getLocalAppHandler,
   localAppCommand,
   localAppTunnelServer,
+  makeTunnelUrl,
+  nodeWatch,
 };

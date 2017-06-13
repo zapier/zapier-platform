@@ -302,16 +302,16 @@ const getInput = (question, {secret = false} = {}) => {
 };
 
 module.exports = {
-  markdownLog,
-  makeTable,
-  makeRowBasedTable,
-  printData,
-  prettyJSONstringify,
   clearSpinner,
-  startSpinner,
   endSpinner,
-  printStarting,
-  printDone,
-  getInput,
   formatStyles,
+  getInput,
+  makeRowBasedTable,
+  makeTable,
+  markdownLog,
+  prettyJSONstringify,
+  printData,
+  printDone,
+  printStarting,
+  startSpinner,
 };
