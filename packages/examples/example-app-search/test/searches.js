@@ -21,7 +21,7 @@ describe('searches', () => {
 
           const firstRecipe = results[0];
           firstRecipe.style.should.eql('style 2');
-          should.exist(firstRecipe.name)
+          should.exist(firstRecipe.name);
           should.exist(firstRecipe.directions);
 
           done();
