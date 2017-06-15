@@ -1,8 +1,11 @@
 ## 2.0.0
 
-* Make CLI 2.X apps run only on NodeJS v6.10.2 in AWS Lambda.
-* Make CLI 0.X and 1.X apps run only on NodeJS v4.3.2 in AWS Lambda.
-* Delete property `searchOrCreate` from the properties of ResourceSchema.
+* (**BREAKING**) CLI 2.x apps run only on NodeJS `v6.10.2` in AWS Lambda. If you need to run on NodeJS `v4.3.2`, use the CLI 1.x release.
+* (**BREAKING**) Delete property `searchOrCreate` from the properties of ResourceSchema.
+* Style checks run by default during `zapier validate`
+* Validation is run during `zapier test`
+* The CLI now uses update-notifier to let you know when there's a new version available
+
 
 ## 1.0.11
 
