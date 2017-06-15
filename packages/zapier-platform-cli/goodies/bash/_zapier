@@ -3,11 +3,29 @@ _zapier() {
     local cmd=${COMP_WORDS[1]}
 
     if [ $COMP_CWORD -eq 1 ]; then
-        COMPREPLY=( $(compgen -W "--help help login logout init register scaffold describe test link apps versions validate build upload push promote migrate deprecate collaborate invite history logs env convert" -- $cur) )
+        COMPREPLY=( $(compgen -W "--help apps build collaborate convert deprecate describe env help history init invite link login logout logs migrate promote push register scaffold test upload validate versions" -- $cur) )
     elif [[ "$cur" == -* ]] || [ -z "$cur" ]; then
         case "$cmd" in
+            build)
+                COMPREPLY=( $( compgen -W "--disable-dependency-detection --include-js-map" -- $cur ) )
+               ;;
+            collaborate)
+                COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
+               ;;
+            env)
+                COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
+               ;;
             init)
                 COMPREPLY=( $( compgen -W "--template" -- $cur ) )
+               ;;
+            invite)
+                COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
+               ;;
+            logs)
+                COMPREPLY=( $( compgen -W "--version --status --type --detailed --user --limit" -- $cur ) )
+               ;;
+            push)
+                COMPREPLY=( $( compgen -W "--disable-dependency-detection --include-js-map" -- $cur ) )
                ;;
             scaffold)
                 COMPREPLY=( $( compgen -W "--dest --entry" -- $cur ) )
@@ -16,25 +34,7 @@ _zapier() {
                 COMPREPLY=( $( compgen -W "--debug --timeout" -- $cur ) )
                ;;
             validate)
-                COMPREPLY=( $( compgen -W "--include-style" -- $cur ) )
-               ;;
-            build)
-                COMPREPLY=( $( compgen -W "--disable-dependency-detection --include-js-map" -- $cur ) )
-               ;;
-            push)
-                COMPREPLY=( $( compgen -W "--disable-dependency-detection --include-js-map" -- $cur ) )
-               ;;
-            collaborate)
-                COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
-               ;;
-            invite)
-                COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
-               ;;
-            logs)
-                COMPREPLY=( $( compgen -W "--version --status --type --detailed --user --limit" -- $cur ) )
-               ;;
-            env)
-                COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
+                COMPREPLY=( $( compgen -W "--without-style" -- $cur ) )
                ;;
         esac
     fi

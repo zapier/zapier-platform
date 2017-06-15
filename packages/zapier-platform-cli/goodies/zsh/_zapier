@@ -1,21 +1,39 @@
 #compdef zapier
 
 getOptions() {
-    local initOpts=("--template:'select a starting app template'")
-    local scaffoldOpts=("--dest:'sets the new files path'" "--entry:'where to import the new file'")
-    local testOpts=("--debug:'print zapier detailed logs to standard out'" "--timeout:'add a default timeout to mocha, in milliseconds'")
-    local validateOpts=("--include-style:'ping the Zapier server to do a style check'")
     local buildOpts=("--disable-dependency-detection:'disables walking required files to slim the build'" "--include-js-map:'include .js.map files (usually source maps'")
-    local pushOpts=("--disable-dependency-detection:'disables walking required files to slim the build'" "--include-js-map:'include .js.map files (usually source maps'")
     local collaborateOpts=("--remove:'elect to remove this user'")
+    local envOpts=("--remove:'optionally remove environment variable with this key'")
+    local initOpts=("--template:'select a starting app template'")
     local inviteOpts=("--remove:'elect to remove this user'")
     local logsOpts=("--version:'display only this versions logs (default is all versions)'" "--status:'display only success logs (status code < 400 / info) or error (status code > 400 / tracebacks)'" "--type:'display only console or http logs'" "--detailed:'show detailed logs (like request/response body and headers)'" "--user:'display only this users logs'" "--limit:'control the maximum result size'")
-    local envOpts=("--remove:'optionally remove environment variable with this key'")
+    local pushOpts=("--disable-dependency-detection:'disables walking required files to slim the build'" "--include-js-map:'include .js.map files (usually source maps'")
+    local scaffoldOpts=("--dest:'sets the new files path'" "--entry:'where to import the new file'")
+    local testOpts=("--debug:'print zapier detailed logs to standard out'" "--timeout:'add a default timeout to mocha, in milliseconds'")
+    local validateOpts=("--without-style:'forgo pinging the Zapier server to do a style check'")
 
     local cmd=$words[2]
     case $cmd in
+        build)
+               _describe 'options' buildOpts
+               ;;
+        collaborate)
+               _describe 'options' collaborateOpts
+               ;;
+        env)
+               _describe 'options' envOpts
+               ;;
         init)
                _describe 'options' initOpts
+               ;;
+        invite)
+               _describe 'options' inviteOpts
+               ;;
+        logs)
+               _describe 'options' logsOpts
+               ;;
+        push)
+               _describe 'options' pushOpts
                ;;
         scaffold)
                _describe 'options' scaffoldOpts
@@ -26,30 +44,12 @@ getOptions() {
         validate)
                _describe 'options' validateOpts
                ;;
-        build)
-               _describe 'options' buildOpts
-               ;;
-        push)
-               _describe 'options' pushOpts
-               ;;
-        collaborate)
-               _describe 'options' collaborateOpts
-               ;;
-        invite)
-               _describe 'options' inviteOpts
-               ;;
-        logs)
-               _describe 'options' logsOpts
-               ;;
-        env)
-               _describe 'options' envOpts
-               ;;
     esac
 }
 
 getCommands() {
     local -a options
-    options=("help:'Lists all the commands you can use.'" "login:'Configure your ~/.zapierrc with a deploy key.'" "logout:'Deactivates all your personal deploy keys and resets ~/.zapierrc.'" "init:'Initializes a new Zapier app in a directory.'" "register:'Registers a new app in your account.'" "scaffold:'Adds a starting resource, trigger, action or search to your app.'" "describe:'Describes the current app.'" "test:'Tests your app via npm test.'" "link:'Link the current directory to an app you have access to.'" "apps:'Lists all the apps you can access.'" "versions:'Lists all the versions of the current app.'" "validate:'Validates the current app.'" "build:'Builds a pushable zip from the current directory.'" "upload:'Upload the last build as a version.'" "push:'Build and upload the current app - does not promote.'" "promote:'Promotes a specific version to public access.'" "migrate:'Migrate users from one version of your app to another.'" "deprecate:'Mark a non-production version of your app as deprecated, with removal by a certain date.'" "collaborate:'Manage the collaborators on your project. Can optionally --remove.'" "invite:'Manage the invitees/testers on your project. Can optionally --remove.'" "history:'Prints all edit history for your app.'" "logs:'Prints recent logs. See help for filter arguments.'" "env:'Read and write environment variables.'" "convert:'Converts a Zapier Platform app to a CLI app, stubs only.'")
+    options=("apps:'Lists all the apps you can access.'" "build:'Builds a pushable zip from the current directory.'" "collaborate:'Manage the collaborators on your project. Can optionally --remove.'" "convert:'Converts a Zapier Platform app to a CLI app, stubs only.'" "deprecate:'Mark a non-production version of your app as deprecated, with removal by a certain date.'" "describe:'Describes the current app.'" "env:'Read and write environment variables.'" "help:'Lists all the commands you can use.'" "history:'Prints all edit history for your app.'" "init:'Initializes a new Zapier app in a directory.'" "invite:'Manage the invitees/testers on your project. Can optionally --remove.'" "link:'Link the current directory to an app you have access to.'" "login:'Configure your ~/.zapierrc with a deploy key.'" "logout:'Deactivates all your personal deploy keys and resets ~/.zapierrc.'" "logs:'Prints recent logs. See help for filter arguments.'" "migrate:'Migrate users from one version of your app to another.'" "promote:'Promotes a specific version to public access.'" "push:'Build and upload the current app - does not promote.'" "register:'Registers a new app in your account.'" "scaffold:'Adds a starting resource, trigger, action or search to your app.'" "test:'Tests your app via npm test.'" "upload:'Upload the last build as a version.'" "validate:'Validates the current app.'" "versions:'Lists all the versions of the current app.'")
     _describe 'commands' options
 }
 

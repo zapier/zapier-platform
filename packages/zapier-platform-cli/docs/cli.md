@@ -330,7 +330,7 @@ $ zapier help
 $ │ logout      │ zapier logout                         │ Deactivates all your personal deploy keys and resets `~/.zapierrc`.        │
 # │ logs        │ zapier logs                           │ Prints recent logs. See help for filter arguments.                         │
 # │ migrate     │ zapier migrate 1.0.0 1.0.1 [10%]      │ Migrate users from one version to another.                                 │
-# │ promote     │ zapier promote 1.0.0                  │ Promotes a specific version to global access.                              │
+# │ promote     │ zapier promote 1.0.0                  │ Promotes a specific version to public access.                              │
 # │ register    │ zapier register "Example"             │ Registers a new app in your account.                                       │
 # │ scaffold    │ zapier scaffold resource "Contact"    │ Adds a starting resource, trigger, action or search to your app.           │
 # │ test        │ zapier test                           │ Tests your app via `npm test`.                                             │
@@ -648,20 +648,20 @@ $ zapier migrate 1.0.0 1.0.1 15%
 
 ## promote
 
-  > Promotes a specific version to global access.
+  > Promotes a specific version to public access.
 
   **Usage:** `zapier promote 1.0.0`
 
   Promotes an app version into production (non-private) rotation, which means new users can use this app version.
 
-* This **does** mark the version as the official global version - all other versions & users are grandfathered.
+* This **does** mark the version as the official public version - all other versions & users are grandfathered.
 * This **does not** build/upload or deploy a version to Zapier - you should `zapier push` first.
 * This **does not** move old users over to this version - `zapier migrate 1.0.0 1.0.1` does that.
 * This **does not** recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
 
 Promotes are an inherently safe operation for all existing users of your app.
 
-> If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to go global. We'll respond within a few business days.
+> If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to make your app public. We'll respond within a few business days.
 
 **Arguments**
 
@@ -783,7 +783,7 @@ $ zapier scaffold resource "Tag" --entry=index.js --dest=resources/tag
 
   **Usage:** `zapier test`
 
-  This command is effectively the same as `npm test`, except we wire in some custom tests to validate your app. We recommend using mocha as your testing framework.
+  This command is effectively the same as `npm test`, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.
 
 **Arguments**
 
@@ -794,13 +794,10 @@ $ zapier scaffold resource "Tag" --entry=index.js --dest=resources/tag
 ```bash
 $ zapier test
 #
-#   app
-#     validation
-#       ✓ should be a valid app
-#
 #   triggers
 #     hello world
 #       ✓ should load fine (777ms)
+#       ✓ should accept parameters (331ms)
 #
 #   2 passing (817ms)
 #
@@ -838,7 +835,7 @@ $ zapier upload
 **Arguments**
 
 
-* `--include-style` -- _optional_, ping the Zapier server to do a style check
+* `--without-style` -- _optional_, forgo pinging the Zapier server to do a style check
 * `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
 * `--help` -- _optional_, prints this help text
 * `--debug` -- _optional_, print debug API calls and tracebacks

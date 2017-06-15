@@ -1366,10 +1366,10 @@ read, and search operations on that resource.</p>
   noun: <span class="hljs-string">&apos;Recipe&apos;</span>,
   <span class="hljs-comment">// `list` and `create` are just a couple of the methods you can define</span>
   list: {
-      <span class="hljs-comment">//...</span>
+    <span class="hljs-comment">//...</span>
   },
   <span class="hljs-attr">create</span>: {
-      <span class="hljs-comment">//...</span>
+    <span class="hljs-comment">//...</span>
   }
 };
 </code></pre>
@@ -1507,7 +1507,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   triggers: {
     <span class="hljs-attr">new_recipe</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;new_recipe&apos;</span>, <span class="hljs-comment">// uniquely identifies the trigger</span>
-      noun: <span class="hljs-string">&apos;Recipe&apos;</span>,    <span class="hljs-comment">// user-friendly word that is used to refer to the resource</span>
+      noun: <span class="hljs-string">&apos;Recipe&apos;</span>, <span class="hljs-comment">// user-friendly word that is used to refer to the resource</span>
       <span class="hljs-comment">// `display` controls the presentation in the Zapier Editor</span>
       display: {
         <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Recipe&apos;</span>,
@@ -2837,7 +2837,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see your <code>z.console</code> logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=console
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=console
 </code></pre>
     </div>
   </div>
@@ -2879,7 +2879,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see the HTTP logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=http
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http
 </code></pre>
     </div>
   </div>
@@ -2889,7 +2889,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see detailed http logs including headers, request and response bodies, etc, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=http --detailed
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http --detailed
 </code></pre>
     </div>
   </div>

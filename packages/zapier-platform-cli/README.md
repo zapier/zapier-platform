@@ -668,10 +668,10 @@ const Recipe = {
   noun: 'Recipe',
   // `list` and `create` are just a couple of the methods you can define
   list: {
-      //...
+    //...
   },
   create: {
-      //...
+    //...
   }
 };
 
@@ -780,7 +780,7 @@ const App = {
   triggers: {
     new_recipe: {
       key: 'new_recipe', // uniquely identifies the trigger
-      noun: 'Recipe',    // user-friendly word that is used to refer to the resource
+      noun: 'Recipe', // user-friendly word that is used to refer to the resource
       // `display` controls the presentation in the Zapier Editor
       display: {
         label: 'New Recipe',

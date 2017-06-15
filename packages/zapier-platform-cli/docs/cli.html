@@ -629,7 +629,7 @@ $ zapier <span class="hljs-built_in">help</span>
 $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span class="hljs-built_in">logout</span>                         &#x2502; Deactivates all your personal deploy keys and resets `~/.zapierrc`.        &#x2502;
 <span class="hljs-comment"># &#x2502; logs        &#x2502; zapier logs                           &#x2502; Prints recent logs. See help for filter arguments.                         &#x2502;</span>
 <span class="hljs-comment"># &#x2502; migrate     &#x2502; zapier migrate 1.0.0 1.0.1 [10%]      &#x2502; Migrate users from one version to another.                                 &#x2502;</span>
-<span class="hljs-comment"># &#x2502; promote     &#x2502; zapier promote 1.0.0                  &#x2502; Promotes a specific version to global access.                              &#x2502;</span>
+<span class="hljs-comment"># &#x2502; promote     &#x2502; zapier promote 1.0.0                  &#x2502; Promotes a specific version to public access.                              &#x2502;</span>
 <span class="hljs-comment"># &#x2502; register    &#x2502; zapier register &quot;Example&quot;             &#x2502; Registers a new app in your account.                                       &#x2502;</span>
 <span class="hljs-comment"># &#x2502; scaffold    &#x2502; zapier scaffold resource &quot;Contact&quot;    &#x2502; Adds a starting resource, trigger, action or search to your app.           &#x2502;</span>
 <span class="hljs-comment"># &#x2502; test        &#x2502; zapier test                           &#x2502; Tests your app via `npm test`.                                             &#x2502;</span>
@@ -905,7 +905,7 @@ All personal keys deactivated - now try `zapier login` to login again.
 <span class="hljs-comment"># &#x2502;     Timestamp &#x2502; 2016-01-01T23:04:36-05:00            &#x2502;</span>
 <span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
 
-$ zapier logs --type=http
+$ zapier logs --<span class="hljs-built_in">type</span>=http
 <span class="hljs-comment"># The logs of your app &quot;Example&quot; listed below.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
@@ -918,7 +918,7 @@ $ zapier logs --type=http
 <span class="hljs-comment"># &#x2502;     Timestamp   &#x2502; 2016-01-01T23:04:36-05:00            &#x2502;</span>
 <span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
 
-$ zapier logs --type=http --detailed --format=plain
+$ zapier logs --<span class="hljs-built_in">type</span>=http --detailed --format=plain
 <span class="hljs-comment"># The logs of your app &quot;Example&quot; listed below.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment"># == Status</span>
@@ -996,14 +996,14 @@ $ zapier logs --type=http --detailed --format=plain
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Promotes a specific version to global access.</p>
+<p>Promotes a specific version to public access.</p>
 </blockquote><p>  <strong>Usage:</strong> <code>zapier promote 1.0.0</code></p><p>  Promotes an app version into production (non-private) rotation, which means new users can use this app version.</p><ul>
-<li>This <strong>does</strong> mark the version as the official global version - all other versions &amp; users are grandfathered.</li>
+<li>This <strong>does</strong> mark the version as the official public version - all other versions &amp; users are grandfathered.</li>
 <li>This <strong>does not</strong> build/upload or deploy a version to Zapier - you should <code>zapier push</code> first.</li>
 <li>This <strong>does not</strong> move old users over to this version - <code>zapier migrate 1.0.0 1.0.1</code> does that.</li>
 <li>This <strong>does not</strong> recommend old users stop using this version - <code>zapier deprecate 1.0.0 2017-01-01</code> does that.</li>
 </ul><p>Promotes are an inherently safe operation for all existing users of your app.</p><blockquote>
-<p>If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to go global. We&apos;ll respond within a few business days.</p>
+<p>If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to make your app public. We&apos;ll respond within a few business days.</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
 <li><code>version [1.0.0]</code> -- <strong>required</strong>,</li>
 </ul>
@@ -1146,7 +1146,7 @@ $ zapier scaffold resource <span class="hljs-string">&quot;Tag&quot;</span> --en
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Tests your app via <code>npm test</code>.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier test</code></p><p>  This command is effectively the same as <code>npm test</code>, except we wire in some custom tests to validate your app. We recommend using mocha as your testing framework.</p><p><strong>Arguments</strong></p><ul>
+</blockquote><p>  <strong>Usage:</strong> <code>zapier test</code></p><p>  This command is effectively the same as <code>npm test</code>, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.</p><p><strong>Arguments</strong></p><ul>
 <li><code>--debug</code> -- <em>optional</em>, print zapier detailed logs to standard out</li>
 <li><code>--timeout=value</code> -- <em>optional</em>, add a default timeout to mocha, in milliseconds</li>
 </ul>
@@ -1154,13 +1154,10 @@ $ zapier scaffold resource <span class="hljs-string">&quot;Tag&quot;</span> --en
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">$ zapier <span class="hljs-built_in">test</span>
 <span class="hljs-comment">#</span>
-<span class="hljs-comment">#   app</span>
-<span class="hljs-comment">#     validation</span>
-<span class="hljs-comment">#       &#x2713; should be a valid app</span>
-<span class="hljs-comment">#</span>
 <span class="hljs-comment">#   triggers</span>
 <span class="hljs-comment">#     hello world</span>
 <span class="hljs-comment">#       &#x2713; should load fine (777ms)</span>
+<span class="hljs-comment">#       &#x2713; should accept parameters (331ms)</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment">#   2 passing (817ms)</span>
 <span class="hljs-comment">#</span>
@@ -1210,7 +1207,7 @@ $ zapier scaffold resource <span class="hljs-string">&quot;Tag&quot;</span> --en
       <blockquote>
 <p>Validates the current app.</p>
 </blockquote><p>  <strong>Usage:</strong> <code>zapier validate</code></p><p>  Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during <code>zapier build</code>, <code>zapier upload</code>, <code>zapier push</code> or even as a test in <code>zapier test</code>.</p><p><strong>Arguments</strong></p><ul>
-<li><code>--include-style</code> -- <em>optional</em>, ping the Zapier server to do a style check</li>
+<li><code>--without-style</code> -- <em>optional</em>, forgo pinging the Zapier server to do a style check</li>
 <li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
 <li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
