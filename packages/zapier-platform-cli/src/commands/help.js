@@ -81,7 +81,7 @@ $ zapier help
 $ │ logout      │ zapier logout                         │ Deactivates all your personal deploy keys and resets \`~/.zapierrc\`.        │
 # │ logs        │ zapier logs                           │ Prints recent logs. See help for filter arguments.                         │
 # │ migrate     │ zapier migrate 1.0.0 1.0.1 [10%]      │ Migrate users from one version to another.                                 │
-# │ promote     │ zapier promote 1.0.0                  │ Promotes a specific version to global access.                              │
+# │ promote     │ zapier promote 1.0.0                  │ Promotes a specific version to public access.                              │
 # │ register    │ zapier register "Example"             │ Registers a new app in your account.                                       │
 # │ scaffold    │ zapier scaffold resource "Contact"    │ Adds a starting resource, trigger, action or search to your app.           │
 # │ test        │ zapier test                           │ Tests your app via \`npm test\`.                                             │

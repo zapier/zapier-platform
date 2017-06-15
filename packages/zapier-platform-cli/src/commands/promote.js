@@ -27,19 +27,19 @@ promote.argsSpec = [
   {name: 'version', example: '1.0.0', required: true},
 ];
 promote.argOptsSpec = {};
-promote.help = 'Promotes a specific version to global access.';
+promote.help = 'Promotes a specific version to public access.';
 promote.example = 'zapier promote 1.0.0';
 promote.docs = `\
 Promotes an app version into production (non-private) rotation, which means new users can use this app version.
 
-* This **does** mark the version as the official global version - all other versions & users are grandfathered.
+* This **does** mark the version as the official public version - all other versions & users are grandfathered.
 * This **does not** build/upload or deploy a version to Zapier - you should \`zapier push\` first.
 * This **does not** move old users over to this version - \`zapier migrate 1.0.0 1.0.1\` does that.
 * This **does not** recommend old users stop using this version - \`zapier deprecate 1.0.0 2017-01-01\` does that.
 
 Promotes are an inherently safe operation for all existing users of your app.
 
-> If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to go global. We'll respond within a few business days.
+> If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to make your app public. We'll respond within a few business days.
 
 **Arguments**
 
