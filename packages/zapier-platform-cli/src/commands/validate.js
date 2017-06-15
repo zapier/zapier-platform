@@ -43,10 +43,8 @@ const validate = (context) => {
         ['Message', 'message'],
         ['Links', 'docLinks'],
       ], ifEmpty, true);
-      return errors;
-    })
-    .then((errors) => {
-      if (errors.length) {
+
+      if (newErrors.length) {
         context.line('Your app is structurally invalid. Address concerns and run this command again.');
         process.exitCode = 1;
       } else {
@@ -59,40 +57,43 @@ const validate = (context) => {
       }
     })
     .then(() => {
-      if (global.argOpts['include-style']) {
-        utils.localAppCommand({ command: 'definition' })
+      if (!global.argOpts['without-style']) {
+        context.line('\nChecking app style.');
+        return utils.localAppCommand({ command: 'definition' })
           .then((rawDefinition) => {
             return utils.callAPI('/style-check', {
               skipDeployKey: true,
               method: 'POST',
               body: rawDefinition
             });
-          })
-          .then((styleResult) => {
-            // process errors
-            context.line('\nChecking app style.');
-            let styleErrors = condenseIssues(styleResult);
-
-            const ifEmpty = colors.grey('No style errors found during validation routine.');
-            if (styleErrors.length) {
-              utils.printData(styleErrors, [
-                ['Category', 'category'],
-                ['Method', 'method'],
-                ['Description', 'description'],
-                ['Link', 'link']
-              ], ifEmpty, true);
-              process.exitCode = 1;
-              context.line('Errors will prevent promotions, warnings are things to improve on.\n');
-            } else {
-              context.line('Your app looks great!\n');
-            }
           });
+      } else {
+        return Promise.resolve([]);
+      }
+    })
+    .then((styleResult) => {
+      // process errors
+      let styleErrors = condenseIssues(styleResult);
+      const ifEmpty = colors.grey('No style errors found during validation routine.');
+
+      utils.printData(styleErrors, [
+        ['Category', 'category'],
+        ['Method', 'method'],
+        ['Description', 'description'],
+        ['Link', 'link']
+      ], ifEmpty, true);
+
+      if (styleErrors.length) {
+        process.exitCode = 1;
+        context.line('Errors will prevent promotions, warnings are things to improve on.\n');
+      } else {
+        context.line('Your app looks great!\n');
       }
     });
 };
 validate.argsSpec = [];
 validate.argOptsSpec = {
-  'include-style': { flag: true, help: 'ping the Zapier server to do a style check' },
+  'without-style': { flag: true, help: 'forgo pinging the Zapier server to do a style check' },
 };
 validate.help = 'Validates the current app.';
 validate.example = 'zapier validate';

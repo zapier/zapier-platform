@@ -202,7 +202,6 @@ const printData = (rows, columnDefs, ifEmptyMessage = '', useRowBasedTable = fal
   if (rows && !rows.length) {
     console.log(ifEmptyMessage);
   } else {
-    // console.log(JSON.stringify(formatter(rows, columnDefs)));
     console.log(formatter(rows, columnDefs));
   }
 };

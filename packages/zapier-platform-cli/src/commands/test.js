@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const constants = require('../constants');
 const utils = require('../utils');
+const validate = require('./validate');
 
 
 const test = (context) => {
@@ -20,7 +21,8 @@ const test = (context) => {
     return Promise.resolve();
   }
 
-  return utils.readCredentials(undefined, false)
+  return validate(context)
+    .then(() => utils.readCredentials(undefined, false))
     .then((credentials) => {
       context.line(`Adding ${constants.AUTH_LOCATION} to environment as ZAPIER_DEPLOY_KEY...`);
       extraEnv.ZAPIER_DEPLOY_KEY = credentials.deployKey;
@@ -34,6 +36,7 @@ const test = (context) => {
         commands.push(`--timeout=${global.argOpts.timeout}`);
       }
 
+      context.line('Running test suite.');
       return utils.runCommand('npm', commands, {stdio: 'inherit', env})
         .then((stdout) => {
           if (stdout) {
@@ -51,7 +54,7 @@ test.argOptsSpec = {
 test.help = 'Tests your app via `npm test`.';
 test.example = 'zapier test';
 test.docs = `\
-This command is effectively the same as \`npm test\`, except we wire in some custom tests to validate your app. We recommend using mocha as your testing framework.
+This command is effectively the same as \`npm test\`, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.
 
 **Arguments**
 
@@ -61,13 +64,10 @@ ${utils.argOptsFragment(test.argOptsSpec)}
 ${'```'}bash
 $ zapier test
 #
-#   app
-#     validation
-#       ✓ should be a valid app
-#
 #   triggers
 #     hello world
 #       ✓ should load fine (777ms)
+#       ✓ should accept parameters (331ms)
 #
 #   2 passing (817ms)
 #
