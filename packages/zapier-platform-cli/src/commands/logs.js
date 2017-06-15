@@ -2,7 +2,7 @@ const utils = require('../utils');
 const colors = require('colors/safe');
 
 const logs = (context) => {
-  context.line(`The logs of your app listed below.\n`);
+  context.line('The logs of your app listed below.\n');
 
   utils.startSpinner();
   return utils.listLogs(global.argOpts)

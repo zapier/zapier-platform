@@ -33,16 +33,16 @@ const inlineResourceMethods = [
 // resources.{key:lead}.get.operation.perform
 const makeResourceTemplates = (methods) =>
   methods
-  .reduce((acc, method) => {
-    return acc.concat([
-      `resources.<%= key %>.${method}.operation.perform`,
-      `resources.<%= key %>.${method}.operation.performSubscribe`,
-      `resources.<%= key %>.${method}.operation.performUnsubscribe`,
-      `resources.<%= key %>.${method}.operation.inputFields`,
-      `resources.<%= key %>.${method}.operation.outputFields`,
-    ]);
-  }, [])
-  .map(template => _.template(template));
+    .reduce((acc, method) => {
+      return acc.concat([
+        `resources.<%= key %>.${method}.operation.perform`,
+        `resources.<%= key %>.${method}.operation.performSubscribe`,
+        `resources.<%= key %>.${method}.operation.performUnsubscribe`,
+        `resources.<%= key %>.${method}.operation.inputFields`,
+        `resources.<%= key %>.${method}.operation.outputFields`,
+      ]);
+    }, [])
+    .map(template => _.template(template));
 
 const allResourceTemplates = makeResourceTemplates(inlineResourceMethods);
 
@@ -61,7 +61,7 @@ const describe = (context) => {
       utils.localAppCommand({command: 'definition'}),
     ]))
     .then(([app, appConfig, version, definition]) => {
-      context.line(`A description of your app listed below.\n`);
+      context.line('A description of your app listed below.\n');
 
       if (app) {
         context.line(colors.bold('Title') + '\n');

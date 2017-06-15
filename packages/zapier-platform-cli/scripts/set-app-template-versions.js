@@ -6,7 +6,7 @@ const tmp = require('tmp');
 const utils = require('../lib/utils');
 const appTemplates = require('../lib/app-templates');
 
-const fse = utils.promisifyAll(require('fs-extra'));
+const fse = require('fs-extra');
 const childProcess = utils.promisifyAll(require('child_process'));
 
 const CLONE_URL_PREFIX = 'git@github.com:zapier/zapier-platform-example-app';

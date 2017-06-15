@@ -164,8 +164,8 @@ const renderStep = (type, definition, key) => {
   const sample = !_.isEmpty(definition.sample_result_fields) ? renderSample(definition) + ',\n' : '';
 
   const url = definition.url ?
-        quote(definition.url) + ',' :
-        `'http://example.com/api/${key}.json', // TODO this is just an example`;
+    quote(definition.url) + ',' :
+    `'http://example.com/api/${key}.json', // TODO this is just an example`;
 
   const templateContext = {
     KEY: snakeCase(key),

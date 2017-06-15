@@ -41,7 +41,7 @@ convert.example = 'zapier convert appid path';
 convert.docs = `\
 Creates a new Zapier app from an existing app. **The new app contains code stubs only.** It is supposed to get you started - it isn't going to create a complete app!
 
-After running this, you\'ll have a new app in your directory, with stubs for your trigger and actions.  If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
+After running this, you'll have a new app in your directory, with stubs for your trigger and actions.  If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
 > Note: this doesn't register or push the app with Zapier - try \`zapier register "Example"\` and \`zapier push\` for that!
 

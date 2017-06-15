@@ -1,12 +1,11 @@
 const fetch = require('node-fetch');
 const path = require('path');
 const tmp = require('tmp');
-const {promisifyAll} = require('./promisify');
-const fse = promisifyAll(require('fs-extra'));
+const fse = require('fs-extra');
 const AdmZip = require('adm-zip');
 
 const {writeFile, copyDir} = require('./files');
-const LAMBDA_VERSION = 'v4.3.2';
+const LAMBDA_VERSION = 'v6.10.2';
 
 const downloadAndUnzipTo = (key, destDir) => {
   const fragment = `zapier-platform-example-app-${key}`;
@@ -16,7 +15,7 @@ const downloadAndUnzipTo = (key, destDir) => {
   const tempDir = tmp.tmpNameSync();
   const tempFilePath = path.resolve(tempDir, 'zapier-template.zip');
 
-  return fse.ensureDirAsync(tempDir)
+  return fse.ensureDir(tempDir)
     .then(() => fetch(url))
     .then((res) => res.buffer())
     .then((buffer) => writeFile(tempFilePath, buffer))
@@ -27,11 +26,11 @@ const downloadAndUnzipTo = (key, destDir) => {
     })
     .then((currPath) => copyDir(currPath, destDir))
     .then(() => fse.writeFile(path.join(destDir, '.nvmrc'), `${LAMBDA_VERSION}\n`))
-    .then(() => fse.removeAsync(tempDir));
+    .then(() => fse.remove(tempDir));
 };
 
 const removeReadme = (dir) => {
-  return fse.removeAsync(path.join(dir, 'README.md'));
+  return fse.remove(path.join(dir, 'README.md'));
 };
 
 module.exports = {

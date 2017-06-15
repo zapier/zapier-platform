@@ -67,7 +67,7 @@ const parseVersions = (versionString) => (
 
 const readNvmVersion = () => {
   const nvmrc = path.resolve(__dirname, '../../.nvmrc');
-  const nvmVersion = fse.readFileSync(nvmrc, 'utf8').substr(1); // strip of leading 'v'
+  const nvmVersion = fse.readFileSync(nvmrc, 'utf8').substr(1); // strip off leading 'v'
   return nvmVersion;
 };
 

@@ -19,7 +19,7 @@ const promote = (context, version) => {
     })
     .then(() => {
       utils.printDone();
-      context.line(`  Promition successful!\n`);
+      context.line('  Promition successful!\n');
       context.line('Optionally try the `zapier migrate 1.0.0 1.0.1 [10%]` command to move users to this version.');
     });
 };

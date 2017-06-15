@@ -6,7 +6,7 @@ describe('misc utils', () => {
   describe('readNvmVersion', () => {
 
     it('should return .nvmrc verson (without leading `v`)', () => {
-      misc.readNvmVersion().should.equal('4.3.2');
+      misc.readNvmVersion().should.equal('6.10.2');
     });
 
   });

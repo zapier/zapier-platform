@@ -25,11 +25,11 @@ describe('files', () => {
 
     files.writeFile(fileName, data)
       .then(() => files.readFile(fileName)
-            .then(buf => {
-              buf.toString().should.equal(data);
-              done();
-            })
-           )
+        .then(buf => {
+          buf.toString().should.equal(data);
+          done();
+        })
+      )
       .catch(done);
   });
 
@@ -57,7 +57,7 @@ describe('files', () => {
 
     it('should not reject when file exists', (done) => {
       files.validateFileExists(__filename).then(() => done())
-      .catch(done);
+        .catch(done);
     });
 
     it('should reject with custom message when file does not exist', (done) => {

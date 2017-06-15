@@ -5,7 +5,7 @@ const path = require('path');
 const tmp = require('tmp');
 const utils = require('../lib/utils');
 
-const fse = utils.promisifyAll(require('fs-extra'));
+const fse = require('fs-extra');
 const childProcess = utils.promisifyAll(require('child_process'));
 
 const appTemplates = require('../lib/app-templates');
@@ -19,7 +19,7 @@ const validateAppTemplate = (template, rootTmpDir) => {
   const logStream = fse.createWriteStream(logFile);
 
   console.log(`Validating ${template} app template, writing logs to ${logFile}`);
-  return fse.ensureFileAsync(logFile)
+  return fse.ensureFile(logFile)
     .then(() => {
       return new Promise((resolve, reject) => {
         const cmd = `${zapierCmd} init ${template} --template=${template} --debug && cd ${template} && npm install ${extraCmd} && ${zapierCmd} validate && export CLIENT_ID=1234 CLIENT_SECRET=asdf && ${zapierCmd} test --timeout=5000`;

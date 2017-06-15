@@ -49,7 +49,7 @@ ${utils.argOptsFragment(register.argOptsSpec)}
 
 ${'```'}bash
 $ zapier register "Example"
-# Let\'s register your app "Example" on Zapier!
+# Let's register your app "Example" on Zapier!
 #
 #   Creating a new app named "Example" on Zapier - done!
 #   Setting up .zapierapprc file - done!

@@ -8,6 +8,7 @@ const _ = require('lodash');
 const archiver = require('archiver');
 const fs = require('fs');
 const fse = require('fs-extra');
+const klaw = require('klaw');
 
 const constants = require('../constants');
 
@@ -82,10 +83,10 @@ const requiredFiles = (cwd, entryPoints) => {
         paths.push(stripPath(cwd, filePath));
         next();
       })
-      .on('end', () => {
-        paths.sort();
-        resolve(paths);
-      }));
+        .on('end', () => {
+          paths.sort();
+          resolve(paths);
+        }));
     b.bundle();
   });
 };
@@ -94,7 +95,7 @@ const listFiles = (dir) => {
   return new Promise((resolve, reject) => {
     const paths = [];
     const cwd = dir + path.sep;
-    fse.walk(dir)
+    klaw(dir)
       .on('data', (item) => {
         if (!item.stats.isDirectory()) {
           paths.push(stripPath(cwd, item.path));

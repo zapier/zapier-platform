@@ -14,7 +14,7 @@ const PLATFORM_PACKAGE = 'zapier-platform-core';
 const BUILD_DIR = 'build';
 const DEFINITION_PATH = `${BUILD_DIR}/definition.json`;
 const BUILD_PATH = `${BUILD_DIR}/build.zip`;
-const LAMBDA_VERSION = 'v4.3.2';
+const LAMBDA_VERSION = 'v6.10.2';
 
 const ART = `\
                 zzzzzzzz

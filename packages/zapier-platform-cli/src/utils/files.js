@@ -1,8 +1,7 @@
 const _ = require('lodash');
 const path = require('path');
 
-const {promisifyAll} = require('./promisify');
-const fse = promisifyAll(require('fs-extra'));
+const fse = require('fs-extra');
 
 const fixHome = (dir) => {
   const home = process.env.HOME || process.env.USERPROFILE;
@@ -19,7 +18,7 @@ const fileExistsSync = (fileName) => {
 };
 
 const validateFileExists = (fileName, errMsg) => {
-  return fse.accessAsync(fileName)
+  return fse.access(fileName)
     .catch(() => {
       let msg = `: File ${fileName} not found.`;
       if (errMsg) {
@@ -32,7 +31,7 @@ const validateFileExists = (fileName, errMsg) => {
 // Returns a promise that reads a file and returns a buffer.
 const readFile = (fileName, errMsg) => {
   return validateFileExists(fileName, errMsg)
-    .then(() => fse.readFileAsync(fixHome(fileName)));
+    .then(() => fse.readFile(fixHome(fileName)));
 };
 
 // Returns a promise that writes a file.
@@ -40,7 +39,7 @@ const writeFile = (fileName, data) => {
   if (!data) {
     throw new Error('No data provided');
   }
-  return fse.writeFileAsync(fixHome(fileName), data);
+  return fse.writeFile(fixHome(fileName), data);
 };
 
 // Returns a promise that deletes the file.
@@ -56,7 +55,7 @@ const deleteFile = (fileName) => {
 };
 
 // Returns a promise that ensures a directory exists.
-const ensureDir = (dir) => fse.ensureDirAsync(dir);
+const ensureDir = (dir) => fse.ensureDir(dir);
 
 const copyFile = (src, dest, mode) => {
   return new Promise((resolve, reject) => {
@@ -95,7 +94,7 @@ const copyDir = (src, dst, options) => {
   });
 
   return ensureDir(dst)
-    .then(() => fse.readdirAsync(src))
+    .then(() => fse.readdir(src))
     .then(files => {
       const promises = files.map(file => {
         const srcItem = path.resolve(src, file);
@@ -132,11 +131,11 @@ const copyDir = (src, dst, options) => {
 };
 
 // Delete a directory.
-const removeDir = (dir) => fse.removeAsync(dir);
+const removeDir = (dir) => fse.remove(dir);
 
 // Returns true if directory is empty, else false.
 // Rejects if directory does not exist.
-const isEmptyDir = (dir) => fse.readdirAsync(dir).then(items => _.isEmpty(items));
+const isEmptyDir = (dir) => fse.readdir(dir).then(items => _.isEmpty(items));
 
 module.exports = {
   copyDir,

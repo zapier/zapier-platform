@@ -37,7 +37,7 @@ init.example = 'zapier init path';
 init.docs = `\
 Initializes a new Zapier app. If you specify a template, will download and install the app from that template.
 
-After running this, you\'ll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
+After running this, you'll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
 > Note: this doesn't register or deploy the app with Zapier - try \`zapier register "Example"\` and \`zapier push\` for that!
 

@@ -14,6 +14,8 @@ const notUndef = (s) => String(s === undefined ? '' : s).trim();
 
 const unBacktick = (s) => s.replace(/\n?`+(bash)?/g, '');
 
+const prettyJSONstringify = (obj) => JSON.stringify(obj, null, '  ');
+
 const markdownLog = (str) => {
   // turn markdown into something with styles and stuff
   // https://blog.mariusschulz.com/content/images/sublime_markdown_with_syntax_highlighting.png
@@ -69,37 +71,6 @@ const ansiTrim = (s) => _.trim(s, [
 const CHARS = {
   // 'top': '', 'top-mid': '', 'top-left': '', 'top-right': '',
   // 'bottom': ' ', 'bottom-mid': ' ', 'bottom-left': ' ', 'bottom-right': ' '
-};
-// Wraps the cli-table2 library. Rows is an array of objects, columnDefs
-// an ordered sub-array [[label, key, (optional_default)], ...].
-const makeTable = (rows, columnDefs) => {
-  const tableOptions = {
-    head: columnDefs.map(([label]) => label),
-    chars: CHARS,
-    style: {
-      compact: true,
-      head: ['bold']
-    }
-  };
-  const table = new Table(tableOptions);
-
-  rows.forEach((row) => {
-    const consumptionRow = [];
-    columnDefs.forEach((columnDef) => {
-      const [label, key, _default] = columnDef;
-      const val = _.get(row, key || label, _default);
-      consumptionRow.push(notUndef(val));
-    });
-    table.push(consumptionRow);
-  });
-
-  const strTable = ansiTrim(table.toString());
-
-  if (isTooWideForWindow(strTable)) {
-    return makeRowBasedTable(rows, columnDefs, {includeIndex: false});
-  }
-
-  return strTable;
 };
 
 // Similar to makeTable, but prints the column headings in the left-hand column
@@ -170,7 +141,37 @@ const makeRowBasedTable = (rows, columnDefs, {includeIndex = true} = {}) => {
   return strTable;
 };
 
-const prettyJSONstringify = (obj) => JSON.stringify(obj, null, '  ');
+// Wraps the cli-table2 library. Rows is an array of objects, columnDefs
+// an ordered sub-array [[label, key, (optional_default)], ...].
+const makeTable = (rows, columnDefs) => {
+  const tableOptions = {
+    head: columnDefs.map(([label]) => label),
+    chars: CHARS,
+    style: {
+      compact: true,
+      head: ['bold']
+    }
+  };
+  const table = new Table(tableOptions);
+
+  rows.forEach((row) => {
+    const consumptionRow = [];
+    columnDefs.forEach((columnDef) => {
+      const [label, key, _default] = columnDef;
+      const val = _.get(row, key || label, _default);
+      consumptionRow.push(notUndef(val));
+    });
+    table.push(consumptionRow);
+  });
+
+  const strTable = ansiTrim(table.toString());
+
+  if (isTooWideForWindow(strTable)) {
+    return makeRowBasedTable(rows, columnDefs, { includeIndex: false });
+  }
+
+  return strTable;
+};
 
 const makeJSON = (rows, columnDefs) => prettyJSONstringify(rewriteLabels(rows, columnDefs));
 const makeRawJSON = (rows) => prettyJSONstringify(rows);
