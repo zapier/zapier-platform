@@ -2,9 +2,10 @@
 
 * (**BREAKING**) CLI 2.x apps run only on NodeJS `v6.10.2` in AWS Lambda. If you need to run on NodeJS `v4.3.2`, use the CLI 1.x release.
 * (**BREAKING**) Delete property `searchOrCreate` from the properties of ResourceSchema.
-* Style checks run by default during `zapier validate`
-* Validation is run during `zapier test`
-* The CLI now uses update-notifier to let you know when there's a new version available
+* Style checks run by default during `zapier validate`.
+* Validation is run during `zapier test`.
+* The CLI now uses update-notifier to let you know when there's a new version available.
+* Rename `global` to `public` for consistency across Zapier platform.
 
 
 ## 1.0.11
