@@ -761,26 +761,6 @@
       },
       "additionalProperties": false
     },
-    "ResourceMethodSearchOrCreateSchema": {
-      "id": "/ResourceMethodSearchOrCreateSchema",
-      "description": "A wrapper operation to automatically create an object if it does not exist. By default, resources reuse existing search, create, and get functions. Only define this if you need to override the default behavior.",
-      "type": "object",
-      "required": [
-        "display",
-        "operation"
-      ],
-      "properties": {
-        "display": {
-          "description": "Define how this search or create method will be exposed in the UI.",
-          "$ref": "/BasicDisplaySchema"
-        },
-        "operation": {
-          "description": "Powers the functionality for this search or create.",
-          "$ref": "/BasicOperationSchema"
-        }
-      },
-      "additionalProperties": false
-    },
     "KeySchema": {
       "id": "/KeySchema",
       "description": "A unique identifier for this item.",
@@ -826,10 +806,6 @@
         "create": {
           "description": "How will we find create a specific object given inputs? Will be turned into a create automatically.",
           "$ref": "/ResourceMethodCreateSchema"
-        },
-        "searchOrCreate": {
-          "description": "A wrapper operation to automatically create an object if it does not exist. By default, resources reuse existing search, create, and get functions. Only define this if you need to override the default behavior.",
-          "$ref": "/ResourceMethodSearchOrCreateSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return?",
