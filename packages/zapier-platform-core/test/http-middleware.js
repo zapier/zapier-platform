@@ -20,7 +20,7 @@ describe('http requests', () => {
     };
 
     const wrappedRequest = applyMiddleware([addRequestHeader], [prepareResponse], request,
-                                           {skipEnvelope: true});
+      {skipEnvelope: true});
 
     wrappedRequest({url: 'http://zapier-httpbin.herokuapp.com/get'}).then(response => {
       response.status.should.eql(200);
@@ -39,7 +39,7 @@ describe('http requests', () => {
     };
 
     const wrappedRequest = applyMiddleware([addRequestHeader], [prepareResponse], request,
-                                          {skipEnvelope: true});
+      {skipEnvelope: true});
 
     wrappedRequest({url: 'http://zapier-httpbin.herokuapp.com/get'}).then(response => {
       response.status.should.eql(200);
@@ -57,7 +57,7 @@ describe('http requests', () => {
     };
 
     const wrappedRequest = applyMiddleware([], [prepareResponse, addToResponseBody], request,
-                                          {skipEnvelope: true});
+      {skipEnvelope: true});
 
     wrappedRequest({url: 'http://zapier-httpbin.herokuapp.com/get'}).then(response => {
       response.status.should.eql(200);
@@ -76,7 +76,7 @@ describe('http requests', () => {
     };
 
     const wrappedRequest = applyMiddleware([], [prepareResponse, addToResponseBody], request,
-                                          {skipEnvelope: true});
+      {skipEnvelope: true});
 
     wrappedRequest({url: 'http://zapier-httpbin.herokuapp.com/get'}).then(response => {
       response.status.should.eql(200);

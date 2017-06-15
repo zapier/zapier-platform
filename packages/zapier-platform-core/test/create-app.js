@@ -262,7 +262,7 @@ describe('create-app', () => {
         test: {},
         oauth2Config: {
           authorizeUrl: {}, // stub, not needed for this test
-          getAccessToken: {},  // stub, not needed for this test
+          getAccessToken: {}, // stub, not needed for this test
           autoRefresh: true
         }
       };
@@ -292,7 +292,7 @@ describe('create-app', () => {
         test: {},
         oauth2Config: {
           authorizeUrl: {}, // stub, not needed for this test
-          getAccessToken: {},  // stub, not needed for this test
+          getAccessToken: {}, // stub, not needed for this test
           autoRefresh: true
         }
       };
@@ -338,28 +338,28 @@ describe('create-app', () => {
     };
 
     testInputOutputFields('should return static input fields',
-                    'triggers.staticinputfieldsList.operation.inputFields');
+      'triggers.staticinputfieldsList.operation.inputFields');
 
     testInputOutputFields('should return dynamic sync input fields',
-                    'triggers.dynamicsyncinputfieldsList.operation.inputFields');
+      'triggers.dynamicsyncinputfieldsList.operation.inputFields');
 
     testInputOutputFields('should return dynamic async input fields',
-                    'triggers.dynamicasyncinputfieldsList.operation.inputFields');
+      'triggers.dynamicasyncinputfieldsList.operation.inputFields');
 
     testInputOutputFields('should return mix of static, sync function and promise inputFields',
-                    'triggers.mixedinputfieldsList.operation.inputFields');
+      'triggers.mixedinputfieldsList.operation.inputFields');
 
     testInputOutputFields('should return static output fields',
-                    'triggers.staticinputfieldsList.operation.outputFields');
+      'triggers.staticinputfieldsList.operation.outputFields');
 
     testInputOutputFields('should return dynamic sync output fields',
-                    'triggers.dynamicsyncinputfieldsList.operation.outputFields');
+      'triggers.dynamicsyncinputfieldsList.operation.outputFields');
 
     testInputOutputFields('should return dynamic async output fields',
-                    'triggers.dynamicasyncinputfieldsList.operation.outputFields');
+      'triggers.dynamicasyncinputfieldsList.operation.outputFields');
 
     testInputOutputFields('should return mix of static, sync function and promise outputFields',
-                    'triggers.mixedinputfieldsList.operation.outputFields');
+      'triggers.mixedinputfieldsList.operation.outputFields');
   });
 
   describe('hydration', () => {

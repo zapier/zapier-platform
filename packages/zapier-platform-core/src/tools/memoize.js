@@ -1,6 +1,6 @@
 'use strict';
 
- /* eslint-disable */
+/* eslint-disable */
 
 // Extracted from assets/app/common/memoize.js. Author @shauser.
 

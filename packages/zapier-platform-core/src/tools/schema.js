@@ -10,10 +10,10 @@ const convertResourceDos = (appRaw) => {
   let triggers = {}, searches = {}, creates = {}, searchOrCreates = {};
 
   _.each(appRaw.resources, (resource) => {
-    let search, create;
+    let search, create, trigger;
 
     if (resource.hook && resource.hook.operation) {
-      let trigger = dataTools.deepCopy(resource.hook);
+      trigger = dataTools.deepCopy(resource.hook);
       trigger.key = `${resource.key}Hook`;
       trigger.noun = resource.noun;
       trigger.operation.resource = resource.key;
@@ -22,7 +22,7 @@ const convertResourceDos = (appRaw) => {
     }
 
     if (resource.list && resource.list.operation) {
-      let trigger = dataTools.deepCopy(resource.list);
+      trigger = dataTools.deepCopy(resource.list);
       trigger.key = `${resource.key}List`;
       trigger.noun = resource.noun;
       trigger.operation.resource = resource.key;

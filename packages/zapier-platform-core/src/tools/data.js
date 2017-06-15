@@ -17,14 +17,12 @@ const findMapDeep = (haystack, needle, comp) => {
   comp = comp || comparison;
 
   const finder = (obj, path) => {
-    let i;
-
     path = path || [];
 
     if (comp(obj, needle)) {
       return path;
     } else if (Array.isArray(obj)) {
-      for (i = obj.length - 1; i >= 0; i--) {
+      for (let i = obj.length - 1; i >= 0; i--) {
         const value = obj[i];
         const found = finder(value, path.concat([`[${i}]`]));
         if (found !== undefined) {
@@ -33,7 +31,7 @@ const findMapDeep = (haystack, needle, comp) => {
       }
     } else if (isPlainObj(obj)) {
       const keys = Object.keys(obj);
-      for (i = keys.length - 1; i >= 0; i--) {
+      for (let i = keys.length - 1; i >= 0; i--) {
         const key = keys[i];
         const value = obj[key];
         const found = finder(value, path.concat([`.${key}`]));
