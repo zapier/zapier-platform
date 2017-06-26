@@ -1371,6 +1371,8 @@ A `beforeRequest` middleware function takes a request options object, and return
 
 Middleware functions can be asynchronous - just return a promise from the middleware function.
 
+The second argument for middleware is the `z` object, but it does *not* include `z.request()` as using that would easily create infinite loops.
+
 ### HTTP Request Options
 
 Shorthand requests and manual `z.request([url], options)` calls support the following HTTP `options`:

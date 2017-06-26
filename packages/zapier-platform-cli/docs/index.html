@@ -2481,7 +2481,7 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>A <code>beforeRequest</code> middleware function takes a request options object, and returns a (possibly mutated) request object. An <code>afterResponse</code> middleware function takes a response object, and returns a (possibly mutated) response object. Middleware functions are executed in the order specified in the app definition, and each subsequent middleware receives the request or response object returned by the previous middleware.</p><p>Middleware functions can be asynchronous - just return a promise from the middleware function.</p>
+      <p>A <code>beforeRequest</code> middleware function takes a request options object, and returns a (possibly mutated) request object. An <code>afterResponse</code> middleware function takes a response object, and returns a (possibly mutated) response object. Middleware functions are executed in the order specified in the app definition, and each subsequent middleware receives the request or response object returned by the previous middleware.</p><p>Middleware functions can be asynchronous - just return a promise from the middleware function.</p><p>The second argument for middleware is the <code>z</code> object, but it does <em>not</em> include <code>z.request()</code> as using that would easily create infinite loops.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
