@@ -19,7 +19,7 @@ const getSessionKey = (z, bundle) => {
 };
 
 const authentication = {
-  type: 'custom',
+  type: 'session',
   // "test" could also be a function
   test: {
     url: 'https://example.com/api/accounts/me.json'
