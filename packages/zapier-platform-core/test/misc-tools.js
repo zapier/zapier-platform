@@ -192,7 +192,7 @@ describe('Tools', () => {
   });
 
   describe('recurseReplaceBank', () => {
-    it('recurseReplaceBank should replace stuff', () => {
+    it('should replace stuff with recurseReplaceBank', () => {
       var template = {
         multi: '{{somekey}} {{somekey}} hi!',
         thing: '{{somekey}} hi!',

@@ -34,7 +34,7 @@ const recurseReplaceBank = (obj, bank) => {
   const replacer = (out) => {
     if (typeof out !== 'string') { return out; }
     Object.keys(bank).forEach((key) => {
-      const s = String(key).replace(/[-[\]/{}()*+?.^$|]/g, '\\$&');
+      const s = String(key).replace(/[-[\]/{}()\\*+?.^$|]/g, '\\$&');
       const re = new RegExp(s, 'g');
       out = out.replace(re, bank[key]);
     });
