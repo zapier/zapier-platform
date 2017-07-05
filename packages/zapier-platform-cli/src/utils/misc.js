@@ -86,13 +86,18 @@ const isValidNodeVersion = () => {
 };
 
 const isValidAppInstall = (command) => {
-  if (command === 'help' || command === 'init' || command === 'login' || command === 'apps' || command === 'convert') {
+  if (['help', 'init', 'login', 'apps', 'convert'].includes(command)) {
     return true;
   }
 
   let packageJson;
   try {
     packageJson = require(path.join(process.cwd(), 'package.json'));
+    const coreVersion = packageJson.dependencies[PLATFORM_PACKAGE];
+    // could check for a lot more, but this is probably enough: https://docs.npmjs.com/files/package.json#dependencies
+    if (!coreVersion || coreVersion.includes('^')) {
+      return false;
+    }
   } catch(err) {
     return false;
   }

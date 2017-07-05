@@ -94,7 +94,10 @@ const callAPI = (route, options) => {
 
       if (constants.DEBUG || global.argOpts.debug) {
         console.log(`>> ${requestOptions.method} ${requestOptions.url}`);
-        if (requestOptions.body) { console.log(`>> ${requestOptions.body}`); }
+        if (requestOptions.body) {
+          let cleanedBody = _.assign({}, JSON.parse(requestOptions.body), {zip_file: 'raw zip removed in logs'});
+          console.log(`>> ${JSON.stringify(cleanedBody)}`);
+        }
         console.log(`<< ${res.status}`);
         console.log(`<< ${(text || '').substring(0, 2500)}\n`);
       } else if (hitError) {

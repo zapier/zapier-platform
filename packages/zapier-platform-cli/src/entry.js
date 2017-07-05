@@ -62,7 +62,7 @@ module.exports = (argv) => {
 
   if (!utils.isValidAppInstall(command)) {
     console.error(colors.red(
-      `Looks like your package.json is missing ${PLATFORM_PACKAGE} or you haven't run npm install yet!`
+      `Looks like your package.json is missing \`${PLATFORM_PACKAGE}\`, its not restricted to a single version, or you haven't run npm install yet!`
     ));
     process.exit(1);
   }
