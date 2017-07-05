@@ -23,16 +23,16 @@ module.exports = {
     inputFields: [
       {key: 'name', required: true, helpText: 'Find the <%= NOUN %> with this name.'}
     ],
-    perform: search<%= CAMEL %>
-  },
+    perform: search<%= CAMEL %>,
 
-  sample: {
-    id: 1,
-    name: 'Test'
-  },
+    sample: {
+      id: 1,
+      name: 'Test'
+    },
 
-  outputFields: [
-    {key: 'id', label: 'ID'},
-    {key: 'name', label: 'Name'}
-  ]
+    outputFields: [
+      {key: 'id', label: 'ID'},
+      {key: 'name', label: 'Name'}
+    ]
+  }
 };

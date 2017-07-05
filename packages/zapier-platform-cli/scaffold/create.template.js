@@ -24,16 +24,16 @@ module.exports = {
     inputFields: [
       {key: 'name', required: true}
     ],
-    perform: create<%= CAMEL %>
-  },
+    perform: create<%= CAMEL %>,
 
-  sample: {
-    id: 1,
-    name: 'Test'
-  },
+    sample: {
+      id: 1,
+      name: 'Test'
+    },
 
-  outputFields: [
-    {key: 'id', label: 'ID'},
-    {key: 'name', label: 'Name'}
-  ]
+    outputFields: [
+      {key: 'id', label: 'ID'},
+      {key: 'name', label: 'Name'}
+    ]
+  }
 };
