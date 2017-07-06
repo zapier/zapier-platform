@@ -5,18 +5,26 @@ const path = require('path');
 const tmp = require('tmp');
 const utils = require('../lib/utils');
 const appTemplates = require('../lib/app-templates');
+const versionStore = require('../lib/version-store');
 
 const fse = require('fs-extra');
+const semver = require('semver');
+const yaml = require('yamljs');
 const childProcess = utils.promisifyAll(require('child_process'));
 
 const CLONE_URL_PREFIX = 'git@github.com:zapier/zapier-platform-example-app';
+const PACKAGES_NAMES = `node, npm, and zapier-platform-core`;
+let packagesVersions;
 
-const newVersion = process.argv[2];
-if (!newVersion) {
+const newCoreVersion = process.argv[2];
+if (!newCoreVersion) {
   console.error('Usage: npm run set-template-version [NEW_CORE_VERSION]');
   /*eslint no-process-exit: 0 */
   process.exit(1);
 }
+
+const newVersions = versionStore[semver.parse(newCoreVersion).major];
+newVersions.coreVersion = newCoreVersion;
 
 const exec = (cmd, cwd) => {
   return new Promise((resolve, reject) => {
@@ -30,13 +38,24 @@ const exec = (cmd, cwd) => {
   });
 };
 
+const hasCurrentVersions = (newVersions, nvmrcNodeVersion, travisNodeVersion, packageJson) => {
+  return (
+    packageJson.dependencies['zapier-platform-core'] === newVersions.coreVersion &&
+    packageJson.engines['node'] === newVersions.nodeVersion &&
+    packageJson.engines['npm'] === newVersions.npmVersion &&
+    nvmrcNodeVersion === newVersions.nodeVersion &&
+    travisNodeVersion === newVersions.nodeVersion
+  );
+};
+
 const setVersion = (template, rootTmpDir) => {
   const repoName = `zapier-platform-example-app-${template}`;
   const repoDir = path.resolve(rootTmpDir, repoName);
   const cloneUrl = `${CLONE_URL_PREFIX}-${template}`;
   var cmd = `git clone ${cloneUrl}`;
+  packagesVersions = `${newVersions.nodeVersion}, ${newVersions.npmVersion}, and ${newVersions.coreVersion}`;
 
-  console.log(`Setting zapier-platform-core version to ${newVersion} in ${template} app template.`);
+  console.log(`Setting versions of ${PACKAGES_NAMES} to ${packagesVersions} respectively in ${template} app template.`);
   console.log(`cloning ${cloneUrl}\n`);
 
   return exec(cmd, rootTmpDir)
@@ -44,20 +63,33 @@ const setVersion = (template, rootTmpDir) => {
       const packageJsonFile = path.resolve(rootTmpDir, `${repoName}/package.json`);
       const packageJson = require(packageJsonFile);
 
-      if (packageJson.dependencies['zapier-platform-core'] === newVersion) {
+      const nvmrcFile = path.resolve(rootTmpDir, `${repoName}/.nvmrc`);
+      const nvmrcNodeVersion = fse.readFileSync(nvmrcFile, 'utf8').trim().substr(1); // strip off leading 'v'
+
+      const travisYamlFile = path.resolve(rootTmpDir, `${repoName}/.travis.yml`);
+      const travisYaml = yaml.load(travisYamlFile);
+
+      if (hasCurrentVersions(newVersions, nvmrcNodeVersion, travisYaml.node_js[0], packageJson)) {
         return 'skip';
       }
 
-      packageJson.dependencies['zapier-platform-core'] = newVersion;
+      packageJson.dependencies['zapier-platform-core'] = newVersions.coreVersion;
+      packageJson.engines['node'] = newVersions.nodeVersion;
+      packageJson.engines['npm'] = newVersions.npmVersion;
       const json = JSON.stringify(packageJson, null, 2);
       fse.writeFileSync(packageJsonFile, json);
+
+      fse.writeFileSync(nvmrcFile, `v${newVersions.nodeVersion}`);
+
+      travisYaml.node_js[0] = newVersions.nodeVersion;
+      fse.writeFileSync(travisYamlFile, yaml.stringify(travisYaml, null, 2));
     })
     .then(result => {
       if (result === 'skip') {
         return result;
       }
 
-      cmd = `git commit package.json -m "update zapier-platform-core version to ${newVersion}"`;
+      cmd = `git commit package.json .nvmrc .travis.yml -m "update ${PACKAGES_NAMES} versions to ${packagesVersions} respectively."`;
       return exec(cmd, repoDir);
     })
     .then(result => {
@@ -70,14 +102,14 @@ const setVersion = (template, rootTmpDir) => {
     })
     .then(result => {
       if (result === 'skip') {
-        console.log(`${template} is already set to ${newVersion}, skipping`);
+        console.log(`${template} is already set to ${packagesVersions} for ${PACKAGES_NAMES} respectively, skipping`);
         return 'skip';
       }
-      console.log(`Set core version to ${newVersion} on app template ${template} successfully.`);
+      console.log(`Set ${PACKAGES_NAMES} versions to ${packagesVersions} respectively on app template ${template} successfully.`);
       return null;
     })
     .catch(err => {
-      console.error(`Error setting core version for app template ${template}:`, err);
+      console.error(`Error setting ${PACKAGES_NAMES} versions for app template ${template}:`, err);
       return template;
     });
 };
@@ -95,10 +127,10 @@ Promise.all(tasks)
     const successCount = tasks.length - failures.length - skipped.length;
 
     if (failures.length) {
-      console.error('failed to set core version on these templates:', failures.join(', '));
+      console.error('failed to set ${PACKAGES_NAMES} versions on these templates:', failures.join(', '));
     }
     if (skipped.length) {
-      console.log(`skipped ${skipped.length} templates because version was already set to ${newVersion}`);
+      console.log(`skipped ${skipped.length} templates because versions for ${PACKAGES_NAMES} were already set to ${packagesVersions} respectively`);
     }
     if (successCount) {
       console.log(`Successfully updated versions in ${successCount} app templates`);

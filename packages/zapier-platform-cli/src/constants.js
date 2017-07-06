@@ -1,5 +1,7 @@
 const os = require('os');
 const path = require('path');
+const semver = require('semver');
+const versionStore = require('./version-store');
 
 const DEBUG = (process.env.ZAPIER_DEBUG || 'false') === 'true';
 
@@ -14,7 +16,8 @@ const PLATFORM_PACKAGE = 'zapier-platform-core';
 const BUILD_DIR = 'build';
 const DEFINITION_PATH = `${BUILD_DIR}/definition.json`;
 const BUILD_PATH = `${BUILD_DIR}/build.zip`;
-const LAMBDA_VERSION = 'v6.10.2';
+const nodeVersion = semver.Comparator(versionStore[versionStore.length - 1].nodeVersion).semver.version;
+const LAMBDA_VERSION = `v${nodeVersion}`;
 
 const ART = `\
                 zzzzzzzz
