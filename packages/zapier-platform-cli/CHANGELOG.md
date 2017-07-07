@@ -1,3 +1,11 @@
+## 2.0.1
+
+* Fix broken appTester on Windows OS.
+* Require the exact version of zapier-platform-core in package.json.
+* Document middleware's z object lacks z.request.
+* Fix typo in session auth docs.
+
+
 ## 2.0.0
 
 * (**BREAKING**) CLI 2.x apps run only on NodeJS `v6.10.2` in AWS Lambda. If you need to run on NodeJS `v4.3.2`, use the CLI 1.x release.
