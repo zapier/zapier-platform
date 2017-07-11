@@ -1068,7 +1068,8 @@ zapier convert 1234 .
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
   test: {
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
-  }
+  },
+  <span class="hljs-attr">connectionLabel</span>: <span class="hljs-string">&apos;{{bundle.authData.username}}&apos;</span> <span class="hljs-comment">// Can also be a function, check digest auth below for an example</span>
   <span class="hljs-comment">// you can provide additional fields, but we&apos;ll provide `username`/`password` automatically</span>
 };
 
@@ -1147,6 +1148,10 @@ zapier convert 1234 .
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
   test: {
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
+  },
+  <span class="hljs-attr">connectionLabel</span>: <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> { <span class="hljs-comment">// Can also be a string, check basic auth above for an example</span>
+    <span class="hljs-comment">// bundle.inputData has whatever comes back from the .test function/request, assuming it returns a JSON object</span>
+    <span class="hljs-keyword">return</span> bundle.inputData.email;
   }
   <span class="hljs-comment">// you can provide additional fields, but Zapier will provide `username`/`password` automatically</span>
 };
