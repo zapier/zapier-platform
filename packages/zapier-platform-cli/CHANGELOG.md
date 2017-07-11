@@ -1,3 +1,9 @@
+## 2.1.0
+
+* [Connection Label is now available](https://zapier.github.io/zapier-platform-schema/build/schema.html#authenticationschema) (`connectionLabel: '{{bundle.inputData.email}}'` inside `authentication`)
+* [Locking is now available for `create`](https://zapier.github.io/zapier-platform-schema/build/schema.html#createschema) (`shouldLock: true` inside `.operation`)
+* Fix typos in docs
+
 ## 2.0.1
 
 * Fix broken appTester on Windows OS.
