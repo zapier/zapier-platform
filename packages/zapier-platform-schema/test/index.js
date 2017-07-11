@@ -134,7 +134,7 @@ describe('app', () => {
   describe('export', () => {
     it('should export the full schema', () => {
       const exportedSchema = schema.exportSchema();
-      Object.keys(exportedSchema.schemas).length.should.eql(40); // changes regularly as we expand
+      Object.keys(exportedSchema.schemas).length.should.eql(41); // changes regularly as we expand
     });
   });
 

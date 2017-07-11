@@ -3,7 +3,7 @@
 const makeSchema = require('../utils/makeSchema');
 
 const BasicDisplaySchema = require('./BasicDisplaySchema');
-const BasicActionOperationSchema = require('./BasicActionOperationSchema');
+const BasicCreateActionOperationSchema = require('./BasicCreateActionOperationSchema');
 const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema({
@@ -11,6 +11,14 @@ module.exports = makeSchema({
   description: 'How will Zapier create a new object?',
   type: 'object',
   required: ['key', 'noun', 'display', 'operation'],
+  examples: [
+    {key: 'recipe', noun: 'Recipe', display: {label: 'Create Recipe', description: 'Creates a new recipe.'}, operation: {perform: '$func$2$f$'}},
+    {key: 'recipe', noun: 'Recipe', display: {label: 'Create Recipe', description: 'Creates a new recipe.'}, operation: {perform: '$func$2$f$', shouldLock: true}},
+  ],
+  antiExamples: [
+    'abc',
+    {key: 'recipe', noun: 'Recipe', display: {label: 'Create Recipe', description: 'Creates a new recipe.'}, operation: {perform: '$func$2$f$', shouldLock: 'yes'}},
+  ],
   properties: {
     key: {
       description: 'A key to uniquely identify this create.',
@@ -28,12 +36,12 @@ module.exports = makeSchema({
     },
     operation: {
       description: 'Powers the functionality for this create.',
-      $ref: BasicActionOperationSchema.id
+      $ref: BasicCreateActionOperationSchema.id
     }
   },
   additionalProperties: false
 }, [
   BasicDisplaySchema,
-  BasicActionOperationSchema,
+  BasicCreateActionOperationSchema,
   KeySchema,
 ]);
