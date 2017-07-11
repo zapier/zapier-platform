@@ -671,10 +671,10 @@ Promotes are an inherently safe operation for all existing users of your app.
 ```bash
 $ zapier promote 1.0.0
 # Preparing to promote version 1.0.0 your app "Example".
-# 
+#
 #   Promoting 1.0.0 - done!
-#   Promition successful!
-# 
+#   Promotion successful!
+#
 # Optionally try the `zapier migrate 1.0.0 1.0.1 [10%]` command to move users to this version.
 ```
 
