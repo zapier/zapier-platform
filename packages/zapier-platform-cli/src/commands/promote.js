@@ -19,7 +19,7 @@ const promote = (context, version) => {
     })
     .then(() => {
       utils.printDone();
-      context.line('  Promition successful!\n');
+      context.line('  Promotion successful!\n');
       context.line('Optionally try the `zapier migrate 1.0.0 1.0.1 [10%]` command to move users to this version.');
     });
 };
@@ -49,10 +49,10 @@ ${utils.argOptsFragment(promote.argOptsSpec)}
 ${'```'}bash
 $ zapier promote 1.0.0
 # Preparing to promote version 1.0.0 your app "Example".
-# 
+#
 #   Promoting 1.0.0 - done!
-#   Promition successful!
-# 
+#   Promotion successful!
+#
 # Optionally try the \`zapier migrate 1.0.0 1.0.1 [10%]\` command to move users to this version.
 ${'```'}
 `;

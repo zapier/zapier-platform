@@ -550,7 +550,7 @@ For more details on error handling in general, see [here](#error-handling).
 
 ## Bundle Object
 
-This object holds the user's auth details and the data to for the API requests.
+This object holds the user's auth details and the data for the API requests.
 
 > The `bundle` object is passed into your functions as the second argument - IE: `perform: (z, bundle) => {}`.
 
