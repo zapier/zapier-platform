@@ -34,7 +34,8 @@
       },
       "scope": "tags,users,contacts",
       "autoRefresh": false
-    }
+    },
+    "connectionLabel": "{{inputData.email}}"
   },
   "resources": {
     "tag": {

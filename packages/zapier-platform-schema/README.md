@@ -8,6 +8,7 @@
 - `npm test` for running tests
 - `npm run export` for updating the exported-schema (even if only the version changes)
 - `npm run docs` for updating docs (even if only the version changes)
+- `npm coverage` for running tests and displaying test coverage
 
 ## Publishing (after merging)
 

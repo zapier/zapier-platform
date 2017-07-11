@@ -156,7 +156,31 @@ Represents authentication schemes.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/AuthenticationSchema.js](https://github.com/zapier/zapier-platform-schema/blob/v2.0.1/lib/schemas/AuthenticationSchema.js)
 
+#### Examples
 
+* `{ type: 'basic', test: '$func$2$f$' }`
+* `{ type: 'custom',
+  test: '$func$2$f$',
+  fields: [ { key: 'abc' } ] }`
+* `{ type: 'custom',
+  test: '$func$2$f$',
+  connectionLabel: '{{bundle.inputData.abc}}' }`
+* `{ type: 'custom',
+  test: '$func$2$f$',
+  connectionLabel: '$func$2$f$' }`
+* `{ type: 'custom',
+  test: '$func$2$f$',
+  connectionLabel: { url: 'abc' } }`
+
+#### Anti-Examples
+
+* `{}`
+* `'$func$2$f$'`
+* `{ type: 'unknown', test: '$func$2$f$' }`
+* `{ type: 'custom', test: '$func$2$f$', fields: '$func$2$f$' }`
+* `{ type: 'custom',
+  test: '$func$2$f$',
+  fields: [ { key: 'abc' }, '$func$2$f$' ] }`
 
 #### Properties
 
@@ -165,6 +189,7 @@ Key | Required | Type | Description
 `type` | **yes** | `string` in (`'basic'`, `'custom'`, `'digest'`, `'oauth2'`, `'session'`) | Choose which scheme you want to use.
 `test` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | A function or request that confirms the authentication is working.
 `fields` | no | [/FieldsSchema](#fieldsschema) | Fields you can request from the user before they connect your app to Zapier.
+`connectionLabel` | no | anyOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema), `string`) | A string with variables, function, or request that returns the connection label for the authenticated user.
 `basicConfig` | no | [/AuthenticationBasicConfigSchema](#authenticationbasicconfigschema) | _No description given._
 `customConfig` | no | [/AuthenticationCustomConfigSchema](#authenticationcustomconfigschema) | _No description given._
 `digestConfig` | no | [/AuthenticationDigestConfigSchema](#authenticationdigestconfigschema) | _No description given._

@@ -1,5 +1,7 @@
 language: node_js
 node_js:
   - "6.10.2"
+script:
+  - npm run coverage
 notifications:
   email: false

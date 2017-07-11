@@ -987,6 +987,20 @@
           "description": "Fields you can request from the user before they connect your app to Zapier.",
           "$ref": "/FieldsSchema"
         },
+        "connectionLabel": {
+          "description": "A string with variables, function, or request that returns the connection label for the authenticated user.",
+          "anyOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
         "basicConfig": {
           "$ref": "/AuthenticationBasicConfigSchema"
         },

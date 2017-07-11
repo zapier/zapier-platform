@@ -12,6 +12,7 @@
     "version": "npm run export && git add exported-schema.json && npm run docs && git add README.md docs/*",
     "postversion": "git push && git push --tags && npm publish",
     "test": "node_modules/mocha/bin/mocha --recursive",
+    "coverage": "node node_modules/.bin/istanbul cover _mocha -- --recursive",
     "export": "node bin/export.js",
     "docs": "node bin/docs.js"
   },
@@ -23,6 +24,7 @@
     "babel": "6.5.2",
     "babel-eslint": "6.1.2",
     "eslint": "3.4.0",
+    "istanbul": "0.4.5",
     "marked-toc": "0.3.0",
     "mocha": "3.0.2",
     "should": "11.1.0"

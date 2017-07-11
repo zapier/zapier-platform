@@ -1,6 +1,6 @@
-image: node:4.3.2
+image: node:6.10.2
 
 all_tests:
   script:
    - npm install
-   - npm test
+   - npm run coverage
