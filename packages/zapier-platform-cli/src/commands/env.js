@@ -26,7 +26,7 @@ const env = (context, version, key, value) => {
       .then(() => {
         utils.printDone();
         context.line();
-        context.line('Environment updated! Try viewing it with `zapier env ${version}`.');
+        context.line(`Environment updated! Try viewing it with \`zapier env ${version}\`.`);
 
         // touch index.js to force watch to pick up env changes
         fs.utimesSync(utils.entryPoint(), NaN, NaN);
