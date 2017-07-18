@@ -25,7 +25,7 @@ const checkOutput = (output) => {
   if (runChecks) {
     const rawResults = checks
       .filter((check) => {
-        return check.shouldRun(event.method);
+        return check.shouldRun(event.method, event.bundle);
       })
       .map((check) => {
         return check.run(event.method, output.results)

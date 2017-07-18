@@ -30,6 +30,9 @@ describe('checks', () => {
     checks.triggerHasId.run(testMethod, [{id: 1}, {id: 2}]).length.should.eql(0);
     checks.triggerHasId.run(testMethod, [{game_id: 1}]).length.should.eql(1);
     checks.triggerHasId.run(testMethod, []).length.should.eql(0, 'blank array');
+    checks.triggerHasId.run(testMethod, [1]).length.should.eql(1);
+    checks.triggerHasId.run(testMethod, [{id: null}]).length.should.eql(1);
+    checks.triggerHasId.run(testMethod, [{}]).length.should.eql(1);
   });
 
   it('should check for unique ids via triggerHasUniqueIds', () => {

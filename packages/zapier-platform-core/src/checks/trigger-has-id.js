@@ -9,10 +9,13 @@ const isTrigger = require('./is-trigger');
 */
 const triggerHasId = {
   name: 'triggerHasId',
-  shouldRun: isTrigger,
+  shouldRun: (method, bundle) => {
+    // Hooks will have a bundle.cleanedRequest and we don't need to check they've got an id
+    return (isTrigger(method) && !bundle.cleanedRequest);
+  },
   run: (method, results) => {
     const missingIdResult = _.find(results, (result) => {
-      return _.isUndefined(result.id) || _.isNull(result.id);
+      return !result || _.isUndefined(result.id) || _.isNull(result.id);
     });
 
     if (missingIdResult) {
