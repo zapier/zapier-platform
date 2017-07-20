@@ -8,17 +8,28 @@ const collectErrors = (inputFields, path) => {
 
   _.each(inputFields, (inputField, index) => {
     if (inputField.children) {
-      const hasDeeplyNestedChildren = _.every(inputField.children, (child) => child.children);
-
-      if (hasDeeplyNestedChildren) {
+      if (inputField.children.length === 0) {
         errors.push(new jsonschema.ValidationError(
-          'must not contain deeply nested child fields. One level max.',
+          'must not be empty.',
           inputField,
           '/FieldSchema',
-          `instance.${path}.inputFields[${index}]`,
-          'deepNesting',
+          `instance.${path}.inputFields[${index}].children`,
+          'empty',
           'inputFields'
         ));
+      } else {
+        const hasDeeplyNestedChildren = _.every(inputField.children, (child) => child.children);
+
+        if (hasDeeplyNestedChildren) {
+          errors.push(new jsonschema.ValidationError(
+            'must not contain deeply nested child fields. One level max.',
+            inputField,
+            '/FieldSchema',
+            `instance.${path}.inputFields[${index}]`,
+            'deepNesting',
+            'inputFields'
+          ));
+        }
       }
     }
   });

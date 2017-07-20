@@ -2,35 +2,23 @@
 
 const makeSchema = require('../utils/makeSchema');
 
-const FieldSchema = require('./FieldSchema');
-const FunctionSchema = require('./FunctionSchema');
+const FieldOrFunctionSchema = require('./FieldOrFunctionSchema');
 
 module.exports = makeSchema({
   id: '/DynamicFieldsSchema',
   description: 'Like [/FieldsSchema](#fieldsschema) but you can provide functions to create dynamic or custom fields.',
   examples: [
     [],
-    '$func$2$f$',
     [{key: 'abc'}],
     [{key: 'abc'}, '$func$2$f$'],
+    ['$func$2$f$', '$func$2$f$'],
   ],
   antiExamples: [
     [{}],
     [{key: 'abc', choices: {}}],
+    '$func$2$f$',
   ],
-  oneOf: [
-    {
-      type: 'array',
-      items: {
-        oneOf: [
-          {$ref: FieldSchema.id},
-          {$ref: FunctionSchema.id}
-        ]
-      },
-    },
-    {$ref: FunctionSchema.id}
-  ]
+  $ref: FieldOrFunctionSchema.id,
 }, [
-  FieldSchema,
-  FunctionSchema,
+  FieldOrFunctionSchema,
 ]);
