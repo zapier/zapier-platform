@@ -11,11 +11,11 @@ const isCreate = require('../src/checks/is-create');
 const testMethod = 'some.method';
 
 describe('checks', () => {
-  it('should see create return values with multiples via createIsSingle', () => {
-    checks.createIsSingle.run(testMethod, []).length.should.eql(0);
-    checks.createIsSingle.run(testMethod, [{}]).length.should.eql(0);
+  it('should see create return values with singles via createIsSingle', () => {
     checks.createIsSingle.run(testMethod, {}).length.should.eql(0);
 
+    checks.createIsSingle.run(testMethod, []).length.should.eql(1);
+    checks.createIsSingle.run(testMethod, [{}]).length.should.eql(1);
     checks.createIsSingle.run(testMethod, [{}, {}]).length.should.eql(1);
   });
 

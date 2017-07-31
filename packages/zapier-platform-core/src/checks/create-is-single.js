@@ -11,7 +11,7 @@ const createIsSingle = {
   name: 'createIsSingle',
   shouldRun: isCreate,
   run: (method, results) => {
-    if (_.isArray(results) && results.length > 1) {
+    if (_.isArray(results)) {
       const repr = _.truncate(JSON.stringify(results), 50);
       return [
         `Got a result with multiple return values, expecting a single object from create (${repr})`
