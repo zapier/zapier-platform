@@ -48,6 +48,23 @@ describe('http requests', () => {
     }).catch(done);
   });
 
+  it('should throw error when middleware does not return object', (done) => {
+    const addRequestHeader = (req) => {
+      if (!req.headers) {
+        req.headers = {};
+      }
+      req.headers.Customheader = 'custom value';
+    };
+
+    const wrappedRequest = applyMiddleware([addRequestHeader], [prepareResponse], request,
+      {skipEnvelope: true});
+
+    wrappedRequest({url: 'http://zapier-httpbin.herokuapp.com/get'}).catch(err => {
+      err.message.should.containEql('Middleware should return an object.');
+      done();
+    });
+  });
+
   it('should support async after middleware', (done) => {
     const addToResponseBody = (response) => {
       const content = JSON.parse(response.content);

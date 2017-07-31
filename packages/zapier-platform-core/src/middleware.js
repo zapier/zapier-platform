@@ -63,7 +63,11 @@ const applyMiddleware = (befores, afters, app, options) => {
         return collector.then(newInput => {
           newInput._addContext = context.addContext;
           const args = [newInput].concat(options.extraArgs);
-          return func.apply(undefined, args);
+          const result = func.apply(undefined, args);
+          if (typeof result !== 'object') {
+            throw new Error('Middleware should return an object.');
+          }
+          return result;
         });
       }, resolve(beforeInput));
     };
@@ -74,6 +78,9 @@ const applyMiddleware = (befores, afters, app, options) => {
           newOutput._addContext = context.addContext;
           const args = [newOutput].concat(options.extraArgs);
           const maybePromise = func.apply(undefined, args);
+          if (typeof maybePromise !== 'object') {
+            throw new Error('Middleware should return an object.');
+          }
           return resolve(maybePromise).then(ensureEnvelope);
         });
       }, resolve(output));
