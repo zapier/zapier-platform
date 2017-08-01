@@ -829,21 +829,21 @@ z.request({
 
 ## Dehydration
 
-Dehydration, and it's counterpart Hydration, is a tool that can lazily load data that might be otherwise expensive to retrieve aggressively.
+Dehydration, and its counterpart Hydration, is a tool that can lazily load data that might be otherwise expensive to retrieve aggressively.
 
 * **Dehydration** - think of this as "make a pointer", you control the creation of pointers with `z.dehydrate(func, inputData)`
 * **Hydration** - think of this as an automatic step that "consumes a pointer" and "returns some data", Zapier does this automatically behind the scenes
 
 > This is very common when [Stashing Files](#stashing-files) - but that isn't their only use!
 
-The interface `z.dehydrate(func, inputData)` has two required arguments:
+The method `z.dehydrate(func, inputData)` has two required arguments:
 
-* `func` - this should any raw `function` that be found _anywhere_ in your app definition (though usually in the root `hydrators` mapping)
+* `func` - the function to call to fetch the extra data. Can be any raw `function`, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app's `hydrators` property
 * `inputData` - this is an object that contains things like a `path` or `id` - whatever you need to load data on the other side
 
-> **Why do I need to register my functions?** Because of how Javascript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to "automatically" (and sometimes incorrectly) infer code locations.
+> **Why do I need to register my functions?** Because of how Javascript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to "automagically" (and sometimes incorrectly) infer code locations.
 
-This example that pulls in extra data for a movie:
+Here is an example that pulls in extra data for a movie:
 
 ```javascript
 [insert-file:./snippets/dehydration.js]

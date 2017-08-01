@@ -2601,17 +2601,17 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Dehydration, and it&apos;s counterpart Hydration, is a tool that can lazily load data that might be otherwise expensive to retrieve aggressively.</p><ul>
+      <p>Dehydration, and its counterpart Hydration, is a tool that can lazily load data that might be otherwise expensive to retrieve aggressively.</p><ul>
 <li><strong>Dehydration</strong> - think of this as &quot;make a pointer&quot;, you control the creation of pointers with <code>z.dehydrate(func, inputData)</code></li>
 <li><strong>Hydration</strong> - think of this as an automatic step that &quot;consumes a pointer&quot; and &quot;returns some data&quot;, Zapier does this automatically behind the scenes</li>
 </ul><blockquote>
 <p>This is very common when <a href="#stashing-files">Stashing Files</a> - but that isn&apos;t their only use!</p>
-</blockquote><p>The interface <code>z.dehydrate(func, inputData)</code> has two required arguments:</p><ul>
-<li><code>func</code> - this should any raw <code>function</code> that be found <em>anywhere</em> in your app definition (though usually in the root <code>hydrators</code> mapping)</li>
+</blockquote><p>The method <code>z.dehydrate(func, inputData)</code> has two required arguments:</p><ul>
+<li><code>func</code> - the function to call to fetch the extra data. Can be any raw <code>function</code>, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app&apos;s <code>hydrators</code> property</li>
 <li><code>inputData</code> - this is an object that contains things like a <code>path</code> or <code>id</code> - whatever you need to load data on the other side</li>
 </ul><blockquote>
-<p><strong>Why do I need to register my functions?</strong> Because of how Javascript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to &quot;automatically&quot; (and sometimes incorrectly) infer code locations.</p>
-</blockquote><p>This example that pulls in extra data for a movie:</p>
+<p><strong>Why do I need to register my functions?</strong> Because of how Javascript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to &quot;automagically&quot; (and sometimes incorrectly) infer code locations.</p>
+</blockquote><p>Here is an example that pulls in extra data for a movie:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> getExtraDataFunction = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
@@ -2842,7 +2842,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see your <code>z.console</code> logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=console
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=console
 </code></pre>
     </div>
   </div>
@@ -2884,7 +2884,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see the HTTP logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=http
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http
 </code></pre>
     </div>
   </div>
@@ -2894,7 +2894,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see detailed http logs including headers, request and response bodies, etc, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=http --detailed
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http --detailed
 </code></pre>
     </div>
   </div>
