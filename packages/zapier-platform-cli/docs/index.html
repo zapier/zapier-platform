@@ -1038,7 +1038,7 @@ zapier convert 1234 .
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Most applications require some sort of authentication - and Zapier provides a handful of methods for helping your users authenticate with your application. Zapier will provide some of the core behaviors, but you&apos;ll likely need to handle the rest.</p><blockquote>
-<p>Hint: You can access the data tied to your authentication via the <code>bundle.authData</code> property in any method called in your app.</p>
+<p>Hint: You can access the data tied to your authentication via the <code>bundle.authData</code> property in any method called in your app. Exceptions exist in OAuth and Session auth. Please see them below.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1186,8 +1186,8 @@ zapier convert 1234 .
     <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/login.json&apos;</span>,
     <span class="hljs-attr">body</span>: {
-      <span class="hljs-attr">username</span>: bundle.authData.username,
-      <span class="hljs-attr">password</span>: bundle.authData.password,
+      <span class="hljs-attr">username</span>: bundle.inputData.username,
+      <span class="hljs-attr">password</span>: bundle.inputData.password,
     }
   });
 
@@ -1250,6 +1250,17 @@ zapier convert 1234 .
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Note - For Session auth, <code>authentication.sessionConfig.perform</code> will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty the first time the Zap runs.</p>
+</blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h3 id="oauth2">OAuth2</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1288,14 +1299,14 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> authentication = {
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;oauth2&apos;</span>,
   <span class="hljs-attr">test</span>: {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{subdomain}}.example.com/api/accounts/me.json&apos;</span>
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>
   },
   <span class="hljs-comment">// you can provide additional fields for inclusion in authData</span>
   oauth2Config: {
     <span class="hljs-comment">// &quot;authorizeUrl&quot; could also be a function returning a string url</span>
     authorizeUrl: {
       <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;GET&apos;</span>,
-      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{subdomain}}.example.com/api/oauth2/authorize&apos;</span>,
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize&apos;</span>,
       <span class="hljs-attr">params</span>: {
         <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
         <span class="hljs-attr">state</span>: <span class="hljs-string">&apos;{{bundle.inputData.state}}&apos;</span>,
@@ -1307,7 +1318,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
     <span class="hljs-comment">// &quot;getAccessToken&quot; could also be a function returning an object</span>
     getAccessToken: {
       <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
-      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{subdomain}}.example.com/api/v2/oauth2/token&apos;</span>,
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token&apos;</span>,
       <span class="hljs-attr">body</span>: {
         <span class="hljs-attr">code</span>: <span class="hljs-string">&apos;{{bundle.inputData.code}}&apos;</span>,
         <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
@@ -1345,6 +1356,17 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 
 <span class="hljs-built_in">module</span>.exports = App;
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Note - For OAuth, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code>  will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty the first time the Zap runs.</p>
+</blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">

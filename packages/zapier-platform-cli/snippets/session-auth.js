@@ -3,8 +3,8 @@ const getSessionKey = (z, bundle) => {
     method: 'POST',
     url: 'https://example.com/api/accounts/login.json',
     body: {
-      username: bundle.authData.username,
-      password: bundle.authData.password,
+      username: bundle.inputData.username,
+      password: bundle.inputData.password,
     }
   });
 

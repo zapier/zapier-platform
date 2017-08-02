@@ -286,7 +286,7 @@ You app will be created and you can continue working on it.
 
 Most applications require some sort of authentication - and Zapier provides a handful of methods for helping your users authenticate with your application. Zapier will provide some of the core behaviors, but you'll likely need to handle the rest.
 
-> Hint: You can access the data tied to your authentication via the `bundle.authData` property in any method called in your app.
+> Hint: You can access the data tied to your authentication via the `bundle.authData` property in any method called in your app. Exceptions exist in OAuth and Session auth. Please see them below.
 
 ### Basic
 
@@ -328,6 +328,8 @@ Probably the most "powerful" mechanism for authentication - it gives you the abi
 [insert-file:./snippets/session-auth.js]
 ```
 
+> Note - For Session auth, `authentication.sessionConfig.perform` will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty the first time the Zap runs.
+
 ### OAuth2
 
 Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](http://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
@@ -358,6 +360,8 @@ Your auth definition would look something like this:
 ```javascript
 [insert-file:./snippets/oauth2.js]
 ```
+
+> Note - For OAuth, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken`  will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty the first time the Zap runs.
 
 
 ## Resources
