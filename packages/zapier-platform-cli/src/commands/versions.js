@@ -21,7 +21,7 @@ versions.argsSpec = [];
 versions.argOptsSpec = {};
 versions.help = 'Lists all the versions of the current app.';
 versions.example = 'zapier versions';
-versions.docs = `\
+versions.docs = `
 Lists the versions of your app available for use in the Zapier editor.
 
 **Arguments**
@@ -33,7 +33,7 @@ ${utils.defaultArgOptsFragment()}
 ${'```'}bash
 $ zapier versions
 # All versions of your app "Example" listed below.
-# 
+#
 # ┌─────────┬──────────┬───────┬────────────────┬──────────────────┬─────────────────────┐
 # │ Version │ Platform │ Users │ Deployment     │ Deprecation Date │ Timestamp           │
 # ├─────────┼──────────┼───────┼────────────────┼──────────────────┼─────────────────────┤

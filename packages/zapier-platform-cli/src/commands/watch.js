@@ -112,7 +112,7 @@ watch.argOptsSpec = {
 };
 watch.help = 'Watch the current directory and send changes live to Zapier.';
 watch.example = 'zapier watch';
-watch.docs = `\
+watch.docs = `
 This command watches the current directory and, on changes, does two things:
 
 * Sends any new changes to Zapier, instantly updating the UI in your Zapier editor.

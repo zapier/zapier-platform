@@ -21,7 +21,9 @@ const test = (context) => {
     return Promise.resolve();
   }
 
-  return validate(context)
+  const validated = global.argOpts['skip-validate'] ? Promise.resolve() : validate(context);
+
+  return validated
     .then(() => utils.readCredentials(undefined, false))
     .then((credentials) => {
       context.line(`Adding ${constants.AUTH_LOCATION} to environment as ZAPIER_DEPLOY_KEY...`);
@@ -50,10 +52,11 @@ test.argsSpec = [
 test.argOptsSpec = {
   debug: {flag: true, help: 'print zapier detailed logs to standard out'},
   timeout: {help: 'add a default timeout to mocha, in milliseconds'},
+  'skip-validate': {flag: true, help: 'forgo running `zapier validate` before `npm test`'},
 };
 test.help = 'Tests your app via `npm test`.';
 test.example = 'zapier test';
-test.docs = `\
+test.docs = `
 This command is effectively the same as \`npm test\`, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.
 
 **Arguments**

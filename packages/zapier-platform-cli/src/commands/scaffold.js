@@ -107,7 +107,7 @@ scaffold.argOptsSpec = {
 scaffold.help = 'Adds a starting resource, trigger, action or search to your app.';
 scaffold.usage = 'zapier scaffold {resource|trigger|search|create} "Name"';
 scaffold.example = 'zapier scaffold resource "Contact"';
-scaffold.docs = `\
+scaffold.docs = `
 The scaffold command does two general things:
 
 * Creates a new destination file like \`resources/contact.js\`
@@ -128,10 +128,10 @@ $ zapier scaffold resource "Contact" --entry=index.js
 $ zapier scaffold resource "Contag Tag" --dest=resources/tag
 $ zapier scaffold resource "Tag" --entry=index.js --dest=resources/tag
 # Adding resource scaffold to your project.
-# 
+#
 #   Writing new resources/tag.js - done!
 #   Rewriting your index.js - done!
-# 
+#
 # Finished! We did the best we could, you might gut check your files though.
 ${'```'}
 `;

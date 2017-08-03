@@ -15,7 +15,7 @@ build.argOptsSpec = {
 };
 build.help = 'Builds a pushable zip from the current directory.';
 build.example = 'zapier build';
-build.docs = `\
+build.docs = `
 Builds a ready-to-upload zip file, but does not upload / push the zip file. Generally you'd use \`zapier push\` which does this and \`zapier upload\` together.
 
 It does the following steps:

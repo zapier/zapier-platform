@@ -16,7 +16,8 @@ $ npm install -g zapier-platform-cli
 
   **Usage:** `zapier apps`
 
-  Lists any apps that you have admin access to. Also checks the current directory for a linked app, which you can control with `zapier link`.
+  
+Lists any apps that you have admin access to. Also checks the current directory for a linked app, which you can control with `zapier link`.
 
 **Arguments**
 
@@ -29,13 +30,13 @@ $ npm install -g zapier-platform-cli
 ```bash
 $ zapier apps
 # All apps listed below.
-# 
+#
 # ┌─────────┬───────────-─┬─────────────────────┬────────┐
 # │ Title   │ Unique Slug │ Timestamp           │ Linked │
 # ├─────────┼───────────-─┼─────────────────────┼────────┤
 # │ Example │ Example     │ 2016-01-01T22:19:28 │ ✔      │
 # └─────────┴───────────-─┴─────────────────────┴────────┘
-# 
+#
 # Try linking the current directory to a different app with the `zapier link` command.
 ```
 
@@ -46,7 +47,8 @@ $ zapier apps
 
   **Usage:** `zapier build`
 
-  Builds a ready-to-upload zip file, but does not upload / push the zip file. Generally you'd use `zapier push` which does this and `zapier upload` together.
+  
+Builds a ready-to-upload zip file, but does not upload / push the zip file. Generally you'd use `zapier push` which does this and `zapier upload` together.
 
 It does the following steps:
 
@@ -88,7 +90,8 @@ $ zapier build
 
   **Usage:** `zapier collaborate [user@example.com]`
 
-  Give any user registered on Zapier the ability to collaborate on your app. Commonly, this is useful for teammates, contractors, or other developers who might want to make changes on your app. Only admin access is supported. If you'd only like to provide read-only or testing access, try `zapier invite`.
+  
+Give any user registered on Zapier the ability to collaborate on your app. Commonly, this is useful for teammates, contractors, or other developers who might want to make changes on your app. Only admin access is supported. If you'd only like to provide read-only or testing access, try `zapier invite`.
 
 **Arguments**
 
@@ -102,7 +105,7 @@ $ zapier build
 ```bash
 $ zapier collaborate
 # The collaborators on your app "Example" listed below.
-# 
+#
 # ┌──────────────────┬───────┬──────────┐
 # │ Email            │ Role  │ Status   │
 # ├──────────────────┼───────┼──────────┤
@@ -111,16 +114,16 @@ $ zapier collaborate
 
 $ zapier collaborate user@example.com
 # Preparing to add collaborator user@example.com to your app "Example".
-# 
+#
 #   Adding user@example.com - done!
-# 
+#
 # Collaborators updated! Try viewing them with `zapier collaborate`.
 
 $ zapier collaborate user@example.com --remove
 # Preparing to remove collaborator user@example.com from your app "Example".
-# 
+#
 #   Removing user@example.com - done!
-# 
+#
 # Collaborators updated! Try viewing them with `zapier collaborate`.
 ```
 
@@ -131,7 +134,8 @@ $ zapier collaborate user@example.com --remove
 
   **Usage:** `zapier convert appid path`
 
-  Creates a new Zapier app from an existing app. **The new app contains code stubs only.** It is supposed to get you started - it isn't going to create a complete app!
+  
+Creates a new Zapier app from an existing app. **The new app contains code stubs only.** It is supposed to get you started - it isn't going to create a complete app!
 
 After running this, you'll have a new app in your directory, with stubs for your trigger and actions.  If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
@@ -159,29 +163,62 @@ $ zapier convert 1234 .
 ```
 
 
+## delete
+
+  > Delete a version of your app (or the whole app) as long as it has no users/Zaps.
+
+  **Usage:** `zapier delete version 1.0.0`
+
+  
+A utility to allow deleting app versions that aren't used.
+
+> The app version needs to have no users/Zaps in order to be deleted.
+
+**Arguments**
+
+* `appOrVersion [{app,version}]` -- **required**, delete the whole app, or just a version?
+* `version [1.0.0]` -- _optional_, the version to delete
+
+
+```bash
+$ zapier delete version 1.0.0
+# Preparing to delete version 1.0.0 of your app "Example".
+#
+#   Deleting 1.0.0 - done!
+#   Deletion successful!
+```
+
+
 ## deprecate
 
   > Mark a non-production version of your app as deprecated, with removal by a certain date.
 
   **Usage:** `zapier deprecate 1.0.0 2017-01-20`
 
-  A utility to alert users of breaking changes that require the deprecation of an app version. Zapier will send emails warning users of the deprecation.
+  
+A utility to alert users of breaking changes that require the deprecation of an app version.
+
+Use this when an app version will not be supported or start breaking at a known date.
+
+Zapier will send an email warning users of the deprecation once a date is set, they'll start seeing it as "Deprecated" in the UI, and once the deprecation date arrives, if the Zaps weren't updated, they'll be paused and the users will be emailed again explaining what happened.
+
+After the deprecation date has passed it will be safe to delete that app version.
 
 > Do not use this if you have non-breaking changes, for example, just fixing help text or labels is a very safe operation.
 
 **Arguments**
 
 * `version [1.0.0]` -- **required**, the version to deprecate
-* `deprecation_date [2017-01-20]` -- **required**, date Zapier will remove the version
+* `deprecationDate [2017-01-20]` -- **required**, date Zapier will make the version unavailable
 
 
 ```bash
 $ zapier deprecate 1.0.0 2017-01-20
 # Preparing to deprecate version 1.0.0 your app "Example".
-# 
+#
 #   Deprecating 1.0.0 - done!
 #   Deprecation successful!
-# 
+#
 # We'll let users know that this version is no longer recommended and will cease to work on 2017-01-20.
 ```
 
@@ -192,7 +229,8 @@ $ zapier deprecate 1.0.0 2017-01-20
 
   **Usage:** `zapier describe`
 
-  Prints a human readable enumeration of your app's triggers, searches, and actions as seen by Zapier. Useful to understand how your resources convert and relate to different actions.
+  
+Prints a human readable enumeration of your app's triggers, searches, and actions as seen by Zapier. Useful to understand how your resources convert and relate to different actions.
 
 > These are the same actions we'd display in our editor!
 
@@ -242,7 +280,8 @@ $ zapier describe
 
   **Usage:** `zapier env 1.0.0 CLIENT_SECRET 12345`
 
-  Manage the environment of your app so that `process.env` has the necessary variables, making it easy to match a local environment with a production environment via `CLIENT_SECRET=12345 zapier test`.
+  
+Manage the environment of your app so that `process.env` has the necessary variables, making it easy to match a local environment with a production environment via `CLIENT_SECRET=12345 zapier test`.
 
 **Arguments**
 
@@ -288,7 +327,8 @@ $ zapier env 1.0.0 CLIENT_SECRET --remove
 
   **Usage:** `zapier help [command]`
 
-  Prints documentation to the terminal screen.
+  
+Prints documentation to the terminal screen.
 
 Generally - the `zapier` command works off of two files:
 
@@ -347,7 +387,8 @@ $ │ logout      │ zapier logout                         │ Deactivates all 
 
   **Usage:** `zapier history`
 
-  Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, collaborator and invitee changes as well as who made the change and when.
+  
+Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, collaborator and invitee changes as well as who made the change and when.
 
 **Arguments**
 
@@ -360,7 +401,7 @@ $ │ logout      │ zapier logout                         │ Deactivates all 
 ```bash
 $ zapier history
 # The history of your app "Example" listed below.
-# 
+#
 # ┌──────────────────────────┬───────────────────┬──────────────────┬─────────────────────┐
 # │ What                     │ Message           │ Who              │ Timestamp           │
 # ├──────────────────────────┼───────────────────┼──────────────────┼─────────────────────┤
@@ -378,7 +419,8 @@ $ zapier history
 
   **Usage:** `zapier init path`
 
-  Initializes a new Zapier app. If you specify a template, will download and install the app from that template.
+  
+Initializes a new Zapier app. If you specify a template, will download and install the app from that template.
 
 After running this, you'll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
@@ -409,7 +451,8 @@ $ zapier init example-app --template=minimal
 
   **Usage:** `zapier invite [user@example.com]`
 
-  Invite any user registered on Zapier to test your app. Commonly, this is useful for teammates, contractors, or other team members who might want to test, QA, or view your apps. If you'd like to provide full admin access, try `zapier collaborate`.
+  
+Invite any user registered on Zapier to test your app. Commonly, this is useful for teammates, contractors, or other team members who might want to test, QA, or view your apps. If you'd like to provide full admin access, try `zapier collaborate`.
 
 > Send an email directly, which contains a one-time use link for them only - or share the public URL to "bulk" invite folks!
 
@@ -425,29 +468,29 @@ $ zapier init example-app --template=minimal
 ```bash
 $ zapier invite
 # The invitees on your app listed below.
-# 
+#
 # ┌──────────────────┬─────────┬──────────┐
 # │ Email            │ Role    │ Status   │
 # ├──────────────────┼─────────┼──────────┤
 # │ user@example.com │ invitee │ accepted │
 # └──────────────────┴─────────┴──────────┘
-# 
+#
 # Don't want to send individual invite emails? Use this public link and share with anyone on the web:
-# 
+#
 #   https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/
 
 $ zapier invite user@example.com
 # Preparing to add invitee user@example.com to your app "Example".
-# 
+#
 #   Adding user@example.com - done!
-# 
+#
 # Invitees updated! Try viewing them with `zapier invite`.
 
 $ zapier invite user@example.com --remove
 # Preparing to remove invitee user@example.com from your app "Example".
-# 
+#
 #   Removing user@example.com - done!
-# 
+#
 # Invitees updated! Try viewing them with `zapier invite`.
 ```
 
@@ -458,7 +501,8 @@ $ zapier invite user@example.com --remove
 
   **Usage:** `zapier link`
 
-  Link the current directory to an app you have access to. It is fairly uncommon to run this command - more often you'd just `git clone git@github.com:example-inc/example.git` which would have a `.zapierapprc` file already included. If not, you'd need to be an admin on the app and use this command to regenerate the `.zapierapprc` file.
+  
+Link the current directory to an app you have access to. It is fairly uncommon to run this command - more often you'd just `git clone git@github.com:example-inc/example.git` which would have a `.zapierapprc` file already included. If not, you'd need to be an admin on the app and use this command to regenerate the `.zapierapprc` file.
 
 Or, if you are making an app from scratch - you should prefer `zapier init`.
 
@@ -500,7 +544,8 @@ $ zapier link
 
   **Usage:** `zapier login`
 
-  This is an interactive prompt which will create, retrieve and store a deploy key.
+  
+This is an interactive prompt which will create, retrieve and store a deploy key.
 
 > This will change the  `~/.zapierrc` (home directory identifies the deploy key & user).
 
@@ -519,7 +564,8 @@ $ zapier login
 
   **Usage:** `zapier logout`
 
-  Deactivates all your personal deploy keys and resets your local config. Does not delete any apps or versions.
+  
+Deactivates all your personal deploy keys and resets your local config. Does not delete any apps or versions.
 
 > This will delete the  `~/.zapierrc` (home directory identifies the deploy key & user).
 
@@ -540,7 +586,8 @@ All personal keys deactivated - now try `zapier login` to login again.
 
   **Usage:** `zapier logs`
 
-  Get the logs that are automatically collected during the running of your app. Either explicitly during `z.console.log()`, automatically via `z.request()`, or any sort of traceback or error.
+  
+Get the logs that are automatically collected during the running of your app. Either explicitly during `z.console.log()`, automatically via `z.request()`, or any sort of traceback or error.
 
 > Does not collect or list the errors found locally during `zapier test`.
 
@@ -621,11 +668,14 @@ $ zapier logs --type=http --detailed --format=plain
 
   **Usage:** `zapier migrate 1.0.0 1.0.1 [10%]`
 
-  Starts a migration to move users between different versions of your app. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (IE: `zapier migrate 1.0.1 1.0.0`).
+  
+Starts a migration to move users between different versions of your app. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (IE: `zapier migrate 1.0.1 1.0.0`).
 
 Only migrate users between non-breaking versions, use `zapier deprecate` if you have breaking changes!
 
-Migrations can take between 5-10 minutes, so be patient and check `zapier history` to track the status.
+Migrations can take between 5-10 minutes, so be patient and check `zapier history` to track the status
+
+Note: since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.
 
 > Tip! We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
@@ -639,9 +689,9 @@ Migrations can take between 5-10 minutes, so be patient and check `zapier histor
 ```bash
 $ zapier migrate 1.0.0 1.0.1 15%
 # Getting ready to migrate your app "Example" from 1.0.0 to 1.0.1.
-# 
+#
 #   Starting migration from 1.0.0 to 1.0.1 for 15% - done!
-# 
+#
 # Migration successfully queued, please check `zapier history` to track the status. Normal migrations take between 5-10 minutes.
 ```
 
@@ -652,7 +702,8 @@ $ zapier migrate 1.0.0 1.0.1 15%
 
   **Usage:** `zapier promote 1.0.0`
 
-  Promotes an app version into production (non-private) rotation, which means new users can use this app version.
+  
+Promotes an app version into production (non-private) rotation, which means new users can use this app version.
 
 * This **does** mark the version as the official public version - all other versions & users are grandfathered.
 * This **does not** build/upload or deploy a version to Zapier - you should `zapier push` first.
@@ -685,7 +736,8 @@ $ zapier promote 1.0.0
 
   **Usage:** `zapier push`
 
-  A shortcut for `zapier build && zapier upload` - this is our recommended way to push an app. This is a common workflow:
+  
+A shortcut for `zapier build && zapier upload` - this is our recommended way to push an app. This is a common workflow:
 
 1. Make changes in `index.js` or other files.
 2. Run `zapier test`.
@@ -720,7 +772,8 @@ $ zapier push
 
   **Usage:** `zapier register "Example"`
 
-  This command registers your app with Zapier. After running this, you can run `zapier push` to push a version of your app that you can use in the Zapier editor.
+  
+This command registers your app with Zapier. After running this, you can run `zapier push` to push a version of your app that you can use in the Zapier editor.
 
 > This will change the  `./.zapierapprc` (which identifies the app associated with the current directory).
 
@@ -747,7 +800,8 @@ $ zapier register "Example"
 
   **Usage:** `zapier scaffold {resource|trigger|search|create} "Name"`
 
-  The scaffold command does two general things:
+  
+The scaffold command does two general things:
 
 * Creates a new destination file like `resources/contact.js`
 * (Attempts to) import and register it inside your entry `index.js`
@@ -769,10 +823,10 @@ $ zapier scaffold resource "Contact" --entry=index.js
 $ zapier scaffold resource "Contag Tag" --dest=resources/tag
 $ zapier scaffold resource "Tag" --entry=index.js --dest=resources/tag
 # Adding resource scaffold to your project.
-# 
+#
 #   Writing new resources/tag.js - done!
 #   Rewriting your index.js - done!
-# 
+#
 # Finished! We did the best we could, you might gut check your files though.
 ```
 
@@ -783,13 +837,15 @@ $ zapier scaffold resource "Tag" --entry=index.js --dest=resources/tag
 
   **Usage:** `zapier test`
 
-  This command is effectively the same as `npm test`, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.
+  
+This command is effectively the same as `npm test`, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.
 
 **Arguments**
 
 
 * `--debug` -- _optional_, print zapier detailed logs to standard out
 * `--timeout=value` -- _optional_, add a default timeout to mocha, in milliseconds
+* `--skip-validate` -- _optional_, forgo running `zapier validate` before `npm test`
 
 ```bash
 $ zapier test
@@ -810,16 +866,17 @@ $ zapier test
 
   **Usage:** `zapier upload`
 
-  Upload the zip file already built by `zapier build` in build/build.zip. The version and other app details are read by Zapier from the zip file.
+  
+Upload the zip file already built by `zapier build` in build/build.zip. The version and other app details are read by Zapier from the zip file.
 
 > Note: we generally recommend using `zapier push` which does both `zapier build && zapier upload` in one step.
 
 ```bash
 $ zapier upload
 # Preparing to upload a new version.
-# 
+#
 #   Uploading version 1.0.0 - done!
-# 
+#
 # Upload of build/build.zip complete! Try `zapier versions` now!
 ```
 
@@ -830,7 +887,8 @@ $ zapier upload
 
   **Usage:** `zapier validate`
 
-  Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during `zapier build`, `zapier upload`, `zapier push` or even as a test in `zapier test`.
+  
+Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during `zapier build`, `zapier upload`, `zapier push` or even as a test in `zapier test`.
 
 **Arguments**
 
@@ -868,7 +926,8 @@ $ zapier validate
 
   **Usage:** `zapier versions`
 
-  Lists the versions of your app available for use in the Zapier editor.
+  
+Lists the versions of your app available for use in the Zapier editor.
 
 **Arguments**
 
@@ -881,7 +940,7 @@ $ zapier validate
 ```bash
 $ zapier versions
 # All versions of your app "Example" listed below.
-# 
+#
 # ┌─────────┬──────────┬───────┬────────────────┬──────────────────┬─────────────────────┐
 # │ Version │ Platform │ Users │ Deployment     │ Deprecation Date │ Timestamp           │
 # ├─────────┼──────────┼───────┼────────────────┼──────────────────┼─────────────────────┤

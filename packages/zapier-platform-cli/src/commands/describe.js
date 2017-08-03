@@ -174,7 +174,7 @@ describe.argsSpec = [];
 describe.argOptsSpec = {};
 describe.help = 'Describes the current app.';
 describe.example = 'zapier describe';
-describe.docs = `\
+describe.docs = `
 Prints a human readable enumeration of your app's triggers, searches, and actions as seen by Zapier. Useful to understand how your resources convert and relate to different actions.
 
 > These are the same actions we'd display in our editor!

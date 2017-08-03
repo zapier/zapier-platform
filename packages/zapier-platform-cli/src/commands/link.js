@@ -65,7 +65,7 @@ link.argsSpec = [];
 link.argOptsSpec = {};
 link.help = 'Link the current directory to an app you have access to.';
 link.example = 'zapier link';
-link.docs = `\
+link.docs = `
 Link the current directory to an app you have access to. It is fairly uncommon to run this command - more often you'd just \`git clone git@github.com:example-inc/example.git\` which would have a \`${constants.CURRENT_APP_FILE}\` file already included. If not, you'd need to be an admin on the app and use this command to regenerate the \`${constants.CURRENT_APP_FILE}\` file.
 
 Or, if you are making an app from scratch - you should prefer \`zapier init\`.

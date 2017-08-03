@@ -40,7 +40,7 @@ help.argsSpec = [
 help.argOptsSpec = {};
 help.help = 'Lists all the commands you can use.';
 help.example = 'zapier help [command]';
-help.docs = `\
+help.docs = `
 Prints documentation to the terminal screen.
 
 Generally - the \`zapier\` command works off of two files:

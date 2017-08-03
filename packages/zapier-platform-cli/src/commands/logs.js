@@ -63,7 +63,7 @@ logs.argOptsSpec = {
 };
 logs.help = 'Prints recent logs. See help for filter arguments.';
 logs.example = 'zapier logs';
-logs.docs = `\
+logs.docs = `
 Get the logs that are automatically collected during the running of your app. Either explicitly during \`z.console.log()\`, automatically via \`z.request()\`, or any sort of traceback or error.
 
 > Does not collect or list the errors found locally during \`zapier test\`.

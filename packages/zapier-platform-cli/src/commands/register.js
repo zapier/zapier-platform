@@ -37,7 +37,7 @@ register.argOptsSpec = {
 };
 register.help = 'Registers a new app in your account.';
 register.example = 'zapier register "Example"';
-register.docs = `\
+register.docs = `
 This command registers your app with Zapier. After running this, you can run \`zapier push\` to push a version of your app that you can use in the Zapier editor.
 
 > This will change the  \`./${constants.CURRENT_APP_FILE}\` (which identifies the app associated with the current directory).

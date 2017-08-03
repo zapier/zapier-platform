@@ -46,7 +46,7 @@ module.exports = (argv) => {
   // create the context, logs thread through this
   const context = utils.createContext({command, args, argOpts});
 
-  if (argOpts.version || argOpts.v) {
+  if (command === 'help' && (argOpts.version || argOpts.v)) {
     context.line([
       `zapier-platform-cli/${require('../package.json').version}`,
       `node/${process.version}`,

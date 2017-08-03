@@ -29,7 +29,7 @@ promote.argsSpec = [
 promote.argOptsSpec = {};
 promote.help = 'Promotes a specific version to public access.';
 promote.example = 'zapier promote 1.0.0';
-promote.docs = `\
+promote.docs = `
 Promotes an app version into production (non-private) rotation, which means new users can use this app version.
 
 * This **does** mark the version as the official public version - all other versions & users are grandfathered.

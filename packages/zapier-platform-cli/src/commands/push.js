@@ -29,7 +29,7 @@ push.argOptsSpec = _.extend({
 }, build.argOptsSpec);
 push.help = 'Build and upload the current app - does not promote.';
 push.example = 'zapier push';
-push.docs = `\
+push.docs = `
 A shortcut for \`zapier build && zapier upload\` - this is our recommended way to push an app. This is a common workflow:
 
 1. Make changes in \`index.js\` or other files.

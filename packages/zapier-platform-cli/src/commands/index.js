@@ -3,6 +3,7 @@ module.exports = {
   build: require('./build'),
   collaborate: require('./collaborate'),
   convert: require('./convert'),
+  'delete': require('./delete'),
   deprecate: require('./deprecate'),
   describe: require('./describe'),
   env: require('./env'),

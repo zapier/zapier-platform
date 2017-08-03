@@ -49,7 +49,7 @@ login.argsSpec = [];
 login.argOptsSpec = {};
 login.help = `Configure your \`${constants.AUTH_LOCATION_RAW}\` with a deploy key.`;
 login.example = 'zapier login';
-login.docs = `\
+login.docs = `
 This is an interactive prompt which will create, retrieve and store a deploy key.
 
 > This will change the  \`${constants.AUTH_LOCATION_RAW}\` (home directory identifies the deploy key & user).

@@ -3,7 +3,7 @@ _zapier() {
     local cmd=${COMP_WORDS[1]}
 
     if [ $COMP_CWORD -eq 1 ]; then
-        COMPREPLY=( $(compgen -W "--help apps build collaborate convert deprecate describe env help history init invite link login logout logs migrate promote push register scaffold test upload validate versions" -- $cur) )
+        COMPREPLY=( $(compgen -W "--help apps build collaborate convert delete deprecate describe env help history init invite link login logout logs migrate promote push register scaffold test upload validate versions" -- $cur) )
     elif [[ "$cur" == -* ]] || [ -z "$cur" ]; then
         case "$cmd" in
             build)
@@ -31,7 +31,7 @@ _zapier() {
                 COMPREPLY=( $( compgen -W "--dest --entry" -- $cur ) )
                ;;
             test)
-                COMPREPLY=( $( compgen -W "--debug --timeout" -- $cur ) )
+                COMPREPLY=( $( compgen -W "--debug --timeout --skip-validate" -- $cur ) )
                ;;
             validate)
                 COMPREPLY=( $( compgen -W "--without-style" -- $cur ) )

@@ -29,7 +29,7 @@ logout.argsSpec = [];
 logout.argOptsSpec = {};
 logout.help = `Deactivates all your personal deploy keys and resets \`${constants.AUTH_LOCATION_RAW}\`.`;
 logout.example = 'zapier logout';
-logout.docs = `\
+logout.docs = `
 Deactivates all your personal deploy keys and resets your local config. Does not delete any apps or versions.
 
 > This will delete the  \`${constants.AUTH_LOCATION_RAW}\` (home directory identifies the deploy key & user).

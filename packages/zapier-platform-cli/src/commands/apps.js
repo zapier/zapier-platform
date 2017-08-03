@@ -22,7 +22,7 @@ apps.argsSpec = [];
 apps.argOptsSpec = {};
 apps.help = 'Lists all the apps you can access.';
 apps.example = 'zapier apps';
-apps.docs = `\
+apps.docs = `
 Lists any apps that you have admin access to. Also checks the current directory for a linked app, which you can control with \`zapier link\`.
 
 **Arguments**
@@ -34,13 +34,13 @@ ${utils.defaultArgOptsFragment()}
 ${'```'}bash
 $ zapier apps
 # All apps listed below.
-# 
+#
 # ┌─────────┬───────────-─┬─────────────────────┬────────┐
 # │ Title   │ Unique Slug │ Timestamp           │ Linked │
 # ├─────────┼───────────-─┼─────────────────────┼────────┤
 # │ Example │ Example     │ 2016-01-01T22:19:28 │ ✔      │
 # └─────────┴───────────-─┴─────────────────────┴────────┘
-# 
+#
 # Try linking the current directory to a different app with the \`zapier link\` command.
 ${'```'}
 `;

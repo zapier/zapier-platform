@@ -59,7 +59,7 @@ env.argOptsSpec = {
 };
 env.help = 'Read and write environment variables.';
 env.example = 'zapier env 1.0.0 CLIENT_SECRET 12345';
-env.docs = `\
+env.docs = `
 Manage the environment of your app so that \`process.env\` has the necessary variables, making it easy to match a local environment with a production environment via \`CLIENT_SECRET=12345 zapier test\`.
 
 **Arguments**
