@@ -1,3 +1,16 @@
+## 2.2.0
+
+* It's now possible to delete apps and app versions with [`zapier delete`](https://zapier.github.io/zapier-platform-cli/cli.html#delete)!
+* You'll now get a warning when doing `zapier push` or `zapier upload` if your app's `zapier-platform-core` version is not up-to-date.
+* It's now possible to skip validation when testing with [`zapier test --skip-validate`](https://zapier.github.io/zapier-platform-cli/cli.html#test)!
+* Added docs around upgrading.
+* Improved docs around authentication, migration, deprecation, and dehydration.
+* Fixed `zapier logs --version=x.x.x` showing `zapier --version`.
+* Improved error messages for [some schema validation errors](https://github.com/zapier/zapier-platform-schema/pull/24).
+* Fixed Python error when a create, as part of a search or create, returned a list with one item ([errors sooner, in core now, with a nicer message](https://github.com/zapier/zapier-platform-core/pull/44)).
+* [Objects received via Hook triggers no longer require an `id`, and checks were improved](https://github.com/zapier/zapier-platform-core/pull/43).
+* Minor misc fixes.
+
 ## 2.1.0
 
 * [Connection Label is now available](https://zapier.github.io/zapier-platform-schema/build/schema.html#authenticationschema) (`connectionLabel: '{{bundle.inputData.email}}'` inside `authentication`)
