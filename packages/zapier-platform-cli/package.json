@@ -38,6 +38,7 @@
     "lodash": "4.17.4",
     "node-fetch": "1.7.1",
     "read": "1.0.7",
+    "semver": "5.3.0",
     "string-length": "1.0.1",
     "through2": "2.0.3",
     "tmp": "0.0.31",
@@ -55,7 +56,6 @@
     "mocha": "3.4.2",
     "ngrok": "2.2.10",
     "node-watch": "0.5.4",
-    "semver": "5.3.0",
     "should": "11.2.1",
     "yamljs": "0.3.0"
   },

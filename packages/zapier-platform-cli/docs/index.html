@@ -321,6 +321,17 @@ a code {
 <li><a href="#bash-completion-script">Bash Completion Script</a></li>
 </ul>
 </li>
+<li><a href="#upgrading-zapier-platform-cli-or-zapier-platform-core">Upgrading Zapier Platform CLI or Zapier Platform Core</a><ul>
+<li><a href="#upgrading-zapier-platform-cli">Upgrading Zapier Platform CLI</a><ul>
+<li><a href="#when-to-update-cli">When to update CLI</a></li>
+</ul>
+</li>
+<li><a href="#upgrading-zapier-platform-core">Upgrading Zapier Platform Core</a><ul>
+<li><a href="#when-to-update-core">When to update Core</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#development-of-the-cli">Development of the CLI</a></li>
 <li><a href="#publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</a></li>
 <li><a href="#get-help">Get Help!</a></li>
@@ -478,6 +489,17 @@ a code {
 <li><a href="#command-line-tab-completion">Command line Tab Completion</a><ul>
 <li><a href="#zsh-completion-script">Zsh Completion Script</a></li>
 <li><a href="#bash-completion-script">Bash Completion Script</a></li>
+</ul>
+</li>
+<li><a href="#upgrading-zapier-platform-cli-or-zapier-platform-core">Upgrading Zapier Platform CLI or Zapier Platform Core</a><ul>
+<li><a href="#upgrading-zapier-platform-cli">Upgrading Zapier Platform CLI</a><ul>
+<li><a href="#when-to-update-cli">When to update CLI</a></li>
+</ul>
+</li>
+<li><a href="#upgrading-zapier-platform-core">Upgrading Zapier Platform Core</a><ul>
+<li><a href="#when-to-update-core">When to update Core</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#development-of-the-cli">Development of the CLI</a></li>
@@ -3446,6 +3468,103 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Finally, restart your shell and start hitting TAB with the <code>zapier</code> command!</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="upgrading-zapier-platform-cli-or-zapier-platform-core">Upgrading Zapier Platform CLI or Zapier Platform Core</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>The CLI version of the Platform has 3 public packages:</p><ul>
+<li><p><a href="https://github.com/zapier/zapier-platform-cli"><code>zapier-platform-cli</code></a>: This is the <code>zapier</code> command. Should be installed with <code>npm install -g zapier-platform-cli</code> and is used to interact with your app and Zapier, but doesn&apos;t run in nor is included by your app.</p>
+</li>
+<li><p><a href="https://github.com/zapier/zapier-platform-core"><code>zapier-platform-core</code></a>: This is what allows your app to interact with Zapier. Apps require this package in their <code>package.json</code> file, and a specific version by design, so you can keep using an older &quot;core&quot; version without having to upgrade your code, but still being able to update your app. Should be installed with <code>npm install</code> in your app. You should manually keep this version number in sync with your <code>zapier-platform-cli</code> global one, but it&apos;s not required for all upgrades.</p>
+</li>
+<li><p><a href="https://github.com/zapier/zapier-platform-schema"><code>zapier-platform-schema</code></a>: This is a separate package for maintainability purposes. It&apos;s a dependency installed automatically by <code>zapier-platform-core</code>. It&apos;s basically the package that enforces app schemas to match what Zapier has in the backend.</p>
+</li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="upgrading-zapier-platform-cli">Upgrading Zapier Platform CLI</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Check your version with <code>$ zapier --version</code> and update with <code>$ npm -g update zapier-platform-cli</code>.</p><p>You can also <a href="https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md">look at the Changelog</a> to understand what changed between versions.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h4 id="when-to-update-cli">When to update CLI</h4>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>You should keep your <code>zapier-platform-cli</code> global package up-to-date to get the latest features and bug fixes for interacting with your app, but it&apos;s not mandatory. You should be able to use any publicly available <code>zapier-platform-cli</code> version.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="upgrading-zapier-platform-core">Upgrading Zapier Platform Core</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Open your app&apos;s <code>package.json</code> file and update the number for the <code>zapier-platform-core</code> entry to what the latest public version is. You can see it on the right side of the <a href="https://www.npmjs.com/package/zapier-platform-core">NPM registry page</a>. After that you should be able to run <code>npm update</code> and get the latest goodies!</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h4 id="when-to-update-core">When to update Core</h4>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>You should keep your <code>zapier-platform-core</code> package up-to-date to get the latest features and bug fixes for your app when interacting with Zapier, but it&apos;s not mandatory. You should be able to use any publicly available <code>zapier-platform-core</code> version.</p><p>While not always required, it&apos;s also recommended you use the same <code>zapier-platform-cli</code> global package as the app&apos;s <code>zapier-platform-core</code> one, to ensure maximum compatibility.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
