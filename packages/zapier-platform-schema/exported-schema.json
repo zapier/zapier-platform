@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -375,27 +375,25 @@
       },
       "additionalProperties": false
     },
+    "FieldOrFunctionSchema": {
+      "id": "/FieldOrFunctionSchema",
+      "description": "Represents an array of fields or functions.",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "/FieldSchema"
+          },
+          {
+            "$ref": "/FunctionSchema"
+          }
+        ]
+      }
+    },
     "DynamicFieldsSchema": {
       "id": "/DynamicFieldsSchema",
       "description": "Like [/FieldsSchema](#fieldsschema) but you can provide functions to create dynamic or custom fields.",
-      "oneOf": [
-        {
-          "type": "array",
-          "items": {
-            "oneOf": [
-              {
-                "$ref": "/FieldSchema"
-              },
-              {
-                "$ref": "/FunctionSchema"
-              }
-            ]
-          }
-        },
-        {
-          "$ref": "/FunctionSchema"
-        }
-      ]
+      "$ref": "/FieldOrFunctionSchema"
     },
     "ResultsSchema": {
       "id": "/ResultsSchema",
