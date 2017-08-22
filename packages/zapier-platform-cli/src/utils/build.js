@@ -113,7 +113,7 @@ const forceIncludeDumbPath = (filePath/*, smartPaths*/) => {
   // we include smartPaths just incase you want to check the inclusion of some library
   return (
     (filePath.endsWith('package.json') || filePath.endsWith('definition.json'))
-    || filePath.match(/aws-sdk\/apis\/.*\.json/)
+    || filePath.match(path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/)
     || (global.argOpts['include-js-map'] && filePath.endsWith('.js.map'))
   );
 };
@@ -226,7 +226,7 @@ const build = (zipPath, wdir) => {
       printDone();
       printStarting('Applying entry point file');
       // TODO: should this routine for include exist elsewhere?
-      return readFile(`${tmpDir}/node_modules/${constants.PLATFORM_PACKAGE}/include/zapierwrapper.js`)
+      return readFile(path.join(tmpDir, 'node_modules', constants.PLATFORM_PACKAGE, 'include', 'zapierwrapper.js'))
         .then(zapierWrapperBuf => writeFile(`${tmpDir}/zapierwrapper.js`, zapierWrapperBuf.toString()));
     })
     .then(() => {
