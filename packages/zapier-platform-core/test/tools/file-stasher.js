@@ -110,7 +110,7 @@ describe('file upload', () => {
       .catch(done);
   });
 
-  it('should fail if not being called from an hydrator event', (done) => {
+  it('should fail if being called from a trigger event', (done) => {
     const pollingStashFile = createFileStasher({
       _zapier: {
         rpc,
@@ -124,7 +124,49 @@ describe('file upload', () => {
     pollingStashFile(file)
       .then(() => done(new Error('this should have exploded')))
       .catch(err => {
-        should(err.message).containEql('Cannot stash files outside an hydration function/method');
+        should(err.message).containEql('Files can only be stashed within a create or hydration function/method');
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should fail if being called from a search event', (done) => {
+    const stashFileTest = createFileStasher({
+      _zapier: {
+        rpc,
+        event: {
+          method: 'search.test.operation.perform',
+        },
+      },
+    });
+
+    const file = fs.createReadStream(path.join(__dirname, 'test.txt'));
+    stashFileTest(file)
+      .then(() => done(new Error('this should have exploded')))
+      .catch(err => {
+        should(err.message).containEql('Files can only be stashed within a create or hydration function/method');
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should work if being called from a create/action event', (done) => {
+    mocky.mockRpcCall(mocky.fakeSignedPostData);
+    mocky.mockUpload();
+
+    const stashFileTest = createFileStasher({
+      _zapier: {
+        rpc,
+        event: {
+          method: 'creates.test.operation.perform',
+        },
+      },
+    });
+
+    const file = 'hello world this is a plain blob of text';
+    stashFileTest(file)
+      .then((url) => {
+        should(url).eql(`${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`);
         done();
       })
       .catch(done);
