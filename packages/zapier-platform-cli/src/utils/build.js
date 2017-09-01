@@ -29,11 +29,12 @@ const {
 const {
   checkCredentials,
   upload,
+  callAPI,
 } = require('./api');
 
 const {
   runCommand,
-  isWindows
+  isWindows,
 } = require('./misc');
 
 const stripPath = (cwd, filePath) => filePath.split(cwd).pop();
@@ -231,38 +232,73 @@ const build = (zipPath, wdir) => {
     })
     .then(() => {
       printDone();
-      printStarting('Validating project');
-      return _appCommandZapierWrapper(tmpDir, {command: 'validate'});
-    })
-    .then((resp) => {
-      const errors = resp.results;
-      if (errors.length) {
-        throw new Error('We hit some validation errors, try running `zapier validate` to see them!');
-      } else {
-        printDone();
-      }
-    })
-    .then(() => {
       printStarting('Building app definition.json');
       return _appCommandZapierWrapper(tmpDir, {command: 'definition'});
     })
     .then((rawDefinition) => {
-      return writeFile(`${tmpDir}/definition.json`, prettyJSONstringify(rawDefinition.results));
+      return Promise.all([
+        writeFile(`${tmpDir}/definition.json`, prettyJSONstringify(rawDefinition.results)),
+        Promise.resolve(rawDefinition.results),
+      ]);
+    })
+    .then(([fileWriteError, rawDefinition]) => {
+      if (fileWriteError) {
+        if (global.argOpts.debug) {
+          console.log('\nFile Write Error:');
+          console.log(fileWriteError);
+          console.log('');
+        }
+        throw new Error(`Unable to write ${tmpDir}/definition.json, please check file permissions!`);
+      }
+
+      printDone();
+      printStarting('Validating project');
+
+      return Promise.all([
+        _appCommandZapierWrapper(tmpDir, {command: 'validate'}),
+        Promise.resolve(rawDefinition),
+      ]);
+    })
+    .then(([validateResponse, rawDefinition]) => {
+      const errors = validateResponse.results;
+      if (errors.length) {
+        return Promise.resolve({
+          errors: {
+            validation: errors,
+          },
+        });
+      }
+
+      // No need to mention specifically we're validating style checks as that's
+      //   implied from `zapier validate`, though it happens as a separate process
+
+      return callAPI('/style-check', {
+        skipDeployKey: true,
+        method: 'POST',
+        body: rawDefinition,
+      });
+    })
+    .then((styleChecksResponse) => {
+      const errors = styleChecksResponse.errors;
+      if (!_.isEmpty(errors)) {
+        throw new Error('We hit some validation errors, try running `zapier validate` to see them!');
+      }
+
+      printDone();
+      printStarting('Zipping project and dependencies');
+      return makeZip(tmpDir, wdir + path.sep + zipPath);
     })
     .then(() => {
       // tries to do a reproducible build at least
       // https://blog.pivotal.io/labs/labs/barriers-deterministic-reproducible-zip-files
       // https://reproducible-builds.org/tools/ or strip-nondeterminism
+      printDone();
+      printStarting('Testing build');
 
       if (isWindows()) {
         return {}; // TODO err, what should we do on windows?
       }
       return runCommand('find', ['.', '-exec', 'touch', '-t', '201601010000', '{}', '+'], {cwd: tmpDir});
-    })
-    .then(() => {
-      printDone();
-      printStarting('Zipping project and dependencies');
-      return makeZip(tmpDir, wdir + path.sep + zipPath);
     })
     .then(() => {
       printDone();
