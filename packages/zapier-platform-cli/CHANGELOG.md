@@ -1,3 +1,11 @@
+## 3.0.0
+
+* (**BREAKING**) `inputField`s will now start [throwing errors in Schema validation](https://github.com/zapier/zapier-platform-schema/pull/25) if there are mutually-exclusive fields.
+* [Added subdomain field support to CLI apps](https://github.com/zapier/zapier-platform-schema/pull/26).
+* [Allowed file stashing within a create/action](https://github.com/zapier/zapier-platform-core/pull/45).
+* [Added style checks to `zapier build`](https://github.com/zapier/zapier-platform-cli/pull/130).
+* Fixed [`zapier build` on Windows](https://github.com/zapier/zapier-platform-cli/pull/122).
+
 ## 2.2.0
 
 * It's now possible to delete apps and app versions with [`zapier delete`](https://zapier.github.io/zapier-platform-cli/cli.html#delete)!
