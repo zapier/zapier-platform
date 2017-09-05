@@ -422,7 +422,7 @@ $ zapier collaborate user@example.com --remove
 </blockquote><p>  <strong>Usage:</strong> <code>zapier convert appid path</code></p><p>Creates a new Zapier app from an existing app. <strong>The new app contains code stubs only.</strong> It is supposed to get you started - it isn&apos;t going to create a complete app!</p><p>After running this, you&apos;ll have a new app in your directory, with stubs for your trigger and actions.  If you re-run this command on an existing directory it will leave existing files alone and not clobber them.</p><blockquote>
 <p>Note: this doesn&apos;t register or push the app with Zapier - try <code>zapier register &quot;Example&quot;</code> and <code>zapier push</code> for that!</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>appid [value]</code> -- <strong>required</strong>, Get the appid from <a href="https://zapier.com/developer/builder/">https://zapier.com/developer/builder/</a> (check the URL)</li>
+<li><code>appid [value]</code> -- <strong>required</strong>, Get the appid from <a href="http://localhost:8000/developer/builder/">http://localhost:8000/developer/builder/</a> (check the URL)</li>
 <li><code>location [value]</code> -- <strong>required</strong>, Relative to your current path - IE: <code>.</code> for current directory</li>
 </ul>
     </div>
@@ -936,7 +936,7 @@ All personal keys deactivated - now try `zapier login` to login again.
 <span class="hljs-comment"># &#x2502;     Timestamp &#x2502; 2016-01-01T23:04:36-05:00            &#x2502;</span>
 <span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
 
-$ zapier logs --type=http
+$ zapier logs --<span class="hljs-built_in">type</span>=http
 <span class="hljs-comment"># The logs of your app &quot;Example&quot; listed below.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
@@ -949,7 +949,7 @@ $ zapier logs --type=http
 <span class="hljs-comment"># &#x2502;     Timestamp   &#x2502; 2016-01-01T23:04:36-05:00            &#x2502;</span>
 <span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
 
-$ zapier logs --type=http --detailed --format=plain
+$ zapier logs --<span class="hljs-built_in">type</span>=http --detailed --format=plain
 <span class="hljs-comment"># The logs of your app &quot;Example&quot; listed below.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment"># == Status</span>
