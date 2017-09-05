@@ -1,3 +1,8 @@
+## 3.0.1
+
+* Fixed node/npm dependency check for 3.x.
+* Fixed URL base endpoint in docs.
+
 ## 3.0.0
 
 * (**BREAKING**) `inputField`s will now start [throwing errors in Schema validation](https://github.com/zapier/zapier-platform-schema/pull/25) if there are mutually-exclusive fields.
