@@ -129,6 +129,50 @@ describe('app', () => {
       results.errors[1].stack.should.eql('instance.searchOrCreates.fooSearchOrCreate.search must match a "key" from a search (options: fooSearch)');
       results.errors[2].stack.should.eql('instance.searchOrCreates.fooSearchOrCreate.create must match a "key" from a create (options: fooCreate)');
     });
+
+    it('should validate inputFormat', () => {
+      const appCopy = copy(appDefinition);
+      appCopy.authentication = {
+        type: 'custom',
+        test: {
+          url: 'https://example.com',
+        },
+        fields: [
+          {
+            key: 'subdomain',
+            type: 'string',
+            required: true,
+            inputFormat: 'https://{{input}}.example.com',
+          },
+        ],
+      };
+      const results = schema.validateAppDefinition(appCopy);
+      results.errors.should.eql([]);
+    });
+
+    it('should invalidate illegal inputFormat', () => {
+      const appCopy = copy(appDefinition);
+      appCopy.authentication = {
+        type: 'custom',
+        test: {
+          url: 'https://example.com',
+        },
+        fields: [
+          {
+            key: 'subdomain',
+            type: 'string',
+            required: true,
+            inputFormat: 'https://{{input}.example.com',
+          },
+        ],
+      };
+      const results = schema.validateAppDefinition(appCopy);
+      results.errors.length.should.eql(1);
+
+      const error = results.errors[0];
+      error.name.should.eql('pattern');
+      error.instance.should.eql('https://{{input}.example.com');
+    });
   });
 
   describe('export', () => {

@@ -546,6 +546,7 @@ Key | Required | Type | Description
 `dict` | no | `boolean` | Is this field a key/value input?
 `computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)?
 `altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?
+`inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
 
 -----
 

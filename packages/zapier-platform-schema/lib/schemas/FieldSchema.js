@@ -101,6 +101,12 @@ module.exports = makeSchema({
       description: 'Does the value of this field affect the definitions of other fields in the set?',
       type: 'boolean',
     },
+    inputFormat: {
+      description: 'Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user\'s input (IE: "https://{{input}}.yourdomain.com").',
+      type: 'string',
+      // TODO: Check if it contains one and ONLY ONE '{{input}}'
+      pattern: '^.*\{\{input\}\}.*$'
+    },
   },
   additionalProperties: false,
 }, [
