@@ -1,0 +1,33 @@
+{
+  "name": "zapier-platform-example-app-onedrive",
+  "version": "1.0.0",
+  "description": "An example app for the Zapier platform. Implements part of the OneDrive API",
+  "repository": "zapier/zapier-platform-example-app-onedrive",
+  "homepage": "https://zapier.com/",
+  "author": "Zapier <partners@zapier.com>",
+  "license": "BSD-3-Clause",
+  "main": "index.js",
+  "scripts": {
+    "lint": "node_modules/.bin/eslint .",
+    "posttest": "npm run lint",
+    "test": "node node_modules/mocha/bin/mocha --recursive --timeout 25000",
+    "coverage": "node node_modules/.bin/istanbul cover _mocha -- --recursive --timeout 25000"
+  },
+  "engines": {
+    "node": ">=6.10.2",
+    "npm": ">=3.0.0"
+  },
+  "dependencies": {
+    "async": "2.4.1",
+    "content-disposition": "0.5.2",
+    "lodash": "4.17.4",
+    "node-fetch": "1.7.1",
+    "zapier-platform-core": "2.2.0"
+  },
+  "devDependencies": {
+    "eslint": "3.19.0",
+    "istanbul": "0.4.5",
+    "mocha": "3.2.0",
+    "should": "11.2.1"
+  }
+}
