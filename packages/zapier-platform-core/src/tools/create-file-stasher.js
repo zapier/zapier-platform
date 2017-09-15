@@ -18,8 +18,9 @@ const LENGTH_ERR_MESSAGE = (
 );
 
 const DEFAULT_FILE_NAME = 'unnamedfile';
+const DEFAULT_CONTENT_TYPE = 'binary/octet-stream';
 
-const uploader = (signedPostData, bufferStringStream, knownLength, filename) => {
+const uploader = (signedPostData, bufferStringStream, knownLength, filename, contentType) => {
   const form = new FormData();
 
   if (knownLength && knownLength > UPLOAD_MAX_SIZE) {
@@ -35,7 +36,7 @@ const uploader = (signedPostData, bufferStringStream, knownLength, filename) => 
   form.append('Content-Disposition', contentDisposition(filename));
 
   form.append('file', bufferStringStream, {
-    contentType: 'binary/octet-stream', // hardcoded from signedPostData.fields too!
+    contentType,
     knownLength,
     filename
   });
@@ -68,7 +69,7 @@ const uploader = (signedPostData, bufferStringStream, knownLength, filename) => 
 const createFileStasher = (input) => {
   const rpc = _.get(input, '_zapier.rpc');
 
-  return (bufferStringStream, knownLength, filename) => {
+  return (bufferStringStream, knownLength, filename, contentType) => {
     // TODO: maybe this could be smart?
     // if it is already a public url, do we pass through? or upload?
     if (!rpc) {
@@ -82,7 +83,9 @@ const createFileStasher = (input) => {
       return ZapierPromise.reject(new Error('Files can only be stashed within a create or hydration function/method.'));
     }
 
-    return rpc('get_presigned_upload_post_data')
+    const fileContentType = contentType ? contentType : DEFAULT_CONTENT_TYPE;
+
+    return rpc('get_presigned_upload_post_data', fileContentType)
       .then(result => {
         if (isPromise(bufferStringStream)) {
           return bufferStringStream.then((maybeResponse) => {
@@ -109,7 +112,7 @@ const createFileStasher = (input) => {
               } else {
                 throw new Error('Cannot stash a Promise wrapped file of unknown type.');
               }
-              return uploader(result, newBufferStringStream, knownLength, filename);
+              return uploader(result, newBufferStringStream, knownLength, filename, fileContentType);
             };
 
             if (isStreamed) {
@@ -119,7 +122,7 @@ const createFileStasher = (input) => {
             }
           });
         } else {
-          return uploader(result, bufferStringStream, knownLength, filename);
+          return uploader(result, bufferStringStream, knownLength, filename, fileContentType);
         }
       });
   };
