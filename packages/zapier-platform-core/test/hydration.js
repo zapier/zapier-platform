@@ -45,6 +45,17 @@ describe('hydration', () => {
       result.should.eql('hydrate|||{"type":"method","method":"some.path.to","bundle":{}}|||hydrate');
     });
 
+    it('should not accept payload size bigger than 2048 bytes.', () => {
+      const inputData = { key: 'a'.repeat(2049) };
+      const payloadSize = JSON.stringify(inputData).length;
+      try {
+        dehydrate(funcToFind, inputData);
+        '1'.should.eql('2'); // shouldn't pass
+      } catch (err) {
+        err.message.should.containEql(`Oops! You passed too much data (${payloadSize} bytes) to your dehydration function - try slimming it down under 2048 bytes (usually by just passing the needed IDs).`);
+      }
+    });
+
   });
 
 });

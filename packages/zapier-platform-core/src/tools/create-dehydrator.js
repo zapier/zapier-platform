@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 const resolveMethodPath = require('./resolve-method-path');
 
-const MAX_PAYLOAD_SIZE = 800; // most urls cannot be larger than 2,083
+const MAX_PAYLOAD_SIZE = 2048; // most urls cannot be larger than 2,083
 const wrapHydrate = (s) => `hydrate|||${JSON.stringify(s)}|||hydrate`;
 
 const createDehydrator = (input) => {
