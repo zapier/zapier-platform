@@ -527,9 +527,9 @@ We provide several methods off of the `z` object, which is provided as the first
 
 `z.dehydrate(func, inputData)` is used to lazily evaluate a function, perfect to avoid API calls during polling or for reuse. See [Dehydration](#dehydration).
 
-### `z.stashFile(bufferStringStream, [knownLength], [filename])`
+### `z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])`
 
-`z.stashFile(bufferStringStream, [knownLength], [filename])` is a promise based file stasher that returns a URL file pointer. See [Stashing Files](#stashing-files).
+`z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])` is a promise based file stasher that returns a URL file pointer. See [Stashing Files](#stashing-files).
 
 ### `z.JSON`
 
@@ -862,11 +862,11 @@ And in future steps of the Zap - if Zapier encounters a pointer as returned by `
 
 It can be expensive to download and stream files or they can require complex handshakes to authorize downloads - so we provide a helpful stash routine that will take any `String`, `Buffer` or `Stream` and return a URL file pointer suitable for returning from triggers, searches, creates, etc.
 
-The interface `z.stashFile(bufferStringStream, [knownLength], [filename])` takes a single required argument - the extra two arguments will be automatically populated in most cases. For example - a full example is this:
+The interface `z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])` takes a single required argument - the extra three arguments will be automatically populated in most cases. For example - a full example is this:
 
 ```javascript
 const content = 'Hello world!';
-z.stashFile(content, content.length, 'hello.txt')
+z.stashFile(content, content.length, 'hello.txt', 'text/plain')
   .then(url => z.console.log(url));
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/f75e2819-05e2-41d0-b70e-9f8272f9eebf
 ```
@@ -875,7 +875,7 @@ Most likely you'd want to stream from another URL - note the usage of `z.request
 
 ```javascript
 const fileRequest = z.request({url: 'http://example.com/file.pdf', raw: true});
-z.stashFile(fileRequest) // knownLength and filename will be sniffed from the request
+z.stashFile(fileRequest) // knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream
   .then(url => z.console.log(url));
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7
 ```

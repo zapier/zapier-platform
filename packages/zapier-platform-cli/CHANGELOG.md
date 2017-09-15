@@ -1,3 +1,8 @@
+## 3.1.0
+
+* [Allow setting a `Content-Type` when stashing a file](https://github.com/zapier/zapier-platform-core/pull/47)
+* [Increase dehydrator max payload size to 2 KB](https://github.com/zapier/zapier-platform-core/pull/46)
+
 ## 3.0.1
 
 * Fixed node/npm dependency check for 3.x.

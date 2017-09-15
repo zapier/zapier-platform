@@ -261,7 +261,7 @@ a code {
 <li><a href="#zrequesturl-options"><code>z.request([url], options)</code></a></li>
 <li><a href="#zconsolemessage"><code>z.console(message)</code></a></li>
 <li><a href="#zdehydratefunc-inputdata"><code>z.dehydrate(func, inputData)</code></a></li>
-<li><a href="#zstashfilebufferstringstream-knownlength-filename"><code>z.stashFile(bufferStringStream, [knownLength], [filename])</code></a></li>
+<li><a href="#zstashfilebufferstringstream-knownlength-filename-contenttype"><code>z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])</code></a></li>
 <li><a href="#zjson"><code>z.JSON</code></a></li>
 <li><a href="#zhash"><code>z.hash()</code></a></li>
 <li><a href="#zerrors"><code>z.errors</code></a></li>
@@ -431,7 +431,7 @@ a code {
 <li><a href="#zrequesturl-options"><code>z.request([url], options)</code></a></li>
 <li><a href="#zconsolemessage"><code>z.console(message)</code></a></li>
 <li><a href="#zdehydratefunc-inputdata"><code>z.dehydrate(func, inputData)</code></a></li>
-<li><a href="#zstashfilebufferstringstream-knownlength-filename"><code>z.stashFile(bufferStringStream, [knownLength], [filename])</code></a></li>
+<li><a href="#zstashfilebufferstringstream-knownlength-filename-contenttype"><code>z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])</code></a></li>
 <li><a href="#zjson"><code>z.JSON</code></a></li>
 <li><a href="#zhash"><code>z.hash()</code></a></li>
 <li><a href="#zerrors"><code>z.errors</code></a></li>
@@ -1937,7 +1937,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="zstashfilebufferstringstream-knownlength-filename"><code>z.stashFile(bufferStringStream, [knownLength], [filename])</code></h3>
+      <h3 id="zstashfilebufferstringstream-knownlength-filename-contenttype"><code>z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1946,7 +1946,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>z.stashFile(bufferStringStream, [knownLength], [filename])</code> is a promise based file stasher that returns a URL file pointer. See <a href="#stashing-files">Stashing Files</a>.</p>
+      <p><code>z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])</code> is a promise based file stasher that returns a URL file pointer. See <a href="#stashing-files">Stashing Files</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2730,11 +2730,11 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>It can be expensive to download and stream files or they can require complex handshakes to authorize downloads - so we provide a helpful stash routine that will take any <code>String</code>, <code>Buffer</code> or <code>Stream</code> and return a URL file pointer suitable for returning from triggers, searches, creates, etc.</p><p>The interface <code>z.stashFile(bufferStringStream, [knownLength], [filename])</code> takes a single required argument - the extra two arguments will be automatically populated in most cases. For example - a full example is this:</p>
+      <p>It can be expensive to download and stream files or they can require complex handshakes to authorize downloads - so we provide a helpful stash routine that will take any <code>String</code>, <code>Buffer</code> or <code>Stream</code> and return a URL file pointer suitable for returning from triggers, searches, creates, etc.</p><p>The interface <code>z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])</code> takes a single required argument - the extra three arguments will be automatically populated in most cases. For example - a full example is this:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> content = <span class="hljs-string">&apos;Hello world!&apos;</span>;
-z.stashFile(content, content.length, <span class="hljs-string">&apos;hello.txt&apos;</span>)
+z.stashFile(content, content.length, <span class="hljs-string">&apos;hello.txt&apos;</span>, <span class="hljs-string">&apos;text/plain&apos;</span>)
   .then(<span class="hljs-function"><span class="hljs-params">url</span> =&gt;</span> z.console.log(url));
 <span class="hljs-comment">// https://zapier-dev-files.s3.amazonaws.com/cli-platform/f75e2819-05e2-41d0-b70e-9f8272f9eebf</span>
 </code></pre>
@@ -2747,7 +2747,7 @@ z.stashFile(content, content.length, <span class="hljs-string">&apos;hello.txt&a
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> fileRequest = z.request({<span class="hljs-attr">url</span>: <span class="hljs-string">&apos;http://example.com/file.pdf&apos;</span>, <span class="hljs-attr">raw</span>: <span class="hljs-literal">true</span>});
-z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename will be sniffed from the request</span>
+z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream</span>
   .then(<span class="hljs-function"><span class="hljs-params">url</span> =&gt;</span> z.console.log(url));
 <span class="hljs-comment">// https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7</span>
 </code></pre>
@@ -2886,7 +2886,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see your <code>z.console</code> logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=console
+      <pre><code class="lang-bash">zapier logs --type=console
 </code></pre>
     </div>
   </div>
@@ -2928,7 +2928,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see the HTTP logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http
+      <pre><code class="lang-bash">zapier logs --type=http
 </code></pre>
     </div>
   </div>
@@ -2938,7 +2938,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see detailed http logs including headers, request and response bodies, etc, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http --detailed
+      <pre><code class="lang-bash">zapier logs --type=http --detailed
 </code></pre>
     </div>
   </div>
