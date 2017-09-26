@@ -2553,7 +2553,7 @@ zapier env 1.0.0
 <li><code>method</code>: HTTP method, default is <code>GET</code>.</li>
 <li><code>headers</code>: request headers object, format <code>{&apos;header-key&apos;: &apos;header-value&apos;}</code>.</li>
 <li><code>params</code>: URL query params object, format <code>{&apos;query-key&apos;: &apos;query-value&apos;}</code>.</li>
-<li><code>body</code>: request body, can be a string, buffer, or readable stream. Default is <code>null</code>.</li>
+<li><code>body</code>: request body, can be a string, buffer, readable stream or plain object. When it is an object/array and the <code>Content-Type</code> header is <code>application/x-www-form-urlencoded</code> the body will be transformed to query string parameters, otherwise we&apos;ll set the header to <code>application/json; charset=utf-8</code> and JSON encode the body. Default is <code>null</code>.</li>
 <li><code>json</code>: shortcut object/array/etc. you want to JSON encode into body. Default is <code>null</code>.</li>
 <li><code>form</code>: shortcut object. you want to form encode into body. Default is <code>null</code>.</li>
 <li><code>raw</code>: set this to stream the response instead of consuming it immediately. Default is <code>false</code>.</li>
@@ -2573,7 +2573,7 @@ zapier env 1.0.0
     <span class="hljs-string">&apos;Content-Type&apos;</span>: <span class="hljs-string">&apos;application/json&apos;</span>
   },
   <span class="hljs-comment">// only provide body, json or form...</span>
-  body: <span class="hljs-string">&apos;{&quot;hello&quot;:&quot;world&quot;}&apos;</span>, <span class="hljs-comment">// or &apos;hello=world&apos;</span>
+  body: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>}, <span class="hljs-comment">// or &apos;{&quot;hello&quot;: &quot;world&quot;}&apos; or &apos;hello=world&apos;</span>
   json: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>},
   <span class="hljs-attr">form</span>: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>},
   <span class="hljs-comment">// access node-fetch style response.body</span>
@@ -2886,7 +2886,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see your <code>z.console</code> logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=console
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=console
 </code></pre>
     </div>
   </div>
@@ -2928,7 +2928,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see the HTTP logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=http
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http
 </code></pre>
     </div>
   </div>
@@ -2938,7 +2938,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see detailed http logs including headers, request and response bodies, etc, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=http --detailed
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http --detailed
 </code></pre>
     </div>
   </div>

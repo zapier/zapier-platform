@@ -1395,7 +1395,7 @@ Shorthand requests and manual `z.request([url], options)` calls support the foll
 * `method`: HTTP method, default is `GET`.
 * `headers`: request headers object, format `{'header-key': 'header-value'}`.
 * `params`: URL query params object, format `{'query-key': 'query-value'}`.
-* `body`: request body, can be a string, buffer, or readable stream. Default is `null`.
+* `body`: request body, can be a string, buffer, readable stream or plain object. When it is an object/array and the `Content-Type` header is `application/x-www-form-urlencoded` the body will be transformed to query string parameters, otherwise we'll set the header to `application/json; charset=utf-8` and JSON encode the body. Default is `null`.
 * `json`: shortcut object/array/etc. you want to JSON encode into body. Default is `null`.
 * `form`: shortcut object. you want to form encode into body. Default is `null`.
 * `raw`: set this to stream the response instead of consuming it immediately. Default is `false`.
@@ -1414,7 +1414,7 @@ z.request({
     'Content-Type': 'application/json'
   },
   // only provide body, json or form...
-  body: '{"hello":"world"}', // or 'hello=world'
+  body: {hello: 'world'}, // or '{"hello": "world"}' or 'hello=world'
   json: {hello: 'world'},
   form: {hello: 'world'},
   // access node-fetch style response.body
