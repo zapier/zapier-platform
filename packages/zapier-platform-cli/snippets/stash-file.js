@@ -37,7 +37,7 @@ const App = {
       noun: 'PDF',
       display: {
         label: 'New PDF',
-        helpText: 'Triggers when a new PDF is added.'
+        description: 'Triggers when a new PDF is added.'
       },
       operation: {
         perform: pdfList

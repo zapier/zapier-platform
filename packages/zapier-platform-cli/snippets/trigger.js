@@ -11,7 +11,7 @@ const App = {
       // `display` controls the presentation in the Zapier Editor
       display: {
         label: 'New Recipe',
-        helpText: 'Triggers when a new recipe is added.'
+        description: 'Triggers when a new recipe is added.'
       },
       // `operation` implements the API call used to fetch the data
       operation: {

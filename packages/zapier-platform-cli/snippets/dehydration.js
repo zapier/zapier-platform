@@ -34,7 +34,7 @@ const App = {
       noun: 'Movie',
       display: {
         label: 'New Movie',
-        helpText: 'Triggers when a new Movie is added.'
+        description: 'Triggers when a new Movie is added.'
       },
       operation: {
         perform: movieList
