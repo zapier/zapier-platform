@@ -3,7 +3,7 @@ const create<%= CAMEL %> = (z, bundle) => {
   const responsePromise = z.request({
     method: 'POST',
     url: 'http://example.com/api/<%= KEY %>s.json',
-    data: JSON.stringify({
+    body: JSON.stringify({
       name: bundle.inputData.name
     })
   });
