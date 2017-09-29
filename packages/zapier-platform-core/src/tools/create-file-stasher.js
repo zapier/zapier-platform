@@ -18,7 +18,7 @@ const LENGTH_ERR_MESSAGE = (
 );
 
 const DEFAULT_FILE_NAME = 'unnamedfile';
-const DEFAULT_CONTENT_TYPE = 'binary/octet-stream';
+const DEFAULT_CONTENT_TYPE = 'application/octet-stream';
 
 const uploader = (signedPostData, bufferStringStream, knownLength, filename, contentType) => {
   const form = new FormData();
