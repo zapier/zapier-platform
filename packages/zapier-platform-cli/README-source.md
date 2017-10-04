@@ -205,7 +205,7 @@ If you'd like to manage your **App**, use these commands:
 * `zapier link` - lists and links a selected app in Zapier to your current folder
 * `zapier history` - print the history of your app
 * `zapier collaborate [user@example.com]` - add admins to your app who can push
-* `zapier invite [user@example.com]` - add users to try your app before promotion
+* `zapier invite [user@example.com] [1.0.0]` - add users to try your app version 1.0.0 before promotion
 
 
 ## Deploying an App Version
@@ -240,14 +240,14 @@ A simple `zapier push` will only create the App Version in your editor. No one e
 This is how you would share your app with friends, co-workers or clients. This is perfect for quality assurance, testing with active users or just sharing any app you like.
 
 ```bash
-# sends an email this user to let them view the app in the UI privately
-zapier invite user@example.com
+# sends an email this user to let them view the app version 1.0.0 in the UI privately
+zapier invite user@example.com 1.0.0
 
 # sends an email this user to let them admin the app (make changes just like you)
 zapier collaborate user@example.com
 ```
 
-You can also invite anyone on the internet to your app by observing the URL at the bottom of `zapier invite`, it should look something like `https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/`. You can put this in your help docs, post it to Twitter, add it to your email campaign, etc.
+You can also invite anyone on the internet to your app by observing the URL at the bottom of `zapier invite`, it should look something like `https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/`. You can put this in your help docs, post it to Twitter, add it to your email campaign, etc. Note this will invite users to every app version.
 
 
 ### Promoting an App Version

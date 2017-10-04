@@ -892,7 +892,7 @@ zapier apps
 <li><code>zapier link</code> - lists and links a selected app in Zapier to your current folder</li>
 <li><code>zapier history</code> - print the history of your app</li>
 <li><code>zapier collaborate [user@example.com]</code> - add admins to your app who can push</li>
-<li><code>zapier invite [user@example.com]</code> - add users to try your app before promotion</li>
+<li><code>zapier invite [user@example.com] [1.0.0]</code> - add users to try your app version 1.0.0 before promotion</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -971,8 +971,8 @@ zapier versions
       <p>This is how you would share your app with friends, co-workers or clients. This is perfect for quality assurance, testing with active users or just sharing any app you like.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash"><span class="hljs-comment"># sends an email this user to let them view the app in the UI privately</span>
-zapier invite user@example.com
+      <pre><code class="lang-bash"><span class="hljs-comment"># sends an email this user to let them view the app version 1.0.0 in the UI privately</span>
+zapier invite user@example.com 1.0.0
 
 <span class="hljs-comment"># sends an email this user to let them admin the app (make changes just like you)</span>
 zapier collaborate user@example.com
@@ -982,7 +982,7 @@ zapier collaborate user@example.com
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can also invite anyone on the internet to your app by observing the URL at the bottom of <code>zapier invite</code>, it should look something like <code>https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/</code>. You can put this in your help docs, post it to Twitter, add it to your email campaign, etc.</p>
+      <p>You can also invite anyone on the internet to your app by observing the URL at the bottom of <code>zapier invite</code>, it should look something like <code>https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/</code>. You can put this in your help docs, post it to Twitter, add it to your email campaign, etc. Note this will invite users to every app version.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2886,7 +2886,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see your <code>z.console</code> logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=console
+      <pre><code class="lang-bash">zapier logs --type=console
 </code></pre>
     </div>
   </div>
@@ -2928,7 +2928,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see the HTTP logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http
+      <pre><code class="lang-bash">zapier logs --type=http
 </code></pre>
     </div>
   </div>
@@ -2938,7 +2938,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see detailed http logs including headers, request and response bodies, etc, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http --detailed
+      <pre><code class="lang-bash">zapier logs --type=http --detailed
 </code></pre>
     </div>
   </div>

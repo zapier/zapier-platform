@@ -754,12 +754,13 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Manage the invitees/testers on your project. Can optionally --remove.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier invite [user@example.com]</code></p><p>Invite any user registered on Zapier to test your app. Commonly, this is useful for teammates, contractors, or other team members who might want to test, QA, or view your apps. If you&apos;d like to provide full admin access, try <code>zapier collaborate</code>.</p><blockquote>
+<p>Manage the invitees/testers on your project. Can optionally specify a version or --remove.</p>
+</blockquote><p>  <strong>Usage:</strong> <code>zapier invite [user@example.com] [1.0.0]</code></p><p>Invite any user registered on Zapier to test your app. Commonly, this is useful for teammates, contractors, or other team members who might want to test, QA, or view your app versions. If you&apos;d like to provide full admin access, try <code>zapier collaborate</code>.</p><blockquote>
 <p>Send an email directly, which contains a one-time use link for them only - or share the public URL to &quot;bulk&quot; invite folks!</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
 <li><em>none</em> -- print all invitees</li>
 <li><code>email [user@example.com]</code> -- <em>optional</em>, which user to add/remove</li>
+<li><code>version [1.0.0]</code> -- <em>optional</em>, only invite to a specific version</li>
 <li><code>--remove</code> -- <em>optional</em>, elect to remove this user</li>
 <li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
@@ -769,19 +770,19 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">$ zapier invite
 <span class="hljs-comment"># The invitees on your app listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; Email            &#x2502; Role    &#x2502; Status   &#x2502;</span>
-<span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
-<span class="hljs-comment"># &#x2502; user@example.com &#x2502; invitee &#x2502; accepted &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
+
+<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
+<span class="hljs-comment"># &#x2502; Email             &#x2502; Role     &#x2502; Status   &#x2502; Version &#x2502;</span>
+<span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
+<span class="hljs-comment"># &#x2502; user@example.com  &#x2502; invitees &#x2502; accepted &#x2502; 1.0.0   &#x2502;</span>
+<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment"># Don&apos;t want to send individual invite emails? Use this public link and share with anyone on the web:</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment">#   https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/</span>
 
-$ zapier invite user@example.com
-<span class="hljs-comment"># Preparing to add invitee user@example.com to your app &quot;Example&quot;.</span>
+$ zapier invite user@example.com 1.0.0
+<span class="hljs-comment"># Preparing to add invitee user@example.com to your app &quot;Example (1.0.0)&quot;.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment">#   Adding user@example.com - done!</span>
 <span class="hljs-comment">#</span>
@@ -936,7 +937,7 @@ All personal keys deactivated - now try `zapier login` to login again.
 <span class="hljs-comment"># &#x2502;     Timestamp &#x2502; 2016-01-01T23:04:36-05:00            &#x2502;</span>
 <span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
 
-$ zapier logs --<span class="hljs-built_in">type</span>=http
+$ zapier logs --type=http
 <span class="hljs-comment"># The logs of your app &quot;Example&quot; listed below.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
@@ -949,7 +950,7 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
 <span class="hljs-comment"># &#x2502;     Timestamp   &#x2502; 2016-01-01T23:04:36-05:00            &#x2502;</span>
 <span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
 
-$ zapier logs --<span class="hljs-built_in">type</span>=http --detailed --format=plain
+$ zapier logs --type=http --detailed --format=plain
 <span class="hljs-comment"># The logs of your app &quot;Example&quot; listed below.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment"># == Status</span>
