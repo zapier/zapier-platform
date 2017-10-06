@@ -2,9 +2,10 @@
 
 const _ = require('lodash');
 const memoize = require('./memoize');
+const plainModule = require('./plain');
 
 const isPlainObj = (o) => {
-  return o && typeof o == 'object' && o.constructor === Object;
+  return o && typeof o == 'object' && (o.constructor === Object || o.constructor === plainModule.constructor);
 };
 
 const comparison = (obj, needle) => obj === needle;

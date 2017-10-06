@@ -5,11 +5,13 @@ require('should');
 const _ = require('lodash');
 
 const appDefinition = require('../userapp');
+const moduleAppDefinition = require('../moduleuserapp');
 const resolveMethodPath = require('../../src/tools/resolve-method-path');
 const schemaTools = require('../../src/tools/schema');
 
 describe('resolve-method-path', () => {
   const app = schemaTools.prepareApp(appDefinition);
+  const moduleApp = schemaTools.prepareApp(moduleAppDefinition);
 
   const oauthAppDef = _.extend({}, appDefinition);
   oauthAppDef.authentication = {
@@ -23,6 +25,14 @@ describe('resolve-method-path', () => {
   it('should resolve a request method object with a url', () => {
     resolveMethodPath(app, app.resources.contact.list.operation.perform)
       .should.eql('resources.contact.list.operation.perform');
+  });
+
+  it('should resolve a method in a module', () => {
+    resolveMethodPath(moduleApp, moduleApp.authentication.test)
+      .should.eql('authentication.test');
+
+    resolveMethodPath(moduleApp, moduleAppDefinition.authentication.oauth2Config.authorizeUrl)
+      .should.eql('authentication.oauth2Config.authorizeUrl');
   });
 
   it('should resolve an inputFields array', () => {
