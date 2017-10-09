@@ -1115,6 +1115,33 @@ const getList = (z, bundle) => {
 };
 ```
 
+**`bundle.meta.zap.id` is only available in the `performSubscribe` and `performUnsubscribe` methods**
+
+The user's Zap ID is available during the [subscribe and unsubscribe](https://zapier.github.io/zapier-platform-schema/build/schema.html#basichookoperationschema) methods.
+
+For example - you could do:
+
+```javascript
+const subscribeHook = (z, bundle) => {
+
+  const options = {
+    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
+    method: 'POST',
+    body: {
+      url: bundle.targetUrl, // bundle.targetUrl has the Hook URL this app should call
+      zap_id: bundle.meta.zap.id,
+    },
+  };
+
+  return z.request(options).then((response) => response.json);
+};
+
+module.exports = {
+  // ... see our rest hook example for additional details: https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js
+  performSubscribe: subscribeHook,
+  // ...
+};
+```
 
 ## Environment
 

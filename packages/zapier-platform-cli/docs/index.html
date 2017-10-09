@@ -2142,6 +2142,34 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p><strong><code>bundle.meta.zap.id</code> is only available in the <code>performSubscribe</code> and <code>performUnsubscribe</code> methods</strong></p><p>The user&apos;s Zap ID is available during the <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#basichookoperationschema">subscribe and unsubscribe</a> methods.</p><p>For example - you could do:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> subscribeHook = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+
+  <span class="hljs-keyword">const</span> options = {
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks&apos;</span>,
+    <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
+    <span class="hljs-attr">body</span>: {
+      <span class="hljs-attr">url</span>: bundle.targetUrl, <span class="hljs-comment">// bundle.targetUrl has the Hook URL this app should call</span>
+      zap_id: bundle.meta.zap.id,
+    },
+  };
+
+  <span class="hljs-keyword">return</span> z.request(options).then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json);
+};
+
+<span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-comment">// ... see our rest hook example for additional details: https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js</span>
+  performSubscribe: subscribeHook,
+  <span class="hljs-comment">// ...</span>
+};
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h2 id="environment">Environment</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
