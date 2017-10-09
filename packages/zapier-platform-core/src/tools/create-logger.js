@@ -86,13 +86,13 @@ const sendLog = (options, event, message, data) => {
   data.log_type = data.log_type || 'console';
 
   const sensitiveBank = makeSensitiveBank(event);
-  message = truncate(cleaner.recurseReplaceBank(message, sensitiveBank));
-  data = cleaner.recurseReplaceBank(data, sensitiveBank);
-  data = dataTools.recurseReplace(data, truncate);
+  const safeMessage = truncate(cleaner.recurseReplaceBank(message, sensitiveBank));
+  const safeData = dataTools.recurseReplace(cleaner.recurseReplaceBank(data, sensitiveBank), truncate);
+  const unsafeData = dataTools.recurseReplace(data, truncate);
 
   const body = {
-    message,
-    data,
+    message: safeMessage,
+    data: safeData,
     token: options.token,
   };
 
@@ -106,12 +106,12 @@ const sendLog = (options, event, message, data) => {
   };
 
   if (event.logToStdout) {
-    toStdout(event, body.message, data);
+    toStdout(event, message, unsafeData);
   }
 
   if (options.logBuffer && data.log_type === 'console') {
     // Cap size of messages in log buffer, in case devs log humongous things.
-    options.logBuffer.push({type: data.log_type, message: truncate(body.message)});
+    options.logBuffer.push({type: safeData.log_type, message: safeMessage});
   }
 
   if (options.token) {
