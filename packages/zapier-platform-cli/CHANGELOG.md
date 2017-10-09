@@ -1,3 +1,13 @@
+## 3.2.0
+
+* [Allow invitations per version](https://github.com/zapier/zapier-platform-cli/pull/150). Try `zapier help invite` for more details.
+* [Added bundle.meta.zap.id for performSubscribe and performUnsubscribe](https://github.com/zapier/zapier-platform-cli/pull/149).
+* [Allow modules to be objects in app definitions](https://github.com/zapier/zapier-platform-core/pull/48).
+* [Use "application" discrete-type instead of "binary" as default content type.](https://github.com/zapier/zapier-platform-core/pull/49).
+* [Use un-obfuscated data when logging to stdout](https://github.com/zapier/zapier-platform-core/pull/50).
+* Improved/fixed sample and scaffolding code in docs.
+* Fixed typos in docs.
+
 ## 3.1.0
 
 * [Allow setting a `Content-Type` when stashing a file](https://github.com/zapier/zapier-platform-core/pull/47)
