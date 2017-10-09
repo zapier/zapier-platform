@@ -11,7 +11,7 @@
     "node": ">=v6.10.2"
   },
   "scripts": {
-    "docs": "node lib/bin/docs.js",
+    "docs": "npm run build && node lib/bin/docs.js",
     "preversion": "git pull && npm test",
     "version": "npm run docs && npm run gen-completions && git add docs/* goodies/* README.md",
     "postversion": "git push && git push --tags && npm publish",

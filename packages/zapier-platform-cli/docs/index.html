@@ -2886,7 +2886,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see your <code>z.console</code> logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=console
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=console
 </code></pre>
     </div>
   </div>
@@ -2928,7 +2928,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see the HTTP logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=http
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http
 </code></pre>
     </div>
   </div>
@@ -2938,7 +2938,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <p>To see detailed http logs including headers, request and response bodies, etc, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier logs --type=http --detailed
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http --detailed
 </code></pre>
     </div>
   </div>
@@ -3012,7 +3012,7 @@ using this error in cases where a required pre-condition is not met. For instanc
 in a create to add an email address to a list where duplicates are not allowed,
 you would want to throw a <code>HaltedError</code> if the Zap attempted to add a duplicate.
 This would indicate failure, but it would be treated as a soft failure.</p><p>Unlike throwing <code>Error</code>, a Zap will never by turned off when this error is thrown
-(even if it is raised more often than not).</p><p>Example: <code>throw new HaltedError(&apos;Your reason.&apos;);</code></p>
+(even if it is raised more often than not).</p><p>Example: <code>throw new z.errors.HaltedError(&apos;Your reason.&apos;);</code></p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3034,9 +3034,9 @@ This would indicate failure, but it would be treated as a soft failure.</p><p>Un
 provides a mechanism to notify users of expired credentials. With the
 <code>ExpiredAuthError</code>, the current operation is interrupted, the Zap is turned off
 (to prevent more calls with expired credentials), and a predefined email is sent
-out informing the user to refresh the credentials.</p><p>Example: <code>throw new ExpiredAuthError(&apos;Your message.&apos;);</code></p><p>For apps that use OAuth2 + refresh or Session Auth, you can use the
+out informing the user to refresh the credentials.</p><p>Example: <code>throw new z.errors.ExpiredAuthError(&apos;Your message.&apos;);</code></p><p>For apps that use OAuth2 + refresh or Session Auth, you can use the
 <code>RefreshAuthError</code>. This will signal Zapier to refresh the credentials and then
-repeat the failed operation.</p><p>Example: <code>throw new RefreshAuthError();</code></p>
+repeat the failed operation.</p><p>Example: <code>throw new z.errors.RefreshAuthError();</code></p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

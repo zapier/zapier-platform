@@ -991,7 +991,7 @@ This would indicate failure, but it would be treated as a soft failure.
 Unlike throwing `Error`, a Zap will never by turned off when this error is thrown
 (even if it is raised more often than not).
 
-Example: `throw new HaltedError('Your reason.');`
+Example: `throw new z.errors.HaltedError('Your reason.');`
 
 ### Stale Authentication Credentials
 
@@ -1001,13 +1001,13 @@ provides a mechanism to notify users of expired credentials. With the
 (to prevent more calls with expired credentials), and a predefined email is sent
 out informing the user to refresh the credentials.
 
-Example: `throw new ExpiredAuthError('Your message.');`
+Example: `throw new z.errors.ExpiredAuthError('Your message.');`
 
 For apps that use OAuth2 + refresh or Session Auth, you can use the
 `RefreshAuthError`. This will signal Zapier to refresh the credentials and then
 repeat the failed operation.
 
-Example: `throw new RefreshAuthError();`
+Example: `throw new z.errors.RefreshAuthError();`
 
 
 ## Testing
