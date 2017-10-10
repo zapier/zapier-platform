@@ -1,3 +1,7 @@
+## 3.2.1
+
+* [Fixes a problem with a sub-sub-dependency](https://github.com/zapier/zapier-platform-cli/issues/157).
+
 ## 3.2.0
 
 * [Allow invitations per version](https://github.com/zapier/zapier-platform-cli/pull/150). Try `zapier help invite` for more details.
