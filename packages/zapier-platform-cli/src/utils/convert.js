@@ -167,11 +167,13 @@ const renderStep = (type, definition, key) => {
     quote(definition.url) + ',' :
     `'http://example.com/api/${key}.json', // TODO this is just an example`;
 
+  const noun = definition.noun || _.capitalize(key);
+
   const templateContext = {
     KEY: snakeCase(key),
     CAMEL: camelCase(key),
-    NOUN: _.capitalize(key),
-    LOWER_NOUN: key.toLowerCase(),
+    NOUN: noun,
+    LOWER_NOUN: noun.toLowerCase(),
     FIELDS: fields.join(',\n'),
     SAMPLE: sample,
     URL: url
