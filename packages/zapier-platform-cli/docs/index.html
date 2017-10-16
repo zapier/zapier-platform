@@ -15,6 +15,8 @@
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/agate.min.css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="./docs.css">
     <style>body {
   font-family: 'Open Sans', Helvetica, arial, sans-serif;
   background-color: #fff;
@@ -207,10 +209,38 @@ a code {
 </style>
   </head>
   <body>
+    <!-- Header -->
+    <div class="docs-header">
+      <div class="docs-header__main">
+        <div class="docs-header__container">
+          <a class="docs-header__logo" href="https://zapier.com"></a>
+          <div class="docs-header__links">
+            <a href="https://zapier.com/app/explore">Explore</a>
+            <a href="https://zapier.com/zapbook/">App Directory</a>
+            <a href="https://zapier.com/pricing">Pricing</a>
+            <a href="https://zapier.com/app/login">Login</a>
+            <a href="https://zapier.com/sign-up/" class="docs-header__sign-up">Sign Up</a>
+          </div>
+        </div>
+      </div>
+      <div class="docs-header__platform">
+        <div class="docs-header__container">
+          <h2 class="docs-header__platform-title">Developer Platform</h2>
+          <div class="docs-header__links">
+            <a href="https://zapier.com/developer/builder">Your Apps</a>
+            <a href="https://zapier.com/developer/shared-zaps">Zap Templates</a>
+            <a href="https://zapier.com/developer/documentation">Documentation</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Header -->
+
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WNQKTM5"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
+
     <div class="docs-toc">
       <ul>
 <li><a href="#getting-started">Getting Started</a><ul>
@@ -3665,5 +3695,9 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
   </div>
 </div>
     </div>
+
+    <script type="text/javascript" src="./lib/lodash.custom.min.js"></script>
+    <script type="text/javascript" src="./docs.js"></script>
+
   </body>
 </html>
