@@ -26,6 +26,13 @@ const stepNamesMap = {
   actions: 'create'
 };
 
+// map cli step names to verbs for display labels
+const stepVerbsMap = {
+  trigger: 'Get',
+  create: 'Create',
+  search: 'Find',
+};
+
 const renderTemplate = (templateFile, templateContext) => {
   return readFile(templateFile)
     .then(templateBuf => templateBuf.toString())
@@ -168,12 +175,14 @@ const renderStep = (type, definition, key) => {
     `'http://example.com/api/${key}.json', // TODO this is just an example`;
 
   const noun = definition.noun || _.capitalize(key);
+  const label = definition.label || `${stepVerbsMap[type]} ${noun}`;
 
   const templateContext = {
     KEY: snakeCase(key),
     CAMEL: camelCase(key),
     NOUN: noun,
     LOWER_NOUN: noun.toLowerCase(),
+    LABEL: label,
     FIELDS: fields.join(',\n'),
     SAMPLE: sample,
     URL: url

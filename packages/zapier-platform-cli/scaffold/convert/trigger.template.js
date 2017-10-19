@@ -17,7 +17,7 @@ module.exports = {
   noun: '<%= NOUN %>',
 
   display: {
-    label: 'Get <%= NOUN %>',
+    label: '<%= LABEL %>',
     description: 'Triggers on a new <%= LOWER_NOUN %>.'
   },
 
