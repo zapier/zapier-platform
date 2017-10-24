@@ -30,7 +30,14 @@ const stepNamesMap = {
 const stepVerbsMap = {
   trigger: 'Get',
   create: 'Create',
-  search: 'Find',
+  search: 'Find'
+};
+
+// map cli step names to templates for descriptions
+const stepDescriptionTemplateMap = {
+  trigger: _.template('Triggers on a new <%= lowerNoun %>.'),
+  create: _.template('Creates a <%= lowerNoun %>.'),
+  search: _.template('Finds a <%= lowerNoun %>.')
 };
 
 const renderTemplate = (templateFile, templateContext) => {
@@ -91,7 +98,6 @@ ${props.join(',\n')}
 
 const renderSampleField = (def) => {
   const type = typesMap[def.type] || 'string';
-
   if (def.label) {
     return `      {
         key: ${quote(def.key)},
@@ -177,11 +183,17 @@ const renderStep = (type, definition, key) => {
   const noun = definition.noun || _.capitalize(key);
   const label = definition.label || `${stepVerbsMap[type]} ${noun}`;
 
+  const lowerNoun = noun.toLowerCase();
+  let description = definition.help_text ||
+                    stepDescriptionTemplateMap[type]({lowerNoun: lowerNoun});
+  description = description.replace(/'/g, "\\'");
+
   const templateContext = {
     KEY: snakeCase(key),
     CAMEL: camelCase(key),
     NOUN: noun,
-    LOWER_NOUN: noun.toLowerCase(),
+    LOWER_NOUN: lowerNoun,
+    DESCRIPTION: description,
     LABEL: label,
     FIELDS: fields.join(',\n'),
     SAMPLE: sample,

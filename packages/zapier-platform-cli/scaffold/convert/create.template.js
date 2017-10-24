@@ -18,8 +18,8 @@ module.exports = {
   noun: '<%= NOUN %>',
 
   display: {
-    label: '<%= LABEL =>',
-    description: 'Creates a <%= LOWER_NOUN %>.'
+    label: '<%= LABEL %>',
+    description: '<%= DESCRIPTION %>'
   },
 
   operation: {

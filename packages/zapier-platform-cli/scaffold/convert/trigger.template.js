@@ -18,7 +18,7 @@ module.exports = {
 
   display: {
     label: '<%= LABEL %>',
-    description: 'Triggers on a new <%= LOWER_NOUN %>.'
+    description: '<%= DESCRIPTION %>'
   },
 
   operation: {

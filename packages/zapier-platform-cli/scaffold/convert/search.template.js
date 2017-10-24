@@ -18,7 +18,7 @@ module.exports = {
 
   display: {
     label: '<%= LABEL %>',
-    description: 'Finds a <%= LOWER_NOUN %>.'
+    description: '<%= DESCRIPTION %>'
   },
 
   operation: {
