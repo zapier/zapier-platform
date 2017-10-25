@@ -12,6 +12,7 @@ const ZapierPromise = require('./promise');
 const environmentTools = require('./environment');
 const checkMemory = require('./memory-checker');
 const createRpcClient = require('./create-rpc-client');
+const createHttpPatch = require('./create-http-patch');
 
 // Sometimes tests want to pass in an app object defined directly in the test,
 // so allow for that.
@@ -25,6 +26,10 @@ const loadApp = (appRawOrPath) => {
 const createLambdaHandler = (appRawOrPath) => {
 
   const handler = (event, context, callback) => {
+    // Adds logging for _all_ kinds of http(s) requests, no matter the library
+    const httpPatch = createHttpPatch(event);
+    httpPatch(require('http'));// 'https' uses 'http' under the hood
+
     // Wait for all async events to complete before callback returns.
     // This is not strictly necessary since this is the default now when
     // using the callback; just putting it here to be explicit.

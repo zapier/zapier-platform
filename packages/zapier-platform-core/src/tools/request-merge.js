@@ -51,8 +51,8 @@ const requestMerge = (requestOne, requestTwo) => {
     method: 'GET',
     params: {},
     headers: {
-      'user-agent': 'Zapier'
-    }
+      'user-agent': 'Zapier',
+    },
   };
 
   const request = caseInsensitiveMerge(baseRequest, requestOne, requestTwo);

@@ -11,7 +11,7 @@ const prepHeaders = (headers) => {
     headers = _headers;
   }
 
-  return Object.keys(headers ).map((k) => {
+  return Object.keys(headers).map((k) => {
     const v = headers[k];
     return `${k}: ${v}`;
   });
@@ -44,8 +44,9 @@ const prepareRequestLog = (req, resp) => {
     request_url: req.url,
     request_method: req.method || 'GET',
     request_headers: requestHeaders.join('\n'),
-    response_status_code: resp.status,
     request_data: req.body,
+    request_via_client: true,
+    response_status_code: resp.status,
     response_headers: respHeaders.join('\n'),
     response_content: body
   };

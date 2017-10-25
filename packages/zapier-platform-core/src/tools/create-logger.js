@@ -7,9 +7,7 @@ const cleaner = require('./cleaner');
 const dataTools = require('./data');
 const hashing = require('./hashing');
 const ZapierPromise = require('./promise');
-
-const DEFAULT_LOGGING_HTTP_ENDPOINT = 'https://httplogger.zapier.com/input';
-const DEFAULT_LOGGING_HTTP_API_KEY = 'R24hzu86v3jntwtX2DtYECeWAB';
+const constants = require('../constants');
 
 const truncate = (str) => _.truncate(str, {length: 3500, omission: ' [...]'});
 
@@ -115,11 +113,12 @@ const sendLog = (options, event, message, data) => {
   }
 
   if (options.token) {
-    return request(httpOptions).catch(err => {
-      // Swallow logging errors.
-      // This will show up in AWS logs at least:
-      console.error('Error making log request:', err, 'http options:', httpOptions);
-    });
+    return request(httpOptions)
+      .catch(err => {
+        // Swallow logging errors.
+        // This will show up in AWS logs at least:
+        console.error('Error making log request:', err, 'http options:', httpOptions);
+      });
   } else {
     return ZapierPromise.resolve();
   }
@@ -134,10 +133,9 @@ const createLogger = (event, options) => {
   event = event || {};
 
   options = _.defaults(options, {
-    endpoint: process.env.LOGGING_ENDPOINT || DEFAULT_LOGGING_HTTP_ENDPOINT,
-    // TODO: can drop apiKey after https://github.com/zapier/http-to-gelf/pull/1 ships
-    apiKey: process.env.LOGGING_API_KEY || DEFAULT_LOGGING_HTTP_API_KEY,
-    token: event.token
+    endpoint: process.env.LOGGING_ENDPOINT || constants.DEFAULT_LOGGING_HTTP_ENDPOINT,
+    apiKey: process.env.LOGGING_API_KEY || constants.DEFAULT_LOGGING_HTTP_API_KEY,
+    token: process.env.LOGGING_TOKEN || event.token,
   });
 
   return sendLog.bind(undefined, options, event);
