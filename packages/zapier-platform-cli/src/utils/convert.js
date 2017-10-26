@@ -188,6 +188,9 @@ const renderStep = (type, definition, key) => {
                     stepDescriptionTemplateMap[type]({lowerNoun: lowerNoun});
   description = description.replace(/'/g, "\\'");
 
+  const hidden = Boolean(definition.hide);
+  const important = Boolean(definition.important);
+
   const templateContext = {
     KEY: snakeCase(key),
     CAMEL: camelCase(key),
@@ -195,6 +198,8 @@ const renderStep = (type, definition, key) => {
     LOWER_NOUN: lowerNoun,
     DESCRIPTION: description,
     LABEL: label,
+    HIDDEN: hidden,
+    IMPORTANT: important,
     FIELDS: fields.join(',\n'),
     SAMPLE: sample,
     URL: url
