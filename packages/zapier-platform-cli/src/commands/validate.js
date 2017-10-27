@@ -57,7 +57,13 @@ const validate = (context) => {
       }
     })
     .then(() => {
-      if (!global.argOpts['without-style']) {
+      if (global.argOpts['without-style']) {
+        return Promise.resolve([]);
+      } else if (process.exitCode === 1) {
+        // There were schema errors with the app, meaning Zapier may not be able to parse it
+        context.line(colors.grey('\nSkipping app style check because app did not validate.'));
+        return Promise.resolve([]);
+      } else {
         context.line('\nChecking app style.');
         return utils.localAppCommand({ command: 'definition' })
           .then((rawDefinition) => {
@@ -67,11 +73,13 @@ const validate = (context) => {
               body: rawDefinition
             });
           });
-      } else {
-        return Promise.resolve([]);
       }
     })
     .then((styleResult) => {
+      if (global.argOpts['without-style'] || process.exitCode === 1) {
+        return;
+      }
+
       // process errors
       let styleErrors = condenseIssues(styleResult);
       const ifEmpty = colors.grey('No style errors found during validation routine.');
@@ -89,6 +97,7 @@ const validate = (context) => {
       } else {
         context.line('Your app looks great!\n');
       }
+      return;
     });
 };
 validate.argsSpec = [];
