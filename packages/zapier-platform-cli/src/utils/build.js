@@ -114,6 +114,7 @@ const forceIncludeDumbPath = (filePath/*, smartPaths*/) => {
   // we include smartPaths just incase you want to check the inclusion of some library
   return (
     (filePath.endsWith('package.json') || filePath.endsWith('definition.json'))
+    || filePath.endsWith('/bin/linux-x64-node-6/deasync.node') // Special, for zapier-platform-legacy-scripting-runner
     || filePath.match(path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/)
     || (global.argOpts['include-js-map'] && filePath.endsWith('.js.map'))
   );
