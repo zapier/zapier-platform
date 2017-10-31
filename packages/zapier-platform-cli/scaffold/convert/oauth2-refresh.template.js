@@ -27,7 +27,21 @@
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     },
-    scope: '<%= SCOPE %>'
+    refreshAccessToken: {
+      method: 'POST',
+      url: '<%= REFRESH_TOKEN_URL %>',
+      body: {
+        refresh_token: '{{bundle.authData.refresh_token}}',
+        client_id: '{{process.env.CLIENT_ID}}',
+        client_secret: '{{process.env.CLIENT_SECRET}}',
+        grant_type: 'refresh_token'
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    },
+    scope: '<%= SCOPE %>',
+    autoRefresh: true
   },
   connectionLabel: '<%= CONNECTION_LABEL %>'
 }

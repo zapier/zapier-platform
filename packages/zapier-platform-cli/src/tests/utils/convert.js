@@ -1,22 +1,34 @@
 require('should');
 const convert = require('../../utils/convert');
+const definitions = {
+  basic: require('./definitions/basic.json'),
+  apiHeader: require('./definitions/api-header.json'),
+  apiQuery: require('./definitions/api-query.json'),
+  session: require('./definitions/session.json'),
+  oauth2: require('./definitions/oauth2.json'),
+  oauth2Refresh: require('./definitions/oauth2-refresh.json'),
+};
 
 /* eslint no-eval: 0 */
-const s2js = (string) => eval(`(${string})`);
+const s2js = (string) => eval(`
+const AuthTest = { operation: { perform: 'FAKE_PERFORM_FUNCTION' } };
+const getSessionKey = 'FAKE_GET_SESSION_KEY_FUNCTION';
+(${string});
+`);
 
 describe('convert render functions', () => {
 
   describe('render field', () => {
     it('should render a string field', () => {
-      const v2Key = 'test_field';
-      const v2Def = {
+      const wbKey = 'test_field';
+      const wbDef = {
         label: 'test field',
         type: 'Unicode',
         required: true,
         help_text: 'help text goes here'
       };
 
-      const string = convert.renderField(v2Def, v2Key);
+      const string = convert.renderField(wbDef, wbKey);
       const field = s2js(string);
       field.should.eql({
         key: 'test_field',
@@ -28,12 +40,12 @@ describe('convert render functions', () => {
     });
 
     it('should pad help text that is too short', () => {
-      const v2Key = 'test_field';
-      const v2Def = {
+      const wbKey = 'test_field';
+      const wbDef = {
         help_text: 'too short'
       };
 
-      const string = convert.renderField(v2Def, v2Key);
+      const string = convert.renderField(wbDef, wbKey);
       const field = s2js(string);
       field.helpText.should.eql('too short (help text must be at least 10 characters)');
     });
@@ -41,108 +53,354 @@ describe('convert render functions', () => {
 
   describe('authentication', () => {
     it('should render basic auth', (done) => {
-      const v2Def = {
-        general: {
-          auth_type: 'Basic Auth'
-        },
-        auth_fields: {
-          username: {
-            label: 'Username',
-            required: true,
-            type: 'Unicode'
-          },
-          password: {
-            label: 'Password',
-            placeholder: '***',
-            required: true,
-            type: 'Password'
-          }
-        }
+      const wbDef = definitions.basic;
+
+      convert.renderAuth(wbDef)
+        .then(string => {
+          const auth = s2js(string);
+          auth.should.eql({
+            type: 'basic',
+            test: 'FAKE_PERFORM_FUNCTION',
+            fields: [
+              {
+                key: 'username',
+                type: 'string',
+                required: true,
+                label: 'Username',
+                helpText: '(help text must be at least 10 characters)'
+              },
+              {
+                key: 'password',
+                type: 'password',
+                required: true,
+                label: 'Password',
+                helpText: '(help text must be at least 10 characters)'
+              }
+            ],
+            connectionLabel: '{{username}}'
+          });
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should render API Key (Header) auth', (done) => {
+      const wbDef = definitions.apiHeader;
+
+      convert.renderAuth(wbDef)
+        .then(string => {
+          const auth = s2js(string);
+          auth.should.eql({
+            type: 'custom',
+            test: 'FAKE_PERFORM_FUNCTION',
+            fields: [
+              {
+                key: 'api_key',
+                type: 'string',
+                required: true,
+                label: 'API Key',
+                helpText: '(help text must be at least 10 characters)'
+              }
+            ],
+            connectionLabel: '{{user}}'
+          });
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should render API Key (Header) beforeRequest', (done) => {
+      const wbDef = definitions.apiHeader;
+
+      convert.getHeader(wbDef)
+        .then(string => {
+          string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
+
+  request.headers['Authorization'] = bundle.authData['api_key'];
+
+  return request;
+}
+
+`);
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should render API Key (Query) auth', (done) => {
+      const wbDef = definitions.apiQuery;
+
+      convert.renderAuth(wbDef)
+        .then(string => {
+          const auth = s2js(string);
+          auth.should.eql({
+            type: 'custom',
+            test: 'FAKE_PERFORM_FUNCTION',
+            fields: [
+              {
+                key: 'api_key',
+                type: 'string',
+                required: true,
+                label: 'API Key',
+                helpText: '(help text must be at least 10 characters)'
+              }
+            ],
+            connectionLabel: '{{user}}'
+          });
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should render API Key (Query) beforeRequest', (done) => {
+      const wbDef = definitions.apiQuery;
+
+      convert.getHeader(wbDef)
+        .then(string => {
+          string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
+
+  request.params['api_key'] = bundle.authData['api_key'];
+
+  return request;
+}
+
+`);
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should render Session auth', (done) => {
+      const wbDef = definitions.session;
+
+      convert.renderAuth(wbDef)
+        .then(string => {
+          const auth = s2js(string);
+          auth.should.eql({
+            type: 'session',
+            test: 'FAKE_PERFORM_FUNCTION',
+            fields: [
+              {
+                key: 'email',
+                type: 'string',
+                required: true,
+                label: 'Email',
+                helpText: '(help text must be at least 10 characters)'
+              },
+              {
+                key: 'pass',
+                type: 'password',
+                required: true,
+                label: 'Password',
+                helpText: '(help text must be at least 10 characters)'
+              }
+            ],
+            sessionConfig: {
+              perform: 'FAKE_GET_SESSION_KEY_FUNCTION'
+            },
+            connectionLabel: '{{user}}'
+          });
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should render Session beforeRequest and afterResponse', (done) => {
+      const wbDef = definitions.session;
+
+      convert.getHeader(wbDef)
+        .then(string => {
+          string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
+
+  request.headers['X-Token'] = bundle.authData.sessionKey;
+
+  return request;
+}
+
+const maybeRefresh = (response, z, bundle) => {
+  if (response.status === 401 || response.status === 403) {
+    throw new z.errors.RefreshAuthError('Session key needs refreshing.');
+  }
+
+  return response;
+}
+
+
+const getSessionKey = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  // Do a get_session_info() from scripting.
+  const getSessionEvent = {
+    name: 'auth.session'
+  };
+  return legacyScriptingRunner.runEvent(getSessionEvent, z, bundle)
+    .then((getSessionResult) => {
+      // IMPORTANT NOTE:
+      //   WB apps in scripting's get_session_info() allowed to return any object and that would be
+      //   added to the authData, but CLI apps require you to specifically define those.
+      //   That means that if you return more than one key from your scripting's get_session_info(),
+      //   you might need to manually tweak this method to return that value at the end of this method,
+      //   and also add more fields to the authentication definition.
+
+      const resultKeys = Object.keys(getSessionResult);
+      const firstKeyValue = (getSessionResult && resultKeys.length > 0) ? getSessionResult[resultKeys[0]] : getSessionResult;
+
+      return {
+        sessionKey: firstKeyValue
       };
-
-      convert.renderAuth(v2Def).then(string => {
-        const auth = s2js(string);
-        auth.should.eql({
-          type: 'basic',
-          test: {
-            url: 'http://www.example.com/auth'
-          },
-          fields: [
-            {
-              key: 'username',
-              type: 'string',
-              required: true,
-              label: 'Username',
-              helpText: '(help text must be at least 10 characters)'
-            },
-            {
-              key: 'password',
-              type: 'password',
-              required: true,
-              label: 'Password',
-              placeholder: '***',
-              helpText: '(help text must be at least 10 characters)'
-            }
-          ]
-        });
-      });
-      done();
     });
-  });
+}
 
-  it.skip('should render oauth2', (done) => {
-    const v2Def = {
-      general: {
-        auth_type: 'OAuth V2',
-        auth_urls: {
-          access_token_url: 'https://example.com/api/v2/oauth2/token',
-          authorization_url: 'https://example.com/api/oauth2/authorize'
-        }
-      }
-    };
-
-    convert.renderAuth(v2Def).then(string => {
-      const auth = s2js(string);
-
-      auth.should.eql({
-        type: 'oauth2',
-        test: {
-          url: 'http://www.example.com/auth'
-        },
-        oauth2Config: {
-          authorizeUrl: {
-            method: 'GET',
-            url: 'https://example.com/api/oauth2/authorize',
-            params: {
-              client_id: '{{process.env.CLIENT_ID}}',
-              state: '{{bundle.inputData.state}}',
-              redirect_uri: '{{bundle.inputData.redirect_uri}}',
-              response_type: 'code'
-            }
-          },
-          getAccessToken: {
-            method: 'POST',
-            url: 'https://example.com/api/v2/oauth2/token',
-            body: {
-              code: '{{bundle.inputData.code}}',
-              client_id: '{{process.env.CLIENT_ID}}',
-              client_secret: '{{process.env.CLIENT_SECRET}}',
-              redirect_uri: '{{bundle.inputData.redirect_uri}}',
-              grant_type: 'authorization_code'
-            },
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            }
-          }
-        }
-      });
-      done();
+`);
+          done();
+        })
+        .catch(done);
     });
+
+    it('should render oauth2', (done) => {
+      const wbDef = definitions.oauth2;
+
+      convert.renderAuth(wbDef)
+        .then(string => {
+          const auth = s2js(string);
+
+          auth.should.eql({
+            type: 'oauth2',
+            test: 'FAKE_PERFORM_FUNCTION',
+            oauth2Config: {
+              authorizeUrl: {
+                method: 'GET',
+                url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize',
+                params: {
+                  client_id: '{{process.env.CLIENT_ID}}',
+                  state: '{{bundle.inputData.state}}',
+                  redirect_uri: '{{bundle.inputData.redirect_uri}}',
+                  response_type: 'code'
+                }
+              },
+              getAccessToken: {
+                method: 'POST',
+                url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-access-token',
+                body: {
+                  code: '{{bundle.inputData.code}}',
+                  client_id: '{{process.env.CLIENT_ID}}',
+                  client_secret: '{{process.env.CLIENT_SECRET}}',
+                  redirect_uri: '{{bundle.inputData.redirect_uri}}',
+                  grant_type: 'authorization_code'
+                },
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                }
+              },
+              scope: ''
+            },
+            connectionLabel: '{{user}}'
+          });
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should render oauth2 beforeRequest', (done) => {
+      const wbDef = definitions.oauth2;
+
+      convert.getHeader(wbDef)
+        .then(string => {
+          string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
+
+  request.headers.Authorization = \`Bearer \${bundle.authData.access_token}\`;
+
+  return request;
+}
+
+`);
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should render oauth2-refresh', (done) => {
+      const wbDef = definitions.oauth2Refresh;
+
+      convert.renderAuth(wbDef)
+        .then(string => {
+          const auth = s2js(string);
+
+          auth.should.eql({
+            type: 'oauth2',
+            test: 'FAKE_PERFORM_FUNCTION',
+            oauth2Config: {
+              authorizeUrl: {
+                method: 'GET',
+                url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize',
+                params: {
+                  client_id: '{{process.env.CLIENT_ID}}',
+                  state: '{{bundle.inputData.state}}',
+                  redirect_uri: '{{bundle.inputData.redirect_uri}}',
+                  response_type: 'code'
+                }
+              },
+              getAccessToken: {
+                method: 'POST',
+                url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-access-token',
+                body: {
+                  code: '{{bundle.inputData.code}}',
+                  client_id: '{{process.env.CLIENT_ID}}',
+                  client_secret: '{{process.env.CLIENT_SECRET}}',
+                  redirect_uri: '{{bundle.inputData.redirect_uri}}',
+                  grant_type: 'authorization_code'
+                },
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                }
+              },
+              refreshAccessToken: {
+                method: 'POST',
+                url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-refresh-token',
+                body: {
+                  refresh_token: '{{bundle.authData.refresh_token}}',
+                  client_id: '{{process.env.CLIENT_ID}}',
+                  client_secret: '{{process.env.CLIENT_SECRET}}',
+                  grant_type: 'refresh_token'
+                },
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                }
+              },
+              scope: '',
+              autoRefresh: true
+            },
+            connectionLabel: '{{user}}'
+          });
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should render oauth2-refresh beforeRequest', (done) => {
+      const wbDef = definitions.oauth2Refresh;
+
+      convert.getHeader(wbDef)
+        .then(string => {
+          string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
+
+  request.headers.Authorization = \`Bearer \${bundle.authData.access_token}\`;
+
+  return request;
+}
+
+`);
+          done();
+        })
+        .catch(done);
+    });
+
   });
 
   describe('render sample', () => {
     it('should render sample output fields', () => {
-      const v2Def = {
+      const wbDef = {
         sample_result_fields: [
           { type: 'float', key: 'bounds__northeast__lat' },
           { type: 'float', key: 'bounds__northeast__lng' },
@@ -153,7 +411,7 @@ describe('convert render functions', () => {
         ]
       };
 
-      const string = '{' + convert.renderSample(v2Def) + '}';
+      const string = '{' + convert.renderSample(wbDef) + '}';
       const fields = s2js(string);
       fields.should.eql({
         outputFields: [
@@ -167,4 +425,5 @@ describe('convert render functions', () => {
       });
     });
   });
+
 });

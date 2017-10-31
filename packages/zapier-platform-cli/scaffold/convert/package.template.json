@@ -7,17 +7,16 @@
     "test": "node node_modules/mocha/bin/mocha --recursive"
   },
   "engines": {
-    "node": ">=4.3.0",
-    "npm": ">=2.0.0"
+    "node": ">=6.10.0",
+    "npm": ">=3.0.0"
   },
   "dependencies": {
-    "lodash": "4.15.0",
-    "zapier-platform-core": "<%= ZAPIER_CORE_VERSION %>"
+    "lodash": "4.17.4",
+    <%= DEPENDENCIES %>
   },
   "devDependencies": {
-    "babel": "6.5.2",
-    "babel-eslint": "6.1.2",
-    "mocha": "2.5.3",
-    "should": "9.0.2"
-  }
+    "mocha": "4.0.1",
+    "should": "13.1.2"
+  },
+  "private": true
 }

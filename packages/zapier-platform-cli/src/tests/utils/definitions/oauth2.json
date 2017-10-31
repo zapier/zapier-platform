@@ -1,0 +1,107 @@
+{
+  "actions": {
+    "create_recipe": {
+      "_dump_version": 1,
+      "custom_fields_result_url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/fields-output",
+      "custom_fields_url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/fields-input",
+      "fields": {
+        "name": {
+          "choices": null,
+          "default": null,
+          "help_text": null,
+          "label": "Name",
+          "list": false,
+          "parent_key": null,
+          "placeholder": null,
+          "prefill": null,
+          "required": true,
+          "searchfill": null,
+          "send_in_json": true,
+          "sort": null,
+          "type_of": "Unicode"
+        }
+      },
+      "help_text": "Creates a new Recipe.",
+      "hide": false,
+      "important": true,
+      "label": "Create Recipe",
+      "noun": "Recipe",
+      "sample_result_fields": [
+        {
+          "key": "authorId",
+          "type": "int"
+        },
+        {
+          "key": "id",
+          "type": "int"
+        },
+        {
+          "important": true,
+          "key": "name",
+          "type": "unicode"
+        }
+      ],
+      "url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/recipe-create"
+    }
+  },
+  "auth_fields": {
+    "access_token": {
+      "choices": null,
+      "default": null,
+      "help_text": null,
+      "input_format": null,
+      "label": "Access Token",
+      "placeholder": null,
+      "required": true,
+      "sort": null,
+      "type": "Unicode"
+    }
+  },
+  "general": {
+    "auth_data": {
+      "access_token_placement": "header",
+      "scope": null
+    },
+    "auth_label": "{{user}}",
+    "auth_mapping": {
+      "Password": "{{password}}",
+      "Username": "{{username}}"
+    },
+    "auth_type": "OAuth V2",
+    "auth_urls": {
+      "access_token_url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-access-token",
+      "authorization_url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize",
+      "refresh_token_url": ""
+    },
+    "cloned_from_app_id": 732,
+    "description": "Test WB app for `zapier convert`.",
+    "homepage_url": null,
+    "image_url": null,
+    "platform_version": "2015-07-31T00:00:00",
+    "subscribe_url": null,
+    "test_trigger_key": "test_auth",
+    "their_user_count": null,
+    "title": "Test OAuth2",
+    "unsubscribe_url": null
+  },
+  "js": null,
+  "searches": {},
+  "triggers": {
+    "test_auth": {
+      "_dump_version": 1,
+      "custom_fields_url": null,
+      "data_source": "Polling",
+      "fields": {},
+      "help_text": "Test auth trigger.",
+      "hide": true,
+      "hook_event": null,
+      "hook_static_directions": "Log into your service and paste the below URL into the webhook setup field.",
+      "important": false,
+      "label": "Test Auth",
+      "noun": "",
+      "paging": false,
+      "sample_result_fields": [],
+      "url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-test"
+    }
+  }
+}
