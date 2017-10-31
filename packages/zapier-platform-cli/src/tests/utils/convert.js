@@ -398,6 +398,44 @@ const getSessionKey = (z, bundle) => {
 
   });
 
+  describe('render step', () => {
+    it('should fill with trigger default description', () => {
+      const v2Def = {
+        key: 'exampleStep',
+        noun: 'Example',
+        label: 'Example Step',
+      };
+
+      return convert.renderStep('trigger', v2Def).then(content => {
+        content.should.containEql("description: 'Triggers on a new example.'");
+      });
+    });
+
+    it('should fill with create default description', () => {
+      const v2Def = {
+        key: 'exampleStep',
+        noun: 'Example',
+        label: 'Example Step',
+      };
+
+      return convert.renderStep('create', v2Def).then(content => {
+        content.should.containEql("description: 'Creates a example.'");
+      });
+    });
+
+    it('should fill with search default description', () => {
+      const v2Def = {
+        key: 'exampleStep',
+        noun: 'Example',
+        label: 'Example Step',
+      };
+
+      return convert.renderStep('search', v2Def).then(content => {
+        content.should.containEql("description: 'Finds a example.'");
+      });
+    });
+  });
+
   describe('render sample', () => {
     it('should render sample output fields', () => {
       const wbDef = {
