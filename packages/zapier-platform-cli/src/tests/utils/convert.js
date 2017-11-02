@@ -49,6 +49,36 @@ describe('convert render functions', () => {
       const field = s2js(string);
       field.helpText.should.eql('too short (help text must be at least 10 characters)');
     });
+
+    it('should convert a dynamic dropdown', () => {
+      const wbKey = 'test';
+      const wbDef = {
+        key: 'test_field',
+        label: 'test field',
+        type: 'Unicode',
+        required: true,
+        prefill: 'test.id.name'
+      };
+
+      const string = convert.renderField(wbDef, wbKey);
+      const field = s2js(string);
+      field.dynamic.should.eql('test.id.name');
+    });
+
+    it('should convert a search-powered field', () => {
+      const wbKey = 'test';
+      const wbDef = {
+        key: 'test_field',
+        label: 'test field',
+        type: 'Unicode',
+        required: true,
+        searchfill: 'test.id'
+      };
+
+      const string = convert.renderField(wbDef, wbKey);
+      const field = s2js(string);
+      field.search.should.eql('test.id');
+    });
   });
 
   describe('authentication', () => {

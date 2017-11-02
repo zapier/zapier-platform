@@ -103,6 +103,14 @@ const renderField = (definition, key) => {
     props.push(renderProp('placeholder', quote(definition.placeholder)));
   }
 
+  if (definition.prefill) {
+    props.push(renderProp('dynamic', quote(definition.prefill)));
+  }
+
+  if (definition.searchfill) {
+    props.push(renderProp('search', quote(definition.searchfill)));
+  }
+
   props = props.map(s => ' '.repeat(8) + s);
 
   return `      {
