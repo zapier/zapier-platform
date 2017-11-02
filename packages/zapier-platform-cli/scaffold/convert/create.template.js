@@ -1,10 +1,9 @@
 // "Create" stub created by 'zapier convert'. This is just a stub - you will need to edit!
 
-// create a particular <%= LOWER_NOUN %> by name
-const create<%= CAMEL %> = (z, bundle) => {
+const makeRequest = (z, bundle) => {
   const responsePromise = z.request({
     method: 'POST',
-    url: <%= URL %>
+    url: '<%= URL %>',
     data: JSON.stringify({
       EXAMPLE: bundle.inputData.EXAMPLE
     })
@@ -29,6 +28,6 @@ module.exports = {
 <%= FIELDS %>
     ],
 <%= SAMPLE %>
-    perform: create<%= CAMEL %>
+    perform: makeRequest
   }
 };

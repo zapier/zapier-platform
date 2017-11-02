@@ -212,18 +212,87 @@ const renderAuth = (definition) => {
   }
 };
 
+// Check if scripting has a given method for a step type, key, and position (pre, post, full)
+const hasScriptingMethod = (js, type, key, position) => {
+  if (!js) {
+    return false;
+  }
+
+  // TODO: Strip out comments from code
+
+  let methodSuffix = '';
+
+  if (type === 'trigger') {
+    if (position === 'pre') {
+      methodSuffix = '_pre_poll';
+    } else if (position === 'post') {
+      methodSuffix = '_post_poll';
+    } else {
+      methodSuffix = '_poll';
+    }
+  } else if (type === 'create') {
+    if (position === 'pre') {
+      methodSuffix = '_pre_write';
+    } else if (position === 'post') {
+      methodSuffix = '_post_write';
+    } else {
+      methodSuffix = '_write';
+    }
+  } else if (type === 'search') {
+    if (position === 'pre') {
+      methodSuffix = '_pre_search';
+    } else if (position === 'post') {
+      methodSuffix = '_post_search';
+    } else {
+      methodSuffix = '_search';
+    }
+  }
+
+  const methodName = `${key}${methodSuffix}`;
+
+  return (js.indexOf(methodName) !== -1);
+};
+
+// Get some quick meta data for templates, regarding a scripting and a step
+const getStepMetaData = (definition, type, key) => {
+  const hasPreScripting = hasScriptingMethod(_.get(definition, 'js'), type, key, 'pre');
+  const hasPostScripting = hasScriptingMethod(_.get(definition, 'js'), type, key, 'post');
+  const hasFullScripting = hasScriptingMethod(_.get(definition, 'js'), type, key, 'full');
+
+  const hasScripting = hasPreScripting || hasPostScripting || hasFullScripting;
+
+  return {
+    hasScripting,
+    hasPreScripting,
+    hasPostScripting,
+    hasFullScripting,
+  };
+};
+
 // Get some quick converted metadata for several templates to use
 const getMetaData = (definition) => {
   const type = authTypeMap[definition.general.auth_type];
 
   const authPlacement = _.get(definition.general, ['auth_data', 'access_token_placement']);
 
+  let hasAnyScriptingMethods = false;
+
+  // Check for all triggers/creates/searches for any necessary scripting methods
+  _.each(stepNamesMap, (cliType, wbType) => {
+    _.each(definition[wbType], (stepDefinition, key) => {
+      const { hasScripting } = getStepMetaData(definition, cliType, key);
+      if (hasScripting) {
+        hasAnyScriptingMethods = true;
+      }
+    });
+  });
+
   const hasBefore = (type === 'api-header' || type === 'api-query' || type === 'session' || type === 'oauth2' || type === 'oauth2-refresh');
   const hasAfter = (type === 'session');
   const fieldsOnQuery = (authPlacement === 'params' || type === 'api-query');
   const isSession = (type === 'session');
   const isOAuth = (type === 'oauth2' || type === 'oauth2-refresh');
-  const needsLegacyScriptingRunner = isSession;
+  const needsLegacyScriptingRunner = isSession || hasAnyScriptingMethods;
 
   return {
     type,
@@ -286,20 +355,25 @@ const getAfterResponses = (definition) => {
 };
 
 // convert a trigger, create or search
-const renderStep = (type, definition, key) => {
+const renderStep = (type, definition, key, legacyApp) => {
+  const {
+    hasScripting,
+    hasPreScripting,
+    hasPostScripting,
+    hasFullScripting,
+  } = getStepMetaData(legacyApp, type, key);
+
   const fields = _.map(definition.fields, renderField);
   const sample = !_.isEmpty(definition.sample_result_fields) ? renderSample(definition) + ',\n' : '';
 
-  const url = definition.url ?
-    quote(definition.url) + ',' :
-    `'http://example.com/api/${key}.json', // TODO this is just an example`;
+  const url = definition.url ? definition.url : 'http://example.com/api/${key}.json';
 
   const noun = definition.noun || _.capitalize(key);
   const label = definition.label || `${stepVerbsMap[type]} ${noun}`;
 
   const lowerNoun = noun.toLowerCase();
   let description = definition.help_text ||
-                    stepDescriptionTemplateMap[type]({lowerNoun: lowerNoun});
+                    stepDescriptionTemplateMap[type]({ lowerNoun: lowerNoun });
   description = description.replace(/'/g, "\\'");
 
   const hidden = Boolean(definition.hide);
@@ -307,16 +381,18 @@ const renderStep = (type, definition, key) => {
 
   const templateContext = {
     KEY: snakeCase(key),
-    CAMEL: camelCase(key),
     NOUN: noun,
-    LOWER_NOUN: lowerNoun,
     DESCRIPTION: description,
     LABEL: label,
     HIDDEN: hidden,
     IMPORTANT: important,
     FIELDS: fields.join(',\n'),
     SAMPLE: sample,
-    URL: url
+    URL: url,
+    scripting: hasScripting,
+    preScripting: hasPreScripting,
+    postScripting: hasPostScripting,
+    fullScripting: hasFullScripting,
   };
 
   const templateFile = path.join(TEMPLATE_DIR, `/${type}.template.js`);
@@ -324,7 +400,7 @@ const renderStep = (type, definition, key) => {
 };
 
 // write a new trigger, create, or search
-const writeStep = (type, definition, key, newAppDir) => {
+const writeStep = (type, definition, key, legacyApp, newAppDir) => {
   const stepTypeMap = {
     trigger: 'triggers',
     search: 'searches',
@@ -333,7 +409,7 @@ const writeStep = (type, definition, key, newAppDir) => {
 
   const fileName = `${stepTypeMap[type]}/${snakeCase(key)}.js`;
 
-  return renderStep(type, definition, key)
+  return renderStep(type, definition, key, legacyApp)
     .then(content => createFile(content, fileName, newAppDir));
 };
 
@@ -460,7 +536,7 @@ const convertApp = (legacyApp, newAppDir) => {
   const promises = [];
   _.each(stepNamesMap, (cliType, wbType) => {
     _.each(legacyApp[wbType], (definition, key) => {
-      promises.push(writeStep(cliType, definition, key, newAppDir));
+      promises.push(writeStep(cliType, definition, key, legacyApp, newAppDir));
     });
   });
 
