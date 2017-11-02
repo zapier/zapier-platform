@@ -1,7 +1,7 @@
 ## 3.3.0
 
 * [Log http(s) requests for non-client library](https://github.com/zapier/zapier-platform-core/pull/51)
-* Many improvements for `zapier convert`: [Copy noun](https://github.com/zapier/zapier-platform-cli/pull/159), [Copy display label](https://github.com/zapier/zapier-platform-cli/pull/160), [Copy description](https://github.com/zapier/zapier-platform-cli/pull/163), [Copy important and hidden props](https://github.com/zapier/zapier-platform-cli/pull/166), [Add more tests](https://github.com/zapier/zapier-platform-cli/pull/170), [Converting more auths](https://github.com/zapier/zapier-platform-cli/pull/167), [Allowing deasync in build](https://github.com/zapier/zapier-platform-cli/pull/169)
+* Many improvements for `zapier convert`: [Copy noun](https://github.com/zapier/zapier-platform-cli/pull/159), [Copy display label](https://github.com/zapier/zapier-platform-cli/pull/160), [Copy description](https://github.com/zapier/zapier-platform-cli/pull/163), [Copy important and hidden props](https://github.com/zapier/zapier-platform-cli/pull/166), [Add more tests](https://github.com/zapier/zapier-platform-cli/pull/170), [Converting more auths](https://github.com/zapier/zapier-platform-cli/pull/167), [Allowing deasync in build](https://github.com/zapier/zapier-platform-cli/pull/169), [Converting scripting for triggers](https://github.com/zapier/zapier-platform-cli/pull/172), [Support for dynamic dropdowns and search-powered fields](https://github.com/zapier/zapier-platform-cli/pull/173)
 * [Skip style check on invalid apps](https://github.com/zapier/zapier-platform-cli/pull/168)
 * [Add header to docs](https://github.com/zapier/zapier-platform-cli/pull/153)
 
