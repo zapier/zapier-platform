@@ -845,7 +845,8 @@ This command is effectively the same as `npm test`, except we also validate your
 
 
 * `--debug` -- _optional_, print zapier detailed logs to standard out
-* `--timeout=value` -- _optional_, add a default timeout to mocha, in milliseconds
+* `--timeout=value` -- _optional_, set test-case timeout in milliseconds [2000]
+* `--grep=value` -- _optional_, only run tests matching pattern
 * `--skip-validate` -- _optional_, forgo running `zapier validate` before `npm test`
 
 ```bash

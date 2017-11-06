@@ -1210,7 +1210,8 @@ $ zapier scaffold resource <span class="hljs-string">&quot;Tag&quot;</span> --en
 <p>Tests your app via <code>npm test</code>.</p>
 </blockquote><p>  <strong>Usage:</strong> <code>zapier test</code></p><p>This command is effectively the same as <code>npm test</code>, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.</p><p><strong>Arguments</strong></p><ul>
 <li><code>--debug</code> -- <em>optional</em>, print zapier detailed logs to standard out</li>
-<li><code>--timeout=value</code> -- <em>optional</em>, add a default timeout to mocha, in milliseconds</li>
+<li><code>--timeout=value</code> -- <em>optional</em>, set test-case timeout in milliseconds [2000]</li>
+<li><code>--grep=value</code> -- <em>optional</em>, only run tests matching pattern</li>
 <li><code>--skip-validate</code> -- <em>optional</em>, forgo running <code>zapier validate</code> before <code>npm test</code></li>
 </ul>
     </div>

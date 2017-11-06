@@ -33,9 +33,16 @@ const test = (context) => {
       const env = _.extend({}, process.env, extraEnv);
       const commands = ['run', '--silent', 'test'];
 
-      if (global.argOpts.timeout) {
+      if (global.argOpts.timeout || global.argOpts.grep) {
         commands.push('--');
-        commands.push(`--timeout=${global.argOpts.timeout}`);
+
+        if (global.argOpts.timeout) {
+          commands.push(`--timeout=${global.argOpts.timeout}`);
+        }
+
+        if (global.argOpts.grep) {
+          commands.push(`--grep=${global.argOpts.grep}`);
+        }
       }
 
       context.line('Running test suite.');
@@ -51,7 +58,8 @@ test.argsSpec = [
 ];
 test.argOptsSpec = {
   debug: {flag: true, help: 'print zapier detailed logs to standard out'},
-  timeout: {help: 'add a default timeout to mocha, in milliseconds'},
+  timeout: {help: 'set test-case timeout in milliseconds [2000]'},
+  grep: {help: 'only run tests matching pattern'},
   'skip-validate': {flag: true, help: 'forgo running `zapier validate` before `npm test`'},
 };
 test.help = 'Tests your app via `npm test`.';
