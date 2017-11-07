@@ -1256,6 +1256,7 @@ While not always required, it's also recommended you use the same `zapier-platfo
 - `npm install` for getting started
 - `npm run build` for updating `./lib` from `./src`
 - `npm test` for running tests (also runs `npm run build`)
+- `npm run test-convert` for running integration tests for the `zapier convert` command
 - `npm run docs` for updating docs
 - `npm run gen-completions` for updating the auto complete scripts
 
