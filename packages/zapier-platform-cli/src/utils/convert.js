@@ -40,6 +40,12 @@ const stepNamesMap = {
   actions: 'create'
 };
 
+const stepTypeMap = {
+  trigger: 'triggers',
+  search: 'searches',
+  create: 'creates'
+};
+
 // map CLI step names to verbs for display labels
 const stepVerbsMap = {
   trigger: 'Get',
@@ -85,6 +91,10 @@ const padHelpText = (text) => {
 const renderProp = (key, value) => `${key}: ${value}`;
 
 const quote = s => `'${s}'`;
+
+const getAuthType = (definition) => {
+  return authTypeMap[definition.general.auth_type];
+};
 
 const renderField = (definition, key) => {
   const type = definition.type && typesMap[definition.type.toLowerCase()] || 'string';
@@ -201,7 +211,7 @@ const renderSessionAuth = (definition) => {
 };
 
 const renderAuth = (definition) => {
-  const type = authTypeMap[definition.general.auth_type];
+  const type = getAuthType(definition);
 
   if (type === 'basic') {
     return renderBasicAuth(definition);
@@ -279,7 +289,7 @@ const getStepMetaData = (definition, type, key) => {
 
 // Get some quick converted metadata for several templates to use
 const getMetaData = (definition) => {
-  const type = authTypeMap[definition.general.auth_type];
+  const type = getAuthType(definition);
 
   const authPlacement = _.get(definition.general, ['auth_data', 'access_token_placement']);
 
@@ -409,15 +419,74 @@ const renderStep = (type, definition, key, legacyApp) => {
 
 // write a new trigger, create, or search
 const writeStep = (type, definition, key, legacyApp, newAppDir) => {
-  const stepTypeMap = {
-    trigger: 'triggers',
-    search: 'searches',
-    create: 'creates'
-  };
-
   const fileName = `${stepTypeMap[type]}/${snakeCase(key)}.js`;
 
   return renderStep(type, definition, key, legacyApp)
+    .then(content => createFile(content, fileName, newAppDir));
+};
+
+// render the authData used in the trigger/search/create test code
+const renderAuthData = (authType) => {
+  let result;
+  switch (authType) {
+  case 'basic':
+    result = `{
+        username: process.env.USERNAME,
+        password: process.env.PASSWORD
+      }`;
+    break;
+  case 'oauth2':
+    result = `{
+        access_token: process.env.ACCESS_TOKEN
+      }`;
+    break;
+  case 'oauth2-refresh':
+    result = `{
+        access_token: process.env.ACCESS_TOKEN,
+        refresh_token: process.env.REFRESH_TOKEN
+      }`;
+    break;
+  case 'api-header': // Fall through
+  case 'api-query':
+    result = `{
+        apiKey: process.env.API_KEY
+      }`;
+    break;
+  case 'session':
+    result = `{
+        sessionKey: process.env.SESSION_KEY
+      }`;
+    break;
+  default:
+    result = `{
+        // TODO: Put your custom auth data here
+      }`;
+    break;
+  }
+  return result;
+};
+
+const renderStepTest = (type, definition, key, legacyApp) => {
+  const authType = getAuthType(legacyApp);
+  const noun = definition.noun || _.capitalize(key);
+  const authData = renderAuthData(authType);
+  const templateContext = {
+    KEY: key,
+    NOUN: noun,
+    AUTH_DATA: authData
+  };
+  const templateFile = path.join(TEMPLATE_DIR, `/${type}-test.template.js`);
+  return renderTemplate(templateFile, templateContext);
+};
+
+// write basic test code for a new trigger, create, or search
+const writeStepTest = (type, definition, key, legacyApp, newAppDir) => {
+  // Skip auth test, as it should return an object instead of an array
+  if (type === 'trigger' && _.get(legacyApp, ['general', 'test_trigger_key']) === key) {
+    return Promise.resolve();
+  }
+  const fileName = `test/${stepTypeMap[type]}/${snakeCase(key)}.js`;
+  return renderStepTest(type, definition, key, legacyApp)
     .then(content => createFile(content, fileName, newAppDir));
 };
 
@@ -546,6 +615,7 @@ const convertApp = (legacyApp, newAppDir) => {
   _.each(stepNamesMap, (cliType, wbType) => {
     _.each(legacyApp[wbType], (definition, key) => {
       promises.push(writeStep(cliType, definition, key, legacyApp, newAppDir));
+      promises.push(writeStepTest(cliType, definition, key, legacyApp, newAppDir));
     });
   });
 
