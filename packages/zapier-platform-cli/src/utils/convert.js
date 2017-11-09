@@ -497,6 +497,7 @@ const renderPackageJson = (legacyApp) => {
     // TODO: Make conditional
     dependencies.push('"async": "2.5.0"');
     dependencies.push('"moment-timezone": "0.5.13"');
+    dependencies.push('"xmldom": "0.1.27"');
     dependencies.push(`"zapier-platform-legacy-scripting-runner": "${ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION}"`);
   }
 
