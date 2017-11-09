@@ -1,0 +1,3 @@
+TEST_USERNAME=YourGitHubLogin
+TEST_PASSWORD=YourGitHubPasswordOrPersonalAccessToken
+TEST_REPO=OrgName/TestRepoName
