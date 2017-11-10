@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/zapier/zapier-platform-interpreter.svg?token=VAqbEB2WYaXsiSCZispa&branch=master)](https://travis-ci.com/zapier/zapier-platform-interpreter)
+[![Build Status](https://travis-ci.org/zapier/zapier-platform-legacy-scripting-runner.svg?branch=master)](https://travis-ci.org/zapier/zapier-platform-legacy-scripting-runner)
 
 # zapier-platform-legacy-scripting-runner
 
