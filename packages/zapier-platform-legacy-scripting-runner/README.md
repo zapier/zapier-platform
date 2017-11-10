@@ -37,6 +37,10 @@ Note this section is intended for Zapier engineers, not for App Developers.
 
 `npm test` runs some unit tests, `npm run ci-test` pulls the "full-test" app and runs `zapier test` in it.
 
+## Releasing
+
+`npm version [patch|minor|major]` should be enough.
+
 ## Test Repos
 
 Some repos might be private. They might have more instructions in their own READMEs.
