@@ -1,0 +1,36 @@
+{
+  "name": "zapier-platform-legacy-scripting-runner",
+  "version": "1.0.0",
+  "description": "Zapier's Legacy Scripting Runner, used by Web Builder apps converted to CLI.",
+  "repository": "zapier/zapier-platform-legacy-scripting-runner",
+  "homepage": "https://zapier.com/",
+  "author": "Zapier <partners@zapier.com>",
+  "license": "UNLICENSED",
+  "main": "index.js",
+  "scripts": {
+    "lint": "node_modules/.bin/eslint .",
+    "test": "export CLIENT_ID=1234 CLIENT_SECRET=asdf && node node_modules/mocha/bin/mocha --recursive",
+    "posttest": "npm run lint",
+    "preversion": "git pull && npm test",
+    "postversion": "git push && git push --tags && npm publish",
+    "ci-test": "npm test && ./ci-test.js"
+  },
+  "engines": {
+    "node": ">=6.10.2",
+    "npm": ">=3.0.0"
+  },
+  "dependencies": {
+    "deasync": "0.1.10",
+    "node-jquery-param": "0.0.2",
+    "lodash": "4.17.4",
+    "request": "2.83.0",
+    "xmldom": "0.1.27"
+  },
+  "devDependencies": {
+    "aws-sdk": "2.140.0",
+    "eslint": "4.9.0",
+    "eslint-plugin-zapier": "3.1.0",
+    "mocha": "3.5.0",
+    "should": "13.0.1"
+  }
+}
