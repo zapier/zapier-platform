@@ -1,4 +1,4 @@
-const Sample = require('../samples/sample_issue');
+const sample = require('../samples/sample_issue');
 
 const triggerIssue = (z, bundle) => {
   const responsePromise = z.request({
@@ -32,6 +32,6 @@ module.exports = {
     ],
     perform: triggerIssue,
 
-    sample: Sample
+    sample: sample
   }
 };
