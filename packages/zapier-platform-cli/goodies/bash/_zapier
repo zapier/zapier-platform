@@ -31,7 +31,7 @@ _zapier() {
                 COMPREPLY=( $( compgen -W "--dest --entry" -- $cur ) )
                ;;
             test)
-                COMPREPLY=( $( compgen -W "--debug --timeout --skip-validate" -- $cur ) )
+                COMPREPLY=( $( compgen -W "--debug --timeout --grep --skip-validate" -- $cur ) )
                ;;
             validate)
                 COMPREPLY=( $( compgen -W "--without-style" -- $cur ) )
