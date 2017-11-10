@@ -39,15 +39,27 @@ describe('convert render functions', () => {
       });
     });
 
-    it('should pad help text that is too short', () => {
+    it('should keep empty help text empty', () => {
       const wbKey = 'test_field';
       const wbDef = {
-        help_text: 'too short'
+        help_text: ''
       };
 
       const string = convert.renderField(wbDef, wbKey);
       const field = s2js(string);
-      field.helpText.should.eql('too short (help text must be at least 10 characters)');
+      field.should.not.have.property('helpText');
+    });
+
+    it('should escape multi-line help text', () => {
+      const wbKey = 'test_field';
+      const wbDef = {
+        help_text: 'line 1\nline 2\nline 3\n'
+      };
+
+      const string = convert.renderField(wbDef, wbKey);
+      console.log(string);
+      const field = s2js(string);
+      field.helpText.should.eql('line 1\\nline 2\\nline 3\\n');
     });
 
     it('should convert a dynamic dropdown', () => {
@@ -96,15 +108,13 @@ describe('convert render functions', () => {
                 key: 'username',
                 type: 'string',
                 required: true,
-                label: 'Username',
-                helpText: '(help text must be at least 10 characters)'
+                label: 'Username'
               },
               {
                 key: 'password',
                 type: 'password',
                 required: true,
-                label: 'Password',
-                helpText: '(help text must be at least 10 characters)'
+                label: 'Password'
               }
             ],
             connectionLabel: '{{username}}'
@@ -128,8 +138,7 @@ describe('convert render functions', () => {
                 key: 'api_key',
                 type: 'string',
                 required: true,
-                label: 'API Key',
-                helpText: '(help text must be at least 10 characters)'
+                label: 'API Key'
               }
             ],
             connectionLabel: '{{user}}'
@@ -171,8 +180,7 @@ describe('convert render functions', () => {
                 key: 'api_key',
                 type: 'string',
                 required: true,
-                label: 'API Key',
-                helpText: '(help text must be at least 10 characters)'
+                label: 'API Key'
               }
             ],
             connectionLabel: '{{user}}'
@@ -214,15 +222,13 @@ describe('convert render functions', () => {
                 key: 'email',
                 type: 'string',
                 required: true,
-                label: 'Email',
-                helpText: '(help text must be at least 10 characters)'
+                label: 'Email'
               },
               {
                 key: 'pass',
                 type: 'password',
                 required: true,
-                label: 'Password',
-                helpText: '(help text must be at least 10 characters)'
+                label: 'Password'
               }
             ],
             sessionConfig: {
