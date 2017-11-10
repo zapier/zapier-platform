@@ -19,7 +19,9 @@ describe('issue trigger', () => {
         password: process.env.TEST_PASSWORD
       },
       inputData: {
-        filter: 'all'
+        filter: 'all',
+        state: 'all',
+        repo: process.env.TEST_REPO
       }
     };
     appTester(App.triggers.issue.operation.perform, bundle)
