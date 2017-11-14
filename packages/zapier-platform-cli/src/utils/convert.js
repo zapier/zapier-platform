@@ -586,6 +586,9 @@ const renderScripting = (legacyApp) => {
     return Promise.resolve();
   }
 
+  // Normalize newlines to '\n'
+  templateContext.CODE = templateContext.CODE.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
   // Remove any 'use strict'; or "use strict"; since we add that automatically
   templateContext.CODE = templateContext.CODE.replace("'use strict';\n", '').replace('"use strict";\n', '');
 
@@ -625,6 +628,7 @@ module.exports = {
   renderAuth,
   renderField,
   renderSample,
+  renderScripting,
   renderStep,
   renderTemplate,
 

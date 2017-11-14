@@ -510,4 +510,25 @@ const getSessionKey = (z, bundle) => {
     });
   });
 
+  describe('render scripting', () => {
+    it('should normalize newlines', () => {
+      const wbDef = {
+        js: 'var a = 1;\r\nvar b = 2;\rvar c = 3;\n'
+      };
+      return convert.renderScripting(wbDef).then(scripting => {
+        scripting.should.containEql('var a = 1;\nvar b = 2;\nvar c = 3;\n');
+      });
+    });
+
+    it("should remove 'use strict'", () => {
+      const wbDef = {
+        js: "'use strict';\nvar foo = 'bar';\n'"
+      };
+      return convert.renderScripting(wbDef).then(scripting => {
+        scripting.should.not.containEql("'use strict';\nvar foo = 'bar';\n");
+        scripting.should.containEql("var foo = 'bar';\n");
+      });
+    });
+  });
+
 });
