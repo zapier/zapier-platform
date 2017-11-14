@@ -57,9 +57,19 @@ describe('convert render functions', () => {
       };
 
       const string = convert.renderField(wbDef, wbKey);
-      console.log(string);
       const field = s2js(string);
-      field.helpText.should.eql('line 1\\nline 2\\nline 3\\n');
+      field.helpText.should.eql('line 1\nline 2\nline 3\n');
+    });
+
+    it('should escape single quotes in help text', () => {
+      const wbKey = 'test_field';
+      const wbDef = {
+        help_text: "That's ok"
+      };
+
+      const string = convert.renderField(wbDef, wbKey);
+      const field = s2js(string);
+      field.helpText.should.eql("That's ok");
     });
 
     it('should convert a dynamic dropdown', () => {

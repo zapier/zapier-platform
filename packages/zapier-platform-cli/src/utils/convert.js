@@ -80,7 +80,7 @@ const renderProp = (key, value) => `${key}: ${value}`;
 
 const quote = s => `'${s}'`;
 
-const escapeLineBreaks = s => s.replace(/\n/g, '\\\\n');
+const escapeSpecialChars = s => s.replace(/\n/g, '\\n').replace(/'/g, "\\'");
 
 const getAuthType = (definition) => {
   return authTypeMap[definition.general.auth_type];
@@ -97,7 +97,7 @@ const renderField = (definition, key) => {
   }
 
   if (definition.help_text) {
-    props.push(renderProp('helpText', quote(escapeLineBreaks(definition.help_text))));
+    props.push(renderProp('helpText', quote(escapeSpecialChars(definition.help_text))));
   }
 
   props.push(renderProp('type', quote(type)));
