@@ -39,8 +39,6 @@ describe('request client', () => {
       .then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
-        console.log(response.request.headers);
-
         should(response.request.headers['user-agent']).eql(undefined);
         response.request.headers['User-Agent'].should.eql('Zapier!');
         response.status.should.eql(200);
@@ -81,7 +79,7 @@ describe('request client', () => {
   });
 
   it('should support promise bodies', (done) => {
-    const payload = {hello: 'world'};
+    const payload = {hello: 'world is nice'};
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
@@ -90,6 +88,7 @@ describe('request client', () => {
     })
       .then(response => {
         response.status.should.eql(200);
+        response.request.body.should.eql(JSON.stringify(payload));
         const body = JSON.parse(response.content);
         body.data.should.eql(JSON.stringify(payload));
         done();
@@ -279,6 +278,51 @@ describe('request client', () => {
 
         const body = JSON.parse(response.content);
         body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should parse form type request body', (done) => {
+    const request = createAppRequestClient(input);
+    request({
+      url: 'http://zapier-httpbin.herokuapp.com/post',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body: {
+        name: 'Something Else',
+        directions: '!!No Way José',
+      },
+    })
+      .then(response => {
+        response.status.should.eql(200);
+        response.request.body.should.eql('name=Something+Else&directions=!!No+Way+Jos%C3%A9');
+        const body = JSON.parse(response.content);
+        body.form.name.should.eql('Something Else');
+        body.form.directions.should.eql('!!No Way José');
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should not parse form type request body when string', (done) => {
+    const request = createAppRequestClient(input);
+    request({
+      url: 'http://zapier-httpbin.herokuapp.com/post',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body: 'name=Something Else&directions=!!No Way José',
+    })
+      .then(response => {
+        response.status.should.eql(200);
+        response.request.body.should.eql('name=Something Else&directions=!!No Way José');
+        const body = JSON.parse(response.content);
+        body.form.name.should.eql('Something Else');
+        body.form.directions.should.eql('!!No Way José');
         done();
       })
       .catch(done);

@@ -39,8 +39,7 @@ const coerceBody = (req) => {
 
   // auto coerce form if header says so
   if (contentType === FORM_TYPE && req.body && !_.isString(req.body)) {
-    // TODO: use const FormData = require('form-data'); instead?
-    req.body = querystring.stringify(req.body);
+    req.body = querystring.stringify(req.body).replace(/%20/g, '+');
   }
 
   if (isStream(req.body)) {
