@@ -1,7 +1,7 @@
 // Trigger stub created by 'zapier convert'. This is just a stub - you will need to edit!
 <%
 // Template for just _pre_poll()
-if (scripting && preScripting && !postScripting) { %>
+if (scripting && preScripting && !postScripting && !fullScripting) { %>
 const getList = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
@@ -21,7 +21,7 @@ const getList = (z, bundle) => {
 }
 
 // Template for _pre_poll() + _post_poll()
-if (scripting && preScripting && postScripting) { %>
+if (scripting && preScripting && postScripting && !fullScripting) { %>
 const getList = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
@@ -49,7 +49,7 @@ const getList = (z, bundle) => {
 }
 
 // Template for just _post_poll()
-if (scripting && !preScripting && postScripting) { %>
+if (scripting && !preScripting && postScripting && !fullScripting) { %>
 const getList = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
