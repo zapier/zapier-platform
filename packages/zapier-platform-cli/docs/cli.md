@@ -57,7 +57,7 @@ It does the following steps:
 * Adds an entry point `zapierwrapper.js`
 * Generates and validates app definition.
 * Detects dependencies via browserify (optional)
-* Zips up all needed `.js` files
+* Zips up all needed `.js` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your `.zapierapprc`.
 * Moves the zip to `build/build.zip`
 
 > If you get live errors like `Error: Cannot find module 'some-path'`, try disabling dependency detection.

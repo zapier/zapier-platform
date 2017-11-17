@@ -126,7 +126,7 @@ const createCredentials = (username, password) => {
   });
 };
 
-// Reads the JSON file at ~/.zapier-platform (AUTH_LOCATION).
+// Reads the JSON file in the app directory.
 const getLinkedAppConfig = (appDir) => {
   appDir = appDir || '.';
 

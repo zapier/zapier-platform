@@ -27,6 +27,7 @@ const {
 } = require('./display');
 
 const {
+  getLinkedAppConfig,
   checkCredentials,
   upload,
   callAPI,
@@ -110,13 +111,23 @@ const listFiles = (dir) => {
   });
 };
 
-const forceIncludeDumbPath = (filePath/*, smartPaths*/) => {
-  // we include smartPaths just incase you want to check the inclusion of some library
+const forceIncludeDumbPath = (appConfig, filePath) => {
+  let matchesConfigInclude = false;
+  const configIncludePaths = _.get(appConfig, 'includeInBuild', []);
+  _.each(configIncludePaths, (includePath) => {
+    if (filePath.match(RegExp(includePath, 'i'))) {
+      matchesConfigInclude = true;
+      return false;
+    }
+    return true;// Because of consistent-return
+  });
+
   return (
     (filePath.endsWith('package.json') || filePath.endsWith('definition.json'))
     || filePath.endsWith('/bin/linux-x64-node-6/deasync.node') // Special, for zapier-platform-legacy-scripting-runner
     || filePath.match(path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/)
     || (global.argOpts['include-js-map'] && filePath.endsWith('.js.map'))
+    || matchesConfigInclude
   );
 };
 
@@ -129,13 +140,14 @@ const makeZip = (dir, zipPath) => {
   return requiredFiles(dir, entryPoints)
     .then((smartPaths) => Promise.all([
       smartPaths,
-      listFiles(dir)
+      listFiles(dir),
+      getLinkedAppConfig(dir),
     ]))
-    .then(([smartPaths, dumbPaths]) => {
+    .then(([smartPaths, dumbPaths, appConfig]) => {
       if (global.argOpts['disable-dependency-detection']) {
         return dumbPaths;
       }
-      let finalPaths = smartPaths.concat(dumbPaths.filter(forceIncludeDumbPath, smartPaths));
+      let finalPaths = smartPaths.concat(dumbPaths.filter(forceIncludeDumbPath.bind(null, appConfig)));
       finalPaths = _.uniq(finalPaths);
       finalPaths.sort();
       if (global.argOpts.debug) {

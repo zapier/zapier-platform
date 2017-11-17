@@ -361,7 +361,7 @@ a code {
 <li>Adds an entry point <code>zapierwrapper.js</code></li>
 <li>Generates and validates app definition.</li>
 <li>Detects dependencies via browserify (optional)</li>
-<li>Zips up all needed <code>.js</code> files</li>
+<li>Zips up all needed <code>.js</code> files. If you want to include more files, add a &quot;includeInBuild&quot; property (array with strings of regexp paths) to your <code>.zapierapprc</code>.</li>
 <li>Moves the zip to <code>build/build.zip</code></li>
 </ul><blockquote>
 <p>If you get live errors like <code>Error: Cannot find module &apos;some-path&apos;</code>, try disabling dependency detection.</p>

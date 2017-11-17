@@ -11,7 +11,7 @@ const build = (context) => {
 build.argsSpec = [];
 build.argOptsSpec = {
   'disable-dependency-detection': {flag: true, help: 'disables walking required files to slim the build'},
-  'include-js-map': {flag: true, help: 'include .js.map files (usually source maps'}
+  'include-js-map': {flag: true, help: 'include .js.map files (usually source maps'},
 };
 build.help = 'Builds a pushable zip from the current directory.';
 build.example = 'zapier build';
@@ -25,7 +25,7 @@ It does the following steps:
 * Adds an entry point \`zapierwrapper.js\`
 * Generates and validates app definition.
 * Detects dependencies via browserify (optional)
-* Zips up all needed \`.js\` files
+* Zips up all needed \`.js\` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your \`${constants.CURRENT_APP_FILE}\`.
 * Moves the zip to \`${constants.BUILD_PATH}\`
 
 > If you get live errors like \`Error: Cannot find module 'some-path'\`, try disabling dependency detection.
