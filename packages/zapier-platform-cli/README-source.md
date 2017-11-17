@@ -27,7 +27,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 ### What is an App?
 
 A CLI App is an implementation of your app's API. You build a Node.js application
-that exports a single object ([JSON Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#appschema)) and upload it to Zapier.
+that exports a single object ([JSON Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#appschema)) and upload it to Zapier.
 Zapier introspects that definition to find out what your app is capable of and
 what options to present end users in the Zap Editor.
 
@@ -391,7 +391,7 @@ The second is the `noun`, the user-friendly name of the resource that is present
 > Example App: check out https://github.com/zapier/zapier-platform-example-app-resource for a working example app using resources.
 
 After those, there is a set of optional properties that tell Zapier what methods can be performed on the resource.
-The complete list of available methods can be found in the [Resource Schema Docs](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#resourceschema).
+The complete list of available methods can be found in the [Resource Schema Docs](https://zapier.github.io/zapier-platform-schema/build/schema.html#resourceschema).
 For now, let's focus on two:
 
  * `list` - Tells Zapier how to fetch a set of this resource. This becomes a Trigger in the Zapier Editor.
@@ -403,7 +403,7 @@ Here is a complete example of what the list method might look like
 [insert-file:./snippets/recipe-list.js]
 ```
 
-The method is made up of two properties, a `display` and an `operation`. The `display` property ([schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#basicdisplayschema)) holds the info needed to present the method as an available Trigger in the Zapier Editor. The `operation` ([schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#resourceschema)) provides the implementation to make the API call.
+The method is made up of two properties, a `display` and an `operation`. The `display` property ([schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#basicdisplayschema)) holds the info needed to present the method as an available Trigger in the Zapier Editor. The `operation` ([schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#resourceschema)) provides the implementation to make the API call.
 
 Adding a create method looks very similar.
 
@@ -429,8 +429,8 @@ The definition for each of these follows the same structure. Here is an example 
 [insert-file:./snippets/trigger.js]
 ```
 
-You can find more details on the definition for each by looking at the [Trigger Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#triggerschema),
-[Search Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#searchschema), and [Create Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#createschema).
+You can find more details on the definition for each by looking at the [Trigger Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#triggerschema),
+[Search Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#searchschema), and [Create Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#createschema).
 
 > Example App: check out https://github.com/zapier/zapier-platform-example-app-trigger for a working example app using triggers.
 
@@ -454,7 +454,7 @@ Each of the 3 types of function expects a certain type of object. As of core `v1
 
 On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Fields are what your users would see in the main Zapier user interface. For example, you might have a "create contact" action with fields like "First name", "Last name", "Email", etc.
 
-You can find more details on each and every field option at [Field Schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#fieldschema).
+You can find more details on each and every field option at [Field Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema).
 
 Those fields have various options you can provide, here is a succinct example:
 
@@ -508,6 +508,11 @@ For fields that take id of another object to create a relationship between the t
 
 If you don't define a trigger for the `dynamic` property, the search connector won't show.
 
+### Computed Fields
+
+In OAuth and Session Auth, you might want to store fields in `bundle.authData` (other than `access_token`, `refresh_token` — for OAuth —, or `sessionKey` — for Session Auth), that you don't want the user to fill in.
+
+For those situations, you need a computed field. It's just like another field, but with a `computed: true` property (don't forget to also make it `required: false`). You can see examples in the [OAuth](#oauth2) or [Session Auth](#session) example sections.
 
 ## Z Object
 

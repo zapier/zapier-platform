@@ -58,8 +58,8 @@ const getSessionKey = (z, bundle) => {
   return legacyScriptingRunner.runEvent(getSessionEvent, z, bundle)
     .then((getSessionResult) => {
       // IMPORTANT NOTE:
-      //   WB apps in scripting's get_session_info() allowed to return any object and that would be
-      //   added to the authData, but CLI apps require you to specifically define those.
+      //   WB apps in scripting's get_session_info() allowed you to return any object and that would
+      //   be added to the authData, but CLI apps require you to specifically define those.
       //   That means that if you return more than one key from your scripting's get_session_info(),
       //   you might need to manually tweak this method to return that value at the end of this method,
       //   and also add more fields to the authentication definition.

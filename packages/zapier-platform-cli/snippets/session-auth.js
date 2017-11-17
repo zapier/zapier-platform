@@ -27,6 +27,11 @@ const authentication = {
   fields: [
     {key: 'username', type: 'string', required: true, helpText: 'Your login username.'},
     {key: 'password', type: 'string', required: true, helpText: 'Your login password.'}
+    // For Session Auth we store `sessionKey` automatically in `bundle.authData`
+    // for future use. If you need to save/use something that the user shouldn't
+    // need to type/choose, add a "computed" field, like:
+    // {key: 'something': type: 'string', required: false, computed: true}
+    // And remember to return it in sessionConfig.perform
   ],
   sessionConfig: {
     perform: getSessionKey
