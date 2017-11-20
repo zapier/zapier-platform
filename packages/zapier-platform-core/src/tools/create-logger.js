@@ -9,7 +9,7 @@ const hashing = require('./hashing');
 const ZapierPromise = require('./promise');
 const constants = require('../constants');
 
-const truncate = (str) => _.truncate(str, {length: 3500, omission: ' [...]'});
+const truncate = (str) => dataTools.simpleTruncate(str, 3500, ' [...]');
 
 // format HTTP request details into string suitable for printing to stdout
 const httpDetailsLogMessage = (data) => {

@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const { simpleTruncate } = require('../tools/data');
 
 const isCreate = require('./is-create');
 
@@ -12,7 +13,7 @@ const createIsSingle = {
   shouldRun: isCreate,
   run: (method, results) => {
     if (_.isArray(results)) {
-      const repr = _.truncate(JSON.stringify(results), 50);
+      const repr = simpleTruncate(JSON.stringify(results), 50);
       return [
         `Got a result with multiple return values, expecting a single object from create (${repr})`
       ];

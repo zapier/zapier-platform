@@ -23,7 +23,6 @@ const triggerHasUniqueIds = {
     });
 
     if (doubleId !== undefined) {
-      //const repr = _.truncate(JSON.stringify(missingIdResult), 50);
       return [
         `Got a two or more results with the id of ${doubleId}`
       ];

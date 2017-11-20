@@ -128,6 +128,24 @@ const flattenPaths = (data, sep) => {
   return out;
 };
 
+// A simpler, and memory-friendlier version of _.truncate()
+const simpleTruncate = (string, length, suffix) => {
+  if (!string || !string.toString) {
+    return '';
+  }
+
+  const finalString = string.toString();
+
+  if (finalString.length === 0) {
+    return '';
+  } else if (finalString.length > length) {
+    const cutoff = (suffix ? length - suffix.length : length);
+    return finalString.substr(0, cutoff) + (suffix ? suffix : '');
+  }
+
+  return string;
+};
+
 module.exports = {
   isPlainObj,
   findMapDeep,
@@ -136,5 +154,6 @@ module.exports = {
   jsonCopy,
   deepFreeze,
   recurseReplace,
-  flattenPaths
+  flattenPaths,
+  simpleTruncate,
 };

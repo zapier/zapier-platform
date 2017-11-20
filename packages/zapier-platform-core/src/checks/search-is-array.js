@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const { simpleTruncate } = require('../tools/data');
 
 const isSearch = require('./is-search');
 
@@ -12,7 +13,7 @@ const searchIsArray = {
   shouldRun: isSearch,
   run: (method, results) => {
     if (!_.isArray(results)) {
-      const repr = _.truncate(JSON.stringify(results), 50);
+      const repr = simpleTruncate(JSON.stringify(results), 50);
       return [
         `Results must be an array, got: ${typeof results}, (${repr})`
       ];

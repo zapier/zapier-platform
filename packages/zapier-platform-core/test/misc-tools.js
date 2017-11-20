@@ -55,6 +55,32 @@ describe('Tools', () => {
     hashing.snipify('hello!').should.eql(':censored:6:f5dab4e158:');
   });
 
+  it('should truncate many things!', () => {
+    const tests = [
+      {value: null, length: 5, suffix: undefined, expected: ''},
+      {value: undefined, length: 5, suffix: '...', expected: ''},
+      {value: false, length: 5, suffix: '...', expected: ''},
+      {value: '', length: 5, suffix: undefined, expected: ''},
+      {value: [], length: 5, suffix: '...', expected: ''},
+      {value: {}, length: 5, suffix: '...', expected: '[o...'},
+      {value: () => {}, length: 5, suffix: '...', expected: '()...'},
+      {value: {yeah: true}, length: 8, suffix: '...', expected: '[obje...'},
+      {value: 'Something', length: 5, suffix: undefined, expected: 'Somet'},
+      {value: 'Something', length: 5, suffix: '...', expected: 'So...'},
+      {value: new Buffer('Something'), length: 7, suffix: ' [...]', expected: 'S [...]'},
+      {value: 'Something', length: 0, suffix: '...', expected: '...'},
+      {value: 'Something', length: 8, suffix: '...', expected: 'Somet...'},
+      {value: 'Something', length: 9, suffix: '...', expected: 'Something'},
+      {value: 'Something', length: 15, suffix: '...', expected: 'Something'},
+      {value: 'Somèt°˜ı¡•ﬁ⁄', length: 9, suffix: '...', expected: 'Somèt°...'},
+      {value: 'Somèt°˜ı¡•ﬁ⁄', length: 12, suffix: '...', expected: 'Somèt°˜ı¡•ﬁ⁄'},
+    ];
+
+    tests.forEach((test) => {
+      dataTools.simpleTruncate(test.value, test.length, test.suffix).should.eql(test.expected);
+    });
+  });
+
   // it('should prepareRequestLog', () => {
   //   const request = {
   //     url: 'http://www.google.com',

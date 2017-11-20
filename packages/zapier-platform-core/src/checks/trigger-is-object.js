@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const { simpleTruncate } = require('../tools/data');
 
 const isTrigger = require('./is-trigger');
 
@@ -20,7 +21,7 @@ const triggerIsObject = {
     });
 
     if (nonObjectResult !== undefined) {
-      const repr = _.truncate(JSON.stringify(nonObjectResult), 50);
+      const repr = simpleTruncate(JSON.stringify(nonObjectResult), 50);
       return [
         `Got a result missing that was not an object (${repr})`
       ];

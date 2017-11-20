@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const { simpleTruncate } = require('../tools/data');
 
 const isTrigger = require('./is-trigger');
 
@@ -19,7 +20,7 @@ const triggerHasId = {
     });
 
     if (missingIdResult) {
-      const repr = _.truncate(JSON.stringify(missingIdResult), 250);
+      const repr = simpleTruncate(JSON.stringify(missingIdResult), 250);
       return [
         `Got a result missing the "id" property (${repr})`
       ];
