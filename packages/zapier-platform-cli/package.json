@@ -52,7 +52,7 @@
     "tar-stream": "1.5.2",
     "through2": "2.0.3",
     "tmp": "0.0.31",
-    "update-notifier": "2.2.0",
+    "update-notifier": "2.3.0",
     "zip-stream": "1.1.0"
   },
   "devDependencies": {

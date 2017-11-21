@@ -3,8 +3,9 @@ require('babel-polyfill');
 
 const _ = require('lodash');
 const colors = require('colors/safe');
+const updateNotifier = require('update-notifier');
 
-const {DEBUG, PLATFORM_PACKAGE} = require('./constants');
+const { DEBUG, PLATFORM_PACKAGE } = require('./constants');
 const commands = require('./commands');
 const utils = require('./utils');
 
@@ -22,7 +23,16 @@ module.exports = (argv) => {
     process.exit(1);
   }
 
-  require('update-notifier')({ pkg: require('../package.json') }).notify();
+  const notifier = updateNotifier({
+    pkg: require('../package.json'),
+    updateCheckInterval: 0,
+  });
+
+  if (notifier.update) {
+    notifier.notify({
+      message: `Update available ${colors.grey(notifier.update.current)} → ${colors.green(notifier.update.latest)}\nRun ${colors.cyan('npm i -g zapier-platform-cli')} to update, and then ${colors.blue('re-test your integration')}.`,
+    });
+  }
 
   if (DEBUG) {
     console.log('running in:', process.cwd());
