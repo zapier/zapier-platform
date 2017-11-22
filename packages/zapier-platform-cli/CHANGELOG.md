@@ -1,3 +1,17 @@
+## 4.0.0
+
+* (**BREAKING**) (Fix) [Encode form requests with + instead of %20 by default](https://github.com/zapier/zapier-platform-core/pull/52)
+* (**BREAKING**) (Fix) [Don't add content-type if there's one](https://github.com/zapier/zapier-platform-core/pull/55)
+* (Fix) [Replace _.truncate, save memory.](https://github.com/zapier/zapier-platform-core/pull/54)
+* (Fix) [`zapier convert`: Escape special chars in field help text](https://github.com/zapier/zapier-platform-cli/pull/182)
+* (Fix) [`zapier convert`: Normalize newlines in scripting ](https://github.com/zapier/zapier-platform-cli/pull/183)
+* (New) [`zapier convert`: Generate create code based on different scripting method combinations](https://github.com/zapier/zapier-platform-cli/pull/181)
+* (New) [`zapier convert`: Ignore _pre_poll and _post_poll if _poll exists ](https://github.com/zapier/zapier-platform-cli/pull/187)
+* (New) [Customize update notification message](https://github.com/zapier/zapier-platform-cli/pull/188)
+* (New) [Allow to include a regexp of paths for the build file](https://github.com/zapier/zapier-platform-cli/pull/158)
+* (New) [Add example docs about computed fields.](https://github.com/zapier/zapier-platform-cli/pull/184)
+
+
 ## 3.3.0
 
 * [Log http(s) requests for non-client library](https://github.com/zapier/zapier-platform-core/pull/51)
