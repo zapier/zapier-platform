@@ -13,6 +13,22 @@ const JSON_TYPE = 'application/json; charset=utf-8';
 const isStream = (obj) => obj instanceof stream.Stream;
 const isPromise = (obj) => obj && typeof obj.then === 'function';
 
+const getContentType = (headers) => {
+  const headerKeys = Object.keys(headers);
+  let foundKey = '';
+
+  _.each(headerKeys, (key) => {
+    if (key.toLowerCase() === 'content-type') {
+      foundKey = key;
+      return false;
+    }
+
+    return true;
+  });
+
+  return _.get(headers, foundKey, '');
+};
+
 const sugarBody = (req) => {
   // move into the body as raw, set headers for coerce, merge to work
 
@@ -35,7 +51,12 @@ const sugarBody = (req) => {
 
 // Be careful not to JSONify a stream or buffer, stuff like that
 const coerceBody = (req) => {
-  const contentType = (req.headers || {})['content-type'] || '';
+  const contentType = getContentType(req.headers || {});
+
+  // No need for body on get
+  if (req.method === 'GET') {
+    delete req.body;
+  }
 
   // auto coerce form if header says so
   if (contentType === FORM_TYPE && req.body && !_.isString(req.body)) {
@@ -51,7 +72,10 @@ const coerceBody = (req) => {
   } else if (req.body && !_.isString(req.body)) {
     // this is a general - popular fallback
     req.body = JSON.stringify(req.body);
-    req.headers['content-type'] = JSON_TYPE;
+
+    if (!contentType) {
+      req.headers['content-type'] = JSON_TYPE;
+    }
   }
 
   return req;
@@ -83,7 +107,6 @@ const prepareRequest = function(req) {
   const input = req.input || {};
 
   req = _.defaults(req, {
-    sync: false, // TODO: gotta sync if we wanna migrate old apps! :scream:
     merge: true,
     replace: true, // always replace curlies
     prune: false, // TODO: do we prune empty {{missing}} vars?,
@@ -104,17 +127,7 @@ const prepareRequest = function(req) {
     req = cleaner.recurseReplaceBank(req, bank);
   }
 
-  // do a few final cleanup bits
-  if (req.method === 'GET') {
-    delete req.body;
-  }
-
   req = coerceBody(req);
-
-  if (req.sync) {
-    // TODO
-    throw new Error('sync coming later');
-  }
 
   req._requestStart = new Date();
 

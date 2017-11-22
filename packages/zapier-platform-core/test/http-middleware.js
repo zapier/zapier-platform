@@ -109,7 +109,7 @@ describe('http prepareRequest', () => {
     const req = prepareRequest({
       url: 'http://example.com',
       params: {
-        foo: '{{inputData.foo}}'
+        foo: '{{inputData.foo}}',
       },
       replace: true,
       body: '123',
@@ -128,6 +128,9 @@ describe('http prepareRequest', () => {
     });
 
     req.url.should.eql('http://example.com');
+    req.headers.should.eql({
+      'user-agent': 'Zapier',
+    });
     should.not.exist(req.body);
   });
 
@@ -174,7 +177,10 @@ describe('http prepareRequest', () => {
     const fixedReq = prepareRequest(origReq);
     should(fixedReq.json).eql(undefined);
     should(fixedReq.body).eql('{"hello":"world"}');
-    should(fixedReq.headers['content-type']).eql('application/json; charset=utf-8');
+    fixedReq.headers.should.eql({
+      'content-type': 'application/json; charset=utf-8',
+      'user-agent': 'Zapier',
+    });
   });
 
   it('should coerce "form" into the body', () => {
@@ -188,7 +194,67 @@ describe('http prepareRequest', () => {
     const fixedReq = prepareRequest(origReq);
     should(fixedReq.form).eql(undefined);
     should(fixedReq.body).eql('hello=world');
-    should(fixedReq.headers['content-type']).eql('application/x-www-form-urlencoded');
+    fixedReq.headers.should.eql({
+      'content-type': 'application/x-www-form-urlencoded',
+      'user-agent': 'Zapier',
+    });
+  });
+
+  it('should default to "json"', () => {
+    const origReq = {
+      method: 'POST',
+      url: 'http://example.com',
+      body: {hello: 'world'},
+      input
+    };
+
+    const fixedReq = prepareRequest(origReq);
+    should(fixedReq.json).eql(undefined);
+    should(fixedReq.body).eql('{"hello":"world"}');
+    fixedReq.headers.should.eql({
+      'content-type': 'application/json; charset=utf-8',
+      'user-agent': 'Zapier',
+    });
+  });
+
+  it('should not set default headers if they are set', () => {
+    const origReq = {
+      method: 'POST',
+      url: 'http://example.com',
+      body: {hello: 'world'},
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      input
+    };
+
+    const fixedReq = prepareRequest(origReq);
+    should(fixedReq.json).eql(undefined);
+    should(fixedReq.body).eql('hello=world');
+    fixedReq.headers.should.eql({
+      'content-type': 'application/x-www-form-urlencoded',
+      'user-agent': 'Zapier',
+    });
+  });
+
+  it('should not set default headers if they are set — even with different case', () => {
+    const origReq = {
+      method: 'POST',
+      url: 'http://example.com',
+      body: {hello: 'world'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      input
+    };
+
+    const fixedReq = prepareRequest(origReq);
+    should(fixedReq.json).eql(undefined);
+    should(fixedReq.body).eql('{"hello":"world"}');
+    fixedReq.headers.should.eql({
+      'Content-Type': 'application/json',
+      'user-agent': 'Zapier',
+    });
   });
 
 });
