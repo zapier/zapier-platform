@@ -3,6 +3,7 @@
 * (**BREAKING**) (Fix) [Encode form requests with + instead of %20 by default](https://github.com/zapier/zapier-platform-core/pull/52)
 * (**BREAKING**) (Fix) [Don't add content-type if there's one](https://github.com/zapier/zapier-platform-core/pull/55)
 * (Fix) [Replace _.truncate, save memory.](https://github.com/zapier/zapier-platform-core/pull/54)
+* (Fix) [fix: exit code 1 for only for errors](https://github.com/zapier/zapier-platform-cli/pull/154)
 * (Fix) [`zapier convert`: Escape special chars in field help text](https://github.com/zapier/zapier-platform-cli/pull/182)
 * (Fix) [`zapier convert`: Normalize newlines in scripting ](https://github.com/zapier/zapier-platform-cli/pull/183)
 * (New) [`zapier convert`: Generate create code based on different scripting method combinations](https://github.com/zapier/zapier-platform-cli/pull/181)
