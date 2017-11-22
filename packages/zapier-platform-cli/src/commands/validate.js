@@ -91,7 +91,8 @@ const validate = (context) => {
         ['Link', 'link']
       ], ifEmpty, true);
 
-      if (styleErrors.length) {
+      // exit code 1 only for errors and not warnings
+      if (styleErrors.filter((error) => error.category === 'errors').length) {
         process.exitCode = 1;
         context.line('Errors will prevent promotions, warnings are things to improve on.\n');
       } else {
