@@ -6,7 +6,11 @@ const appTester = zapier.createAppTester(App);
 describe('hydrators', () => {
 
   describe('uploadFile', () => {
-    it('should download files', (done) => {
+    it('should download files', function(done) {
+      if (!process.env.ZAPIER_DEPLOY_KEY || process.env.ZAPIER_DEPLOY_KEY === 'undefined') {
+        this.skip();
+      }
+
       const bundle = {
         inputData: {
           fileId: 3,

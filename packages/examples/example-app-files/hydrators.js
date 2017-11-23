@@ -2,7 +2,7 @@ const hydrators = {
   downloadFile: (z, bundle) => {
     // use standard auth to request the file
     const filePromise = z.request({
-      url: `https://zapier.webscript.io/platform-example-app/download?id=${bundle.inputData.fileId}`,
+      url: `https://wt-d9eeb64793d8836c8641adb2acda6ed3-0.run.webtask.io/download-file?id=${bundle.inputData.fileId}`,
       raw: true
     });
 
