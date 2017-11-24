@@ -18,7 +18,7 @@ const uploadFile = (z, bundle) => {
   }
 
   return z.request({
-      url: 'https://zapier.webscript.io/platform-example-app/upload',
+      url: 'https://1i94uigjze.execute-api.us-east-1.amazonaws.com/api/upload',
       method: 'POST',
       body: formData,
     })
