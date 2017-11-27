@@ -1,3 +1,4 @@
+const colors = require('colors/safe');
 const utils = require('../utils');
 
 const promote = (context, version) => {
@@ -6,21 +7,34 @@ const promote = (context, version) => {
     return Promise.resolve();
   }
 
+  let appId = 0;
+
   return utils.checkCredentials()
     .then(() => utils.getLinkedApp())
     .then((app) => {
-      context.line(`Preparing to promote version ${version} your app "${app.title}".\n`);
+      context.line(`Preparing to promote version ${version} of your app "${app.title}".\n`);
       const url = `/apps/${app.id}/versions/${version}/promote/production`;
+      appId = app.id;
       utils.printStarting(`Promoting ${version}`);
       return utils.callAPI(url, {
         method: 'PUT',
         body: {}
-      });
+      }, false);
     })
     .then(() => {
       utils.printDone();
       context.line('  Promotion successful!\n');
       context.line('Optionally try the `zapier migrate 1.0.0 1.0.1 [10%]` command to move users to this version.');
+    })
+    .catch((error) => {
+      // The server 403's when the app hasn't been approved yet
+      if (error.message.indexOf('You cannot promote until we have approved your app.') !== -1) {
+        utils.printDone();
+        context.line('\nGood news! Your app passes validation and has the required number of testers and active Zaps.\n');
+        context.line(`The next step is to visit: ${colors.cyan(`https://zapier.com/developer/builder/cli-app/${appId}/activate/${version}`)} to request public activation of your app.\n`);
+      } else {
+        throw error;
+      }
     });
 };
 promote.argsSpec = [

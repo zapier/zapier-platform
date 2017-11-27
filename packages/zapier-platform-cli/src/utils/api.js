@@ -46,7 +46,7 @@ const readCredentials = (credentials, explodeIfMissing = true) => {
 };
 
 // Calls the underlying platform REST API with proper authentication.
-const callAPI = (route, options) => {
+const callAPI = (route, options, displayError = true) => {
   options = options || {};
   const url = options.url || constants.ENDPOINT + route;
 
@@ -101,7 +101,7 @@ const callAPI = (route, options) => {
         }
         console.log(`<< ${res.status}`);
         console.log(`<< ${(text || '').substring(0, 2500)}\n`);
-      } else if (hitError) {
+      } else if (hitError && displayError) {
         printDone(false);
       }
 
