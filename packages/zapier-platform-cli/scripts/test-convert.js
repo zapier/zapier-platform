@@ -11,7 +11,8 @@ const childProcess = utils.promisifyAll(require('child_process'));
 const appsToConvert = [
   {id: 80082, name: 'simple-basic-auth'},
   {id: 80182, name: 'trigger-session-auth'},
-  // TODO: Add more apps that require scripting and different auths, once zapier-platform-legacy-scripting-runner is live
+  {id: 82052, name: 'simple-oauth'},
+  // TODO: Add more apps that require different scripting methods, as we start to support them
 ];
 
 const testConvertedApp = (appToConvert, rootTmpDir) => {

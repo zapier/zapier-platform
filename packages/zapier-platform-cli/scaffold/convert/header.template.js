@@ -13,7 +13,7 @@
   });
 %>
   return request;
-}
+};
 <% }
 
 if (before && session) { %>const maybeIncludeAuth = (request, z, bundle) => {
@@ -24,7 +24,7 @@ if (before && session) { %>const maybeIncludeAuth = (request, z, bundle) => {
   request.headers['<%= Object.keys(mapping)[0] %>'] = bundle.authData.sessionKey;
 <% } %>
   return request;
-}
+};
 <% }
 
 if (before && oauth) { %>const maybeIncludeAuth = (request, z, bundle) => {
@@ -32,7 +32,7 @@ if (before && oauth) { %>const maybeIncludeAuth = (request, z, bundle) => {
   request.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
 
   return request;
-}
+};
 <% }
 
 if (after) { %>
@@ -42,8 +42,7 @@ const maybeRefresh = (response, z, bundle) => {
   }
 
   return response;
-}
-
+};
 <% }
 
 if (session) { %>
@@ -71,5 +70,5 @@ const getSessionKey = (z, bundle) => {
         sessionKey: firstKeyValue
       };
     });
-}
+};
 <% } %>

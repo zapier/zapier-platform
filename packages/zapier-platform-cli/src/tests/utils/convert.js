@@ -1,20 +1,32 @@
 require('should');
+const requireFromString = require('require-from-string');
 const convert = require('../../utils/convert');
 const definitions = {
+  noAuth: require('./definitions/no-auth.json'),
   basic: require('./definitions/basic.json'),
+  basicScripting: require('./definitions/basic-scripting.json'),
   apiHeader: require('./definitions/api-header.json'),
   apiQuery: require('./definitions/api-query.json'),
   session: require('./definitions/session.json'),
   oauth2: require('./definitions/oauth2.json'),
+  oauth2Scripting: require('./definitions/oauth2-scripting.json'),
   oauth2Refresh: require('./definitions/oauth2-refresh.json'),
+  oauth2RefreshScripting: require('./definitions/oauth2-refresh-scripting.json'),
 };
 
 /* eslint no-eval: 0 */
-const s2js = (string) => eval(`
-const AuthTest = { operation: { perform: 'FAKE_PERFORM_FUNCTION' } };
-const getSessionKey = 'FAKE_GET_SESSION_KEY_FUNCTION';
-(${string});
-`);
+const s2js = (string) => eval(`(${string});`);
+
+const loadAuthModuleFromString = (string) => {
+  // As the test trigger module doesn't exist during unit testing, let's mock
+  // the test trigger import with a dummy test trigger that returns the test
+  // trigger module path, allowing us to assert on.
+  const match = string.match(/const testTrigger = require\('([^']*)/);
+  const testTriggerPath = match ? match[1] : 'TEST TRIGGER NOT IMPORTED';
+  string = string.replace(/const testTrigger = require\(.*;/, '');
+  string = `const testTrigger = {operation: {perform: () => '${testTriggerPath}'}};\n` + string;
+  return requireFromString(string);
+};
 
 describe('convert render functions', () => {
 
@@ -104,164 +116,177 @@ describe('convert render functions', () => {
   });
 
   describe('authentication', () => {
-    it('should render basic auth', (done) => {
+    it('should not render no auth', () => {
+      const wbDef = definitions.noAuth;
+      return convert.renderIndex(wbDef)
+        .then(string => {
+          string.should.containEql('authentication: {}');
+          convert.hasAuth(wbDef).should.be.false();
+        });
+    });
+
+    it('should render basic auth', () => {
       const wbDef = definitions.basic;
 
-      convert.renderAuth(wbDef)
+      return convert.renderAuth(wbDef)
         .then(string => {
-          const auth = s2js(string);
-          auth.should.eql({
-            type: 'basic',
-            test: 'FAKE_PERFORM_FUNCTION',
-            fields: [
-              {
-                key: 'username',
-                type: 'string',
-                required: true,
-                label: 'Username'
-              },
-              {
-                key: 'password',
-                type: 'password',
-                required: true,
-                label: 'Password'
-              }
-            ],
-            connectionLabel: '{{username}}'
-          });
-          done();
-        })
-        .catch(done);
+          const auth = loadAuthModuleFromString(string);
+          auth.type.should.eql('basic');
+          auth.fields.should.eql([
+            {
+              key: 'username',
+              label: 'Username',
+              required: true,
+              type: 'string'
+            },
+            {
+              key: 'password',
+              label: 'Password',
+              required: true,
+              type: 'password'
+            }
+          ]);
+          auth.connectionLabel.should.eql('{{username}}');
+          auth.test().should.eql('./triggers/test_auth');
+        });
     });
 
-    it('should render API Key (Header) auth', (done) => {
-      const wbDef = definitions.apiHeader;
+    it('should render basic auth w/scripting', () => {
+      const wbDef = definitions.basicScripting;
 
-      convert.renderAuth(wbDef)
+      return convert.renderAuth(wbDef)
         .then(string => {
-          const auth = s2js(string);
-          auth.should.eql({
-            type: 'custom',
-            test: 'FAKE_PERFORM_FUNCTION',
-            fields: [
-              {
-                key: 'api_key',
-                type: 'string',
-                required: true,
-                label: 'API Key'
-              }
-            ],
-            connectionLabel: '{{user}}'
-          });
-          done();
-        })
-        .catch(done);
+          const auth = loadAuthModuleFromString(string);
+          auth.type.should.eql('basic');
+          auth.fields.should.eql([
+            {
+              key: 'username',
+              label: 'Username',
+              required: true,
+              type: 'string'
+            },
+            {
+              key: 'password',
+              label: 'Password',
+              required: true,
+              type: 'password'
+            }
+          ]);
+          auth.connectionLabel.should.be.Function();
+          auth.test().should.eql('./triggers/test_auth');
+        });
     });
 
-    it('should render API Key (Header) beforeRequest', (done) => {
+    it('should render API Key (Headers) auth', () => {
       const wbDef = definitions.apiHeader;
 
-      convert.getHeader(wbDef)
+      return convert.renderAuth(wbDef)
+        .then(string => {
+          const auth = loadAuthModuleFromString(string);
+          auth.type.should.eql('custom');
+          auth.fields.should.eql([
+            {
+              key: 'api_key',
+              type: 'string',
+              required: true,
+              label: 'API Key'
+            }
+          ]);
+          auth.connectionLabel.should.eql('{{user}}');
+          auth.test().should.eql('./triggers/test_auth');
+        });
+    });
+
+    it('should render API Key (Headers) beforeRequest', () => {
+      const wbDef = definitions.apiHeader;
+
+      return convert.getHeader(wbDef)
         .then(string => {
           string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
 
   request.headers['Authorization'] = bundle.authData['api_key'];
 
   return request;
-}
+};
 
 `);
-          done();
-        })
-        .catch(done);
+        });
     });
 
-    it('should render API Key (Query) auth', (done) => {
+    it('should render API Key (Query) auth', () => {
       const wbDef = definitions.apiQuery;
 
-      convert.renderAuth(wbDef)
+      return convert.renderAuth(wbDef)
         .then(string => {
-          const auth = s2js(string);
-          auth.should.eql({
-            type: 'custom',
-            test: 'FAKE_PERFORM_FUNCTION',
-            fields: [
-              {
-                key: 'api_key',
-                type: 'string',
-                required: true,
-                label: 'API Key'
-              }
-            ],
-            connectionLabel: '{{user}}'
-          });
-          done();
-        })
-        .catch(done);
+          const auth = loadAuthModuleFromString(string);
+          auth.type.should.eql('custom');
+          auth.fields.should.eql([
+            {
+              key: 'api_key',
+              type: 'string',
+              required: true,
+              label: 'API Key'
+            }
+          ]);
+          auth.connectionLabel.should.eql('{{user}}');
+          auth.test().should.eql('./triggers/test_auth');
+        });
     });
 
-    it('should render API Key (Query) beforeRequest', (done) => {
+    it('should render API Key (Query) beforeRequest', () => {
       const wbDef = definitions.apiQuery;
 
-      convert.getHeader(wbDef)
+      return convert.getHeader(wbDef)
         .then(string => {
           string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
 
   request.params['api_key'] = bundle.authData['api_key'];
 
   return request;
-}
+};
 
 `);
-          done();
-        })
-        .catch(done);
+        });
     });
 
-    it('should render Session auth', (done) => {
+    it('should render Session auth', () => {
       const wbDef = definitions.session;
 
-      convert.renderAuth(wbDef)
+      return convert.renderAuth(wbDef)
         .then(string => {
-          const auth = s2js(string);
-          auth.should.eql({
-            type: 'session',
-            test: 'FAKE_PERFORM_FUNCTION',
-            fields: [
-              {
-                key: 'email',
-                type: 'string',
-                required: true,
-                label: 'Email'
-              },
-              {
-                key: 'pass',
-                type: 'password',
-                required: true,
-                label: 'Password'
-              }
-            ],
-            sessionConfig: {
-              perform: 'FAKE_GET_SESSION_KEY_FUNCTION'
+          const auth = loadAuthModuleFromString(string);
+          auth.type.should.eql('session');
+          auth.fields.should.eql([
+            {
+              key: 'email',
+              type: 'string',
+              required: true,
+              label: 'Email'
             },
-            connectionLabel: '{{user}}'
-          });
-          done();
-        })
-        .catch(done);
+            {
+              key: 'pass',
+              type: 'password',
+              required: true,
+              label: 'Password'
+            }
+          ]);
+          auth.connectionLabel.should.eql('{{user}}');
+          auth.test().should.eql('./triggers/test_auth');
+          auth.sessionConfig.perform.should.be.Function();
+        });
     });
 
-    it('should render Session beforeRequest and afterResponse', (done) => {
+    it('should render Session beforeRequest and afterResponse', () => {
       const wbDef = definitions.session;
 
-      convert.getHeader(wbDef)
+      return convert.getHeader(wbDef)
         .then(string => {
           string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
 
   request.headers['X-Token'] = bundle.authData.sessionKey;
 
   return request;
-}
+};
 
 const maybeRefresh = (response, z, bundle) => {
   if (response.status === 401 || response.status === 403) {
@@ -269,8 +294,7 @@ const maybeRefresh = (response, z, bundle) => {
   }
 
   return response;
-}
-
+};
 
 const getSessionKey = (z, bundle) => {
   const scripting = require('../scripting');
@@ -296,150 +320,188 @@ const getSessionKey = (z, bundle) => {
         sessionKey: firstKeyValue
       };
     });
-}
+};
 
 `);
-          done();
-        })
-        .catch(done);
+        });
     });
 
-    it('should render oauth2', (done) => {
+    it('should render oauth2', () => {
       const wbDef = definitions.oauth2;
 
-      convert.renderAuth(wbDef)
+      return convert.renderAuth(wbDef)
         .then(string => {
-          const auth = s2js(string);
+          const auth = loadAuthModuleFromString(string);
 
-          auth.should.eql({
-            type: 'oauth2',
-            test: 'FAKE_PERFORM_FUNCTION',
-            oauth2Config: {
-              authorizeUrl: {
-                method: 'GET',
-                url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize',
-                params: {
-                  client_id: '{{process.env.CLIENT_ID}}',
-                  state: '{{bundle.inputData.state}}',
-                  redirect_uri: '{{bundle.inputData.redirect_uri}}',
-                  response_type: 'code'
-                }
-              },
-              getAccessToken: {
-                method: 'POST',
-                url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-access-token',
-                body: {
-                  code: '{{bundle.inputData.code}}',
-                  client_id: '{{process.env.CLIENT_ID}}',
-                  client_secret: '{{process.env.CLIENT_SECRET}}',
-                  redirect_uri: '{{bundle.inputData.redirect_uri}}',
-                  grant_type: 'authorization_code'
-                },
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
-              },
-              scope: ''
+          auth.type.should.eql('oauth2');
+          auth.oauth2Config.should.eql({
+            authorizeUrl: {
+              method: 'GET',
+              url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize',
+              params: {
+                client_id: '{{process.env.CLIENT_ID}}',
+                state: '{{bundle.inputData.state}}',
+                redirect_uri: '{{bundle.inputData.redirect_uri}}',
+                response_type: 'code'
+              }
             },
-            connectionLabel: '{{user}}'
+            getAccessToken: {
+              method: 'POST',
+              url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-access-token',
+              body: {
+                code: '{{bundle.inputData.code}}',
+                client_id: '{{process.env.CLIENT_ID}}',
+                client_secret: '{{process.env.CLIENT_SECRET}}',
+                redirect_uri: '{{bundle.inputData.redirect_uri}}',
+                grant_type: 'authorization_code'
+              },
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            },
+            scope: ''
           });
-          done();
-        })
-        .catch(done);
+          auth.connectionLabel.should.eql('{{user}}');
+          auth.test().should.eql('./triggers/test_auth');
+        });
     });
 
-    it('should render oauth2 beforeRequest', (done) => {
+    it('should render oauth2 beforeRequest', () => {
       const wbDef = definitions.oauth2;
 
-      convert.getHeader(wbDef)
+      return convert.getHeader(wbDef)
         .then(string => {
           string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
 
   request.headers.Authorization = \`Bearer \${bundle.authData.access_token}\`;
 
   return request;
-}
+};
 
 `);
-          done();
-        })
-        .catch(done);
+        });
     });
 
-    it('should render oauth2-refresh', (done) => {
-      const wbDef = definitions.oauth2Refresh;
+    it('should render oauth2 w/scripting', () => {
+      const wbDef = definitions.oauth2Scripting;
 
-      convert.renderAuth(wbDef)
+      return convert.renderAuth(wbDef)
         .then(string => {
-          const auth = s2js(string);
+          const auth = loadAuthModuleFromString(string);
 
-          auth.should.eql({
-            type: 'oauth2',
-            test: 'FAKE_PERFORM_FUNCTION',
-            oauth2Config: {
-              authorizeUrl: {
-                method: 'GET',
-                url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize',
-                params: {
-                  client_id: '{{process.env.CLIENT_ID}}',
-                  state: '{{bundle.inputData.state}}',
-                  redirect_uri: '{{bundle.inputData.redirect_uri}}',
-                  response_type: 'code'
-                }
-              },
-              getAccessToken: {
-                method: 'POST',
-                url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-access-token',
-                body: {
-                  code: '{{bundle.inputData.code}}',
-                  client_id: '{{process.env.CLIENT_ID}}',
-                  client_secret: '{{process.env.CLIENT_SECRET}}',
-                  redirect_uri: '{{bundle.inputData.redirect_uri}}',
-                  grant_type: 'authorization_code'
-                },
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
-              },
-              refreshAccessToken: {
-                method: 'POST',
-                url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-refresh-token',
-                body: {
-                  refresh_token: '{{bundle.authData.refresh_token}}',
-                  client_id: '{{process.env.CLIENT_ID}}',
-                  client_secret: '{{process.env.CLIENT_SECRET}}',
-                  grant_type: 'refresh_token'
-                },
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-                }
-              },
-              scope: '',
-              autoRefresh: true
-            },
-            connectionLabel: '{{user}}'
+          auth.type.should.eql('oauth2');
+          auth.oauth2Config.authorizeUrl.should.eql({
+            method: 'GET',
+            url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize',
+            params: {
+              client_id: '{{process.env.CLIENT_ID}}',
+              state: '{{bundle.inputData.state}}',
+              redirect_uri: '{{bundle.inputData.redirect_uri}}',
+              response_type: 'code'
+            }
           });
-          done();
-        })
-        .catch(done);
+          auth.oauth2Config.scope.should.eql('');
+          auth.oauth2Config.getAccessToken.should.be.Function();
+          auth.connectionLabel.should.eql('{{user}}');
+          auth.test().should.eql('./triggers/test_auth');
+        });
     });
 
-    it('should render oauth2-refresh beforeRequest', (done) => {
+    it('should render oauth2-refresh', () => {
       const wbDef = definitions.oauth2Refresh;
 
-      convert.getHeader(wbDef)
+      return convert.renderAuth(wbDef)
+        .then(string => {
+          const auth = loadAuthModuleFromString(string);
+
+          auth.type.should.eql('oauth2');
+          auth.oauth2Config.should.eql({
+            authorizeUrl: {
+              method: 'GET',
+              url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize',
+              params: {
+                client_id: '{{process.env.CLIENT_ID}}',
+                state: '{{bundle.inputData.state}}',
+                redirect_uri: '{{bundle.inputData.redirect_uri}}',
+                response_type: 'code'
+              }
+            },
+            getAccessToken: {
+              method: 'POST',
+              url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-access-token',
+              body: {
+                code: '{{bundle.inputData.code}}',
+                client_id: '{{process.env.CLIENT_ID}}',
+                client_secret: '{{process.env.CLIENT_SECRET}}',
+                redirect_uri: '{{bundle.inputData.redirect_uri}}',
+                grant_type: 'authorization_code'
+              },
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            },
+            refreshAccessToken: {
+              method: 'POST',
+              url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-refresh-token',
+              body: {
+                refresh_token: '{{bundle.authData.refresh_token}}',
+                client_id: '{{process.env.CLIENT_ID}}',
+                client_secret: '{{process.env.CLIENT_SECRET}}',
+                grant_type: 'refresh_token'
+              },
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            },
+            scope: '',
+            autoRefresh: true
+          });
+          auth.connectionLabel.should.eql('{{user}}');
+          auth.test().should.eql('./triggers/test_auth');
+        });
+    });
+
+    it('should render oauth2-refresh w/scripting', () => {
+      const wbDef = definitions.oauth2RefreshScripting;
+
+      return convert.renderAuth(wbDef)
+        .then(string => {
+          const auth = loadAuthModuleFromString(string);
+
+          auth.type.should.eql('oauth2');
+          auth.oauth2Config.authorizeUrl.should.eql({
+            method: 'GET',
+            url: 'https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize',
+            params: {
+              client_id: '{{process.env.CLIENT_ID}}',
+              state: '{{bundle.inputData.state}}',
+              redirect_uri: '{{bundle.inputData.redirect_uri}}',
+              response_type: 'code'
+            }
+          });
+          auth.oauth2Config.scope.should.eql('');
+          auth.oauth2Config.autoRefresh.should.be.true();
+          auth.oauth2Config.getAccessToken.should.be.Function();
+          auth.oauth2Config.refreshAccessToken.should.be.Function();
+          auth.connectionLabel.should.eql('{{user}}');
+          auth.test().should.eql('./triggers/test_auth');
+        });
+    });
+
+    it('should render oauth2-refresh beforeRequest', () => {
+      const wbDef = definitions.oauth2Refresh;
+
+      return convert.getHeader(wbDef)
         .then(string => {
           string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
 
   request.headers.Authorization = \`Bearer \${bundle.authData.access_token}\`;
 
   return request;
-}
+};
 
 `);
-          done();
-        })
-        .catch(done);
+        });
     });
 
   });

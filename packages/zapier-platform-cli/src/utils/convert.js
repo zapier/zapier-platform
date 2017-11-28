@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const path = require('path');
+const stripComments = require('strip-comments');
 const {camelCase, snakeCase} = require('./misc');
 const {readFile, writeFile, ensureDir} = require('./files');
 const {printStarting, printDone} = require('./display');
@@ -86,7 +87,11 @@ const getAuthType = (definition) => {
   return authTypeMap[definition.general.auth_type];
 };
 
-const renderField = (definition, key) => {
+const hasAuth = (definition) => {
+  return getAuthType(definition) !== 'custom' || !_.isEmpty(definition.auth_fields);
+};
+
+const renderField = (definition, key, indent = 0) => {
   const type = definition.type && typesMap[definition.type.toLowerCase()] || 'string';
 
   let props = [];
@@ -115,11 +120,20 @@ const renderField = (definition, key) => {
     props.push(renderProp('search', quote(definition.searchfill)));
   }
 
-  props = props.map(s => ' '.repeat(8) + s);
+  props = props.map(s => ' '.repeat(indent + 2) + s);
+  const padding = ' '.repeat(indent);
 
-  return `      {
+  return `${padding}{
 ${props.join(',\n')}
-      }`;
+${padding}}`;
+};
+
+const renderFields = (fields, indent = 0) => {
+  const results = [];
+  _.each(fields, (field, key) => {
+    results.push(renderField(field, key, indent));
+  });
+  return results.join(',\n');
 };
 
 const renderSampleField = (def) => {
@@ -150,20 +164,43 @@ ${fields.join(',\n')}
     ]`;
 };
 
+// Get some quick metadata on auth scripting methods
+const getAuthMetaData = (definition) => {
+  const js = definition.js ? stripComments(definition.js) : '';
+
+  const hasPreOAuthTokenScripting = js.indexOf('pre_oauthv2_token') > 0;
+  const hasPostOAuthTokenScripting = js.indexOf('post_oauthv2_token') > 0;
+  const hasPreOAuthRefreshScripting = js.indexOf('pre_oauthv2_refresh') > 0;
+  const hasGetConnectionLabelScripting = js.indexOf('get_connection_label') > 0;
+
+  return {
+    hasPreOAuthTokenScripting,
+    hasPostOAuthTokenScripting,
+    hasPreOAuthRefreshScripting,
+    hasGetConnectionLabelScripting,
+  };
+};
+
+const getTestTriggerKey = (definition) => {
+  return _.get(definition, ['general', 'test_trigger_key']);
+};
+
 const renderAuthTemplate = (authType, definition) => {
-  const fields = _.map(definition.auth_fields, renderField);
+  const fields = renderFields(definition.auth_fields, 4);
   const connectionLabel = _.get(definition, ['general', 'auth_label'], '');
+  const testTriggerKey = getTestTriggerKey(definition);
+  const { hasGetConnectionLabelScripting } = getAuthMetaData(definition);
 
-  const auth = `{
-    type: '${authType}',
-    test: AuthTest.operation.perform,
-    fields: [
-${fields.join(',\n')}
-    ],
-    connectionLabel: '${connectionLabel}'
-  }`;
+  const templateContext = {
+    TEST_TRIGGER_MODULE: `./triggers/${snakeCase(testTriggerKey)}`,
+    TYPE: authType,
+    FIELDS: fields,
+    CONNECTION_LABEL: connectionLabel,
+    hasGetConnectionLabelScripting,
+  };
 
-  return Promise.resolve(auth);
+  const templateFile = path.join(TEMPLATE_DIR, '/simple-auth.template.js');
+  return renderTemplate(templateFile, templateContext);
 };
 
 const renderBasicAuth = _.bind(renderAuthTemplate, null, 'basic');
@@ -175,29 +212,52 @@ const renderOAuth2 = (definition, withRefresh) => {
   const refreshTokenUrl = _.get(definition, ['general', 'auth_urls', 'refresh_token_url'], 'TODO');
   const connectionLabel = _.get(definition, ['general', 'auth_label'], '');
   const scope = _.get(definition, ['general', 'auth_data', 'scope'], '');
+  const testTriggerKey = getTestTriggerKey(definition);
+
+  const {
+    hasPreOAuthTokenScripting,
+    hasPostOAuthTokenScripting,
+    hasPreOAuthRefreshScripting,
+    hasGetConnectionLabelScripting,
+  } = getAuthMetaData(definition);
 
   const templateContext = {
+    TEST_TRIGGER_MODULE: `./triggers/${snakeCase(testTriggerKey)}`,
     AUTHORIZE_URL: authorizeUrl,
     ACCESS_TOKEN_URL: accessTokenUrl,
     REFRESH_TOKEN_URL: refreshTokenUrl,
     CONNECTION_LABEL: connectionLabel,
     SCOPE: scope,
+
+    withRefresh,
+
+    hasPreOAuthTokenScripting,
+    hasPostOAuthTokenScripting,
+    hasPreOAuthRefreshScripting,
+    hasGetConnectionLabelScripting,
+
     // TODO: Extra fields?
   };
 
-  const templateFileName = withRefresh ? 'oauth2-refresh' : 'oauth2';
-
-  const templateFile = path.join(TEMPLATE_DIR, `/${templateFileName}.template.js`);
+  const templateFile = path.join(TEMPLATE_DIR, '/oauth2.template.js');
   return renderTemplate(templateFile, templateContext);
 };
 
 const renderSessionAuth = (definition) => {
-  const fields = _.map(definition.auth_fields, renderField);
+  const fields = renderFields(definition.auth_fields, 4);
   const connectionLabel = _.get(definition, ['general', 'auth_label'], '');
+  const testTriggerKey = getTestTriggerKey(definition);
+
+  const {
+    hasGetConnectionLabelScripting,
+  } = getAuthMetaData(definition);
 
   const templateContext = {
-    FIELDS: fields.join(',\n'),
+    TEST_TRIGGER_MODULE: `./triggers/${snakeCase(testTriggerKey)}`,
+    FIELDS: fields,
     CONNECTION_LABEL: connectionLabel,
+
+    hasGetConnectionLabelScripting,
   };
 
   const templateFile = path.join(TEMPLATE_DIR, '/session.template.js');
@@ -222,6 +282,13 @@ const renderAuth = (definition) => {
     // TODO: complete auth settings
   }`);
   }
+};
+
+// write authentication.js
+const writeAuth = (definition, newAppDir) => {
+  const fileName = 'authentication.js';
+  return renderAuth(definition)
+    .then(content => createFile(content, fileName, newAppDir));
 };
 
 // Check if scripting has a given method for a step type, key, and position (pre, post, full)
@@ -317,6 +384,7 @@ const getMetaData = (definition) => {
   };
 };
 
+
 // Generate methods for beforeRequest and afterResponse
 const getHeader = (definition) => {
   const {
@@ -375,7 +443,7 @@ const renderStep = (type, definition, key, legacyApp) => {
     hasFullScripting,
   } = getStepMetaData(legacyApp, type, key);
 
-  const fields = _.map(definition.fields, renderField);
+  const fields = renderFields(definition.fields, 6);
   const sample = !_.isEmpty(definition.sample_result_fields) ? renderSample(definition) + ',\n' : '';
 
   const url = definition.url ? definition.url : 'http://example.com/api/${key}.json';
@@ -398,7 +466,7 @@ const renderStep = (type, definition, key, legacyApp) => {
     LABEL: label,
     HIDDEN: hidden,
     IMPORTANT: important,
-    FIELDS: fields.join(',\n'),
+    FIELDS: fields,
     SAMPLE: sample,
     URL: url,
     scripting: hasScripting,
@@ -485,25 +553,26 @@ const writeStepTest = (type, definition, key, legacyApp, newAppDir) => {
 };
 
 const renderIndex = (legacyApp) => {
+  const _hasAuth = hasAuth(legacyApp);
   const templateContext = {
-    AUTHENTICATION: '',
     HEADER: '',
     TRIGGERS: '',
     SEARCHES: '',
     CREATES: '',
     BEFORE_REQUESTS: getBeforeRequests(legacyApp),
     AFTER_RESPONSES: getAfterResponses(legacyApp),
+    hasAuth: _hasAuth
   };
 
-  return renderAuth(legacyApp)
-    .then((auth) => {
-      templateContext.AUTHENTICATION = auth;
-      return getHeader(legacyApp);
-    })
+  return getHeader(legacyApp)
     .then((header) => {
       templateContext.HEADER = header;
 
       const importLines = [];
+
+      if (_hasAuth) {
+        importLines.push("const authentication = require('./authentication');");
+      }
 
       const dirMap = {
         trigger: 'triggers',
@@ -518,11 +587,6 @@ const renderIndex = (legacyApp) => {
           const varName = `${camelCase(name)}${_.capitalize(camelCase(cliType))}`;
           const requireFile = `${dirMap[cliType]}/${snakeCase(name)}`;
           importLines.push(`const ${varName} = require('./${requireFile}');`);
-
-          if (cliType === 'trigger' && _.get(legacyApp, ['general', 'test_trigger_key']) === name) {
-            importLines.push(`const AuthTest = ${varName};`);
-          }
-
           lines.push(`[${varName}.key]: ${varName}`);
         });
 
@@ -620,6 +684,10 @@ const convertApp = (legacyApp, newAppDir) => {
   promises.push(writePackageJson(legacyApp, newAppDir));
   promises.push(writeScripting(legacyApp, newAppDir));
 
+  if (hasAuth(legacyApp)) {
+    promises.push(writeAuth(legacyApp, newAppDir));
+  }
+
   return Promise.all(promises);
 };
 
@@ -627,6 +695,7 @@ module.exports = {
   convertApp,
   renderAuth,
   renderField,
+  renderIndex,
   renderSample,
   renderScripting,
   renderStep,
@@ -636,4 +705,5 @@ module.exports = {
   getHeader,
   getBeforeRequests,
   getAfterResponses,
+  hasAuth,
 };
