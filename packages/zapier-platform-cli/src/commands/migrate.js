@@ -8,18 +8,33 @@ const migrate = (context, fromVersion, toVersion, optionalPercent = '100%') => {
   optionalPercent = parseInt(optionalPercent, 10);
   return utils.getLinkedApp()
     .then(app => {
-      context.line(`Getting ready to migrate your app "${app.title}" from ${fromVersion} to ${toVersion}.\n`);
-      utils.printStarting(`Starting migration from ${fromVersion} to ${toVersion} for ${optionalPercent}%`);
+      const body = {
+        percent: optionalPercent,
+      };
+      const user = global.argOpts.user;
+
+      if (user) {
+        if (optionalPercent !== 100) {
+          throw new Error('Cannot define percent and user. Use only one or the other.');
+        }
+
+        body.user = user;
+
+        context.line(`Getting ready to migrate "${user}" in your app "${app.title}" from ${fromVersion} to ${toVersion}.\n`);
+        utils.printStarting(`Starting migration from ${fromVersion} to ${toVersion} for ${user}`);
+      } else {
+        context.line(`Getting ready to migrate your app "${app.title}" from ${fromVersion} to ${toVersion}.\n`);
+        utils.printStarting(`Starting migration from ${fromVersion} to ${toVersion} for ${optionalPercent}%`);
+      }
+
       return utils.callAPI(`/apps/${app.id}/versions/${fromVersion}/migrate-to/${toVersion}`, {
         method: 'POST',
-        body: {
-          percent: optionalPercent
-        }
+        body,
       });
     })
     .then(() => {
       utils.printDone();
-      context.line('\nMigration successfully queued, please check `zapier history` to track the status. Normal migrations take between 5-10 minutes.');
+      context.line('\nMigration successfully queued, please check `zapier history` to track the status. Migrations usually take between 5-10 minutes.');
     });
 };
 migrate.argsSpec = [
@@ -27,7 +42,12 @@ migrate.argsSpec = [
   {name: 'toVersion', example: '1.0.1', required: true, help: 'the version **to** which to migrate users'},
   {name: 'percent', example: '100%', default: '100%', help: 'percent of users to migrate'},
 ];
-migrate.argOptsSpec = {};
+migrate.argOptsSpec = {
+  user: {
+    help: 'migrate only this user',
+    example: 'user@example.com',
+  },
+};
 migrate.help = 'Migrate users from one version of your app to another.';
 migrate.example = 'zapier migrate 1.0.0 1.0.1 [10%]';
 migrate.docs = `
@@ -40,6 +60,8 @@ Migrations can take between 5-10 minutes, so be patient and check \`zapier histo
 Note: since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.
 
 > Tip! We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
+
+> Tip 2! You can migrate a single user by using \`--user\` (IE: \`zapier migrate 1.0.0 1.0.1 --user=user@example.com\`).
 
 **Arguments**
 
