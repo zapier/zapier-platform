@@ -5,6 +5,7 @@ module.exports = _.extend(
   require('./api'),
   require('./args'),
   require('./build'),
+  require('./changelog'),
   require('./context'),
   require('./convert'),
   require('./correct-version'),

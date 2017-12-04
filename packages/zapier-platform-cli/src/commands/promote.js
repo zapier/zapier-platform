@@ -1,24 +1,65 @@
 const colors = require('colors/safe');
 const utils = require('../utils');
 
+const hasCancelled = answer => (answer.toLowerCase() === 'n' || answer.toLowerCase() === 'no' || answer.toLowerCase() === 'cancel');
+const hasAccepted = answer => (answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes');
+
 const promote = (context, version) => {
   if (!version) {
     context.line('Error: No deploment/version selected...\n');
     return Promise.resolve();
   }
 
-  let appId = 0;
+  let app, changelog;
 
   return utils.checkCredentials()
-    .then(() => utils.getLinkedApp())
-    .then((app) => {
+    .then(() => Promise.all([
+      utils.getLinkedApp(),
+      utils.getVersionChangelog(version),
+    ]))
+    .then(([foundApp, foundChangelog]) => {
+      app = foundApp;
+      changelog = foundChangelog;
+
       context.line(`Preparing to promote version ${version} of your app "${app.title}".\n`);
+
+      let action;
+
+      if (changelog) {
+        context.line(colors.green(`Changelog found for ${version}!`));
+        context.line(`\n---\n${changelog}\n---\n`);
+        action = () => utils.getInput('Would you like to continue promoting with this changelog? (y/n) (Ctrl-C to cancel)\n\n');
+      } else {
+        context.line(`${colors.yellow('Warning!')} Changelog not found. Please create a \`CHANGELOG.md\` file in a format similar to ${colors.cyan('https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md')}, with user-facing descriptions.\n`);
+        action = () => utils.getInput('Would you like to continue promoting without a changelog? (y/n) (Ctrl-C to cancel)\n\n');
+      }
+
+      const stop = (answer) => {
+        if (!hasCancelled(answer) && !hasAccepted(answer)) {
+          throw new Error('That answer is not valid. Please try "y" or "n".');
+        }
+
+        return hasCancelled(answer) || hasAccepted(answer);
+      };
+
+      return utils.promiseDoWhile(action, stop);
+    })
+    .then((answer) => {
+      if (hasCancelled(answer)) {
+        throw new Error('Cancelled promote.');
+      }
+
       const url = `/apps/${app.id}/versions/${version}/promote/production`;
-      appId = app.id;
+      const body = {};
+
+      if (changelog) {
+        body.changelog = changelog;
+      }
+
       utils.printStarting(`Promoting ${version}`);
       return utils.callAPI(url, {
         method: 'PUT',
-        body: {}
+        body,
       }, false);
     })
     .then(() => {
@@ -31,7 +72,7 @@ const promote = (context, version) => {
       if (error.message.indexOf('You cannot promote until we have approved your app.') !== -1) {
         utils.printDone();
         context.line('\nGood news! Your app passes validation and has the required number of testers and active Zaps.\n');
-        context.line(`The next step is to visit: ${colors.cyan(`https://zapier.com/developer/builder/cli-app/${appId}/activate/${version}`)} to request public activation of your app.\n`);
+        context.line(`The next step is to visit: ${colors.cyan(`https://zapier.com/developer/builder/cli-app/${app.id}/activate/${version}`)} to request public activation of your app.\n`);
       } else {
         throw error;
       }
@@ -62,7 +103,11 @@ ${utils.argOptsFragment(promote.argOptsSpec)}
 
 ${'```'}bash
 $ zapier promote 1.0.0
-# Preparing to promote version 1.0.0 your app "Example".
+# Preparing to promote version 1.0.0 of your app "Example".
+* Changelog found for 1.0.0!
+* ---
+* Initial release!
+* ---
 #
 #   Promoting 1.0.0 - done!
 #   Promotion successful!
