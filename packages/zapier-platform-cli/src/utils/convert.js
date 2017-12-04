@@ -297,8 +297,6 @@ const hasScriptingMethod = (js, type, key, position) => {
     return false;
   }
 
-  // TODO: Strip out comments from code
-
   let methodSuffix = '';
 
   if (type === 'trigger') {
@@ -334,17 +332,29 @@ const hasScriptingMethod = (js, type, key, position) => {
 
 // Get some quick meta data for templates, regarding a scripting and a step
 const getStepMetaData = (definition, type, key) => {
-  const hasPreScripting = hasScriptingMethod(_.get(definition, 'js'), type, key, 'pre');
-  const hasPostScripting = hasScriptingMethod(_.get(definition, 'js'), type, key, 'post');
-  const hasFullScripting = hasScriptingMethod(_.get(definition, 'js'), type, key, 'full');
+  const js = definition.js ? stripComments(definition.js) : '';
 
-  const hasScripting = hasPreScripting || hasPostScripting || hasFullScripting;
+  const hasPreScripting = hasScriptingMethod(js, type, key, 'pre');
+  const hasPostScripting = hasScriptingMethod(js, type, key, 'post');
+  const hasFullScripting = hasScriptingMethod(js, type, key, 'full');
+
+  const hasResourcePreScripting = js.indexOf(`${key}_pre_read_resource`) > 0;
+  const hasResourcePostScripting = js.indexOf(`${key}_post_read_resource`) > 0;
+  const hasResourceFullScripting = js.indexOf(`${key}_read_resource`) > 0;
+
+  const hasScripting = (
+    hasPreScripting || hasPostScripting || hasFullScripting ||
+    hasResourcePreScripting || hasResourcePostScripting || hasResourceFullScripting
+  );
 
   return {
     hasScripting,
     hasPreScripting,
     hasPostScripting,
     hasFullScripting,
+    hasResourcePreScripting,
+    hasResourcePostScripting,
+    hasResourceFullScripting,
   };
 };
 
@@ -441,6 +451,9 @@ const renderStep = (type, definition, key, legacyApp) => {
     hasPreScripting,
     hasPostScripting,
     hasFullScripting,
+    hasResourcePreScripting,
+    hasResourcePostScripting,
+    hasResourceFullScripting,
   } = getStepMetaData(legacyApp, type, key);
 
   const fields = renderFields(definition.fields, 6);
@@ -473,7 +486,14 @@ const renderStep = (type, definition, key, legacyApp) => {
     preScripting: hasPreScripting,
     postScripting: hasPostScripting,
     fullScripting: hasFullScripting,
+    resourcePreScripting: hasResourcePreScripting,
+    resourcePostScripting: hasResourcePostScripting,
+    resourceFullScripting: hasResourceFullScripting,
   };
+
+  if (type === 'search') {
+    templateContext.RESOURCE_URL = definition.resource_url;
+  }
 
   const templateFile = path.join(TEMPLATE_DIR, `/${type}.template.js`);
   return renderTemplate(templateFile, templateContext);
@@ -530,11 +550,11 @@ const renderAuthData = (authType) => {
 
 const renderStepTest = (type, definition, key, legacyApp) => {
   const authType = getAuthType(legacyApp);
-  const noun = definition.noun || _.capitalize(key);
+  const label = definition.label || _.capitalize(key);
   const authData = renderAuthData(authType);
   const templateContext = {
     KEY: key,
-    NOUN: noun,
+    LABEL: label,
     AUTH_DATA: authData
   };
   const templateFile = path.join(TEMPLATE_DIR, `/${type}-test.template.js`);

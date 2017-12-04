@@ -5,7 +5,7 @@ const zapier = require('zapier-platform-core');
 const App = require('../../index');
 const appTester = zapier.createAppTester(App);
 
-describe('Creates - <%= NOUN %>', () => {
+describe('Creates - <%= LABEL %>', () => {
   zapier.tools.env.inject();
 
   it('should create an object', (done) => {

@@ -12,7 +12,9 @@ const appsToConvert = [
   {id: 80082, name: 'simple-basic-auth'},
   {id: 80182, name: 'trigger-session-auth'},
   {id: 82052, name: 'simple-oauth'},
-  // TODO: Add more apps that require different scripting methods, as we start to support them
+  {id: 82250, name: 'search-oauth'},
+  {id: 82251, name: 'basic-api-header'},
+  // TODO: Add more apps that use different scripting methods, as we start to support them
 ];
 
 const testConvertedApp = (appToConvert, rootTmpDir) => {

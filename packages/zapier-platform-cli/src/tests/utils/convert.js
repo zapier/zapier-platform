@@ -508,37 +508,49 @@ const getSessionKey = (z, bundle) => {
 
   describe('render step', () => {
     it('should fill with trigger default description', () => {
-      const v2Def = {
-        key: 'exampleStep',
-        noun: 'Example',
-        label: 'Example Step',
+      const wbDef = {
+        triggers: {
+          exampleStep: {
+            noun: 'Example',
+            label: 'Example Step',
+          },
+        },
       };
+      const stepDef = wbDef.triggers.exampleStep;
 
-      return convert.renderStep('trigger', v2Def).then(content => {
+      return convert.renderStep('trigger', stepDef, 'exampleStep', wbDef).then(content => {
         content.should.containEql("description: 'Triggers on a new example.'");
       });
     });
 
     it('should fill with create default description', () => {
-      const v2Def = {
-        key: 'exampleStep',
-        noun: 'Example',
-        label: 'Example Step',
+      const wbDef = {
+        actions: {
+          exampleStep: {
+            noun: 'Example',
+            label: 'Example Step',
+          },
+        },
       };
+      const stepDef = wbDef.actions.exampleStep;
 
-      return convert.renderStep('create', v2Def).then(content => {
+      return convert.renderStep('create', stepDef, 'exampleStep', wbDef).then(content => {
         content.should.containEql("description: 'Creates a example.'");
       });
     });
 
     it('should fill with search default description', () => {
-      const v2Def = {
-        key: 'exampleStep',
-        noun: 'Example',
-        label: 'Example Step',
+      const wbDef = {
+        searches: {
+          exampleStep: {
+            noun: 'Example',
+            label: 'Example Step',
+          },
+        },
       };
+      const stepDef = wbDef.searches.exampleStep;
 
-      return convert.renderStep('search', v2Def).then(content => {
+      return convert.renderStep('search', stepDef, 'exampleStep', wbDef).then(content => {
         content.should.containEql("description: 'Finds a example.'");
       });
     });
