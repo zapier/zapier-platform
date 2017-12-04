@@ -2311,6 +2311,7 @@ should(<span class="hljs-string">&apos;some tests&apos;</span>, () =&gt; {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>This is a popular way to provide <code>process.env.ACCESS_TOKEN || bundle.authData.access_token</code> for convenient testing.</p>
+<p><strong>NOTE</strong> Variables defined via <code>zapier env</code> will <em>always</em> be uppercased. For example, you would access the variable defined by <code>zapier env 1.0.0 foo_bar 1234</code> with <code>process.env.FOO_BAR</code>.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

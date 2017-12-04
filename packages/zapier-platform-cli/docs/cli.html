@@ -601,7 +601,7 @@ $ zapier collaborate user@example.com --remove
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Read and write environment variables.</p>
+<p>Read, write, and delete environment variables.</p>
 </blockquote><p>  <strong>Usage:</strong> <code>zapier env 1.0.0 CLIENT_SECRET 12345</code></p><p>Manage the environment of your app so that <code>process.env</code> has the necessary variables, making it easy to match a local environment with a production environment via <code>CLIENT_SECRET=12345 zapier test</code>.</p><p><strong>Arguments</strong></p><ul>
 <li><code>version [1.0.0]</code> -- <strong>required</strong>, the app version&apos;s environment to work on</li>
 <li><code>key [CLIENT_SECRET]</code> -- <em>optional</em>, the uppercase key of the environment variable to set</li>
@@ -1029,10 +1029,12 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http --detailed --format
 <p>Migrate users from one version of your app to another.</p>
 </blockquote><p>  <strong>Usage:</strong> <code>zapier migrate 1.0.0 1.0.1 [10%]</code></p><p>Starts a migration to move users between different versions of your app. You may also &quot;revert&quot; by simply swapping the from/to verion strings in the command line arguments (IE: <code>zapier migrate 1.0.1 1.0.0</code>).</p><p>Only migrate users between non-breaking versions, use <code>zapier deprecate</code> if you have breaking changes!</p><p>Migrations can take between 5-10 minutes, so be patient and check <code>zapier history</code> to track the status</p><p>Note: since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.</p><blockquote>
 <p>Tip! We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.</p>
+<p>Tip 2! You can migrate a single user by using <code>--user</code> (IE: <code>zapier migrate 1.0.0 1.0.1 --user=user@example.com</code>).</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
 <li><code>fromVersion [1.0.0]</code> -- <strong>required</strong>, the version <strong>from</strong> which to migrate users</li>
 <li><code>toVersion [1.0.1]</code> -- <strong>required</strong>, the version <strong>to</strong> which to migrate users</li>
 <li><code>percent [100%]</code> -- <em>optional</em>, percent of users to migrate. Default is <code>100%</code></li>
+<li><code>--user=user@example.com</code> -- <em>optional</em>, migrate only this user</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1072,7 +1074,11 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http --detailed --format
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">$ zapier promote 1.0.0
-<span class="hljs-comment"># Preparing to promote version 1.0.0 your app &quot;Example&quot;.</span>
+<span class="hljs-comment"># Preparing to promote version 1.0.0 of your app &quot;Example&quot;.</span>
+* Changelog found <span class="hljs-keyword">for</span> 1.0.0!
+* ---
+* Initial release!
+* ---
 <span class="hljs-comment">#</span>
 <span class="hljs-comment">#   Promoting 1.0.0 - done!</span>
 <span class="hljs-comment">#   Promotion successful!</span>

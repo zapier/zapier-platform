@@ -276,7 +276,7 @@ $ zapier describe
 
 ## env
 
-  > Read and write environment variables.
+  > Read, write, and delete environment variables.
 
   **Usage:** `zapier env 1.0.0 CLIENT_SECRET 12345`
 
@@ -680,12 +680,14 @@ Note: since a migration is only for non-breaking changes, users are not emailed 
 
 > Tip! We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
+> Tip 2! You can migrate a single user by using `--user` (IE: `zapier migrate 1.0.0 1.0.1 --user=user@example.com`).
+
 **Arguments**
 
 * `fromVersion [1.0.0]` -- **required**, the version **from** which to migrate users
 * `toVersion [1.0.1]` -- **required**, the version **to** which to migrate users
 * `percent [100%]` -- _optional_, percent of users to migrate. Default is `100%`
-
+* `--user=user@example.com` -- _optional_, migrate only this user
 
 ```bash
 $ zapier migrate 1.0.0 1.0.1 15%
@@ -722,7 +724,11 @@ Promotes are an inherently safe operation for all existing users of your app.
 
 ```bash
 $ zapier promote 1.0.0
-# Preparing to promote version 1.0.0 your app "Example".
+# Preparing to promote version 1.0.0 of your app "Example".
+* Changelog found for 1.0.0!
+* ---
+* Initial release!
+* ---
 #
 #   Promoting 1.0.0 - done!
 #   Promotion successful!
