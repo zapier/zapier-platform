@@ -23,12 +23,12 @@ const fetchList = (z, bundle) => {
           return speciesID == bundle.inputData.species;
         });
       }
-      
+
       peopleArray.forEach( (person) => {
         // copy the "url" field into an "id" field
         person.id = generateID(person.url);
       });
-      
+
       return peopleArray;
     });
 };
@@ -43,7 +43,16 @@ module.exports = {
 
   operation: {
     inputFields: [
-      {key: 'species', type: 'string',  helpText: 'Species of person', dynamic: 'species.id.name'}
+      {key: 'species', type: 'string',  helpText: 'Species of person', dynamic: 'species.id.name', altersDynamicFields:true },
+      (z, bundle) => {
+        if (!bundle.inputData.species) {
+          return [];
+        }
+        return [
+          {key: 'foo1', label: 'Favorite Number', required: false, type: 'number'},
+          {key: 'foo2', label: 'Favorite Color', required: false, type: 'string'},
+        ];
+      }
     ],
     perform: fetchList,
     sample: {
