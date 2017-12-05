@@ -1,3 +1,11 @@
+## 4.1.0
+
+* (New) `zapier convert` now supports [auth](https://github.com/zapier/zapier-platform-cli/pull/185) and [search](https://github.com/zapier/zapier-platform-cli/pull/186) scripting methods.
+* (New) [Allow to migrate users by email.](https://github.com/zapier/zapier-platform-cli/pull/192)
+* (New) [Accept changelog for app promotion.](https://github.com/zapier/zapier-platform-cli/pull/194)
+* (Doc) [Add explanation about uppercased env vars.](https://github.com/zapier/zapier-platform-cli/pull/195)
+* [Improve first promote message.](https://github.com/zapier/zapier-platform-cli/pull/191)
+
 ## 4.0.0
 
 * (**BREAKING**) (Fix) [Encode form requests with + instead of %20 by default](https://github.com/zapier/zapier-platform-core/pull/52)
