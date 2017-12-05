@@ -24,6 +24,9 @@ _zapier() {
             logs)
                 COMPREPLY=( $( compgen -W "--version --status --type --detailed --user --limit" -- $cur ) )
                ;;
+            migrate)
+                COMPREPLY=( $( compgen -W "--user" -- $cur ) )
+               ;;
             push)
                 COMPREPLY=( $( compgen -W "--disable-dependency-detection --include-js-map" -- $cur ) )
                ;;

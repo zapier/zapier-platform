@@ -7,6 +7,7 @@ getOptions() {
     local initOpts=("--template:'select a starting app template'")
     local inviteOpts=("--remove:'elect to remove this user'")
     local logsOpts=("--version:'display only this versions logs (default is all versions)'" "--status:'display only success logs (status code < 400 / info) or error (status code > 400 / tracebacks)'" "--type:'display only console or http logs'" "--detailed:'show detailed logs (like request/response body and headers)'" "--user:'display only this users logs'" "--limit:'control the maximum result size'")
+    local migrateOpts=("--user:'migrate only this user'")
     local pushOpts=("--disable-dependency-detection:'disables walking required files to slim the build'" "--include-js-map:'include .js.map files (usually source maps'")
     local scaffoldOpts=("--dest:'sets the new files path'" "--entry:'where to import the new file'")
     local testOpts=("--debug:'print zapier detailed logs to standard out'" "--timeout:'set test-case timeout in milliseconds [2000]'" "--grep:'only run tests matching pattern'" "--skip-validate:'forgo running zapier validate before npm test'")
@@ -32,6 +33,9 @@ getOptions() {
         logs)
                _describe 'options' logsOpts
                ;;
+        migrate)
+               _describe 'options' migrateOpts
+               ;;
         push)
                _describe 'options' pushOpts
                ;;
@@ -49,7 +53,7 @@ getOptions() {
 
 getCommands() {
     local -a options
-    options=("apps:'Lists all the apps you can access.'" "build:'Builds a pushable zip from the current directory.'" "collaborate:'Manage the collaborators on your project. Can optionally --remove.'" "convert:'Converts a Zapier Platform app to a CLI app, stubs only.'" "delete:'Delete a version of your app (or the whole app) as long as it has no users/Zaps.'" "deprecate:'Mark a non-production version of your app as deprecated, with removal by a certain date.'" "describe:'Describes the current app.'" "env:'Read and write environment variables.'" "help:'Lists all the commands you can use.'" "history:'Prints all edit history for your app.'" "init:'Initializes a new Zapier app in a directory.'" "invite:'Manage the invitees/testers on your project. Can optionally specify a version or --remove.'" "link:'Link the current directory to an app you have access to.'" "login:'Configure your ~/.zapierrc with a deploy key.'" "logout:'Deactivates all your personal deploy keys and resets ~/.zapierrc.'" "logs:'Prints recent logs. See help for filter arguments.'" "migrate:'Migrate users from one version of your app to another.'" "promote:'Promotes a specific version to public access.'" "push:'Build and upload the current app - does not promote.'" "register:'Registers a new app in your account.'" "scaffold:'Adds a starting resource, trigger, action or search to your app.'" "test:'Tests your app via npm test.'" "upload:'Upload the last build as a version.'" "validate:'Validates the current app.'" "versions:'Lists all the versions of the current app.'")
+    options=("apps:'Lists all the apps you can access.'" "build:'Builds a pushable zip from the current directory.'" "collaborate:'Manage the collaborators on your project. Can optionally --remove.'" "convert:'Converts a Zapier Platform app to a CLI app, stubs only.'" "delete:'Delete a version of your app (or the whole app) as long as it has no users/Zaps.'" "deprecate:'Mark a non-production version of your app as deprecated, with removal by a certain date.'" "describe:'Describes the current app.'" "env:'Read, write, and delete environment variables.'" "help:'Lists all the commands you can use.'" "history:'Prints all edit history for your app.'" "init:'Initializes a new Zapier app in a directory.'" "invite:'Manage the invitees/testers on your project. Can optionally specify a version or --remove.'" "link:'Link the current directory to an app you have access to.'" "login:'Configure your ~/.zapierrc with a deploy key.'" "logout:'Deactivates all your personal deploy keys and resets ~/.zapierrc.'" "logs:'Prints recent logs. See help for filter arguments.'" "migrate:'Migrate users from one version of your app to another.'" "promote:'Promotes a specific version to public access.'" "push:'Build and upload the current app - does not promote.'" "register:'Registers a new app in your account.'" "scaffold:'Adds a starting resource, trigger, action or search to your app.'" "test:'Tests your app via npm test.'" "upload:'Upload the last build as a version.'" "validate:'Validates the current app.'" "versions:'Lists all the versions of the current app.'")
     _describe 'commands' options
 }
 
