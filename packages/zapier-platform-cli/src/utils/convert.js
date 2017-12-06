@@ -40,6 +40,13 @@ const stepNamesMap = {
   actions: 'create'
 };
 
+// map CLI step names to WB
+const stepNamesMapInv = {
+  trigger: 'triggers',
+  search: 'searches',
+  create: 'actions'
+};
+
 const stepTypeMap = {
   trigger: 'triggers',
   search: 'searches',
@@ -291,43 +298,75 @@ const writeAuth = (definition, newAppDir) => {
     .then(content => createFile(content, fileName, newAppDir));
 };
 
-// Check if scripting has a given method for a step type, key, and position (pre, post, full)
-const hasScriptingMethod = (js, type, key, position) => {
+// Check if scripting has a given method for a step type, key, position (pre, post, full),
+// and method_type (step, resource, input_fields, output_fields)
+const hasScriptingMethod = (js, type, key, position, method_type = 'step') => {
   if (!js) {
     return false;
   }
 
-  let methodSuffix = '';
+  const suffixTable = {
+    trigger: {
+      pre: {
+        step: '_pre_poll',
+        output_fields: '_pre_custom_trigger_fields',
+      },
+      post: {
+        step: '_post_poll',
+        output_fields: '_post_custom_trigger_fields',
+      },
+      full: {
+        step: '_poll',
+        output_fields: '_custom_trigger_fields',
+      },
+    },
+    create: {
+      pre: {
+        step: '_pre_write',
+        input_fields: '_pre_custom_action_fields',
+        output_fields: '_pre_custom_action_result_fields',
+      },
+      post: {
+        step: '_post_write',
+        input_fields: '_post_custom_action_fields',
+        output_fields: '_post_custom_action_result_fields',
+      },
+      full: {
+        step: '_write',
+        input_fields: '_custom_action_fields',
+        output_fields: '_custom_action_result_fields',
+      },
+    },
+    search: {
+      pre: {
+        step: '_pre_search',
+        resource: '_pre_read_resource',
+        input_fields: '_pre_custom_search_fields',
+        output_fields: '_pre_custom_search_result_fields',
+      },
+      post: {
+        step: '_post_search',
+        resource: '_post_read_resource',
+        input_fields: '_post_custom_search_fields',
+        output_fields: '_post_custom_search_result_fields',
+      },
+      full: {
+        step: '_search',
+        resource: '_read_resource',
+        input_fields: '_custom_search_fields',
+        output_fields: '_custom_search_result_fields',
+      },
+    },
+  };
 
-  if (type === 'trigger') {
-    if (position === 'pre') {
-      methodSuffix = '_pre_poll';
-    } else if (position === 'post') {
-      methodSuffix = '_post_poll';
-    } else {
-      methodSuffix = '_poll';
-    }
-  } else if (type === 'create') {
-    if (position === 'pre') {
-      methodSuffix = '_pre_write';
-    } else if (position === 'post') {
-      methodSuffix = '_post_write';
-    } else {
-      methodSuffix = '_write';
-    }
-  } else if (type === 'search') {
-    if (position === 'pre') {
-      methodSuffix = '_pre_search';
-    } else if (position === 'post') {
-      methodSuffix = '_post_search';
-    } else {
-      methodSuffix = '_search';
-    }
+  const methodSuffix = suffixTable[type][position][method_type];
+  if (!methodSuffix) {
+    return false;
   }
 
+  // Whole word search. '\b' regex matches a word boundary.
   const methodName = `${key}${methodSuffix}`;
-
-  return (js.indexOf(methodName) !== -1);
+  return new RegExp('\\b' + methodName + '\\b').test(js);
 };
 
 // Get some quick meta data for templates, regarding a scripting and a step
@@ -338,13 +377,34 @@ const getStepMetaData = (definition, type, key) => {
   const hasPostScripting = hasScriptingMethod(js, type, key, 'post');
   const hasFullScripting = hasScriptingMethod(js, type, key, 'full');
 
-  const hasResourcePreScripting = js.indexOf(`${key}_pre_read_resource`) > 0;
-  const hasResourcePostScripting = js.indexOf(`${key}_post_read_resource`) > 0;
-  const hasResourceFullScripting = js.indexOf(`${key}_read_resource`) > 0;
+  const hasResourcePreScripting = hasScriptingMethod(js, type, key, 'pre', 'resource');
+  const hasResourcePostScripting = hasScriptingMethod(js, type, key, 'post', 'resource');
+  const hasResourceFullScripting = hasScriptingMethod(js, type, key, 'full', 'resource');
+
+  const hasInputFieldPreScripting = hasScriptingMethod(js, type, key, 'pre', 'input_fields');
+  const hasInputFieldPostScripting = hasScriptingMethod(js, type, key, 'post', 'input_fields');
+  const hasInputFieldFullScripting = hasScriptingMethod(js, type, key, 'full', 'input_fields');
+
+  const hasOutputFieldPreScripting = hasScriptingMethod(js, type, key, 'pre', 'output_fields');
+  const hasOutputFieldPostScripting = hasScriptingMethod(js, type, key, 'post', 'output_fields');
+  const hasOutputFieldFullScripting = hasScriptingMethod(js, type, key, 'full', 'output_fields');
 
   const hasScripting = (
     hasPreScripting || hasPostScripting || hasFullScripting ||
-    hasResourcePreScripting || hasResourcePostScripting || hasResourceFullScripting
+    hasResourcePreScripting || hasResourcePostScripting || hasResourceFullScripting ||
+    hasInputFieldPreScripting || hasInputFieldPostScripting || hasInputFieldFullScripting ||
+    hasOutputFieldPreScripting || hasOutputFieldPostScripting || hasOutputFieldFullScripting
+  );
+
+  const stepDef = definition[stepNamesMapInv[type]][key];
+
+  const hasCustomInputFields = (
+    hasInputFieldPreScripting || hasInputFieldPostScripting || hasInputFieldFullScripting ||
+    Boolean(stepDef.custom_fields_url)
+  );
+  const hasCustomOutputFields = (
+    hasOutputFieldPreScripting || hasOutputFieldPostScripting || hasOutputFieldFullScripting ||
+    Boolean(stepDef.custom_fields_result_url)
   );
 
   return {
@@ -355,6 +415,14 @@ const getStepMetaData = (definition, type, key) => {
     hasResourcePreScripting,
     hasResourcePostScripting,
     hasResourceFullScripting,
+    hasInputFieldPreScripting,
+    hasInputFieldPostScripting,
+    hasInputFieldFullScripting,
+    hasOutputFieldPreScripting,
+    hasOutputFieldPostScripting,
+    hasOutputFieldFullScripting,
+    hasCustomInputFields,
+    hasCustomOutputFields,
   };
 };
 
@@ -446,15 +514,7 @@ const getAfterResponses = (definition) => {
 
 // convert a trigger, create or search
 const renderStep = (type, definition, key, legacyApp) => {
-  const {
-    hasScripting,
-    hasPreScripting,
-    hasPostScripting,
-    hasFullScripting,
-    hasResourcePreScripting,
-    hasResourcePostScripting,
-    hasResourceFullScripting,
-  } = getStepMetaData(legacyApp, type, key);
+  const stepMeta = getStepMetaData(legacyApp, type, key);
 
   const fields = renderFields(definition.fields, 6);
   const sample = !_.isEmpty(definition.sample_result_fields) ? renderSample(definition) + ',\n' : '';
@@ -482,17 +542,29 @@ const renderStep = (type, definition, key, legacyApp) => {
     FIELDS: fields,
     SAMPLE: sample,
     URL: url,
-    scripting: hasScripting,
-    preScripting: hasPreScripting,
-    postScripting: hasPostScripting,
-    fullScripting: hasFullScripting,
-    resourcePreScripting: hasResourcePreScripting,
-    resourcePostScripting: hasResourcePostScripting,
-    resourceFullScripting: hasResourceFullScripting,
+    scripting: stepMeta.hasScripting,
+    preScripting: stepMeta.hasPreScripting,
+    postScripting: stepMeta.hasPostScripting,
+    fullScripting: stepMeta.hasFullScripting,
+    resourcePreScripting: stepMeta.hasResourcePreScripting,
+    resourcePostScripting: stepMeta.hasResourcePostScripting,
+    resourceFullScripting: stepMeta.hasResourceFullScripting,
+    inputFieldPreScripting: stepMeta.hasInputFieldPreScripting,
+    inputFieldPostScripting: stepMeta.hasInputFieldPostScripting,
+    inputFieldFullScripting: stepMeta.hasInputFieldFullScripting,
+    outputFieldPreScripting: stepMeta.hasOutputFieldPreScripting,
+    outputFieldPostScripting: stepMeta.hasOutputFieldPostScripting,
+    outputFieldFullScripting: stepMeta.hasOutputFieldFullScripting,
+    hasCustomInputFields: stepMeta.hasCustomInputFields,
+    hasCustomOutputFields: stepMeta.hasCustomOutputFields,
   };
 
   if (type === 'search') {
     templateContext.RESOURCE_URL = definition.resource_url;
+  }
+
+  if (definition.custom_fields_url) {
+    templateContext.CUSTOM_FIELDS_URL = definition.custom_fields_url;
   }
 
   const templateFile = path.join(TEMPLATE_DIR, `/${type}.template.js`);

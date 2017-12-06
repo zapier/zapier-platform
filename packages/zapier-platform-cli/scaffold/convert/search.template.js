@@ -786,6 +786,98 @@ const getList = (z, bundle) => {
     });
 <% } %>
 };
+<% }
+
+if (inputFieldFullScripting) { %>
+const getInputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  // Do a _custom_search_fields() from scripting.
+  const fullFieldsEvent = {
+    name: 'search.input',
+    key: '<%= KEY %>'
+  };
+  return legacyScriptingRunner.runEvent(fullFieldsEvent, z, bundle);
+};
+<% } else if (inputFieldPreScripting && !inputFieldPostScripting) { %>
+const getInputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  // Do a _pre_custom_search_fields() from scripting.
+  const preFieldsEvent = {
+    name: 'search.input.pre',
+    key: '<%= KEY %>'
+  };
+  return legacyScriptingRunner.runEvent(preFieldsEvent, z, bundle)
+    .then((preFieldsResult) => z.request(preFieldsResult))
+    .then((response) => z.JSON.parse(response.content));
+};
+<% } else if (inputFieldPreScripting && inputFieldPostScripting) { %>
+const getInputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  // Do a _pre_custom_search_fields() from scripting.
+  const preFieldsEvent = {
+    name: 'search.input.pre',
+    key: '<%= KEY %>'
+  };
+  return legacyScriptingRunner.runEvent(preFieldsEvent, z, bundle)
+    .then((preFieldsResult) => z.request(preFieldsResult))
+    .then((response) => {
+      // Do a _post_custom_search_fields() from scripting.
+      const postFieldsEvent = {
+        name: 'search.input.post',
+        key: '<%= KEY %>',
+        response,
+      };
+      return legacyScriptingRunner.runEvent(postFieldsEvent, z, bundle);
+    });
+};
+<% } else if (!inputFieldPreScripting && inputFieldPostScripting) { %>
+const getInputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  const responsePromise = z.request({
+    url: bundle._legacyUrl
+  });
+  return responsePromise
+    .then((response) => {
+      // Do a _post_custom_search_fields() from scripting.
+      const postFieldsEvent = {
+        name: 'search.input.post',
+        key: '<%= KEY %>',
+        response,
+      };
+      return legacyScriptingRunner.runEvent(postFieldsEvent, z, bundle);
+    });
+};
+<% } else if (hasCustomInputFields) { %>
+const getInputFields = (z, bundle) => {
+  let url = '<%= CUSTOM_FIELDS_URL %>';
+  url = replaceVars(url, bundle, {});
+
+  const responsePromise = z.request({
+    url: url
+  });
+  return responsePromise
+    .then((response) => z.JSON.parse(response.content));
+};
 <% } %>
 
 module.exports = {
@@ -801,7 +893,8 @@ module.exports = {
 
   operation: {
     inputFields: [
-<%= FIELDS %>
+      <%= FIELDS %><% if (hasCustomInputFields) { %><% if (FIELDS) { %>,<% } %>
+      getInputFields<% } %>
     ],
 <%= SAMPLE %>
     perform: getList

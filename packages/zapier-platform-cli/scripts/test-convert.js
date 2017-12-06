@@ -14,6 +14,7 @@ const appsToConvert = [
   {id: 82052, name: 'simple-oauth'},
   {id: 82250, name: 'search-oauth'},
   {id: 82251, name: 'basic-api-header'},
+  {id: 82460, name: 'custom-fields'},
   // TODO: Add more apps that use different scripting methods, as we start to support them
 ];
 
