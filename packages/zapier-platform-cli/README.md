@@ -55,7 +55,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [Computed Fields](#computed-fields)
 - [Z Object](#z-object)
   * [`z.request([url], options)`](#zrequesturl-options)
-  * [`z.console(message)`](#zconsolemessage)
+  * [`z.console`](#zconsole)
   * [`z.dehydrate(func, inputData)`](#zdehydratefunc-inputdata)
   * [`z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])`](#zstashfilebufferstringstream-knownlength-filename-contenttype)
   * [`z.JSON`](#zjson)
@@ -1034,9 +1034,9 @@ We provide several methods off of the `z` object, which is provided as the first
 
 `z.request([url], options)` is a promise based HTTP client with some Zapier-specific goodies. See [Making HTTP Requests](#making-http-requests).
 
-### `z.console(message)`
+### `z.console`
 
-`z.console(message)` is a logging console, similar to Node.js `console` but logs remotely, as well as to stdout in tests. See [Log Statements](#console-logging)
+`z.console.log(message)` is a logging console, similar to Node.js `console` but logs remotely, as well as to stdout in tests. See [Log Statements](#console-logging)
 
 ### `z.dehydrate(func, inputData)`
 
@@ -1395,12 +1395,12 @@ If you need to process all HTTP requests in a certain way, you may be able to us
 Try putting them in your app definition:
 
 ```javascript
-const addHeader = (request, /*z*/) => {
+const addHeader = (request/*, z*/) => {
   request.headers['my-header'] = 'from zapier';
   return request;
 };
 
-const mustBe200 = (response, /*z*/) => {
+const mustBe200 = (response/*, z*/) => {
   if (response.status !== 200) {
     throw new Error(`Unexpected status code ${response.status}`);
   }
@@ -1665,7 +1665,7 @@ module.exports = App;
 
 ## Logging
 
-There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the `z.console` method ([see below for details](#console-logging)). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use `z.request([url], options)` or shorthand request objects).
+There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the `z.console.log` method ([see below for details](#console-logging)). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use `z.request([url], options)` or shorthand request objects).
 
 To view the logs for your application, use the `zapier logs` command. There are two types of logs, `http` (logged automatically by Zapier on HTTP requests) and `console` (manual logs via `z.console.log()` statements).
 
@@ -1677,7 +1677,7 @@ zapier help logs
 
 ### Console Logging
 
-To manually print a log statement in your code, use `z.console`:
+To manually print a log statement in your code, use `z.console.log`:
 
 ```javascript
 z.console.log('Here are the input fields', bundle.inputData);
@@ -1687,7 +1687,7 @@ The `z.console` object has all the same methods and works just like the Node.js 
 
 ### Viewing Console Logs
 
-To see your `z.console` logs, do:
+To see your `z.console.log` logs, do:
 
 ```bash
 zapier logs --type=console

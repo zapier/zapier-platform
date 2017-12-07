@@ -524,9 +524,9 @@ We provide several methods off of the `z` object, which is provided as the first
 
 `z.request([url], options)` is a promise based HTTP client with some Zapier-specific goodies. See [Making HTTP Requests](#making-http-requests).
 
-### `z.console(message)`
+### `z.console`
 
-`z.console(message)` is a logging console, similar to Node.js `console` but logs remotely, as well as to stdout in tests. See [Log Statements](#console-logging)
+`z.console.log(message)` is a logging console, similar to Node.js `console` but logs remotely, as well as to stdout in tests. See [Log Statements](#console-logging)
 
 ### `z.dehydrate(func, inputData)`
 
@@ -927,7 +927,7 @@ See a full example with dehydration/hydration wired in correctly:
 
 ## Logging
 
-There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the `z.console` method ([see below for details](#console-logging)). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use `z.request([url], options)` or shorthand request objects).
+There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the `z.console.log` method ([see below for details](#console-logging)). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use `z.request([url], options)` or shorthand request objects).
 
 To view the logs for your application, use the `zapier logs` command. There are two types of logs, `http` (logged automatically by Zapier on HTTP requests) and `console` (manual logs via `z.console.log()` statements).
 
@@ -939,7 +939,7 @@ zapier help logs
 
 ### Console Logging
 
-To manually print a log statement in your code, use `z.console`:
+To manually print a log statement in your code, use `z.console.log`:
 
 ```javascript
 z.console.log('Here are the input fields', bundle.inputData);
@@ -949,7 +949,7 @@ The `z.console` object has all the same methods and works just like the Node.js 
 
 ### Viewing Console Logs
 
-To see your `z.console` logs, do:
+To see your `z.console.log` logs, do:
 
 ```bash
 zapier logs --type=console

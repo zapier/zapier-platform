@@ -290,7 +290,7 @@ a code {
 </li>
 <li><a href="#z-object">Z Object</a><ul>
 <li><a href="#zrequesturl-options"><code>z.request([url], options)</code></a></li>
-<li><a href="#zconsolemessage"><code>z.console(message)</code></a></li>
+<li><a href="#zconsole"><code>z.console</code></a></li>
 <li><a href="#zdehydratefunc-inputdata"><code>z.dehydrate(func, inputData)</code></a></li>
 <li><a href="#zstashfilebufferstringstream-knownlength-filename-contenttype"><code>z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])</code></a></li>
 <li><a href="#zjson"><code>z.JSON</code></a></li>
@@ -461,7 +461,7 @@ a code {
 </li>
 <li><a href="#z-object">Z Object</a><ul>
 <li><a href="#zrequesturl-options"><code>z.request([url], options)</code></a></li>
-<li><a href="#zconsolemessage"><code>z.console(message)</code></a></li>
+<li><a href="#zconsole"><code>z.console</code></a></li>
 <li><a href="#zdehydratefunc-inputdata"><code>z.dehydrate(func, inputData)</code></a></li>
 <li><a href="#zstashfilebufferstringstream-knownlength-filename-contenttype"><code>z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])</code></a></li>
 <li><a href="#zjson"><code>z.JSON</code></a></li>
@@ -1961,7 +1961,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="zconsolemessage"><code>z.console(message)</code></h3>
+      <h3 id="zconsole"><code>z.console</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1970,7 +1970,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>z.console(message)</code> is a logging console, similar to Node.js <code>console</code> but logs remotely, as well as to stdout in tests. See <a href="#console-logging">Log Statements</a></p>
+      <p><code>z.console.log(message)</code> is a logging console, similar to Node.js <code>console</code> but logs remotely, as well as to stdout in tests. See <a href="#console-logging">Log Statements</a></p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2585,12 +2585,12 @@ zapier env 1.0.0
 </blockquote><p>Try putting them in your app definition:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> addHeader = <span class="hljs-function">(<span class="hljs-params">request, <span class="hljs-regexp">/*z*/</span></span>) =&gt;</span> {
+      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> addHeader = <span class="hljs-function">(<span class="hljs-params">request<span class="hljs-regexp">/*, z*/</span></span>) =&gt;</span> {
   request.headers[<span class="hljs-string">&apos;my-header&apos;</span>] = <span class="hljs-string">&apos;from zapier&apos;</span>;
   <span class="hljs-keyword">return</span> request;
 };
 
-<span class="hljs-keyword">const</span> mustBe200 = <span class="hljs-function">(<span class="hljs-params">response, <span class="hljs-regexp">/*z*/</span></span>) =&gt;</span> {
+<span class="hljs-keyword">const</span> mustBe200 = <span class="hljs-function">(<span class="hljs-params">response<span class="hljs-regexp">/*, z*/</span></span>) =&gt;</span> {
   <span class="hljs-keyword">if</span> (response.status !== <span class="hljs-number">200</span>) {
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`Unexpected status code <span class="hljs-subst">${response.status}</span>`</span>);
   }
@@ -2925,7 +2925,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the <code>z.console</code> method (<a href="#console-logging">see below for details</a>). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use <code>z.request([url], options)</code> or shorthand request objects).</p><p>To view the logs for your application, use the <code>zapier logs</code> command. There are two types of logs, <code>http</code> (logged automatically by Zapier on HTTP requests) and <code>console</code> (manual logs via <code>z.console.log()</code> statements).</p><p>For advanced logging options including only displaying the logs for a certain user or app version, look at the help for the logs command:</p>
+      <p>There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the <code>z.console.log</code> method (<a href="#console-logging">see below for details</a>). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use <code>z.request([url], options)</code> or shorthand request objects).</p><p>To view the logs for your application, use the <code>zapier logs</code> command. There are two types of logs, <code>http</code> (logged automatically by Zapier on HTTP requests) and <code>console</code> (manual logs via <code>z.console.log()</code> statements).</p><p>For advanced logging options including only displaying the logs for a certain user or app version, look at the help for the logs command:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier <span class="hljs-built_in">help</span> logs
@@ -2944,7 +2944,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To manually print a log statement in your code, use <code>z.console</code>:</p>
+      <p>To manually print a log statement in your code, use <code>z.console.log</code>:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript">z.console.log(<span class="hljs-string">&apos;Here are the input fields&apos;</span>, bundle.inputData);
@@ -2972,7 +2972,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To see your <code>z.console</code> logs, do:</p>
+      <p>To see your <code>z.console.log</code> logs, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=console
