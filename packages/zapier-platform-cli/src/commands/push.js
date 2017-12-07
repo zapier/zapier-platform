@@ -3,6 +3,7 @@ const _ = require('lodash');
 const utils = require('../utils');
 const constants = require('../constants');
 const register = require('./register');
+const login = require('./login');
 
 const build = require('./build');
 
@@ -18,7 +19,16 @@ const createIfNeeded = (context) => {
 const push = (context) => {
   context.line('Preparing to build and upload your app.\n');
 
-  return createIfNeeded(context)
+  return utils.readCredentials(null, false)
+    .then((creds) => {
+      if (_.isEmpty(creds)) {
+        context.line('Before you can push, you need to be logged in.\n');
+        return login(context, false);
+      } else {
+        return Promise.resolve();
+      }
+    })
+    .then(() => createIfNeeded(context))
     .then(() => utils.buildAndUploadDir())
     .then(() => {
       context.line(`\nBuild and upload complete! You should see it in your Zapier editor at ${constants.BASE_ENDPOINT}/app/editor now!`);

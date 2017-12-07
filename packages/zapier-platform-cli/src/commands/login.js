@@ -5,7 +5,7 @@ const utils = require('../utils');
 
 const QUESTION_USERNAME = 'What is your Zapier login email address? (Ctrl-C to cancel)';
 const QUESTION_PASSWORD = 'What is your Zapier login password?';
-const login = (context) => {
+const login = (context, firstTime = true) => {
   const checks = [
     utils.readCredentials()
       .then(() => true)
@@ -42,7 +42,10 @@ const login = (context) => {
     })
     .then(utils.checkCredentials)
     .then(() => {
-      context.line(`Your deploy key has been saved to ${constants.AUTH_LOCATION}. Now try \`zapier init .\` to start a new local app.`);
+      context.line(`Your deploy key has been saved to ${constants.AUTH_LOCATION}. `);
+      if (firstTime) {
+        context.line('Now try `zapier init .` to start a new local app.\n');
+      }
     });
 };
 login.argsSpec = [];
