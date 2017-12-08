@@ -1,7 +1,8 @@
 // Trigger stub created by 'zapier convert'. This is just a stub - you will need to edit!
+const { replaceVars } = require('../utils');
 <%
 // Template for just _pre_poll()
-if (scripting && preScripting && !postScripting && !fullScripting) { %>
+if (preScripting && !postScripting && !fullScripting) { %>
 const getList = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
@@ -21,7 +22,7 @@ const getList = (z, bundle) => {
 }
 
 // Template for _pre_poll() + _post_poll()
-if (scripting && preScripting && postScripting && !fullScripting) { %>
+if (preScripting && postScripting && !fullScripting) { %>
 const getList = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
@@ -49,7 +50,7 @@ const getList = (z, bundle) => {
 }
 
 // Template for just _post_poll()
-if (scripting && !preScripting && postScripting && !fullScripting) { %>
+if (!preScripting && postScripting && !fullScripting) { %>
 const getList = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
@@ -74,7 +75,7 @@ const getList = (z, bundle) => {
 }
 
 // Template for just _poll()
-if (scripting && fullScripting) { %>
+if (fullScripting) { %>
 const getList = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
@@ -92,7 +93,7 @@ const getList = (z, bundle) => {
 }
 
 // If there's no scripting, it's even sweeter and simpler!
-if (!scripting) { %>
+if (!preScripting && !postScripting && !fullScripting) { %>
 const getList = (z, bundle) => {
   const responsePromise = z.request({
     url: '<%= URL %>'
@@ -100,8 +101,84 @@ const getList = (z, bundle) => {
   return responsePromise
     .then(response => z.JSON.parse(response.content));
 };
-<% } %>
+<% }
 
+if (outputFieldPreScripting && !outputFieldPostScripting) { %>
+const getOutputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  // Do a _pre_custom_trigger_fields() from scripting.
+  const preResultFieldsEvent = {
+    name: 'trigger.output.pre',
+    key: '<%= KEY %>',
+  };
+  return legacyScriptingRunner.runEvent(preResultFieldsEvent, z, bundle)
+    .then((preResultFieldsResult) => z.request(preResultFieldsResult))
+    .then((response) => z.JSON.parse(response.content));
+};
+<% } else if (outputFieldPreScripting && outputFieldPostScripting) { %>
+const getOutputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  // Do a _pre_custom_trigger_fields() from scripting.
+  const preResultFieldsEvent = {
+    name: 'trigger.output.pre',
+    key: '<%= KEY %>',
+  };
+  return legacyScriptingRunner.runEvent(preResultFieldsEvent, z, bundle)
+    .then((preResultFieldsResult) => z.request(preResultFieldsResult))
+    .then((response) => {
+      // Do a _post_custom_trigger_fields() from scripting.
+      const postResultFieldsEvent = {
+        name: 'trigger.output.post',
+        key: '<%= KEY %>',
+        response,
+      };
+      return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
+    });
+};
+<% } else if (!outputFieldPreScripting && outputFieldPostScripting) { %>
+const getOutputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  const responsePromise = z.request({
+    url: bundle._legacyUrl
+  });
+  return responsePromise
+    .then((response) => {
+      // Do a _post_custom_trigger_fields() from scripting.
+      const postResultFieldsEvent = {
+        name: 'trigger.output.post',
+        key: '<%= KEY %>',
+        response,
+      };
+      return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
+    });
+};
+<% } else if (hasCustomOutputFields) { %>
+const getOutputFields = (z, bundle) => {
+  let url = '<%= CUSTOM_FIELDS_URL %>';
+  url = replaceVars(url, bundle, {});
+
+  const responsePromise = z.request({
+    url: url
+  });
+  return responsePromise
+    .then((response) => z.JSON.parse(response.content));
+};
+<% } %>
 module.exports = {
   key: '<%= KEY %>',
   noun: '<%= NOUN %>',
@@ -117,7 +194,10 @@ module.exports = {
     inputFields: [
 <%= FIELDS %>
     ],
-<%= SAMPLE %>
+    outputFields: [
+<%= SAMPLE %><% if (hasCustomOutputFields) { %><% if (SAMPLE) { %>,<% } %>
+      getOutputFields<% } %>
+    ],
     perform: getList
   }
 };

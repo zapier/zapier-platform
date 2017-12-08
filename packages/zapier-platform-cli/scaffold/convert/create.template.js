@@ -1,12 +1,5 @@
 // "Create" stub created by 'zapier convert'. This is just a stub - you will need to edit!
-const _ = require('lodash');
-
-// Does string replacement ala WB, using bundle and a potential result object
-const replaceVars = (templateString, bundle, result) => {
-  _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
-  const values = _.extend({}, bundle.authData, bundle.inputData, result);
-  return _.template(templateString)(values);
-};
+const { replaceVars } = require('../utils');
 <%
 // Template for just _pre_write()
 if (preScripting && !postScripting && !fullScripting) { %>
@@ -202,6 +195,98 @@ const getInputFields = (z, bundle) => {
   return responsePromise
     .then((response) => z.JSON.parse(response.content));
 };
+<% }
+
+if (outputFieldFullScripting) {%>
+const getOutputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_RESULT_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  // Do a _custom_action_result_fields() from scripting.
+  const fullResultFieldsEvent = {
+    name: 'create.output',
+    key: '<%= KEY %>',
+  };
+  return legacyScriptingRunner.runEvent(fullResultFieldsEvent, z, bundle);
+};
+<% } else if (outputFieldPreScripting && !outputFieldPostScripting) { %>
+const getOutputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_RESULT_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  // Do a _pre_custom_action_result_fields() from scripting.
+  const preResultFieldsEvent = {
+    name: 'create.output.pre',
+    key: '<%= KEY %>',
+  };
+  return legacyScriptingRunner.runEvent(preResultFieldsEvent, z, bundle)
+    .then((preResultFieldsResult) => z.request(preResultFieldsResult))
+    .then((response) => z.JSON.parse(response.content));
+};
+<% } else if (outputFieldPreScripting && outputFieldPostScripting) { %>
+const getOutputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_RESULT_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  // Do a _pre_custom_action_result_fields() from scripting.
+  const preResultFieldsEvent = {
+    name: 'create.output.pre',
+    key: '<%= KEY %>',
+  };
+  return legacyScriptingRunner.runEvent(preResultFieldsEvent, z, bundle)
+    .then((preResultFieldsResult) => z.request(preResultFieldsResult))
+    .then((response) => {
+      // Do a _post_custom_action_result_fields() from scripting.
+      const postResultFieldsEvent = {
+        name: 'create.output.post',
+        key: '<%= KEY %>',
+        response,
+      };
+      return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
+    });
+};
+<% } else if (!outputFieldPreScripting && outputFieldPostScripting) { %>
+const getOutputFields = (z, bundle) => {
+  const scripting = require('../scripting');
+  const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
+
+  bundle._legacyUrl = '<%= CUSTOM_FIELDS_RESULT_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+
+  const responsePromise = z.request({
+    url: bundle._legacyUrl
+  });
+  return responsePromise
+    .then((response) => {
+      // Do a _post_custom_action_result_fields() from scripting.
+      const postResultFieldsEvent = {
+        name: 'create.output.post',
+        key: '<%= KEY %>',
+        response,
+      };
+      return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
+    });
+};
+<% } else if (hasCustomOutputFields) { %>
+const getOutputFields = (z, bundle) => {
+  let url = '<%= CUSTOM_FIELDS_RESULT_URL %>';
+  url = replaceVars(url, bundle, {});
+
+  const responsePromise = z.request({
+    url: url
+  });
+  return responsePromise
+    .then((response) => z.JSON.parse(response.content));
+};
 <% } %>
 module.exports = {
   key: '<%= KEY %>',
@@ -219,7 +304,10 @@ module.exports = {
 <%= FIELDS %><% if (hasCustomInputFields) { %><% if (FIELDS) { %>,<% } %>
       getInputFields<% } %>
     ],
-<%= SAMPLE %>
+    outputFields: [
+<%= SAMPLE %><% if (hasCustomOutputFields) { %><% if (SAMPLE) { %>,<% } %>
+      getOutputFields<% } %>
+    ],
     perform: makeRequest
   }
 };
