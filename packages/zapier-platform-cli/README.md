@@ -89,6 +89,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [Stale Authentication Credentials](#stale-authentication-credentials)
 - [Testing](#testing)
   * [Writing Unit Tests](#writing-unit-tests)
+  * [Mocking Requests](#mocking-requests)
   * [Running Unit Tests](#running-unit-tests)
   * [Testing & Environment Variables](#testing--environment-variables)
   * [Viewing HTTP Logs in Unit Tests](#viewing-http-logs-in-unit-tests)
@@ -1834,6 +1835,81 @@ describe('triggers', () => {
 });
 
 ```
+
+### Mocking Requests
+
+While testing, it's useful to test your code without actually hitting any external services. [Nock](https://github.com/node-nock/nock) is a node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with `z.request` by setting up your `nock` before calling `appTester`.
+
+```js
+require('should');
+
+const zapier = require('zapier-platform-core');
+
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
+
+const nock = require('nock');
+
+describe('triggers', () => {
+  describe('new recipe trigger', () => {
+    it('should load recipes', done => {
+      const bundle = {
+        inputData: {
+          style: 'mediterranean'
+        }
+      };
+
+      // mocks the next request that matches this url and querystring
+      nock('http://57b20fb546b57d1100a3c405.mockapi.io/api')
+        .get('/recipes')
+        .query(bundle.inputData)
+        .reply(200, [
+          { name: 'name 1', directions: 'directions 1', id: 1 },
+          { name: 'name 2', directions: 'directions 2', id: 2 }
+        ]);
+
+      appTester(App.triggers.recipe.operation.perform, bundle)
+        .then(results => {
+          results.length.should.above(1);
+
+          const firstRecipe = results[0];
+          firstRecipe.name.should.eql('name 1');
+          firstRecipe.directions.should.eql('directions 1');
+
+          done();
+        })
+        .catch(done);
+    });
+
+    it('should load recipes without filters', done => {
+      const bundle = {};
+
+      // each test needs its own mock
+      nock('http://57b20fb546b57d1100a3c405.mockapi.io/api')
+        .get('/recipes')
+        .reply(200, [
+          { name: 'name 1', directions: 'directions 1', id: 1 },
+          { name: 'name 2', directions: 'directions 2', id: 2 }
+        ]);
+
+      appTester(App.triggers.recipe.operation.perform, bundle)
+        .then(results => {
+          results.length.should.above(1);
+
+          const firstRecipe = results[0];
+          firstRecipe.name.should.eql('name 1');
+          firstRecipe.directions.should.eql('directions 1');
+
+          done();
+        })
+        .catch(done);
+    });
+  });
+});
+
+```
+
+There's more info about nock and its usage in its [readme](https://github.com/node-nock/nock/blob/master/README.md).
 
 ### Running Unit Tests
 

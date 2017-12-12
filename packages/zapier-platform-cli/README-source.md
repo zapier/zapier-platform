@@ -1058,6 +1058,16 @@ We recommend using the [Mocha](https://mochajs.org/) testing framework. After ru
 [insert-file:./snippets/mocha-test.js]
 ```
 
+### Mocking Requests
+
+While testing, it's useful to test your code without actually hitting any external services. [Nock](https://github.com/node-nock/nock) is a node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with `z.request` by setting up your `nock` before calling `appTester`.
+
+```js
+[insert-file:./snippets/mocha-mocked-test.js]
+```
+
+There's more info about nock and its usage in its [readme](https://github.com/node-nock/nock/blob/master/README.md).
+
 ### Running Unit Tests
 
 To run all your tests do:
