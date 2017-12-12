@@ -43,7 +43,7 @@ module.exports = makeSchema({
       type: 'boolean'
     },
     order: {
-      description: 'Should this operation precede or follow other operations when displayed in the UI?',
+      description: '[**DEPRECATED**] Should this operation precede or follow other operations when displayed in the UI?',
       type: 'number',
     },
   },

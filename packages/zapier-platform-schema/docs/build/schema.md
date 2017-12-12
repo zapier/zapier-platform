@@ -307,7 +307,7 @@ Key | Required | Type | Description
 `directions` | no | `string` | A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application.
 `important` | no | `boolean` | Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.
 `hidden` | no | `boolean` | Should this operation be unselectable by users?
-`order` | no | `number` | Should this operation precede or follow other operations when displayed in the UI?
+`order` | no | `number` | [**DEPRECATED**] Should this operation precede or follow other operations when displayed in the UI?
 
 -----
 
