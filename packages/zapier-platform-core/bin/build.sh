@@ -29,4 +29,5 @@ find . -print | \
     grep -v "\.md" | \
     grep -v "\.sh" | \
     grep -v "\.zip" | \
+    grep -v "^\./tags$" | \
     zip $1 -@
