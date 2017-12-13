@@ -1,5 +1,5 @@
 {
-  "version": "4.1.0",
+  "version": "4.2.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -445,7 +445,7 @@
           "type": "boolean"
         },
         "order": {
-          "description": "Should this operation precede or follow other operations when displayed in the UI?",
+          "description": "[**DEPRECATED**] Should this operation precede or follow other operations when displayed in the UI?",
           "type": "number"
         }
       },
