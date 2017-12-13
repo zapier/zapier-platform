@@ -1,3 +1,7 @@
+## 4.2.1
+
+* (Fix) Repack zapier-platform-core to really fix bloated size
+
 ## 4.2.0
 
 * (New) `zapier convert` now supports [input](https://github.com/zapier/zapier-platform-cli/pull/196) and [output custom fields](https://github.com/zapier/zapier-platform-cli/pull/199).
