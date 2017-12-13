@@ -1,3 +1,12 @@
+## 4.2.0
+
+* (New) `zapier convert` now supports [input](https://github.com/zapier/zapier-platform-cli/pull/196) and [output custom fields](https://github.com/zapier/zapier-platform-cli/pull/199).
+* (New) [Prettify `zapier convert` generated code.](https://github.com/zapier/zapier-platform-cli/pull/202)
+* (Fix) [Fix bloated size of zapier-platform-core 4.1.0 package.](https://github.com/zapier/zapier-platform-core/pull/56)
+* (Fix) [Fix typos in docs.](https://github.com/zapier/zapier-platform-cli/pull/197)
+* (Doc) [Add 'Mocking Requests' section to docs.](https://github.com/zapier/zapier-platform-cli/pull/201)
+* (Doc) [Mark step 'order' as deprecated.](https://github.com/zapier/zapier-platform-schema/pull/28)
+
 ## 4.1.0
 
 * (New) `zapier convert` now supports [auth](https://github.com/zapier/zapier-platform-cli/pull/185) and [search](https://github.com/zapier/zapier-platform-cli/pull/186) scripting methods.
