@@ -11,3 +11,4 @@ deploy:
   api_key: $NPM_TOKEN
   on:
     tags: true
+  skip_cleanup: true
