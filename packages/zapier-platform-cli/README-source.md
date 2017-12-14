@@ -269,18 +269,19 @@ zapier deprecate 1.0.0 2017-01-01
 
 ## Converting an Existing App
 
-> Warning! This is in a **very** alpha state - the immediate goal is to provide some basic structure to match an existing application. It will not even get close to a working copy of your existing app (yet).
-
-If you have an existing application (nominally named "V2") on https://zapier.com/developer/builder/ you can use it as a template to kickstart your local application.
+If you have an existing Web Builder app on [Zapier Developer Platform](https://zapier.com/developer/builder/) you can use it as a template to kickstart your local application.
 
 ```bash
-# the 1234 is from the URL in https://zapier.com/developer/builder/
-zapier convert 1234 .
+# Convert an existing Web Builder app to a CLI app in the my-app directory
+# App ID 1234 is from URL https://zapier.com/developer/builder/app/1234/development
+zapier convert 1234 my-app
 ```
 
-You app will be created and you can continue working on it.
+Your CLI app will be created and you can continue working on it.
 
-> Note - there is no way to convert a CLI app to a V2 app and we do not plan on implementing this.
+> Since v3.3.0, `zapier convert` has been improved a lot. But this is still in an alpha state - you'll likely have to edit the code to make it work.
+
+> Note - there is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.
 
 ## Authentication
 

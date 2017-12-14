@@ -1060,21 +1060,21 @@ zapier deprecate 1.0.0 2017-01-01
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <blockquote>
-<p>Warning! This is in a <strong>very</strong> alpha state - the immediate goal is to provide some basic structure to match an existing application. It will not even get close to a working copy of your existing app (yet).</p>
-</blockquote><p>If you have an existing application (nominally named &quot;V2&quot;) on <a href="https://zapier.com/developer/builder/">https://zapier.com/developer/builder/</a> you can use it as a template to kickstart your local application.</p>
+      <p>If you have an existing Web Builder app on <a href="https://zapier.com/developer/builder/">Zapier Developer Platform</a> you can use it as a template to kickstart your local application.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash"><span class="hljs-comment"># the 1234 is from the URL in https://zapier.com/developer/builder/</span>
-zapier convert 1234 .
+      <pre><code class="lang-bash"><span class="hljs-comment"># Convert an existing Web Builder app to a CLI app in the my-app directory</span>
+<span class="hljs-comment"># App ID 1234 is from URL https://zapier.com/developer/builder/app/1234/development</span>
+zapier convert 1234 my-app
 </code></pre>
     </div>
   </div>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You app will be created and you can continue working on it.</p><blockquote>
-<p>Note - there is no way to convert a CLI app to a V2 app and we do not plan on implementing this.</p>
+      <p>Your CLI app will be created and you can continue working on it.</p><blockquote>
+<p>Since v3.3.0, <code>zapier convert</code> has been improved a lot. But this is still in an alpha state - you&apos;ll likely have to edit the code to make it work.</p>
+<p>Note - there is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
