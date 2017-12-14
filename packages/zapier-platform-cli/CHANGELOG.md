@@ -1,3 +1,7 @@
+## 4.2.3
+
+* The first build made by Travis CI!
+
 ## 4.2.1
 
 * (Fix) Repack zapier-platform-core to really fix bloated size
