@@ -5,3 +5,9 @@ script:
   - npm run coverage
 notifications:
   email: false
+deploy:
+  provider: npm
+  email: engineering@zapier.com
+  api_key: $NPM_TOKEN
+  on:
+    tags: true
