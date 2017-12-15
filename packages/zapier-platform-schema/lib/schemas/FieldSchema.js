@@ -6,6 +6,8 @@ const FieldsSchema = require('./FieldsSchema');
 
 const RefResourceSchema = require('./RefResourceSchema');
 
+const FieldChoicesSchema = require('./FieldChoicesSchema');
+
 module.exports = makeSchema({
   id: '/FieldSchema',
   description: 'Defines a field an app either needs as input, or gives as output.',
@@ -13,6 +15,8 @@ module.exports = makeSchema({
   examples: [
     {key: 'abc'},
     {key: 'abc', choices: {mobile: 'Mobile Phone'}},
+    {key: 'abc', choices: ['first', 'second', 'third']},
+    {key: 'abc', choices: [{label: 'Red', sample: '#f00', value: '#f00'}]},
     {key: 'abc', children: []},
     {key: 'abc', children: [{key: 'abc'}]},
     {key: 'abc', children: [{key: 'abc', children: []}]},
@@ -22,7 +26,8 @@ module.exports = makeSchema({
     {},
     {key: 'abc', choices: {}},
     {key: 'abc', choices: []},
-    {key: 'abc', choices: ['mobile']},
+    {key: 'abc', choices: [3]},
+    {key: 'abc', choices: [{label: 'Red', value: '#f00'}]},
     {key: 'abc', choices: 'mobile'},
     {key: 'abc', type: 'loltype'},
   ],
@@ -78,8 +83,7 @@ module.exports = makeSchema({
     },
     choices: {
       description: 'An object of machine keys and human values to populate a static dropdown.',
-      type: 'object',
-      minProperties: 1,
+      $ref: FieldChoicesSchema.id
     },
     list: {
       description: 'Can a user provide multiples of this field?',
@@ -111,4 +115,5 @@ module.exports = makeSchema({
   additionalProperties: false,
 }, [
   RefResourceSchema,
+  FieldChoicesSchema
 ]);

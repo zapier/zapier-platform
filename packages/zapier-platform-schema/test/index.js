@@ -9,6 +9,8 @@ const appDefinition = require('../examples/definition.json');
 
 const copy = (o) => JSON.parse(JSON.stringify(o));
 
+const NUM_SCHEMAS = 44; // changes regularly as we expand
+
 describe('app', () => {
 
   describe('validation', () => {
@@ -178,7 +180,7 @@ describe('app', () => {
   describe('export', () => {
     it('should export the full schema', () => {
       const exportedSchema = schema.exportSchema();
-      Object.keys(exportedSchema.schemas).length.should.eql(42); // changes regularly as we expand
+      Object.keys(exportedSchema.schemas).length.should.eql(NUM_SCHEMAS);
     });
   });
 
