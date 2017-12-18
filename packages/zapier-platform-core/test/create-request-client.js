@@ -12,9 +12,9 @@ describe('request client', () => {
   const testLogger = () => Promise.resolve({});
   const input = createInput({}, {}, testLogger);
 
-  it('should include a user-agent header', (done) => {
+  it('should include a user-agent header', done => {
     const request = createAppRequestClient(input);
-    request({url: 'http://zapier-httpbin.herokuapp.com/get'})
+    request({ url: 'http://zapier-httpbin.herokuapp.com/get' })
       .then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -28,13 +28,13 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should allow overriding the user-agent header', (done) => {
+  it('should allow overriding the user-agent header', done => {
     const request = createAppRequestClient(input);
     request({
       url: 'http://zapier-httpbin.herokuapp.com/get',
       headers: {
-        'User-Agent': 'Zapier!',
-      },
+        'User-Agent': 'Zapier!'
+      }
     })
       .then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
@@ -50,9 +50,9 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should have json serializable response', (done) => {
+  it('should have json serializable response', done => {
     const request = createAppRequestClient(input);
-    request({url: 'http://zapier-httpbin.herokuapp.com/get'})
+    request({ url: 'http://zapier-httpbin.herokuapp.com/get' })
       .then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -66,9 +66,9 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should wrap a request entirely', (done) => {
+  it('should wrap a request entirely', done => {
     const request = createAppRequestClient(input);
-    request({url: 'http://zapier-httpbin.herokuapp.com/get'})
+    request({ url: 'http://zapier-httpbin.herokuapp.com/get' })
       .then(response => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
@@ -78,13 +78,13 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support promise bodies', (done) => {
-    const payload = {hello: 'world is nice'};
+  it('should support promise bodies', done => {
+    const payload = { hello: 'world is nice' };
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
       url: 'http://zapier-httpbin.herokuapp.com/post',
-      body: Promise.resolve(payload),
+      body: Promise.resolve(payload)
     })
       .then(response => {
         response.status.should.eql(200);
@@ -96,14 +96,16 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming another request', (done) => {
-    const fileUrl = 'https://s3.amazonaws.com/zapier-downloads/just-a-few-lines.txt';
-    const fileExpectedContent = '0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n';
+  it('should support streaming another request', done => {
+    const fileUrl =
+      'https://s3.amazonaws.com/zapier-downloads/just-a-few-lines.txt';
+    const fileExpectedContent =
+      '0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n';
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
       url: 'http://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
-      body: request({url: fileUrl, raw: true}),
+      body: request({ url: fileUrl, raw: true })
     })
       .then(response => {
         response.status.should.eql(200);
@@ -114,12 +116,12 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should handle a buffer upload fine', (done) => {
+  it('should handle a buffer upload fine', done => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
       url: 'http://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
-      body: new Buffer('hello world this is a cat (=^..^=)'),
+      body: new Buffer('hello world this is a cat (=^..^=)')
     })
       .then(response => {
         response.status.should.eql(200);
@@ -130,12 +132,12 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should handle a stream upload fine', (done) => {
+  it('should handle a stream upload fine', done => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
       url: 'http://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
-      body: fs.createReadStream(path.join(__dirname, 'test.txt')),
+      body: fs.createReadStream(path.join(__dirname, 'test.txt'))
     })
       .then(response => {
         response.status.should.eql(200);
@@ -146,7 +148,7 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support single url param', (done) => {
+  it('should support single url param', done => {
     const request = createAppRequestClient(input);
     request('http://zapier-httpbin.herokuapp.com/get')
       .then(response => {
@@ -158,9 +160,9 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support url param with options', (done) => {
+  it('should support url param with options', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/get', {headers: {A: 'B'}})
+    request('http://zapier-httpbin.herokuapp.com/get', { headers: { A: 'B' } })
       .then(response => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
@@ -171,7 +173,7 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support bytes', (done) => {
+  it('should support bytes', done => {
     const request = createAppRequestClient(input);
     request('http://zapier-httpbin.herokuapp.com/bytes/1024')
       .then(response => {
@@ -183,9 +185,9 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support bytes raw', (done) => {
+  it('should support bytes raw', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/bytes/1024', {raw: true})
+    request('http://zapier-httpbin.herokuapp.com/bytes/1024', { raw: true })
       .then(response => {
         response.status.should.eql(200);
         should(response.buffer).be.type('function');
@@ -196,7 +198,7 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming bytes', (done) => {
+  it('should support streaming bytes', done => {
     const request = createAppRequestClient(input);
     request('http://zapier-httpbin.herokuapp.com/stream-bytes/1024')
       .then(response => {
@@ -208,9 +210,11 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming bytes raw', (done) => {
+  it('should support streaming bytes raw', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/stream-bytes/1024', {raw: true})
+    request('http://zapier-httpbin.herokuapp.com/stream-bytes/1024', {
+      raw: true
+    })
       .then(response => {
         response.status.should.eql(200);
         should(response.buffer).be.type('function');
@@ -221,9 +225,11 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming bytes raw as buffer', (done) => {
+  it('should support streaming bytes raw as buffer', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/stream-bytes/1024', {raw: true})
+    request('http://zapier-httpbin.herokuapp.com/stream-bytes/1024', {
+      raw: true
+    })
       .then(response => {
         response.status.should.eql(200);
         return response.buffer();
@@ -235,17 +241,21 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should run any beforeRequest functions', (done) => {
-    const inputWithBeforeMiddleware = createInput({
-      beforeRequest: [
-        (request) => {
-          request.headers['X-Testing-True'] = 'Yes';
-          return request;
-        },
-      ],
-    }, {}, testLogger);
+  it('should run any beforeRequest functions', done => {
+    const inputWithBeforeMiddleware = createInput(
+      {
+        beforeRequest: [
+          request => {
+            request.headers['X-Testing-True'] = 'Yes';
+            return request;
+          }
+        ]
+      },
+      {},
+      testLogger
+    );
     const request = createAppRequestClient(inputWithBeforeMiddleware);
-    request({url: 'http://zapier-httpbin.herokuapp.com/get'})
+    request({ url: 'http://zapier-httpbin.herokuapp.com/get' })
       .then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -259,17 +269,21 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should run any afterResponse functions', (done) => {
-    const inputWithAfterMiddleware = createInput({
-      afterResponse: [
-        (response) => {
-          response.json = {testing: true};
-          return response;
-        },
-      ],
-    }, {}, testLogger);
+  it('should run any afterResponse functions', done => {
+    const inputWithAfterMiddleware = createInput(
+      {
+        afterResponse: [
+          response => {
+            response.json = { testing: true };
+            return response;
+          }
+        ]
+      },
+      {},
+      testLogger
+    );
     const request = createAppRequestClient(inputWithAfterMiddleware);
-    request({url: 'http://zapier-httpbin.herokuapp.com/get'})
+    request({ url: 'http://zapier-httpbin.herokuapp.com/get' })
       .then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -283,22 +297,24 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should parse form type request body', (done) => {
+  it('should parse form type request body', done => {
     const request = createAppRequestClient(input);
     request({
       url: 'http://zapier-httpbin.herokuapp.com/post',
       method: 'POST',
       headers: {
-        'content-type': 'application/x-www-form-urlencoded',
+        'content-type': 'application/x-www-form-urlencoded'
       },
       body: {
         name: 'Something Else',
-        directions: '!!No Way José',
-      },
+        directions: '!!No Way José'
+      }
     })
       .then(response => {
         response.status.should.eql(200);
-        response.request.body.should.eql('name=Something+Else&directions=!!No+Way+Jos%C3%A9');
+        response.request.body.should.eql(
+          'name=Something+Else&directions=!!No+Way+Jos%C3%A9'
+        );
         const body = JSON.parse(response.content);
         body.form.name.should.eql('Something Else');
         body.form.directions.should.eql('!!No Way José');
@@ -307,19 +323,21 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should not parse form type request body when string', (done) => {
+  it('should not parse form type request body when string', done => {
     const request = createAppRequestClient(input);
     request({
       url: 'http://zapier-httpbin.herokuapp.com/post',
       method: 'POST',
       headers: {
-        'content-type': 'application/x-www-form-urlencoded',
+        'content-type': 'application/x-www-form-urlencoded'
       },
-      body: 'name=Something Else&directions=!!No Way José',
+      body: 'name=Something Else&directions=!!No Way José'
     })
       .then(response => {
         response.status.should.eql(200);
-        response.request.body.should.eql('name=Something Else&directions=!!No Way José');
+        response.request.body.should.eql(
+          'name=Something Else&directions=!!No Way José'
+        );
         const body = JSON.parse(response.content);
         body.form.name.should.eql('Something Else');
         body.form.directions.should.eql('!!No Way José');
@@ -327,5 +345,4 @@ describe('request client', () => {
       })
       .catch(done);
   });
-
 });

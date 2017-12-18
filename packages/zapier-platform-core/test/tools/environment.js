@@ -8,17 +8,17 @@ describe('read env', () => {
   beforeEach(() => {
     mock({
       '.environment': fake_file,
-      'secrets': 'SECRET=very_secret_thing'
+      secrets: 'SECRET=very_secret_thing'
     });
   });
 
-  it('should parse a config', (done) => {
+  it('should parse a config', done => {
     tools.env.inject();
     process.env.PIZZA.should.equal('Blackjack');
     done();
   });
 
-  it('should parse a with filename', (done) => {
+  it('should parse a with filename', done => {
     tools.env.inject('secrets');
     process.env.SECRET.should.equal('very_secret_thing');
     done();
@@ -28,5 +28,3 @@ describe('read env', () => {
     mock.restore();
   });
 });
-
-

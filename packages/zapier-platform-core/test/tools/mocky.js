@@ -2,7 +2,6 @@ const nock = require('nock');
 
 const createRpcClient = require('../../src/tools/create-rpc-client');
 
-
 const makeRpc = () => {
   return createRpcClient({
     rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
@@ -10,24 +9,23 @@ const makeRpc = () => {
   });
 };
 
-const mockRpcCall = (result) => {
+const mockRpcCall = result => {
   nock('http://mock.zapier.com')
     .post('/platform/rpc/cli')
     .reply(200, (uri, requestBody) => {
       const id = JSON.parse(requestBody).id;
-      return {'result': result, id};
+      return { result: result, id };
     });
 };
 
-const mockRpcFail = (error) => {
+const mockRpcFail = error => {
   nock('http://mock.zapier.com')
     .post('/platform/rpc/cli')
     .reply(500, (uri, requestBody) => {
       const id = JSON.parse(requestBody).id;
-      return {'error': error, id};
+      return { error: error, id };
     });
 };
-
 
 const fakeSignedPostData = {
   url: 'http://s3-fake.zapier.com/',
@@ -45,7 +43,6 @@ const mockUpload = () => {
     .post('/')
     .reply(204, '');
 };
-
 
 module.exports = {
   makeRpc,

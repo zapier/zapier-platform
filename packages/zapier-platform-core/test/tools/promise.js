@@ -4,16 +4,16 @@ require('should');
 const ZapierPromise = require('../../src/tools/promise');
 
 describe('contextual promise', () => {
-  const contextifyErrorFn = (err) => {
+  const contextifyErrorFn = err => {
     try {
       err.message = `${err.message} contextified!`;
       return;
-    } catch(_err) {
+    } catch (_err) {
       return;
     }
   };
 
-  it('should handle normal promises', (done) => {
+  it('should handle normal promises', done => {
     const promise = ZapierPromise.resolve({});
 
     promise
@@ -28,10 +28,10 @@ describe('contextual promise', () => {
       .catch(done);
   });
 
-  it('should contextify errors raised in then handler', (done) => {
-    const promise = ZapierPromise
-      .resolve({})
-      .bind(ZapierPromise.makeContext(contextifyErrorFn));
+  it('should contextify errors raised in then handler', done => {
+    const promise = ZapierPromise.resolve({}).bind(
+      ZapierPromise.makeContext(contextifyErrorFn)
+    );
 
     promise
       .then(() => {
@@ -49,10 +49,10 @@ describe('contextual promise', () => {
       .catch(done);
   });
 
-  it.skip('should contextify errors thrown by promises returned from then handler', (done) => {
-    const promise = ZapierPromise
-      .resolve({})
-      .bind(ZapierPromise.makeContext(contextifyErrorFn));
+  it.skip('should contextify errors thrown by promises returned from then handler', done => {
+    const promise = ZapierPromise.resolve({}).bind(
+      ZapierPromise.makeContext(contextifyErrorFn)
+    );
 
     promise
       .then(() => {
@@ -67,10 +67,10 @@ describe('contextual promise', () => {
       .catch(done);
   });
 
-  it.skip('should contextify errors rejected by promises returned from then handler', (done) => {
-    const promise = ZapierPromise
-      .resolve({})
-      .bind(ZapierPromise.makeContext(contextifyErrorFn));
+  it.skip('should contextify errors rejected by promises returned from then handler', done => {
+    const promise = ZapierPromise.resolve({}).bind(
+      ZapierPromise.makeContext(contextifyErrorFn)
+    );
 
     promise
       .then(() => {
@@ -85,11 +85,10 @@ describe('contextual promise', () => {
       .catch(done);
   });
 
-  it.skip('should handle rejected outright promises', (done) => {
+  it.skip('should handle rejected outright promises', done => {
     const promise = new ZapierPromise((resolve, reject) => {
       reject(new Error('whoops'));
-    })
-      .bind(ZapierPromise.makeContext(contextifyErrorFn));
+    }).bind(ZapierPromise.makeContext(contextifyErrorFn));
 
     promise
       .catch(err => {
@@ -99,26 +98,29 @@ describe('contextual promise', () => {
       .catch(done);
   });
 
-  it('should handle two arg .then calls', (done) => {
-    const promise = ZapierPromise
-      .resolve({})
-      .bind(ZapierPromise.makeContext(contextifyErrorFn));
+  it('should handle two arg .then calls', done => {
+    const promise = ZapierPromise.resolve({}).bind(
+      ZapierPromise.makeContext(contextifyErrorFn)
+    );
 
     promise
       .then(() => {
         throw new Error('whoops');
       })
-      .then(() => {}, (err) => {
-        err.message.should.eql('whoops contextified!');
-        done();
-      })
+      .then(
+        () => {},
+        err => {
+          err.message.should.eql('whoops contextified!');
+          done();
+        }
+      )
       .catch(done);
   });
 
-  it('should inject context on chained promises', (done) => {
-    const promise = ZapierPromise
-      .resolve({})
-      .bind(ZapierPromise.makeContext(contextifyErrorFn));
+  it('should inject context on chained promises', done => {
+    const promise = ZapierPromise.resolve({}).bind(
+      ZapierPromise.makeContext(contextifyErrorFn)
+    );
 
     promise
       .then(() => {
@@ -136,5 +138,4 @@ describe('contextual promise', () => {
       })
       .catch(done);
   });
-
 });

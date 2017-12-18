@@ -10,13 +10,13 @@ const List = {
   noun: 'List',
   list: {
     display: {
-      description: 'Trigger on new thing in list.',
+      description: 'Trigger on new thing in list.'
     },
     operation: {
       perform: (z, bundle) => {
-        return helpers.noop([{id: 1234}, {id: 5678}]);
+        return helpers.noop([{ id: 1234 }, { id: 5678 }]);
       }
-    },
+    }
   }
 };
 
@@ -27,7 +27,7 @@ const Contact = {
     display: {
       label: 'New Contact',
       description: 'Trigger on new contacts.',
-      visible: true,
+      visible: true
     },
     operation: {
       perform: {
@@ -49,7 +49,7 @@ const Contact = {
           required: false
         }
       ] // or function
-    },
+    }
   },
   create: {
     display: {
@@ -59,12 +59,8 @@ const Contact = {
       perform: () => {}
     }
   },
-  outputFields: [
-    {key: 'id', type: 'string'},
-    () => {}
-  ] // or function
+  outputFields: [{ key: 'id', type: 'string' }, () => {}] // or function
 };
-
 
 const ContactError = {
   key: 'contacterror',
@@ -79,7 +75,7 @@ const ContactError = {
         url: '{{process.env.BASE_URL}}/get?error=serverDown'
       }
     }
-  },
+  }
 };
 
 const LoggingFunc = {
@@ -88,17 +84,17 @@ const LoggingFunc = {
   list: {
     display: {
       label: 'New Logging Func',
-      description: 'Just works on sync function.',
+      description: 'Just works on sync function.'
     },
     operation: {
-      perform: (z/* , bundle */) => {
-        const results = [{id: 1234}];
+      perform: (z /* , bundle */) => {
+        const results = [{ id: 1234 }];
         z.console.log('operation results: %j', results); // just showing that formatting works
         z.console.error('something bad happened');
         z.console.trace(new Error('sky is falling'));
-        return [{id: 1234}];
+        return [{ id: 1234 }];
       }
-    },
+    }
   }
 };
 
@@ -108,18 +104,17 @@ const RequestFunc = {
   list: {
     display: {
       label: 'New Request Func',
-      description: 'Makes an http request via z.request.',
+      description: 'Makes an http request via z.request.'
     },
     operation: {
-      perform: (z/* , bundle */) => {
-        return z.request({url: '{{process.env.BASE_URL}}/get'})
-          .then((resp) => {
-            const result = JSON.parse(resp.content);
-            result.id = 123;
-            return [result];
-          });
+      perform: (z /* , bundle */) => {
+        return z.request({ url: '{{process.env.BASE_URL}}/get' }).then(resp => {
+          const result = JSON.parse(resp.content);
+          result.id = 123;
+          return [result];
+        });
       }
-    },
+    }
   }
 };
 
@@ -129,16 +124,17 @@ const RequestSugar = {
   list: {
     display: {
       label: 'New Request Func',
-      description: 'Makes an http request via z.request with single url param.',
+      description: 'Makes an http request via z.request with single url param.'
     },
     operation: {
-      perform: (z/* , bundle */) => {
-        return z.request('http://zapier-httpbin.herokuapp.com/get')
-          .then((resp) => {
+      perform: (z /* , bundle */) => {
+        return z
+          .request('http://zapier-httpbin.herokuapp.com/get')
+          .then(resp => {
             return JSON.parse(resp.content);
           });
       }
-    },
+    }
   }
 };
 
@@ -148,13 +144,13 @@ const WorkingFunc = {
   list: {
     display: {
       label: 'New Working Func',
-      description: 'Just works on sync function.',
+      description: 'Just works on sync function.'
     },
     operation: {
       perform: (/* z, bundle */) => {
-        return [{id: 1234}];
+        return [{ id: 1234 }];
       }
-    },
+    }
   }
 };
 
@@ -164,13 +160,13 @@ const WorkingFuncAsync = {
   list: {
     display: {
       label: 'New Working Async Func',
-      description: 'Just works on an async function.',
+      description: 'Just works on an async function.'
     },
     operation: {
       perform: (z, bundle, cb) => {
-        return cb(null, [{id: 2345}]);
+        return cb(null, [{ id: 2345 }]);
       }
-    },
+    }
   }
 };
 
@@ -180,13 +176,13 @@ const WorkingFuncPromise = {
   list: {
     display: {
       label: 'New Working Promise',
-      description: 'Just works on an promise.',
+      description: 'Just works on an promise.'
     },
     operation: {
       perform: () => {
-        return Promise.resolve([{id: 3456}]);
+        return Promise.resolve([{ id: 3456 }]);
       }
-    },
+    }
   }
 };
 
@@ -196,13 +192,13 @@ const FailerHttp = {
   list: {
     display: {
       label: 'New Failer',
-      description: 'Just fails on HTTP.',
+      description: 'Just fails on HTTP.'
     },
     operation: {
       perform: {
-        url: 'http://zapier-httpbin.herokuapp.com/status/403',
+        url: 'http://zapier-httpbin.herokuapp.com/status/403'
       }
-    },
+    }
   }
 };
 
@@ -212,13 +208,13 @@ const FailerFunc = {
   list: {
     display: {
       label: 'New Failer Func',
-      description: 'Just fails on sync function.',
+      description: 'Just fails on sync function.'
     },
     operation: {
       perform: (/* z, bundle */) => {
         throw new Error('Failer on sync function!');
       }
-    },
+    }
   }
 };
 
@@ -228,7 +224,7 @@ const FailerFuncAsync = {
   list: {
     display: {
       label: 'New Failer Func Async',
-      description: 'Just fails on async function.',
+      description: 'Just fails on async function.'
     },
     operation: {
       /*eslint no-unused-vars: 0*/
@@ -237,7 +233,7 @@ const FailerFuncAsync = {
           throw new Error('Failer on async function!');
         }, 0);
       }
-    },
+    }
   }
 };
 
@@ -247,13 +243,13 @@ const FailerFuncPromise = {
   list: {
     display: {
       label: 'New Failer Promise',
-      description: 'Just fails on an promise.',
+      description: 'Just fails on an promise.'
     },
     operation: {
       perform: () => {
         return Promise.reject(new Error('Failer on promise function!'));
       }
-    },
+    }
   }
 };
 
@@ -263,19 +259,11 @@ const StaticInputFields = {
   list: {
     display: {
       label: 'static input fields',
-      description: 'has static input fields',
+      description: 'has static input fields'
     },
     operation: {
-      inputFields: [
-        {key: 'key 1'},
-        {key: 'key 2'},
-        {key: 'key 3'},
-      ],
-      outputFields: [
-        {key: 'key 1'},
-        {key: 'key 2'},
-        {key: 'key 3'},
-      ],
+      inputFields: [{ key: 'key 1' }, { key: 'key 2' }, { key: 'key 3' }],
+      outputFields: [{ key: 'key 1' }, { key: 'key 2' }, { key: 'key 3' }],
       perform: () => {}
     }
   }
@@ -287,19 +275,19 @@ const DynamicSyncInputFields = {
   list: {
     display: {
       label: 'dynamic sync fields',
-      description: 'sync function input fields',
+      description: 'sync function input fields'
     },
     operation: {
-      inputFields: (z, bundle) => ([
-        {key: bundle.key1},
-        {key: bundle.key2},
-        {key: bundle.key3},
-      ]),
-      outputFields: (z, bundle) => ([
-        {key: bundle.key1},
-        {key: bundle.key2},
-        {key: bundle.key3},
-      ]),
+      inputFields: (z, bundle) => [
+        { key: bundle.key1 },
+        { key: bundle.key2 },
+        { key: bundle.key3 }
+      ],
+      outputFields: (z, bundle) => [
+        { key: bundle.key1 },
+        { key: bundle.key2 },
+        { key: bundle.key3 }
+      ],
       perform: () => {}
     }
   }
@@ -311,18 +299,18 @@ const DynamicAsyncInputFields = {
   list: {
     display: {
       label: 'dynamic async fields',
-      description: 'input fields are a promise',
+      description: 'input fields are a promise'
     },
     operation: {
       inputFields: Promise.resolve([
-        {key: 'key 1'},
-        {key: 'key 2'},
-        {key: 'key 3'},
+        { key: 'key 1' },
+        { key: 'key 2' },
+        { key: 'key 3' }
       ]),
       outputFields: Promise.resolve([
-        {key: 'key 1'},
-        {key: 'key 2'},
-        {key: 'key 3'},
+        { key: 'key 1' },
+        { key: 'key 2' },
+        { key: 'key 3' }
       ]),
       perform: () => {}
     }
@@ -335,18 +323,19 @@ const MixedInputFields = {
   list: {
     display: {
       label: 'mixed input fields',
-      description: 'input fields are static, a sync function, and an async promise',
+      description:
+        'input fields are static, a sync function, and an async promise'
     },
     operation: {
       inputFields: [
-        {key: 'key 1'},
-        (z, bundle) => (Promise.resolve({key: bundle.key2})),
-        Promise.resolve({key: 'key 3'})
+        { key: 'key 1' },
+        (z, bundle) => Promise.resolve({ key: bundle.key2 }),
+        Promise.resolve({ key: 'key 3' })
       ],
       outputFields: [
-        {key: 'key 1'},
-        (z, bundle) => (Promise.resolve({key: bundle.key2})),
-        Promise.resolve({key: 'key 3'})
+        { key: 'key 1' },
+        (z, bundle) => Promise.resolve({ key: bundle.key2 }),
+        Promise.resolve({ key: 'key 3' })
       ],
       perform: () => {}
     }
@@ -374,7 +363,9 @@ const HonkerDonker = {
       perform: (z, bundle) => {
         const honkerIds = [1, 2, 3];
         return honkerIds.map(id => {
-          return z.dehydrate(HonkerDonker.get.operation.perform, {honkerId: id});
+          return z.dehydrate(HonkerDonker.get.operation.perform, {
+            honkerId: id
+          });
         });
       }
     }
@@ -392,13 +383,13 @@ const ExecuteRequestAsFunc = {
     operation: {
       perform: (z, bundle) => {
         const req = _.defaults({}, bundle.inputData.options);
-        return z.request(req).then((resp) => {
+        return z.request(req).then(resp => {
           return bundle.inputData.returnValue || JSON.parse(resp.content);
         });
       },
       inputFields: [
-        {key: 'options', dict: true},
-        {key: 'returnValue', list: true}
+        { key: 'options', dict: true },
+        { key: 'returnValue', list: true }
       ]
     }
   }
@@ -414,15 +405,17 @@ const ExecuteRequestAsShorthand = {
     },
     operation: {
       perform: {
-        url: '{{bundle.inputData.url}}',
+        url: '{{bundle.inputData.url}}'
       },
       inputFields: [
-        {key: 'url', 'default': 'http://zapier-httpbin.herokuapp.com/status/403'},
+        {
+          key: 'url',
+          default: 'http://zapier-httpbin.herokuapp.com/status/403'
+        }
       ]
     }
   }
 };
-
 
 // custom HTTP middlewares /////
 
@@ -440,7 +433,7 @@ const addRequestHeader = (request, z, bundle) => {
   changes the status code if there's an error. Something like this
   could be useful for APIs that always return 200 even on errors.
  */
-const changeStatusOnErrorResponses = (response) => {
+const changeStatusOnErrorResponses = response => {
   const contentType = response.getHeader('Content-Type');
   if (!contentType) {
     return response;
@@ -459,13 +452,10 @@ const changeStatusOnErrorResponses = (response) => {
   return response;
 };
 
-
 const App = {
   title: 'Example App',
   beforeRequest: addRequestHeader,
-  afterResponse: [
-    changeStatusOnErrorResponses
-  ],
+  afterResponse: [changeStatusOnErrorResponses],
   resources: {
     [List.key]: List,
     [Contact.key]: Contact,

@@ -16,19 +16,18 @@ const createHttpPatch = require('./create-http-patch');
 
 // Sometimes tests want to pass in an app object defined directly in the test,
 // so allow for that.
-const loadApp = (appRawOrPath) => {
+const loadApp = appRawOrPath => {
   if (_.isString(appRawOrPath)) {
     return require(appRawOrPath);
   }
   return appRawOrPath;
 };
 
-const createLambdaHandler = (appRawOrPath) => {
-
+const createLambdaHandler = appRawOrPath => {
   const handler = (event, context, callback) => {
     // Adds logging for _all_ kinds of http(s) requests, no matter the library
     const httpPatch = createHttpPatch(event);
-    httpPatch(require('http'));// 'https' uses 'http' under the hood
+    httpPatch(require('http')); // 'https' uses 'http' under the hood
 
     // Wait for all async events to complete before callback returns.
     // This is not strictly necessary since this is the default now when
@@ -47,7 +46,7 @@ const createLambdaHandler = (appRawOrPath) => {
 
     // Create logger outside of domain, so we can use in both error and run callbacks.
     const logBuffer = [];
-    const logger = createLogger(event, {logBuffer});
+    const logger = createLogger(event, { logBuffer });
 
     let isCallbackCalled = false;
     const callbackOnce = (err, resp) => {
@@ -62,20 +61,21 @@ const createLambdaHandler = (appRawOrPath) => {
       // strictly necessary because callbacksWaitsForEmptyLoop is
       // the default behavior with callbacks anyway, but don't want
       // to rely on that.
-      logger(logMsg, logData)
-        .then(() => {
-          if (!constants.IS_TESTING) {
-            err.message += '\n\nConsole logs:\n' + logBuffer.map(s => `  ${s.message}`).join('');
-          }
-          callbackOnce(err);
-        });
+      logger(logMsg, logData).then(() => {
+        if (!constants.IS_TESTING) {
+          err.message +=
+            '\n\nConsole logs:\n' +
+            logBuffer.map(s => `  ${s.message}`).join('');
+        }
+        callbackOnce(err);
+      });
     };
 
     const handlerDomain = domain.create();
 
     handlerDomain.on('error', err => {
       const logMsg = `Uncaught error: ${err}\n${err.stack || '<stack>'}`;
-      const logData = {err, log_type: 'error'};
+      const logData = { err, log_type: 'error' };
       logErrorAndCallbackOnce(logMsg, logData, err);
     });
 
@@ -89,19 +89,18 @@ const createLambdaHandler = (appRawOrPath) => {
 
       const input = createInput(appRaw, event, logger, logBuffer, rpc);
       return app(input)
-        .then((output) => {
+        .then(output => {
           callbackOnce(null, cleaner.maskOutput(output));
         })
-        .catch((err) => {
+        .catch(err => {
           const logMsg = `Unhandled error: ${err}\n${err.stack || '<stack>'}`;
-          const logData = {err, log_type: 'error'};
+          const logData = { err, log_type: 'error' };
           logErrorAndCallbackOnce(logMsg, logData, err);
         });
     });
   };
 
   return handler;
-
 };
 
 module.exports = createLambdaHandler;

@@ -6,10 +6,13 @@ const dataTools = require('./data');
 const zapierSchema = require('zapier-platform-schema');
 
 // Take a resource with methods like list/hook and turn it into triggers, etc.
-const convertResourceDos = (appRaw) => {
-  let triggers = {}, searches = {}, creates = {}, searchOrCreates = {};
+const convertResourceDos = appRaw => {
+  let triggers = {},
+    searches = {},
+    creates = {},
+    searchOrCreates = {};
 
-  _.each(appRaw.resources, (resource) => {
+  _.each(appRaw.resources, resource => {
     let search, create, trigger;
 
     if (resource.hook && resource.hook.operation) {
@@ -59,7 +62,6 @@ const convertResourceDos = (appRaw) => {
       };
       searchOrCreates[searchOrCreate.key] = searchOrCreate;
     }
-
   });
 
   return { triggers, searches, creates, searchOrCreates };
@@ -69,17 +71,23 @@ const convertResourceDos = (appRaw) => {
  * the resource and copy missing properties from resource to the action.
  */
 const copyPropertiesFromResource = (type, action, appRaw) => {
-  if (appRaw.resources && action.operation && appRaw.resources[action.operation.resource]) {
+  if (
+    appRaw.resources &&
+    action.operation &&
+    appRaw.resources[action.operation.resource]
+  ) {
     const copyableProperties = ['outputFields', 'sample'];
     const resource = appRaw.resources[action.operation.resource];
 
     if (type === 'trigger' && action.operation.type === 'hook') {
       if (_.get(resource, 'list.operation.perform')) {
-        action.operation.performList = action.operation.performList || resource.list.operation.perform;
+        action.operation.performList =
+          action.operation.performList || resource.list.operation.perform;
       }
     } else if (type === 'search' || type === 'create') {
       if (_.get(resource, 'get.operation.perform')) {
-        action.operation.performGet = action.operation.performGet || resource.get.operation.perform;
+        action.operation.performGet =
+          action.operation.performGet || resource.get.operation.perform;
       }
     }
 
@@ -89,42 +97,58 @@ const copyPropertiesFromResource = (type, action, appRaw) => {
   return action;
 };
 
-const compileApp = (appRaw) => {
+const compileApp = appRaw => {
   appRaw = dataTools.deepCopy(appRaw);
   const extras = convertResourceDos(appRaw);
 
   appRaw.triggers = _.extend({}, extras.triggers, appRaw.triggers || {});
   appRaw.searches = _.extend({}, extras.searches, appRaw.searches || {});
   appRaw.creates = _.extend({}, extras.creates, appRaw.creates || {});
-  appRaw.searchOrCreates = _.extend({}, extras.searchOrCreates, appRaw.searchOrCreates || {});
+  appRaw.searchOrCreates = _.extend(
+    {},
+    extras.searchOrCreates,
+    appRaw.searchOrCreates || {}
+  );
 
-  _.each(appRaw.triggers, (trigger) => {
-    appRaw.triggers[trigger.key] = copyPropertiesFromResource('trigger', trigger, appRaw);
+  _.each(appRaw.triggers, trigger => {
+    appRaw.triggers[trigger.key] = copyPropertiesFromResource(
+      'trigger',
+      trigger,
+      appRaw
+    );
   });
 
-  _.each(appRaw.searches, (search) => {
-    appRaw.searches[search.key] = copyPropertiesFromResource('search', search, appRaw);
+  _.each(appRaw.searches, search => {
+    appRaw.searches[search.key] = copyPropertiesFromResource(
+      'search',
+      search,
+      appRaw
+    );
   });
 
-  _.each(appRaw.creates, (create) => {
-    appRaw.creates[create.key] = copyPropertiesFromResource('create', create, appRaw);
+  _.each(appRaw.creates, create => {
+    appRaw.creates[create.key] = copyPropertiesFromResource(
+      'create',
+      create,
+      appRaw
+    );
   });
 
   return appRaw;
 };
 
-const serializeApp = (compiledApp) => {
+const serializeApp = compiledApp => {
   const cleanedApp = cleaner.recurseCleanFuncs(compiledApp);
   return dataTools.jsonCopy(cleanedApp);
 };
 
-const validateApp = (compiledApp) => {
+const validateApp = compiledApp => {
   const cleanedApp = cleaner.recurseCleanFuncs(compiledApp);
   const results = zapierSchema.validateAppDefinition(cleanedApp);
   return dataTools.jsonCopy(results.errors);
 };
 
-const prepareApp = (appRaw) => {
+const prepareApp = appRaw => {
   const compiledApp = compileApp(appRaw);
   return dataTools.deepFreeze(compiledApp);
 };

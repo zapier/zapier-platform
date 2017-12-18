@@ -26,18 +26,24 @@ describe('checks', () => {
   });
 
   it('should check for ids via triggerHasId', () => {
-    checks.triggerHasId.run(testMethod, [{id: 1}]).length.should.eql(0);
-    checks.triggerHasId.run(testMethod, [{id: 1}, {id: 2}]).length.should.eql(0);
-    checks.triggerHasId.run(testMethod, [{game_id: 1}]).length.should.eql(1);
+    checks.triggerHasId.run(testMethod, [{ id: 1 }]).length.should.eql(0);
+    checks.triggerHasId
+      .run(testMethod, [{ id: 1 }, { id: 2 }])
+      .length.should.eql(0);
+    checks.triggerHasId.run(testMethod, [{ game_id: 1 }]).length.should.eql(1);
     checks.triggerHasId.run(testMethod, []).length.should.eql(0, 'blank array');
     checks.triggerHasId.run(testMethod, [1]).length.should.eql(1);
-    checks.triggerHasId.run(testMethod, [{id: null}]).length.should.eql(1);
+    checks.triggerHasId.run(testMethod, [{ id: null }]).length.should.eql(1);
     checks.triggerHasId.run(testMethod, [{}]).length.should.eql(1);
   });
 
   it('should check for unique ids via triggerHasUniqueIds', () => {
-    checks.triggerHasUniqueIds.run(testMethod, [{ id: 1 }, { id: 2 }]).length.should.eql(0);
-    checks.triggerHasUniqueIds.run(testMethod, [{ id: 1 }, { id: 1 }]).length.should.eql(1);
+    checks.triggerHasUniqueIds
+      .run(testMethod, [{ id: 1 }, { id: 2 }])
+      .length.should.eql(0);
+    checks.triggerHasUniqueIds
+      .run(testMethod, [{ id: 1 }, { id: 1 }])
+      .length.should.eql(1);
 
     checks.triggerHasUniqueIds.run(testMethod, []).length.should.eql(0);
   });
@@ -49,10 +55,18 @@ describe('checks', () => {
   });
 
   it('should error for non-objects via triggerIsObject', () => {
-    checks.triggerIsObject.run(testMethod, ['']).length.should.eql(1, 'empty string');
-    checks.triggerIsObject.run(testMethod, []).length.should.eql(0, 'empty array');
-    checks.triggerIsObject.run(testMethod, [{}, {}]).length.should.eql(0, 'single object');
-    checks.triggerIsObject.run(testMethod, [{}, []]).length.should.eql(1, 'mismatched objects');
+    checks.triggerIsObject
+      .run(testMethod, [''])
+      .length.should.eql(1, 'empty string');
+    checks.triggerIsObject
+      .run(testMethod, [])
+      .length.should.eql(0, 'empty array');
+    checks.triggerIsObject
+      .run(testMethod, [{}, {}])
+      .length.should.eql(0, 'single object');
+    checks.triggerIsObject
+      .run(testMethod, [{}, []])
+      .length.should.eql(1, 'mismatched objects');
   });
 
   it('should recognize types by name', () => {

@@ -4,8 +4,12 @@ const _ = require('lodash');
 const memoize = require('./memoize');
 const plainModule = require('./plain');
 
-const isPlainObj = (o) => {
-  return o && typeof o == 'object' && (o.constructor === Object || o.constructor === plainModule.constructor);
+const isPlainObj = o => {
+  return (
+    o &&
+    typeof o == 'object' &&
+    (o.constructor === Object || o.constructor === plainModule.constructor)
+  );
 };
 
 const comparison = (obj, needle) => obj === needle;
@@ -55,8 +59,8 @@ const findMapDeep = (haystack, needle, comp) => {
 
 const memoizedFindMapDeep = memoize(findMapDeep);
 
-const deepCopy = (obj) => {
-  return _.cloneDeepWith(obj, (value) => {
+const deepCopy = obj => {
+  return _.cloneDeepWith(obj, value => {
     if (_.isFunction(value)) {
       return value;
     }
@@ -64,18 +68,20 @@ const deepCopy = (obj) => {
   });
 };
 
-const jsonCopy = (obj) => {
+const jsonCopy = obj => {
   return JSON.parse(JSON.stringify(obj));
 };
 
-const deepFreeze = (obj) => {
+const deepFreeze = obj => {
   Object.freeze(obj);
 
-  Object.getOwnPropertyNames(obj).forEach(function (prop) {
-    if (obj.hasOwnProperty(prop)
-        && (typeof obj[prop] === 'object' || typeof obj[prop] === 'function')
-        && obj[prop] !== null
-        && !Object.isFrozen(obj[prop])) {
+  Object.getOwnPropertyNames(obj).forEach(function(prop) {
+    if (
+      obj.hasOwnProperty(prop) &&
+      (typeof obj[prop] === 'object' || typeof obj[prop] === 'function') &&
+      obj[prop] !== null &&
+      !Object.isFrozen(obj[prop])
+    ) {
       deepFreeze(obj[prop]);
     }
   });
@@ -86,12 +92,12 @@ const deepFreeze = (obj) => {
 // Recurse a nested object replace stuff according to the function.
 const recurseReplace = (obj, replacer) => {
   if (Array.isArray(obj)) {
-    return obj.map((value) => {
+    return obj.map(value => {
       return recurseReplace(value, replacer);
     });
   } else if (isPlainObj(obj)) {
     const newObj = {};
-    Object.keys(obj).map((key) => {
+    Object.keys(obj).map(key => {
       const value = obj[key];
       newObj[key] = recurseReplace(value, replacer);
     });
@@ -111,9 +117,9 @@ const flattenPaths = (data, sep) => {
   const recurse = (obj, prop) => {
     prop = prop || '';
     if (isPlainObj(obj)) {
-      Object.keys(obj).map((key) => {
+      Object.keys(obj).map(key => {
         const value = obj[key];
-        const newProp = prop ? (prop + sep + key) : key;
+        const newProp = prop ? prop + sep + key : key;
         const subValue = recurse(value, newProp);
         if (subValue !== _IGNORE) {
           out[newProp] = subValue;
@@ -139,7 +145,7 @@ const simpleTruncate = (string, length, suffix) => {
   if (finalString.length === 0) {
     return '';
   } else if (finalString.length > length) {
-    const cutoff = (suffix ? length - suffix.length : length);
+    const cutoff = suffix ? length - suffix.length : length;
     return finalString.substr(0, cutoff) + (suffix ? suffix : '');
   }
 
@@ -155,5 +161,5 @@ module.exports = {
   deepFreeze,
   recurseReplace,
   flattenPaths,
-  simpleTruncate,
+  simpleTruncate
 };

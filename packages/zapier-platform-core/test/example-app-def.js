@@ -3,22 +3,22 @@ var ItemResource = {
   noun: 'Item',
   list: {
     display: {
-      description: 'This is a description',
+      description: 'This is a description'
     },
     operation: {
       perform: {
         url: 'https://example.com'
       },
       inputFields: [
-        {key: 'integer'},
-        {key: 'test', type: 'string'},
-        {key: 'whatever', dynamic: 'thing.id.cat'},
+        { key: 'integer' },
+        { key: 'test', type: 'string' },
+        { key: 'whatever', dynamic: 'thing.id.cat' }
       ]
     }
   },
   search: {
     display: {
-      description: 'This is a description',
+      description: 'This is a description'
     },
     operation: {
       perform: () => {},
@@ -32,7 +32,7 @@ var PingResource = {
   noun: 'Ping',
   hook: {
     display: {
-      description: 'This is a description for a static hook.',
+      description: 'This is a description for a static hook.'
     },
     operation: {
       perform: () => {}
@@ -45,7 +45,7 @@ var SubPingResource = {
   noun: 'Sub Ping',
   hook: {
     display: {
-      description: 'This is a description for a sub hook.',
+      description: 'This is a description for a sub hook.'
     },
     operation: {
       perform: () => {},
@@ -56,7 +56,7 @@ var SubPingResource = {
           url: '{{subscriptionUrl}}'
         }
       },
-      performUnsubscribe: () => {},
+      performUnsubscribe: () => {}
     }
   }
 };
@@ -98,11 +98,9 @@ var ExtraTrigger = {
     perform: function() {},
     // performSubscribe
     // performUnsubscribe
-    inputFields: [
-      {key: 'project_name'}
-    ],
+    inputFields: [{ key: 'project_name' }],
     outputFields: [],
-    sample: {id: 123}
+    sample: { id: 123 }
     // flags?
   }
 };

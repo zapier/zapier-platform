@@ -7,7 +7,7 @@ const request = require('./request-client-internal');
 
 const FALLBACK_RPC = process.env.ZAPIER_BASE_ENDPOINT + '/platform/rpc/cli';
 
-const createRpcClient = (event) => {
+const createRpcClient = event => {
   return function(method) {
     const params = _.toArray(arguments);
     params.shift();
@@ -34,7 +34,7 @@ const createRpcClient = (event) => {
       if (constants.IS_TESTING) {
         throw new Error(
           'No deploy key found. Make sure you set the `ZAPIER_DEPLOY_KEY` environment variable ' +
-          'to write tests that rely on the RPC API (i.e. z.stashFile)'
+            'to write tests that rely on the RPC API (i.e. z.stashFile)'
         );
       } else {
         throw new Error('No token found - cannot call RPC');
@@ -45,7 +45,9 @@ const createRpcClient = (event) => {
       .then(res => {
         if (res.content) {
           if (res.content.id !== id) {
-            throw new Error(`Got id ${res.content.id} but expected ${id} when calling RPC`);
+            throw new Error(
+              `Got id ${res.content.id} but expected ${id} when calling RPC`
+            );
           }
           return res.content;
         } else {

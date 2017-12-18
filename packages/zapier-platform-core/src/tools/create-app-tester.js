@@ -5,19 +5,22 @@ const resolveMethodPath = require('./resolve-method-path');
 const ZapierPromise = require('./promise');
 
 // Convert a app handler to promise for convenience.
-const promisifyHandler = (handler) => {
-  return (event) => {
+const promisifyHandler = handler => {
+  return event => {
     return new ZapierPromise((resolve, reject) => {
       handler(event, {}, (err, resp) => {
-        if (err) { reject(err); }
-        else { resolve(resp); }
+        if (err) {
+          reject(err);
+        } else {
+          resolve(resp);
+        }
       });
     });
   };
 };
 
 // A shorthand compatible wrapper for testing.
-const createAppTester = (appRaw) => {
+const createAppTester = appRaw => {
   const handler = createLambdaHandler(appRaw);
   const createHandlerPromise = promisifyHandler(handler);
 

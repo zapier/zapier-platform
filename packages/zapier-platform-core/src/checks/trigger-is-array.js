@@ -14,9 +14,7 @@ const triggerIsArray = {
   run: (method, results) => {
     if (!_.isArray(results)) {
       const repr = simpleTruncate(JSON.stringify(results), 50);
-      return [
-        `Results must be an array, got: ${typeof results}, (${repr})`
-      ];
+      return [`Results must be an array, got: ${typeof results}, (${repr})`];
     }
     return [];
   }

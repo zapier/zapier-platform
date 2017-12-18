@@ -9,9 +9,8 @@ const prepareResponse = require('../src/http-middlewares/after/prepare-response'
 const applyMiddleware = require('../src/middleware');
 
 describe('http requests', () => {
-
-  it('should support async before middleware', (done) => {
-    const addRequestHeader = (req) => {
+  it('should support async before middleware', done => {
+    const addRequestHeader = req => {
       if (!req.headers) {
         req.headers = {};
       }
@@ -19,18 +18,26 @@ describe('http requests', () => {
       return Promise.resolve(req);
     };
 
-    const wrappedRequest = applyMiddleware([addRequestHeader], [prepareResponse], request,
-      {skipEnvelope: true});
+    const wrappedRequest = applyMiddleware(
+      [addRequestHeader],
+      [prepareResponse],
+      request,
+      { skipEnvelope: true }
+    );
 
-    wrappedRequest({url: 'http://zapier-httpbin.herokuapp.com/get'}).then(response => {
-      response.status.should.eql(200);
-      JSON.parse(response.content).headers.Customheader.should.eql('custom value');
-      done();
-    }).catch(done);
+    wrappedRequest({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+      .then(response => {
+        response.status.should.eql(200);
+        JSON.parse(response.content).headers.Customheader.should.eql(
+          'custom value'
+        );
+        done();
+      })
+      .catch(done);
   });
 
-  it('should support sync before middleware', (done) => {
-    const addRequestHeader = (req) => {
+  it('should support sync before middleware', done => {
+    const addRequestHeader = req => {
       if (!req.headers) {
         req.headers = {};
       }
@@ -38,78 +45,103 @@ describe('http requests', () => {
       return req;
     };
 
-    const wrappedRequest = applyMiddleware([addRequestHeader], [prepareResponse], request,
-      {skipEnvelope: true});
+    const wrappedRequest = applyMiddleware(
+      [addRequestHeader],
+      [prepareResponse],
+      request,
+      { skipEnvelope: true }
+    );
 
-    wrappedRequest({url: 'http://zapier-httpbin.herokuapp.com/get'}).then(response => {
-      response.status.should.eql(200);
-      JSON.parse(response.content).headers.Customheader.should.eql('custom value');
-      done();
-    }).catch(done);
+    wrappedRequest({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+      .then(response => {
+        response.status.should.eql(200);
+        JSON.parse(response.content).headers.Customheader.should.eql(
+          'custom value'
+        );
+        done();
+      })
+      .catch(done);
   });
 
-  it('should throw error when middleware does not return object', (done) => {
-    const addRequestHeader = (req) => {
+  it('should throw error when middleware does not return object', done => {
+    const addRequestHeader = req => {
       if (!req.headers) {
         req.headers = {};
       }
       req.headers.Customheader = 'custom value';
     };
 
-    const wrappedRequest = applyMiddleware([addRequestHeader], [prepareResponse], request,
-      {skipEnvelope: true});
+    const wrappedRequest = applyMiddleware(
+      [addRequestHeader],
+      [prepareResponse],
+      request,
+      { skipEnvelope: true }
+    );
 
-    wrappedRequest({url: 'http://zapier-httpbin.herokuapp.com/get'}).catch(err => {
-      err.message.should.containEql('Middleware should return an object.');
-      done();
-    });
+    wrappedRequest({ url: 'http://zapier-httpbin.herokuapp.com/get' }).catch(
+      err => {
+        err.message.should.containEql('Middleware should return an object.');
+        done();
+      }
+    );
   });
 
-  it('should support async after middleware', (done) => {
-    const addToResponseBody = (response) => {
+  it('should support async after middleware', done => {
+    const addToResponseBody = response => {
       const content = JSON.parse(response.content);
       content.customKey = 'custom value';
       response.content = JSON.stringify(content);
       return Promise.resolve(response);
     };
 
-    const wrappedRequest = applyMiddleware([], [prepareResponse, addToResponseBody], request,
-      {skipEnvelope: true});
+    const wrappedRequest = applyMiddleware(
+      [],
+      [prepareResponse, addToResponseBody],
+      request,
+      { skipEnvelope: true }
+    );
 
-    wrappedRequest({url: 'http://zapier-httpbin.herokuapp.com/get'}).then(response => {
-      response.status.should.eql(200);
-      should.not.exist(response.results); // should not be 'enveloped'
-      JSON.parse(response.content).customKey.should.eql('custom value');
-      done();
-    }).catch(done);
+    wrappedRequest({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+      .then(response => {
+        response.status.should.eql(200);
+        should.not.exist(response.results); // should not be 'enveloped'
+        JSON.parse(response.content).customKey.should.eql('custom value');
+        done();
+      })
+      .catch(done);
   });
 
-  it('should support sync after middleware', (done) => {
-    const addToResponseBody = (response) => {
+  it('should support sync after middleware', done => {
+    const addToResponseBody = response => {
       const content = JSON.parse(response.content);
       content.customKey = 'custom value';
       response.content = JSON.stringify(content);
       return response;
     };
 
-    const wrappedRequest = applyMiddleware([], [prepareResponse, addToResponseBody], request,
-      {skipEnvelope: true});
+    const wrappedRequest = applyMiddleware(
+      [],
+      [prepareResponse, addToResponseBody],
+      request,
+      { skipEnvelope: true }
+    );
 
-    wrappedRequest({url: 'http://zapier-httpbin.herokuapp.com/get'}).then(response => {
-      response.status.should.eql(200);
-      JSON.parse(response.content).customKey.should.eql('custom value');
-      done();
-    }).catch(done);
+    wrappedRequest({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+      .then(response => {
+        response.status.should.eql(200);
+        JSON.parse(response.content).customKey.should.eql('custom value');
+        done();
+      })
+      .catch(done);
   });
 });
 
 describe('http prepareRequest', () => {
-
   it('should delete req.body on GET requests', () => {
     const req = prepareRequest({
       url: 'http://example.com',
       params: {
-        foo: '{{inputData.foo}}',
+        foo: '{{inputData.foo}}'
       },
       replace: true,
       body: '123',
@@ -129,7 +161,7 @@ describe('http prepareRequest', () => {
 
     req.url.should.eql('http://example.com');
     req.headers.should.eql({
-      'user-agent': 'Zapier',
+      'user-agent': 'Zapier'
     });
     should.not.exist(req.body);
   });
@@ -170,7 +202,7 @@ describe('http prepareRequest', () => {
     const origReq = {
       method: 'POST',
       url: 'http://example.com',
-      json: {hello: 'world'},
+      json: { hello: 'world' },
       input
     };
 
@@ -179,7 +211,7 @@ describe('http prepareRequest', () => {
     should(fixedReq.body).eql('{"hello":"world"}');
     fixedReq.headers.should.eql({
       'content-type': 'application/json; charset=utf-8',
-      'user-agent': 'Zapier',
+      'user-agent': 'Zapier'
     });
   });
 
@@ -187,7 +219,7 @@ describe('http prepareRequest', () => {
     const origReq = {
       method: 'POST',
       url: 'http://example.com',
-      form: {hello: 'world'},
+      form: { hello: 'world' },
       input
     };
 
@@ -196,7 +228,7 @@ describe('http prepareRequest', () => {
     should(fixedReq.body).eql('hello=world');
     fixedReq.headers.should.eql({
       'content-type': 'application/x-www-form-urlencoded',
-      'user-agent': 'Zapier',
+      'user-agent': 'Zapier'
     });
   });
 
@@ -204,7 +236,7 @@ describe('http prepareRequest', () => {
     const origReq = {
       method: 'POST',
       url: 'http://example.com',
-      body: {hello: 'world'},
+      body: { hello: 'world' },
       input
     };
 
@@ -213,7 +245,7 @@ describe('http prepareRequest', () => {
     should(fixedReq.body).eql('{"hello":"world"}');
     fixedReq.headers.should.eql({
       'content-type': 'application/json; charset=utf-8',
-      'user-agent': 'Zapier',
+      'user-agent': 'Zapier'
     });
   });
 
@@ -221,9 +253,9 @@ describe('http prepareRequest', () => {
     const origReq = {
       method: 'POST',
       url: 'http://example.com',
-      body: {hello: 'world'},
+      body: { hello: 'world' },
       headers: {
-        'content-type': 'application/x-www-form-urlencoded',
+        'content-type': 'application/x-www-form-urlencoded'
       },
       input
     };
@@ -233,7 +265,7 @@ describe('http prepareRequest', () => {
     should(fixedReq.body).eql('hello=world');
     fixedReq.headers.should.eql({
       'content-type': 'application/x-www-form-urlencoded',
-      'user-agent': 'Zapier',
+      'user-agent': 'Zapier'
     });
   });
 
@@ -241,9 +273,9 @@ describe('http prepareRequest', () => {
     const origReq = {
       method: 'POST',
       url: 'http://example.com',
-      body: {hello: 'world'},
+      body: { hello: 'world' },
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       input
     };
@@ -253,10 +285,9 @@ describe('http prepareRequest', () => {
     should(fixedReq.body).eql('{"hello":"world"}');
     fixedReq.headers.should.eql({
       'Content-Type': 'application/json',
-      'user-agent': 'Zapier',
+      'user-agent': 'Zapier'
     });
   });
-
 });
 
 describe('http addBasicAuthHeader before middelware', () => {
@@ -270,7 +301,7 @@ describe('http addBasicAuthHeader before middelware', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: 'pass',
+        password: 'pass'
       }
     };
     const req = addBasicAuthHeader(origReq, z, bundle);
@@ -283,7 +314,7 @@ describe('http addBasicAuthHeader before middelware', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: 'pass',
+        password: 'pass'
       }
     };
     const req = addBasicAuthHeader(origReq, z, bundle);
@@ -296,7 +327,7 @@ describe('http addBasicAuthHeader before middelware', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: '',
+        password: ''
       }
     };
     var req = addBasicAuthHeader(origReq, z, bundle);

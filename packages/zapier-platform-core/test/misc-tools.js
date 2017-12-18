@@ -16,7 +16,7 @@ describe('Tools', () => {
           c: 123
         }
       },
-      other: 'stuff',
+      other: 'stuff'
       // earlyEnd: 123
     };
 
@@ -42,7 +42,7 @@ describe('Tools', () => {
           }
         ]
       },
-      other: 'stuff',
+      other: 'stuff'
       // earlyEnd: 123
     };
 
@@ -57,27 +57,44 @@ describe('Tools', () => {
 
   it('should truncate many things!', () => {
     const tests = [
-      {value: null, length: 5, suffix: undefined, expected: ''},
-      {value: undefined, length: 5, suffix: '...', expected: ''},
-      {value: false, length: 5, suffix: '...', expected: ''},
-      {value: '', length: 5, suffix: undefined, expected: ''},
-      {value: [], length: 5, suffix: '...', expected: ''},
-      {value: {}, length: 5, suffix: '...', expected: '[o...'},
-      {value: () => {}, length: 5, suffix: '...', expected: '()...'},
-      {value: {yeah: true}, length: 8, suffix: '...', expected: '[obje...'},
-      {value: 'Something', length: 5, suffix: undefined, expected: 'Somet'},
-      {value: 'Something', length: 5, suffix: '...', expected: 'So...'},
-      {value: new Buffer('Something'), length: 7, suffix: ' [...]', expected: 'S [...]'},
-      {value: 'Something', length: 0, suffix: '...', expected: '...'},
-      {value: 'Something', length: 8, suffix: '...', expected: 'Somet...'},
-      {value: 'Something', length: 9, suffix: '...', expected: 'Something'},
-      {value: 'Something', length: 15, suffix: '...', expected: 'Something'},
-      {value: 'Somèt°˜ı¡•ﬁ⁄', length: 9, suffix: '...', expected: 'Somèt°...'},
-      {value: 'Somèt°˜ı¡•ﬁ⁄', length: 12, suffix: '...', expected: 'Somèt°˜ı¡•ﬁ⁄'},
+      { value: null, length: 5, suffix: undefined, expected: '' },
+      { value: undefined, length: 5, suffix: '...', expected: '' },
+      { value: false, length: 5, suffix: '...', expected: '' },
+      { value: '', length: 5, suffix: undefined, expected: '' },
+      { value: [], length: 5, suffix: '...', expected: '' },
+      { value: {}, length: 5, suffix: '...', expected: '[o...' },
+      { value: () => {}, length: 5, suffix: '...', expected: '()...' },
+      { value: { yeah: true }, length: 8, suffix: '...', expected: '[obje...' },
+      { value: 'Something', length: 5, suffix: undefined, expected: 'Somet' },
+      { value: 'Something', length: 5, suffix: '...', expected: 'So...' },
+      {
+        value: new Buffer('Something'),
+        length: 7,
+        suffix: ' [...]',
+        expected: 'S [...]'
+      },
+      { value: 'Something', length: 0, suffix: '...', expected: '...' },
+      { value: 'Something', length: 8, suffix: '...', expected: 'Somet...' },
+      { value: 'Something', length: 9, suffix: '...', expected: 'Something' },
+      { value: 'Something', length: 15, suffix: '...', expected: 'Something' },
+      {
+        value: 'Somèt°˜ı¡•ﬁ⁄',
+        length: 9,
+        suffix: '...',
+        expected: 'Somèt°...'
+      },
+      {
+        value: 'Somèt°˜ı¡•ﬁ⁄',
+        length: 12,
+        suffix: '...',
+        expected: 'Somèt°˜ı¡•ﬁ⁄'
+      }
     ];
 
-    tests.forEach((test) => {
-      dataTools.simpleTruncate(test.value, test.length, test.suffix).should.eql(test.expected);
+    tests.forEach(test => {
+      dataTools
+        .simpleTruncate(test.value, test.length, test.suffix)
+        .should.eql(test.expected);
     });
   });
 
@@ -118,12 +135,16 @@ describe('Tools', () => {
   //   actual.should.eql(expected);
   // });
 
-
   describe('deepFreeze', () => {
     it('should not let you tweak stuff', () => {
       var output = dataTools.deepFreeze({
-        funcArity: (a, b, c) => { return c; },
-        funcArityArgs: (a, b) => { a = arguments; return b; },
+        funcArity: (a, b, c) => {
+          return c;
+        },
+        funcArityArgs: (a, b) => {
+          a = arguments;
+          return b;
+        },
         nested: {
           thing: 1234
         }
@@ -136,7 +157,6 @@ describe('Tools', () => {
     });
   });
 
-
   describe('flatten', () => {
     it('should flatten things', () => {
       const output = dataTools.flattenPaths({
@@ -148,9 +168,7 @@ describe('Tools', () => {
           },
           f: null
         },
-        g: [
-          4
-        ],
+        g: [4],
         h: 5,
         i: undefined
       });
@@ -160,13 +178,12 @@ describe('Tools', () => {
         'a.c': 2,
         'a.d.e': 3,
         'a.f': null,
-        'g': [4],
-        'h': 5,
-        'i': undefined
+        g: [4],
+        h: 5,
+        i: undefined
       });
     });
   });
-
 
   describe('recurseCleanFuncs', () => {
     it('should handle objects, arrays and function->str', () => {
@@ -174,10 +191,15 @@ describe('Tools', () => {
         hello: 'world',
         number: 1234,
         arr: ['0', 1],
-        nested: {hello: 'world'},
+        nested: { hello: 'world' },
         func: () => {},
-        funcArity: (a, b, c) => { return c; },
-        funcArityArgs: (a, b) => { a = arguments; return b; },
+        funcArity: (a, b, c) => {
+          return c;
+        },
+        funcArityArgs: (a, b) => {
+          a = arguments;
+          return b;
+        },
         funcNested: {
           deeper: () => {}
         }
@@ -185,7 +207,7 @@ describe('Tools', () => {
       var expected = {
         hello: 'world',
         number: 1234,
-        arr: [ '0', 1 ],
+        arr: ['0', 1],
         nested: { hello: 'world' },
         func: '$func$0$f$',
         funcArity: '$func$3$f$',
@@ -197,9 +219,8 @@ describe('Tools', () => {
   });
 
   describe('ensureArray', () => {
-
     it('should convert single object to array', () => {
-      const o = {a: 1};
+      const o = { a: 1 };
       ensureArray(o).should.eql([o]);
     });
 
@@ -214,7 +235,6 @@ describe('Tools', () => {
     it('should convert to undefined to empty array', () => {
       ensureArray(undefined).should.eql([]);
     });
-
   });
 
   describe('recurseReplaceBank', () => {
@@ -239,30 +259,28 @@ describe('Tools', () => {
   describe('createRequestOptions', () => {
     it('should allow single url param', () => {
       const options = requestSugar.createRequestOptions('http://foo.com');
-      options.should.eql({url: 'http://foo.com'});
+      options.should.eql({ url: 'http://foo.com' });
     });
 
     it('should allow single options param', () => {
       const options = requestSugar.createRequestOptions({
         url: 'http://foo.com',
-        headers: {a: 'b'}
+        headers: { a: 'b' }
       });
       options.should.eql({
         url: 'http://foo.com',
-        headers: {a: 'b'}
+        headers: { a: 'b' }
       });
     });
 
     it('should should allow url param and options param', () => {
-      const options = requestSugar.createRequestOptions(
-        'http://foo.com',
-        { headers: {a: 'b'} }
-      );
+      const options = requestSugar.createRequestOptions('http://foo.com', {
+        headers: { a: 'b' }
+      });
       options.should.eql({
         url: 'http://foo.com',
-        headers: {a: 'b'}
+        headers: { a: 'b' }
       });
     });
   });
-
 });

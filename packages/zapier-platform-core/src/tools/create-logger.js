@@ -9,28 +9,34 @@ const hashing = require('./hashing');
 const ZapierPromise = require('./promise');
 const constants = require('../constants');
 
-const truncate = (str) => dataTools.simpleTruncate(str, 3500, ' [...]');
+const truncate = str => dataTools.simpleTruncate(str, 3500, ' [...]');
 
 // format HTTP request details into string suitable for printing to stdout
-const httpDetailsLogMessage = (data) => {
+const httpDetailsLogMessage = data => {
   if (data.log_type !== 'http') {
     return '';
   }
 
-  const trimmedData = _.reduce(data, (result, value, key) => {
-    result[key] = value;
-    if (typeof value === 'string') {
-      result[key] = truncate(value);
-    }
-    return result;
-  }, {});
+  const trimmedData = _.reduce(
+    data,
+    (result, value, key) => {
+      result[key] = value;
+      if (typeof value === 'string') {
+        result[key] = truncate(value);
+      }
+      return result;
+    },
+    {}
+  );
 
   if (trimmedData.request_params) {
     trimmedData.request_params = '?' + trimmedData.request_params;
   }
 
   return `\
-${trimmedData.request_method || 'GET'} ${trimmedData.request_url}${trimmedData.request_params || ''}
+${trimmedData.request_method || 'GET'} ${
+    trimmedData.request_url
+  }${trimmedData.request_params || ''}
 ${trimmedData.request_headers || ''}
 
 ${trimmedData.request_data || ''}
@@ -54,44 +60,41 @@ const toStdout = (event, msg, data) => {
   }
 };
 
-const makeSensitiveBank = (event) => {
+const makeSensitiveBank = event => {
   const bundle = event.bundle || {};
   const sensitiveData = _.extend(
     {},
     bundle.authData || {},
-    _.extend(
-      {},
-      process.env || {}
-    )
+    _.extend({}, process.env || {})
   );
-  return _.values(sensitiveData)
-    .reduce((bank, val) => {
-      // keeps short values from spamming censor strings in logs, < 6 chars is not a proper secret
-      // see https://github.com/zapier/zapier-platform-core/issues/4#issuecomment-277855071
-      if (val && String(val).length > 5) {
-        bank[val] = hashing.snipify(val);
-      }
-      return bank;
-    }, {});
+  return _.values(sensitiveData).reduce((bank, val) => {
+    // keeps short values from spamming censor strings in logs, < 6 chars is not a proper secret
+    // see https://github.com/zapier/zapier-platform-core/issues/4#issuecomment-277855071
+    if (val && String(val).length > 5) {
+      bank[val] = hashing.snipify(val);
+    }
+    return bank;
+  }, {});
 };
 
 const sendLog = (options, event, message, data) => {
-  data = _.extend(
-    {},
-    data || {},
-    event.logExtra || {}
-  );
+  data = _.extend({}, data || {}, event.logExtra || {});
   data.log_type = data.log_type || 'console';
 
   const sensitiveBank = makeSensitiveBank(event);
-  const safeMessage = truncate(cleaner.recurseReplaceBank(message, sensitiveBank));
-  const safeData = dataTools.recurseReplace(cleaner.recurseReplaceBank(data, sensitiveBank), truncate);
+  const safeMessage = truncate(
+    cleaner.recurseReplaceBank(message, sensitiveBank)
+  );
+  const safeData = dataTools.recurseReplace(
+    cleaner.recurseReplaceBank(data, sensitiveBank),
+    truncate
+  );
   const unsafeData = dataTools.recurseReplace(data, truncate);
 
   const body = {
     message: safeMessage,
     data: safeData,
-    token: options.token,
+    token: options.token
   };
 
   // TODO: auth data
@@ -109,16 +112,20 @@ const sendLog = (options, event, message, data) => {
 
   if (options.logBuffer && data.log_type === 'console') {
     // Cap size of messages in log buffer, in case devs log humongous things.
-    options.logBuffer.push({type: safeData.log_type, message: safeMessage});
+    options.logBuffer.push({ type: safeData.log_type, message: safeMessage });
   }
 
   if (options.token) {
-    return request(httpOptions)
-      .catch(err => {
-        // Swallow logging errors.
-        // This will show up in AWS logs at least:
-        console.error('Error making log request:', err, 'http options:', httpOptions);
-      });
+    return request(httpOptions).catch(err => {
+      // Swallow logging errors.
+      // This will show up in AWS logs at least:
+      console.error(
+        'Error making log request:',
+        err,
+        'http options:',
+        httpOptions
+      );
+    });
   } else {
     return ZapierPromise.resolve();
   }
@@ -133,9 +140,11 @@ const createLogger = (event, options) => {
   event = event || {};
 
   options = _.defaults(options, {
-    endpoint: process.env.LOGGING_ENDPOINT || constants.DEFAULT_LOGGING_HTTP_ENDPOINT,
-    apiKey: process.env.LOGGING_API_KEY || constants.DEFAULT_LOGGING_HTTP_API_KEY,
-    token: process.env.LOGGING_TOKEN || event.token,
+    endpoint:
+      process.env.LOGGING_ENDPOINT || constants.DEFAULT_LOGGING_HTTP_ENDPOINT,
+    apiKey:
+      process.env.LOGGING_API_KEY || constants.DEFAULT_LOGGING_HTTP_API_KEY,
+    token: process.env.LOGGING_TOKEN || event.token
   });
 
   return sendLog.bind(undefined, options, event);

@@ -19,7 +19,9 @@ const enrichErrorMessage = (err, frameStack) => {
 
 // Because reject callbacks stack, we have to skip errors we've already seen.
 const contextifyOnce = (err, attachErrorTrace, frameStack) => {
-  if (!err || err.isContextified) { return err; }
+  if (!err || err.isContextified) {
+    return err;
+  }
 
   Object.defineProperty(err, 'isContextified', {
     value: true,
@@ -40,7 +42,7 @@ const contextifyOnce = (err, attachErrorTrace, frameStack) => {
   return err;
 };
 
-const find_boundTo = (promise) => {
+const find_boundTo = promise => {
   if (promise._boundTo) {
     return promise._boundTo;
   } else if (promise._promise0) {
@@ -64,7 +66,8 @@ ZapierPromise.prototype._attachExtraTrace = function(error, ignoreSelf) {
 // Expose a this.pushStack() in promises, and always wrap an error from a promise chain.
 ZapierPromise.makeContext = function(attachErrorTrace) {
   const frameStack = [];
-  const attachErrorTraceOnce = (err) => contextifyOnce(err, attachErrorTrace, frameStack);
+  const attachErrorTraceOnce = err =>
+    contextifyOnce(err, attachErrorTrace, frameStack);
   return {
     isContext: true,
     frameStack: frameStack,
@@ -86,7 +89,9 @@ ZapierPromise.makeContext = function(attachErrorTrace) {
   require('babel-runtime/core-js/promise').default = require('zapier-platform-core').ZapierPromise;
 */
 const patchGlobal = () => {
-  if (global._PromisePatched) { return; }
+  if (global._PromisePatched) {
+    return;
+  }
   global.Promise = ZapierPromise;
   global._PromisePatched = true;
 };

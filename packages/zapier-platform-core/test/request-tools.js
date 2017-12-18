@@ -6,16 +6,16 @@ const requestMerge = require('../src/tools/request-merge');
 describe('request tools', () => {
   it('should merge requests', () => {
     const request = requestMerge(
-      {params: {'api-key': 'dcba'}, headers: {'ApI-kEy': 'abcd'}},
-      {url: 'http://example.com?cat=mouse', params: {hello: 'world'}}
+      { params: { 'api-key': 'dcba' }, headers: { 'ApI-kEy': 'abcd' } },
+      { url: 'http://example.com?cat=mouse', params: { hello: 'world' } }
     );
     const expected = {
       method: 'GET',
       url: 'http://example.com',
       params: {
         'api-key': 'dcba',
-        'hello': 'world',
-        'cat': 'mouse'
+        hello: 'world',
+        cat: 'mouse'
       },
       headers: {
         'user-agent': 'Zapier',
@@ -27,8 +27,8 @@ describe('request tools', () => {
 
   it('should drop headers', () => {
     const request = requestMerge(
-      {url: 'http://example.com', headers: {'api-key': 'abcd'}},
-      {headers: {'api-key': ''}}
+      { url: 'http://example.com', headers: { 'api-key': 'abcd' } },
+      { headers: { 'api-key': '' } }
     );
     const expected = {
       method: 'GET',
@@ -43,8 +43,8 @@ describe('request tools', () => {
 
   it('should overwrite headers, case insensitively, and by order', () => {
     let request = requestMerge(
-      {url: 'http://example.com', headers: {'api-key': 'abcd'}},
-      {headers: {'api-Key': 'efgh'}}
+      { url: 'http://example.com', headers: { 'api-key': 'abcd' } },
+      { headers: { 'api-Key': 'efgh' } }
     );
     let expected = {
       method: 'GET',
@@ -58,8 +58,11 @@ describe('request tools', () => {
     request.should.eql(expected);
 
     request = requestMerge(
-      {url: 'http://example.com', headers: {'api-key': 'abcd', 'Token': '123', 'User-Agent': 'Zapier'}},
-      {headers: {'api-key': 'efgh', 'tOken': '754'}}
+      {
+        url: 'http://example.com',
+        headers: { 'api-key': 'abcd', Token: '123', 'User-Agent': 'Zapier' }
+      },
+      { headers: { 'api-key': 'efgh', tOken: '754' } }
     );
     expected = {
       method: 'GET',
@@ -68,10 +71,9 @@ describe('request tools', () => {
       headers: {
         'User-Agent': 'Zapier',
         'api-key': 'efgh',
-        'tOken': '754'
+        tOken: '754'
       }
     };
     request.should.eql(expected);
   });
-
 });

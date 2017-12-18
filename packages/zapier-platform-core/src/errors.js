@@ -4,7 +4,7 @@ const _ = require('lodash');
 const util = require('util');
 
 // Make some of the errors we'll use!
-const createError = (name) => {
+const createError = name => {
   const NewError = function(message) {
     this.name = name;
     this.message = message || '';
@@ -26,9 +26,13 @@ const names = [
   'CheckError'
 ];
 
-const exceptions = _.reduce(names, (col, name) => {
-  col[name] = createError(name);
-  return col;
-}, {});
+const exceptions = _.reduce(
+  names,
+  (col, name) => {
+    col[name] = createError(name);
+    return col;
+  },
+  {}
+);
 
 module.exports = exceptions;

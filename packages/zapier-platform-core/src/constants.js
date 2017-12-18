@@ -12,7 +12,7 @@ const HYDRATE_DIRECTIVE_HOIST = '$HOIST$';
 
 const RENDER_ONLY_METHODS = ['authentication.oauth2Config.authorizeUrl'];
 
-const REQUEST_OBJECT_SHORTHAND_OPTIONS = {replace: true};
+const REQUEST_OBJECT_SHORTHAND_OPTIONS = { replace: true };
 
 const DEFAULT_LOGGING_HTTP_ENDPOINT = 'https://httplogger.zapier.com/input';
 const DEFAULT_LOGGING_HTTP_API_KEY = 'R24hzu86v3jntwtX2DtYECeWAB'; // It's ok, this isn't PROD
@@ -26,5 +26,5 @@ module.exports = {
   RENDER_ONLY_METHODS,
   REQUEST_OBJECT_SHORTHAND_OPTIONS,
   DEFAULT_LOGGING_HTTP_ENDPOINT,
-  DEFAULT_LOGGING_HTTP_API_KEY,
+  DEFAULT_LOGGING_HTTP_API_KEY
 };

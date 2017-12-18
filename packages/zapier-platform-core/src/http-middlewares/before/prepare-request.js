@@ -10,14 +10,14 @@ const requestMerge = require('../../tools/request-merge');
 const FORM_TYPE = 'application/x-www-form-urlencoded';
 const JSON_TYPE = 'application/json; charset=utf-8';
 
-const isStream = (obj) => obj instanceof stream.Stream;
-const isPromise = (obj) => obj && typeof obj.then === 'function';
+const isStream = obj => obj instanceof stream.Stream;
+const isPromise = obj => obj && typeof obj.then === 'function';
 
-const getContentType = (headers) => {
+const getContentType = headers => {
   const headerKeys = Object.keys(headers);
   let foundKey = '';
 
-  _.each(headerKeys, (key) => {
+  _.each(headerKeys, key => {
     if (key.toLowerCase() === 'content-type') {
       foundKey = key;
       return false;
@@ -29,7 +29,7 @@ const getContentType = (headers) => {
   return _.get(headers, foundKey, '');
 };
 
-const sugarBody = (req) => {
+const sugarBody = req => {
   // move into the body as raw, set headers for coerce, merge to work
 
   req.headers = req.headers || {};
@@ -50,7 +50,7 @@ const sugarBody = (req) => {
 };
 
 // Be careful not to JSONify a stream or buffer, stuff like that
-const coerceBody = (req) => {
+const coerceBody = req => {
   const contentType = getContentType(req.headers || {});
 
   // No need for body on get
@@ -82,22 +82,29 @@ const coerceBody = (req) => {
 };
 
 // Wrap up the request in a promise - if needed.
-const finalRequest = (req) => {
+const finalRequest = req => {
   if (isPromise(req.body)) {
-    return req.body
-      .then(reqBodyRes => {
-        if (reqBodyRes && reqBodyRes.body && typeof reqBodyRes.body.pipe === 'function') {
-          req.body = reqBodyRes.body;
-        } else if (reqBodyRes && reqBodyRes.content && typeof reqBodyRes.content === 'string') {
-          req.body = reqBodyRes.content;
-        } else {
-          req.body = reqBodyRes;
-          // we could inspect response headers from reqBodyRes
-          // and apply content type to req - but maybe later
-          req = coerceBody(req);
-        }
-        return req;
-      });
+    return req.body.then(reqBodyRes => {
+      if (
+        reqBodyRes &&
+        reqBodyRes.body &&
+        typeof reqBodyRes.body.pipe === 'function'
+      ) {
+        req.body = reqBodyRes.body;
+      } else if (
+        reqBodyRes &&
+        reqBodyRes.content &&
+        typeof reqBodyRes.content === 'string'
+      ) {
+        req.body = reqBodyRes.content;
+      } else {
+        req.body = reqBodyRes;
+        // we could inspect response headers from reqBodyRes
+        // and apply content type to req - but maybe later
+        req = coerceBody(req);
+      }
+      return req;
+    });
   } else {
     return req;
   }
@@ -123,7 +130,10 @@ const prepareRequest = function(req) {
 
   // replace sensitive data in the request
   if (req.replace) {
-    const bank = cleaner.createBundleBank(input._zapier.app, input._zapier.event);
+    const bank = cleaner.createBundleBank(
+      input._zapier.app,
+      input._zapier.event
+    );
     req = cleaner.recurseReplaceBank(req, bank);
   }
 

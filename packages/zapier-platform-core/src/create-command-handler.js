@@ -16,8 +16,8 @@ const commandHandlers = {
   Creates middleware app that can process z-app app definitions, handling
   commands like 'execute', 'validate', 'definition', 'request'.
 */
-const createCommandHandler = (compiledApp) => {
-  return (input) => {
+const createCommandHandler = compiledApp => {
+  return input => {
     const command = input._zapier.event.command || 'execute'; // validate || definition || request
     const handler = commandHandlers[command];
     if (!handler) {

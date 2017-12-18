@@ -1,6 +1,6 @@
 'use strict';
 
-const prepHeaders = (headers) => {
+const prepHeaders = headers => {
   headers = headers || {};
 
   if (headers && typeof headers.forEach === 'function') {
@@ -11,7 +11,7 @@ const prepHeaders = (headers) => {
     headers = _headers;
   }
 
-  return Object.keys(headers).map((k) => {
+  return Object.keys(headers).map(k => {
     const v = headers[k];
     return `${k}: ${v}`;
   });
@@ -57,11 +57,16 @@ const prepareRequestLog = (req, resp) => {
 
   if (req.url && req.url.indexOf('?') !== -1) {
     data.request_url = req.url.split('?')[0];
-    data.request_params = req.url.split('?').slice(1).join('?');
+    data.request_params = req.url
+      .split('?')
+      .slice(1)
+      .join('?');
   }
 
   return {
-    message: `${data.response_status_code} ${data.request_method} ${data.request_url}`,
+    message: `${data.response_status_code} ${data.request_method} ${
+      data.request_url
+    }`,
     data: data
   };
 };
@@ -69,7 +74,7 @@ const prepareRequestLog = (req, resp) => {
 /*
    Log a response and it's original request to our logger.
 */
-const logResponse = (resp) => {
+const logResponse = resp => {
   const logger = resp.request.input._zapier.logger;
   const logs = prepareRequestLog(resp.request, resp);
 
@@ -79,7 +84,9 @@ const logResponse = (resp) => {
   }
 
   resp._addContext(infoMsg);
-  resp._addContext(`Received content "${String(logs.data.response_content).substr(0, 100)}"`);
+  resp._addContext(
+    `Received content "${String(logs.data.response_content).substr(0, 100)}"`
+  );
 
   // steamroll any results/errors with org response!
   return logger(logs.message, logs.data)

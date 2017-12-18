@@ -14,7 +14,8 @@ const constants = require('./constants');
 
 const executeHttpRequest = (input, options) => {
   options = _.extend({}, options, constants.REQUEST_OBJECT_SHORTHAND_OPTIONS);
-  return input.z.request(options)
+  return input.z
+    .request(options)
     .then(throwForStatus)
     .then(resp => createJSONtool().parse(resp.content));
 };
@@ -24,11 +25,9 @@ const executeInputOutputFields = (inputOutputFields, input) => {
 
   return ZapierPromise.all(
     inputOutputFields.map(
-      field => _.isFunction(field) ? field(input.z, input.bundle) : field
+      field => (_.isFunction(field) ? field(input.z, input.bundle) : field)
     )
-  ).then(
-    fields => _.flatten(fields)
-  );
+  ).then(fields => _.flatten(fields));
 };
 
 const executeCallbackMethod = (z, bundle, method) => {
@@ -45,8 +44,10 @@ const executeCallbackMethod = (z, bundle, method) => {
   });
 };
 
-const isInputOutputFields = methodName => methodName.match(/\.(inputFields|outputFields)$/);
-const isRenderOnly = methodName => _.indexOf(constants.RENDER_ONLY_METHODS, methodName) >= 0;
+const isInputOutputFields = methodName =>
+  methodName.match(/\.(inputFields|outputFields)$/);
+const isRenderOnly = methodName =>
+  _.indexOf(constants.RENDER_ONLY_METHODS, methodName) >= 0;
 
 const execute = (app, input) => {
   const z = input.z;
@@ -69,13 +70,19 @@ const execute = (app, input) => {
   } else if (_.isObject(method) && method.url) {
     const options = method;
     if (isRenderOnly(methodName)) {
-      const requestWithInput = _.extend({}, injectInput(input)(options), constants.REQUEST_OBJECT_SHORTHAND_OPTIONS);
+      const requestWithInput = _.extend(
+        {},
+        injectInput(input)(options),
+        constants.REQUEST_OBJECT_SHORTHAND_OPTIONS
+      );
       const preparedRequest = addQueryParams(prepareRequest(requestWithInput));
       return preparedRequest.url;
     }
     return executeHttpRequest(input, options);
   } else {
-    throw new Error(`Error: Could not find the method to call: ${input._zapier.event.method}`);
+    throw new Error(
+      `Error: Could not find the method to call: ${input._zapier.event.method}`
+    );
   }
 };
 

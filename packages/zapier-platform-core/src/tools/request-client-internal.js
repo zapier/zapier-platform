@@ -5,7 +5,7 @@ const _ = require('lodash');
 const fetch = require('./fetch');
 const requestSugar = require('./request-sugar');
 
-const parseResponse = (resp) => {
+const parseResponse = resp => {
   const contentType = resp.headers.get('Content-Type') || '';
 
   if (contentType.match(/^application\/json/)) {
@@ -22,7 +22,7 @@ const parseResponse = (resp) => {
 };
 
 // Return our INTERNAL convenient flavor of resp. No middleware!
-const request = (options) => {
+const request = options => {
   const fetchUrl = options.url;
   options = _.omit(options, 'url');
 

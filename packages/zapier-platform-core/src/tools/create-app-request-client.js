@@ -23,7 +23,7 @@ const createAppRequestClient = (input, options) => {
 
   options = _.defaults({}, options, {
     skipDefaultMiddle: true,
-    extraArgs: [],
+    extraArgs: []
   });
 
   const httpBefores = [
@@ -41,13 +41,13 @@ const createAppRequestClient = (input, options) => {
 
   httpBefores.push(addQueryParams);
 
-  const httpOriginalAfters = [
-    prepareResponse,
-    logResponse
-  ];
+  const httpOriginalAfters = [prepareResponse, logResponse];
 
   if (app.authentication) {
-    if (app.authentication.type === 'oauth2' && _.get(app, 'authentication.oauth2Config.autoRefresh')) {
+    if (
+      app.authentication.type === 'oauth2' &&
+      _.get(app, 'authentication.oauth2Config.autoRefresh')
+    ) {
       httpOriginalAfters.push(throwForStaleAuth);
     }
   }

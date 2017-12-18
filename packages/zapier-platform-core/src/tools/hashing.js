@@ -12,7 +12,7 @@ const hashify = (algo, s, encoding, input_encoding) => {
 };
 
 // Clean up sensitive values in a hashed manner so they don't get logged.
-const snipify = (s) => {
+const snipify = s => {
   if (typeof s !== 'string') {
     return null;
   }
@@ -24,5 +24,5 @@ const snipify = (s) => {
 
 module.exports = {
   hashify,
-  snipify,
+  snipify
 };

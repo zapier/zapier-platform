@@ -5,7 +5,6 @@ require('should');
 const schema = require('../../src/tools/schema');
 
 describe('schema', () => {
-
   describe('compileApp on a resource', () => {
     it('should handle blank methods', () => {
       const appRaw = {
@@ -31,7 +30,9 @@ describe('schema', () => {
     it('should populate generated triggers/searches/creates with properties from resource', () => {
       const dummyMethod = {
         operation: {
-          perform: () => {return {};}
+          perform: () => {
+            return {};
+          }
         }
       };
 
@@ -45,8 +46,8 @@ describe('schema', () => {
             search: dummyMethod,
             create: dummyMethod,
             outputFields: [
-              {key: 'id', type: 'integer'},
-              {key: 'name', type: 'string'},
+              { key: 'id', type: 'integer' },
+              { key: 'name', type: 'string' }
             ],
             sample: {
               id: 123,
@@ -57,11 +58,24 @@ describe('schema', () => {
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fooList.operation.outputFields.should.have.length(2);
-      compiledApp.triggers.fooList.operation.sample.should.have.keys('id', 'name');
-      compiledApp.searches.fooSearch.operation.outputFields.should.have.length(2);
-      compiledApp.searches.fooSearch.operation.sample.should.have.keys('id', 'name');
-      compiledApp.creates.fooCreate.operation.outputFields.should.have.length(2);
-      compiledApp.creates.fooCreate.operation.sample.should.have.keys('id', 'name');
+      compiledApp.triggers.fooList.operation.sample.should.have.keys(
+        'id',
+        'name'
+      );
+      compiledApp.searches.fooSearch.operation.outputFields.should.have.length(
+        2
+      );
+      compiledApp.searches.fooSearch.operation.sample.should.have.keys(
+        'id',
+        'name'
+      );
+      compiledApp.creates.fooCreate.operation.outputFields.should.have.length(
+        2
+      );
+      compiledApp.creates.fooCreate.operation.sample.should.have.keys(
+        'id',
+        'name'
+      );
     });
 
     it('should populate generated searchOrCreate from resource', () => {
@@ -71,7 +85,9 @@ describe('schema', () => {
           description: 'Finds a Foo.'
         },
         operation: {
-          perform: () => {return {};}
+          perform: () => {
+            return {};
+          }
         }
       };
 
@@ -81,7 +97,9 @@ describe('schema', () => {
           description: 'Creates a Foo.'
         },
         operation: {
-          perform: () => {return {};}
+          perform: () => {
+            return {};
+          }
         }
       };
 
@@ -93,8 +111,8 @@ describe('schema', () => {
             search: dummySearch,
             create: dummyCreate,
             outputFields: [
-              {key: 'id', type: 'integer'},
-              {key: 'name', type: 'string'},
+              { key: 'id', type: 'integer' },
+              { key: 'name', type: 'string' }
             ],
             sample: {
               id: 123,
@@ -124,20 +142,20 @@ describe('schema', () => {
             noun: 'Foo',
             hook: {
               display: {},
-              operation: {},
+              operation: {}
             },
             list: {
               display: {},
               operation: {
-                perform: {url: 'http://local.dev/items'}
-              },
-            },
+                perform: { url: 'http://local.dev/items' }
+              }
+            }
           }
         }
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fooHook.operation.should.containEql({
-        performList: {url: 'http://local.dev/items'}
+        performList: { url: 'http://local.dev/items' }
       });
     });
 
@@ -150,21 +168,21 @@ describe('schema', () => {
             hook: {
               display: {},
               operation: {
-                performList: {url: 'http://local.dev/items-for-hook'}
-              },
+                performList: { url: 'http://local.dev/items-for-hook' }
+              }
             },
             list: {
               display: {},
               operation: {
-                perform: {url: 'http://local.dev/items'}
-              },
-            },
+                perform: { url: 'http://local.dev/items' }
+              }
+            }
           }
         }
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fooHook.operation.should.containEql({
-        performList: {url: 'http://local.dev/items-for-hook'}
+        performList: { url: 'http://local.dev/items-for-hook' }
       });
     });
 
@@ -177,19 +195,21 @@ describe('schema', () => {
             get: {
               display: {},
               operation: {
-                perform: {url: 'http://local.dev/items/{{bundle.inputData.id}}'},
+                perform: {
+                  url: 'http://local.dev/items/{{bundle.inputData.id}}'
+                }
               }
             },
             search: {
               display: {},
-              operation: {},
-            },
+              operation: {}
+            }
           }
         }
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searches.fooSearch.operation.should.containEql({
-        performGet: {url: 'http://local.dev/items/{{bundle.inputData.id}}'}
+        performGet: { url: 'http://local.dev/items/{{bundle.inputData.id}}' }
       });
     });
 
@@ -202,21 +222,28 @@ describe('schema', () => {
             get: {
               display: {},
               operation: {
-                perform: {url: 'http://local.dev/items/{{bundle.inputData.id}}'},
-              },
+                perform: {
+                  url: 'http://local.dev/items/{{bundle.inputData.id}}'
+                }
+              }
             },
             search: {
               display: {},
               operation: {
-                performGet: {url: 'http://local.dev/items-for-search/{{bundle.inputData.id}}'}
-              },
-            },
+                performGet: {
+                  url:
+                    'http://local.dev/items-for-search/{{bundle.inputData.id}}'
+                }
+              }
+            }
           }
         }
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searches.fooSearch.operation.should.containEql({
-        performGet: {url: 'http://local.dev/items-for-search/{{bundle.inputData.id}}'}
+        performGet: {
+          url: 'http://local.dev/items-for-search/{{bundle.inputData.id}}'
+        }
       });
     });
   });
@@ -229,9 +256,9 @@ describe('schema', () => {
             list: {
               display: {},
               operation: {
-                perform: {url: 'http://local.dev/items'}
-              },
-            },
+                perform: { url: 'http://local.dev/items' }
+              }
+            }
           }
         },
         triggers: {
@@ -241,14 +268,14 @@ describe('schema', () => {
             display: {},
             operation: {
               resource: 'foo',
-              type: 'hook',
+              type: 'hook'
             }
           }
         }
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fastFoo.operation.should.containEql({
-        performList: {url: 'http://local.dev/items'}
+        performList: { url: 'http://local.dev/items' }
       });
     });
 
@@ -261,16 +288,15 @@ describe('schema', () => {
             get: {
               display: {},
               operation: {
-                perform: {url: 'http://local.dev/items/{{bundle.inputData.id}}'},
+                perform: {
+                  url: 'http://local.dev/items/{{bundle.inputData.id}}'
+                }
               }
             },
-            outputFields: [
-              {'key': 'id'},
-              {'key': 'name'}
-            ],
+            outputFields: [{ key: 'id' }, { key: 'name' }],
             sample: {
-              'id': 123,
-              'name': 'John Doe'
+              id: 123,
+              name: 'John Doe'
             }
           }
         },
@@ -278,17 +304,20 @@ describe('schema', () => {
           findFoo: {
             display: {},
             operation: {
-              resource: 'foo',
-            },
-          },
+              resource: 'foo'
+            }
+          }
         }
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searches.findFoo.operation.should.containEql({
-        performGet: {url: 'http://local.dev/items/{{bundle.inputData.id}}'}
+        performGet: { url: 'http://local.dev/items/{{bundle.inputData.id}}' }
       });
       compiledApp.searches.findFoo.operation.outputFields.should.have.length(2);
-      compiledApp.searches.findFoo.operation.sample.should.have.keys('id', 'name');
+      compiledApp.searches.findFoo.operation.sample.should.have.keys(
+        'id',
+        'name'
+      );
     });
 
     it('should populate create with properties from linked resource', () => {
@@ -300,16 +329,15 @@ describe('schema', () => {
             get: {
               display: {},
               operation: {
-                perform: {url: 'http://local.dev/items/{{bundle.inputData.id}}'},
+                perform: {
+                  url: 'http://local.dev/items/{{bundle.inputData.id}}'
+                }
               }
             },
-            outputFields: [
-              {'key': 'id'},
-              {'key': 'name'}
-            ],
+            outputFields: [{ key: 'id' }, { key: 'name' }],
             sample: {
-              'id': 123,
-              'name': 'John Doe'
+              id: 123,
+              name: 'John Doe'
             }
           }
         },
@@ -317,17 +345,20 @@ describe('schema', () => {
           makeFoo: {
             display: {},
             operation: {
-              resource: 'foo',
-            },
-          },
+              resource: 'foo'
+            }
+          }
         }
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.creates.makeFoo.operation.should.containEql({
-        performGet: {url: 'http://local.dev/items/{{bundle.inputData.id}}'}
+        performGet: { url: 'http://local.dev/items/{{bundle.inputData.id}}' }
       });
       compiledApp.creates.makeFoo.operation.outputFields.should.have.length(2);
-      compiledApp.creates.makeFoo.operation.sample.should.have.keys('id', 'name');
+      compiledApp.creates.makeFoo.operation.sample.should.have.keys(
+        'id',
+        'name'
+      );
     });
   });
 });

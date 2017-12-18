@@ -13,7 +13,7 @@ const hashing = require('../../tools/hashing');
 /*
    Before middleware that injects z object.
 */
-const injectZObject = (input) => {
+const injectZObject = input => {
   const bundle = _.get(input, '_zapier.event.bundle', {});
 
   const zRoot = {
@@ -28,7 +28,7 @@ const injectZObject = (input) => {
   let zSkinny = _.extend({}, zRoot);
 
   const z = _.extend({}, zSkinny, {
-    request: createAppRequestClient(input, {extraArgs: [zSkinny, bundle]})
+    request: createAppRequestClient(input, { extraArgs: [zSkinny, bundle] })
   });
 
   return _.extend({}, input, { z });

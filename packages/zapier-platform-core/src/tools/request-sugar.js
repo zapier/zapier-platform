@@ -6,7 +6,7 @@ const _ = require('lodash');
   Sugarize http request options.
 */
 const createRequestOptions = (url, options) => {
-  return (typeof url === 'string') ? _.extend({}, options, {url}) : url;
+  return typeof url === 'string' ? _.extend({}, options, { url }) : url;
 };
 
 /*
@@ -32,5 +32,5 @@ const addUrlOrOptions = requestFn => {
 
 module.exports = {
   createRequestOptions,
-  addUrlOrOptions,
+  addUrlOrOptions
 };

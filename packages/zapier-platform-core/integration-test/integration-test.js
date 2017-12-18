@@ -5,9 +5,12 @@ const path = require('path');
 const createLambdaHandler = require('../src/tools/create-lambda-handler');
 
 const AWS = require('aws-sdk');
-const lambda = new AWS.Lambda({apiVersion: '2015-03-31', region: 'us-east-1'});
+const lambda = new AWS.Lambda({
+  apiVersion: '2015-03-31',
+  region: 'us-east-1'
+});
 
-const runLambda = (event) => {
+const runLambda = event => {
   return new Promise((resolve, reject) => {
     const params = {
       FunctionName: 'integration-test-dev-cli',
@@ -21,7 +24,7 @@ const runLambda = (event) => {
         return reject(err);
       }
 
-      const logs = (new Buffer(data.LogResult, 'base64')).toString();
+      const logs = new Buffer(data.LogResult, 'base64').toString();
       console.log('\n=== LOGS ===\n', logs, '\n===\n');
 
       const response = data.Payload ? JSON.parse(data.Payload) : data;
@@ -35,9 +38,11 @@ const runLambda = (event) => {
 };
 runLambda.testName = 'runLambda';
 
-const runLocally = (event) => {
+const runLocally = event => {
   return new Promise((resolve, reject) => {
-    const handler = createLambdaHandler(path.resolve(__dirname, '../test/userapp'));
+    const handler = createLambdaHandler(
+      path.resolve(__dirname, '../test/userapp')
+    );
 
     handler(event, {}, (err, data) => {
       if (err) {
@@ -49,12 +54,9 @@ const runLocally = (event) => {
 };
 runLocally.testName = 'runLocally';
 
-
-const doTest = (runner) => {
-
+const doTest = runner => {
   describe(`${runner.testName} integration tests`, () => {
-
-    it('should return data from app function call', (done) => {
+    it('should return data from app function call', done => {
       const event = {
         command: 'execute',
         method: 'resources.list.list.operation.perform',
@@ -66,15 +68,15 @@ const doTest = (runner) => {
       runner(event)
         .then(response => {
           should.exist(response.results);
-          response.results.should.eql([{id: 1234}, {id: 5678}]);
+          response.results.should.eql([{ id: 1234 }, { id: 5678 }]);
           done();
         })
         .catch(done);
     });
 
-    it('should validate an app', (done) => {
+    it('should validate an app', done => {
       const event = {
-        command: 'validate',
+        command: 'validate'
       };
       runner(event)
         .then(response => {
@@ -84,9 +86,9 @@ const doTest = (runner) => {
         .catch(done);
     });
 
-    it('should provide the definition for an app', (done) => {
+    it('should provide the definition for an app', done => {
       const event = {
-        command: 'definition',
+        command: 'definition'
       };
       runner(event)
         .then(response => {
@@ -96,7 +98,7 @@ const doTest = (runner) => {
         .catch(done);
     });
 
-    it('should do a logging function', (done) => {
+    it('should do a logging function', done => {
       const event = {
         command: 'execute',
         method: 'resources.loggingfunc.list.operation.perform',
@@ -112,7 +114,7 @@ const doTest = (runner) => {
         .catch(done);
     });
 
-    it('should log requests', (done) => {
+    it('should log requests', done => {
       const event = {
         command: 'execute',
         method: 'resources.requestfunc.list.operation.perform',
@@ -129,9 +131,8 @@ const doTest = (runner) => {
     });
 
     describe('error handling', () => {
-
       const testError = (method, errorMessage) => {
-        it(`should catch errors from ${method}`, (done) => {
+        it(`should catch errors from ${method}`, done => {
           const event = {
             command: 'execute',
             method
@@ -148,14 +149,20 @@ const doTest = (runner) => {
         });
       };
 
-      testError('triggers.failerfuncasyncList.operation.perform', 'Failer on async function!');
-      testError('resources.failerfunc.list.operation.perform', 'Failer on sync function!');
-      testError('resources.failerfuncpromise.list.operation.perform', 'Failer on promise function!');
-
+      testError(
+        'triggers.failerfuncasyncList.operation.perform',
+        'Failer on async function!'
+      );
+      testError(
+        'resources.failerfunc.list.operation.perform',
+        'Failer on sync function!'
+      );
+      testError(
+        'resources.failerfuncpromise.list.operation.perform',
+        'Failer on promise function!'
+      );
     });
-
   });
-
 };
 
 if (process.argv.indexOf('integration-test') > 0) {

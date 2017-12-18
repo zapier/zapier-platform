@@ -7,7 +7,7 @@ const mocky = require('./mocky');
 describe('rpc client', () => {
   const rpc = mocky.makeRpc();
 
-  it('should handle a ping', (done) => {
+  it('should handle a ping', done => {
     mocky.mockRpcCall('pong');
 
     rpc('ping')
@@ -18,7 +18,7 @@ describe('rpc client', () => {
       .catch(done);
   });
 
-  it('should handle an explosion', (done) => {
+  it('should handle an explosion', done => {
     mocky.mockRpcFail('this is an expected explosion');
 
     rpc('explode')

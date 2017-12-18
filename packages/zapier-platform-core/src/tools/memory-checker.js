@@ -5,15 +5,26 @@ const constants = require('../constants');
 const zid = Math.round(Math.random() * Math.pow(10, 15)).toString(16);
 let zrun = 0;
 
-const checkMemory = (event) => {
+const checkMemory = event => {
   event = event || {};
 
   zrun += 1;
   if (!constants.IS_TESTING && !event.calledFromCli) {
-    console.log('ZID:', zid, 'pid', 'ZRUN:', zrun, 'RSSMEM:', process.memoryUsage());
+    console.log(
+      'ZID:',
+      zid,
+      'pid',
+      'ZRUN:',
+      zrun,
+      'RSSMEM:',
+      process.memoryUsage()
+    );
   }
 
-  if (zrun > constants.KILL_MIN_LIMIT && process.memoryUsage().rss > constants.KILL_MAX_LIMIT) {
+  if (
+    zrun > constants.KILL_MIN_LIMIT &&
+    process.memoryUsage().rss > constants.KILL_MAX_LIMIT
+  ) {
     // should throw "Process exited before completing request"
     // and a @retry in our stack will attempt again - and this
     // process will get restarted

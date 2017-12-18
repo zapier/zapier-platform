@@ -18,14 +18,15 @@ function _interopRequireWildcard(obj) {
         }
       }
     }
-    newObj.default = obj; return newObj;
+    newObj.default = obj;
+    return newObj;
   }
 }
 
 var authentication = _interopRequireWildcard(_authentication);
 
 exports.default = {
-  authentication,
+  authentication
 };
 
-module.exports = exports['default'];  // eslint-disable-line
+module.exports = exports['default']; // eslint-disable-line
