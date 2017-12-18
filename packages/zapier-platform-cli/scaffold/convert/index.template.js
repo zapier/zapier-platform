@@ -7,10 +7,8 @@
 const App = {
   version: require('./package.json').version,
   platformVersion: require('zapier-platform-core').version,
-<% if (hasAuth) { %>
+<% if (needsAuth) { %>
   authentication,
-<% } else { %>
-  authentication: {},
 <% } %>
   beforeRequest: [
     <%= BEFORE_REQUESTS %>

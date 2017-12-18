@@ -72,8 +72,8 @@
     "auth_data": {},
     "auth_label": "{{username}}",
     "auth_mapping": {
-      "Password": "{{password}}",
-      "Username": "{{username}}"
+      "password": "{{password}}",
+      "username": "{{username}}"
     },
     "auth_type": "Basic Auth",
     "auth_urls": {},
