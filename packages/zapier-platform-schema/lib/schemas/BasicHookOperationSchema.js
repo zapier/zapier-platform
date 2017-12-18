@@ -8,18 +8,22 @@ const RequestSchema = require('./RequestSchema');
 
 // TODO: would be nice to deep merge these instead
 // or maybe use allOf which is built into json-schema
-const BasicHookOperationSchema = JSON.parse(JSON.stringify(BasicOperationSchema.schema));
+const BasicHookOperationSchema = JSON.parse(
+  JSON.stringify(BasicOperationSchema.schema)
+);
 
 BasicHookOperationSchema.id = '/BasicHookOperationSchema';
 
-BasicHookOperationSchema.description = 'Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. Defers to list for fields.';
+BasicHookOperationSchema.description =
+  'Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. Defers to list for fields.';
 
 BasicHookOperationSchema.properties = {
   type: {
-     // TODO: not a fan of this...
-    description: 'Clarify how this operation works (polling == pull or hook == push).',
+    // TODO: not a fan of this...
+    description:
+      'Clarify how this operation works (polling == pull or hook == push).',
     type: 'string',
-    'default': 'hook',
+    default: 'hook',
     enum: ['hook']
   },
   resource: BasicHookOperationSchema.properties.resource,
@@ -28,29 +32,26 @@ BasicHookOperationSchema.properties = {
     $ref: FunctionSchema.id
   },
   performList: {
-    description: 'Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods.',
-    oneOf: [
-      {$ref: RequestSchema.id},
-      {$ref: FunctionSchema.id},
-    ]
+    description:
+      'Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods.',
+    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
   },
   performSubscribe: {
-    description: 'Takes a URL and any necessary data from the user and subscribes.',
-    oneOf: [
-      {$ref: RequestSchema.id},
-      {$ref: FunctionSchema.id},
-    ]
+    description:
+      'Takes a URL and any necessary data from the user and subscribes.',
+    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
   },
   performUnsubscribe: {
-    description: 'Takes a URL and data from a previous subscribe call and unsubscribes.',
-    oneOf: [
-      {$ref: RequestSchema.id},
-      {$ref: FunctionSchema.id},
-    ]
+    description:
+      'Takes a URL and data from a previous subscribe call and unsubscribes.',
+    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
   },
   inputFields: BasicHookOperationSchema.properties.inputFields,
   outputFields: BasicHookOperationSchema.properties.outputFields,
-  sample: BasicHookOperationSchema.properties.sample,
+  sample: BasicHookOperationSchema.properties.sample
 };
 
-module.exports = makeSchema(BasicHookOperationSchema, BasicOperationSchema.dependencies);
+module.exports = makeSchema(
+  BasicHookOperationSchema,
+  BasicOperationSchema.dependencies
+);

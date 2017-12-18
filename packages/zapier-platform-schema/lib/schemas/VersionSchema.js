@@ -4,12 +4,9 @@ const makeSchema = require('../utils/makeSchema');
 
 module.exports = makeSchema({
   id: '/VersionSchema',
-  description: 'Represents a simplified semver string, from `0.0.0` to `999.999.999`.',
-  examples: [
-    '1.0.0',
-    '2.11.3',
-    '999.999.999'
-  ],
+  description:
+    'Represents a simplified semver string, from `0.0.0` to `999.999.999`.',
+  examples: ['1.0.0', '2.11.3', '999.999.999'],
   antiExamples: [
     '1.0.0.0',
     '1000.0.0',

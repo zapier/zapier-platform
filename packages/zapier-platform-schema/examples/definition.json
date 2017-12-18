@@ -2,9 +2,7 @@
   "version": "1.2.30",
   "platformVersion": "1.2.30",
   "beforeRequest": "$func$2$f$",
-  "afterResponse": [
-    "$func$2$f$"
-  ],
+  "afterResponse": ["$func$2$f$"],
   "requestTemplate": {
     "headers": {
       "X-MyCustomHeader": "my header value"
@@ -29,8 +27,8 @@
     "oauth2Config": {
       "authorizeUrl": "$func$2$f$",
       "getAccessToken": {
-          "url": "http://fake-crm.getsandbox.com/oauth/access_token",
-          "method": "POST"
+        "url": "http://fake-crm.getsandbox.com/oauth/access_token",
+        "method": "POST"
       },
       "scope": "tags,users,contacts",
       "autoRefresh": false
@@ -133,11 +131,7 @@
         "phone": "1-111-555-7000",
         "address": "1234 Test Canyon",
         "owner_id": 1,
-        "tag_ids": [
-          1,
-          2,
-          3
-        ]
+        "tag_ids": [1, 2, 3]
       },
       "get": {
         "display": {
@@ -160,7 +154,8 @@
       "list": {
         "display": {
           "label": "New Contact",
-          "description": "Trigger when a new Contact is created in your account."
+          "description":
+            "Trigger when a new Contact is created in your account."
         },
         "operation": {
           "perform": {
@@ -232,7 +227,8 @@
       "operation": {
         "resource": "contact",
         "perform": {
-          "url": "http://fake-crm.getsandbox.com/contacts?tag_id={{inputData.tagId}}"
+          "url":
+            "http://fake-crm.getsandbox.com/contacts?tag_id={{inputData.tagId}}"
         },
         "inputFields": [
           {
@@ -250,11 +246,7 @@
           "phone": "1-111-555-7000",
           "address": "1234 Test Canyon",
           "owner_id": 1,
-          "tag_ids": [
-            1,
-            2,
-            3
-          ]
+          "tag_ids": [1, 2, 3]
         }
       }
     },
@@ -308,11 +300,7 @@
           "phone": "1-111-555-7000",
           "address": "1234 Test Canyon",
           "owner_id": 1,
-          "tag_ids": [
-            1,
-            2,
-            3
-          ]
+          "tag_ids": [1, 2, 3]
         }
       },
       "key": "contact_list",
@@ -415,11 +403,7 @@
           "phone": "1-111-555-7000",
           "address": "1234 Test Canyon",
           "owner_id": 1,
-          "tag_ids": [
-            1,
-            2,
-            3
-          ]
+          "tag_ids": [1, 2, 3]
         }
       },
       "key": "contact_create",

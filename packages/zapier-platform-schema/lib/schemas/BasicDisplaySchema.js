@@ -7,35 +7,50 @@ module.exports = makeSchema({
   description: 'Represents user information for a trigger, search, or create.',
   type: 'object',
   examples: [
-    {label: 'New Thing', description: 'Gets a new thing for you.'},
-    {label: 'New Thing', description: 'Gets a new thing for you.', directions: 'This is how you use the thing.', hidden: false, important: true, order: 12},
+    { label: 'New Thing', description: 'Gets a new thing for you.' },
+    {
+      label: 'New Thing',
+      description: 'Gets a new thing for you.',
+      directions: 'This is how you use the thing.',
+      hidden: false,
+      important: true,
+      order: 12
+    }
   ],
   antiExamples: [
-    {label: 'New Thing'},
-    {label: 'New Thing', description: 'Gets a new thing for you.', important: 1},
+    { label: 'New Thing' },
+    {
+      label: 'New Thing',
+      description: 'Gets a new thing for you.',
+      important: 1
+    }
   ],
   required: ['label', 'description'],
   properties: {
     label: {
-      description: 'A short label like "New Record" or "Create Record in Project".',
+      description:
+        'A short label like "New Record" or "Create Record in Project".',
       type: 'string',
       minLength: 2,
       maxLength: 64
     },
     description: {
-      description: 'A description of what this trigger, search, or create does.',
+      description:
+        'A description of what this trigger, search, or create does.',
       type: 'string',
       minLength: 12,
       maxLength: 1000
     },
     directions: {
-      description: 'A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application.',
+      description:
+        'A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application.',
       type: 'string',
       minLength: 12,
       maxLength: 1000
     },
     important: {
-      description: 'Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.',
+      description:
+        'Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.',
       type: 'boolean'
     },
     hidden: {
@@ -43,9 +58,10 @@ module.exports = makeSchema({
       type: 'boolean'
     },
     order: {
-      description: '[**DEPRECATED**] Should this operation precede or follow other operations when displayed in the UI?',
-      type: 'number',
-    },
+      description:
+        '[**DEPRECATED**] Should this operation precede or follow other operations when displayed in the UI?',
+      type: 'number'
+    }
   },
   additionalProperties: false
 });

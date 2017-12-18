@@ -16,7 +16,7 @@ const incompatibleFields = [
   ['children', 'default'], // default is ignored
   ['dict', 'list'], // Use only one or the other
   ['dynamic', 'dict'], // dict is ignored
-  ['dynamic', 'choices'], // choices are ignored
+  ['dynamic', 'choices'] // choices are ignored
 ];
 
 const verifyIncompatibilities = (inputFields, path) => {
@@ -25,14 +25,16 @@ const verifyIncompatibilities = (inputFields, path) => {
   _.each(inputFields, (inputField, index) => {
     _.each(incompatibleFields, ([firstField, secondField]) => {
       if (_.has(inputField, firstField) && _.has(inputField, secondField)) {
-        errors.push(new jsonschema.ValidationError(
-          `must not contain ${firstField} and ${secondField}, as they're mutually exclusive.`,
-          inputField,
-          '/FieldSchema',
-          `instance.${path}.inputFields[${index}]`,
-          'invalid',
-          'inputFields'
-        ));
+        errors.push(
+          new jsonschema.ValidationError(
+            `must not contain ${firstField} and ${secondField}, as they're mutually exclusive.`,
+            inputField,
+            '/FieldSchema',
+            `instance.${path}.inputFields[${index}]`,
+            'invalid',
+            'inputFields'
+          )
+        );
       }
     });
   });
@@ -40,14 +42,20 @@ const verifyIncompatibilities = (inputFields, path) => {
   return errors;
 };
 
-const mutuallyExclusiveFields = (definition) => {
+const mutuallyExclusiveFields = definition => {
   let errors = [];
 
-  _.each(['triggers', 'searches', 'creates'], (typeOf) => {
+  _.each(['triggers', 'searches', 'creates'], typeOf => {
     if (definition[typeOf]) {
-      _.each(definition[typeOf], (actionDef) => {
+      _.each(definition[typeOf], actionDef => {
         if (actionDef.operation && actionDef.operation.inputFields) {
-          errors = [...errors, ...verifyIncompatibilities(actionDef.operation.inputFields, `${typeOf}.${actionDef.key}`)];
+          errors = [
+            ...errors,
+            ...verifyIncompatibilities(
+              actionDef.operation.inputFields,
+              `${typeOf}.${actionDef.key}`
+            )
+          ];
         }
       });
     }

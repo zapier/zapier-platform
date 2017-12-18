@@ -13,10 +13,10 @@
 const checks = [
   require('./searchOrCreateKeys'),
   require('./deepNestedFields'),
-  require('./mutuallyExclusiveFields'),
+  require('./mutuallyExclusiveFields')
 ];
 
-const runFunctionalConstraints = (definition) => {
+const runFunctionalConstraints = definition => {
   return checks.reduce((errors, checkFunc) => {
     const errorsForCheck = checkFunc(definition);
     if (errorsForCheck) {

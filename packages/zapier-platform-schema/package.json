@@ -1,7 +1,8 @@
 {
   "name": "zapier-platform-schema",
   "version": "4.2.3",
-  "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
+  "description":
+    "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-schema",
   "homepage": "https://zapier.com/",
   "author": "Bryan Helmig <bryan@zapier.com>",
@@ -9,12 +10,14 @@
   "main": "schema.js",
   "scripts": {
     "preversion": "git pull && npm test",
-    "version": "npm run export && git add exported-schema.json && npm run docs && git add README.md docs/*",
+    "version":
+      "npm run export && git add exported-schema.json && npm run docs && git add README.md docs/*",
     "postversion": "git push && git push --tags",
     "test": "node_modules/mocha/bin/mocha --recursive",
     "coverage": "node node_modules/.bin/istanbul cover _mocha -- --recursive",
     "export": "node bin/export.js",
-    "docs": "node bin/docs.js"
+    "docs": "node bin/docs.js",
+    "precommit": "lint-staged"
   },
   "dependencies": {
     "jsonschema": "1.1.1",
@@ -24,9 +27,18 @@
     "babel": "6.5.2",
     "babel-eslint": "6.1.2",
     "eslint": "3.4.0",
+    "husky": "^0.14.3",
     "istanbul": "0.4.5",
+    "lint-staged": "^6.0.0",
     "marked-toc": "0.3.0",
     "mocha": "3.0.2",
+    "prettier": "^1.9.2",
     "should": "11.1.0"
+  },
+  "prettier": {
+    "singleQuote": true
+  },
+  "lint-staged": {
+    "*.{js,json}": ["prettier --write", "git add"]
   }
 }

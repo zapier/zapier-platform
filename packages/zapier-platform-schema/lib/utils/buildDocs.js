@@ -8,7 +8,6 @@ const toc = require('marked-toc');
 const packageJson = require('../../package.json');
 const links = require('./links');
 
-
 const NO_DESCRIPTION = '_No description given._';
 const COMBOS = ['anyOf', 'allOf', 'oneOf'];
 
@@ -16,7 +15,7 @@ const walkSchemas = (InitSchema, callback) => {
   const recurse = (Schema, parents) => {
     parents = parents || [];
     callback(Schema, parents);
-    Schema.dependencies.map((childSchema) => {
+    Schema.dependencies.map(childSchema => {
       const newParents = parents.concat([InitSchema]);
       recurse(childSchema, newParents);
     });
@@ -24,18 +23,18 @@ const walkSchemas = (InitSchema, callback) => {
   recurse(InitSchema);
 };
 
-const collectSchemas = (InitSchema) => {
+const collectSchemas = InitSchema => {
   const schemas = {};
-  walkSchemas(InitSchema, (Schema) => {
+  walkSchemas(InitSchema, Schema => {
     schemas[Schema.id] = Schema;
   });
   return schemas;
 };
 
-const quoteOrNa = (val) => val ? `\`${val.replace('`', '')}\`` : '_n/a_';
+const quoteOrNa = val => (val ? `\`${val.replace('`', '')}\`` : '_n/a_');
 
 // Generate a display of the type (or link to a $ref).
-const typeOrLink = (schema) => {
+const typeOrLink = schema => {
   if (schema.type === 'array' && schema.items) {
     return `${quoteOrNa(schema.type)}[${typeOrLink(schema.items)}]`;
   }
@@ -49,61 +48,75 @@ const typeOrLink = (schema) => {
     }
   }
   if (schema.enum && schema.enum.length) {
-    return `${quoteOrNa(schema.type)} in (${schema.enum.map(util.inspect).map(quoteOrNa).join(', ')})`;
+    return `${quoteOrNa(schema.type)} in (${schema.enum
+      .map(util.inspect)
+      .map(quoteOrNa)
+      .join(', ')})`;
   }
   return quoteOrNa(schema.type);
 };
 
-
 // Properly quote and display examples.
-const makeExampleSection = (Schema) => {
+const makeExampleSection = Schema => {
   const examples = Schema.schema.examples || [];
-  if (!examples.length) { return ''; }
+  if (!examples.length) {
+    return '';
+  }
   return `\
 #### Examples
 
-${(examples).map((example) => {
-  return `* ${quoteOrNa(util.inspect(example))}`;
-}).join('\n')}
+${examples
+    .map(example => {
+      return `* ${quoteOrNa(util.inspect(example))}`;
+    })
+    .join('\n')}
 `;
 };
 
-
 // Properly quote and display anti-examples.
-const makeAntiExampleSection = (Schema) => {
+const makeAntiExampleSection = Schema => {
   const examples = Schema.schema.antiExamples || [];
-  if (!examples.length) { return ''; }
+  if (!examples.length) {
+    return '';
+  }
   return `\
 #### Anti-Examples
 
-${(examples).map((example) => {
-  return `* ${quoteOrNa(util.inspect(example))}`;
-}).join('\n')}
+${examples
+    .map(example => {
+      return `* ${quoteOrNa(util.inspect(example))}`;
+    })
+    .join('\n')}
 `;
 };
 
-
 // Enumerate the properties as a table.
-const makePropertiesSection = (Schema) => {
-  const properties = Schema.schema.properties || Schema.schema.patternProperties || {};
-  if (!Object.keys(properties).length) { return ''; }
+const makePropertiesSection = Schema => {
+  const properties =
+    Schema.schema.properties || Schema.schema.patternProperties || {};
+  if (!Object.keys(properties).length) {
+    return '';
+  }
   const required = Schema.schema.required || [];
   return `\
 #### Properties
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-${Object.keys(properties).map((key) => {
-  const property = properties[key];
-  const isRequired = required.indexOf(key) !== -1 ? '**yes**' : 'no';
-  return `${quoteOrNa(key)} | ${isRequired} | ${typeOrLink(property)} | ${property.description || NO_DESCRIPTION}`;
-}).join('\n')}
+${Object.keys(properties)
+    .map(key => {
+      const property = properties[key];
+      const isRequired = required.indexOf(key) !== -1 ? '**yes**' : 'no';
+      return `${quoteOrNa(key)} | ${isRequired} | ${typeOrLink(
+        property
+      )} | ${property.description || NO_DESCRIPTION}`;
+    })
+    .join('\n')}
 `;
 };
 
-
 // Given a "root" schema, create some markdown.
-const makeMarkdownSection = (Schema) => {
+const makeMarkdownSection = Schema => {
   return `\
 ## ${Schema.id}
 
@@ -113,7 +126,9 @@ ${Schema.schema.description || NO_DESCRIPTION}
 
 * **Type** - ${typeOrLink(Schema.schema)}
 * **Pattern** - ${quoteOrNa(Schema.schema.pattern)}
-* **Source Code** - [lib/schemas${Schema.id}.js](${links.makeCodeLink(Schema.id)})
+* **Source Code** - [lib/schemas${Schema.id}.js](${links.makeCodeLink(
+    Schema.id
+  )})
 
 ${makeExampleSection(Schema)}
 ${makeAntiExampleSection(Schema)}
@@ -121,9 +136,8 @@ ${makePropertiesSection(Schema)}
 `.trim();
 };
 
-
 // Generate the final markdown.
-const buildDocs = (InitSchema) => {
+const buildDocs = InitSchema => {
   const schemas = collectSchemas(InitSchema);
   const markdownSections = _.chain(schemas)
     .values()
@@ -133,7 +147,9 @@ const buildDocs = (InitSchema) => {
   const docs = `\
 # \`zapier-platform-schema\` Generated Documentation
 
-This is automatically generated by the \`npm run docs\` command in \`zapier-platform-schema\` version ${quoteOrNa(packageJson.version)}.
+This is automatically generated by the \`npm run docs\` command in \`zapier-platform-schema\` version ${quoteOrNa(
+    packageJson.version
+  )}.
 
 -----
 
@@ -144,8 +160,7 @@ This is automatically generated by the \`npm run docs\` command in \`zapier-plat
 
 ${markdownSections}
 `.trim();
-  return toc.insert(docs, {maxDepth: 1, omit: ['Index']});
+  return toc.insert(docs, { maxDepth: 1, omit: ['Index'] });
 };
-
 
 module.exports = buildDocs;
