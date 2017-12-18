@@ -5,8 +5,7 @@ const constants = require('../constants');
 const utils = require('../utils');
 const validate = require('./validate');
 
-
-const test = (context) => {
+const test = context => {
   const extraEnv = {
     ZAPIER_BASE_ENDPOINT: constants.BASE_ENDPOINT
   };
@@ -21,12 +20,18 @@ const test = (context) => {
     return Promise.resolve();
   }
 
-  const validated = global.argOpts['skip-validate'] ? Promise.resolve() : validate(context);
+  const validated = global.argOpts['skip-validate']
+    ? Promise.resolve()
+    : validate(context);
 
   return validated
     .then(() => utils.readCredentials(undefined, false))
-    .then((credentials) => {
-      context.line(`Adding ${constants.AUTH_LOCATION} to environment as ZAPIER_DEPLOY_KEY...`);
+    .then(credentials => {
+      context.line(
+        `Adding ${
+          constants.AUTH_LOCATION
+        } to environment as ZAPIER_DEPLOY_KEY...`
+      );
       extraEnv.ZAPIER_DEPLOY_KEY = credentials.deployKey;
     })
     .then(() => {
@@ -46,21 +51,24 @@ const test = (context) => {
       }
 
       context.line('Running test suite.');
-      return utils.runCommand('npm', commands, {stdio: 'inherit', env})
-        .then((stdout) => {
+      return utils
+        .runCommand('npm', commands, { stdio: 'inherit', env })
+        .then(stdout => {
           if (stdout) {
             context.line(stdout);
           }
         });
     });
 };
-test.argsSpec = [
-];
+test.argsSpec = [];
 test.argOptsSpec = {
-  debug: {flag: true, help: 'print zapier detailed logs to standard out'},
-  timeout: {help: 'set test-case timeout in milliseconds [2000]'},
-  grep: {help: 'only run tests matching pattern'},
-  'skip-validate': {flag: true, help: 'forgo running `zapier validate` before `npm test`'},
+  debug: { flag: true, help: 'print zapier detailed logs to standard out' },
+  timeout: { help: 'set test-case timeout in milliseconds [2000]' },
+  grep: { help: 'only run tests matching pattern' },
+  'skip-validate': {
+    flag: true,
+    help: 'forgo running `zapier validate` before `npm test`'
+  }
 };
 test.help = 'Tests your app via `npm test`.';
 test.example = 'zapier test';

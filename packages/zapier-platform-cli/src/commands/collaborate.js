@@ -3,7 +3,8 @@ const utils = require('../utils');
 const makeAccess = require('./_access');
 
 const collaborate = makeAccess('collaborate', 'collaborator');
-collaborate.help = 'Manage the collaborators on your project. Can optionally --remove.';
+collaborate.help =
+  'Manage the collaborators on your project. Can optionally --remove.';
 collaborate.example = 'zapier collaborate [user@example.com]';
 collaborate.docs = `
 Give any user registered on Zapier the ability to collaborate on your app. Commonly, this is useful for teammates, contractors, or other developers who might want to make changes on your app. Only admin access is supported. If you'd only like to provide read-only or testing access, try \`zapier invite\`.

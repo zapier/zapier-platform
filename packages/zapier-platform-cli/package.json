@@ -13,19 +13,26 @@
   "scripts": {
     "docs": "npm run build && node lib/bin/docs.js",
     "preversion": "git pull && npm test",
-    "version": "npm run docs && npm run gen-completions && git add docs/* goodies/* README.md",
+    "version":
+      "npm run docs && npm run gen-completions && git add docs/* goodies/* README.md",
     "postversion": "git push && git push --tags",
     "prepublish": "npm run build",
-    "build": "rm -rf lib && node_modules/babel-cli/bin/babel.js src -d lib --copy-files",
-    "watch": "rm -rf lib && node_modules/babel-cli/bin/babel.js --watch src -d lib --copy-files",
+    "build":
+      "rm -rf lib && node_modules/babel-cli/bin/babel.js src -d lib --copy-files",
+    "watch":
+      "rm -rf lib && node_modules/babel-cli/bin/babel.js --watch src -d lib --copy-files",
     "lint": "node_modules/.bin/eslint zapier.js src",
-    "lint-snippets": "node_modules/.bin/eslint snippets --rule 'no-unused-vars: 0'",
-    "test": "npm run build && node_modules/mocha/bin/mocha -t 15000 --recursive lib/tests && npm run lint && npm run lint-snippets",
+    "lint-snippets":
+      "node_modules/.bin/eslint snippets --rule 'no-unused-vars: 0'",
+    "test":
+      "npm run build && node_modules/mocha/bin/mocha -t 15000 --recursive lib/tests && npm run lint && npm run lint-snippets",
     "zapier": "zapier.js",
     "validate-templates": "./scripts/validate-app-templates.js",
     "set-template-versions": "./scripts/set-app-template-versions.js",
-    "gen-completions": "./scripts/gen-zsh-completions.js > ./goodies/zsh/_zapier && ./scripts/gen-bash-completions.js > ./goodies/bash/_zapier",
-    "test-convert": "./scripts/test-convert.js"
+    "gen-completions":
+      "./scripts/gen-zsh-completions.js > ./goodies/zsh/_zapier && ./scripts/gen-bash-completions.js > ./goodies/bash/_zapier",
+    "test-convert": "./scripts/test-convert.js",
+    "precommit": "lint-staged"
   },
   "dependencies": {
     "adm-zip": "0.4.7",
@@ -63,17 +70,26 @@
     "babel-preset-es2015": "6.24.1",
     "eslint": "4.0.0",
     "fetch-mock": "5.11.0",
+    "husky": "^0.14.3",
     "jayson": "2.0.3",
+    "lint-staged": "^6.0.0",
     "litdoc": "1.5.6",
     "markdown-toc": "1.1.0",
     "mocha": "3.4.2",
     "ngrok": "2.2.10",
     "node-watch": "0.5.4",
+    "prettier": "^1.9.2",
     "require-from-string": "2.0.1",
     "should": "11.2.1",
     "yamljs": "0.3.0"
   },
   "bin": {
     "zapier": "zapier.js"
+  },
+  "prettier": {
+    "singleQuote": true
+  },
+  "lint-staged": {
+    "*.{js,json}": ["prettier --write", "git add"]
   }
 }

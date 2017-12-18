@@ -3,7 +3,7 @@ module.exports = {
   build: require('./build'),
   collaborate: require('./collaborate'),
   convert: require('./convert'),
-  'delete': require('./delete'),
+  delete: require('./delete'),
   deprecate: require('./deprecate'),
   describe: require('./describe'),
   env: require('./env'),
@@ -24,5 +24,5 @@ module.exports = {
   upload: require('./upload'),
   validate: require('./validate'),
   versions: require('./versions'),
-  watch: require('./watch'),
+  watch: require('./watch')
 };

@@ -4,32 +4,23 @@ const App = {
   platformVersion: require('zapier-platform-core').version,
 
   // see "Authentication" section below
-  authentication: {
-  },
+  authentication: {},
 
   // see "Dehydration" section below
-  hydrators: {
-  },
+  hydrators: {},
 
   // see "Making HTTP Requests" section below
-  requestTemplate: {
-  },
-  beforeRequest: [
-  ],
-  afterResponse: [
-  ],
+  requestTemplate: {},
+  beforeRequest: [],
+  afterResponse: [],
 
   // See "Resources" section below
-  resources: {
-  },
+  resources: {},
 
   // See "Triggers/Searches/Creates" section below
-  triggers: {
-  },
-  searches: {
-  },
-  creates: {
-  }
+  triggers: {},
+  searches: {},
+  creates: {}
 };
 
 module.exports = App;

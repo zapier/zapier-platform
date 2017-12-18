@@ -12,12 +12,8 @@ describe('utils', () => {
   // For some reason, Travis dies on this one
   it.skip('should print a nice little table', () => {
     const table = utils.makeTable(
-      [{id: 123, title: 'hello'}, {id: 456, title: 'world'}],
-      [
-        ['ID', 'id'],
-        ['Title', 'title'],
-        ['Missing', 'missing'],
-      ]
+      [{ id: 123, title: 'hello' }, { id: 456, title: 'world' }],
+      [['ID', 'id'], ['Title', 'title'], ['Missing', 'missing']]
     );
     table.indexOf('ID').should.be.above(0);
     table.indexOf('Title').should.be.above(0);
@@ -27,5 +23,4 @@ describe('utils', () => {
     table.indexOf('456').should.be.above(0);
     table.indexOf('world').should.be.above(0);
   });
-
 });

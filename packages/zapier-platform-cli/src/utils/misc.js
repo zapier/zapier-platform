@@ -6,10 +6,10 @@ const path = require('path');
 const fse = require('fs-extra');
 const os = require('os');
 
-const {PLATFORM_PACKAGE} = require('../constants');
+const { PLATFORM_PACKAGE } = require('../constants');
 
-const camelCase = (str) => _.capitalize(_.camelCase(str));
-const snakeCase = (str) => _.snakeCase(str);
+const camelCase = str => _.capitalize(_.camelCase(str));
+const snakeCase = str => _.snakeCase(str);
 
 const isWindows = () => {
   return os.platform().match(/^win/i);
@@ -24,14 +24,18 @@ const runCommand = (command, args, options) => {
   options = options || {};
   if (global.argOpts.debug) {
     console.log('\n');
-    console.log(`Running ${colors.bold(command + ' ' + args.join(' '))} command in ${colors.bold(options.cwd || process.cwd())}:\n`);
+    console.log(
+      `Running ${colors.bold(
+        command + ' ' + args.join(' ')
+      )} command in ${colors.bold(options.cwd || process.cwd())}:\n`
+    );
   }
   return new Promise((resolve, reject) => {
     const result = cp.spawn(command, args, options);
 
     let stdout = '';
     if (result.stdout) {
-      result.stdout.on('data', (data) => {
+      result.stdout.on('data', data => {
         stdout += data.toString();
         if (global.argOpts.debug) {
           console.log(colors.green(stdout));
@@ -41,7 +45,7 @@ const runCommand = (command, args, options) => {
 
     let stderr = '';
     if (result.stderr) {
-      result.stderr.on('data', (data) => {
+      result.stderr.on('data', data => {
         stderr += data.toString();
         if (global.argOpts.debug) {
           console.log(colors.red(stdout));
@@ -51,7 +55,7 @@ const runCommand = (command, args, options) => {
 
     result.on('error', reject);
 
-    result.on('close', (code) => {
+    result.on('close', code => {
       if (code !== 0) {
         reject(new Error(stderr));
       }
@@ -60,10 +64,8 @@ const runCommand = (command, args, options) => {
   });
 };
 
-
-const parseVersions = (versionString) => (
-  versionString.split('.').map(s => parseInt(s, 10))
-);
+const parseVersions = versionString =>
+  versionString.split('.').map(s => parseInt(s, 10));
 
 const readNvmVersion = () => {
   const nvmrc = path.resolve(__dirname, '../../.nvmrc');
@@ -79,13 +81,13 @@ const isValidNodeVersion = () => {
   const [major, minor, patch] = parseVersions(process.versions.node);
 
   return (
-    (major > nvmMajor) ||
+    major > nvmMajor ||
     (major === nvmMajor && minor > nvmMinor) ||
     (major === nvmMajor && minor === nvmMinor && patch >= nvmPatch)
   );
 };
 
-const isValidAppInstall = (command) => {
+const isValidAppInstall = command => {
   if (['help', 'init', 'login', 'apps', 'convert'].includes(command)) {
     return true;
   }
@@ -98,7 +100,7 @@ const isValidAppInstall = (command) => {
     if (!coreVersion || coreVersion.includes('^')) {
       return false;
     }
-  } catch(err) {
+  } catch (err) {
     return false;
   }
 
@@ -115,15 +117,15 @@ const isValidAppInstall = (command) => {
 
   try {
     require(`${process.cwd()}/node_modules/${PLATFORM_PACKAGE}`);
-  } catch(err) {
+  } catch (err) {
     return false;
   }
 
   return true;
 };
 
-const npmInstall = (appDir) => {
-  return runCommand('npm', ['install'], {cwd: appDir});
+const npmInstall = appDir => {
+  return runCommand('npm', ['install'], { cwd: appDir });
 };
 
 /*
@@ -132,27 +134,29 @@ const npmInstall = (appDir) => {
   stop returns falsey. Action is always run at least once.
  */
 const promiseDoWhile = (action, stop) => {
-  const loop = () => (
-    action().then(result => stop(result) ? result : loop())
-  );
+  const loop = () => action().then(result => (stop(result) ? result : loop()));
   return loop();
 };
 
 /* Delay a promise, by just a bit. */
 const promiseDelay = (delay = 1000) => {
-  return () => new Promise(resolve => {
-    setTimeout(() => resolve(), delay);
-  });
+  return () =>
+    new Promise(resolve => {
+      setTimeout(() => resolve(), delay);
+    });
 };
 
 /* Never stop looping. */
 const promiseForever = (action, delay = 1000) => {
-  const loop = () => action().then(promiseDelay(delay)).then(loop);
+  const loop = () =>
+    action()
+      .then(promiseDelay(delay))
+      .then(loop);
   return loop();
 };
 
 /* Return full path to entry point file as specified in package.json (ie "index.js") */
-const entryPoint = (dir) => {
+const entryPoint = dir => {
   dir = dir || process.cwd();
   const packageJson = require(path.resolve(dir, 'package.json'));
   return fse.realpathSync(path.resolve(dir, packageJson.main));
@@ -169,5 +173,5 @@ module.exports = {
   promiseForever,
   readNvmVersion,
   runCommand,
-  snakeCase,
+  snakeCase
 };

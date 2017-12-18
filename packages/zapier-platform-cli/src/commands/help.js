@@ -14,29 +14,28 @@ const help = (context, cmd) => {
     utils.markdownLog(commands[cmd].docs.trim());
     return Promise.resolve();
   }
-  context.line('Usage: zapier COMMAND [command-specific-arguments] [--command-specific-options]'.trim());
-  return Promise.resolve()
-    .then(() => {
-      context.line();
-      const allCommands = _.orderBy(Object.keys(commands))
-        .filter((name) => !commands[name].hide)
-        .map((name) => {
-          return {
-            name,
-            help: commands[name].help,
-            example: commands[name].example
-          };
-        });
-      utils.printData(allCommands, [
-        ['Command', 'name'],
-        ['Example', 'example'],
-        ['Help', 'help'],
-      ]);
-    });
+  context.line(
+    'Usage: zapier COMMAND [command-specific-arguments] [--command-specific-options]'.trim()
+  );
+  return Promise.resolve().then(() => {
+    context.line();
+    const allCommands = _.orderBy(Object.keys(commands))
+      .filter(name => !commands[name].hide)
+      .map(name => {
+        return {
+          name,
+          help: commands[name].help,
+          example: commands[name].example
+        };
+      });
+    utils.printData(allCommands, [
+      ['Command', 'name'],
+      ['Example', 'example'],
+      ['Help', 'help']
+    ]);
+  });
 };
-help.argsSpec = [
-  {name: 'cmd', help: 'the command to view docs for'}
-];
+help.argsSpec = [{ name: 'cmd', help: 'the command to view docs for' }];
 help.argOptsSpec = {};
 help.help = 'Lists all the commands you can use.';
 help.example = 'zapier help [command]';
@@ -45,7 +44,9 @@ Prints documentation to the terminal screen.
 
 Generally - the \`zapier\` command works off of two files:
 
- * ${constants.AUTH_LOCATION_RAW}      (home directory identifies the deploy key & user)
+ * ${
+   constants.AUTH_LOCATION_RAW
+ }      (home directory identifies the deploy key & user)
  * ./${constants.CURRENT_APP_FILE}   (current directory identifies the app)
 
 The \`zapier login\` and \`zapier register "Example"\` or \`zapier link\` commands will help manage those files. All commands listed below.

@@ -2,8 +2,10 @@
   "actions": {
     "create_recipe": {
       "_dump_version": 1,
-      "custom_fields_result_url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/fields-output",
-      "custom_fields_url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/fields-input",
+      "custom_fields_result_url":
+        "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/fields-output",
+      "custom_fields_url":
+        "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/fields-input",
       "fields": {
         "name": {
           "choices": null,
@@ -41,7 +43,8 @@
           "type": "unicode"
         }
       ],
-      "url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/recipe-create"
+      "url":
+        "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/recipe-create"
     }
   },
   "auth_fields": {
@@ -80,9 +83,12 @@
     },
     "auth_type": "OAuth V2 (w/refresh)",
     "auth_urls": {
-      "access_token_url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-access-token",
-      "authorization_url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize",
-      "refresh_token_url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-refresh-token"
+      "access_token_url":
+        "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-access-token",
+      "authorization_url":
+        "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-authorize",
+      "refresh_token_url":
+        "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-refresh-token"
     },
     "cloned_from_app_id": 733,
     "description": "Test WB app for `zapier convert`.",
@@ -106,13 +112,15 @@
       "help_text": "Test auth trigger.",
       "hide": true,
       "hook_event": null,
-      "hook_static_directions": "Log into your service and paste the below URL into the webhook setup field.",
+      "hook_static_directions":
+        "Log into your service and paste the below URL into the webhook setup field.",
       "important": false,
       "label": "Test Auth",
       "noun": "",
       "paging": false,
       "sample_result_fields": [],
-      "url": "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-test"
+      "url":
+        "https://wt-c396b46e7e285c63f4bd6d4f8d32dc2e-0.run.webtask.io/oauth2-test"
     }
   }
 }

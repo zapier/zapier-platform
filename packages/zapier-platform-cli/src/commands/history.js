@@ -1,16 +1,15 @@
 const utils = require('../utils');
 
-const history = (context) => {
-  return utils.listHistory()
-    .then((data) => {
-      context.line(`The history of your app "${data.app.title}" listed below.\n`);
-      utils.printData(data.history, [
-        ['What', 'action'],
-        ['Message', 'message'],
-        ['Who', 'customuser'],
-        ['Timestamp', 'date'],
-      ]);
-    });
+const history = context => {
+  return utils.listHistory().then(data => {
+    context.line(`The history of your app "${data.app.title}" listed below.\n`);
+    utils.printData(data.history, [
+      ['What', 'action'],
+      ['Message', 'message'],
+      ['Who', 'customuser'],
+      ['Timestamp', 'date']
+    ]);
+  });
 };
 history.argsSpec = [];
 history.argOptsSpec = {};

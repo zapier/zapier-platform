@@ -6,15 +6,22 @@ const env = (context, version, key, value) => {
 
   if (value !== undefined || isRemove) {
     key = key.toUpperCase();
-    return utils.checkCredentials()
+    return utils
+      .checkCredentials()
       .then(() => utils.getLinkedApp())
-      .then((app) => {
+      .then(app => {
         const url = `/apps/${app.id}/versions/${version}/environment/${key}`;
         const verb = isRemove ? 'remove' : 'set';
 
-        context.line(`Preparing to ${verb} environment ${key} for your ${version} "${app.title}".\n`);
+        context.line(
+          `Preparing to ${verb} environment ${key} for your ${version} "${
+            app.title
+          }".\n`
+        );
 
-        const startMsg = isRemove ? `Deleting ${key}` : `Setting ${key} to "${value}"`;
+        const startMsg = isRemove
+          ? `Deleting ${key}`
+          : `Setting ${key} to "${value}"`;
         utils.printStarting(startMsg);
 
         const method = isRemove ? 'DELETE' : 'PUT';
@@ -26,7 +33,9 @@ const env = (context, version, key, value) => {
       .then(() => {
         utils.printDone();
         context.line();
-        context.line(`Environment updated! Try viewing it with \`zapier env ${version}\`.`);
+        context.line(
+          `Environment updated! Try viewing it with \`zapier env ${version}\`.`
+        );
 
         // touch index.js to force watch to pick up env changes
         fs.utimesSync(utils.entryPoint(), NaN, NaN);
@@ -35,27 +44,42 @@ const env = (context, version, key, value) => {
       });
   }
   if (key) {
-    context.line(`Try viewing your env with \`zapier env\` or setting with \`${env.example}\`.`);
+    context.line(
+      `Try viewing your env with \`zapier env\` or setting with \`${
+        env.example
+      }\`.`
+    );
     return Promise.resolve();
   }
-  return utils.listEnv(version)
-    .then((data) => {
-      context.line(`The env of your "${data.app.title}" listed below.\n`);
-      utils.printData(data.environment, [
-        ['Version', 'app_version'],
-        ['Key', 'key'],
-        ['Value', 'value'],
-      ]);
-      context.line(`\nTry setting an env with the \`${env.example}\` command.`);
-    });
+  return utils.listEnv(version).then(data => {
+    context.line(`The env of your "${data.app.title}" listed below.\n`);
+    utils.printData(data.environment, [
+      ['Version', 'app_version'],
+      ['Key', 'key'],
+      ['Value', 'value']
+    ]);
+    context.line(`\nTry setting an env with the \`${env.example}\` command.`);
+  });
 };
 env.argsSpec = [
-  {name: 'version', example: '1.0.0', required: true, help: 'the app version\'s environment to work on'},
-  {name: 'key', example: 'CLIENT_SECRET', help: 'the uppercase key of the environment variable to set'},
-  {name: 'value', example: '12345', help: 'the raw value to set to the key'},
+  {
+    name: 'version',
+    example: '1.0.0',
+    required: true,
+    help: "the app version's environment to work on"
+  },
+  {
+    name: 'key',
+    example: 'CLIENT_SECRET',
+    help: 'the uppercase key of the environment variable to set'
+  },
+  { name: 'value', example: '12345', help: 'the raw value to set to the key' }
 ];
 env.argOptsSpec = {
-  remove: {flag: true, help: 'optionally remove environment variable with this key'}
+  remove: {
+    flag: true,
+    help: 'optionally remove environment variable with this key'
+  }
 };
 env.help = 'Read, write, and delete environment variables.';
 env.example = 'zapier env 1.0.0 CLIENT_SECRET 12345';

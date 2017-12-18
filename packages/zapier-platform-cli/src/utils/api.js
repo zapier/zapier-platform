@@ -11,37 +11,27 @@ const fetch = require('node-fetch');
 const path = require('path');
 const semver = require('semver');
 
-const {
-  writeFile,
-  readFile,
-} = require('./files');
+const { writeFile, readFile } = require('./files');
 
-const {
-  prettyJSONstringify,
-  printStarting,
-  printDone,
-} = require('./display');
+const { prettyJSONstringify, printStarting, printDone } = require('./display');
 
-const {
-  localAppCommand,
-} = require('./local');
-
+const { localAppCommand } = require('./local');
 
 // Reads the JSON file at ~/.zapierrc (AUTH_LOCATION).
 const readCredentials = (credentials, explodeIfMissing = true) => {
   return Promise.resolve(
     credentials ||
-    readFile(constants.AUTH_LOCATION, 'Please run `zapier login`.')
-      .then((buf) => {
-        return JSON.parse(buf.toString());
-      })
-      .catch(err => {
-        if (explodeIfMissing) {
-          throw err;
-        } else {
-          return {};
-        }
-      })
+      readFile(constants.AUTH_LOCATION, 'Please run `zapier login`.')
+        .then(buf => {
+          return JSON.parse(buf.toString());
+        })
+        .catch(err => {
+          if (explodeIfMissing) {
+            throw err;
+          } else {
+            return {};
+          }
+        })
   );
 };
 
@@ -61,26 +51,22 @@ const callAPI = (route, options, displayError = true) => {
     }
   };
   return Promise.resolve(requestOptions)
-    .then((_requestOptions) => {
+    .then(_requestOptions => {
       // requestOptions === _requestOptions side step for linting
       if (options.skipDeployKey) {
         return _requestOptions;
       } else {
-        return readCredentials()
-          .then((credentials) => {
-            _requestOptions.headers['X-Deploy-Key'] = credentials.deployKey;
-            return _requestOptions;
-          });
+        return readCredentials().then(credentials => {
+          _requestOptions.headers['X-Deploy-Key'] = credentials.deployKey;
+          return _requestOptions;
+        });
       }
     })
-    .then((_requestOptions) => {
+    .then(_requestOptions => {
       return fetch(_requestOptions.url, _requestOptions);
     })
-    .then((res) => {
-      return Promise.all([
-        res,
-        res.text()
-      ]);
+    .then(res => {
+      return Promise.all([res, res.text()]);
     })
     .then(([res, text]) => {
       let errors;
@@ -88,7 +74,7 @@ const callAPI = (route, options, displayError = true) => {
       if (hitError) {
         try {
           errors = JSON.parse(text).errors.join(', ');
-        } catch(err) {
+        } catch (err) {
           errors = (text || 'Unknown error').slice(0, 250);
         }
       }
@@ -96,7 +82,9 @@ const callAPI = (route, options, displayError = true) => {
       if (constants.DEBUG || global.argOpts.debug) {
         console.log(`>> ${requestOptions.method} ${requestOptions.url}`);
         if (requestOptions.body) {
-          let cleanedBody = _.assign({}, JSON.parse(requestOptions.body), {zip_file: 'raw zip removed in logs'});
+          let cleanedBody = _.assign({}, JSON.parse(requestOptions.body), {
+            zip_file: 'raw zip removed in logs'
+          });
           console.log(`>> ${JSON.stringify(cleanedBody)}`);
         }
         console.log(`<< ${res.status}`);
@@ -106,7 +94,9 @@ const callAPI = (route, options, displayError = true) => {
       }
 
       if (hitError) {
-        throw new Error(`"${requestOptions.url}" returned "${res.status}" saying "${errors}"`);
+        throw new Error(
+          `"${requestOptions.url}" returned "${res.status}" saying "${errors}"`
+        );
       }
 
       return JSON.parse(text);
@@ -127,38 +117,44 @@ const createCredentials = (username, password) => {
 };
 
 // Reads the JSON file in the app directory.
-const getLinkedAppConfig = (appDir) => {
+const getLinkedAppConfig = appDir => {
   appDir = appDir || '.';
 
   const file = path.resolve(appDir, constants.CURRENT_APP_FILE);
-  return readFile(file)
-    .then((buf) => {
-      return JSON.parse(buf.toString());
-    });
+  return readFile(file).then(buf => {
+    return JSON.parse(buf.toString());
+  });
 };
 
 const writeLinkedAppConfig = (app, appDir) => {
-  const file = appDir ?
-    path.resolve(appDir, constants.CURRENT_APP_FILE) :
-    constants.CURRENT_APP_FILE;
+  const file = appDir
+    ? path.resolve(appDir, constants.CURRENT_APP_FILE)
+    : constants.CURRENT_APP_FILE;
 
-  return writeFile(file, prettyJSONstringify({
-    id: app.id,
-    key: app.key
-  }));
+  return writeFile(
+    file,
+    prettyJSONstringify({
+      id: app.id,
+      key: app.key
+    })
+  );
 };
 
 // Loads the linked app from the API.
-const getLinkedApp = (appDir) => {
+const getLinkedApp = appDir => {
   return getLinkedAppConfig(appDir)
-    .then((app) => {
+    .then(app => {
       if (!app) {
         return {};
       }
       return callAPI('/apps/' + app.id);
     })
     .catch(() => {
-      throw new Error(`Warning! ${constants.CURRENT_APP_FILE} seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`);
+      throw new Error(
+        `Warning! ${
+          constants.CURRENT_APP_FILE
+        } seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
+      );
     });
 };
 
@@ -166,11 +162,10 @@ const getLinkedApp = (appDir) => {
 const getVersionInfo = () => {
   return Promise.all([
     getLinkedApp(),
-    localAppCommand({command: 'definition'})
-  ])
-    .then(([app, definition]) => {
-      return callAPI(`/apps/${app.id}/versions/${definition.version}`);
-    });
+    localAppCommand({ command: 'definition' })
+  ]).then(([app, definition]) => {
+    return callAPI(`/apps/${app.id}/versions/${definition.version}`);
+  });
 };
 
 const checkCredentials = () => {
@@ -181,19 +176,19 @@ const listApps = () => {
   return checkCredentials()
     .then(() => {
       return Promise.all([
-        getLinkedApp()
-          .catch(() => {
-            return undefined;
-          }),
+        getLinkedApp().catch(() => {
+          return undefined;
+        }),
         callAPI('/apps')
       ]);
     })
-    .then((values) => {
+    .then(values => {
       const [linkedApp, data] = values;
       return {
         app: linkedApp,
-        apps: data.objects.map((app) => {
-          app.linked = (linkedApp && app.id === linkedApp.id) ? colors.green('✔') : '';
+        apps: data.objects.map(app => {
+          app.linked =
+            linkedApp && app.id === linkedApp.id ? colors.green('✔') : '';
           return app;
         })
       };
@@ -203,14 +198,11 @@ const listApps = () => {
 const listEndpoint = (endpoint, keyOverride) => {
   return checkCredentials()
     .then(() => getLinkedApp())
-    .then((app) => {
-      return Promise.all([
-        app,
-        callAPI(`/apps/${app.id}/${endpoint}`)
-      ]);
+    .then(app => {
+      return Promise.all([app, callAPI(`/apps/${app.id}/${endpoint}`)]);
     })
     .then(([app, results]) => {
-      const out = {app};
+      const out = { app };
       out[keyOverride || endpoint] = results.objects;
       _.assign(out, _.omit(results, 'objects'));
       return out;
@@ -229,11 +221,11 @@ const listInvitees = () => {
   return listEndpoint('invitees');
 };
 
-const listLogs = (opts) => {
+const listLogs = opts => {
   return listEndpoint(`logs?${qs.stringify(opts)}`, 'logs');
 };
 
-const listEnv = (version) => {
+const listEnv = version => {
   let endpoint;
   if (version) {
     endpoint = `versions/${version}/environment`;
@@ -248,7 +240,7 @@ const upload = (zipPath, appDir) => {
   const fullZipPath = path.resolve(appDir, zipPath);
 
   return getLinkedApp(appDir)
-    .then((app) => {
+    .then(app => {
       const zip = new AdmZip(fullZipPath);
       const definitionJson = zip.readAsText('definition.json');
       if (!definitionJson) {
@@ -267,11 +259,17 @@ const upload = (zipPath, appDir) => {
         }
       });
     })
-    .then((appVersion) => {
+    .then(appVersion => {
       printDone();
 
       if (semver.lt(appVersion.platform_version, appVersion.core_npm_version)) {
-        console.log(`\n**NOTE:** Your app is using zapier-platform-core@${appVersion.platform_version}, and there's a new version: ${appVersion.core_npm_version}. Please consider updating it: https://zapier.github.io/zapier-platform-cli/#upgrading-zapier-platform-cli-or-zapier-platform-core`);
+        console.log(
+          `\n**NOTE:** Your app is using zapier-platform-core@${
+            appVersion.platform_version
+          }, and there's a new version: ${
+            appVersion.core_npm_version
+          }. Please consider updating it: https://zapier.github.io/zapier-platform-cli/#upgrading-zapier-platform-cli-or-zapier-platform-core`
+        );
       }
     });
 };
@@ -292,5 +290,5 @@ module.exports = {
   listVersions,
   readCredentials,
   upload,
-  writeLinkedAppConfig,
+  writeLinkedAppConfig
 };

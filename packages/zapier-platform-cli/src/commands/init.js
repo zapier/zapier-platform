@@ -3,34 +3,39 @@ const exampleApps = require('../utils/example-apps');
 const constants = require('../constants');
 const appTemplates = require('../app-templates');
 
-
 const init = (context, location) => {
   context.line('Welcome to the Zapier Platform! :-D');
   context.line();
   context.line(constants.ART);
   context.line();
-  context.line('Let\'s initialize your app!');
+  context.line("Let's initialize your app!");
   context.line();
 
   const template = global.argOpts.template || 'minimal';
-  const createApp = (tempAppDir) => {
-    utils.printStarting(`Downloading zapier/zapier-platform-example-app-${template} starter app`);
-    return exampleApps.downloadAndUnzipTo(template, tempAppDir)
+  const createApp = tempAppDir => {
+    utils.printStarting(
+      `Downloading zapier/zapier-platform-example-app-${template} starter app`
+    );
+    return exampleApps
+      .downloadAndUnzipTo(template, tempAppDir)
       .then(() => exampleApps.removeReadme(tempAppDir))
       .then(() => utils.printDone());
   };
 
-  return utils.initApp(context, location, createApp)
-    .then(() => {
-      context.line('\nFinished! You might need to `npm install` then try `zapier test`!');
-    });
+  return utils.initApp(context, location, createApp).then(() => {
+    context.line(
+      '\nFinished! You might need to `npm install` then try `zapier test`!'
+    );
+  });
 };
 
-init.argsSpec = [
-  {name: 'path', required: true},
-];
+init.argsSpec = [{ name: 'path', required: true }];
 init.argOptsSpec = {
-  template: {help: 'select a starting app template', choices: appTemplates, 'default': 'minimal'}
+  template: {
+    help: 'select a starting app template',
+    choices: appTemplates,
+    default: 'minimal'
+  }
 };
 init.help = 'Initializes a new Zapier app in a directory.';
 init.example = 'zapier init path';

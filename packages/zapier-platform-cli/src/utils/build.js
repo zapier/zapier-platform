@@ -17,26 +17,19 @@ const {
   readFile,
   copyDir,
   ensureDir,
-  removeDir,
+  removeDir
 } = require('./files');
 
-const {
-  prettyJSONstringify,
-  printStarting,
-  printDone,
-} = require('./display');
+const { prettyJSONstringify, printStarting, printDone } = require('./display');
 
 const {
   getLinkedAppConfig,
   checkCredentials,
   upload,
-  callAPI,
+  callAPI
 } = require('./api');
 
-const {
-  runCommand,
-  isWindows,
-} = require('./misc');
+const { runCommand, isWindows } = require('./misc');
 
 const stripPath = (cwd, filePath) => filePath.split(cwd).pop();
 
@@ -50,7 +43,7 @@ const requiredFiles = (cwd, entryPoints) => {
   }
 
   const argv = {
-    noParse: [ undefined ],
+    noParse: [undefined],
     extensions: [],
     ignoreTransform: [],
     entries: entryPoints,
@@ -78,27 +71,29 @@ const requiredFiles = (cwd, entryPoints) => {
     b.on('error', reject);
 
     const paths = [];
-    b.pipeline.get('deps')
-      .push(through.obj((row, enc, next) => {
-        const filePath = row.file || row.id;
-        // why does browserify add /private + filePath?
-        paths.push(stripPath(cwd, filePath));
-        next();
-      })
+    b.pipeline.get('deps').push(
+      through
+        .obj((row, enc, next) => {
+          const filePath = row.file || row.id;
+          // why does browserify add /private + filePath?
+          paths.push(stripPath(cwd, filePath));
+          next();
+        })
         .on('end', () => {
           paths.sort();
           resolve(paths);
-        }));
+        })
+    );
     b.bundle();
   });
 };
 
-const listFiles = (dir) => {
+const listFiles = dir => {
   return new Promise((resolve, reject) => {
     const paths = [];
     const cwd = dir + path.sep;
     klaw(dir)
-      .on('data', (item) => {
+      .on('data', item => {
         if (!item.stats.isDirectory()) {
           paths.push(stripPath(cwd, item.path));
         }
@@ -114,20 +109,23 @@ const listFiles = (dir) => {
 const forceIncludeDumbPath = (appConfig, filePath) => {
   let matchesConfigInclude = false;
   const configIncludePaths = _.get(appConfig, 'includeInBuild', []);
-  _.each(configIncludePaths, (includePath) => {
+  _.each(configIncludePaths, includePath => {
     if (filePath.match(RegExp(includePath, 'i'))) {
       matchesConfigInclude = true;
       return false;
     }
-    return true;// Because of consistent-return
+    return true; // Because of consistent-return
   });
 
   return (
-    (filePath.endsWith('package.json') || filePath.endsWith('definition.json'))
-    || filePath.endsWith('/bin/linux-x64-node-6/deasync.node') // Special, for zapier-platform-legacy-scripting-runner
-    || filePath.match(path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/)
-    || (global.argOpts['include-js-map'] && filePath.endsWith('.js.map'))
-    || matchesConfigInclude
+    filePath.endsWith('package.json') ||
+    filePath.endsWith('definition.json') ||
+    filePath.endsWith('/bin/linux-x64-node-6/deasync.node') || // Special, for zapier-platform-legacy-scripting-runner
+    filePath.match(
+      path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/
+    ) ||
+    (global.argOpts['include-js-map'] && filePath.endsWith('.js.map')) ||
+    matchesConfigInclude
   );
 };
 
@@ -138,16 +136,16 @@ const makeZip = (dir, zipPath) => {
   ];
 
   return requiredFiles(dir, entryPoints)
-    .then((smartPaths) => Promise.all([
-      smartPaths,
-      listFiles(dir),
-      getLinkedAppConfig(dir),
-    ]))
+    .then(smartPaths =>
+      Promise.all([smartPaths, listFiles(dir), getLinkedAppConfig(dir)])
+    )
     .then(([smartPaths, dumbPaths, appConfig]) => {
       if (global.argOpts['disable-dependency-detection']) {
         return dumbPaths;
       }
-      let finalPaths = smartPaths.concat(dumbPaths.filter(forceIncludeDumbPath.bind(null, appConfig)));
+      let finalPaths = smartPaths.concat(
+        dumbPaths.filter(forceIncludeDumbPath.bind(null, appConfig))
+      );
       finalPaths = _.uniq(finalPaths);
       finalPaths.sort();
       if (global.argOpts.debug) {
@@ -157,7 +155,7 @@ const makeZip = (dir, zipPath) => {
       }
       return finalPaths;
     })
-    .then((paths) => {
+    .then(paths => {
       return new Promise((resolve, reject) => {
         const output = fs.createWriteStream(zipPath);
         const zip = archiver('zip', {
@@ -176,13 +174,13 @@ const makeZip = (dir, zipPath) => {
         // pipe archive data to the file
         zip.pipe(output);
 
-        paths.forEach(function (filePath) {
+        paths.forEach(function(filePath) {
           var basePath = path.dirname(filePath);
           if (basePath === '.') {
             basePath = undefined;
           }
           var name = path.join(dir, filePath);
-          zip.file(name, {name: filePath});
+          zip.file(name, { name: filePath });
         });
 
         zip.finalize();
@@ -195,7 +193,7 @@ const makeZip = (dir, zipPath) => {
 const _appCommandZapierWrapper = (dir, event) => {
   const app = require(`${dir}/zapierwrapper.js`);
   event = Object.assign({}, event, {
-    calledFromCli: true,
+    calledFromCli: true
   });
   return new Promise((resolve, reject) => {
     app.handler(event, {}, (err, resp) => {
@@ -212,7 +210,10 @@ const build = (zipPath, wdir) => {
   wdir = wdir || process.cwd();
   zipPath = zipPath || constants.BUILD_PATH;
   const osTmpDir = fse.realpathSync(os.tmpdir());
-  const tmpDir = path.join(osTmpDir, 'zapier-' + crypto.randomBytes(4).toString('hex'));
+  const tmpDir = path.join(
+    osTmpDir,
+    'zapier-' + crypto.randomBytes(4).toString('hex')
+  );
 
   return ensureDir(tmpDir)
     .then(() => ensureDir(constants.BUILD_DIR))
@@ -221,12 +222,12 @@ const build = (zipPath, wdir) => {
 
       let filter;
       if (process.env.SKIP_NPM_INSTALL) {
-        filter = (dir) => {
+        filter = dir => {
           const isntBuild = dir.indexOf('.zip') === -1;
           return isntBuild;
         };
       }
-      return copyDir(wdir, tmpDir, {filter});
+      return copyDir(wdir, tmpDir, { filter });
     })
     .then(() => {
       if (process.env.SKIP_NPM_INSTALL) {
@@ -234,24 +235,36 @@ const build = (zipPath, wdir) => {
       }
       printDone();
       printStarting('Installing project dependencies');
-      return runCommand('npm', ['install', '--production'], {cwd: tmpDir});
+      return runCommand('npm', ['install', '--production'], { cwd: tmpDir });
     })
     .then(() => {
       printDone();
       printStarting('Applying entry point file');
       // TODO: should this routine for include exist elsewhere?
-      return readFile(path.join(tmpDir, 'node_modules', constants.PLATFORM_PACKAGE, 'include', 'zapierwrapper.js'))
-        .then(zapierWrapperBuf => writeFile(`${tmpDir}/zapierwrapper.js`, zapierWrapperBuf.toString()));
+      return readFile(
+        path.join(
+          tmpDir,
+          'node_modules',
+          constants.PLATFORM_PACKAGE,
+          'include',
+          'zapierwrapper.js'
+        )
+      ).then(zapierWrapperBuf =>
+        writeFile(`${tmpDir}/zapierwrapper.js`, zapierWrapperBuf.toString())
+      );
     })
     .then(() => {
       printDone();
       printStarting('Building app definition.json');
-      return _appCommandZapierWrapper(tmpDir, {command: 'definition'});
+      return _appCommandZapierWrapper(tmpDir, { command: 'definition' });
     })
-    .then((rawDefinition) => {
+    .then(rawDefinition => {
       return Promise.all([
-        writeFile(`${tmpDir}/definition.json`, prettyJSONstringify(rawDefinition.results)),
-        Promise.resolve(rawDefinition.results),
+        writeFile(
+          `${tmpDir}/definition.json`,
+          prettyJSONstringify(rawDefinition.results)
+        ),
+        Promise.resolve(rawDefinition.results)
       ]);
     })
     .then(([fileWriteError, rawDefinition]) => {
@@ -261,15 +274,17 @@ const build = (zipPath, wdir) => {
           console.log(fileWriteError);
           console.log('');
         }
-        throw new Error(`Unable to write ${tmpDir}/definition.json, please check file permissions!`);
+        throw new Error(
+          `Unable to write ${tmpDir}/definition.json, please check file permissions!`
+        );
       }
 
       printDone();
       printStarting('Validating project');
 
       return Promise.all([
-        _appCommandZapierWrapper(tmpDir, {command: 'validate'}),
-        Promise.resolve(rawDefinition),
+        _appCommandZapierWrapper(tmpDir, { command: 'validate' }),
+        Promise.resolve(rawDefinition)
       ]);
     })
     .then(([validateResponse, rawDefinition]) => {
@@ -277,8 +292,8 @@ const build = (zipPath, wdir) => {
       if (errors.length) {
         return Promise.resolve({
           errors: {
-            validation: errors,
-          },
+            validation: errors
+          }
         });
       }
 
@@ -288,13 +303,15 @@ const build = (zipPath, wdir) => {
       return callAPI('/style-check', {
         skipDeployKey: true,
         method: 'POST',
-        body: rawDefinition,
+        body: rawDefinition
       });
     })
-    .then((styleChecksResponse) => {
+    .then(styleChecksResponse => {
       const errors = styleChecksResponse.errors;
       if (!_.isEmpty(errors)) {
-        throw new Error('We hit some validation errors, try running `zapier validate` to see them!');
+        throw new Error(
+          'We hit some validation errors, try running `zapier validate` to see them!'
+        );
       }
 
       printDone();
@@ -311,7 +328,11 @@ const build = (zipPath, wdir) => {
       if (isWindows()) {
         return {}; // TODO err, what should we do on windows?
       }
-      return runCommand('find', ['.', '-exec', 'touch', '-t', '201601010000', '{}', '+'], {cwd: tmpDir});
+      return runCommand(
+        'find',
+        ['.', '-exec', 'touch', '-t', '201601010000', '{}', '+'],
+        { cwd: tmpDir }
+      );
     })
     .then(() => {
       printDone();
@@ -340,5 +361,5 @@ module.exports = {
   build,
   buildAndUploadDir,
   listFiles,
-  requiredFiles,
+  requiredFiles
 };

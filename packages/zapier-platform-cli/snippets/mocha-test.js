@@ -8,9 +8,8 @@ const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
-
   describe('new recipe trigger', () => {
-    it('should load recipes', (done) => {
+    it('should load recipes', done => {
       // This is what Zapier will send to your app as input.
       // It contains trigger options the user choice in their zap.
       const bundle = {
@@ -35,5 +34,4 @@ describe('triggers', () => {
         .catch(done);
     });
   });
-
 });

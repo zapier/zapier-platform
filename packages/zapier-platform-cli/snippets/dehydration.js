@@ -1,11 +1,11 @@
 const getExtraDataFunction = (z, bundle) => {
   const url = `http://example.com/movies/${bundle.inputData.id}.json`;
-  return z.request(url)
-    .then(res => z.JSON.parse(res.content));
+  return z.request(url).then(res => z.JSON.parse(res.content));
 };
 
 const movieList = (z, bundle) => {
-  return z.request('http://example.com/movies.json')
+  return z
+    .request('http://example.com/movies.json')
     .then(res => z.JSON.parse(res.content))
     .then(results => {
       return results.map(result => {

@@ -21,13 +21,17 @@ const promisify = (fn, context) => {
 };
 
 const promisifyAll = (object, context) => {
-  return _.reduce(object, (result, method, name) => {
-    if (!name.match(/Sync$/)) {
-      result[`${name}Async`] = promisify(method, context);
-    }
-    result[name] = method;
-    return result;
-  }, {});
+  return _.reduce(
+    object,
+    (result, method, name) => {
+      if (!name.match(/Sync$/)) {
+        result[`${name}Async`] = promisify(method, context);
+      }
+      result[name] = method;
+      return result;
+    },
+    {}
+  );
 };
 
 /*
@@ -47,5 +51,5 @@ const promisifySome = (object, methods) => {
 module.exports = {
   promisify,
   promisifyAll,
-  promisifySome,
+  promisifySome
 };

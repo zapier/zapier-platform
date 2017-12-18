@@ -1,6 +1,6 @@
 const readline = require('readline');
 
-const {isWindows} = require('./misc');
+const { isWindows } = require('./misc');
 
 // could we explore https://www.npmjs.com/package/columnify
 // to simplify the columns/tables? the | - decoration is big
@@ -10,13 +10,13 @@ const stringLength = require('string-length');
 const _ = require('lodash');
 const read = require('read');
 
-const notUndef = (s) => String(s === undefined ? '' : s).trim();
+const notUndef = s => String(s === undefined ? '' : s).trim();
 
-const unBacktick = (s) => s.replace(/\n?`+(bash)?/g, '');
+const unBacktick = s => s.replace(/\n?`+(bash)?/g, '');
 
-const prettyJSONstringify = (obj) => JSON.stringify(obj, null, '  ');
+const prettyJSONstringify = obj => JSON.stringify(obj, null, '  ');
 
-const markdownLog = (str) => {
+const markdownLog = str => {
   // turn markdown into something with styles and stuff
   // https://blog.mariusschulz.com/content/images/sublime_markdown_with_syntax_highlighting.png
   console.log(unBacktick(str));
@@ -24,9 +24,9 @@ const markdownLog = (str) => {
 
 // Convert rows from keys to column labels.
 const rewriteLabels = (rows, columnDefs) => {
-  return rows.map((row) => {
+  return rows.map(row => {
     const consumptionRow = {};
-    columnDefs.forEach((columnDef) => {
+    columnDefs.forEach(columnDef => {
       const [label, key, _default] = columnDef;
       const val = _.get(row, key || label, _default);
       consumptionRow[label] = notUndef(val);
@@ -35,7 +35,7 @@ const rewriteLabels = (rows, columnDefs) => {
   });
 };
 
-const makePlainSingle = (row) => {
+const makePlainSingle = row => {
   return _.map(row, (value, key) => {
     return (colors.grey('==') + ' ' + colors.bold(key) + '\n' + value).trim();
   }).join('\n');
@@ -43,12 +43,14 @@ const makePlainSingle = (row) => {
 
 // An easier way to print rows for copy paste accessibility.
 const makePlain = (rows, columnDefs) => {
-  return rewriteLabels(rows, columnDefs)
-    .map(makePlainSingle)
-    .join(colors.grey('\n\n - - - - - - - - - - - - - - - - - - \n\n')) + '\n';
+  return (
+    rewriteLabels(rows, columnDefs)
+      .map(makePlainSingle)
+      .join(colors.grey('\n\n - - - - - - - - - - - - - - - - - - \n\n')) + '\n'
+  );
 };
 
-const isTooWideForWindow = (str) => {
+const isTooWideForWindow = str => {
   const widestRow = str.split('\n').reduce((coll, row) => {
     if (stringLength(row) > coll) {
       return stringLength(row);
@@ -60,13 +62,14 @@ const isTooWideForWindow = (str) => {
   return widestRow > process.stdout.columns;
 };
 
-const ansiTrim = (s) => _.trim(s, [
-  '\r',
-  '\n',
-  ' ',
-  // '\u001b[39m',
-  // '\u001b[90m',
-]);
+const ansiTrim = s =>
+  _.trim(s, [
+    '\r',
+    '\n',
+    ' '
+    // '\u001b[39m',
+    // '\u001b[90m',
+  ]);
 
 const CHARS = {
   // 'top': '', 'top-mid': '', 'top-left': '', 'top-right': '',
@@ -75,7 +78,7 @@ const CHARS = {
 
 // Similar to makeTable, but prints the column headings in the left-hand column
 // and the values in the right-hand column, in rows
-const makeRowBasedTable = (rows, columnDefs, {includeIndex = true} = {}) => {
+const makeRowBasedTable = (rows, columnDefs, { includeIndex = true } = {}) => {
   const tableOptions = {
     chars: CHARS,
     style: {
@@ -84,20 +87,24 @@ const makeRowBasedTable = (rows, columnDefs, {includeIndex = true} = {}) => {
   };
   const table = new Table(tableOptions);
 
-  const maxLabelLength = _.reduce(columnDefs, (maxLength, columnDef) => {
-    if (columnDef[0] && stringLength(columnDef[0]) > maxLength) {
-      return stringLength(columnDef[0]);
-    }
-    return maxLength;
-  }, 1);
+  const maxLabelLength = _.reduce(
+    columnDefs,
+    (maxLength, columnDef) => {
+      if (columnDef[0] && stringLength(columnDef[0]) > maxLength) {
+        return stringLength(columnDef[0]);
+      }
+      return maxLength;
+    },
+    1
+  );
   const widthForValue = process.stdout.columns - maxLabelLength - 15; // The last bit accounts for some padding and borders
 
   rows.forEach((row, index) => {
     if (includeIndex) {
-      table.push([{colSpan: 2, content: colors.grey(`= ${index + 1} =`)}]);
+      table.push([{ colSpan: 2, content: colors.grey(`= ${index + 1} =`) }]);
     }
 
-    columnDefs.forEach((columnDef) => {
+    columnDefs.forEach(columnDef => {
       const consumptionRow = {};
       const [label, key, _default] = columnDef;
       let val = _.get(row, key || label, _default);
@@ -106,7 +113,7 @@ const makeRowBasedTable = (rows, columnDefs, {includeIndex = true} = {}) => {
       if (stringLength(val) > widthForValue) {
         try {
           val = prettyJSONstringify(JSON.parse(val));
-        } catch(err) {
+        } catch (err) {
           // Wasn't JSON, so splice in newlines so that word wraping works properly
           let rest = val;
           val = '';
@@ -128,7 +135,7 @@ const makeRowBasedTable = (rows, columnDefs, {includeIndex = true} = {}) => {
     });
 
     if (index < rows.length - 1) {
-      table.push([{colSpan: 2, content: '  '}]);
+      table.push([{ colSpan: 2, content: '  ' }]);
     }
   });
 
@@ -154,9 +161,9 @@ const makeTable = (rows, columnDefs) => {
   };
   const table = new Table(tableOptions);
 
-  rows.forEach((row) => {
+  rows.forEach(row => {
     const consumptionRow = [];
-    columnDefs.forEach((columnDef) => {
+    columnDefs.forEach(columnDef => {
       const [label, key, _default] = columnDef;
       const val = _.get(row, key || label, _default);
       consumptionRow.push(notUndef(val));
@@ -173,15 +180,20 @@ const makeTable = (rows, columnDefs) => {
   return strTable;
 };
 
-const makeJSON = (rows, columnDefs) => prettyJSONstringify(rewriteLabels(rows, columnDefs));
-const makeRawJSON = (rows) => prettyJSONstringify(rows);
+const makeJSON = (rows, columnDefs) =>
+  prettyJSONstringify(rewriteLabels(rows, columnDefs));
+const makeRawJSON = rows => prettyJSONstringify(rows);
 
-const makeSmall = (rows) => {
+const makeSmall = rows => {
   const longestRow = _.max(rows.map(r => r.name.length));
   let res = [];
 
   rows.forEach(row => {
-    res.push(`  ${row.name}${' '.repeat(longestRow - row.name.length + 1)} # ${row.help}`);
+    res.push(
+      `  ${row.name}${' '.repeat(longestRow - row.name.length + 1)} # ${
+        row.help
+      }`
+    );
   });
 
   return res.join('\n');
@@ -197,8 +209,14 @@ const formatStyles = {
   small: makeSmall
 };
 
-const printData = (rows, columnDefs, ifEmptyMessage = '', useRowBasedTable = false) => {
-  const formatStyle = (global.argOpts || {}).format || (useRowBasedTable ? 'row' : DEFAULT_STYLE);
+const printData = (
+  rows,
+  columnDefs,
+  ifEmptyMessage = '',
+  useRowBasedTable = false
+) => {
+  const formatStyle =
+    (global.argOpts || {}).format || (useRowBasedTable ? 'row' : DEFAULT_STYLE);
   const formatter = formatStyles[formatStyle] || formatStyles[DEFAULT_STYLE];
   if (rows && !rows.length) {
     console.log(ifEmptyMessage);
@@ -214,22 +232,10 @@ let spinTransitions;
 
 if (isWindows()) {
   spinSpeed = 240;
-  spinTransitions = [
-    '   ',
-    '.  ',
-    '.. ',
-    '...',
-  ];
+  spinTransitions = ['   ', '.  ', '.. ', '...'];
 } else {
   spinSpeed = 80;
-  spinTransitions = [
-    '⠃',
-    '⠉',
-    '⠘',
-    '⠰',
-    '⠤',
-    '⠆',
-  ];
+  spinTransitions = ['⠃', '⠉', '⠘', '⠰', '⠤', '⠆'];
 }
 const finalTransition = spinTransitions[0];
 
@@ -239,10 +245,15 @@ const clearSpinner = () => {
   spinner = undefined;
 };
 
-const writeNextSpinnerTick = (final = false, _finalTransition = finalTransition) => {
+const writeNextSpinnerTick = (
+  final = false,
+  _finalTransition = finalTransition
+) => {
   readline.moveCursor(process.stdout, -spinTransitions[currentIter].length, 0);
   currentIter++;
-  if (currentIter >= spinTransitions.length) { currentIter = 0; }
+  if (currentIter >= spinTransitions.length) {
+    currentIter = 0;
+  }
   process.stdout.write(final ? _finalTransition : spinTransitions[currentIter]);
 };
 
@@ -255,14 +266,18 @@ const startSpinner = () => {
   }, spinSpeed);
 };
 
-const endSpinner = (_finalTransition) => {
-  if (!spinner) { return; }
+const endSpinner = _finalTransition => {
+  if (!spinner) {
+    return;
+  }
   clearSpinner();
   writeNextSpinnerTick(true, _finalTransition);
 };
 
-const printStarting = (msg) => {
-  if (spinner) { return; }
+const printStarting = msg => {
+  if (spinner) {
+    return;
+  }
   if (msg) {
     msg = '  ' + msg + ' ';
   } else {
@@ -273,31 +288,38 @@ const printStarting = (msg) => {
 };
 
 const printDone = (success = true, message) => {
-  if (!spinner) { return; }
+  if (!spinner) {
+    return;
+  }
   endSpinner();
 
   if (message) {
     message = ` ${message}`;
   }
 
-  const logMsg = success ?
-    colors.green(message || ' done!') :
-    colors.red(message || ' fail!');
+  const logMsg = success
+    ? colors.green(message || ' done!')
+    : colors.red(message || ' fail!');
 
   console.log(logMsg);
 };
 
 // Get input from a user.
-const getInput = (question, {secret = false} = {}) => {
+const getInput = (question, { secret = false } = {}) => {
   return new Promise((resolve, reject) => {
-    read({
-      prompt: question,
-      silent: secret,
-      replace: secret ? '*' : undefined
-    }, (err, result) => {
-      if (err) { reject(err); }
-      resolve(result);
-    });
+    read(
+      {
+        prompt: question,
+        silent: secret,
+        replace: secret ? '*' : undefined
+      },
+      (err, result) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(result);
+      }
+    );
   });
 };
 
@@ -313,5 +335,5 @@ module.exports = {
   printData,
   printDone,
   printStarting,
-  startSpinner,
+  startSpinner
 };

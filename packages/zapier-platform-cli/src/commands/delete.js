@@ -1,18 +1,22 @@
 const utils = require('../utils');
 
 const deleteApp = (context, app) => {
-  context.line(`Preparing to delete all versions of your app "${app.title}".\n`);
+  context.line(
+    `Preparing to delete all versions of your app "${app.title}".\n`
+  );
   utils.printStarting('Deleting app');
   return utils.callAPI(`/apps/${app.id}`, {
-    method: 'DELETE',
+    method: 'DELETE'
   });
 };
 
 const deleteVersion = (context, app, version) => {
-  context.line(`Preparing to delete version ${version} of your app "${app.title}".\n`);
+  context.line(
+    `Preparing to delete version ${version} of your app "${app.title}".\n`
+  );
   utils.printStarting(`Deleting version ${version}`);
   return utils.callAPI(`/apps/${app.id}/versions/${version}`, {
-    method: 'DELETE',
+    method: 'DELETE'
   });
 };
 
@@ -22,20 +26,38 @@ const _delete = (context, appOrVersion, version) => {
     const message = 'Error: No version - provide a version like "1.0.0"...';
     return Promise.reject(new Error(message));
   }
-  return utils.checkCredentials()
+  return utils
+    .checkCredentials()
     .then(() => utils.getLinkedApp())
-    .then((app) => isDeletingVersion ? deleteVersion(context, app, version) : deleteApp(context, app))
+    .then(
+      app =>
+        isDeletingVersion
+          ? deleteVersion(context, app, version)
+          : deleteApp(context, app)
+    )
     .then(() => {
       utils.printDone();
       context.line('  Deletion successful!\n');
     });
 };
 _delete.argsSpec = [
-  {name: 'appOrVersion', example: 'version', choices: ['app', 'version'], required: true, help: 'delete the whole app, or just a version?'},
-  {name: 'version', example: '1.0.0', required: false, help: 'the version to delete'},
+  {
+    name: 'appOrVersion',
+    example: 'version',
+    choices: ['app', 'version'],
+    required: true,
+    help: 'delete the whole app, or just a version?'
+  },
+  {
+    name: 'version',
+    example: '1.0.0',
+    required: false,
+    help: 'the version to delete'
+  }
 ];
 _delete.argOptsSpec = {};
-_delete.help = 'Delete a version of your app (or the whole app) as long as it has no users/Zaps.';
+_delete.help =
+  'Delete a version of your app (or the whole app) as long as it has no users/Zaps.';
 _delete.example = 'zapier delete version 1.0.0';
 _delete.docs = `
 A utility to allow deleting app versions that aren't used.

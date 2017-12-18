@@ -4,9 +4,15 @@ const path = require('path');
 const { readFile } = require('./files');
 
 const getChangelogFromMarkdown = (version, markdown) => {
-  const lines = markdown.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+  const lines = markdown
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .split('\n');
 
-  let startingLine = _.findIndex(lines, (line) => (line.indexOf(`## ${version}`) === 0));
+  let startingLine = _.findIndex(
+    lines,
+    line => line.indexOf(`## ${version}`) === 0
+  );
 
   if (startingLine === -1) {
     return '';
@@ -15,7 +21,11 @@ const getChangelogFromMarkdown = (version, markdown) => {
   // Skip the line with the version, and the next line (expected blank)
   startingLine += 2;
 
-  let endingLine = _.findIndex(lines, (line) => (line.indexOf('## ') === 0), startingLine);
+  let endingLine = _.findIndex(
+    lines,
+    line => line.indexOf('## ') === 0,
+    startingLine
+  );
 
   if (endingLine === -1) {
     endingLine = lines.length;
@@ -33,10 +43,10 @@ const getVersionChangelog = (version, appDir = '.') => {
   const file = path.resolve(appDir, 'CHANGELOG.md');
 
   return readFile(file)
-    .then((buffer) => getChangelogFromMarkdown(version, buffer.toString()))
-    .catch(() => '');// We're ignoring files that don't exist or that aren't readable
+    .then(buffer => getChangelogFromMarkdown(version, buffer.toString()))
+    .catch(() => ''); // We're ignoring files that don't exist or that aren't readable
 };
 
 module.exports = {
-  getVersionChangelog,
+  getVersionChangelog
 };

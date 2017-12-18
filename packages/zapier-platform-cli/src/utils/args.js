@@ -2,21 +2,29 @@ const _ = require('lodash');
 const display = require('./display');
 
 const globalArgOptsSpec = {
-  format: {help: 'display format', choices: Object.keys(display.formatStyles), default: 'table'},
-  help: {help: 'prints this help text', flag: true},
-  debug: {help: 'print debug API calls and tracebacks', flag: true},
+  format: {
+    help: 'display format',
+    choices: Object.keys(display.formatStyles),
+    default: 'table'
+  },
+  help: { help: 'prints this help text', flag: true },
+  debug: { help: 'print debug API calls and tracebacks', flag: true }
 };
 
-const quoteStr = (s) => String(s || '').indexOf(' ') === -1 ? s : `"${s}"`;
-const choicesStr = (choices) => `{${choices.map(String).join(',')}}`;
+const quoteStr = s => (String(s || '').indexOf(' ') === -1 ? s : `"${s}"`);
+const choicesStr = choices => `{${choices.map(String).join(',')}}`;
 
 // Turn process.argv into args/opts.
-const argParse = (argv) => {
-  const args = [], opts = {};
-  argv.forEach((arg) => {
+const argParse = argv => {
+  const args = [],
+    opts = {};
+  argv.forEach(arg => {
     if (arg.startsWith('--')) {
       const key = arg.split('=', 1)[0].replace('--', '');
-      let val = arg.split('=').slice(1).join('=');
+      let val = arg
+        .split('=')
+        .slice(1)
+        .join('=');
       if (val === '') {
         val = true;
       } else if (val.toLowerCase() === 'false') {
@@ -50,17 +58,25 @@ const enforceArgSpec = (fullSpec, args, argOpts) => {
     _argLookback[spec.name] = arg;
 
     let missingCurrent = spec.required && !arg;
-    let missingLookback = (
+    let missingLookback =
       !arg && // is absent (but that could be fine)!
       (spec.requiredWith || []).length && // has required friends!
-      _.every(spec.requiredWith, (name) => _argLookback[name]) // friends are missing!
-    );
+      _.every(spec.requiredWith, name => _argLookback[name]); // friends are missing!
     if (missingCurrent || missingLookback) {
       errors.push(`Missing required positional argument ${i + 1}/${spec.name}`);
     }
-    if (arg && spec.choices && spec.choices.length && spec.choices.indexOf(arg) === -1) {
+    if (
+      arg &&
+      spec.choices &&
+      spec.choices.length &&
+      spec.choices.indexOf(arg) === -1
+    ) {
       let choices = choicesStr(spec.choices);
-      errors.push(`Unexpected positional argument ${i + 1}/${spec.name} of ${quoteStr(arg)}, must be one of ${choices}`);
+      errors.push(
+        `Unexpected positional argument ${i + 1}/${spec.name} of ${quoteStr(
+          arg
+        )}, must be one of ${choices}`
+      );
     }
 
     restAfter = i;
@@ -72,7 +88,9 @@ const enforceArgSpec = (fullSpec, args, argOpts) => {
   // Make sure any leftover provided args are expected.
   _.forEach(args, (arg, i) => {
     if (i > restAfter) {
-      errors.push(`Unexpected positional argument ${i + 1} of ${quoteStr(arg)}`);
+      errors.push(
+        `Unexpected positional argument ${i + 1} of ${quoteStr(arg)}`
+      );
     }
   });
 
@@ -86,12 +104,25 @@ const enforceArgSpec = (fullSpec, args, argOpts) => {
     }
 
     if (spec.required && !arg) {
-      errors.push(`Missing required keyword argument --${name}=${quoteStr(arg || spec.example || 'value')}`);
+      errors.push(
+        `Missing required keyword argument --${name}=${quoteStr(
+          arg || spec.example || 'value'
+        )}`
+      );
     }
 
-    if (arg && spec.choices && spec.choices.length && spec.choices.indexOf(arg) === -1) {
+    if (
+      arg &&
+      spec.choices &&
+      spec.choices.length &&
+      spec.choices.indexOf(arg) === -1
+    ) {
       let choices = choicesStr(spec.choices);
-      errors.push(`Unexpected keyword argument --${name}=${quoteStr(arg)}, must be one of ${choices}`);
+      errors.push(
+        `Unexpected keyword argument --${name}=${quoteStr(
+          arg
+        )}, must be one of ${choices}`
+      );
     }
   });
 
@@ -109,30 +140,36 @@ const enforceArgSpec = (fullSpec, args, argOpts) => {
   return errors;
 };
 
-
 // Make a markdown list for args.
-const argsFragment = (argsSpec) => {
-  return _.map(argsSpec, (spec) => {
+const argsFragment = argsSpec => {
+  return _.map(argsSpec, spec => {
     let val = spec.example || 'value';
-    val = (spec.choices && spec.choices.length) ? choicesStr(spec.choices) : val;
+    val = spec.choices && spec.choices.length ? choicesStr(spec.choices) : val;
     let def = spec.default ? `. Default is \`${spec.default}\`` : '';
-    return `* \`${spec.name} [${quoteStr(val)}]\` -- ${spec.required ? '**required**' : '_optional_'}, ${spec.help || ''}${def}`;
-  }).join('\n').trim();
+    return `* \`${spec.name} [${quoteStr(val)}]\` -- ${
+      spec.required ? '**required**' : '_optional_'
+    }, ${spec.help || ''}${def}`;
+  })
+    .join('\n')
+    .trim();
 };
 
 // Make a markdown list for args opts/keywords.
-const argOptsFragment = (argOptsSpec) => {
+const argOptsFragment = argOptsSpec => {
   return _.map(argOptsSpec, (spec, name) => {
     let val = spec.example || spec.default || 'value';
-    val = (spec.choices && spec.choices.length) ? choicesStr(spec.choices) : val;
+    val = spec.choices && spec.choices.length ? choicesStr(spec.choices) : val;
     val = spec.flag ? '' : `=${quoteStr(val)}`;
     let def = spec.default ? `. Default is \`${spec.default}\`` : '';
-    return `* \`--${name}${val}\` -- ${spec.required ? '**required**' : '_optional_'}, ${spec.help || ''}${def}`;
-  }).join('\n').trim();
+    return `* \`--${name}${val}\` -- ${
+      spec.required ? '**required**' : '_optional_'
+    }, ${spec.help || ''}${def}`;
+  })
+    .join('\n')
+    .trim();
 };
 
 const defaultArgOptsFragment = () => argOptsFragment(globalArgOptsSpec);
-
 
 module.exports = {
   argOptsFragment,
@@ -140,5 +177,5 @@ module.exports = {
   argsFragment,
   defaultArgOptsFragment,
   enforceArgSpec,
-  globalArgOptsSpec,
+  globalArgOptsSpec
 };

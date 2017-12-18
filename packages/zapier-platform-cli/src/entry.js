@@ -9,7 +9,7 @@ const { DEBUG, PLATFORM_PACKAGE } = require('./constants');
 const commands = require('./commands');
 const utils = require('./utils');
 
-module.exports = (argv) => {
+module.exports = argv => {
   process.on('exit', utils.clearSpinner);
   process.on('SIGINT', () => {
     utils.clearSpinner();
@@ -17,20 +17,28 @@ module.exports = (argv) => {
   });
 
   if (!utils.isValidNodeVersion()) {
-    console.error(colors.red(
-      `Requires node version >= ${utils.readNvmVersion()}, found ${process.versions.node}. Please upgrade node.`
-    ));
+    console.error(
+      colors.red(
+        `Requires node version >= ${utils.readNvmVersion()}, found ${
+          process.versions.node
+        }. Please upgrade node.`
+      )
+    );
     process.exit(1);
   }
 
   const notifier = updateNotifier({
     pkg: require('../package.json'),
-    updateCheckInterval: 0,
+    updateCheckInterval: 0
   });
 
   if (notifier.update) {
     notifier.notify({
-      message: `Update available ${colors.grey(notifier.update.current)} → ${colors.green(notifier.update.latest)}\nRun ${colors.cyan('npm i -g zapier-platform-cli')} to update, and then ${colors.blue('re-test your integration')}.`,
+      message: `Update available ${colors.grey(
+        notifier.update.current
+      )} → ${colors.green(notifier.update.latest)}\nRun ${colors.cyan(
+        'npm i -g zapier-platform-cli'
+      )} to update, and then ${colors.blue('re-test your integration')}.`
     });
   }
 
@@ -54,26 +62,32 @@ module.exports = (argv) => {
   args = args.slice(1);
 
   // create the context, logs thread through this
-  const context = utils.createContext({command, args, argOpts});
+  const context = utils.createContext({ command, args, argOpts });
 
   if (command === 'help' && (argOpts.version || argOpts.v)) {
-    context.line([
-      `zapier-platform-cli/${require('../package.json').version}`,
-      `node/${process.version}`,
-    ].join('\n'));
+    context.line(
+      [
+        `zapier-platform-cli/${require('../package.json').version}`,
+        `node/${process.version}`
+      ].join('\n')
+    );
     return;
   }
 
   let commandFunc = commands[command];
   if (!commandFunc) {
-    context.line(`\`zapier ${command}\` is not a command! Try running \`zapier help\`?`);
+    context.line(
+      `\`zapier ${command}\` is not a command! Try running \`zapier help\`?`
+    );
     return;
   }
 
   if (!utils.isValidAppInstall(command)) {
-    console.error(colors.red(
-      `Looks like your package.json is missing \`${PLATFORM_PACKAGE}\`, its not restricted to a single version, or you haven't run npm install yet!`
-    ));
+    console.error(
+      colors.red(
+        `Looks like your package.json is missing \`${PLATFORM_PACKAGE}\`, its not restricted to a single version, or you haven't run npm install yet!`
+      )
+    );
     process.exit(1);
   }
 
@@ -85,20 +99,25 @@ module.exports = (argv) => {
   if (errors.length) {
     utils.clearSpinner();
     context.line();
-    context.line(colors.red('Errors running command `' + ['zapier'].concat(argv).join(' ') + '`:'));
+    context.line(
+      colors.red(
+        'Errors running command `' + ['zapier'].concat(argv).join(' ') + '`:'
+      )
+    );
     context.line();
-    errors.forEach((error) => context.line(colors.red(`!!!   ${error}`)));
+    errors.forEach(error => context.line(colors.red(`!!!   ${error}`)));
     context.line();
     context.line(`For more information, run \`zapier help ${command}\`.`);
     context.line();
     process.exit(1);
   }
 
-  commandFunc.apply(commands, [context].concat(args))
+  commandFunc
+    .apply(commands, [context].concat(args))
     .then(() => {
       utils.clearSpinner();
     })
-    .catch((err) => {
+    .catch(err => {
       utils.clearSpinner();
       if (DEBUG || global.argOpts.debug) {
         context.line();
@@ -109,7 +128,11 @@ module.exports = (argv) => {
         context.line();
         context.line();
         context.line(colors.red('Error!') + ' ' + colors.red(err.message));
-        context.line(colors.grey('(Use --debug flag and run this command again to get more details.)'));
+        context.line(
+          colors.grey(
+            '(Use --debug flag and run this command again to get more details.)'
+          )
+        );
       }
       process.exit(1);
     });

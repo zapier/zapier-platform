@@ -7,7 +7,7 @@ const authenticationPaths = [
   'authentication.test',
   'authentication.oauth2Config.getAccessToken',
   'authentication.oauth2Config.refreshAccessToken',
-  'authentication.sessionConfig.perform',
+  'authentication.sessionConfig.perform'
 ];
 
 // {type:triggers}.{key:lead}.operation.perform
@@ -16,7 +16,7 @@ const actionTemplates = [
   '<%= type %>.<%= key %>.operation.performSubscribe',
   '<%= type %>.<%= key %>.operation.performUnsubscribe',
   '<%= type %>.<%= key %>.operation.inputFields',
-  '<%= type %>.<%= key %>.operation.outputFields',
+  '<%= type %>.<%= key %>.operation.outputFields'
 ].map(template => _.template(template));
 
 const hydrateTemplate = _.template('hydrators.<%= key %>');
@@ -27,11 +27,11 @@ const inlineResourceMethods = [
   'list',
   'search',
   'create',
-  'searchOrCreate',
+  'searchOrCreate'
 ];
 
 // resources.{key:lead}.get.operation.perform
-const makeResourceTemplates = (methods) =>
+const makeResourceTemplates = methods =>
   methods
     .reduce((acc, method) => {
       return acc.concat([
@@ -39,7 +39,7 @@ const makeResourceTemplates = (methods) =>
         `resources.<%= key %>.${method}.operation.performSubscribe`,
         `resources.<%= key %>.${method}.operation.performUnsubscribe`,
         `resources.<%= key %>.${method}.operation.inputFields`,
-        `resources.<%= key %>.${method}.operation.outputFields`,
+        `resources.<%= key %>.${method}.operation.outputFields`
       ]);
     }, [])
     .map(template => _.template(template));
@@ -49,17 +49,19 @@ const allResourceTemplates = makeResourceTemplates(inlineResourceMethods);
 const typeMap = {
   triggers: ['list', 'hook'],
   searches: ['search'],
-  creates: ['create'],
+  creates: ['create']
 };
 
-const describe = (context) => {
+const describe = context => {
   return Promise.resolve()
-    .then(() => Promise.all([
-      utils.getLinkedApp().catch(() => null),
-      utils.getLinkedAppConfig().catch(() => null),
-      utils.getVersionInfo().catch(() => null),
-      utils.localAppCommand({command: 'definition'}),
-    ]))
+    .then(() =>
+      Promise.all([
+        utils.getLinkedApp().catch(() => null),
+        utils.getLinkedAppConfig().catch(() => null),
+        utils.getVersionInfo().catch(() => null),
+        utils.localAppCommand({ command: 'definition' })
+      ])
+    )
     .then(([app, appConfig, version, definition]) => {
       context.line('A description of your app listed below.\n');
 
@@ -90,7 +92,9 @@ const describe = (context) => {
           if (appConfig && version) {
             authentication.redirect_uri = version.oauth_redirect_uri;
           } else {
-            authentication.redirect_uri = colors.grey('do zapier push to see redirect_uri!');
+            authentication.redirect_uri = colors.grey(
+              'do zapier push to see redirect_uri!'
+            );
           }
         }
         authRows = [authentication];
@@ -98,7 +102,7 @@ const describe = (context) => {
       const authHeaders = [
         ['Type', 'type'],
         ['Redirect URI', 'redirect_uri', colors.grey('n/a')],
-        ['Available Methods', 'paths', colors.grey('n/a')],
+        ['Available Methods', 'paths', colors.grey('n/a')]
       ];
       const authIfEmpty = colors.grey('Nothing found for authentication.');
       utils.printData(authRows, authHeaders, authIfEmpty);
@@ -108,36 +112,40 @@ const describe = (context) => {
       let hydratorRows = _.map(definition.hydrators, (val, key) => {
         return {
           key,
-          paths: hydrateTemplate({key})
+          paths: hydrateTemplate({ key })
         };
       });
       const hydratorHeaders = [
         ['Key', 'key'],
-        ['Method', 'paths', colors.grey('n/a')],
+        ['Method', 'paths', colors.grey('n/a')]
       ];
       const hydratorIfEmpty = colors.grey('Nothing found for hydrators.');
       utils.printData(hydratorRows, hydratorHeaders, hydratorIfEmpty);
       context.line();
 
-      const resourceRows = _.values(definition.resources || {}).map((resource) => {
-        resource = _.assign({}, resource);
-        resource.paths = allResourceTemplates
-          .map(method => method({key: resource.key}))
-          .filter(path => _.has(definition, path))
-          .join('\n');
-        return resource;
-      });
+      const resourceRows = _.values(definition.resources || {}).map(
+        resource => {
+          resource = _.assign({}, resource);
+          resource.paths = allResourceTemplates
+            .map(method => method({ key: resource.key }))
+            .filter(path => _.has(definition, path))
+            .join('\n');
+          return resource;
+        }
+      );
       context.line(colors.bold('Resources') + '\n');
       const resourceHeaders = [
         ['Noun', 'noun'],
         ['Ref', 'key'],
-        ['Available Methods', 'paths', colors.grey('n/a')],
+        ['Available Methods', 'paths', colors.grey('n/a')]
       ];
-      const resourceIfEmpty = colors.grey('Nothing found for resources, maybe try the `zapier scaffold` command?');
+      const resourceIfEmpty = colors.grey(
+        'Nothing found for resources, maybe try the `zapier scaffold` command?'
+      );
       utils.printData(resourceRows, resourceHeaders, resourceIfEmpty);
       context.line();
 
-      Object.keys(typeMap).forEach((type) => {
+      Object.keys(typeMap).forEach(type => {
         context.line(colors.bold(_.capitalize(type)) + '\n');
         const rows = _.values(definition[type]).map(row => {
           row = _.assign({}, row);
@@ -145,29 +153,39 @@ const describe = (context) => {
           row.paths = [];
 
           // add possible action paths
-          row.paths = row.paths.concat(actionTemplates.map(method => method({type, key: row.key})));
+          row.paths = row.paths.concat(
+            actionTemplates.map(method => method({ type, key: row.key }))
+          );
 
           // add possible resource paths
           if (row.operation.resource) {
             const key = row.operation.resource.split('.')[0];
             const resourceTemplates = makeResourceTemplates(typeMap[type]);
-            row.paths = row.paths.concat(resourceTemplates.map(method => method({key})));
+            row.paths = row.paths.concat(
+              resourceTemplates.map(method => method({ key }))
+            );
           }
 
-          row.paths = row.paths.filter(path => _.has(definition, path)).join('\n');
+          row.paths = row.paths
+            .filter(path => _.has(definition, path))
+            .join('\n');
           return row;
         });
         const headers = [
           ['Noun', 'noun'],
           ['Label', 'display.label'],
           ['Resource Ref', 'operation.resource', colors.grey('n/a')],
-          ['Available Methods', 'paths', colors.grey('n/a')],
+          ['Available Methods', 'paths', colors.grey('n/a')]
         ];
-        const ifEmpty = colors.grey(`Nothing found for ${type}, maybe try the \`zapier scaffold\` command?`);
+        const ifEmpty = colors.grey(
+          `Nothing found for ${type}, maybe try the \`zapier scaffold\` command?`
+        );
         utils.printData(rows, headers, ifEmpty);
         context.line();
       });
-      context.line('If you\'d like to add more, try the `zapier scaffold` command to kickstart!');
+      context.line(
+        "If you'd like to add more, try the `zapier scaffold` command to kickstart!"
+      );
     });
 };
 describe.argsSpec = [];

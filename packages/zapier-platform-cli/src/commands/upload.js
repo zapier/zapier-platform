@@ -1,13 +1,16 @@
 const constants = require('../constants');
 const utils = require('../utils');
 
-const upload = (context) => {
+const upload = context => {
   const zipPath = constants.BUILD_PATH;
   context.line('Preparing to upload a new version.\n');
-  return utils.upload(zipPath, '.')
-    .then(() => {
-      context.line(`\nUpload of ${constants.BUILD_PATH} complete! Try \`zapier versions\` now!`);
-    });
+  return utils.upload(zipPath, '.').then(() => {
+    context.line(
+      `\nUpload of ${
+        constants.BUILD_PATH
+      } complete! Try \`zapier versions\` now!`
+    );
+  });
 };
 upload.argsSpec = [];
 upload.argOptsSpec = {};

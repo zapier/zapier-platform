@@ -4,11 +4,11 @@ const getSessionKey = (z, bundle) => {
     url: 'https://example.com/api/accounts/login.json',
     body: {
       username: bundle.inputData.username,
-      password: bundle.inputData.password,
+      password: bundle.inputData.password
     }
   });
 
-  return promise.then((response) => {
+  return promise.then(response => {
     if (response.status === 401) {
       throw new Error('The username/password you supplied is invalid');
     }
@@ -25,8 +25,18 @@ const authentication = {
     url: 'https://example.com/api/accounts/me.json'
   },
   fields: [
-    {key: 'username', type: 'string', required: true, helpText: 'Your login username.'},
-    {key: 'password', type: 'string', required: true, helpText: 'Your login password.'}
+    {
+      key: 'username',
+      type: 'string',
+      required: true,
+      helpText: 'Your login username.'
+    },
+    {
+      key: 'password',
+      type: 'string',
+      required: true,
+      helpText: 'Your login password.'
+    }
     // For Session Auth we store `sessionKey` automatically in `bundle.authData`
     // for future use. If you need to save/use something that the user shouldn't
     // need to type/choose, add a "computed" field, like:
@@ -58,11 +68,7 @@ const sessionRefreshIf401 = (response, z, bundle) => {
 const App = {
   // ...
   authentication: authentication,
-  beforeRequest: [
-    includeSessionKeyHeader
-  ],
-  afterResponse: [
-    sessionRefreshIf401
-  ],
+  beforeRequest: [includeSessionKeyHeader],
+  afterResponse: [sessionRefreshIf401]
   // ...
 };

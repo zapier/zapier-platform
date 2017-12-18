@@ -7,19 +7,21 @@ const utils = require('../utils');
 const defaultPort = 7545;
 
 // TODO: would be nice to have a /tmp/zapier-watch.pid
-const watch = (context) => {
-  context.line('Watching and running your app locally. Zapier will tunnel JS calls here.\n');
+const watch = context => {
+  context.line(
+    'Watching and running your app locally. Zapier will tunnel JS calls here.\n'
+  );
 
   const options = {
     log: context.line,
-    port: context.argOpts.port || defaultPort,
+    port: context.argOpts.port || defaultPort
   };
 
   let localAppId, localProxyUrl, localDefinition;
   const orgVersion = require(path.join(process.cwd(), 'package.json')).version;
 
   const resetHandler = () => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       options.handler = utils.getLocalAppHandler({
         reload: true,
         baseEvent: {
@@ -32,21 +34,34 @@ const watch = (context) => {
   resetHandler();
 
   const pingZapierForTunnel = () => {
-    if (!localProxyUrl) { return Promise.resolve(); }
+    if (!localProxyUrl) {
+      return Promise.resolve();
+    }
     const url = `/apps/${localAppId}/versions/${orgVersion}/tunnel`;
-    return utils.callAPI(url, {method: 'PUT', body: {
-      url: localProxyUrl,
-      definition: localDefinition || {},
-    }});
+    return utils.callAPI(url, {
+      method: 'PUT',
+      body: {
+        url: localProxyUrl,
+        definition: localDefinition || {}
+      }
+    });
   };
 
   const reloadDefinition = () => {
     return new Promise((resolve, reject) => {
-      options.handler({command: 'definition'}, {}, (err, resp) => {
-        if (err) { return reject(err); }
+      options.handler({ command: 'definition' }, {}, (err, resp) => {
+        if (err) {
+          return reject(err);
+        }
         const currentDefinition = resp.results;
         if (currentDefinition.version !== orgVersion) {
-          context.line(colors.yellow(`  Warning! Version changed from ${orgVersion} to ${currentDefinition.version}! You need to restart watch to do that.`));
+          context.line(
+            colors.yellow(
+              `  Warning! Version changed from ${orgVersion} to ${
+                currentDefinition.version
+              }! You need to restart watch to do that.`
+            )
+          );
         } else {
           localDefinition = currentDefinition;
         }
@@ -56,15 +71,17 @@ const watch = (context) => {
   };
   reloadDefinition();
 
-  utils.nodeWatch(process.cwd(), {}, (filePath) => {
+  utils.nodeWatch(process.cwd(), {}, filePath => {
     const fileName = filePath.replace(process.cwd() + path.sep, '');
-    if (fileName.startsWith('.git')) { return; }
+    if (fileName.startsWith('.git')) {
+      return;
+    }
     utils.printStarting(`Reloading for ${fileName}`);
     resetHandler()
       .then(reloadDefinition)
       .then(pingZapierForTunnel)
       .then(() => utils.printDone())
-      .catch((err) => {
+      .catch(err => {
         utils.printDone(false);
         context.line(err);
         // don't print err.stack until we use require('syntax-error') or similar
@@ -73,23 +90,17 @@ const watch = (context) => {
 
   // TODO: check we've pushed the current versions.
 
-  return utils.checkCredentials()
+  return utils
+    .checkCredentials()
     .then(() => utils.getLinkedApp())
-    .then((app) => {
+    .then(app => {
       utils.printStarting('Starting local server on port ' + options.port);
-      return Promise.all([
-        app,
-        utils.localAppTunnelServer(options)
-      ]);
+      return Promise.all([app, utils.localAppTunnelServer(options)]);
     })
     .then(([app, server]) => {
       utils.printDone();
       utils.printStarting('Starting local tunnel for port ' + options.port);
-      return Promise.all([
-        app,
-        server,
-        utils.makeTunnelUrl(options.port)
-      ]);
+      return Promise.all([app, server, utils.makeTunnelUrl(options.port)]);
     })
     .then(([app, server, _proxyUrl]) => {
       utils.printDone();
@@ -98,7 +109,9 @@ const watch = (context) => {
       localProxyUrl = _proxyUrl;
 
       context.line();
-      context.line('Running! Make changes local and you should see them reflect almost instantly in the Zapier editor.');
+      context.line(
+        'Running! Make changes local and you should see them reflect almost instantly in the Zapier editor.'
+      );
       context.line();
 
       // We must ping Zapier with the new deets a minimum of every 15 seconds.
@@ -108,7 +121,10 @@ const watch = (context) => {
 watch.hide = true;
 watch.argsSpec = [];
 watch.argOptsSpec = {
-  port: {help: 'what port should we host/listen for tunneling', default: defaultPort},
+  port: {
+    help: 'what port should we host/listen for tunneling',
+    default: defaultPort
+  }
 };
 watch.help = 'Watch the current directory and send changes live to Zapier.';
 watch.example = 'zapier watch';

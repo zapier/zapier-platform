@@ -10,10 +10,10 @@ const entryDir = fs.realpathSync(path.resolve(__dirname, '../../..'));
 const entryPoint = path.resolve(__dirname, '../../../zapier.js');
 
 describe('build', () => {
-
-  it('should list only required files', (done) => {
-    build.requiredFiles(entryDir, [entryPoint])
-      .then((smartPaths) => {
+  it('should list only required files', done => {
+    build
+      .requiredFiles(entryDir, [entryPoint])
+      .then(smartPaths => {
         // check that only the required lodash files are grabbed
         smartPaths
           .filter(filePath => filePath.indexOf('node_modules/lodash') === 0)
@@ -27,9 +27,10 @@ describe('build', () => {
       .catch(done);
   });
 
-  it('should list all the files', (done) => {
-    build.listFiles(entryDir)
-      .then((dumbPaths) => {
+  it('should list all the files', done => {
+    build
+      .listFiles(entryDir)
+      .then(dumbPaths => {
         // check that way more than the required lodash files are grabbed
         dumbPaths
           .filter(filePath => filePath.indexOf('node_modules/lodash') === 0)
@@ -42,5 +43,4 @@ describe('build', () => {
       })
       .catch(done);
   });
-
 });

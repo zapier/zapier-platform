@@ -2,21 +2,28 @@ const colors = require('colors');
 
 const utils = require('../utils');
 
-const apps = (context) => {
-  return utils.listApps()
-    .then((data) => {
-      context.line('All apps listed below.\n');
-      const ifEmpty = colors.grey('No apps found, maybe try the `zapier register "Example"` command?');
-      utils.printData(data.apps, [
+const apps = context => {
+  return utils.listApps().then(data => {
+    context.line('All apps listed below.\n');
+    const ifEmpty = colors.grey(
+      'No apps found, maybe try the `zapier register "Example"` command?'
+    );
+    utils.printData(
+      data.apps,
+      [
         ['Title', 'title'],
         ['Unique Slug', 'key'],
         ['Timestamp', 'date'],
-        ['Linked', 'linked'],
-      ], ifEmpty);
-      if (data.apps.length) {
-        context.line('\nTry linking the current directory to a different app with the `zapier link` command.');
-      }
-    });
+        ['Linked', 'linked']
+      ],
+      ifEmpty
+    );
+    if (data.apps.length) {
+      context.line(
+        '\nTry linking the current directory to a different app with the `zapier link` command.'
+      );
+    }
+  });
 };
 apps.argsSpec = [];
 apps.argOptsSpec = {};

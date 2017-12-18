@@ -7,16 +7,20 @@ const commandsIndex = require('../lib/commands/index');
 const convertUtils = require('../lib/utils/convert');
 const renderTemplate = convertUtils.renderTemplate;
 
-const allCommands = _.reduce(Object.keys(commandsIndex), (all, name) => {
-  const cmd = commandsIndex[name];
-  all.push({
-    name,
-    help: cmd.help,
-    argOptsSpec: cmd.argOptsSpec,
-    hide: cmd.hide
-  });
-  return all;
-}, []);
+const allCommands = _.reduce(
+  Object.keys(commandsIndex),
+  (all, name) => {
+    const cmd = commandsIndex[name];
+    all.push({
+      name,
+      help: cmd.help,
+      argOptsSpec: cmd.argOptsSpec,
+      hide: cmd.hide
+    });
+    return all;
+  },
+  []
+);
 
 const commands = _.filter(allCommands, cmd => !cmd.hide);
 

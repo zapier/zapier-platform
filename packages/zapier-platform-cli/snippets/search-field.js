@@ -7,7 +7,9 @@ const App = {
       search: {
         //...
         operation: {
-          perform: () => { return [{id: 123, name: 'Project 1'}]; } // called for project_id
+          perform: () => {
+            return [{ id: 123, name: 'Project 1' }];
+          } // called for project_id
         }
       }
     },
@@ -18,9 +20,20 @@ const App = {
         //...
         operation: {
           inputFields: [
-            {key: 'project_id', required: true, label: 'Project', dynamic: 'projectList.id.name', search: 'projectSearch.id'}, // calls project.search (requires a trigger in the "dynamic" property)
-            {key: 'title', required: true, label: 'Title', helpText: 'What is the name of the issue?'},
-          ],
+            {
+              key: 'project_id',
+              required: true,
+              label: 'Project',
+              dynamic: 'projectList.id.name',
+              search: 'projectSearch.id'
+            }, // calls project.search (requires a trigger in the "dynamic" property)
+            {
+              key: 'title',
+              required: true,
+              label: 'Title',
+              helpText: 'What is the name of the issue?'
+            }
+          ]
         }
       }
     }

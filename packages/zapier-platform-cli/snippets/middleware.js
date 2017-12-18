@@ -1,9 +1,9 @@
-const addHeader = (request/*, z*/) => {
+const addHeader = (request /*, z*/) => {
   request.headers['my-header'] = 'from zapier';
   return request;
 };
 
-const mustBe200 = (response/*, z*/) => {
+const mustBe200 = (response /*, z*/) => {
   if (response.status !== 200) {
     throw new Error(`Unexpected status code ${response.status}`);
   }
@@ -17,12 +17,7 @@ const autoParseJson = (response, z) => {
 
 const App = {
   // ...
-  beforeRequest: [
-    addHeader,
-  ],
-  afterResponse: [
-    mustBe200,
-    autoParseJson,
-  ]
+  beforeRequest: [addHeader],
+  afterResponse: [mustBe200, autoParseJson]
   // ...
 };

@@ -13,5 +13,5 @@ module.exports = [
   'session-auth',
   'babel',
   'rest-hooks',
-  'files',
+  'files'
 ];

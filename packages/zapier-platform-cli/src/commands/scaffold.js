@@ -15,7 +15,7 @@ const scaffold = (context, type, name) => {
     KEY: utils.snakeCase(name),
     NOUN: _.capitalize(name),
     LOWER_NOUN: name.toLowerCase(),
-    INPUT_FIELDS: '',
+    INPUT_FIELDS: ''
   };
 
   // what is the `resources: {}` app definition point?
@@ -23,7 +23,7 @@ const scaffold = (context, type, name) => {
     resource: 'resources',
     trigger: 'triggers',
     search: 'searches',
-    create: 'creates',
+    create: 'creates'
   };
 
   // where will we create/required the new file?
@@ -31,15 +31,20 @@ const scaffold = (context, type, name) => {
     resource: `resources/${templateContext.KEY}`,
     trigger: `triggers/${templateContext.KEY}`,
     search: `searches/${templateContext.KEY}`,
-    create: `creates/${templateContext.KEY}`,
+    create: `creates/${templateContext.KEY}`
   };
 
   if (!typeMap[type]) {
-    context.line(`Scaffold type "${type}" not found! Please see \`zaper help scaffold\`.`);
+    context.line(
+      `Scaffold type "${type}" not found! Please see \`zaper help scaffold\`.`
+    );
     return Promise.resolve();
   }
 
-  const templateFile = path.join(__dirname, `../../scaffold/${type}.template.js`);
+  const templateFile = path.join(
+    __dirname,
+    `../../scaffold/${type}.template.js`
+  );
   const dest = global.argOpts.dest || destMap[type];
   const destFile = path.join(process.cwd(), dest + '.js');
   const entry = global.argOpts.entry || 'index.js';
@@ -47,12 +52,16 @@ const scaffold = (context, type, name) => {
 
   context.line(`Adding ${type} scaffold to your project.\n`);
 
-  return utils.readFile(templateFile)
+  return utils
+    .readFile(templateFile)
     .then(templateBuf => templateBuf.toString())
-    .then(template => _.template(template, {interpolate: /<%=([\s\S]+?)%>/g})(templateContext))
+    .then(template =>
+      _.template(template, { interpolate: /<%=([\s\S]+?)%>/g })(templateContext)
+    )
     .then(rendered => {
       utils.printStarting(`Writing new ${dest}.js`);
-      return utils.ensureDir(path.dirname(destFile))
+      return utils
+        .ensureDir(path.dirname(destFile))
         .then(() => utils.writeFile(destFile, rendered));
     })
     .then(() => utils.printDone())
@@ -73,38 +82,61 @@ const scaffold = (context, type, name) => {
       // insert '[Resource.key]: Resource,' after 'resources:' line
       const injectAfter = `${typeMap[type]}: {`;
       const injectorLine = `[${varName}.key]: ${varName},`;
-      const linesDefIndex = _.findIndex(lines, (line) => _.endsWith(line, injectAfter));
+      const linesDefIndex = _.findIndex(lines, line =>
+        _.endsWith(line, injectAfter)
+      );
       if (linesDefIndex === -1) {
         utils.printDone(false);
         context.line();
-        context.line(colors.bold(`Oops, we could not reliably rewrite your ${entry}.`) + ' Please add:');
+        context.line(
+          colors.bold(`Oops, we could not reliably rewrite your ${entry}.`) +
+            ' Please add:'
+        );
         context.line(` * \`${importerLine}\` to the top`);
-        context.line(` * \`${injectAfter} ${injectorLine} },\` in your app definition`);
+        context.line(
+          ` * \`${injectAfter} ${injectorLine} },\` in your app definition`
+        );
         return Promise.resolve();
       } else {
         lines.splice(linesDefIndex + 1, 0, '    ' + injectorLine);
-        return utils.writeFile(entryFile, lines.join('\n'))
+        return utils
+          .writeFile(entryFile, lines.join('\n'))
           .then(() => utils.printDone());
       }
     })
-    .then(() => context.line('\nFinished! We did the best we could, you might gut check your files though.'));
+    .then(() =>
+      context.line(
+        '\nFinished! We did the best we could, you might gut check your files though.'
+      )
+    );
 };
 scaffold.argsSpec = [
-  {name: 'type', help: 'what type of thing are you creating', required: true, choices: [
-    // 'index',
-    // 'oauth2',
-    'resource',
-    'trigger',
-    'search',
-    'create'
-  ]},
-  {name: 'name', help: 'the name of the new thing to create', required: true, example: 'Some Name'},
+  {
+    name: 'type',
+    help: 'what type of thing are you creating',
+    required: true,
+    choices: [
+      // 'index',
+      // 'oauth2',
+      'resource',
+      'trigger',
+      'search',
+      'create'
+    ]
+  },
+  {
+    name: 'name',
+    help: 'the name of the new thing to create',
+    required: true,
+    example: 'Some Name'
+  }
 ];
 scaffold.argOptsSpec = {
-  dest: {help: 'sets the new file\'s path', default: '{type}s/{name}'},
-  entry: {help: 'where to import the new file', default: 'index.js'},
+  dest: { help: "sets the new file's path", default: '{type}s/{name}' },
+  entry: { help: 'where to import the new file', default: 'index.js' }
 };
-scaffold.help = 'Adds a starting resource, trigger, action or search to your app.';
+scaffold.help =
+  'Adds a starting resource, trigger, action or search to your app.';
 scaffold.usage = 'zapier scaffold {resource|trigger|search|create} "Name"';
 scaffold.example = 'zapier scaffold resource "Contact"';
 scaffold.docs = `

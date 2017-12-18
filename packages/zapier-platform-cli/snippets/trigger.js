@@ -1,5 +1,5 @@
 const recipeListRequest = {
-  url: 'http://example.com/recipes',
+  url: 'http://example.com/recipes'
 };
 
 const App = {

@@ -2,9 +2,9 @@ const _ = require('lodash');
 const path = require('path');
 const prettier = require('prettier');
 const stripComments = require('strip-comments');
-const {camelCase, snakeCase} = require('./misc');
-const {readFile, writeFile, ensureDir} = require('./files');
-const {printStarting, printDone} = require('./display');
+const { camelCase, snakeCase } = require('./misc');
+const { readFile, writeFile, ensureDir } = require('./files');
+const { printStarting, printDone } = require('./display');
 
 const TEMPLATE_DIR = path.join(__dirname, '../../scaffold/convert');
 const ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION = '1.0.0';
@@ -19,7 +19,7 @@ const authTypeMap = {
   'API Key (Query String)': 'api-query',
   'Session Auth': 'session',
   // TODO: 'Digest Auth': 'digest',
-  'Unknown Auth': 'custom',
+  'Unknown Auth': 'custom'
 };
 
 // map WB field types to CLI
@@ -71,16 +71,20 @@ const stepDescriptionTemplateMap = {
 const renderTemplate = (templateFile, templateContext, prettify = true) => {
   return readFile(templateFile)
     .then(templateBuf => templateBuf.toString())
-    .then(template => _.template(template, {interpolate: /<%=([\s\S]+?)%>/g})(templateContext))
+    .then(template =>
+      _.template(template, { interpolate: /<%=([\s\S]+?)%>/g })(templateContext)
+    )
     .then(content => {
       if (prettify) {
         const ext = path.extname(templateFile).toLowerCase();
         const prettifier = {
-          '.json': origString => JSON.stringify(JSON.parse(origString), null, 2),
-          '.js': origString => prettier.format(origString, {
-            singleQuote: true,
-            printWidth: 120
-          })
+          '.json': origString =>
+            JSON.stringify(JSON.parse(origString), null, 2),
+          '.js': origString =>
+            prettier.format(origString, {
+              singleQuote: true,
+              printWidth: 120
+            })
         }[ext];
         if (prettifier) {
           return prettifier(content);
@@ -107,16 +111,19 @@ const quote = s => `'${s}'`;
 
 const escapeSpecialChars = s => s.replace(/\n/g, '\\n').replace(/'/g, "\\'");
 
-const getAuthType = (definition) => {
+const getAuthType = definition => {
   return authTypeMap[definition.general.auth_type];
 };
 
-const hasAuth = (definition) => {
-  return getAuthType(definition) !== 'custom' && !_.isEmpty(definition.auth_fields);
+const hasAuth = definition => {
+  return (
+    getAuthType(definition) !== 'custom' && !_.isEmpty(definition.auth_fields)
+  );
 };
 
 const renderField = (definition, key, indent = 0) => {
-  const type = definition.type && typesMap[definition.type.toLowerCase()] || 'string';
+  const type =
+    (definition.type && typesMap[definition.type.toLowerCase()]) || 'string';
 
   let props = [];
 
@@ -126,7 +133,9 @@ const renderField = (definition, key, indent = 0) => {
   }
 
   if (definition.help_text) {
-    props.push(renderProp('helpText', quote(escapeSpecialChars(definition.help_text))));
+    props.push(
+      renderProp('helpText', quote(escapeSpecialChars(definition.help_text)))
+    );
   }
 
   props.push(renderProp('type', quote(type)));
@@ -190,7 +199,7 @@ const renderSample = (fields, indent = 0) => {
 };
 
 // Get some quick metadata on auth scripting methods
-const getAuthMetaData = (definition) => {
+const getAuthMetaData = definition => {
   const js = definition.js ? stripComments(definition.js) : '';
 
   const hasPreOAuthTokenScripting = js.indexOf('pre_oauthv2_token') > 0;
@@ -202,11 +211,11 @@ const getAuthMetaData = (definition) => {
     hasPreOAuthTokenScripting,
     hasPostOAuthTokenScripting,
     hasPreOAuthRefreshScripting,
-    hasGetConnectionLabelScripting,
+    hasGetConnectionLabelScripting
   };
 };
 
-const getTestTriggerKey = (definition) => {
+const getTestTriggerKey = definition => {
   return _.get(definition, ['general', 'test_trigger_key']);
 };
 
@@ -225,7 +234,7 @@ const renderAuthTemplate = (authType, definition) => {
     TYPE: authType,
     FIELDS: fields,
     CONNECTION_LABEL: connectionLabel,
-    hasGetConnectionLabelScripting,
+    hasGetConnectionLabelScripting
   };
 
   const templateFile = path.join(TEMPLATE_DIR, '/simple-auth.template.js');
@@ -236,9 +245,21 @@ const renderBasicAuth = _.bind(renderAuthTemplate, null, 'basic');
 const renderCustomAuth = _.bind(renderAuthTemplate, null, 'custom');
 
 const renderOAuth2 = (definition, withRefresh) => {
-  const authorizeUrl = _.get(definition, ['general', 'auth_urls', 'authorization_url'], 'TODO');
-  const accessTokenUrl = _.get(definition, ['general', 'auth_urls', 'access_token_url'], 'TODO');
-  const refreshTokenUrl = _.get(definition, ['general', 'auth_urls', 'refresh_token_url'], 'TODO');
+  const authorizeUrl = _.get(
+    definition,
+    ['general', 'auth_urls', 'authorization_url'],
+    'TODO'
+  );
+  const accessTokenUrl = _.get(
+    definition,
+    ['general', 'auth_urls', 'access_token_url'],
+    'TODO'
+  );
+  const refreshTokenUrl = _.get(
+    definition,
+    ['general', 'auth_urls', 'refresh_token_url'],
+    'TODO'
+  );
   const connectionLabel = _.get(definition, ['general', 'auth_label'], '');
   const scope = _.get(definition, ['general', 'auth_data', 'scope'], '');
   const testTriggerKey = getTestTriggerKey(definition);
@@ -247,7 +268,7 @@ const renderOAuth2 = (definition, withRefresh) => {
     hasPreOAuthTokenScripting,
     hasPostOAuthTokenScripting,
     hasPreOAuthRefreshScripting,
-    hasGetConnectionLabelScripting,
+    hasGetConnectionLabelScripting
   } = getAuthMetaData(definition);
 
   const templateContext = {
@@ -263,7 +284,7 @@ const renderOAuth2 = (definition, withRefresh) => {
     hasPreOAuthTokenScripting,
     hasPostOAuthTokenScripting,
     hasPreOAuthRefreshScripting,
-    hasGetConnectionLabelScripting,
+    hasGetConnectionLabelScripting
 
     // TODO: Extra fields?
   };
@@ -272,28 +293,26 @@ const renderOAuth2 = (definition, withRefresh) => {
   return renderTemplate(templateFile, templateContext);
 };
 
-const renderSessionAuth = (definition) => {
+const renderSessionAuth = definition => {
   const fields = renderFields(definition.auth_fields, 4);
   const connectionLabel = _.get(definition, ['general', 'auth_label'], '');
   const testTriggerKey = getTestTriggerKey(definition);
 
-  const {
-    hasGetConnectionLabelScripting,
-  } = getAuthMetaData(definition);
+  const { hasGetConnectionLabelScripting } = getAuthMetaData(definition);
 
   const templateContext = {
     TEST_TRIGGER_MODULE: `./triggers/${snakeCase(testTriggerKey)}`,
     FIELDS: fields,
     CONNECTION_LABEL: connectionLabel,
 
-    hasGetConnectionLabelScripting,
+    hasGetConnectionLabelScripting
   };
 
   const templateFile = path.join(TEMPLATE_DIR, '/session.template.js');
   return renderTemplate(templateFile, templateContext);
 };
 
-const renderAuth = (definition) => {
+const renderAuth = definition => {
   const type = getAuthType(definition);
 
   if (type === 'basic') {
@@ -302,7 +321,11 @@ const renderAuth = (definition) => {
     return renderOAuth2(definition);
   } else if (type === 'oauth2-refresh') {
     return renderOAuth2(definition, true);
-  } else if (type === 'custom' || type === 'api-header' || type === 'api-query') {
+  } else if (
+    type === 'custom' ||
+    type === 'api-header' ||
+    type === 'api-query'
+  ) {
     return renderCustomAuth(definition);
   } else if (type === 'session') {
     return renderSessionAuth(definition);
@@ -316,8 +339,9 @@ const renderAuth = (definition) => {
 // write authentication.js
 const writeAuth = (definition, newAppDir) => {
   const fileName = 'authentication.js';
-  return renderAuth(definition)
-    .then(content => createFile(content, fileName, newAppDir));
+  return renderAuth(definition).then(content =>
+    createFile(content, fileName, newAppDir)
+  );
 };
 
 // Check if scripting has a given method for a step type, key, position (pre, post, full),
@@ -331,53 +355,53 @@ const hasScriptingMethod = (js, type, key, position, method_type = 'step') => {
     trigger: {
       pre: {
         step: '_pre_poll',
-        output_fields: '_pre_custom_trigger_fields',
+        output_fields: '_pre_custom_trigger_fields'
       },
       post: {
         step: '_post_poll',
-        output_fields: '_post_custom_trigger_fields',
+        output_fields: '_post_custom_trigger_fields'
       },
       full: {
-        step: '_poll',
-      },
+        step: '_poll'
+      }
     },
     create: {
       pre: {
         step: '_pre_write',
         input_fields: '_pre_custom_action_fields',
-        output_fields: '_pre_custom_action_result_fields',
+        output_fields: '_pre_custom_action_result_fields'
       },
       post: {
         step: '_post_write',
         input_fields: '_post_custom_action_fields',
-        output_fields: '_post_custom_action_result_fields',
+        output_fields: '_post_custom_action_result_fields'
       },
       full: {
         step: '_write',
         input_fields: '_custom_action_fields',
-        output_fields: '_custom_action_result_fields',
-      },
+        output_fields: '_custom_action_result_fields'
+      }
     },
     search: {
       pre: {
         step: '_pre_search',
         resource: '_pre_read_resource',
         input_fields: '_pre_custom_search_fields',
-        output_fields: '_pre_custom_search_result_fields',
+        output_fields: '_pre_custom_search_result_fields'
       },
       post: {
         step: '_post_search',
         resource: '_post_read_resource',
         input_fields: '_post_custom_search_fields',
-        output_fields: '_post_custom_search_result_fields',
+        output_fields: '_post_custom_search_result_fields'
       },
       full: {
         step: '_search',
         resource: '_read_resource',
         input_fields: '_custom_search_fields',
-        output_fields: '_custom_search_result_fields',
-      },
-    },
+        output_fields: '_custom_search_result_fields'
+      }
+    }
   };
 
   const methodSuffix = suffixTable[type][position][method_type];
@@ -398,37 +422,101 @@ const getStepMetaData = (definition, type, key) => {
   const hasPostScripting = hasScriptingMethod(js, type, key, 'post');
   const hasFullScripting = hasScriptingMethod(js, type, key, 'full');
 
-  const hasResourcePreScripting = hasScriptingMethod(js, type, key, 'pre', 'resource');
-  const hasResourcePostScripting = hasScriptingMethod(js, type, key, 'post', 'resource');
-  const hasResourceFullScripting = hasScriptingMethod(js, type, key, 'full', 'resource');
-
-  const hasInputFieldPreScripting = hasScriptingMethod(js, type, key, 'pre', 'input_fields');
-  const hasInputFieldPostScripting = hasScriptingMethod(js, type, key, 'post', 'input_fields');
-  const hasInputFieldFullScripting = hasScriptingMethod(js, type, key, 'full', 'input_fields');
-
-  const hasOutputFieldPreScripting = hasScriptingMethod(js, type, key, 'pre', 'output_fields');
-  const hasOutputFieldPostScripting = hasScriptingMethod(js, type, key, 'post', 'output_fields');
-  const hasOutputFieldFullScripting = hasScriptingMethod(js, type, key, 'full', 'output_fields');
-
-  const hasScripting = (
-    hasPreScripting || hasPostScripting || hasFullScripting ||
-    hasResourcePreScripting || hasResourcePostScripting || hasResourceFullScripting ||
-    hasInputFieldPreScripting || hasInputFieldPostScripting || hasInputFieldFullScripting ||
-    hasOutputFieldPreScripting || hasOutputFieldPostScripting || hasOutputFieldFullScripting
+  const hasResourcePreScripting = hasScriptingMethod(
+    js,
+    type,
+    key,
+    'pre',
+    'resource'
   );
+  const hasResourcePostScripting = hasScriptingMethod(
+    js,
+    type,
+    key,
+    'post',
+    'resource'
+  );
+  const hasResourceFullScripting = hasScriptingMethod(
+    js,
+    type,
+    key,
+    'full',
+    'resource'
+  );
+
+  const hasInputFieldPreScripting = hasScriptingMethod(
+    js,
+    type,
+    key,
+    'pre',
+    'input_fields'
+  );
+  const hasInputFieldPostScripting = hasScriptingMethod(
+    js,
+    type,
+    key,
+    'post',
+    'input_fields'
+  );
+  const hasInputFieldFullScripting = hasScriptingMethod(
+    js,
+    type,
+    key,
+    'full',
+    'input_fields'
+  );
+
+  const hasOutputFieldPreScripting = hasScriptingMethod(
+    js,
+    type,
+    key,
+    'pre',
+    'output_fields'
+  );
+  const hasOutputFieldPostScripting = hasScriptingMethod(
+    js,
+    type,
+    key,
+    'post',
+    'output_fields'
+  );
+  const hasOutputFieldFullScripting = hasScriptingMethod(
+    js,
+    type,
+    key,
+    'full',
+    'output_fields'
+  );
+
+  const hasScripting =
+    hasPreScripting ||
+    hasPostScripting ||
+    hasFullScripting ||
+    hasResourcePreScripting ||
+    hasResourcePostScripting ||
+    hasResourceFullScripting ||
+    hasInputFieldPreScripting ||
+    hasInputFieldPostScripting ||
+    hasInputFieldFullScripting ||
+    hasOutputFieldPreScripting ||
+    hasOutputFieldPostScripting ||
+    hasOutputFieldFullScripting;
 
   const stepDef = definition[stepNamesMapInv[type]][key];
 
-  const hasCustomInputFields = (
-    hasInputFieldPreScripting || hasInputFieldPostScripting || hasInputFieldFullScripting ||
-    (type !== 'trigger' && Boolean(stepDef.custom_fields_url))
-    // Triggers in WB don't have custom input fields
-  );
-  const hasCustomOutputFields = (
-    hasOutputFieldPreScripting || hasOutputFieldPostScripting || hasOutputFieldFullScripting ||
-    (Boolean(stepDef.custom_fields_result_url) || (type === 'trigger' && Boolean(stepDef.custom_fields_url)))
-    // Triggers' custom output fields URL route is specified by 'custom_fields_url', unlike creates and searches
-  );
+  const hasCustomInputFields =
+    hasInputFieldPreScripting ||
+    hasInputFieldPostScripting ||
+    hasInputFieldFullScripting ||
+    (type !== 'trigger' && Boolean(stepDef.custom_fields_url));
+  // Triggers in WB don't have custom input fields
+  const hasCustomOutputFields =
+    hasOutputFieldPreScripting ||
+    hasOutputFieldPostScripting ||
+    hasOutputFieldFullScripting ||
+    (Boolean(stepDef.custom_fields_result_url) ||
+      (type === 'trigger' && Boolean(stepDef.custom_fields_url)));
+  // Triggers' custom output fields URL route is specified by 'custom_fields_url', unlike creates and searches
 
   return {
     hasScripting,
@@ -445,15 +533,18 @@ const getStepMetaData = (definition, type, key) => {
     hasOutputFieldPostScripting,
     hasOutputFieldFullScripting,
     hasCustomInputFields,
-    hasCustomOutputFields,
+    hasCustomOutputFields
   };
 };
 
 // Get some quick converted metadata for several templates to use
-const getMetaData = (definition) => {
+const getMetaData = definition => {
   const type = getAuthType(definition);
 
-  const authPlacement = _.get(definition.general, ['auth_data', 'access_token_placement']);
+  const authPlacement = _.get(definition.general, [
+    'auth_data',
+    'access_token_placement'
+  ]);
 
   let hasAnyScriptingMethods = false;
 
@@ -468,14 +559,21 @@ const getMetaData = (definition) => {
   });
 
   const needsAuth = hasAuth(definition);
-  const isCustomBasic = (needsAuth && type === 'basic' && !_.isEmpty(definition.general.auth_mapping));
-  const hasBefore = needsAuth && (
-    type === 'api-header' || type === 'api-query' || type === 'session' ||
-    type === 'oauth2' || type === 'oauth2-refresh' || isCustomBasic
-  );
-  const hasAfter = (needsAuth && type === 'session');
-  const fieldsOnQuery = (authPlacement === 'params' || type === 'api-query');
-  const isSession = (needsAuth && type === 'session');
+  const isCustomBasic =
+    needsAuth &&
+    type === 'basic' &&
+    !_.isEmpty(definition.general.auth_mapping);
+  const hasBefore =
+    needsAuth &&
+    (type === 'api-header' ||
+      type === 'api-query' ||
+      type === 'session' ||
+      type === 'oauth2' ||
+      type === 'oauth2-refresh' ||
+      isCustomBasic);
+  const hasAfter = needsAuth && type === 'session';
+  const fieldsOnQuery = authPlacement === 'params' || type === 'api-query';
+  const isSession = needsAuth && type === 'session';
   const isOAuth = needsAuth && (type === 'oauth2' || type === 'oauth2-refresh');
 
   const needsLegacyScriptingRunner = isSession || hasAnyScriptingMethods;
@@ -488,20 +586,19 @@ const getMetaData = (definition) => {
     isSession,
     isOAuth,
     isCustomBasic,
-    needsLegacyScriptingRunner,
+    needsLegacyScriptingRunner
   };
 };
 
-
 // Generate methods for beforeRequest and afterResponse
-const getHeader = (definition) => {
+const getHeader = definition => {
   const {
     hasBefore,
     hasAfter,
     isSession,
     isOAuth,
     isCustomBasic,
-    fieldsOnQuery,
+    fieldsOnQuery
   } = getMetaData(definition);
 
   if (hasBefore || hasAfter) {
@@ -513,7 +610,7 @@ const getHeader = (definition) => {
       customBasic: isCustomBasic,
       fields: Object.keys(definition.auth_fields),
       mapping: _.get(definition, ['general', 'auth_mapping'], {}),
-      query: fieldsOnQuery,
+      query: fieldsOnQuery
     };
     const templateFile = path.join(TEMPLATE_DIR, '/header.template.js');
     return renderTemplate(templateFile, templateContext);
@@ -523,7 +620,7 @@ const getHeader = (definition) => {
 };
 
 // Return methods to use for beforeRequest
-const getBeforeRequests = (definition) => {
+const getBeforeRequests = definition => {
   const { hasBefore } = getMetaData(definition);
 
   if (hasBefore) {
@@ -534,7 +631,7 @@ const getBeforeRequests = (definition) => {
 };
 
 // Return methods to use for afterResponse
-const getAfterResponses = (definition) => {
+const getAfterResponses = definition => {
   const { hasAfter } = getMetaData(definition);
 
   if (hasAfter) {
@@ -551,14 +648,17 @@ const renderStep = (type, definition, key, legacyApp) => {
   const fields = renderFields(definition.fields, 6);
   const sample = renderSample(definition.sample_result_fields, 6);
 
-  const url = definition.url ? definition.url : 'http://example.com/api/${key}.json';
+  const url = definition.url
+    ? definition.url
+    : 'http://example.com/api/${key}.json';
 
   const noun = definition.noun || _.capitalize(key);
   const label = definition.label || `${stepVerbsMap[type]} ${noun}`;
 
   const lowerNoun = noun.toLowerCase();
-  let description = definition.help_text ||
-                    stepDescriptionTemplateMap[type]({ lowerNoun: lowerNoun });
+  let description =
+    definition.help_text ||
+    stepDescriptionTemplateMap[type]({ lowerNoun: lowerNoun });
   description = description.replace(/'/g, "\\'");
 
   const hidden = Boolean(definition.hide);
@@ -588,7 +688,7 @@ const renderStep = (type, definition, key, legacyApp) => {
     outputFieldPostScripting: stepMeta.hasOutputFieldPostScripting,
     outputFieldFullScripting: stepMeta.hasOutputFieldFullScripting,
     hasCustomInputFields: stepMeta.hasCustomInputFields,
-    hasCustomOutputFields: stepMeta.hasCustomOutputFields,
+    hasCustomOutputFields: stepMeta.hasCustomOutputFields
   };
 
   if (type === 'search') {
@@ -599,7 +699,8 @@ const renderStep = (type, definition, key, legacyApp) => {
     templateContext.CUSTOM_FIELDS_URL = definition.custom_fields_url;
   }
   if (definition.custom_fields_result_url) {
-    templateContext.CUSTOM_FIELDS_RESULT_URL = definition.custom_fields_result_url;
+    templateContext.CUSTOM_FIELDS_RESULT_URL =
+      definition.custom_fields_result_url;
   }
 
   const templateFile = path.join(TEMPLATE_DIR, `/${type}.template.js`);
@@ -610,52 +711,53 @@ const renderStep = (type, definition, key, legacyApp) => {
 const writeStep = (type, definition, key, legacyApp, newAppDir) => {
   const fileName = `${stepTypeMap[type]}/${snakeCase(key)}.js`;
 
-  return renderStep(type, definition, key, legacyApp)
-    .then(content => createFile(content, fileName, newAppDir));
+  return renderStep(type, definition, key, legacyApp).then(content =>
+    createFile(content, fileName, newAppDir)
+  );
 };
 
 // render the authData used in the trigger/search/create test code
-const renderAuthData = (definition) => {
+const renderAuthData = definition => {
   const authType = getAuthType(definition);
   let result;
   switch (authType) {
-  case 'basic': {
-    let lines = _.map(definition.auth_fields, (field, key) => {
-      const upperKey = key.toUpperCase();
-      return `        ${key}: process.env.${upperKey}`;
-    });
-    result = `{
+    case 'basic': {
+      let lines = _.map(definition.auth_fields, (field, key) => {
+        const upperKey = key.toUpperCase();
+        return `        ${key}: process.env.${upperKey}`;
+      });
+      result = `{
 ${lines.join(',\n')}
       }`;
-    break;
-  }
-  case 'oauth2':
-    result = `{
+      break;
+    }
+    case 'oauth2':
+      result = `{
         access_token: process.env.ACCESS_TOKEN
       }`;
-    break;
-  case 'oauth2-refresh':
-    result = `{
+      break;
+    case 'oauth2-refresh':
+      result = `{
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN
       }`;
-    break;
-  case 'api-header': // Fall through
-  case 'api-query':
-    result = `{
+      break;
+    case 'api-header': // Fall through
+    case 'api-query':
+      result = `{
         apiKey: process.env.API_KEY
       }`;
-    break;
-  case 'session':
-    result = `{
+      break;
+    case 'session':
+      result = `{
         sessionKey: process.env.SESSION_KEY
       }`;
-    break;
-  default:
-    result = `{
+      break;
+    default:
+      result = `{
         // TODO: Put your custom auth data here
       }`;
-    break;
+      break;
   }
   return result;
 };
@@ -675,12 +777,16 @@ const renderStepTest = (type, definition, key, legacyApp) => {
 // write basic test code for a new trigger, create, or search
 const writeStepTest = (type, definition, key, legacyApp, newAppDir) => {
   // Skip auth test, as it should return an object instead of an array
-  if (type === 'trigger' && _.get(legacyApp, ['general', 'test_trigger_key']) === key) {
+  if (
+    type === 'trigger' &&
+    _.get(legacyApp, ['general', 'test_trigger_key']) === key
+  ) {
     return Promise.resolve();
   }
   const fileName = `test/${stepTypeMap[type]}/${snakeCase(key)}.js`;
-  return renderStepTest(type, definition, key, legacyApp)
-    .then(content => createFile(content, fileName, newAppDir));
+  return renderStepTest(type, definition, key, legacyApp).then(content =>
+    createFile(content, fileName, newAppDir)
+  );
 };
 
 const renderUtils = () => {
@@ -688,13 +794,14 @@ const renderUtils = () => {
   return renderTemplate(templateFile);
 };
 
-const writeUtils = (newAppDir) => {
+const writeUtils = newAppDir => {
   const fileName = 'utils.js';
-  return renderUtils()
-    .then(content => createFile(content, fileName, newAppDir));
+  return renderUtils().then(content =>
+    createFile(content, fileName, newAppDir)
+  );
 };
 
-const renderIndex = (legacyApp) => {
+const renderIndex = legacyApp => {
   const needsAuth = hasAuth(legacyApp);
   const templateContext = {
     HEADER: '',
@@ -703,57 +810,56 @@ const renderIndex = (legacyApp) => {
     CREATES: '',
     BEFORE_REQUESTS: getBeforeRequests(legacyApp),
     AFTER_RESPONSES: getAfterResponses(legacyApp),
-    needsAuth,
+    needsAuth
   };
 
-  return getHeader(legacyApp)
-    .then((header) => {
-      templateContext.HEADER = header;
+  return getHeader(legacyApp).then(header => {
+    templateContext.HEADER = header;
 
-      const importLines = [];
+    const importLines = [];
+    if (needsAuth) {
+      importLines.push("const authentication = require('./authentication');");
+    }
 
-      if (needsAuth) {
-        importLines.push("const authentication = require('./authentication');");
-      }
+    const dirMap = {
+      trigger: 'triggers',
+      search: 'searches',
+      create: 'creates'
+    };
 
-      const dirMap = {
-        trigger: 'triggers',
-        search: 'searches',
-        create: 'creates'
-      };
+    _.each(stepNamesMap, (cliType, wbType) => {
+      const lines = [];
 
-      _.each(stepNamesMap, (cliType, wbType) => {
-        const lines = [];
-
-        _.each(legacyApp[wbType], (definition, name) => {
-          const varName = `${camelCase(name)}${_.capitalize(camelCase(cliType))}`;
-          const requireFile = `${dirMap[cliType]}/${snakeCase(name)}`;
-          importLines.push(`const ${varName} = require('./${requireFile}');`);
-          lines.push(`[${varName}.key]: ${varName}`);
-        });
-
-        const section = dirMap[cliType].toUpperCase();
-        templateContext[section] = lines.join(',\n');
+      _.each(legacyApp[wbType], (definition, name) => {
+        const varName = `${camelCase(name)}${_.capitalize(camelCase(cliType))}`;
+        const requireFile = `${dirMap[cliType]}/${snakeCase(name)}`;
+        importLines.push(`const ${varName} = require('./${requireFile}');`);
+        lines.push(`[${varName}.key]: ${varName}`);
       });
 
-      templateContext.REQUIRES = importLines.join('\n');
-
-      const templateFile = path.join(TEMPLATE_DIR, '/index.template.js');
-      return renderTemplate(templateFile, templateContext);
+      const section = dirMap[cliType].toUpperCase();
+      templateContext[section] = lines.join(',\n');
     });
+
+    templateContext.REQUIRES = importLines.join('\n');
+
+    const templateFile = path.join(TEMPLATE_DIR, '/index.template.js');
+    return renderTemplate(templateFile, templateContext);
+  });
 };
 
 const writeIndex = (legacyApp, newAppDir) => {
-  return renderIndex(legacyApp)
-    .then(content => createFile(content, 'index.js', newAppDir));
+  return renderIndex(legacyApp).then(content =>
+    createFile(content, 'index.js', newAppDir)
+  );
 };
 
-const renderPackageJson = (legacyApp) => {
+const renderPackageJson = legacyApp => {
   const { needsLegacyScriptingRunner } = getMetaData(legacyApp);
 
   const templateContext = {
     NAME: _.kebabCase(legacyApp.general.title),
-    DESCRIPTION: legacyApp.general.description,
+    DESCRIPTION: legacyApp.general.description
   };
 
   const zapierCoreVersion = require('../../package.json').version;
@@ -767,7 +873,9 @@ const renderPackageJson = (legacyApp) => {
     dependencies.push('"async": "2.5.0"');
     dependencies.push('"moment-timezone": "0.5.13"');
     dependencies.push('"xmldom": "0.1.27"');
-    dependencies.push(`"zapier-platform-legacy-scripting-runner": "${ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION}"`);
+    dependencies.push(
+      `"zapier-platform-legacy-scripting-runner": "${ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION}"`
+    );
   }
 
   templateContext.DEPENDENCIES = dependencies.join(',\n    ');
@@ -777,14 +885,15 @@ const renderPackageJson = (legacyApp) => {
 };
 
 const writePackageJson = (legacyApp, newAppDir) => {
-  return renderPackageJson(legacyApp)
-    .then(content => createFile(content, 'package.json', newAppDir));
+  return renderPackageJson(legacyApp).then(content =>
+    createFile(content, 'package.json', newAppDir)
+  );
 };
 
-const renderScripting = (legacyApp) => {
+const renderScripting = legacyApp => {
   const templateContext = {
     CODE: _.get(legacyApp, 'js'),
-    VERSION: ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION,
+    VERSION: ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION
   };
 
   // Don't render the file if there's nothing to render
@@ -793,24 +902,29 @@ const renderScripting = (legacyApp) => {
   }
 
   // Normalize newlines to '\n'
-  templateContext.CODE = templateContext.CODE.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  templateContext.CODE = templateContext.CODE.replace(/\r\n/g, '\n').replace(
+    /\r/g,
+    '\n'
+  );
 
   // Remove any 'use strict'; or "use strict"; since we add that automatically
-  templateContext.CODE = templateContext.CODE.replace("'use strict';\n", '').replace('"use strict";\n', '');
+  templateContext.CODE = templateContext.CODE.replace(
+    "'use strict';\n",
+    ''
+  ).replace('"use strict";\n', '');
 
   const templateFile = path.join(TEMPLATE_DIR, '/scripting.template.js');
   return renderTemplate(templateFile, templateContext, false);
 };
 
 const writeScripting = (legacyApp, newAppDir) => {
-  return renderScripting(legacyApp)
-    .then(content => {
-      if (content) {
-        return createFile(content, 'scripting.js', newAppDir);
-      }
+  return renderScripting(legacyApp).then(content => {
+    if (content) {
+      return createFile(content, 'scripting.js', newAppDir);
+    }
 
-      return null;
-    });
+    return null;
+  });
 };
 
 const convertApp = (legacyApp, newAppDir) => {
@@ -818,7 +932,9 @@ const convertApp = (legacyApp, newAppDir) => {
   _.each(stepNamesMap, (cliType, wbType) => {
     _.each(legacyApp[wbType], (definition, key) => {
       promises.push(writeStep(cliType, definition, key, legacyApp, newAppDir));
-      promises.push(writeStepTest(cliType, definition, key, legacyApp, newAppDir));
+      promises.push(
+        writeStepTest(cliType, definition, key, legacyApp, newAppDir)
+      );
     });
   });
 
@@ -848,5 +964,5 @@ module.exports = {
   getHeader,
   getBeforeRequests,
   getAfterResponses,
-  hasAuth,
+  hasAuth
 };

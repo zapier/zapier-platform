@@ -17,7 +17,8 @@ const App = {
             body: JSON.stringify(recipe)
           };
 
-          return z.request('http://example.com/api/v2/recipes.json', options)
+          return z
+            .request('http://example.com/api/v2/recipes.json', options)
             .then(response => {
               if (response.status !== 201) {
                 throw new Error(`Unexpected status code ${response.status}`);

@@ -14,7 +14,6 @@
     "camelcase": 0,
     "no-underscore-dangle": 0,
     "new-cap": 0,
-    "indent": [2, 2],
     "comma-dangle": 0,
     "comma-spacing": 2,
     "consistent-return": 2,
@@ -62,13 +61,13 @@
     "no-undef": 2,
     "no-undef-init": 2,
     "no-unused-expressions": 2,
-    "no-unused-vars": [2, {"vars": "all", "args": "after-used"}],
+    "no-unused-vars": [2, { "vars": "all", "args": "after-used" }],
     "no-use-before-define": 2,
     "no-with": 2,
     "semi": 2,
-    "semi-spacing": [2, {"before": false, "after": true}],
+    "semi-spacing": [2, { "before": false, "after": true }],
     "space-infix-ops": 2,
-    "space-unary-ops": [2, {"words": true, "nonwords": false}],
-    "yoda": [2, "never"],
+    "space-unary-ops": [2, { "words": true, "nonwords": false }],
+    "yoda": [2, "never"]
   }
 }

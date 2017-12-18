@@ -6,20 +6,25 @@ const convert = (context, appid, location) => {
   context.line();
   context.line(constants.ART);
   context.line();
-  context.line('Let\'s convert your app!');
+  context.line("Let's convert your app!");
   context.line();
 
   appid = Number(appid);
   if (!appid) {
-    const message = `You must provide an appid - get that from ${constants.BASE_ENDPOINT}/developer/builder/ (check the URL).`;
+    const message = `You must provide an appid - get that from ${
+      constants.BASE_ENDPOINT
+    }/developer/builder/ (check the URL).`;
     return Promise.reject(new Error(message));
   }
 
-  const createApp = (tempAppDir) => {
-    const url = `${constants.BASE_ENDPOINT}/api/developer/v1/apps/${appid}/dump`;
+  const createApp = tempAppDir => {
+    const url = `${
+      constants.BASE_ENDPOINT
+    }/api/developer/v1/apps/${appid}/dump`;
 
     utils.printStarting('Downloading app from Zapier');
-    return utils.callAPI(null, {url})
+    return utils
+      .callAPI(null, { url })
       .then(legacyApp => {
         utils.printDone();
         return legacyApp;
@@ -27,14 +32,25 @@ const convert = (context, appid, location) => {
       .then(legacyApp => utils.convertApp(legacyApp, tempAppDir));
   };
 
-  return utils.initApp(context, location, createApp)
-    .then(() => {
-      context.line('\nFinished! You might need to `npm install` then try `zapier test`!');
-    });
+  return utils.initApp(context, location, createApp).then(() => {
+    context.line(
+      '\nFinished! You might need to `npm install` then try `zapier test`!'
+    );
+  });
 };
 convert.argsSpec = [
-  {name: 'appid', required: true, help: `Get the appid from ${constants.BASE_ENDPOINT}/developer/builder/ (check the URL)`},
-  {name: 'location', required: true, help: 'Relative to your current path - IE: `.` for current directory'},
+  {
+    name: 'appid',
+    required: true,
+    help: `Get the appid from ${
+      constants.BASE_ENDPOINT
+    }/developer/builder/ (check the URL)`
+  },
+  {
+    name: 'location',
+    required: true,
+    help: 'Relative to your current path - IE: `.` for current directory'
+  }
 ];
 convert.help = 'Converts a Zapier Platform app to a CLI app, stubs only.';
 convert.example = 'zapier convert appid path';

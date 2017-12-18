@@ -1,65 +1,88 @@
 const utils = require('../utils');
 const colors = require('colors/safe');
 
-const logs = (context) => {
+const logs = context => {
   context.line('The logs of your app listed below.\n');
 
   utils.startSpinner();
-  return utils.listLogs(global.argOpts)
-    .then((data) => {
-      utils.endSpinner('');
+  return utils.listLogs(global.argOpts).then(data => {
+    utils.endSpinner('');
 
-      let columns;
-      const type = global.argOpts.type || logs.argOptsSpec.type.default;
-      if (type === 'http') {
-        columns = [
-          ['Status', 'response_status_code'],
-          ['Method', 'request_method'],
-          ['URL', 'request_url'],
-          ['Querystring', 'request_params'],
-          ['Version', 'app_cli_version'],
-          ['Step ID', 'step'],
-          // ['ID', 'id'],
-          ['Timestamp', 'timestamp'],
-        ];
+    let columns;
+    const type = global.argOpts.type || logs.argOptsSpec.type.default;
+    if (type === 'http') {
+      columns = [
+        ['Status', 'response_status_code'],
+        ['Method', 'request_method'],
+        ['URL', 'request_url'],
+        ['Querystring', 'request_params'],
+        ['Version', 'app_cli_version'],
+        ['Step ID', 'step'],
+        // ['ID', 'id'],
+        ['Timestamp', 'timestamp']
+      ];
 
-        if (global.argOpts.detailed) {
-          columns.push(['Request Headers', 'request_headers']);
-          columns.push(['Request Body', 'request_data']);
-          columns.push(['Response Headers', 'response_headers']);
-          columns.push(['Response Body', 'response_content']);
-        }
-      } else {
-        columns = [
-          ['Log', 'full_message'],
-          ['Version', 'app_cli_version'],
-          ['Step', 'step'],
-          // ['ID', 'id'],
-          ['Timestamp', 'timestamp'],
-        ];
+      if (global.argOpts.detailed) {
+        columns.push(['Request Headers', 'request_headers']);
+        columns.push(['Request Body', 'request_data']);
+        columns.push(['Response Headers', 'response_headers']);
+        columns.push(['Response Body', 'response_content']);
       }
+    } else {
+      columns = [
+        ['Log', 'full_message'],
+        ['Version', 'app_cli_version'],
+        ['Step', 'step'],
+        // ['ID', 'id'],
+        ['Timestamp', 'timestamp']
+      ];
+    }
 
-      const ifEmpty = colors.grey('No logs found. Try adding some `z.request()`, `z.console.log()` and doing a `zapier push`!\n');
+    const ifEmpty = colors.grey(
+      'No logs found. Try adding some `z.request()`, `z.console.log()` and doing a `zapier push`!\n'
+    );
 
-      const listLogs = [].concat(data.logs);
-      listLogs.reverse();
-      utils.printData(listLogs, columns, ifEmpty, true);
+    const listLogs = [].concat(data.logs);
+    listLogs.reverse();
+    utils.printData(listLogs, columns, ifEmpty, true);
 
-      context.line(colors.grey('  Most recent logs near the bottom.'));
+    context.line(colors.grey('  Most recent logs near the bottom.'));
 
-      if (type === 'http' && !global.argOpts.detailed) {
-        context.line(colors.grey('  TIP: Use `zapier logs --type=http --detailed` to include response information.'));
-      }
-    });
+    if (type === 'http' && !global.argOpts.detailed) {
+      context.line(
+        colors.grey(
+          '  TIP: Use `zapier logs --type=http --detailed` to include response information.'
+        )
+      );
+    }
+  });
 };
 logs.argsSpec = [];
 logs.argOptsSpec = {
-  version: {help: 'display only this version\'s logs (default is all versions)'},
-  status: {help: 'display only success logs (status code < 400 / info) or error (status code > 400 / tracebacks)', choices: ['any', 'success', 'error'], default: 'any'},
-  type: {help: 'display only console or http logs', choices: ['console', 'http'], default: 'console'},
-  detailed: {help: 'show detailed logs (like request/response body and headers)', flag: true},
-  user: {help: 'display only this user\'s logs', example: 'user@example.com', 'default': 'me'},
-  limit: {help: 'control the maximum result size', default: 50},
+  version: {
+    help: "display only this version's logs (default is all versions)"
+  },
+  status: {
+    help:
+      'display only success logs (status code < 400 / info) or error (status code > 400 / tracebacks)',
+    choices: ['any', 'success', 'error'],
+    default: 'any'
+  },
+  type: {
+    help: 'display only console or http logs',
+    choices: ['console', 'http'],
+    default: 'console'
+  },
+  detailed: {
+    help: 'show detailed logs (like request/response body and headers)',
+    flag: true
+  },
+  user: {
+    help: "display only this user's logs",
+    example: 'user@example.com',
+    default: 'me'
+  },
+  limit: { help: 'control the maximum result size', default: 50 }
 };
 logs.help = 'Prints recent logs. See help for filter arguments.';
 logs.example = 'zapier logs';

@@ -3,7 +3,8 @@ const utils = require('../utils');
 const makeAccess = require('./_access');
 
 const invite = makeAccess('invite', 'invitee');
-invite.help = 'Manage the invitees/testers on your project. Can optionally specify a version or --remove.';
+invite.help =
+  'Manage the invitees/testers on your project. Can optionally specify a version or --remove.';
 invite.example = 'zapier invite [user@example.com] [1.0.0]';
 invite.docs = `
 Invite any user registered on Zapier to test your app. Commonly, this is useful for teammates, contractors, or other team members who might want to test, QA, or view your app versions. If you'd like to provide full admin access, try \`zapier collaborate\`.

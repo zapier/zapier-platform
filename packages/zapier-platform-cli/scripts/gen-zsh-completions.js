@@ -7,29 +7,39 @@ const commandsIndex = require('../lib/commands/index');
 const convertUtils = require('../lib/utils/convert');
 const renderTemplate = convertUtils.renderTemplate;
 
-const allCommands = _.reduce(Object.keys(commandsIndex), (all, name) => {
-  const cmd = commandsIndex[name];
-  all.push({
-    name,
-    help: cmd.help,
-    argOptsSpec: cmd.argOptsSpec,
-    hide: cmd.hide
-  });
-  return all;
-}, []);
+const allCommands = _.reduce(
+  Object.keys(commandsIndex),
+  (all, name) => {
+    const cmd = commandsIndex[name];
+    all.push({
+      name,
+      help: cmd.help,
+      argOptsSpec: cmd.argOptsSpec,
+      hide: cmd.hide
+    });
+    return all;
+  },
+  []
+);
 
 const commands = _.filter(allCommands, cmd => !cmd.hide);
 
-const clean = s => s ? s.replace(/[`']/g, '') : '';
+const clean = s => (s ? s.replace(/[`']/g, '') : '');
 
 const commandsWithOpts = _.filter(commands, cmd => !_.isEmpty(cmd.argOptsSpec));
 
 const optsList = _.map(commandsWithOpts, cmd => {
-  const opts = _.map(cmd.argOptsSpec, (spec, opt) => `"--${opt}:'${clean(spec.help)}'"`);
+  const opts = _.map(
+    cmd.argOptsSpec,
+    (spec, opt) => `"--${opt}:'${clean(spec.help)}'"`
+  );
   return `local ${cmd.name}Opts=(${opts.join(' ')})`;
 });
 
-const commandsList = _.map(commands, cmd => `"${cmd.name}:'${clean(cmd.help)}'"`);
+const commandsList = _.map(
+  commands,
+  cmd => `"${cmd.name}:'${clean(cmd.help)}'"`
+);
 
 const templateFile = path.resolve(__dirname, '_zapier.template');
 

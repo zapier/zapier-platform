@@ -2,51 +2,88 @@ const utils = require('../utils');
 
 const migrate = (context, fromVersion, toVersion, optionalPercent = '100%') => {
   if (!toVersion) {
-    context.line('Must provide both old and new version like `zapier migrate 1.0.0 1.0.1`.');
+    context.line(
+      'Must provide both old and new version like `zapier migrate 1.0.0 1.0.1`.'
+    );
     return Promise.resolve();
   }
   optionalPercent = parseInt(optionalPercent, 10);
-  return utils.getLinkedApp()
+  return utils
+    .getLinkedApp()
     .then(app => {
       const body = {
-        percent: optionalPercent,
+        percent: optionalPercent
       };
       const user = global.argOpts.user;
 
       if (user) {
         if (optionalPercent !== 100) {
-          throw new Error('Cannot define percent and user. Use only one or the other.');
+          throw new Error(
+            'Cannot define percent and user. Use only one or the other.'
+          );
         }
 
         body.user = user;
 
-        context.line(`Getting ready to migrate "${user}" in your app "${app.title}" from ${fromVersion} to ${toVersion}.\n`);
-        utils.printStarting(`Starting migration from ${fromVersion} to ${toVersion} for ${user}`);
+        context.line(
+          `Getting ready to migrate "${user}" in your app "${
+            app.title
+          }" from ${fromVersion} to ${toVersion}.\n`
+        );
+        utils.printStarting(
+          `Starting migration from ${fromVersion} to ${toVersion} for ${user}`
+        );
       } else {
-        context.line(`Getting ready to migrate your app "${app.title}" from ${fromVersion} to ${toVersion}.\n`);
-        utils.printStarting(`Starting migration from ${fromVersion} to ${toVersion} for ${optionalPercent}%`);
+        context.line(
+          `Getting ready to migrate your app "${
+            app.title
+          }" from ${fromVersion} to ${toVersion}.\n`
+        );
+        utils.printStarting(
+          `Starting migration from ${fromVersion} to ${toVersion} for ${optionalPercent}%`
+        );
       }
 
-      return utils.callAPI(`/apps/${app.id}/versions/${fromVersion}/migrate-to/${toVersion}`, {
-        method: 'POST',
-        body,
-      });
+      return utils.callAPI(
+        `/apps/${app.id}/versions/${fromVersion}/migrate-to/${toVersion}`,
+        {
+          method: 'POST',
+          body
+        }
+      );
     })
     .then(() => {
       utils.printDone();
-      context.line('\nMigration successfully queued, please check `zapier history` to track the status. Migrations usually take between 5-10 minutes.');
+      context.line(
+        '\nMigration successfully queued, please check `zapier history` to track the status. Migrations usually take between 5-10 minutes.'
+      );
     });
 };
 migrate.argsSpec = [
-  {name: 'fromVersion', example: '1.0.0', required: true, help: 'the version **from** which to migrate users'},
-  {name: 'toVersion', example: '1.0.1', required: true, help: 'the version **to** which to migrate users'},
-  {name: 'percent', example: '100%', default: '100%', help: 'percent of users to migrate'},
+  {
+    name: 'fromVersion',
+    example: '1.0.0',
+    required: true,
+    help: 'the version **from** which to migrate users'
+  },
+  {
+    name: 'toVersion',
+    example: '1.0.1',
+    required: true,
+    help: 'the version **to** which to migrate users'
+  },
+  {
+    name: 'percent',
+    example: '100%',
+    default: '100%',
+    help: 'percent of users to migrate'
+  }
 ];
 migrate.argOptsSpec = {
   user: {
     help: 'migrate only this user',
-    example: 'user@example.com',
-  },
+    example: 'user@example.com'
+  }
 };
 migrate.help = 'Migrate users from one version of your app to another.';
 migrate.example = 'zapier migrate 1.0.0 1.0.1 [10%]';

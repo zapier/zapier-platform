@@ -2,20 +2,20 @@ const _ = require('lodash');
 const colors = require('colors');
 const path = require('path');
 
-const {PLATFORM_PACKAGE} = require('../constants');
+const { PLATFORM_PACKAGE } = require('../constants');
 
-const {prettyJSONstringify} = require('./display');
+const { prettyJSONstringify } = require('./display');
 
-const {promisify} = require('./promisify');
+const { promisify } = require('./promisify');
 
 const nodeWatch = (...args) => require('node-watch')(...args);
 const makeTunnelUrl = (...args) => promisify(require('ngrok').connect)(...args);
 
-const getLocalAppHandler = ({reload = false, baseEvent = {}} = {}) => {
+const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
   const entryPath = `${process.cwd()}/index`;
   const rootPath = path.dirname(require.resolve(entryPath));
   if (reload) {
-    Object.keys(require.cache).map((cachePath) => {
+    Object.keys(require.cache).map(cachePath => {
       if (cachePath.startsWith(rootPath)) {
         delete require.cache[cachePath];
       }
@@ -32,15 +32,20 @@ const getLocalAppHandler = ({reload = false, baseEvent = {}} = {}) => {
   }
   const handler = zapier.createAppHandler(appRaw);
   return (event, ctx, callback) => {
-    event = _.merge({}, event, {
-      calledFromCli: true,
-    }, baseEvent);
+    event = _.merge(
+      {},
+      event,
+      {
+        calledFromCli: true
+      },
+      baseEvent
+    );
     handler(event, _, callback);
   };
 };
 
 // Runs a local app command (./index.js) like {command: 'validate'};
-const localAppCommand = (event) => {
+const localAppCommand = event => {
   const handler = getLocalAppHandler();
   return new Promise((resolve, reject) => {
     handler(event, {}, (err, resp) => {
@@ -54,7 +59,7 @@ const localAppCommand = (event) => {
 };
 
 // translate a JS Error into what would be returned from lambda
-const createAWSError = (error) => {
+const createAWSError = error => {
   const stackTrace = error.stack.split(/\n\s+at\s/).slice(1);
 
   return {
@@ -65,12 +70,12 @@ const createAWSError = (error) => {
 };
 
 // Stands up a local tunnel server for app commands.
-const localAppTunnelServer = (options) => {
+const localAppTunnelServer = options => {
   const jayson = require('jayson');
 
   const server = jayson.server({
     test: (args, callback) => {
-      callback(null, {'results': 'Success!'});
+      callback(null, { results: 'Success!' });
     },
     invoke: (args, callback) => {
       const [event] = args;
@@ -111,5 +116,5 @@ module.exports = {
   localAppCommand,
   localAppTunnelServer,
   makeTunnelUrl,
-  nodeWatch,
+  nodeWatch
 };

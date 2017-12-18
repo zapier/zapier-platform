@@ -1,21 +1,22 @@
 const utils = require('../utils');
 
-const versions = (context) => {
-  return utils.listVersions()
-    .then((data) => {
-      context.line(`All versions of your app "${data.app.title}" listed below.\n`);
-      utils.printData(data.versions, [
-        ['Version', 'version'],
-        ['Platform', 'platform_version'],
-        ['Users', 'user_count'],
-        ['Deployment', 'deployment'],
-        ['Deprecation Date', 'deprecation_date'],
-        ['Timestamp', 'date'],
-      ]);
-      if (!data.versions.length) {
-        context.line('\nTry adding an version with the `zapier push` command.');
-      }
-    });
+const versions = context => {
+  return utils.listVersions().then(data => {
+    context.line(
+      `All versions of your app "${data.app.title}" listed below.\n`
+    );
+    utils.printData(data.versions, [
+      ['Version', 'version'],
+      ['Platform', 'platform_version'],
+      ['Users', 'user_count'],
+      ['Deployment', 'deployment'],
+      ['Deprecation Date', 'deprecation_date'],
+      ['Timestamp', 'date']
+    ]);
+    if (!data.versions.length) {
+      context.line('\nTry adding an version with the `zapier push` command.');
+    }
+  });
 };
 versions.argsSpec = [];
 versions.argOptsSpec = {};
