@@ -27,10 +27,7 @@ module.exports = argv => {
     process.exit(1);
   }
 
-  const notifier = updateNotifier({
-    pkg: require('../package.json'),
-    updateCheckInterval: 0
-  });
+  const notifier = updateNotifier({ pkg: require('../package.json') });
 
   if (notifier.update) {
     notifier.notify({
