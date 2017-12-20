@@ -18,10 +18,18 @@ const createHttpPatch = event => {
 
     // Proxy the request method
     object.request = (options, callback) => {
-      const requestUrl =
-        options.url ||
-        options.href ||
-        `${options.protocol || 'https://'}${options.host}${options.path}`;
+      // `options` can be an object or a string. If options is a string, it is
+      // automatically parsed with url.parse().
+      // See https://nodejs.org/docs/latest-v6.x/api/http.html#http_http_request_options_callback
+      let requestUrl;
+      if (typeof options === 'string') {
+        requestUrl = options;
+      } else {
+        requestUrl =
+          options.href ||
+          `${options.protocol || 'https:'}//${options.host}${options.path}`;
+      }
+
       const logger_url =
         process.env.LOGGING_ENDPOINT || constants.DEFAULT_LOGGING_HTTP_ENDPOINT;
 
