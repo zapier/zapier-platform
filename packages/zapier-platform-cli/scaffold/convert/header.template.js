@@ -25,7 +25,7 @@ const maybeIncludeAuth = (request, z, bundle) => {
   };
   const username = replaceVars(mapping.username, bundle);
   const password = replaceVars(mapping.password, bundle);
-  const encoded = new Buffer(`${username}:${password}`).toString('base64');
+  const encoded = Buffer.from(`${username}:${password}`).toString('base64');
   request.headers.Authorization = `Basic ${encoded}`;
   return request;
 };

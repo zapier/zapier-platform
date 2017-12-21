@@ -249,7 +249,7 @@ const upload = (zipPath, appDir) => {
       const definition = JSON.parse(definitionJson);
 
       const binaryZip = fs.readFileSync(fullZipPath);
-      const buffer = new Buffer(binaryZip).toString('base64');
+      const buffer = Buffer.from(binaryZip).toString('base64');
 
       printStarting(`Uploading version ${definition.version}`);
       return callAPI(`/apps/${app.id}/versions/${definition.version}`, {
