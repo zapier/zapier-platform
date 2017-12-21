@@ -25,7 +25,7 @@
     "lint-snippets":
       "node_modules/.bin/eslint snippets --rule 'no-unused-vars: 0'",
     "test":
-      "npm run build && node_modules/mocha/bin/mocha -t 15000 --recursive lib/tests && npm run lint && npm run lint-snippets",
+      "npm run build && node_modules/mocha/bin/mocha -t 30000 --recursive lib/tests && npm run lint && npm run lint-snippets",
     "zapier": "zapier.js",
     "validate-templates": "./scripts/validate-app-templates.js",
     "set-template-versions": "./scripts/set-app-template-versions.js",
