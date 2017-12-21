@@ -4,6 +4,23 @@ const colors = require('colors');
 
 const utils = require('../utils');
 
+const writeTemplateFile = (templatePath, templateContext, dest) => {
+  const destPath = path.join(process.cwd(), `${dest}.js`);
+  return utils
+    .readFile(templatePath)
+    .then(templateBuf => templateBuf.toString())
+    .then(template =>
+      _.template(template, { interpolate: /<%=([\s\S]+?)%>/g })(templateContext)
+    )
+    .then(rendered => {
+      utils.printStarting(`Writing new ${dest}.js`);
+      return utils
+        .ensureDir(path.dirname(destPath))
+        .then(() => utils.writeFile(destPath, rendered));
+    })
+    .then(() => utils.printDone());
+};
+
 const scaffold = (context, type, name) => {
   if (!name) {
     context.line('Missing arguments. Please see `zaper help scaffold`.');
@@ -15,7 +32,11 @@ const scaffold = (context, type, name) => {
     KEY: utils.snakeCase(name),
     NOUN: _.capitalize(name),
     LOWER_NOUN: name.toLowerCase(),
-    INPUT_FIELDS: ''
+    INPUT_FIELDS: '',
+    TYPE: type,
+    TYPE_PLURAL: type === 'search' ? `${type}es` : `${type}s`,
+    // resources need an extra line for tests to "just run"
+    MAYBE_RESOURCE: type === 'resource' ? 'list.' : ''
   };
 
   // what is the `resources: {}` app definition point?
@@ -45,26 +66,20 @@ const scaffold = (context, type, name) => {
     __dirname,
     `../../scaffold/${type}.template.js`
   );
+  const testTemplateFile = path.join(
+    __dirname,
+    '../../scaffold/test.template.js'
+  );
   const dest = global.argOpts.dest || destMap[type];
-  const destFile = path.join(process.cwd(), dest + '.js');
   const entry = global.argOpts.entry || 'index.js';
   const entryFile = path.join(process.cwd(), entry);
 
   context.line(`Adding ${type} scaffold to your project.\n`);
 
-  return utils
-    .readFile(templateFile)
-    .then(templateBuf => templateBuf.toString())
-    .then(template =>
-      _.template(template, { interpolate: /<%=([\s\S]+?)%>/g })(templateContext)
+  return writeTemplateFile(templateFile, templateContext, dest)
+    .then(() =>
+      writeTemplateFile(testTemplateFile, templateContext, `test/${dest}`)
     )
-    .then(rendered => {
-      utils.printStarting(`Writing new ${dest}.js`);
-      return utils
-        .ensureDir(path.dirname(destFile))
-        .then(() => utils.writeFile(destFile, rendered));
-    })
-    .then(() => utils.printDone())
     .then(() => utils.readFile(entryFile))
     .then(entryBuf => entryBuf.toString())
     .then(entryJs => {
