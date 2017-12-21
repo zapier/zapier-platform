@@ -1,7 +1,7 @@
 // find a particular <%= LOWER_NOUN %> by name
 const search<%= CAMEL %> = (z, bundle) => {
   const responsePromise = z.request({
-    url: 'http://example.com/api/<%= KEY %>s.json',
+    url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       name: bundle.inputData.name
     }

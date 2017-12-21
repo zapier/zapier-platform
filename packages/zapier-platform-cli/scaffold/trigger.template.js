@@ -1,7 +1,7 @@
 // triggers on <%= LOWER_NOUN %> with a certain tag
 const trigger<%= CAMEL %> = (z, bundle) => {
   const responsePromise = z.request({
-    url: 'http://example.com/api/<%= KEY %>s.json',
+    url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       tag: bundle.inputData.tagName
     }
