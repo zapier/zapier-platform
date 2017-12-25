@@ -67,6 +67,17 @@ describe('convert render functions', () => {
       field.should.not.have.property('helpText');
     });
 
+    it('should escape single quotes in label', () => {
+      const wbKey = 'test_field';
+      const wbDef = {
+        label: "It's a test"
+      };
+
+      const string = convert.renderField(wbDef, wbKey);
+      const field = s2js(string);
+      field.label.should.eql("It's a test");
+    });
+
     it('should escape multi-line help text', () => {
       const wbKey = 'test_field';
       const wbDef = {

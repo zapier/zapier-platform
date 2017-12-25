@@ -1,4 +1,6 @@
+<% if (TEST_TRIGGER_MODULE) { %>
 const testTrigger = require('<%= TEST_TRIGGER_MODULE %>');
+<% } %>
 <% if (hasGetConnectionLabelScripting) { %>
 const getConnectionLabel = (z, bundle) => {
   const scripting = require('./scripting');
@@ -14,7 +16,9 @@ const getConnectionLabel = (z, bundle) => {
 const authentication = {
   // TODO: just an example stub - you'll need to complete
   type: '<%= TYPE %>',
+<% if (TEST_TRIGGER_MODULE) { %>
   test: testTrigger.operation.perform,
+<% } %>
   fields: [
 <%= FIELDS %>
   ],

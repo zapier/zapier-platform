@@ -60,8 +60,18 @@ const makeRequest = (z, bundle) => {
   bundle._legacyUrl = '<%= URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
+<% if (excludeFieldKeys) { %>
+  // Exclude create fields that uncheck "Send to Action Endpoint URL in JSON body"
+  // https://zapier.com/developer/documentation/v2/action-fields/#send-to-action-endpoint-url-in-json-body
+  <% excludeFieldKeys.forEach(fieldKey => { %>
+    delete bundle.inputData['<%= fieldKey %>'];
+  <% }); %>
+<% } %>
+
   const responsePromise = z.request({
-    url: bundle._legacyUrl
+    url: bundle._legacyUrl,
+    method: 'POST',
+    body: bundle.inputData
   });
   return responsePromise
     .then((response) => {
@@ -101,6 +111,14 @@ if (!preScripting && !postScripting && !fullScripting) { %>
 const makeRequest = (z, bundle) => {
   let url = '<%= URL %>';
   url = replaceVars(url, bundle);
+
+<% if (excludeFieldKeys) { %>
+  // Exclude create fields that uncheck "Send to Action Endpoint URL in JSON body"
+  // https://zapier.com/developer/documentation/v2/action-fields/#send-to-action-endpoint-url-in-json-body
+  <% excludeFieldKeys.forEach(fieldKey => { %>
+    delete bundle.inputData['<%= fieldKey %>'];
+  <% }); %>
+<% } %>
 
   const responsePromise = z.request({
     url: url,
