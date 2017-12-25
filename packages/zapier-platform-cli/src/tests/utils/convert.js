@@ -21,12 +21,16 @@ const loadAuthModuleFromString = string => {
   // As the test trigger module doesn't exist during unit testing, let's mock
   // the test trigger import with a dummy test trigger that returns the test
   // trigger module path, allowing us to assert on.
-  const match = string.match(/const testTrigger = require\('([^']*)/);
+  let match = string.match(/const testTrigger = require\('([^']*)/);
   const testTriggerPath = match ? match[1] : 'TEST TRIGGER NOT IMPORTED';
   string = string.replace(/const testTrigger = require\(.*;/, '');
   string =
     `const testTrigger = {operation: {perform: () => '${testTriggerPath}'}};\n` +
     string;
+
+  // utils doesn't exist during testing neither, so let's mock it, too.
+  string = string.replace(/const { replaceVars } = require\(.*;/, '');
+
   return requireFromString(string);
 };
 

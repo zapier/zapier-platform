@@ -10,7 +10,10 @@ describe('Triggers - <%= LABEL %>', () => {
 
   it('should get an array', (done) => {
     const bundle = {
-      authData: <%= AUTH_DATA %>
+      authData: <%= AUTH_DATA %>,
+<% if (INPUT_DATA) { %>
+      inputData: <%= INPUT_DATA %>
+<% } %>
     };
 
     appTester(App.triggers['<%= KEY %>'].operation.perform, bundle)

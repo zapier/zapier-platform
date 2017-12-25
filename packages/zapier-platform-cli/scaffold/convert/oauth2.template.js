@@ -1,3 +1,4 @@
+const { replaceVars } = require('./utils');
 const testTrigger = require('<%= TEST_TRIGGER_MODULE %>');
 <% if (hasPreOAuthTokenScripting && hasPostOAuthTokenScripting) { %>
 const getAccessToken = (z, bundle) => {
@@ -5,6 +6,7 @@ const getAccessToken = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= ACCESS_TOKEN_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   // Do a pre_oauthv2_token() from scripting.
   const preOAuth2TokenEvent = {
@@ -31,6 +33,7 @@ const getAccessToken = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= ACCESS_TOKEN_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   // Do a pre_oauthv2_token() from scripting.
   const preOAuth2TokenEvent = {
@@ -51,6 +54,7 @@ const getAccessToken = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= ACCESS_TOKEN_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   const responsePromise = z.request({
     method: 'POST',
@@ -82,6 +86,7 @@ const refreshAccessToken = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= REFRESH_TOKEN_URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   // Do a pre_oauthv2_refresh() from scripting.
   const preOAuth2RefreshEvent = {

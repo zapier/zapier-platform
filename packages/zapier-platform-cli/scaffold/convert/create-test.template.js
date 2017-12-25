@@ -11,9 +11,9 @@ describe('Creates - <%= LABEL %>', () => {
   it('should create an object', (done) => {
     const bundle = {
       authData: <%= AUTH_DATA %>,
-      inputData: {
-        name: 'Testing',
-      },
+<% if (INPUT_DATA) { %>
+      inputData: <%= INPUT_DATA %>
+<% } %>
     };
 
     appTester(App.creates['<%= KEY %>'].operation.perform, bundle)

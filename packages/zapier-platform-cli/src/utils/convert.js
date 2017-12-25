@@ -153,6 +153,12 @@ const renderField = (definition, key, indent = 0) => {
     props.push(renderProp('search', quote(definition.searchfill)));
   }
 
+  if (definition.default) {
+    props.push(
+      renderProp('default', quote(escapeSpecialChars(definition.default)))
+    );
+  }
+
   props = props.map(s => ' '.repeat(indent + 2) + s);
   const padding = ' '.repeat(indent);
 
@@ -762,13 +768,26 @@ ${lines.join(',\n')}
   return result;
 };
 
+const renderDefaultInputData = definition => {
+  const lines = [];
+  _.each(definition.fields, (field, key) => {
+    if (field.default) {
+      const defaultValue = escapeSpecialChars(field.default);
+      lines.push(`'${key}': '${defaultValue}'`);
+    }
+  });
+  return '{' + lines.join(',\n') + '}';
+};
+
 const renderStepTest = (type, definition, key, legacyApp) => {
   const label = definition.label || _.capitalize(key);
   const authData = renderAuthData(legacyApp);
+  const inputData = renderDefaultInputData(definition);
   const templateContext = {
     KEY: key,
     LABEL: label,
-    AUTH_DATA: authData
+    AUTH_DATA: authData,
+    INPUT_DATA: inputData
   };
   const templateFile = path.join(TEMPLATE_DIR, `/${type}-test.template.js`);
   return renderTemplate(templateFile, templateContext);
@@ -817,6 +836,7 @@ const renderIndex = legacyApp => {
     templateContext.HEADER = header;
 
     const importLines = [];
+
     if (needsAuth) {
       importLines.push("const authentication = require('./authentication');");
     }

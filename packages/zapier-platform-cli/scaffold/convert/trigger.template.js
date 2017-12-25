@@ -8,6 +8,7 @@ const getList = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   // Do a _pre_poll() from scripting.
   const prePollEvent = {
@@ -28,6 +29,7 @@ const getList = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   // Do a _pre_poll() from scripting.
   const prePollEvent = {
@@ -56,6 +58,7 @@ const getList = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   const responsePromise = z.request({
     url: bundle._legacyUrl
@@ -81,6 +84,7 @@ const getList = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= URL %>';
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   // Do a _poll() from scripting.
   const fullPollEvent = {
@@ -95,9 +99,10 @@ const getList = (z, bundle) => {
 // If there's no scripting, it's even sweeter and simpler!
 if (!preScripting && !postScripting && !fullScripting) { %>
 const getList = (z, bundle) => {
-  const responsePromise = z.request({
-    url: '<%= URL %>'
-  });
+  let url = '<%= URL %>';
+  url = replaceVars(url, bundle);
+
+  const responsePromise = z.request({ url });
   return responsePromise
     .then(response => z.JSON.parse(response.content));
 };
@@ -109,7 +114,7 @@ const getOutputFields = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
-  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   // Do a _pre_custom_trigger_fields() from scripting.
   const preResultFieldsEvent = {
@@ -126,7 +131,7 @@ const getOutputFields = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
-  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   // Do a _pre_custom_trigger_fields() from scripting.
   const preResultFieldsEvent = {
@@ -151,7 +156,7 @@ const getOutputFields = (z, bundle) => {
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
-  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle, {});
+  bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
 
   const responsePromise = z.request({
     url: bundle._legacyUrl
