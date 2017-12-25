@@ -12,7 +12,7 @@ const listExample = (z, bundle) => {
         throw new Error(`Unexpected status code ${response.status}`);
       }
 
-      const recipes = JSON.parse(response.content);
+      const recipes = z.JSON.parse(response.content);
       // do any custom processing of recipes here...
 
       return recipes;

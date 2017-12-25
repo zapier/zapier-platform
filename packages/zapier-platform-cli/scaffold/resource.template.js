@@ -4,7 +4,7 @@ const get<%= CAMEL %> = (z, bundle) => {
     url: `https://jsonplaceholder.typicode.com/posts/${bundle.inputData.id}`,
   });
   return responsePromise
-    .then(response => JSON.parse(response.content));
+    .then(response => z.JSON.parse(response.content));
 };
 
 // get a list of <%= LOWER_NOUN %>s
@@ -16,7 +16,7 @@ const list<%= CAMEL %>s = (z) => {
     }
   });
   return responsePromise
-    .then(response => JSON.parse(response.content));
+    .then(response => z.JSON.parse(response.content));
 };
 
 // find a particular <%= LOWER_NOUN %> by name
@@ -28,7 +28,7 @@ const search<%= CAMEL %>s = (z, bundle) => {
     }
   });
   return responsePromise
-    .then(response => JSON.parse(response.content));
+    .then(response => z.JSON.parse(response.content));
 };
 
 // create a <%= LOWER_NOUN %>
@@ -41,7 +41,7 @@ const create<%= CAMEL %> = (z, bundle) => {
     }
   });
   return responsePromise
-    .then(response => JSON.parse(response.content));
+    .then(response => z.JSON.parse(response.content));
 };
 
 module.exports = {

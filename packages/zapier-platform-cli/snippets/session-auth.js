@@ -13,7 +13,7 @@ const getSessionKey = (z, bundle) => {
       throw new Error('The username/password you supplied is invalid');
     }
     return {
-      sessionKey: JSON.parse(response.content).sessionKey
+      sessionKey: z.JSON.parse(response.content).sessionKey
     };
   });
 };
