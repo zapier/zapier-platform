@@ -1,5 +1,5 @@
 // You'll want to set these with either `CLIENT_ID=abc zapier test` or `zapier env 1.0.0 CLIENT_ID abc`
-process.env.BASE_URL = process.env.BASE_URL || 'http://zapier.webscript.io/platform-example-app';
+process.env.BASE_URL = process.env.BASE_URL || 'https://oauth-test.zapier.com/oauth';
 process.env.CLIENT_ID = process.env.CLIENT_ID || '1234';
 process.env.CLIENT_SECRET = process.env.CLIENT_SECRET || 'asdf';
 
