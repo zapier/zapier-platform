@@ -68,7 +68,7 @@ describe('Tools', () => {
       { value: 'Something', length: 5, suffix: undefined, expected: 'Somet' },
       { value: 'Something', length: 5, suffix: '...', expected: 'So...' },
       {
-        value: new Buffer('Something'),
+        value: Buffer.from('Something'),
         length: 7,
         suffix: ' [...]',
         expected: 'S [...]'

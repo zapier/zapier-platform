@@ -67,7 +67,7 @@ const coerceBody = req => {
     // leave a stream/pipe alone!
   } else if (isPromise(req.body)) {
     // leave a promise alone!
-  } else if (_.isBuffer(req.body)) {
+  } else if (Buffer.isBuffer(req.body)) {
     // leave a buffer alone!
   } else if (req.body && !_.isString(req.body)) {
     // this is a general - popular fallback

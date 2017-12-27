@@ -121,7 +121,7 @@ describe('request client', () => {
     request({
       method: 'POST',
       url: 'http://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
-      body: new Buffer('hello world this is a cat (=^..^=)')
+      body: Buffer.from('hello world this is a cat (=^..^=)')
     })
       .then(response => {
         response.status.should.eql(200);

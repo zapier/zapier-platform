@@ -3,7 +3,7 @@
 // Computes the basic auth header for the request
 const addBasicAuthHeader = (req, z, bundle) => {
   if (bundle.authData && bundle.authData.username && bundle.authData.password) {
-    const buff = new Buffer(
+    const buff = Buffer.from(
       `${bundle.authData.username}:${bundle.authData.password}`,
       'utf8'
     );

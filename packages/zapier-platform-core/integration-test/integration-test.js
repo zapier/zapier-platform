@@ -24,7 +24,7 @@ const runLambda = event => {
         return reject(err);
       }
 
-      const logs = new Buffer(data.LogResult, 'base64').toString();
+      const logs = Buffer.from(data.LogResult, 'base64').toString();
       console.log('\n=== LOGS ===\n', logs, '\n===\n');
 
       const response = data.Payload ? JSON.parse(data.Payload) : data;
