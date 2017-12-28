@@ -849,32 +849,23 @@ npm install
   <span class="hljs-attr">platformVersion</span>: <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>).version,
 
   <span class="hljs-comment">// see &quot;Authentication&quot; section below</span>
-  authentication: {
-  },
+  authentication: {},
 
   <span class="hljs-comment">// see &quot;Dehydration&quot; section below</span>
-  hydrators: {
-  },
+  hydrators: {},
 
   <span class="hljs-comment">// see &quot;Making HTTP Requests&quot; section below</span>
-  requestTemplate: {
-  },
-  <span class="hljs-attr">beforeRequest</span>: [
-  ],
-  <span class="hljs-attr">afterResponse</span>: [
-  ],
+  requestTemplate: {},
+  <span class="hljs-attr">beforeRequest</span>: [],
+  <span class="hljs-attr">afterResponse</span>: [],
 
   <span class="hljs-comment">// See &quot;Resources&quot; section below</span>
-  resources: {
-  },
+  resources: {},
 
   <span class="hljs-comment">// See &quot;Triggers/Searches/Creates&quot; section below</span>
-  triggers: {
-  },
-  <span class="hljs-attr">searches</span>: {
-  },
-  <span class="hljs-attr">creates</span>: {
-  }
+  triggers: {},
+  <span class="hljs-attr">searches</span>: {},
+  <span class="hljs-attr">creates</span>: {}
 };
 
 <span class="hljs-built_in">module</span>.exports = App;
@@ -966,7 +957,9 @@ zapier versions
 <li><code>zapier migrate [1.0.0] [1.0.1] [100%]</code> - move users between versions, regardless of deployment status</li>
 <li><code>zapier deprecate [1.0.0] [YYYY-MM-DD]</code> - mark a version as deprecated, but let users continue to use it (we&apos;ll email them)</li>
 <li><code>zapier env 1.0.0 [KEY] [value]</code> - set an environment variable to some value</li>
-</ul>
+</ul><blockquote>
+<p>Note: To see the changes that were just pushed reflected in the browser, you have to manually refresh the browser each time you push.</p>
+</blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1131,7 +1124,7 @@ zapier convert 1234 my-app
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  authentication: authentication,
+  authentication: authentication
   <span class="hljs-comment">// ...</span>
 };
 </code></pre>
@@ -1158,11 +1151,22 @@ zapier convert 1234 my-app
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;custom&apos;</span>,
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
   test: {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>
+    <span class="hljs-attr">url</span>:
+      <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>
   },
   <span class="hljs-attr">fields</span>: [
-    {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Found in your browsers address bar after logging in.&apos;</span>},
-    {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;api_key&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Found on your settings page.&apos;</span>}
+    {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
+      <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Found in your browsers address bar after logging in.&apos;</span>
+    },
+    {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;api_key&apos;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
+      <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Found on your settings page.&apos;</span>
+    }
   ]
 };
 
@@ -1176,9 +1180,7 @@ zapier convert 1234 my-app
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   authentication: authentication,
-  <span class="hljs-attr">beforeRequest</span>: [
-    addApiKeyToHeader,
-  ],
+  <span class="hljs-attr">beforeRequest</span>: [addApiKeyToHeader]
   <span class="hljs-comment">// ...</span>
 };
 </code></pre>
@@ -1205,7 +1207,8 @@ zapier convert 1234 my-app
   test: {
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
   },
-  <span class="hljs-attr">connectionLabel</span>: <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> { <span class="hljs-comment">// Can also be a string, check basic auth above for an example</span>
+  <span class="hljs-attr">connectionLabel</span>: <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+    <span class="hljs-comment">// Can also be a string, check basic auth above for an example</span>
     <span class="hljs-comment">// bundle.inputData has whatever comes back from the .test function/request, assuming it returns a JSON object</span>
     <span class="hljs-keyword">return</span> bundle.inputData.email;
   }
@@ -1214,7 +1217,7 @@ zapier convert 1234 my-app
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  authentication: authentication,
+  authentication: authentication
   <span class="hljs-comment">// ...</span>
 };
 </code></pre>
@@ -1243,16 +1246,16 @@ zapier convert 1234 my-app
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/login.json&apos;</span>,
     <span class="hljs-attr">body</span>: {
       <span class="hljs-attr">username</span>: bundle.inputData.username,
-      <span class="hljs-attr">password</span>: bundle.inputData.password,
+      <span class="hljs-attr">password</span>: bundle.inputData.password
     }
   });
 
-  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
+  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
     <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">401</span>) {
       <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&apos;The username/password you supplied is invalid&apos;</span>);
     }
     <span class="hljs-keyword">return</span> {
-      <span class="hljs-attr">sessionKey</span>: <span class="hljs-built_in">JSON</span>.parse(response.content).sessionKey
+      <span class="hljs-attr">sessionKey</span>: z.JSON.parse(response.content).sessionKey
     };
   });
 };
@@ -1264,8 +1267,18 @@ zapier convert 1234 my-app
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
   },
   <span class="hljs-attr">fields</span>: [
-    {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;username&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Your login username.&apos;</span>},
-    {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;password&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Your login password.&apos;</span>}
+    {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;username&apos;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
+      <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Your login username.&apos;</span>
+    },
+    {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;password&apos;</span>,
+      <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
+      <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Your login password.&apos;</span>
+    }
     <span class="hljs-comment">// For Session Auth we store `sessionKey` automatically in `bundle.authData`</span>
     <span class="hljs-comment">// for future use. If you need to save/use something that the user shouldn&apos;t</span>
     <span class="hljs-comment">// need to type/choose, add a &quot;computed&quot; field, like:</span>
@@ -1297,12 +1310,8 @@ zapier convert 1234 my-app
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   authentication: authentication,
-  <span class="hljs-attr">beforeRequest</span>: [
-    includeSessionKeyHeader
-  ],
-  <span class="hljs-attr">afterResponse</span>: [
-    sessionRefreshIf401
-  ],
+  <span class="hljs-attr">beforeRequest</span>: [includeSessionKeyHeader],
+  <span class="hljs-attr">afterResponse</span>: [sessionRefreshIf401]
   <span class="hljs-comment">// ...</span>
 };
 </code></pre>
@@ -1360,14 +1369,16 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> authentication = {
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;oauth2&apos;</span>,
   <span class="hljs-attr">test</span>: {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>
+    <span class="hljs-attr">url</span>:
+      <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>
   },
   <span class="hljs-comment">// you can provide additional fields for inclusion in authData</span>
   oauth2Config: {
     <span class="hljs-comment">// &quot;authorizeUrl&quot; could also be a function returning a string url</span>
     authorizeUrl: {
       <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;GET&apos;</span>,
-      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize&apos;</span>,
+      <span class="hljs-attr">url</span>:
+        <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize&apos;</span>,
       <span class="hljs-attr">params</span>: {
         <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
         <span class="hljs-attr">state</span>: <span class="hljs-string">&apos;{{bundle.inputData.state}}&apos;</span>,
@@ -1379,7 +1390,8 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
     <span class="hljs-comment">// &quot;getAccessToken&quot; could also be a function returning an object</span>
     getAccessToken: {
       <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
-      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token&apos;</span>,
+      <span class="hljs-attr">url</span>:
+        <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token&apos;</span>,
       <span class="hljs-attr">body</span>: {
         <span class="hljs-attr">code</span>: <span class="hljs-string">&apos;{{bundle.inputData.code}}&apos;</span>,
         <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
@@ -1395,7 +1407,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   },
   <span class="hljs-comment">// If you need any fields upfront, put them here</span>
   fields: [
-    {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span>}
+    { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> }
     <span class="hljs-comment">// For OAuth we store `access_token` and `refresh_token` automatically</span>
     <span class="hljs-comment">// in `bundle.authData` for future use. If you need to save/use something</span>
     <span class="hljs-comment">// that the user shouldn&apos;t need to type/choose, add a &quot;computed&quot; field, like:</span>
@@ -1414,9 +1426,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   authentication: authentication,
-  <span class="hljs-attr">beforeRequest</span>: [
-    addBearerHeader,
-  ]
+  <span class="hljs-attr">beforeRequest</span>: [addBearerHeader]
   <span class="hljs-comment">// ...</span>
 };
 
@@ -1592,7 +1602,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> recipeListRequest = {
-  <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;http://example.com/recipes&apos;</span>,
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;http://example.com/recipes&apos;</span>
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -1709,8 +1719,17 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       operation: {
         <span class="hljs-comment">// an array of objects is the simplest way</span>
         inputFields: [
-          {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title of Recipe&apos;</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Name your recipe!&apos;</span>},
-          {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;style&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">choices</span>: {<span class="hljs-attr">mexican</span>: <span class="hljs-string">&apos;Mexican&apos;</span>, <span class="hljs-attr">italian</span>: <span class="hljs-string">&apos;Italian&apos;</span>}}
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
+            <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title of Recipe&apos;</span>,
+            <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Name your recipe!&apos;</span>
+          },
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;style&apos;</span>,
+            <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+            <span class="hljs-attr">choices</span>: { <span class="hljs-attr">mexican</span>: <span class="hljs-string">&apos;Mexican&apos;</span>, <span class="hljs-attr">italian</span>: <span class="hljs-string">&apos;Italian&apos;</span> }
+          }
         ],
         <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {}
       }
@@ -1751,8 +1770,17 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       operation: {
         <span class="hljs-comment">// an array of objects is the simplest way</span>
         inputFields: [
-          {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title of Recipe&apos;</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Name your recipe!&apos;</span>},
-          {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;style&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">choices</span>: {<span class="hljs-attr">mexican</span>: <span class="hljs-string">&apos;Mexican&apos;</span>, <span class="hljs-attr">italian</span>: <span class="hljs-string">&apos;Italian&apos;</span>}},
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
+            <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title of Recipe&apos;</span>,
+            <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Name your recipe!&apos;</span>
+          },
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;style&apos;</span>,
+            <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+            <span class="hljs-attr">choices</span>: { <span class="hljs-attr">mexican</span>: <span class="hljs-string">&apos;Mexican&apos;</span>, <span class="hljs-attr">italian</span>: <span class="hljs-string">&apos;Italian&apos;</span> }
+          },
           recipeFields <span class="hljs-comment">// provide a function inline - we&apos;ll merge the results!</span>
         ],
         <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {}
@@ -1778,15 +1806,22 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   },
   <span class="hljs-attr">operation</span>: {
     <span class="hljs-attr">inputFields</span>: [
-      {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;type&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">choices</span>: {<span class="hljs-number">1</span>: <span class="hljs-string">&apos;cake&apos;</span>, <span class="hljs-number">2</span>: <span class="hljs-string">&apos;ice cream&apos;</span>, <span class="hljs-number">3</span>: <span class="hljs-string">&apos;cookie&apos;</span>}, <span class="hljs-attr">altersDynamicFields</span>: <span class="hljs-literal">true</span>},
+      {
+        <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;type&apos;</span>,
+        <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+        <span class="hljs-attr">choices</span>: { <span class="hljs-number">1</span>: <span class="hljs-string">&apos;cake&apos;</span>, <span class="hljs-number">2</span>: <span class="hljs-string">&apos;ice cream&apos;</span>, <span class="hljs-number">3</span>: <span class="hljs-string">&apos;cookie&apos;</span> },
+        <span class="hljs-attr">altersDynamicFields</span>: <span class="hljs-literal">true</span>
+      },
       <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">z, bundle</span>) </span>{
         <span class="hljs-keyword">if</span> (bundle.inputData.type === <span class="hljs-string">&apos;2&apos;</span>) {
-          <span class="hljs-keyword">return</span> [{<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;with_sprinkles&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;boolean&apos;</span>}];
+          <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;with_sprinkles&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;boolean&apos;</span> }];
         }
         <span class="hljs-keyword">return</span> [];
       }
     ],
-    <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">z, bundle</span>) </span>{<span class="hljs-comment">/* ... */</span>}
+    <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">z, bundle</span>) </span>{
+      <span class="hljs-comment">/* ... */</span>
+    }
   }
 };
 </code></pre>
@@ -1816,7 +1851,9 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       list: {
         <span class="hljs-comment">//...</span>
         operation: {
-          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> { <span class="hljs-keyword">return</span> [{<span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span>}]; } <span class="hljs-comment">// called for project_id dropdown</span>
+          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+            <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span> }];
+          } <span class="hljs-comment">// called for project_id dropdown</span>
         }
       }
     },
@@ -1827,9 +1864,19 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         <span class="hljs-comment">//...</span>
         operation: {
           <span class="hljs-attr">inputFields</span>: [
-            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>, <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>}, <span class="hljs-comment">// calls project.list</span>
-            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>},
-          ],
+            {
+              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>,
+              <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+              <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>,
+              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>
+            }, <span class="hljs-comment">// calls project.list</span>
+            {
+              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
+              <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+              <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>,
+              <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>
+            }
+          ]
         }
       }
     }
@@ -1873,7 +1920,9 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       search: {
         <span class="hljs-comment">//...</span>
         operation: {
-          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> { <span class="hljs-keyword">return</span> [{<span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span>}]; } <span class="hljs-comment">// called for project_id</span>
+          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+            <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span> }];
+          } <span class="hljs-comment">// called for project_id</span>
         }
       }
     },
@@ -1884,9 +1933,20 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         <span class="hljs-comment">//...</span>
         operation: {
           <span class="hljs-attr">inputFields</span>: [
-            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>, <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>, <span class="hljs-attr">search</span>: <span class="hljs-string">&apos;projectSearch.id&apos;</span>}, <span class="hljs-comment">// calls project.search (requires a trigger in the &quot;dynamic&quot; property)</span>
-            {<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>, <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>},
-          ],
+            {
+              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>,
+              <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+              <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>,
+              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>,
+              <span class="hljs-attr">search</span>: <span class="hljs-string">&apos;projectSearch.id&apos;</span>
+            }, <span class="hljs-comment">// calls project.search (requires a trigger in the &quot;dynamic&quot; property)</span>
+            {
+              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
+              <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+              <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>,
+              <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>
+            }
+          ]
         }
       }
     }
@@ -2352,7 +2412,10 @@ zapier env 1.0.0
       <span class="hljs-string">&apos;my-header&apos;</span>: process.env.MY_SECRET_VALUE
     }
   };
-  <span class="hljs-keyword">const</span> response = z.request(<span class="hljs-string">&apos;http://example.com/api/v2/recipes.json&apos;</span>, httpOptions);
+  <span class="hljs-keyword">const</span> response = z.request(
+    <span class="hljs-string">&apos;http://example.com/api/v2/recipes.json&apos;</span>,
+    httpOptions
+  );
   <span class="hljs-keyword">return</span> response.then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json);
 };
 
@@ -2483,13 +2546,14 @@ zapier env 1.0.0
     }
   };
 
-  <span class="hljs-keyword">return</span> z.request(<span class="hljs-string">&apos;http://example.com/api/v2/recipes.json&apos;</span>, customHttpOptions)
+  <span class="hljs-keyword">return</span> z
+    .request(<span class="hljs-string">&apos;http://example.com/api/v2/recipes.json&apos;</span>, customHttpOptions)
     .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
       <span class="hljs-keyword">if</span> (response.status &gt;= <span class="hljs-number">300</span>) {
         <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`Unexpected status code <span class="hljs-subst">${response.status}</span>`</span>);
       }
 
-      <span class="hljs-keyword">const</span> recipes = <span class="hljs-built_in">JSON</span>.parse(response.content);
+      <span class="hljs-keyword">const</span> recipes = z.JSON.parse(response.content);
       <span class="hljs-comment">// do any custom processing of recipes here...</span>
 
       <span class="hljs-keyword">return</span> recipes;
@@ -2545,7 +2609,8 @@ zapier env 1.0.0
             <span class="hljs-attr">body</span>: <span class="hljs-built_in">JSON</span>.stringify(recipe)
           };
 
-          <span class="hljs-keyword">return</span> z.request(<span class="hljs-string">&apos;http://example.com/api/v2/recipes.json&apos;</span>, options)
+          <span class="hljs-keyword">return</span> z
+            .request(<span class="hljs-string">&apos;http://example.com/api/v2/recipes.json&apos;</span>, options)
             .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
               <span class="hljs-keyword">if</span> (response.status !== <span class="hljs-number">201</span>) {
                 <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`Unexpected status code <span class="hljs-subst">${response.status}</span>`</span>);
@@ -2587,12 +2652,12 @@ zapier env 1.0.0
 </blockquote><p>Try putting them in your app definition:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> addHeader = <span class="hljs-function">(<span class="hljs-params">request<span class="hljs-regexp">/*, z*/</span></span>) =&gt;</span> {
+      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> addHeader = <span class="hljs-function">(<span class="hljs-params">request <span class="hljs-regexp">/*, z*/</span></span>) =&gt;</span> {
   request.headers[<span class="hljs-string">&apos;my-header&apos;</span>] = <span class="hljs-string">&apos;from zapier&apos;</span>;
   <span class="hljs-keyword">return</span> request;
 };
 
-<span class="hljs-keyword">const</span> mustBe200 = <span class="hljs-function">(<span class="hljs-params">response<span class="hljs-regexp">/*, z*/</span></span>) =&gt;</span> {
+<span class="hljs-keyword">const</span> mustBe200 = <span class="hljs-function">(<span class="hljs-params">response <span class="hljs-regexp">/*, z*/</span></span>) =&gt;</span> {
   <span class="hljs-keyword">if</span> (response.status !== <span class="hljs-number">200</span>) {
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`Unexpected status code <span class="hljs-subst">${response.status}</span>`</span>);
   }
@@ -2606,13 +2671,8 @@ zapier env 1.0.0
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  beforeRequest: [
-    addHeader,
-  ],
-  <span class="hljs-attr">afterResponse</span>: [
-    mustBe200,
-    autoParseJson,
-  ]
+  beforeRequest: [addHeader],
+  <span class="hljs-attr">afterResponse</span>: [mustBe200, autoParseJson]
   <span class="hljs-comment">// ...</span>
 };
 </code></pre>
@@ -2751,12 +2811,12 @@ zapier env 1.0.0
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> getExtraDataFunction = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> url = <span class="hljs-string">`http://example.com/movies/<span class="hljs-subst">${bundle.inputData.id}</span>.json`</span>;
-  <span class="hljs-keyword">return</span> z.request(url)
-    .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> z.JSON.parse(res.content));
+  <span class="hljs-keyword">return</span> z.request(url).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> z.JSON.parse(res.content));
 };
 
 <span class="hljs-keyword">const</span> movieList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  <span class="hljs-keyword">return</span> z.request(<span class="hljs-string">&apos;http://example.com/movies.json&apos;</span>)
+  <span class="hljs-keyword">return</span> z
+    .request(<span class="hljs-string">&apos;http://example.com/movies.json&apos;</span>)
     .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> z.JSON.parse(res.content))
     .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
       <span class="hljs-keyword">return</span> results.map(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
@@ -2863,7 +2923,8 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 };
 
 <span class="hljs-keyword">const</span> pdfList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  <span class="hljs-keyword">return</span> z.request(<span class="hljs-string">&apos;http://example.com/pdfs.json&apos;</span>)
+  <span class="hljs-keyword">return</span> z
+    .request(<span class="hljs-string">&apos;http://example.com/pdfs.json&apos;</span>)
     .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> z.JSON.parse(res.content))
     .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
       <span class="hljs-keyword">return</span> results.map(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
@@ -3178,9 +3239,8 @@ You can run these tests in a CI tool like <a href="https://travis-ci.com/">Travi
 <span class="hljs-keyword">const</span> appTester = zapier.createAppTester(App);
 
 describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
-
   describe(<span class="hljs-string">&apos;new recipe trigger&apos;</span>, () =&gt; {
-    it(<span class="hljs-string">&apos;should load recipes&apos;</span>, (done) =&gt; {
+    it(<span class="hljs-string">&apos;should load recipes&apos;</span>, done =&gt; {
       <span class="hljs-comment">// This is what Zapier will send to your app as input.</span>
       <span class="hljs-comment">// It contains trigger options the user choice in their zap.</span>
       <span class="hljs-keyword">const</span> bundle = {
@@ -3205,7 +3265,6 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
         .catch(done);
     });
   });
-
 });
 </code></pre>
     </div>

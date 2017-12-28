@@ -273,32 +273,23 @@ const App = {
   platformVersion: require('zapier-platform-core').version,
 
   // see "Authentication" section below
-  authentication: {
-  },
+  authentication: {},
 
   // see "Dehydration" section below
-  hydrators: {
-  },
+  hydrators: {},
 
   // see "Making HTTP Requests" section below
-  requestTemplate: {
-  },
-  beforeRequest: [
-  ],
-  afterResponse: [
-  ],
+  requestTemplate: {},
+  beforeRequest: [],
+  afterResponse: [],
 
   // See "Resources" section below
-  resources: {
-  },
+  resources: {},
 
   // See "Triggers/Searches/Creates" section below
-  triggers: {
-  },
-  searches: {
-  },
-  creates: {
-  }
+  triggers: {},
+  searches: {},
+  creates: {}
 };
 
 module.exports = App;
@@ -352,6 +343,8 @@ If you'd like to manage your **Version**, use these commands:
 * `zapier migrate [1.0.0] [1.0.1] [100%]` - move users between versions, regardless of deployment status
 * `zapier deprecate [1.0.0] [YYYY-MM-DD]` - mark a version as deprecated, but let users continue to use it (we'll email them)
 * `zapier env 1.0.0 [KEY] [value]` - set an environment variable to some value
+
+> Note: To see the changes that were just pushed reflected in the browser, you have to manually refresh the browser each time you push.
 
 
 ### Private App Version (default)
@@ -434,7 +427,7 @@ const authentication = {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication: authentication
   // ...
 };
 
@@ -451,11 +444,22 @@ const authentication = {
   type: 'custom',
   // "test" could also be a function
   test: {
-    url: 'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json'
+    url:
+      'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json'
   },
   fields: [
-    {key: 'subdomain', type: 'string', required: true, helpText: 'Found in your browsers address bar after logging in.'},
-    {key: 'api_key', type: 'string', required: true, helpText: 'Found on your settings page.'}
+    {
+      key: 'subdomain',
+      type: 'string',
+      required: true,
+      helpText: 'Found in your browsers address bar after logging in.'
+    },
+    {
+      key: 'api_key',
+      type: 'string',
+      required: true,
+      helpText: 'Found on your settings page.'
+    }
   ]
 };
 
@@ -469,9 +473,7 @@ const addApiKeyToHeader = (request, z, bundle) => {
 const App = {
   // ...
   authentication: authentication,
-  beforeRequest: [
-    addApiKeyToHeader,
-  ],
+  beforeRequest: [addApiKeyToHeader]
   // ...
 };
 
@@ -488,7 +490,8 @@ const authentication = {
   test: {
     url: 'https://example.com/api/accounts/me.json'
   },
-  connectionLabel: (z, bundle) => { // Can also be a string, check basic auth above for an example
+  connectionLabel: (z, bundle) => {
+    // Can also be a string, check basic auth above for an example
     // bundle.inputData has whatever comes back from the .test function/request, assuming it returns a JSON object
     return bundle.inputData.email;
   }
@@ -497,7 +500,7 @@ const authentication = {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication: authentication
   // ...
 };
 
@@ -516,16 +519,16 @@ const getSessionKey = (z, bundle) => {
     url: 'https://example.com/api/accounts/login.json',
     body: {
       username: bundle.inputData.username,
-      password: bundle.inputData.password,
+      password: bundle.inputData.password
     }
   });
 
-  return promise.then((response) => {
+  return promise.then(response => {
     if (response.status === 401) {
       throw new Error('The username/password you supplied is invalid');
     }
     return {
-      sessionKey: JSON.parse(response.content).sessionKey
+      sessionKey: z.JSON.parse(response.content).sessionKey
     };
   });
 };
@@ -537,8 +540,18 @@ const authentication = {
     url: 'https://example.com/api/accounts/me.json'
   },
   fields: [
-    {key: 'username', type: 'string', required: true, helpText: 'Your login username.'},
-    {key: 'password', type: 'string', required: true, helpText: 'Your login password.'}
+    {
+      key: 'username',
+      type: 'string',
+      required: true,
+      helpText: 'Your login username.'
+    },
+    {
+      key: 'password',
+      type: 'string',
+      required: true,
+      helpText: 'Your login password.'
+    }
     // For Session Auth we store `sessionKey` automatically in `bundle.authData`
     // for future use. If you need to save/use something that the user shouldn't
     // need to type/choose, add a "computed" field, like:
@@ -570,12 +583,8 @@ const sessionRefreshIf401 = (response, z, bundle) => {
 const App = {
   // ...
   authentication: authentication,
-  beforeRequest: [
-    includeSessionKeyHeader
-  ],
-  afterResponse: [
-    sessionRefreshIf401
-  ],
+  beforeRequest: [includeSessionKeyHeader],
+  afterResponse: [sessionRefreshIf401]
   // ...
 };
 
@@ -614,14 +623,16 @@ Your auth definition would look something like this:
 const authentication = {
   type: 'oauth2',
   test: {
-    url: 'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json'
+    url:
+      'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json'
   },
   // you can provide additional fields for inclusion in authData
   oauth2Config: {
     // "authorizeUrl" could also be a function returning a string url
     authorizeUrl: {
       method: 'GET',
-      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize',
+      url:
+        'https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize',
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
         state: '{{bundle.inputData.state}}',
@@ -633,7 +644,8 @@ const authentication = {
     // "getAccessToken" could also be a function returning an object
     getAccessToken: {
       method: 'POST',
-      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token',
+      url:
+        'https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token',
       body: {
         code: '{{bundle.inputData.code}}',
         client_id: '{{process.env.CLIENT_ID}}',
@@ -649,7 +661,7 @@ const authentication = {
   },
   // If you need any fields upfront, put them here
   fields: [
-    {key: 'subdomain', type: 'string', required: true, default: 'app'}
+    { key: 'subdomain', type: 'string', required: true, default: 'app' }
     // For OAuth we store `access_token` and `refresh_token` automatically
     // in `bundle.authData` for future use. If you need to save/use something
     // that the user shouldn't need to type/choose, add a "computed" field, like:
@@ -668,9 +680,7 @@ const addBearerHeader = (request, z, bundle) => {
 const App = {
   // ...
   authentication: authentication,
-  beforeRequest: [
-    addBearerHeader,
-  ]
+  beforeRequest: [addBearerHeader]
   // ...
 };
 
@@ -799,7 +809,7 @@ The definition for each of these follows the same structure. Here is an example 
 
 ```javascript
 const recipeListRequest = {
-  url: 'http://example.com/recipes',
+  url: 'http://example.com/recipes'
 };
 
 const App = {
@@ -864,8 +874,17 @@ const App = {
       operation: {
         // an array of objects is the simplest way
         inputFields: [
-          {key: 'title', required: true, label: 'Title of Recipe', helpText: 'Name your recipe!'},
-          {key: 'style', required: true, choices: {mexican: 'Mexican', italian: 'Italian'}}
+          {
+            key: 'title',
+            required: true,
+            label: 'Title of Recipe',
+            helpText: 'Name your recipe!'
+          },
+          {
+            key: 'style',
+            required: true,
+            choices: { mexican: 'Mexican', italian: 'Italian' }
+          }
         ],
         perform: () => {}
       }
@@ -896,8 +915,17 @@ const App = {
       operation: {
         // an array of objects is the simplest way
         inputFields: [
-          {key: 'title', required: true, label: 'Title of Recipe', helpText: 'Name your recipe!'},
-          {key: 'style', required: true, choices: {mexican: 'Mexican', italian: 'Italian'}},
+          {
+            key: 'title',
+            required: true,
+            label: 'Title of Recipe',
+            helpText: 'Name your recipe!'
+          },
+          {
+            key: 'style',
+            required: true,
+            choices: { mexican: 'Mexican', italian: 'Italian' }
+          },
           recipeFields // provide a function inline - we'll merge the results!
         ],
         perform: () => {}
@@ -920,15 +948,22 @@ module.exports = {
   },
   operation: {
     inputFields: [
-      {key: 'type', required: true, choices: {1: 'cake', 2: 'ice cream', 3: 'cookie'}, altersDynamicFields: true},
+      {
+        key: 'type',
+        required: true,
+        choices: { 1: 'cake', 2: 'ice cream', 3: 'cookie' },
+        altersDynamicFields: true
+      },
       function(z, bundle) {
         if (bundle.inputData.type === '2') {
-          return [{key: 'with_sprinkles', type: 'boolean'}];
+          return [{ key: 'with_sprinkles', type: 'boolean' }];
         }
         return [];
       }
     ],
-    perform: function (z, bundle) {/* ... */}
+    perform: function(z, bundle) {
+      /* ... */
+    }
   }
 };
 
@@ -952,7 +987,9 @@ const App = {
       list: {
         //...
         operation: {
-          perform: () => { return [{id: 123, name: 'Project 1'}]; } // called for project_id dropdown
+          perform: () => {
+            return [{ id: 123, name: 'Project 1' }];
+          } // called for project_id dropdown
         }
       }
     },
@@ -963,9 +1000,19 @@ const App = {
         //...
         operation: {
           inputFields: [
-            {key: 'project_id', required: true, label: 'Project', dynamic: 'projectList.id.name'}, // calls project.list
-            {key: 'title', required: true, label: 'Title', helpText: 'What is the name of the issue?'},
-          ],
+            {
+              key: 'project_id',
+              required: true,
+              label: 'Project',
+              dynamic: 'projectList.id.name'
+            }, // calls project.list
+            {
+              key: 'title',
+              required: true,
+              label: 'Title',
+              helpText: 'What is the name of the issue?'
+            }
+          ]
         }
       }
     }
@@ -994,7 +1041,9 @@ const App = {
       search: {
         //...
         operation: {
-          perform: () => { return [{id: 123, name: 'Project 1'}]; } // called for project_id
+          perform: () => {
+            return [{ id: 123, name: 'Project 1' }];
+          } // called for project_id
         }
       }
     },
@@ -1005,9 +1054,20 @@ const App = {
         //...
         operation: {
           inputFields: [
-            {key: 'project_id', required: true, label: 'Project', dynamic: 'projectList.id.name', search: 'projectSearch.id'}, // calls project.search (requires a trigger in the "dynamic" property)
-            {key: 'title', required: true, label: 'Title', helpText: 'What is the name of the issue?'},
-          ],
+            {
+              key: 'project_id',
+              required: true,
+              label: 'Project',
+              dynamic: 'projectList.id.name',
+              search: 'projectSearch.id'
+            }, // calls project.search (requires a trigger in the "dynamic" property)
+            {
+              key: 'title',
+              required: true,
+              label: 'Title',
+              helpText: 'What is the name of the issue?'
+            }
+          ]
         }
       }
     }
@@ -1230,7 +1290,10 @@ const listExample = (z, bundle) => {
       'my-header': process.env.MY_SECRET_VALUE
     }
   };
-  const response = z.request('http://example.com/api/v2/recipes.json', httpOptions);
+  const response = z.request(
+    'http://example.com/api/v2/recipes.json',
+    httpOptions
+  );
   return response.then(res => res.json);
 };
 
@@ -1320,13 +1383,14 @@ const listExample = (z, bundle) => {
     }
   };
 
-  return z.request('http://example.com/api/v2/recipes.json', customHttpOptions)
+  return z
+    .request('http://example.com/api/v2/recipes.json', customHttpOptions)
     .then(response => {
       if (response.status >= 300) {
         throw new Error(`Unexpected status code ${response.status}`);
       }
 
-      const recipes = JSON.parse(response.content);
+      const recipes = z.JSON.parse(response.content);
       // do any custom processing of recipes here...
 
       return recipes;
@@ -1372,7 +1436,8 @@ const App = {
             body: JSON.stringify(recipe)
           };
 
-          return z.request('http://example.com/api/v2/recipes.json', options)
+          return z
+            .request('http://example.com/api/v2/recipes.json', options)
             .then(response => {
               if (response.status !== 201) {
                 throw new Error(`Unexpected status code ${response.status}`);
@@ -1397,12 +1462,12 @@ If you need to process all HTTP requests in a certain way, you may be able to us
 Try putting them in your app definition:
 
 ```javascript
-const addHeader = (request/*, z*/) => {
+const addHeader = (request /*, z*/) => {
   request.headers['my-header'] = 'from zapier';
   return request;
 };
 
-const mustBe200 = (response/*, z*/) => {
+const mustBe200 = (response /*, z*/) => {
   if (response.status !== 200) {
     throw new Error(`Unexpected status code ${response.status}`);
   }
@@ -1416,13 +1481,8 @@ const autoParseJson = (response, z) => {
 
 const App = {
   // ...
-  beforeRequest: [
-    addHeader,
-  ],
-  afterResponse: [
-    mustBe200,
-    autoParseJson,
-  ]
+  beforeRequest: [addHeader],
+  afterResponse: [mustBe200, autoParseJson]
   // ...
 };
 
@@ -1531,12 +1591,12 @@ Here is an example that pulls in extra data for a movie:
 ```javascript
 const getExtraDataFunction = (z, bundle) => {
   const url = `http://example.com/movies/${bundle.inputData.id}.json`;
-  return z.request(url)
-    .then(res => z.JSON.parse(res.content));
+  return z.request(url).then(res => z.JSON.parse(res.content));
 };
 
 const movieList = (z, bundle) => {
-  return z.request('http://example.com/movies.json')
+  return z
+    .request('http://example.com/movies.json')
     .then(res => z.JSON.parse(res.content))
     .then(results => {
       return results.map(result => {
@@ -1621,7 +1681,8 @@ const stashPDFfunction = (z, bundle) => {
 };
 
 const pdfList = (z, bundle) => {
-  return z.request('http://example.com/pdfs.json')
+  return z
+    .request('http://example.com/pdfs.json')
     .then(res => z.JSON.parse(res.content))
     .then(results => {
       return results.map(result => {
@@ -1805,9 +1866,8 @@ const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
-
   describe('new recipe trigger', () => {
-    it('should load recipes', (done) => {
+    it('should load recipes', done => {
       // This is what Zapier will send to your app as input.
       // It contains trigger options the user choice in their zap.
       const bundle = {
@@ -1832,7 +1892,6 @@ describe('triggers', () => {
         .catch(done);
     });
   });
-
 });
 
 ```

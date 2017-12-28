@@ -229,6 +229,8 @@ If you'd like to manage your **Version**, use these commands:
 * `zapier deprecate [1.0.0] [YYYY-MM-DD]` - mark a version as deprecated, but let users continue to use it (we'll email them)
 * `zapier env 1.0.0 [KEY] [value]` - set an environment variable to some value
 
+> Note: To see the changes that were just pushed reflected in the browser, you have to manually refresh the browser each time you push.
+
 
 ### Private App Version (default)
 
