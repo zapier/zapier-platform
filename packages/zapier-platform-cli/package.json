@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-cli",
-  "version": "4.2.3",
+  "version": "4.3.0",
   "description": "The CLI for apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-cli",
   "homepage": "https://zapier.com/",
@@ -13,24 +13,18 @@
   "scripts": {
     "docs": "npm run build && node lib/bin/docs.js",
     "preversion": "git pull && npm test",
-    "version":
-      "npm run docs && npm run gen-completions && git add docs/* goodies/* README.md",
+    "version": "npm run docs && npm run gen-completions && git add docs/* goodies/* README.md",
     "postversion": "git push && git push --tags",
     "prepublish": "npm run build",
-    "build":
-      "rm -rf lib && node_modules/babel-cli/bin/babel.js src -d lib --copy-files",
-    "watch":
-      "rm -rf lib && node_modules/babel-cli/bin/babel.js --watch src -d lib --copy-files",
+    "build": "rm -rf lib && node_modules/babel-cli/bin/babel.js src -d lib --copy-files",
+    "watch": "rm -rf lib && node_modules/babel-cli/bin/babel.js --watch src -d lib --copy-files",
     "lint": "node_modules/.bin/eslint zapier.js src",
-    "lint-snippets":
-      "node_modules/.bin/eslint snippets --rule 'no-unused-vars: 0'",
-    "test":
-      "npm run build && node_modules/mocha/bin/mocha -t 30000 --recursive lib/tests && npm run lint && npm run lint-snippets",
+    "lint-snippets": "node_modules/.bin/eslint snippets --rule 'no-unused-vars: 0'",
+    "test": "npm run build && node_modules/mocha/bin/mocha -t 30000 --recursive lib/tests && npm run lint && npm run lint-snippets",
     "zapier": "zapier.js",
     "validate-templates": "./scripts/validate-app-templates.js",
     "set-template-versions": "./scripts/set-app-template-versions.js",
-    "gen-completions":
-      "./scripts/gen-zsh-completions.js > ./goodies/zsh/_zapier && ./scripts/gen-bash-completions.js > ./goodies/bash/_zapier",
+    "gen-completions": "./scripts/gen-zsh-completions.js > ./goodies/zsh/_zapier && ./scripts/gen-bash-completions.js > ./goodies/bash/_zapier",
     "test-convert": "./scripts/test-convert.js",
     "precommit": "lint-staged"
   },
@@ -90,6 +84,9 @@
     "singleQuote": true
   },
   "lint-staged": {
-    "*.{js,json}": ["prettier --write", "git add"]
+    "*.{js,json}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
