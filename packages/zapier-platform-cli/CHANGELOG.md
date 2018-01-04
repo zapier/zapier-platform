@@ -1,3 +1,7 @@
+## 4.3.1
+
+* (Fix) [Broken patching on http.request.](https://github.com/zapier/zapier-platform-core/pull/61)
+
 ## 4.3.0
 
 * (New) `zapier convert` now supports [custom auth mapping](https://github.com/zapier/zapier-platform-cli/pull/200), [searchOrCreates](https://github.com/zapier/zapier-platform-cli/pull/207) and ["Send to Action Endpoint URL in JSON body" checkbox](https://github.com/zapier/zapier-platform-cli/pull/204).
