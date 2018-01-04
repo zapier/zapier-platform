@@ -24,6 +24,10 @@ const createHttpPatch = event => {
       let requestUrl;
       if (typeof options === 'string') {
         requestUrl = options;
+      } else if (typeof options.url === 'string') {
+        // XXX: Somehow options.url is available for some requests although http.request doesn't really accept it.
+        // Without this else-if, many HTTP requests don't work. Should take a deeper look at this weirdness.
+        requestUrl = options.url;
       } else {
         requestUrl =
           options.href ||
