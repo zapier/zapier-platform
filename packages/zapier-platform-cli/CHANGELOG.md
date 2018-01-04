@@ -1,3 +1,16 @@
+## 4.3.0
+
+* (New) `zapier convert` now supports [custom auth mapping](https://github.com/zapier/zapier-platform-cli/pull/200), [searchOrCreates](https://github.com/zapier/zapier-platform-cli/pull/207) and ["Send to Action Endpoint URL in JSON body" checkbox](https://github.com/zapier/zapier-platform-cli/pull/204).
+* (New) [`zapier scaffold` now also creates a test.](https://github.com/zapier/zapier-platform-cli/pull/212)
+* (New) [Allow ordering static dropdowns.](https://github.com/zapier/zapier-platform-schema/pull/30)
+* (Fix) [Properly replace variables in URLs in `zapier convert` generated code.](https://github.com/zapier/zapier-platform-cli/pull/208)
+* (Fix) [Fix TypeError in `http.request` patch.](https://github.com/zapier/zapier-platform-core/pull/59)
+* (Doc) [Clarify pushing doesn't reload browser automatically.](https://github.com/zapier/zapier-platform-cli/pull/218)
+* [Use working endpoints for scaffolds.](https://github.com/zapier/zapier-platform-cli/pull/215)
+* [Notify for update less often.](https://github.com/zapier/zapier-platform-cli/pull/210)
+* [Introduce Prettier into development process.](https://github.com/zapier/zapier-platform-cli/pull/209)
+* [Ensure all template code use z.JSON.parse.](https://github.com/zapier/zapier-platform-cli/pull/216)
+
 ## 4.2.3
 
 * The first build made by Travis CI!
