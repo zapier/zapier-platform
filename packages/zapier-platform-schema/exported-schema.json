@@ -1,21 +1,19 @@
 {
-  "version": "4.2.3",
+  "version": "4.3.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
       "description": "Represents a full app.",
       "type": "object",
-      "required": [
-        "version",
-        "platformVersion"
-      ],
+      "required": ["version", "platformVersion"],
       "properties": {
         "version": {
           "description": "A version identifier for your code.",
           "$ref": "/VersionSchema"
         },
         "platformVersion": {
-          "description": "A version identifier for the Zapier execution environment.",
+          "description":
+            "A version identifier for the Zapier execution environment.",
           "$ref": "/VersionSchema"
         },
         "authentication": {
@@ -23,70 +21,133 @@
           "$ref": "/AuthenticationSchema"
         },
         "requestTemplate": {
-          "description": "Define a request mixin, great for setting custom headers, content-types, etc.",
+          "description":
+            "Define a request mixin, great for setting custom headers, content-types, etc.",
           "$ref": "/RequestSchema"
         },
         "beforeRequest": {
-          "description": "Before an HTTP request is sent via our `z.request()` client, you can modify it.",
+          "description":
+            "Before an HTTP request is sent via our `z.request()` client, you can modify it.",
           "$ref": "/MiddlewaresSchema"
         },
         "afterResponse": {
-          "description": "After an HTTP response is recieved via our `z.request()` client, you can modify it.",
+          "description":
+            "After an HTTP response is recieved via our `z.request()` client, you can modify it.",
           "$ref": "/MiddlewaresSchema"
         },
         "hydrators": {
-          "description": "An optional bank of named functions that you can use in `z.hydrate('someName')` to lazily load data.",
+          "description":
+            "An optional bank of named functions that you can use in `z.hydrate('someName')` to lazily load data.",
           "$ref": "/HydratorsSchema"
         },
         "resources": {
-          "description": "All the resources for your app. Zapier will take these and generate the relevent triggers/searches/creates automatically.",
+          "description":
+            "All the resources for your app. Zapier will take these and generate the relevent triggers/searches/creates automatically.",
           "$ref": "/ResourcesSchema"
         },
         "triggers": {
-          "description": "All the triggers for your app. You can add your own here, or Zapier will automatically register any from the list/hook methods on your resources.",
+          "description":
+            "All the triggers for your app. You can add your own here, or Zapier will automatically register any from the list/hook methods on your resources.",
           "$ref": "/TriggersSchema"
         },
         "searches": {
-          "description": "All the searches for your app. You can add your own here, or Zapier will automatically register any from the search method on your resources.",
+          "description":
+            "All the searches for your app. You can add your own here, or Zapier will automatically register any from the search method on your resources.",
           "$ref": "/SearchesSchema"
         },
         "creates": {
-          "description": "All the creates for your app. You can add your own here, or Zapier will automatically register any from the create method on your resources.",
+          "description":
+            "All the creates for your app. You can add your own here, or Zapier will automatically register any from the create method on your resources.",
           "$ref": "/CreatesSchema"
         },
         "searchOrCreates": {
-          "description": "All the search-or-create combos for your app. You can create your own here, or Zapier will automatically register any from resources that define a search, a create, and a get (or define a searchOrCreate directly). Register non-resource search-or-creates here as well.",
+          "description":
+            "All the search-or-create combos for your app. You can create your own here, or Zapier will automatically register any from resources that define a search, a create, and a get (or define a searchOrCreate directly). Register non-resource search-or-creates here as well.",
           "$ref": "/SearchOrCreatesSchema"
         }
       },
       "additionalProperties": false
     },
-    "RefResourceSchema": {
-      "id": "/RefResourceSchema",
-      "description": "Reference a resource by key and the data it returns. In the format of: `{resource_key}.{foreign_key}(.{human_label_key})`.",
-      "type": "string",
-      "pattern": "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)?(\\.[a-zA-Z0-9_]+)?$"
-    },
-    "FieldSchema": {
-      "id": "/FieldSchema",
-      "description": "Defines a field an app either needs as input, or gives as output.",
+    "FieldChoiceWithLabelSchema": {
+      "id": "/FieldChoiceWithLabelSchema",
+      "description":
+        "An object describing a labeled choice in a static dropdown. Useful if the value a user picks isn't exactly what the zap uses. For instance, when they click on a nickname, but the zap uses the user's full name ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).",
       "type": "object",
-      "required": [
-        "key"
-      ],
+      "required": ["value", "sample", "label"],
       "properties": {
-        "key": {
-          "description": "A unique machine readable key for this value (IE: \"fname\").",
+        "value": {
+          "description":
+            "The actual value that is sent into the Zap. Should match sample exactly.",
+          "type": "string",
+          "minLength": 1
+        },
+        "sample": {
+          "description":
+            "Displayed as light grey text in the editor. It's important that the value match the sample. Otherwise, the actual value won't match what the user picked, which is confusing.",
           "type": "string",
           "minLength": 1
         },
         "label": {
-          "description": "A human readable label for this value (IE: \"First Name\").",
+          "description": "A human readable label for this value.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "RefResourceSchema": {
+      "id": "/RefResourceSchema",
+      "description":
+        "Reference a resource by key and the data it returns. In the format of: `{resource_key}.{foreign_key}(.{human_label_key})`.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)?(\\.[a-zA-Z0-9_]+)?$"
+    },
+    "FieldChoicesSchema": {
+      "id": "/FieldChoicesSchema",
+      "description":
+        "A static dropdown of options. Which you use depends on your order and label requirements:\n\nNeed a Label? | Does Order Matter? | Type to Use\n---|---|---\nYes | No | Object of value -> label\nNo | Yes | Array of Strings\nYes | Yes | Array of [FieldChoiceWithLabel](#fieldchoicewithlabelschema)",
+      "oneOf": [
+        {
+          "type": "object",
+          "minProperties": 1
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "/FieldChoiceWithLabelSchema"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "FieldSchema": {
+      "id": "/FieldSchema",
+      "description":
+        "Defines a field an app either needs as input, or gives as output.",
+      "type": "object",
+      "required": ["key"],
+      "properties": {
+        "key": {
+          "description":
+            "A unique machine readable key for this value (IE: \"fname\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "description":
+            "A human readable label for this value (IE: \"First Name\").",
           "type": "string",
           "minLength": 1
         },
         "helpText": {
-          "description": "A human readable description of this value (IE: \"The first part of a full name.\").",
+          "description":
+            "A human readable description of this value (IE: \"The first part of a full name.\").",
           "type": "string",
           "minLength": 10,
           "maxLength": 1000
@@ -115,44 +176,51 @@
           "minLength": 1
         },
         "default": {
-          "description": "A default value that is saved the first time a Zap is created.",
+          "description":
+            "A default value that is saved the first time a Zap is created.",
           "type": "string",
           "minLength": 1
         },
         "dynamic": {
-          "description": "A reference to a trigger that will power a dynamic dropdown.",
+          "description":
+            "A reference to a trigger that will power a dynamic dropdown.",
           "$ref": "/RefResourceSchema"
         },
         "search": {
-          "description": "A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.",
+          "description":
+            "A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.",
           "$ref": "/RefResourceSchema"
         },
         "choices": {
-          "description": "An object of machine keys and human values to populate a static dropdown.",
-          "type": "object",
-          "minProperties": 1
+          "description":
+            "An object of machine keys and human values to populate a static dropdown.",
+          "$ref": "/FieldChoicesSchema"
         },
         "list": {
           "description": "Can a user provide multiples of this field?",
           "type": "boolean"
         },
         "children": {
-          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items."
+          "description":
+            "An array of child fields that define the structure of a sub-object for this field. Usually used for line items."
         },
         "dict": {
           "description": "Is this field a key/value input?",
           "type": "boolean"
         },
         "computed": {
-          "description": "Is this field automatically populated (and hidden from the user)?",
+          "description":
+            "Is this field automatically populated (and hidden from the user)?",
           "type": "boolean"
         },
         "altersDynamicFields": {
-          "description": "Does the value of this field affect the definitions of other fields in the set?",
+          "description":
+            "Does the value of this field affect the definitions of other fields in the set?",
           "type": "boolean"
         },
         "inputFormat": {
-          "description": "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
+          "description":
+            "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
           "type": "string",
           "pattern": "^.*{{input}}.*$"
         }
@@ -165,7 +233,8 @@
       "type": "object",
       "patternProperties": {
         "[^\\s]+": {
-          "description": "Any key may exist in this flat object as long as its values are simple.",
+          "description":
+            "Any key may exist in this flat object as long as its values are simple.",
           "anyOf": [
             {
               "type": "null"
@@ -189,29 +258,31 @@
     },
     "FunctionSchema": {
       "id": "/FunctionSchema",
-      "description": "Internal pointer to a function from the original source. Encodes arity and if `arguments` is used in the body. Note - just write normal functions and the system will encode the pointers for you.",
+      "description":
+        "Internal pointer to a function from the original source. Encodes arity and if `arguments` is used in the body. Note - just write normal functions and the system will encode the pointers for you.",
       "type": "string",
       "pattern": "^\\$func\\$\\d+\\$[tf]\\$$"
     },
     "RedirectRequestSchema": {
       "id": "/RedirectRequestSchema",
-      "description": "A representation of a HTTP redirect - you can use the `{{syntax}}` to inject authentication, field or global variables.",
+      "description":
+        "A representation of a HTTP redirect - you can use the `{{syntax}}` to inject authentication, field or global variables.",
       "type": "object",
       "properties": {
         "method": {
           "description": "The HTTP method for the request.",
           "type": "string",
           "default": "GET",
-          "enum": [
-            "GET"
-          ]
+          "enum": ["GET"]
         },
         "url": {
-          "description": "A URL for the request (we will parse the querystring and merge with params). Keys and values will not be re-encoded.",
+          "description":
+            "A URL for the request (we will parse the querystring and merge with params). Keys and values will not be re-encoded.",
           "type": "string"
         },
         "params": {
-          "description": "A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.",
+          "description":
+            "A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.",
           "$ref": "/FlatObjectSchema"
         }
       },
@@ -219,28 +290,24 @@
     },
     "RequestSchema": {
       "id": "/RequestSchema",
-      "description": "A representation of a HTTP request - you can use the `{{syntax}}` to inject authentication, field or global variables.",
+      "description":
+        "A representation of a HTTP request - you can use the `{{syntax}}` to inject authentication, field or global variables.",
       "type": "object",
       "properties": {
         "method": {
           "description": "The HTTP method for the request.",
           "type": "string",
           "default": "GET",
-          "enum": [
-            "GET",
-            "PUT",
-            "POST",
-            "PATCH",
-            "DELETE",
-            "HEAD"
-          ]
+          "enum": ["GET", "PUT", "POST", "PATCH", "DELETE", "HEAD"]
         },
         "url": {
-          "description": "A URL for the request (we will parse the querystring and merge with params). Keys and values will not be re-encoded.",
+          "description":
+            "A URL for the request (we will parse the querystring and merge with params). Keys and values will not be re-encoded.",
           "type": "string"
         },
         "body": {
-          "description": "Can be nothing, a raw string or JSON (object or array).",
+          "description":
+            "Can be nothing, a raw string or JSON (object or array).",
           "oneOf": [
             {
               "type": "null"
@@ -257,7 +324,8 @@
           ]
         },
         "params": {
-          "description": "A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.",
+          "description":
+            "A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.",
           "$ref": "/FlatObjectSchema"
         },
         "headers": {
@@ -265,7 +333,8 @@
           "$ref": "/FlatObjectSchema"
         },
         "auth": {
-          "description": "The username and password for Basic Auth. Like `['AzureDiamond', 'hunter2']`.",
+          "description":
+            "The username and password for Basic Auth. Like `['AzureDiamond', 'hunter2']`.",
           "type": "array",
           "items": {
             "type": "string",
@@ -286,21 +355,24 @@
     },
     "AuthenticationBasicConfigSchema": {
       "id": "/AuthenticationBasicConfigSchema",
-      "description": "Config for Basic Authentication. No extra properties are required to setup Basic Auth, so you can leave this empty if your app uses Basic Auth.",
+      "description":
+        "Config for Basic Authentication. No extra properties are required to setup Basic Auth, so you can leave this empty if your app uses Basic Auth.",
       "type": "object",
       "properties": {},
       "additionalProperties": false
     },
     "AuthenticationCustomConfigSchema": {
       "id": "/AuthenticationCustomConfigSchema",
-      "description": "Config for custom authentication (like API keys). No extra properties are required to setup this auth type, so you can leave this empty if your app uses a custom auth method.",
+      "description":
+        "Config for custom authentication (like API keys). No extra properties are required to setup this auth type, so you can leave this empty if your app uses a custom auth method.",
       "type": "object",
       "properties": {},
       "additionalProperties": false
     },
     "AuthenticationDigestConfigSchema": {
       "id": "/AuthenticationDigestConfigSchema",
-      "description": "Config for Digest Authentication. No extra properties are required to setup Digest Auth, so you can leave this empty if your app uses Digets Auth.",
+      "description":
+        "Config for Digest Authentication. No extra properties are required to setup Digest Auth, so you can leave this empty if your app uses Digets Auth.",
       "type": "object",
       "properties": {},
       "additionalProperties": false
@@ -309,13 +381,11 @@
       "id": "/AuthenticationOAuth2ConfigSchema",
       "description": "Config for OAuth2 authentication.",
       "type": "object",
-      "required": [
-        "authorizeUrl",
-        "getAccessToken"
-      ],
+      "required": ["authorizeUrl", "getAccessToken"],
       "properties": {
         "authorizeUrl": {
-          "description": "Define where Zapier will redirect the user to authorize our app. Note: we append the redirect URL and state parameters to return value of this function.",
+          "description":
+            "Define where Zapier will redirect the user to authorize our app. Note: we append the redirect URL and state parameters to return value of this function.",
           "oneOf": [
             {
               "$ref": "/RedirectRequestSchema"
@@ -326,7 +396,8 @@
           ]
         },
         "getAccessToken": {
-          "description": "Define how Zapier fetches an access token from the API",
+          "description":
+            "Define how Zapier fetches an access token from the API",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -337,7 +408,8 @@
           ]
         },
         "refreshAccessToken": {
-          "description": "Define how Zapier will refresh the access token from the API",
+          "description":
+            "Define how Zapier will refresh the access token from the API",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -352,7 +424,8 @@
           "type": "string"
         },
         "autoRefresh": {
-          "description": "Should Zapier include a pre-built afterResponse middleware that invokes `refreshAccessToken` when we receive a 401 response?",
+          "description":
+            "Should Zapier include a pre-built afterResponse middleware that invokes `refreshAccessToken` when we receive a 401 response?",
           "type": "boolean"
         }
       },
@@ -362,12 +435,11 @@
       "id": "/AuthenticationSessionConfigSchema",
       "description": "Config for session authentication.",
       "type": "object",
-      "required": [
-        "perform"
-      ],
+      "required": ["perform"],
       "properties": {
         "perform": {
-          "description": "Define how Zapier fetches the additional authData needed to make API calls.",
+          "description":
+            "Define how Zapier fetches the additional authData needed to make API calls.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -397,12 +469,14 @@
     },
     "DynamicFieldsSchema": {
       "id": "/DynamicFieldsSchema",
-      "description": "Like [/FieldsSchema](#fieldsschema) but you can provide functions to create dynamic or custom fields.",
+      "description":
+        "Like [/FieldsSchema](#fieldsschema) but you can provide functions to create dynamic or custom fields.",
       "$ref": "/FieldOrFunctionSchema"
     },
     "ResultsSchema": {
       "id": "/ResultsSchema",
-      "description": "An array of objects suitable for returning in perform calls.",
+      "description":
+        "An array of objects suitable for returning in perform calls.",
       "type": "array",
       "items": {
         "type": "object",
@@ -411,33 +485,35 @@
     },
     "BasicDisplaySchema": {
       "id": "/BasicDisplaySchema",
-      "description": "Represents user information for a trigger, search, or create.",
+      "description":
+        "Represents user information for a trigger, search, or create.",
       "type": "object",
-      "required": [
-        "label",
-        "description"
-      ],
+      "required": ["label", "description"],
       "properties": {
         "label": {
-          "description": "A short label like \"New Record\" or \"Create Record in Project\".",
+          "description":
+            "A short label like \"New Record\" or \"Create Record in Project\".",
           "type": "string",
           "minLength": 2,
           "maxLength": 64
         },
         "description": {
-          "description": "A description of what this trigger, search, or create does.",
+          "description":
+            "A description of what this trigger, search, or create does.",
           "type": "string",
           "minLength": 12,
           "maxLength": 1000
         },
         "directions": {
-          "description": "A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application.",
+          "description":
+            "A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application.",
           "type": "string",
           "minLength": 12,
           "maxLength": 1000
         },
         "important": {
-          "description": "Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.",
+          "description":
+            "Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.",
           "type": "boolean"
         },
         "hidden": {
@@ -445,7 +521,8 @@
           "type": "boolean"
         },
         "order": {
-          "description": "[**DEPRECATED**] Should this operation precede or follow other operations when displayed in the UI?",
+          "description":
+            "[**DEPRECATED**] Should this operation precede or follow other operations when displayed in the UI?",
           "type": "number"
         }
       },
@@ -453,18 +530,19 @@
     },
     "BasicOperationSchema": {
       "id": "/BasicOperationSchema",
-      "description": "Represents the fundamental mechanics of triggers, searches, or creates.",
+      "description":
+        "Represents the fundamental mechanics of triggers, searches, or creates.",
       "type": "object",
-      "required": [
-        "perform"
-      ],
+      "required": ["perform"],
       "properties": {
         "resource": {
-          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "description":
+            "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/RefResourceSchema"
         },
         "perform": {
-          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "description":
+            "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -475,15 +553,18 @@
           ]
         },
         "inputFields": {
-          "description": "What should the form a user sees and configures look like?",
+          "description":
+            "What should the form a user sees and configures look like?",
           "$ref": "/DynamicFieldsSchema"
         },
         "outputFields": {
-          "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
+          "description":
+            "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
           "$ref": "/DynamicFieldsSchema"
         },
         "sample": {
-          "description": "What does a sample of data look like? Will use resource sample if missing.",
+          "description":
+            "What does a sample of data look like? Will use resource sample if missing.",
           "type": "object",
           "minProperties": 1
         }
@@ -492,30 +573,31 @@
     },
     "BasicHookOperationSchema": {
       "id": "/BasicHookOperationSchema",
-      "description": "Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. Defers to list for fields.",
+      "description":
+        "Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. Defers to list for fields.",
       "type": "object",
-      "required": [
-        "perform"
-      ],
+      "required": ["perform"],
       "properties": {
         "type": {
-          "description": "Clarify how this operation works (polling == pull or hook == push).",
+          "description":
+            "Clarify how this operation works (polling == pull or hook == push).",
           "type": "string",
           "default": "hook",
-          "enum": [
-            "hook"
-          ]
+          "enum": ["hook"]
         },
         "resource": {
-          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "description":
+            "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/RefResourceSchema"
         },
         "perform": {
-          "description": "A function that processes the inbound webhook request.",
+          "description":
+            "A function that processes the inbound webhook request.",
           "$ref": "/FunctionSchema"
         },
         "performList": {
-          "description": "Can get \"live\" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods.",
+          "description":
+            "Can get \"live\" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -526,7 +608,8 @@
           ]
         },
         "performSubscribe": {
-          "description": "Takes a URL and any necessary data from the user and subscribes.",
+          "description":
+            "Takes a URL and any necessary data from the user and subscribes.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -537,7 +620,8 @@
           ]
         },
         "performUnsubscribe": {
-          "description": "Takes a URL and data from a previous subscribe call and unsubscribes.",
+          "description":
+            "Takes a URL and data from a previous subscribe call and unsubscribes.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -548,15 +632,18 @@
           ]
         },
         "inputFields": {
-          "description": "What should the form a user sees and configures look like?",
+          "description":
+            "What should the form a user sees and configures look like?",
           "$ref": "/DynamicFieldsSchema"
         },
         "outputFields": {
-          "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
+          "description":
+            "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
           "$ref": "/DynamicFieldsSchema"
         },
         "sample": {
-          "description": "What does a sample of data look like? Will use resource sample if missing.",
+          "description":
+            "What does a sample of data look like? Will use resource sample if missing.",
           "type": "object",
           "minProperties": 1
         }
@@ -567,24 +654,23 @@
       "id": "/BasicPollingOperationSchema",
       "description": "Represents the fundamental mechanics of a trigger.",
       "type": "object",
-      "required": [
-        "perform"
-      ],
+      "required": ["perform"],
       "properties": {
         "type": {
-          "description": "Clarify how this operation works (polling == pull or hook == push).",
+          "description":
+            "Clarify how this operation works (polling == pull or hook == push).",
           "type": "string",
           "default": "polling",
-          "enum": [
-            "polling"
-          ]
+          "enum": ["polling"]
         },
         "resource": {
-          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "description":
+            "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/RefResourceSchema"
         },
         "perform": {
-          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "description":
+            "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -599,15 +685,18 @@
           "type": "boolean"
         },
         "inputFields": {
-          "description": "What should the form a user sees and configures look like?",
+          "description":
+            "What should the form a user sees and configures look like?",
           "$ref": "/DynamicFieldsSchema"
         },
         "outputFields": {
-          "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
+          "description":
+            "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
           "$ref": "/DynamicFieldsSchema"
         },
         "sample": {
-          "description": "What does a sample of data look like? Will use resource sample if missing.",
+          "description":
+            "What does a sample of data look like? Will use resource sample if missing.",
           "type": "object",
           "minProperties": 1
         }
@@ -618,16 +707,16 @@
       "id": "/BasicActionOperationSchema",
       "description": "Represents the fundamental mechanics of a search/create.",
       "type": "object",
-      "required": [
-        "perform"
-      ],
+      "required": ["perform"],
       "properties": {
         "resource": {
-          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "description":
+            "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/RefResourceSchema"
         },
         "perform": {
-          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "description":
+            "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -638,7 +727,8 @@
           ]
         },
         "performGet": {
-          "description": "How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.",
+          "description":
+            "How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -649,15 +739,18 @@
           ]
         },
         "inputFields": {
-          "description": "What should the form a user sees and configures look like?",
+          "description":
+            "What should the form a user sees and configures look like?",
           "$ref": "/DynamicFieldsSchema"
         },
         "outputFields": {
-          "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
+          "description":
+            "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
           "$ref": "/DynamicFieldsSchema"
         },
         "sample": {
-          "description": "What does a sample of data look like? Will use resource sample if missing.",
+          "description":
+            "What does a sample of data look like? Will use resource sample if missing.",
           "type": "object",
           "minProperties": 1
         }
@@ -666,15 +759,14 @@
     },
     "ResourceMethodGetSchema": {
       "id": "/ResourceMethodGetSchema",
-      "description": "How will we get a single object given a unique identifier/id?",
+      "description":
+        "How will we get a single object given a unique identifier/id?",
       "type": "object",
-      "required": [
-        "display",
-        "operation"
-      ],
+      "required": ["display", "operation"],
       "properties": {
         "display": {
-          "description": "Define how this get method will be exposed in the UI.",
+          "description":
+            "Define how this get method will be exposed in the UI.",
           "$ref": "/BasicDisplaySchema"
         },
         "operation": {
@@ -686,15 +778,14 @@
     },
     "ResourceMethodHookSchema": {
       "id": "/ResourceMethodHookSchema",
-      "description": "How will we get notified of new objects? Will be turned into a trigger automatically.",
+      "description":
+        "How will we get notified of new objects? Will be turned into a trigger automatically.",
       "type": "object",
-      "required": [
-        "display",
-        "operation"
-      ],
+      "required": ["display", "operation"],
       "properties": {
         "display": {
-          "description": "Define how this hook/trigger method will be exposed in the UI.",
+          "description":
+            "Define how this hook/trigger method will be exposed in the UI.",
           "$ref": "/BasicDisplaySchema"
         },
         "operation": {
@@ -706,15 +797,14 @@
     },
     "ResourceMethodListSchema": {
       "id": "/ResourceMethodListSchema",
-      "description": "How will we get a list of new objects? Will be turned into a trigger automatically.",
+      "description":
+        "How will we get a list of new objects? Will be turned into a trigger automatically.",
       "type": "object",
-      "required": [
-        "display",
-        "operation"
-      ],
+      "required": ["display", "operation"],
       "properties": {
         "display": {
-          "description": "Define how this list/trigger method will be exposed in the UI.",
+          "description":
+            "Define how this list/trigger method will be exposed in the UI.",
           "$ref": "/BasicDisplaySchema"
         },
         "operation": {
@@ -726,15 +816,14 @@
     },
     "ResourceMethodSearchSchema": {
       "id": "/ResourceMethodSearchSchema",
-      "description": "How will we find a specific object given filters or search terms? Will be turned into a search automatically.",
+      "description":
+        "How will we find a specific object given filters or search terms? Will be turned into a search automatically.",
       "type": "object",
-      "required": [
-        "display",
-        "operation"
-      ],
+      "required": ["display", "operation"],
       "properties": {
         "display": {
-          "description": "Define how this search method will be exposed in the UI.",
+          "description":
+            "Define how this search method will be exposed in the UI.",
           "$ref": "/BasicDisplaySchema"
         },
         "operation": {
@@ -746,15 +835,14 @@
     },
     "ResourceMethodCreateSchema": {
       "id": "/ResourceMethodCreateSchema",
-      "description": "How will we find create a specific object given inputs? Will be turned into a create automatically.",
+      "description":
+        "How will we find create a specific object given inputs? Will be turned into a create automatically.",
       "type": "object",
-      "required": [
-        "display",
-        "operation"
-      ],
+      "required": ["display", "operation"],
       "properties": {
         "display": {
-          "description": "Define how this create method will be exposed in the UI.",
+          "description":
+            "Define how this create method will be exposed in the UI.",
           "$ref": "/BasicDisplaySchema"
         },
         "operation": {
@@ -773,41 +861,45 @@
     },
     "ResourceSchema": {
       "id": "/ResourceSchema",
-      "description": "Represents a resource, which will in turn power triggers, searches, or creates.",
+      "description":
+        "Represents a resource, which will in turn power triggers, searches, or creates.",
       "type": "object",
-      "required": [
-        "key",
-        "noun"
-      ],
+      "required": ["key", "noun"],
       "properties": {
         "key": {
           "description": "A key to uniquely identify this resource.",
           "$ref": "/KeySchema"
         },
         "noun": {
-          "description": "A noun for this resource that completes the sentence \"create a new XXX\".",
+          "description":
+            "A noun for this resource that completes the sentence \"create a new XXX\".",
           "type": "string",
           "minLength": 2,
           "maxLength": 255
         },
         "get": {
-          "description": "How will we get a single object given a unique identifier/id?",
+          "description":
+            "How will we get a single object given a unique identifier/id?",
           "$ref": "/ResourceMethodGetSchema"
         },
         "hook": {
-          "description": "How will we get notified of new objects? Will be turned into a trigger automatically.",
+          "description":
+            "How will we get notified of new objects? Will be turned into a trigger automatically.",
           "$ref": "/ResourceMethodHookSchema"
         },
         "list": {
-          "description": "How will we get a list of new objects? Will be turned into a trigger automatically.",
+          "description":
+            "How will we get a list of new objects? Will be turned into a trigger automatically.",
           "$ref": "/ResourceMethodListSchema"
         },
         "search": {
-          "description": "How will we find a specific object given filters or search terms? Will be turned into a search automatically.",
+          "description":
+            "How will we find a specific object given filters or search terms? Will be turned into a search automatically.",
           "$ref": "/ResourceMethodSearchSchema"
         },
         "create": {
-          "description": "How will we find create a specific object given inputs? Will be turned into a create automatically.",
+          "description":
+            "How will we find create a specific object given inputs? Will be turned into a create automatically.",
           "$ref": "/ResourceMethodCreateSchema"
         },
         "outputFields": {
@@ -826,19 +918,15 @@
       "id": "/TriggerSchema",
       "description": "How will Zapier get notified of new objects?",
       "type": "object",
-      "required": [
-        "key",
-        "noun",
-        "display",
-        "operation"
-      ],
+      "required": ["key", "noun", "display", "operation"],
       "properties": {
         "key": {
           "description": "A key to uniquely identify this trigger.",
           "$ref": "/KeySchema"
         },
         "noun": {
-          "description": "A noun for this trigger that completes the sentence \"triggers on a new XXX\".",
+          "description":
+            "A noun for this trigger that completes the sentence \"triggers on a new XXX\".",
           "type": "string",
           "minLength": 2,
           "maxLength": 255
@@ -865,19 +953,15 @@
       "id": "/SearchSchema",
       "description": "How will Zapier search for existing objects?",
       "type": "object",
-      "required": [
-        "key",
-        "noun",
-        "display",
-        "operation"
-      ],
+      "required": ["key", "noun", "display", "operation"],
       "properties": {
         "key": {
           "description": "A key to uniquely identify this search.",
           "$ref": "/KeySchema"
         },
         "noun": {
-          "description": "A noun for this search that completes the sentence \"finds a specific XXX\".",
+          "description":
+            "A noun for this search that completes the sentence \"finds a specific XXX\".",
           "type": "string",
           "minLength": 2,
           "maxLength": 255
@@ -897,16 +981,16 @@
       "id": "/BasicCreateActionOperationSchema",
       "description": "Represents the fundamental mechanics of a create.",
       "type": "object",
-      "required": [
-        "perform"
-      ],
+      "required": ["perform"],
       "properties": {
         "resource": {
-          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "description":
+            "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/RefResourceSchema"
         },
         "perform": {
-          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "description":
+            "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -917,7 +1001,8 @@
           ]
         },
         "performGet": {
-          "description": "How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.",
+          "description":
+            "How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -928,20 +1013,24 @@
           ]
         },
         "inputFields": {
-          "description": "What should the form a user sees and configures look like?",
+          "description":
+            "What should the form a user sees and configures look like?",
           "$ref": "/DynamicFieldsSchema"
         },
         "outputFields": {
-          "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
+          "description":
+            "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
           "$ref": "/DynamicFieldsSchema"
         },
         "sample": {
-          "description": "What does a sample of data look like? Will use resource sample if missing.",
+          "description":
+            "What does a sample of data look like? Will use resource sample if missing.",
           "type": "object",
           "minProperties": 1
         },
         "shouldLock": {
-          "description": "Should this action be performed one at a time (avoid concurrency)?",
+          "description":
+            "Should this action be performed one at a time (avoid concurrency)?",
           "type": "boolean"
         }
       },
@@ -951,19 +1040,15 @@
       "id": "/CreateSchema",
       "description": "How will Zapier create a new object?",
       "type": "object",
-      "required": [
-        "key",
-        "noun",
-        "display",
-        "operation"
-      ],
+      "required": ["key", "noun", "display", "operation"],
       "properties": {
         "key": {
           "description": "A key to uniquely identify this create.",
           "$ref": "/KeySchema"
         },
         "noun": {
-          "description": "A noun for this create that completes the sentence \"creates a new XXX\".",
+          "description":
+            "A noun for this create that completes the sentence \"creates a new XXX\".",
           "type": "string",
           "minLength": 2,
           "maxLength": 255
@@ -981,14 +1066,10 @@
     },
     "SearchOrCreateSchema": {
       "id": "/SearchOrCreateSchema",
-      "description": "Pair an existing search and a create to enable \"Find or Create\" functionality in your app",
+      "description":
+        "Pair an existing search and a create to enable \"Find or Create\" functionality in your app",
       "type": "object",
-      "required": [
-        "key",
-        "display",
-        "search",
-        "create"
-      ],
+      "required": ["key", "display", "search", "create"],
       "properties": {
         "key": {
           "description": "A key to uniquely identify this search-or-create.",
@@ -999,11 +1080,13 @@
           "$ref": "/BasicDisplaySchema"
         },
         "search": {
-          "description": "The key of the search that powers this search-or-create",
+          "description":
+            "The key of the search that powers this search-or-create",
           "$ref": "/KeySchema"
         },
         "create": {
-          "description": "The key of the create that powers this search-or-create",
+          "description":
+            "The key of the create that powers this search-or-create",
           "$ref": "/KeySchema"
         }
       },
@@ -1013,24 +1096,16 @@
       "id": "/AuthenticationSchema",
       "description": "Represents authentication schemes.",
       "type": "object",
-      "required": [
-        "type",
-        "test"
-      ],
+      "required": ["type", "test"],
       "properties": {
         "type": {
           "description": "Choose which scheme you want to use.",
           "type": "string",
-          "enum": [
-            "basic",
-            "custom",
-            "digest",
-            "oauth2",
-            "session"
-          ]
+          "enum": ["basic", "custom", "digest", "oauth2", "session"]
         },
         "test": {
-          "description": "A function or request that confirms the authentication is working.",
+          "description":
+            "A function or request that confirms the authentication is working.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -1041,11 +1116,13 @@
           ]
         },
         "fields": {
-          "description": "Fields you can request from the user before they connect your app to Zapier.",
+          "description":
+            "Fields you can request from the user before they connect your app to Zapier.",
           "$ref": "/FieldsSchema"
         },
         "connectionLabel": {
-          "description": "A string with variables, function, or request that returns the connection label for the authenticated user.",
+          "description":
+            "A string with variables, function, or request that returns the connection label for the authenticated user.",
           "anyOf": [
             {
               "$ref": "/RequestSchema"
@@ -1078,11 +1155,13 @@
     },
     "ResourcesSchema": {
       "id": "/ResourcesSchema",
-      "description": "All the resources that underlie common CRUD methods powering automatically handled triggers, creates, and searches for your app. Zapier will break these apart for you.",
+      "description":
+        "All the resources that underlie common CRUD methods powering automatically handled triggers, creates, and searches for your app. Zapier will break these apart for you.",
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z]+[a-zA-Z0-9_]*$": {
-          "description": "Any unique key can be used and its values will be validated against the ResourceSchema.",
+          "description":
+            "Any unique key can be used and its values will be validated against the ResourceSchema.",
           "$ref": "/ResourceSchema"
         }
       },
@@ -1090,11 +1169,13 @@
     },
     "TriggersSchema": {
       "id": "/TriggersSchema",
-      "description": "Enumerates the triggers your app has available for users.",
+      "description":
+        "Enumerates the triggers your app has available for users.",
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z]+[a-zA-Z0-9_]*$": {
-          "description": "Any unique key can be used and its values will be validated against the TriggerSchema.",
+          "description":
+            "Any unique key can be used and its values will be validated against the TriggerSchema.",
           "$ref": "/TriggerSchema"
         }
       },
@@ -1102,11 +1183,13 @@
     },
     "SearchesSchema": {
       "id": "/SearchesSchema",
-      "description": "Enumerates the searches your app has available for users.",
+      "description":
+        "Enumerates the searches your app has available for users.",
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z]+[a-zA-Z0-9_]*$": {
-          "description": "Any unique key can be used and its values will be validated against the SearchSchema.",
+          "description":
+            "Any unique key can be used and its values will be validated against the SearchSchema.",
           "$ref": "/SearchSchema"
         }
       }
@@ -1117,31 +1200,36 @@
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z]+[a-zA-Z0-9_]*$": {
-          "description": "Any unique key can be used and its values will be validated against the CreateSchema.",
+          "description":
+            "Any unique key can be used and its values will be validated against the CreateSchema.",
           "$ref": "/CreateSchema"
         }
       }
     },
     "SearchOrCreatesSchema": {
       "id": "/SearchOrCreatesSchema",
-      "description": "Enumerates the search-or-creates your app has available for users.",
+      "description":
+        "Enumerates the search-or-creates your app has available for users.",
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z]+[a-zA-Z0-9_]*$": {
-          "description": "Any unique key can be used and its values will be validated against the SearchOrCreateSchema.",
+          "description":
+            "Any unique key can be used and its values will be validated against the SearchOrCreateSchema.",
           "$ref": "/SearchOrCreateSchema"
         }
       }
     },
     "VersionSchema": {
       "id": "/VersionSchema",
-      "description": "Represents a simplified semver string, from `0.0.0` to `999.999.999`.",
+      "description":
+        "Represents a simplified semver string, from `0.0.0` to `999.999.999`.",
       "type": "string",
       "pattern": "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$"
     },
     "MiddlewaresSchema": {
       "id": "/MiddlewaresSchema",
-      "description": "List of HTTP before or after middlewares. Can be an array of functions or a single function",
+      "description":
+        "List of HTTP before or after middlewares. Can be an array of functions or a single function",
       "oneOf": [
         {
           "type": "array",
@@ -1157,11 +1245,13 @@
     },
     "HydratorsSchema": {
       "id": "/HydratorsSchema",
-      "description": "A bank of named functions that you can use in `z.hydrate('someName')` to lazily load data.",
+      "description":
+        "A bank of named functions that you can use in `z.hydrate('someName')` to lazily load data.",
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z]+[a-zA-Z0-9]*$": {
-          "description": "Any unique key can be used in `z.hydrate('uniqueKeyHere')`.",
+          "description":
+            "Any unique key can be used in `z.hydrate('uniqueKeyHere')`.",
           "$ref": "/FunctionSchema"
         }
       },
