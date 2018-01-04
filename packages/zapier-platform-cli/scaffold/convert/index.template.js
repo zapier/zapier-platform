@@ -31,8 +31,10 @@ const App = {
 
   creates: {
     <%= CREATES %>
-  }
-
+  },
+<% if (SEARCH_OR_CREATES) { %>
+  searchOrCreates: <%= SEARCH_OR_CREATES %>
+<% } %>
 };
 
 module.exports = App;
