@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-core",
-  "version": "4.2.3",
+  "version": "4.3.0",
   "description": "The core SDK for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-core",
   "homepage": "https://zapier.com/",
@@ -10,19 +10,15 @@
   "scripts": {
     "docs": "node bin/docs.js",
     "preversion": "git pull && npm test",
-    "version":
-      "node bin/bump-dependencies.js && git add package.json && npm run docs && git add README.md docs/*",
+    "version": "node bin/bump-dependencies.js && git add package.json && npm run docs && git add README.md docs/*",
     "postversion": "git push && git push --tags",
-    "test":
-      "node_modules/.bin/eslint src test && node_modules/.bin/mocha -t 5000 --recursive test",
+    "test": "node_modules/.bin/eslint src test && node_modules/.bin/mocha -t 5000 --recursive test",
     "plain-test": "node_modules/.bin/mocha -t 3000 --recursive test",
-    "integration-test":
-      "node_modules/mocha/bin/mocha -t 10000 integration-test",
+    "integration-test": "node_modules/mocha/bin/mocha -t 10000 integration-test",
     "lint": "node_modules/.bin/eslint src test",
     "build": "bin/build.sh local.bundle.zip",
     "upload": "bin/upload-lambda.js local.bundle.zip",
-    "deploy":
-      "bin/build.sh local.bundle.zip && bin/upload-lambda.js local.bundle.zip",
+    "deploy": "bin/build.sh local.bundle.zip && bin/upload-lambda.js local.bundle.zip",
     "precommit": "lint-staged"
   },
   "engines": {
@@ -37,7 +33,7 @@
     "form-data": "2.2.0",
     "lodash": "4.17.4",
     "node-fetch": "1.7.1",
-    "zapier-platform-schema": "4.2.3"
+    "zapier-platform-schema": "4.3.0"
   },
   "devDependencies": {
     "aws-sdk": "2.70.0",
@@ -54,6 +50,9 @@
     "singleQuote": true
   },
   "lint-staged": {
-    "*.{js,json}": ["prettier --write", "git add"]
+    "*.{js,json}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
