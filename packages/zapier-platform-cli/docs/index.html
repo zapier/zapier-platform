@@ -342,30 +342,34 @@ a code {
 <li><a href="#running-unit-tests">Running Unit Tests</a></li>
 <li><a href="#testing--environment-variables">Testing &amp; Environment Variables</a></li>
 <li><a href="#viewing-http-logs-in-unit-tests">Viewing HTTP Logs in Unit Tests</a></li>
-<li><a href="#testing-in-your-ci-jenkinstravisetc">Testing in your CI (Jenkins/Travis/etc.)</a></li>
+<li><a href="#testing-in-your-ci-jenkinstravisetc">Testing in Your CI (Jenkins/Travis/etc.)</a></li>
 </ul>
 </li>
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
 <li><a href="#using-transpilers">Using Transpilers</a></li>
 <li><a href="#example-apps">Example Apps</a></li>
-<li><a href="#command-line-tab-completion">Command line Tab Completion</a><ul>
+<li><a href="#faqs">FAQs</a></li>
+<li><a href="#command-line-tab-completion">Command Line Tab Completion</a><ul>
 <li><a href="#zsh-completion-script">Zsh Completion Script</a></li>
 <li><a href="#bash-completion-script">Bash Completion Script</a></li>
 </ul>
 </li>
 <li><a href="#upgrading-zapier-platform-cli-or-zapier-platform-core">Upgrading Zapier Platform CLI or Zapier Platform Core</a><ul>
 <li><a href="#upgrading-zapier-platform-cli">Upgrading Zapier Platform CLI</a><ul>
-<li><a href="#when-to-update-cli">When to update CLI</a></li>
+<li><a href="#when-to-update-cli">When to Update CLI</a></li>
 </ul>
 </li>
 <li><a href="#upgrading-zapier-platform-core">Upgrading Zapier Platform Core</a><ul>
-<li><a href="#when-to-update-core">When to update Core</a></li>
+<li><a href="#when-to-update-core">When To Update Core</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#development-of-the-cli">Development of the CLI</a></li>
+<li><a href="#development-of-the-cli">Development of the CLI</a><ul>
+<li><a href="#commands">Commands</a></li>
 <li><a href="#publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</a></li>
+</ul>
+</li>
 <li><a href="#get-help">Get Help!</a></li>
 </ul>
 
@@ -514,30 +518,34 @@ a code {
 <li><a href="#running-unit-tests">Running Unit Tests</a></li>
 <li><a href="#testing--environment-variables">Testing &amp; Environment Variables</a></li>
 <li><a href="#viewing-http-logs-in-unit-tests">Viewing HTTP Logs in Unit Tests</a></li>
-<li><a href="#testing-in-your-ci-jenkinstravisetc">Testing in your CI (Jenkins/Travis/etc.)</a></li>
+<li><a href="#testing-in-your-ci-jenkinstravisetc">Testing in Your CI (Jenkins/Travis/etc.)</a></li>
 </ul>
 </li>
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
 <li><a href="#using-transpilers">Using Transpilers</a></li>
 <li><a href="#example-apps">Example Apps</a></li>
-<li><a href="#command-line-tab-completion">Command line Tab Completion</a><ul>
+<li><a href="#faqs">FAQs</a></li>
+<li><a href="#command-line-tab-completion">Command Line Tab Completion</a><ul>
 <li><a href="#zsh-completion-script">Zsh Completion Script</a></li>
 <li><a href="#bash-completion-script">Bash Completion Script</a></li>
 </ul>
 </li>
 <li><a href="#upgrading-zapier-platform-cli-or-zapier-platform-core">Upgrading Zapier Platform CLI or Zapier Platform Core</a><ul>
 <li><a href="#upgrading-zapier-platform-cli">Upgrading Zapier Platform CLI</a><ul>
-<li><a href="#when-to-update-cli">When to update CLI</a></li>
+<li><a href="#when-to-update-cli">When to Update CLI</a></li>
 </ul>
 </li>
 <li><a href="#upgrading-zapier-platform-core">Upgrading Zapier Platform Core</a><ul>
-<li><a href="#when-to-update-core">When to update Core</a></li>
+<li><a href="#when-to-update-core">When To Update Core</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#development-of-the-cli">Development of the CLI</a></li>
+<li><a href="#development-of-the-cli">Development of the CLI</a><ul>
+<li><a href="#commands">Commands</a></li>
 <li><a href="#publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</a></li>
+</ul>
+</li>
 <li><a href="#get-help">Get Help!</a></li>
 </ul>
     </div>
@@ -3464,7 +3472,7 @@ zapier <span class="hljs-built_in">test</span>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="testing-in-your-ci-jenkinstravisetc">Testing in your CI (Jenkins/Travis/etc.)</h3>
+      <h3 id="testing-in-your-ci-jenkinstravisetc">Testing in Your CI (Jenkins/Travis/etc.)</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3636,7 +3644,145 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="command-line-tab-completion">Command line Tab Completion</h2>
+      <h2 id="faqs">FAQs</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p><em>Q: Does Zapier support XML (SOAP) APIs?</em></p><p>A: Not natively, but it can! Users have reported that the following <code>npm</code> modules are compatible with the CLI Platform:</p><ul>
+<li><a href="https://github.com/jhuckaby/pixl-xml">pixl-xml</a></li>
+<li><a href="https://github.com/Leonidas-from-XIV/node-xml2js">xml2js</a></li>
+<li><a href="https://github.com/NaturalIntelligence/fast-xml-parser">fast-xml-parser</a></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> xml = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;pixl-xml&apos;</span>);
+
+<span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">// ...</span>
+  afterResponse: [
+    <span class="hljs-function">(<span class="hljs-params">response, z, bundle</span>) =&gt;</span> {
+      response.xml = xml.parse(response.content);
+      <span class="hljs-keyword">return</span> response;
+    }
+  ]
+  <span class="hljs-comment">// ...</span>
+};
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p><em>Q: Is it possible to iterate over pages in a polling trigger?</em></p><p>A: Yes, though there are caveats. Your entire function only gets 30 seconds to run. HTTP requests are costly, so paging through a list may time out (which you should avoid at all costs).</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript"><span class="hljs-comment">// some async call</span>
+<span class="hljs-keyword">const</span> makeCall = <span class="hljs-function">(<span class="hljs-params">z, start, limit</span>) =&gt;</span> {
+  <span class="hljs-keyword">return</span> z.request({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://jsonplaceholder.typicode.com/posts&apos;</span>,
+    <span class="hljs-attr">params</span>: {
+      <span class="hljs-attr">_start</span>: start,
+      <span class="hljs-attr">_limit</span>: limit
+    }
+  });
+};
+
+<span class="hljs-comment">// triggers on paging with a certain tag</span>
+<span class="hljs-keyword">const</span> performPaging = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> limit = <span class="hljs-number">3</span>;
+  <span class="hljs-keyword">let</span> start = <span class="hljs-number">0</span>;
+
+  <span class="hljs-comment">// array of promises</span>
+  <span class="hljs-keyword">let</span> promises = [];
+
+  <span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">while</span> (i &lt; <span class="hljs-number">5</span>) {
+    promises.push(makeCall(z, start, limit));
+    start += limit;
+    i += <span class="hljs-number">1</span>;
+  }
+
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.all(promises).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+    <span class="hljs-comment">// res is an array of responses</span>
+    <span class="hljs-keyword">const</span> results = res.map(<span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span> r.json); <span class="hljs-comment">// array of arrays of js objects</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.prototype.concat.apply([], results); <span class="hljs-comment">// flatten array</span>
+  });
+};
+
+<span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;paging&apos;</span>,
+  <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Paging&apos;</span>,
+
+  <span class="hljs-attr">display</span>: {
+    <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Get Paging&apos;</span>,
+    <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers on a new paging.&apos;</span>
+  },
+
+  <span class="hljs-attr">operation</span>: {
+    <span class="hljs-attr">inputFields</span>: [],
+    <span class="hljs-attr">perform</span>: performPaging
+  }
+};
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>If you need to do more requests conditionally based on the results of an HTTP call (such as getting &quot;next url&quot; param, using <code>async/await</code> with a transpiler is the way to go. If you go this route, only page as far as you need to. Keep an eye on the polling <a href="https://zapier.com/developer/documentation/v2/deduplication/">guidelines</a>, namely the part about only iterating until you hit items that have probably been seen in a previous poll.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript"><span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;paging&apos;</span>,
+  <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Paging&apos;</span>,
+
+  <span class="hljs-attr">display</span>: {
+    <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Get Paging&apos;</span>,
+    <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers on a new paging.&apos;</span>
+  },
+
+  <span class="hljs-attr">operation</span>: {
+    <span class="hljs-attr">inputFields</span>: [],
+    <span class="hljs-attr">perform</span>: <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+      <span class="hljs-keyword">let</span> response = <span class="hljs-keyword">await</span> z.request({
+        <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://jsonplaceholder.typicode.com/posts&apos;</span>,
+        <span class="hljs-attr">params</span>: {
+          <span class="hljs-attr">_start</span>: <span class="hljs-number">0</span>,
+          <span class="hljs-attr">_limit</span>: <span class="hljs-number">3</span>
+        }
+      });
+
+      <span class="hljs-keyword">let</span> results = response.json;
+
+      <span class="hljs-comment">// conditionally make a second request</span>
+      <span class="hljs-keyword">if</span> (results[<span class="hljs-number">0</span>].id &lt; <span class="hljs-number">5</span>) {
+        response = <span class="hljs-keyword">await</span> z.request({
+          <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://jsonplaceholder.typicode.com/posts&apos;</span>,
+          <span class="hljs-attr">params</span>: {
+            <span class="hljs-attr">_start</span>: <span class="hljs-number">3</span>,
+            <span class="hljs-attr">_limit</span>: <span class="hljs-number">3</span>
+          }
+        });
+
+        results = results.concat(response.json);
+      }
+
+      <span class="hljs-keyword">return</span> results;
+    }
+  }
+};
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="command-line-tab-completion">Command Line Tab Completion</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3780,7 +3926,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h4 id="when-to-update-cli">When to update CLI</h4>
+      <h4 id="when-to-update-cli">When to Update CLI</h4>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3816,7 +3962,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h4 id="when-to-update-core">When to update Core</h4>
+      <h4 id="when-to-update-core">When To Update Core</h4>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3843,6 +3989,24 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>This section is only relevant if you&apos;re editing the <code>zapier-platform-cli</code> package</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="commands">Commands</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <ul>
 <li><code>export ZAPIER_BASE_ENDPOINT=&apos;http://localhost:8000&apos;</code> if you&apos;re building against a local dev environment</li>
 <li><code>npm install</code> for getting started</li>
@@ -3860,7 +4024,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</h2>
+      <h3 id="publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

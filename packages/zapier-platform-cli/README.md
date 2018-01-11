@@ -93,20 +93,22 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [Running Unit Tests](#running-unit-tests)
   * [Testing & Environment Variables](#testing--environment-variables)
   * [Viewing HTTP Logs in Unit Tests](#viewing-http-logs-in-unit-tests)
-  * [Testing in your CI (Jenkins/Travis/etc.)](#testing-in-your-ci-jenkinstravisetc)
+  * [Testing in Your CI (Jenkins/Travis/etc.)](#testing-in-your-ci-jenkinstravisetc)
 - [Using `npm` Modules](#using-npm-modules)
 - [Using Transpilers](#using-transpilers)
 - [Example Apps](#example-apps)
-- [Command line Tab Completion](#command-line-tab-completion)
+- [FAQs](#faqs)
+- [Command Line Tab Completion](#command-line-tab-completion)
   * [Zsh Completion Script](#zsh-completion-script)
   * [Bash Completion Script](#bash-completion-script)
 - [Upgrading Zapier Platform CLI or Zapier Platform Core](#upgrading-zapier-platform-cli-or-zapier-platform-core)
   * [Upgrading Zapier Platform CLI](#upgrading-zapier-platform-cli)
-    + [When to update CLI](#when-to-update-cli)
+    + [When to Update CLI](#when-to-update-cli)
   * [Upgrading Zapier Platform Core](#upgrading-zapier-platform-core)
-    + [When to update Core](#when-to-update-core)
+    + [When To Update Core](#when-to-update-core)
 - [Development of the CLI](#development-of-the-cli)
-- [Publishing of the CLI (after merging)](#publishing-of-the-cli-after-merging)
+  * [Commands](#commands)
+  * [Publishing of the CLI (after merging)](#publishing-of-the-cli-after-merging)
 - [Get Help!](#get-help)
 
 <!-- tocstop -->
@@ -1814,7 +1816,7 @@ Note that if a Zap raises too many error messages it will be automatically
 turned off, so only use these if the scenario is truly an error that needs to
 be fixed.
 
-###  Halting Execution
+### Halting Execution
 
 Any operation can be interrupted or "halted" (not success, not error, but
 stopped for some specific reason) with a `HaltedError`. You might find yourself
@@ -2019,7 +2021,7 @@ To also suppress the HTTP summary logs do:
 zapier test --very-quiet
 ```
 
-### Testing in your CI (Jenkins/Travis/etc.)
+### Testing in Your CI (Jenkins/Travis/etc.)
 
 Behind the scenes `zapier test` is doing a pretty standard `npm test` with [mocha](https://www.npmjs.com/package/mocha) as the backend.
 
@@ -2111,7 +2113,133 @@ There are a lot of details left out - check out the full example app for a worki
 
 See [the wiki](https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps) for a full list of working examples (and installation instructions).
 
-## Command line Tab Completion
+## FAQs
+
+*Q: Does Zapier support XML (SOAP) APIs?*
+
+A: Not natively, but it can! Users have reported that the following `npm` modules are compatible with the CLI Platform:
+
+* [pixl-xml](https://github.com/jhuckaby/pixl-xml)
+* [xml2js](https://github.com/Leonidas-from-XIV/node-xml2js)
+* [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser)
+
+```javascript
+const xml = require('pixl-xml');
+
+const App = {
+  // ...
+  afterResponse: [
+    (response, z, bundle) => {
+      response.xml = xml.parse(response.content);
+      return response;
+    }
+  ]
+  // ...
+};
+
+```
+
+*Q: Is it possible to iterate over pages in a polling trigger?*
+
+A: Yes, though there are caveats. Your entire function only gets 30 seconds to run. HTTP requests are costly, so paging through a list may time out (which you should avoid at all costs).
+
+```javascript
+// some async call
+const makeCall = (z, start, limit) => {
+  return z.request({
+    url: 'https://jsonplaceholder.typicode.com/posts',
+    params: {
+      _start: start,
+      _limit: limit
+    }
+  });
+};
+
+// triggers on paging with a certain tag
+const performPaging = (z, bundle) => {
+  const limit = 3;
+  let start = 0;
+
+  // array of promises
+  let promises = [];
+
+  let i = 0;
+  while (i < 5) {
+    promises.push(makeCall(z, start, limit));
+    start += limit;
+    i += 1;
+  }
+
+  return Promise.all(promises).then(res => {
+    // res is an array of responses
+    const results = res.map(r => r.json); // array of arrays of js objects
+    return Array.prototype.concat.apply([], results); // flatten array
+  });
+};
+
+module.exports = {
+  key: 'paging',
+  noun: 'Paging',
+
+  display: {
+    label: 'Get Paging',
+    description: 'Triggers on a new paging.'
+  },
+
+  operation: {
+    inputFields: [],
+    perform: performPaging
+  }
+};
+
+```
+
+If you need to do more requests conditionally based on the results of an HTTP call (such as getting "next url" param, using `async/await` with a transpiler is the way to go. If you go this route, only page as far as you need to. Keep an eye on the polling [guidelines](https://zapier.com/developer/documentation/v2/deduplication/), namely the part about only iterating until you hit items that have probably been seen in a previous poll.
+
+```javascript
+module.exports = {
+  key: 'paging',
+  noun: 'Paging',
+
+  display: {
+    label: 'Get Paging',
+    description: 'Triggers on a new paging.'
+  },
+
+  operation: {
+    inputFields: [],
+    perform: async (z, bundle) => {
+      let response = await z.request({
+        url: 'https://jsonplaceholder.typicode.com/posts',
+        params: {
+          _start: 0,
+          _limit: 3
+        }
+      });
+
+      let results = response.json;
+
+      // conditionally make a second request
+      if (results[0].id < 5) {
+        response = await z.request({
+          url: 'https://jsonplaceholder.typicode.com/posts',
+          params: {
+            _start: 3,
+            _limit: 3
+          }
+        });
+
+        results = results.concat(response.json);
+      }
+
+      return results;
+    }
+  }
+};
+
+```
+
+## Command Line Tab Completion
 
 We have provided two tab completion scripts to make it easier to use the Zapier Platform CLI, for zsh and bash.
 
@@ -2170,7 +2298,7 @@ Check your version with `$ zapier --version` and update with `$ npm -g update za
 
 You can also [look at the Changelog](https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md) to understand what changed between versions.
 
-#### When to update CLI
+#### When to Update CLI
 
 You should keep your `zapier-platform-cli` global package up-to-date to get the latest features and bug fixes for interacting with your app, but it's not mandatory. You should be able to use any publicly available `zapier-platform-cli` version.
 
@@ -2178,13 +2306,17 @@ You should keep your `zapier-platform-cli` global package up-to-date to get the 
 
 Open your app's `package.json` file and update the number for the `zapier-platform-core` entry to what the latest public version is. You can see it on the right side of the [NPM registry page](https://www.npmjs.com/package/zapier-platform-core). After that you should be able to run `npm update` and get the latest goodies!
 
-#### When to update Core
+#### When To Update Core
 
 You should keep your `zapier-platform-core` package up-to-date to get the latest features and bug fixes for your app when interacting with Zapier, but it's not mandatory. You should be able to use any publicly available `zapier-platform-core` version.
 
 While not always required, it's also recommended you use the same `zapier-platform-cli` global package as the app's `zapier-platform-core` one, to ensure maximum compatibility.
 
 ## Development of the CLI
+
+This section is only relevant if you're editing the `zapier-platform-cli` package
+
+### Commands
 
 - `export ZAPIER_BASE_ENDPOINT='http://localhost:8000'` if you're building against a local dev environment
 - `npm install` for getting started
@@ -2194,7 +2326,7 @@ While not always required, it's also recommended you use the same `zapier-platfo
 - `npm run docs` for updating docs
 - `npm run gen-completions` for updating the auto complete scripts
 
-## Publishing of the CLI (after merging)
+### Publishing of the CLI (after merging)
 
 - `npm version [patch|minor|major]` will pull, test, update docs, increment version in package.json, push tags, and publish to npm
 - `npm run validate-templates` for validating the example apps
