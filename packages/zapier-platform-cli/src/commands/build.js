@@ -1,16 +1,24 @@
 const constants = require('../constants');
 const utils = require('../utils');
+const {
+  maybeLogin,
+  maybeRegisterApp
+} = require('../utils/command-invocations');
 
 const build = context => {
   context.line('Building project.\n');
-  return utils.build().then(() => {
-    context.line(
-      `\nBuild complete! Moved to ${
-        constants.BUILD_PATH
-      }! Try the \`zapier upload\` command now.`
-    );
-  });
+  return maybeLogin(context)
+    .then(() => maybeRegisterApp(context))
+    .then(() => utils.build())
+    .then(() => {
+      context.line(
+        `\nBuild complete! Moved to ${
+          constants.BUILD_PATH
+        }! Try the \`zapier upload\` command now.`
+      );
+    });
 };
+
 build.argsSpec = [];
 build.argOptsSpec = {
   'disable-dependency-detection': {
