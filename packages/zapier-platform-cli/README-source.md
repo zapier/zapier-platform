@@ -1318,7 +1318,7 @@ This section is only relevant if you're editing the `zapier-platform-cli` packag
 
 ### Commands
 
-- `export ZAPIER_BASE_ENDPOINT='http://localhost:8000'` if you're building against a local dev environment
+- `export ZAPIER_BASE_ENDPOINT='http://localhost:8001'` if you're building against a local dev environment
 - `npm install` for getting started
 - `npm run build` for updating `./lib` from `./src`
 - `npm test` for running tests (also runs `npm run build`)
