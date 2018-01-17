@@ -922,7 +922,7 @@ const renderPackageJson = legacyApp => {
 
   const templateContext = {
     NAME: _.kebabCase(legacyApp.general.title),
-    DESCRIPTION: legacyApp.general.description
+    DESCRIPTION: escapeSpecialChars(legacyApp.general.description)
   };
 
   const zapierCoreVersion = require('../../package.json').version;
