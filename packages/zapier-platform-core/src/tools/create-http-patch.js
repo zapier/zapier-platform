@@ -1,3 +1,4 @@
+const zlib = require('zlib');
 const _ = require('lodash');
 const constants = require('../constants');
 
@@ -57,9 +58,10 @@ const createHttpPatch = event => {
           Object.keys(response.headers || {}),
           header => `${header}: ${response.headers[header]}`
         );
-        const responseBody = [];
 
-        const logResponse = () => {
+        const chunks = [];
+
+        const sendToLogger = responseBody => {
           // Prepare data for GL
           const logData = {
             log_type: 'http',
@@ -71,7 +73,7 @@ const createHttpPatch = event => {
             request_via_client: false,
             response_status_code: response.statusCode,
             response_headers: responseHeaders.join('\n'),
-            response_content: responseBody.join('')
+            response_content: responseBody
           };
 
           logger(
@@ -82,7 +84,26 @@ const createHttpPatch = event => {
           );
         };
 
-        response.on('data', chunk => responseBody.push(chunk.toString()));
+        const logResponse = () => {
+          // Decode gzip if needed
+          if (response.headers['content-encoding'] === 'gzip') {
+            const buffer = Buffer.concat(chunks);
+            zlib.gunzip(buffer, (err, decoded) => {
+              const responseBody = err
+                ? 'Could not decode response body.'
+                : decoded.toString();
+
+              sendToLogger(responseBody);
+            });
+          } else {
+            const responseBody = _.map(chunks, chunk => chunk.toString()).join(
+              '\n'
+            );
+            sendToLogger(responseBody);
+          }
+        };
+
+        response.on('data', chunk => chunks.push(chunk));
         response.on('end', logResponse);
         response.on('error', logResponse);
 
