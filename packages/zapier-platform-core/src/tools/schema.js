@@ -101,6 +101,33 @@ const compileApp = appRaw => {
   appRaw = dataTools.deepCopy(appRaw);
   const extras = convertResourceDos(appRaw);
 
+  const actions = ['triggers', 'searches', 'creates', 'searchOrCreates'];
+  let problemKeys = [];
+
+  actions.forEach(a => {
+    const collisions = _.intersection(
+      Object.keys(extras[a] || {}),
+      Object.keys(appRaw[a] || {})
+    );
+    if (collisions.length) {
+      problemKeys = problemKeys.concat(collisions.map(k => `${a}.${k}`));
+    }
+  });
+
+  if (problemKeys.length) {
+    // TODO - DB: throw an error instead of logging
+    console.log(
+      '\nWARNING! The following key(s) conflict with those created by a resource:\n'
+    );
+    console.log(
+      problemKeys.map(k => `* ${k}`).join('\n'),
+      `\n\nEdit the standalone object${
+        problemKeys.length > 1 ? 's' : ''
+      } to resolve`,
+      '!! In the next major version, this will throw an error\n'
+    );
+  }
+
   appRaw.triggers = _.extend({}, extras.triggers, appRaw.triggers || {});
   appRaw.searches = _.extend({}, extras.searches, appRaw.searches || {});
   appRaw.creates = _.extend({}, extras.creates, appRaw.creates || {});
