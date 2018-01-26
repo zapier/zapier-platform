@@ -6,7 +6,7 @@ const testAuth = (z /*, bundle*/) => {
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
   return z.request({
-      url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes',
+      url: 'https://auth-json-server.zapier.ninja/me',
     }).then((response) => {
       if (response.status === 401) {
         throw new Error('The API Key you supplied is invalid');
