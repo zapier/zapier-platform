@@ -348,7 +348,17 @@ a code {
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
 <li><a href="#using-transpilers">Using Transpilers</a></li>
 <li><a href="#example-apps">Example Apps</a></li>
-<li><a href="#faqs">FAQs</a></li>
+<li><a href="#faqs">FAQs</a><ul>
+<li><a href="#why-doesnt-zapier-support-newer-versions-of-nodejs">Why doesn&#39;t Zapier support newer versions of Node.js?</a></li>
+<li><a href="#does-zapier-support-xml-soap-apis">Does Zapier support XML (SOAP) APIs?</a></li>
+<li><a href="#is-it-possible-to-iterate-over-pages-in-a-polling-trigger">Is it possible to iterate over pages in a polling trigger?</a></li>
+<li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
+<li><a href="#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</a></li>
+<li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&#39;s the deal with pagination? When is it used and how does it work?</a></li>
+<li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
+<li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field-i-didnt-have-to-do-that-in-the-web-builder">Why are my triggers complaining if I don&#39;t provide an explicit <code>id</code> field? I didn&#39;t have to do that in the Web Builder!</a></li>
+</ul>
+</li>
 <li><a href="#command-line-tab-completion">Command Line Tab Completion</a><ul>
 <li><a href="#zsh-completion-script">Zsh Completion Script</a></li>
 <li><a href="#bash-completion-script">Bash Completion Script</a></li>
@@ -524,7 +534,17 @@ a code {
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
 <li><a href="#using-transpilers">Using Transpilers</a></li>
 <li><a href="#example-apps">Example Apps</a></li>
-<li><a href="#faqs">FAQs</a></li>
+<li><a href="#faqs">FAQs</a><ul>
+<li><a href="#why-doesnt-zapier-support-newer-versions-of-nodejs">Why doesn&apos;t Zapier support newer versions of Node.js?</a></li>
+<li><a href="#does-zapier-support-xml-soap-apis">Does Zapier support XML (SOAP) APIs?</a></li>
+<li><a href="#is-it-possible-to-iterate-over-pages-in-a-polling-trigger">Is it possible to iterate over pages in a polling trigger?</a></li>
+<li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
+<li><a href="#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</a></li>
+<li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&apos;s the deal with pagination? When is it used and how does it work?</a></li>
+<li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
+<li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field-i-didnt-have-to-do-that-in-the-web-builder">Why are my triggers complaining if I don&apos;t provide an explicit <code>id</code> field? I didn&apos;t have to do that in the Web Builder!</a></li>
+</ul>
+</li>
 <li><a href="#command-line-tab-completion">Command Line Tab Completion</a><ul>
 <li><a href="#zsh-completion-script">Zsh Completion Script</a></li>
 <li><a href="#bash-completion-script">Bash Completion Script</a></li>
@@ -2194,8 +2214,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript">{
-  <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;Bobby Flay&apos;</span>
-  style: <span class="hljs-string">&apos;mediterranean&apos;</span>
+  <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;his name is Bobby Flay&apos;</span>
+  style: <span class="hljs-string">&apos;he cooks mediterranean&apos;</span>
 }
 </code></pre>
     </div>
@@ -2216,10 +2236,21 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript">{
-  <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;{{chef_name}}&apos;</span>
-  style: <span class="hljs-string">&apos;{{style}}&apos;</span>
+  <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;his name is {{123__chef_name}}&apos;</span>
+  style: <span class="hljs-string">&apos;he cooks {{456__style}}&apos;</span>
 }
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>&quot;curlies&quot; are data mapped in from previous steps. They take the form <code>{{NODE_ID__key_name}}</code>. You&apos;ll usually want to use <code>bundle.inputData</code> instead.</p>
+</blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -2234,39 +2265,69 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>bundle.meta</code> is extra information useful for doing advanced behaviors depending on what the user is doing. It looks something like this:</p>
+      <p><code>bundle.meta</code> is extra information useful for doing advanced behaviors depending on what the user is doing. It has the following options:</p>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript">{
-  <span class="hljs-attr">frontend</span>: <span class="hljs-literal">false</span>,
-  <span class="hljs-attr">prefill</span>: <span class="hljs-literal">false</span>,
-  <span class="hljs-attr">hydrate</span>: <span class="hljs-literal">true</span>,
-  <span class="hljs-attr">test_poll</span>: <span class="hljs-literal">false</span>,
-  <span class="hljs-attr">standard_poll</span>: <span class="hljs-literal">true</span>,
-  <span class="hljs-attr">first_poll</span>: <span class="hljs-literal">false</span>,
-  <span class="hljs-attr">limit</span>: <span class="hljs-number">-1</span>,
-  <span class="hljs-attr">page</span>: <span class="hljs-number">0</span>,
-}
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For example - if you want to do pagination - you could do:</p>
+      <table>
+<thead>
+<tr>
+<th>key</th>
+<th>default</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>frontend</td>
+<td><code>false</code></td>
+<td>if true, this run was initiated manually via the Zap editor</td>
+</tr>
+<tr>
+<td>prefill</td>
+<td><code>false</code></td>
+<td>if true, this poll is being used to populate a dynamic dropdown</td>
+</tr>
+<tr>
+<td>hydrate</td>
+<td><code>true</code></td>
+<td>if true, the results of this run will be hydrated (false if we&apos;re in the middle of hydrating already)</td>
+</tr>
+<tr>
+<td>test_poll</td>
+<td><code>false</code></td>
+<td>if true, the poll was triggered by a user testing their account (via <a href="https://cdn.zapier.com/storage/photos/5c94c304ce11b02c073a973466a7b846.png">clicking &quot;test&quot;</a> on the auth</td>
+</tr>
+<tr>
+<td>standard_poll</td>
+<td><code>true</code></td>
+<td>the opposite of <code>test_poll</code></td>
+</tr>
+<tr>
+<td>first_poll</td>
+<td><code>false</code></td>
+<td>if true, the results of this poll will be used to initialize the deduplication list rather than trigger a zap. See: <a href="#dedup">deduplication</a></td>
+</tr>
+<tr>
+<td>limit</td>
+<td><code>-1</code></td>
+<td>the number of items to fetch. <code>-1</code> indicates there&apos;s no limit (which will almost always be the case)</td>
+</tr>
+<tr>
+<td>page</td>
+<td><code>0</code></td>
+<td>used in <a href="#paging">paging</a> to uniquely identify which page of results should be returned</td>
+</tr>
+</tbody>
+</table>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> getList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> promise = z.request({
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;http://example.com/api/list.json&apos;</span>,
-    <span class="hljs-attr">params</span>: {
-      <span class="hljs-attr">limit</span>: <span class="hljs-number">100</span>,
-      <span class="hljs-attr">offset</span>: <span class="hljs-number">100</span> * bundle.meta.page
-    }
-  });
-  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json);
-};
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -2467,7 +2528,7 @@ zapier env 1.0.0
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>There are two primary ways to make HTTP requests in the Zapier platform:</p><ol>
 <li><strong>Shorthand HTTP Requests</strong> - these are simple object literals that make it easy to define simple requests.</li>
-<li><strong>Manual HTTP Requests</strong> - this is much less &quot;magic&quot;, you use <code>z.request([url], options)</code> to make the requests and control the response.</li>
+<li><strong>Manual HTTP Requests</strong> - you use <code>z.request([url], options)</code> to make the requests and control the response. Use this when you need to change options for certain requests (for all requests, use middleware).</li>
 </ol><p>There are also a few helper constructs you can use to reduce boilerplate:</p><ol>
 <li><code>requestTemplate</code> which is an shorthand HTTP request that will be merged with every request.</li>
 <li><code>beforeRequest</code> middleware which is an array of functions to mutate a request before it is sent.</li>
@@ -2660,19 +2721,19 @@ zapier env 1.0.0
 </blockquote><p>Try putting them in your app definition:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> addHeader = <span class="hljs-function">(<span class="hljs-params">request <span class="hljs-regexp">/*, z*/</span></span>) =&gt;</span> {
+      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> addHeader = <span class="hljs-function">(<span class="hljs-params">request, z, bundle</span>) =&gt;</span> {
   request.headers[<span class="hljs-string">&apos;my-header&apos;</span>] = <span class="hljs-string">&apos;from zapier&apos;</span>;
   <span class="hljs-keyword">return</span> request;
 };
 
-<span class="hljs-keyword">const</span> mustBe200 = <span class="hljs-function">(<span class="hljs-params">response <span class="hljs-regexp">/*, z*/</span></span>) =&gt;</span> {
+<span class="hljs-keyword">const</span> mustBe200 = <span class="hljs-function">(<span class="hljs-params">response, z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">if</span> (response.status !== <span class="hljs-number">200</span>) {
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">`Unexpected status code <span class="hljs-subst">${response.status}</span>`</span>);
   }
   <span class="hljs-keyword">return</span> response;
 };
 
-<span class="hljs-keyword">const</span> autoParseJson = <span class="hljs-function">(<span class="hljs-params">response, z</span>) =&gt;</span> {
+<span class="hljs-keyword">const</span> autoParseJson = <span class="hljs-function">(<span class="hljs-params">response, z, bundle</span>) =&gt;</span> {
   response.json = z.JSON.parse(response.content);
   <span class="hljs-keyword">return</span> response;
 };
@@ -3025,7 +3086,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The <code>z.console</code> object has all the same methods and works just like the Node.js <a href="https://nodejs.org/dist/latest-v4.x/docs/api/console.html"><code>Console</code></a> class - the only difference is we&apos;ll log to our distributed datastore and you can view them via <code>zapier logs</code> (more below).</p>
+      <p>The <code>z.console</code> object has all the same methods and works just like the Node.js <a href="https://nodejs.org/docs/latest-v6.x/api/console.html"><code>Console</code></a> class - the only difference is we&apos;ll log to our distributed datastore and you can view them via <code>zapier logs</code> (more below).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3411,7 +3472,22 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>These work much like normal environment variables - for example:</p>
+      <p>The best way to store sensitive values (like API keys, OAuth secrets, or passwords) is in an <code>.environment</code> file (<a href="https://github.com/motdotla/dotenv#faq">learn more</a>). Then, you can include the following before your tests run:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
+zapier.tools.env.inject(); <span class="hljs-comment">// inject() can take a filename; defaults to &quot;.environment&quot;</span>
+
+<span class="hljs-comment">// now process.env has all the values in your .environment file</span>
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Remember: don&apos;t add your secrets file to version control!</p>
+</blockquote><p>Additionally, you can provide them dynamically at runtime:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</span>
@@ -3653,7 +3729,34 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><em>Q: Does Zapier support XML (SOAP) APIs?</em></p><p>A: Not natively, but it can! Users have reported that the following <code>npm</code> modules are compatible with the CLI Platform:</p><ul>
+      <h3 id="why-doesnt-zapier-support-newer-versions-of-nodejs">Why doesn&apos;t Zapier support newer versions of Node.js?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>We run your code on AWS Lambda, which only supports a few <a href="https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html">versions</a> of Node (the latest of which is <code>v6.10.2</code>. As that updates, so too will we.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="does-zapier-support-xml-soap-apis">Does Zapier support XML (SOAP) APIs?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Not natively, but it can! Users have reported that the following <code>npm</code> modules are compatible with the CLI Platform:</p><ul>
 <li><a href="https://github.com/jhuckaby/pixl-xml">pixl-xml</a></li>
 <li><a href="https://github.com/Leonidas-from-XIV/node-xml2js">xml2js</a></li>
 <li><a href="https://github.com/NaturalIntelligence/fast-xml-parser">fast-xml-parser</a></li>
@@ -3678,7 +3781,16 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><em>Q: Is it possible to iterate over pages in a polling trigger?</em></p><p>A: Yes, though there are caveats. Your entire function only gets 30 seconds to run. HTTP requests are costly, so paging through a list may time out (which you should avoid at all costs).</p>
+      <h3 id="is-it-possible-to-iterate-over-pages-in-a-polling-trigger">Is it possible to iterate over pages in a polling trigger?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Yes, though there are caveats. Your entire function only gets 30 seconds to run. HTTP requests are costly, so paging through a list may time out (which you should avoid at all costs).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-comment">// some async call</span>
@@ -3776,6 +3888,127 @@ npm run zapier-push
     }
   }
 };
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Update your <code>zapier-platform-core</code> dependency in <code>package.json</code>.  Each major version ties to a specific version of Node.js. You can find the mapping <a href="https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js">here</a>. We only support the version(s) supported by <a href="https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html">AWS Lambda</a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>To understand search-powered fields, we have to have a good understanding of dynamic dropdowns.</p><p>When users are selecting specific resources (for instance, a Google Sheet), it&apos;s important they&apos;re able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via <code>id</code> instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a <strong>dynamic dropdown</strong>. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app.  It provides a list of ids with labels that show the item&apos;s name:</p><p><img src="https://cdn.zapier.com/storage/photos/fb56bdc2aab91504be0e51800bec4d64.png" alt=""></p><p>The field&apos;s value reaches your app as an id. You define this connection with the <code>dynamic</code> property, which is a string: <code>trigger_key.id_key.label_key</code>. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.</p><p><strong>Search fields</strong> take this connection a step further. Rather than set the spreadsheet id at setup, the user could precede the action with a search field to make the id dynamic. For instance, let&apos;s say you have a different spreadsheet for every day of the week. You could build the following zap:</p><ol>
+<li>Some Trigger</li>
+<li>Calculate what day of the week it is today (Code)</li>
+<li>Find the spreadsheet that matches the day from Step 2</li>
+<li>Update the spreadsheet (with the id from step 3) with some data</li>
+</ol><p>If the connection between steps 3 and 4 is a common one, you can indicate that in your field by specifying <code>search</code> as a <code>search_key.id_key</code>. When paired <strong>with a dynamic dropdown</strong>, this will add a button to the editor that will add the search step to the user&apos;s Zap and map the id field correctly.</p><p><img src="https://cdn.zapier.com/storage/photos/d263fd3a56cf8108cb89195163e7c9aa.png" alt=""></p><p>This is paired most often with &quot;update&quot; actions, where a required parameter will be a resource id.</p><p><a id="paging"></a></p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&apos;s the deal with pagination? When is it used and how does it work?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Paging is <strong>only used when a trigger is part of a dynamic dropdown</strong>. Depending on how many items exist and how many are returned in the first poll, it&apos;s possible that the resource the user is looking for isn&apos;t in the initial poll. If they hit the &quot;see more&quot; button, we&apos;ll increment the value of <code>bundle.meta.page</code> and poll again.</p><p>Paging is a lot like a regular trigger except the range of items returned is dynamic. The most common example of this is when you can pass a <code>start</code> parameter:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> getList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> promise = z.request({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;http://example.com/api/list.json&apos;</span>,
+    <span class="hljs-attr">params</span>: {
+      <span class="hljs-attr">limit</span>: <span class="hljs-number">100</span>,
+      <span class="hljs-attr">offset</span>: <span class="hljs-number">100</span> * bundle.meta.page
+    }
+  });
+  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json);
+};
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Lastly, you need to set <code>canPaginate</code> to <code>true</code> in your polling definition (per the <a href="https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#basicpollingoperationschema">schema</a>).</p><p><a id="dedup"></a></p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="how-does-deduplication-work">How does deduplication work?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Each time a polling Zap runs, Zapier needs to decide which of the items in the response should trigger the zap. To do this, we compare the <code>id</code>s to all those we&apos;ve seen before, trigger on new objects, and update the list of seen <code>id</code>s. When a Zap is turned on, we initialize the list of seen <code>id</code>s with a single poll. When it&apos;s turned off, we clear that list. For this reason, it&apos;s important that calls to a polling endpoint always return the newest items.</p><p>For example, the initial poll returns objects 4, 5, and 6 (where a higher <code>id</code> is newer). If a later poll increases the limit and returns objects 1-6, then 1, 2, and 3 will be (incorrectly) treated like new objects.</p><p>There&apos;s a more in-depth explanation <a href="https://zapier.com/developer/documentation/v2/deduplication/">here</a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field-i-didnt-have-to-do-that-in-the-web-builder">Why are my triggers complaining if I don&apos;t provide an explicit <code>id</code> field? I didn&apos;t have to do that in the Web Builder!</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>For deduplication to work, we need to be able to identify and use a unique field. For WB apps, we guessed if <code>id</code> wasn&apos;t present. In order to ensure we don&apos;t guess wrong, we now require that the developers send us an <code>id</code> field. If your objects have a differently-named unique field, feel free to adapt this snippet and ensure this test passes:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-comment">// ...</span>
+<span class="hljs-keyword">let</span> items = z.JSON.parse(response.content).items;
+items.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+  item.id = item.contactId;
+})
+
+<span class="hljs-keyword">return</span> items;
 </code></pre>
     </div>
   </div>

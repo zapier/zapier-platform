@@ -21,6 +21,7 @@ const { localAppCommand } = require('./local');
 const readCredentials = (credentials, explodeIfMissing = true) => {
   return Promise.resolve(
     credentials ||
+      // deploy key? ||
       readFile(constants.AUTH_LOCATION, 'Please run `zapier login`.')
         .then(buf => {
           return JSON.parse(buf.toString());
