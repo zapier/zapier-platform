@@ -128,7 +128,7 @@ const prepareRequest = function(req) {
     req = requestMerge(requestTemplate, req);
   }
 
-  // replace sensitive data in the request
+  // replace {{curlies}} in the request
   if (req.replace) {
     const bank = cleaner.createBundleBank(
       input._zapier.app,
