@@ -129,7 +129,9 @@ const renderField = (definition, key, indent = 0) => {
 
   props.push(renderProp('key', quote(key)));
   if (definition.label) {
-    props.push(renderProp('label', quote(escapeSpecialChars(definition.label))));
+    props.push(
+      renderProp('label', quote(escapeSpecialChars(definition.label)))
+    );
   }
 
   if (definition.help_text) {
@@ -243,7 +245,9 @@ const renderAuthTemplate = (authType, definition) => {
 
   const testTriggerKey = getTestTriggerKey(definition);
   if (testTriggerKey) {
-    templateContext.TEST_TRIGGER_MODULE = `./triggers/${snakeCase(testTriggerKey)}`;
+    templateContext.TEST_TRIGGER_MODULE = `./triggers/${snakeCase(
+      testTriggerKey
+    )}`;
   } else {
     templateContext.TEST_TRIGGER_MODULE = '';
   }
@@ -667,10 +671,9 @@ const renderStep = (type, definition, key, legacyApp) => {
   const label = definition.label || `${stepVerbsMap[type]} ${noun}`;
 
   const lowerNoun = noun.toLowerCase();
-  let description =
+  const description =
     definition.help_text ||
     stepDescriptionTemplateMap[type]({ lowerNoun: lowerNoun });
-  description = description.replace(/'/g, "\\'");
 
   const hidden = Boolean(definition.hide);
   const important = Boolean(definition.important);
@@ -678,8 +681,8 @@ const renderStep = (type, definition, key, legacyApp) => {
   const templateContext = {
     KEY: snakeCase(key),
     NOUN: noun,
-    DESCRIPTION: description,
-    LABEL: label,
+    DESCRIPTION: escapeSpecialChars(description),
+    LABEL: escapeSpecialChars(label),
     HIDDEN: hidden,
     IMPORTANT: important,
     FIELDS: fields,
@@ -714,11 +717,18 @@ const renderStep = (type, definition, key, legacyApp) => {
       definition.custom_fields_result_url;
   }
 
-  if (type === 'create' && !stepMeta.hasPreScripting && !stepMeta.hasFullScripting) {
+  if (
+    type === 'create' &&
+    !stepMeta.hasPreScripting &&
+    !stepMeta.hasFullScripting
+  ) {
     // Exclude create fields that uncheck "Send to Action Endpoint URL in JSON body"
     // https://zapier.com/developer/documentation/v2/action-fields/#send-to-action-endpoint-url-in-json-body
     const fieldKeys = _.keys(definition.fields);
-    const excludeFieldKeys = _.filter(fieldKeys, k => !definition.fields[k].send_in_json);
+    const excludeFieldKeys = _.filter(
+      fieldKeys,
+      k => !definition.fields[k].send_in_json
+    );
     templateContext.excludeFieldKeys = excludeFieldKeys || null;
   }
 
@@ -798,7 +808,7 @@ const renderStepTest = (type, definition, key, legacyApp) => {
   const inputData = renderDefaultInputData(definition);
   const templateContext = {
     KEY: key,
-    LABEL: label,
+    LABEL: escapeSpecialChars(label),
     AUTH_DATA: authData,
     INPUT_DATA: inputData
   };
@@ -833,7 +843,7 @@ const writeUtils = newAppDir => {
   );
 };
 
-const findSearchOrCreates = (legacyApp) => {
+const findSearchOrCreates = legacyApp => {
   let searchOrCreates = {};
   _.each(legacyApp.searches, (searchDef, searchKey) => {
     if (searchDef.action_pair_key) {
@@ -903,7 +913,11 @@ const renderIndex = legacyApp => {
     if (_.isEmpty(searchOrCreates)) {
       templateContext.SEARCH_OR_CREATES = null;
     } else {
-      templateContext.SEARCH_OR_CREATES = JSON.stringify(searchOrCreates, null, 2);
+      templateContext.SEARCH_OR_CREATES = JSON.stringify(
+        searchOrCreates,
+        null,
+        2
+      );
     }
 
     const templateFile = path.join(TEMPLATE_DIR, '/index.template.js');

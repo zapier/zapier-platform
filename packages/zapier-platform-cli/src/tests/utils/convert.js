@@ -559,6 +559,67 @@ const getSessionKey = (z, bundle) => {
           content.should.containEql("description: 'Finds a example.'");
         });
     });
+
+    it('should escape trigger label and description', () => {
+      const wbDef = {
+        triggers: {
+          example: {
+            label: "Ender's Trigger",
+            help_text: "It's a trigger.\nLine 2."
+          }
+        }
+      };
+      const stepDef = wbDef.triggers.example;
+
+      return convert
+        .renderStep('trigger', stepDef, 'example', wbDef)
+        .then(content => {
+          content.should.containEql('label: "Ender\'s Trigger"');
+          content.should.containEql(
+            'description: "It\'s a trigger.\\nLine 2."'
+          );
+        });
+    });
+
+    it('should escape create label and description', () => {
+      const wbDef = {
+        actions: {
+          example: {
+            label: "Ender's Action",
+            help_text: "It's an action.\nLine 2."
+          }
+        }
+      };
+      const stepDef = wbDef.actions.example;
+
+      return convert
+        .renderStep('create', stepDef, 'example', wbDef)
+        .then(content => {
+          content.should.containEql('label: "Ender\'s Action"');
+          content.should.containEql(
+            'description: "It\'s an action.\\nLine 2."'
+          );
+        });
+    });
+
+    it('should escape search label and description', () => {
+      const wbDef = {
+        searches: {
+          example: {
+            label: "Ender's Search",
+            help_text: "It's a search.\nLine 2."
+          }
+        }
+      };
+      const stepDef = wbDef.searches.example;
+
+      return convert
+        .renderStep('search', stepDef, 'example', wbDef)
+        .then(content => {
+          content.should.containEql('label: "Ender\'s Search"');
+          content.should.containEql('description: "It\'s a search.\\nLine 2."');
+        });
+    });
   });
 
   describe('render sample', () => {
