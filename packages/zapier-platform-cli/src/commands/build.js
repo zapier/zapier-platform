@@ -27,7 +27,7 @@ build.argOptsSpec = {
   },
   'include-js-map': {
     flag: true,
-    help: 'include .js.map files (usually source maps'
+    help: 'include .js.map files (usually source maps)'
   }
 };
 build.help = 'Builds a pushable zip from the current directory.';

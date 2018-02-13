@@ -56,18 +56,14 @@ From a user perspective, both the CLI and the existing web builder platform offe
 
 All Zapier CLI apps are run using Node.js `LAMBDA_VERSION`.
 
-You can develop using any version of Node you'd like, but your code has to run on Node `LAMBDA_VERSION`. You can accomplish this by developing on your preferred version and then transpiling with [Babel](https://babeljs.io/) (or similar).
+You can develop using any version of Node you'd like, but your eventual code must be compatible with `LAMBDA_VERSION`. If you're using features not yet available in `LAMBDA_VERSION`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
 
-To ensure stability for our users, we also require that you run your tests on `LAMBDA_VERSION` as well. If you don't have it available, we recommend using either [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation) to install `LAMBDA_VERSION` and run the tests locally. On Windows you can use [nvm-windows](https://github.com/coreybutler/nvm-windows#installation--upgrades) or [nodist](https://github.com/marcelklehr/nodist#installation).
+To ensure stability for our users, we strongly encourage you run tests on `LAMBDA_VERSION` sometime before your code reaches users. This can be done multiple ways.
 
-For NVM on Mac (via [homebrew](http://brew.sh/)):
+Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform-example-app-minimal/blob/master/.travis.yml) file in our template apps to get you started.
 
-```bash
-brew install nvm
-nvm install v6.10.2
-```
-
-You can then either swap to that version with `nvm use LAMBDA_VERSION`, or do `nvm exec LAMBDA_VERSION zapier test` so you can run tests without having to switch versions while developing.
+Alternatively, you can change your local node version with tools such as [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation).
+Then you can either swap to that version with `nvm use LAMBDA_VERSION`, or do `nvm exec LAMBDA_VERSION zapier test` so you can run tests without having to switch versions while developing.
 
 
 ### Quick Setup Guide

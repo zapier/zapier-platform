@@ -8,7 +8,6 @@ module.exports = _.extend(
   require('./changelog'),
   require('./context'),
   require('./convert'),
-  require('./correct-version'),
   require('./display'),
   require('./files'),
   require('./init'),

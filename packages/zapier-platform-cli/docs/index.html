@@ -662,18 +662,8 @@ and returns the relevant data, which gets fed back into Zapier.</p>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>All Zapier CLI apps are run using Node.js <code>v6.10.2</code>.</p><p>You can develop using any version of Node you&apos;d like, but your code has to run on Node <code>v6.10.2</code>. You can accomplish this by developing on your preferred version and then transpiling with <a href="https://babeljs.io/">Babel</a> (or similar).</p><p>To ensure stability for our users, we also require that you run your tests on <code>v6.10.2</code> as well. If you don&apos;t have it available, we recommend using either <a href="https://github.com/creationix/nvm#installation">nvm</a> or <a href="https://github.com/tj/n#installation">n</a> to install <code>v6.10.2</code> and run the tests locally. On Windows you can use <a href="https://github.com/coreybutler/nvm-windows#installation--upgrades">nvm-windows</a> or <a href="https://github.com/marcelklehr/nodist#installation">nodist</a>.</p><p>For NVM on Mac (via <a href="http://brew.sh/">homebrew</a>):</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">brew install nvm
-nvm install v6.10.2
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can then either swap to that version with <code>nvm use v6.10.2</code>, or do <code>nvm exec v6.10.2 zapier test</code> so you can run tests without having to switch versions while developing.</p>
+      <p>All Zapier CLI apps are run using Node.js <code>v6.10.2</code>.</p><p>You can develop using any version of Node you&apos;d like, but your eventual code must be compatible with <code>v6.10.2</code>. If you&apos;re using features not yet available in <code>v6.10.2</code>, you can transpile your code to a compatible format with <a href="https://babeljs.io/">Babel</a> (or similar).</p><p>To ensure stability for our users, we strongly encourage you run tests on <code>v6.10.2</code> sometime before your code reaches users. This can be done multiple ways.</p><p>Firstly, by using a CI tool (like <a href="https://travis-ci.org/">Travis CI</a> or <a href="https://circleci.com/">Circle CI</a>, which are free for open source projects). We provide a sample <a href="https://github.com/zapier/zapier-platform-example-app-minimal/blob/master/.travis.yml">.travis.yml</a> file in our template apps to get you started.</p><p>Alternatively, you can change your local node version with tools such as <a href="https://github.com/creationix/nvm#installation">nvm</a> or <a href="https://github.com/tj/n#installation">n</a>.
+Then you can either swap to that version with <code>nvm use v6.10.2</code>, or do <code>nvm exec v6.10.2 zapier test</code> so you can run tests without having to switch versions while developing.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

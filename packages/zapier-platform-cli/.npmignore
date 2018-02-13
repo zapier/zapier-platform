@@ -6,3 +6,5 @@ lib/tests/*
 *.sh
 *.log
 README-source.md
+snippets/*
+docs/*

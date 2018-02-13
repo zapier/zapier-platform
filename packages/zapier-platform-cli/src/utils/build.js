@@ -10,6 +10,8 @@ const fs = require('fs');
 const fse = require('fs-extra');
 const klaw = require('klaw');
 
+const eslint = require('eslint');
+
 const constants = require('../constants');
 
 const {
@@ -106,6 +108,39 @@ const listFiles = dir => {
   });
 };
 
+// returns paths as to be chainable
+const verifyNodeFeatures = paths => {
+  const opts = {
+    plugins: ['node'],
+    // set version as high as possible, let's parse it all
+    // see: https://eslint.org/docs/user-guide/configuring#specifying-parser-options
+    parserOptions: { ecmaVersion: 9 },
+    useEslintrc: false, // literally only check this rule
+    rules: {
+      'node/no-unsupported-features': [
+        'error',
+        { version: require('../constants').LAMBDA_VERSION }
+      ]
+    }
+  };
+
+  // only lint js files; node_modules ignored by default
+  const jsPaths = paths.filter(p => p.endsWith('.js'));
+  const cli = new eslint.CLIEngine(opts);
+  const errors = eslint.CLIEngine.getErrorResults(
+    cli.executeOnFiles(jsPaths).results
+  );
+
+  if (errors.length) {
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('\n', cli.getFormatter()(errors));
+    }
+    throw new Error('Using unsupported features, see above');
+  } else {
+    return paths;
+  }
+};
+
 const forceIncludeDumbPath = (appConfig, filePath) => {
   let matchesConfigInclude = false;
   const configIncludePaths = _.get(appConfig, 'includeInBuild', []);
@@ -135,10 +170,11 @@ const makeZip = (dir, zipPath) => {
     path.resolve(dir, 'index.js')
   ];
 
-  return requiredFiles(dir, entryPoints)
-    .then(smartPaths =>
-      Promise.all([smartPaths, listFiles(dir), getLinkedAppConfig(dir)])
-    )
+  return Promise.all([
+    requiredFiles(dir, entryPoints),
+    listFiles(dir),
+    getLinkedAppConfig(dir)
+  ])
     .then(([smartPaths, dumbPaths, appConfig]) => {
       if (global.argOpts['disable-dependency-detection']) {
         return dumbPaths;
@@ -155,6 +191,7 @@ const makeZip = (dir, zipPath) => {
       }
       return finalPaths;
     })
+    .then(verifyNodeFeatures)
     .then(paths => {
       return new Promise((resolve, reject) => {
         const output = fs.createWriteStream(zipPath);
@@ -360,7 +397,8 @@ const buildAndUploadDir = (zipPath, appDir) => {
 module.exports = {
   build,
   buildAndUploadDir,
+  makeZip,
   listFiles,
   requiredFiles,
-  makeZip
+  verifyNodeFeatures
 };

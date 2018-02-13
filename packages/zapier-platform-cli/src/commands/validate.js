@@ -62,11 +62,6 @@ const validate = context => {
       }
     })
     .then(() => {
-      if (!utils.isCorrectVersion(context)) {
-        process.exitCode = 1;
-      }
-    })
-    .then(() => {
       if (global.argOpts['without-style']) {
         return Promise.resolve([]);
       } else if (process.exitCode === 1) {
