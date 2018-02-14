@@ -373,8 +373,9 @@ const getSessionKey = (z, bundle) => {
 
       return convert.getHeader(wbDef).then(string => {
         string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
-  request.headers.Authorization = \`Bearer \${bundle.authData.access_token}\`;
-
+  if (bundle.authData.access_token) {
+    request.headers.Authorization = \`Bearer \${bundle.authData.access_token}\`;
+  }
   return request;
 };
 `);
@@ -494,8 +495,9 @@ const getSessionKey = (z, bundle) => {
 
       return convert.getHeader(wbDef).then(string => {
         string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
-  request.headers.Authorization = \`Bearer \${bundle.authData.access_token}\`;
-
+  if (bundle.authData.access_token) {
+    request.headers.Authorization = \`Bearer \${bundle.authData.access_token}\`;
+  }
   return request;
 };
 `);
