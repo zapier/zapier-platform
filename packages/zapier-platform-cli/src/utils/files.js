@@ -146,5 +146,6 @@ module.exports = {
   readFile,
   removeDir,
   validateFileExists,
-  writeFile
+  writeFile,
+  copyFile
 };

@@ -3,7 +3,7 @@ const path = require('path');
 const prettier = require('prettier');
 const stripComments = require('strip-comments');
 const { camelCase, snakeCase } = require('./misc');
-const { readFile, writeFile, ensureDir } = require('./files');
+const { copyFile, readFile, writeFile, ensureDir } = require('./files');
 const { printStarting, printDone } = require('./display');
 
 const TEMPLATE_DIR = path.join(__dirname, '../../scaffold/convert');
@@ -1004,6 +1004,15 @@ const writeScripting = (legacyApp, newAppDir) => {
   });
 };
 
+const writeGitIgnore = newAppDir => {
+  const srcPath = path.join(TEMPLATE_DIR, '/gitignore');
+  const destPath = path.join(newAppDir, '/.gitignore');
+  return copyFile(srcPath, destPath).then(() => {
+    printStarting('Writing .gitignore');
+    printDone();
+  });
+};
+
 const convertApp = (legacyApp, newAppDir) => {
   const promises = [];
   _.each(stepNamesMap, (cliType, wbType) => {
@@ -1019,6 +1028,7 @@ const convertApp = (legacyApp, newAppDir) => {
   promises.push(writeIndex(legacyApp, newAppDir));
   promises.push(writePackageJson(legacyApp, newAppDir));
   promises.push(writeScripting(legacyApp, newAppDir));
+  promises.push(writeGitIgnore(newAppDir));
 
   if (hasAuth(legacyApp)) {
     promises.push(writeAuth(legacyApp, newAppDir));
