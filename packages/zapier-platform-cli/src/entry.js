@@ -5,7 +5,7 @@ const _ = require('lodash');
 const colors = require('colors/safe');
 const updateNotifier = require('update-notifier');
 
-const { DEBUG, PLATFORM_PACKAGE } = require('./constants');
+const { DEBUG } = require('./constants');
 const commands = require('./commands');
 const utils = require('./utils');
 
@@ -79,12 +79,9 @@ module.exports = argv => {
     return;
   }
 
-  if (!utils.isValidAppInstall(command)) {
-    console.error(
-      colors.red(
-        `Looks like your package.json is missing \`${PLATFORM_PACKAGE}\`, its not restricted to a single version, or you haven't run npm install yet!`
-      )
-    );
+  const { valid, reason } = utils.isValidAppInstall(command);
+  if (!valid) {
+    console.error(colors.red(reason));
     process.exit(1);
   }
 
