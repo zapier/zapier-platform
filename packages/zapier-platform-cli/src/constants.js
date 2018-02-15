@@ -22,6 +22,7 @@ const nodeVersion = semver.Comparator(
   versionStore[versionStore.length - 1].nodeVersion
 ).semver.version;
 const LAMBDA_VERSION = `v${nodeVersion}`;
+const AUTH_KEY = 'deployKey';
 const PACKAGE_VERSION = require('../package.json').version;
 
 const ART = `\
@@ -47,6 +48,7 @@ zzzzzzzzzzzzzzz          zzzzzzzzzzzzzzz
 module.exports = {
   API_PATH,
   ART,
+  AUTH_KEY,
   AUTH_LOCATION,
   AUTH_LOCATION_RAW,
   BASE_ENDPOINT,

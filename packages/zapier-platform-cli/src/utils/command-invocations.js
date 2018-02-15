@@ -13,7 +13,7 @@ const constants = require('../constants');
 // check if the user needs to be logged in and do it if so
 // returns a promise
 const maybeLogin = context => {
-  return readCredentials(null, false).then(creds => {
+  return readCredentials(false).then(creds => {
     if (_.isEmpty(creds)) {
       context.line('Before you can do that, you need to be logged in.\n');
       return login(context, false);

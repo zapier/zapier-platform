@@ -57,7 +57,7 @@ const login = (context, firstTime = true) => {
       return utils.writeFile(
         constants.AUTH_LOCATION,
         utils.prettyJSONstringify({
-          deployKey: deployKey
+          [constants.AUTH_KEY]: deployKey
         })
       );
     })

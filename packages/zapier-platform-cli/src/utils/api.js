@@ -18,10 +18,13 @@ const { prettyJSONstringify, printStarting, printDone } = require('./display');
 const { localAppCommand } = require('./local');
 
 // Reads the JSON file at ~/.zapierrc (AUTH_LOCATION).
-const readCredentials = (credentials, explodeIfMissing = true) => {
-  return Promise.resolve(
-    credentials ||
-      // deploy key? ||
+const readCredentials = (explodeIfMissing = true) => {
+  if (process.env.ZAPIER_DEPLOY_KEY) {
+    return Promise.resolve({
+      [constants.AUTH_KEY]: process.env.ZAPIER_DEPLOY_KEY
+    });
+  } else {
+    return Promise.resolve(
       readFile(constants.AUTH_LOCATION, 'Please run `zapier login`.')
         .then(buf => {
           return JSON.parse(buf.toString());
@@ -33,7 +36,8 @@ const readCredentials = (credentials, explodeIfMissing = true) => {
             return {};
           }
         })
-  );
+    );
+  }
 };
 
 // Calls the underlying platform REST API with proper authentication.
@@ -58,7 +62,8 @@ const callAPI = (route, options, displayError = true) => {
         return _requestOptions;
       } else {
         return readCredentials().then(credentials => {
-          _requestOptions.headers['X-Deploy-Key'] = credentials.deployKey;
+          _requestOptions.headers['X-Deploy-Key'] =
+            credentials[constants.AUTH_KEY];
           return _requestOptions;
         });
       }

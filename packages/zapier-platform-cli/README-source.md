@@ -1111,7 +1111,9 @@ To also suppress the HTTP summary logs do:
 zapier test --very-quiet
 ```
 
-### Testing in Your CI (Jenkins/Travis/etc.)
+### Testing in Your CI
+
+Whether you use Travis, Circle, Jenkins, or anything else, we aim to make it painless to test in an automated environment.
 
 Behind the scenes `zapier test` is doing a pretty standard `npm test` with [mocha](https://www.npmjs.com/package/mocha) as the backend.
 
@@ -1125,7 +1127,9 @@ before_script: npm install -g zapier-platform-cli
 script: CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
 
-But you can substitute `zapier test` with `npm test`, or a direct call to `node_modules/mocha/bin/mocha`. Also, we generally recommend putting the environment variables into whatever configuration screen Jenkins or Travis provides!
+You can substitute `zapier test` with `npm test`, or a direct call to `node_modules/mocha/bin/mocha`. Also, we generally recommend putting the environment variables into whatever configuration screen Jenkins or Travis provides!
+
+As an alternative to reading the deploy key from root (the default location), you may set the `ZAPIER_DEPLOY_KEY` environment variable to run privileged commands without the human input needed for `zapier login`. We suggest encrypting your deploy key in whatever manner you CI provides (such as [these instructions](https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml), for Travis).
 
 
 ## Using `npm` Modules
