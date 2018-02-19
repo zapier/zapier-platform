@@ -38,7 +38,8 @@ const env = (context, version, key, value) => {
         );
 
         // touch index.js to force watch to pick up env changes
-        fs.utimesSync(utils.entryPoint(), NaN, NaN);
+        const now = Date.now() / 1000;
+        fs.utimesSync(utils.entryPoint(), now, now);
 
         return;
       });
