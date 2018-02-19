@@ -18,6 +18,7 @@ describe('deepNestedFields', () => {
           },
           operation: {
             perform: '$func$2$f$',
+            sample: { id: 1 },
             inputFields: [
               { key: 'orderId', type: 'number' },
               {
@@ -53,6 +54,7 @@ describe('deepNestedFields', () => {
           },
           operation: {
             perform: '$func$2$f$',
+            sample: { id: 1 },
             inputFields: [
               { key: 'orderId', type: 'number' },
               {
@@ -91,6 +93,7 @@ describe('deepNestedFields', () => {
           },
           operation: {
             perform: '$func$2$f$',
+            sample: { id: 1 },
             inputFields: [
               { key: 'orderId', type: 'number' },
               {

@@ -52,6 +52,10 @@
           "perform": {
             "url": "http://fake-crm.getsandbox.com/tags/{{inputData.id}}"
           },
+          "sample": {
+            "id": 385,
+            "name": "proactive enable ROI"
+          },
           "inputFields": [
             {
               "key": "id",
@@ -69,6 +73,10 @@
         "operation": {
           "perform": {
             "url": "http://fake-crm.getsandbox.com/tags"
+          },
+          "sample": {
+            "id": 385,
+            "name": "proactive enable ROI"
           }
         }
       },
@@ -78,7 +86,11 @@
           "description": "Create a new Tag in your account."
         },
         "operation": {
-          "perform": "$func$2$f$"
+          "perform": "$func$2$f$",
+          "sample": {
+            "id": 1,
+            "name": "proactive enable ROI"
+          }
         }
       }
     },
@@ -100,6 +112,11 @@
           "perform": {
             "url": "http://fake-crm.getsandbox.com/users/{{inputData.id}}"
           },
+          "sample": {
+            "id": 1,
+            "name": "Jalen Bode",
+            "email": "jalen.bode@company.com"
+          },
           "inputFields": [
             {
               "key": "id",
@@ -116,6 +133,11 @@
         "operation": {
           "perform": {
             "url": "http://fake-crm.getsandbox.com/users"
+          },
+          "sample": {
+            "id": 49,
+            "name": "Veronica Kuhn",
+            "email": "veronica.kuhn@company.com"
           }
         }
       }
@@ -143,6 +165,16 @@
           "perform": {
             "url": "http://fake-crm.getsandbox.com/contacts/{{inputData.id}}"
           },
+          "sample": {
+            "id": 1,
+            "name": "Rosalee Kub",
+            "company": "Schmidt, O'Reilly and Moen",
+            "email": "Rosalee_Kub47@hotmail.com",
+            "phone": "412-916-6798 x3478",
+            "address": "73375 Jacobson Turnpike",
+            "owner_id": 9,
+            "tag_ids": [87]
+          },
           "inputFields": [
             {
               "key": "id",
@@ -160,6 +192,16 @@
         "operation": {
           "perform": {
             "url": "http://fake-crm.getsandbox.com/contacts"
+          },
+          "sample": {
+            "id": 1,
+            "name": "Rosalee Kub",
+            "company": "Schmidt, O'Reilly and Moen",
+            "email": "Rosalee_Kub47@hotmail.com",
+            "phone": "412-916-6798 x3478",
+            "address": "73375 Jacobson Turnpike",
+            "owner_id": 9,
+            "tag_ids": [87]
           }
         }
       },
@@ -170,6 +212,16 @@
         },
         "operation": {
           "perform": "$func$2$f$",
+          "sample": {
+            "id": 1,
+            "name": "Rosalee Kub",
+            "company": "Schmidt, O'Reilly and Moen",
+            "email": "Rosalee_Kub47@hotmail.com",
+            "phone": "412-916-6798 x3478",
+            "address": "73375 Jacobson Turnpike",
+            "owner_id": 9,
+            "tag_ids": [87]
+          },
           "inputFields": [
             {
               "key": "email",
@@ -260,6 +312,10 @@
         "perform": {
           "url": "http://fake-crm.getsandbox.com/tags"
         },
+        "sample": {
+          "id": 385,
+          "name": "proactive enable ROI"
+        },
         "resource": "tag",
         "type": "polling"
       },
@@ -274,6 +330,11 @@
       "operation": {
         "perform": {
           "url": "http://fake-crm.getsandbox.com/users"
+        },
+        "sample": {
+          "id": 49,
+          "name": "Veronica Kuhn",
+          "email": "veronica.kuhn@company.com"
         },
         "resource": "user",
         "type": "polling"
@@ -317,6 +378,10 @@
         "perform": {
           "url": "http://fake-crm.getsandbox.com/tags?name={{inputData.name}}"
         },
+        "sample": {
+          "id": 385,
+          "name": "proactive enable ROI"
+        },
         "resource": "tag",
         "inputFields": [
           {
@@ -342,7 +407,11 @@
       },
       "operation": {
         "perform": "$func$2$f$",
-        "resource": "tag"
+        "resource": "tag",
+        "sample": {
+          "id": 385,
+          "name": "proactive enable ROI"
+        }
       },
       "key": "tag_create",
       "noun": "Tag"

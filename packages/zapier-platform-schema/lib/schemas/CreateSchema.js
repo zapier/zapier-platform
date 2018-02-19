@@ -20,7 +20,7 @@ module.exports = makeSchema(
           label: 'Create Recipe',
           description: 'Creates a new recipe.'
         },
-        operation: { perform: '$func$2$f$' }
+        operation: { perform: '$func$2$f$', sample: { id: 1 } }
       },
       {
         key: 'recipe',
@@ -29,7 +29,11 @@ module.exports = makeSchema(
           label: 'Create Recipe',
           description: 'Creates a new recipe.'
         },
-        operation: { perform: '$func$2$f$', shouldLock: true }
+        operation: {
+          perform: '$func$2$f$',
+          sample: { id: 1 },
+          shouldLock: true
+        }
       }
     ],
     antiExamples: [

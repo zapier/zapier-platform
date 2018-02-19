@@ -49,7 +49,8 @@ describe('app', () => {
               description: 'Find a foo...'
             },
             operation: {
-              perform: '$func$2$f$'
+              perform: '$func$2$f$',
+              sample: { id: 1 }
             }
           }
         },
@@ -62,7 +63,8 @@ describe('app', () => {
               description: 'Creates a...'
             },
             operation: {
-              perform: '$func$2$f$'
+              perform: '$func$2$f$',
+              sample: { id: 1 }
             }
           }
         },
@@ -95,7 +97,8 @@ describe('app', () => {
               description: 'Find a foo...'
             },
             operation: {
-              perform: '$func$2$f$'
+              perform: '$func$2$f$',
+              sample: { id: 1 }
             }
           }
         },
@@ -108,7 +111,8 @@ describe('app', () => {
               description: 'Creates a...'
             },
             operation: {
-              perform: '$func$2$f$'
+              perform: '$func$2$f$',
+              sample: { id: 1 }
             }
           }
         },

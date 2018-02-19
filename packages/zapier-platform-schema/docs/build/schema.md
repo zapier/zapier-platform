@@ -243,7 +243,7 @@ Key | Required | Type | Description
 `performGet` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
-`sample` | no | `object` | What does a sample of data look like? Will use resource sample if missing.
+`sample` | **yes** | `object` | What does a sample of data look like? Will use resource sample if missing.
 
 -----
 
@@ -268,7 +268,7 @@ Key | Required | Type | Description
 `performGet` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
-`sample` | no | `object` | What does a sample of data look like? Will use resource sample if missing.
+`sample` | **yes** | `object` | What does a sample of data look like? Will use resource sample if missing.
 `shouldLock` | no | `boolean` | Should this action be performed one at a time (avoid concurrency)?
 
 -----
@@ -337,7 +337,7 @@ Key | Required | Type | Description
 `performUnsubscribe` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Takes a URL and data from a previous subscribe call and unsubscribes.
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
-`sample` | no | `object` | What does a sample of data look like? Will use resource sample if missing.
+`sample` | **yes** | `object` | What does a sample of data look like? Will use resource sample if missing.
 
 -----
 
@@ -361,7 +361,7 @@ Key | Required | Type | Description
 `perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
-`sample` | no | `object` | What does a sample of data look like? Will use resource sample if missing.
+`sample` | **yes** | `object` | What does a sample of data look like? Will use resource sample if missing.
 
 -----
 
@@ -387,7 +387,7 @@ Key | Required | Type | Description
 `canPaginate` | no | `boolean` | Does this endpoint support a page offset?
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
-`sample` | no | `object` | What does a sample of data look like? Will use resource sample if missing.
+`sample` | **yes** | `object` | What does a sample of data look like? Will use resource sample if missing.
 
 -----
 
@@ -406,11 +406,11 @@ How will Zapier create a new object?
 * `{ key: 'recipe',
   noun: 'Recipe',
   display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-  operation: { perform: '$func$2$f$' } }`
+  operation: { perform: '$func$2$f$', sample: { id: 1 } } }`
 * `{ key: 'recipe',
   noun: 'Recipe',
   display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-  operation: { perform: '$func$2$f$', shouldLock: true } }`
+  operation: { perform: '$func$2$f$', sample: { id: 1 }, shouldLock: true } }`
 
 #### Anti-Examples
 

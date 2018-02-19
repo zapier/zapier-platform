@@ -26,7 +26,8 @@ describe('readability', () => {
         description: 'Creates a new recipe.'
       },
       operation: {
-        perform: '$func$2$f$'
+        perform: '$func$2$f$',
+        sample: { id: 1 }
       }
     });
     results.errors.should.have.length(1);
@@ -45,6 +46,7 @@ describe('readability', () => {
       },
       operation: {
         perform: '$func$2$f$',
+        sample: { id: 1 },
         inputFields: [false]
       }
     });
@@ -62,6 +64,7 @@ describe('readability', () => {
       },
       operation: {
         perform: '$func$2$f$',
+        sample: { id: 1 },
         inputFields: [{ key: 'field', type: 'string', default: '' }]
       }
     });

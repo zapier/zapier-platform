@@ -14,7 +14,7 @@ module.exports = makeSchema(
     description:
       'Represents the fundamental mechanics of triggers, searches, or creates.',
     type: 'object',
-    required: ['perform'],
+    required: ['perform', 'sample'],
     properties: {
       resource: {
         description:
