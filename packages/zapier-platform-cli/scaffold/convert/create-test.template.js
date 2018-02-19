@@ -17,9 +17,8 @@ describe('Creates - <%= LABEL %>', () => {
     };
 
     appTester(App.creates['<%= KEY %>'].operation.perform, bundle)
-      .then((result) => {
+      .then(result => {
         result.should.not.be.an.Array();
-        result.should.have.property('id');
         done();
       })
       .catch(done);
