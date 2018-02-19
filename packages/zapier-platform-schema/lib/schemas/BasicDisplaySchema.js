@@ -13,8 +13,7 @@ module.exports = makeSchema({
       description: 'Gets a new thing for you.',
       directions: 'This is how you use the thing.',
       hidden: false,
-      important: true,
-      order: 12
+      important: true
     }
   ],
   antiExamples: [
@@ -56,11 +55,6 @@ module.exports = makeSchema({
     hidden: {
       description: 'Should this operation be unselectable by users?',
       type: 'boolean'
-    },
-    order: {
-      description:
-        '[**DEPRECATED**] Should this operation precede or follow other operations when displayed in the UI?',
-      type: 'number'
     }
   },
   additionalProperties: false

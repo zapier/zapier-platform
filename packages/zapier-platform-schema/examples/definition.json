@@ -67,7 +67,6 @@
       "list": {
         "display": {
           "label": "New Tag",
-          "order": 3,
           "description": "Trigger when a new Tag is created in your account."
         },
         "operation": {
@@ -104,7 +103,6 @@
       },
       "get": {
         "display": {
-          "order": 4,
           "label": "Get User by ID",
           "description": "Grab a specific User by ID."
         },
@@ -157,7 +155,6 @@
       },
       "get": {
         "display": {
-          "order": 1,
           "label": "Get Contact by ID",
           "description": "Grab a specific Contact by ID."
         },
@@ -272,7 +269,6 @@
       "key": "contact_by_tag",
       "noun": "Contact",
       "display": {
-        "order": 2,
         "label": "New Tagged Contact",
         "description": "Trigger when a new Contact is tagged in your account."
       },
@@ -305,7 +301,6 @@
     "tag_list": {
       "display": {
         "label": "New Tag",
-        "order": 3,
         "description": "Trigger when a new Tag is created in your account."
       },
       "operation": {
