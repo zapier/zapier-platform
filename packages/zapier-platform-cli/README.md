@@ -153,16 +153,16 @@ From a user perspective, both the CLI and the existing web builder platform offe
 
 ### Requirements
 
-All Zapier CLI apps are run using Node.js `v6.10.2`.
+All Zapier CLI apps are run using Node.js `v6.10.3`.
 
-You can develop using any version of Node you'd like, but your eventual code must be compatible with `v6.10.2`. If you're using features not yet available in `v6.10.2`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
+You can develop using any version of Node you'd like, but your eventual code must be compatible with `v6.10.3`. If you're using features not yet available in `v6.10.3`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
 
-To ensure stability for our users, we strongly encourage you run tests on `v6.10.2` sometime before your code reaches users. This can be done multiple ways.
+To ensure stability for our users, we strongly encourage you run tests on `v6.10.3` sometime before your code reaches users. This can be done multiple ways.
 
 Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform-example-app-minimal/blob/master/.travis.yml) file in our template apps to get you started.
 
 Alternatively, you can change your local node version with tools such as [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation).
-Then you can either swap to that version with `nvm use v6.10.2`, or do `nvm exec v6.10.2 zapier test` so you can run tests without having to switch versions while developing.
+Then you can either swap to that version with `nvm use v6.10.3`, or do `nvm exec v6.10.3 zapier test` so you can run tests without having to switch versions while developing.
 
 
 ### Quick Setup Guide
@@ -2121,7 +2121,7 @@ See [the wiki](https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps) 
 
 ### Why doesn't Zapier support newer versions of Node.js?
 
-We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html) of Node (the latest of which is `v6.10.2`. As that updates, so too will we.
+We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html) of Node (the latest of which is `v6.10.3`. As that updates, so too will we.
 
 
 ### Does Zapier support XML (SOAP) APIs?
