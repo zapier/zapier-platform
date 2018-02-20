@@ -14,7 +14,7 @@
     "test": "npm run zapier-build && node node_modules/mocha/bin/mocha --recursive lib"
   },
   "engines": {
-    "node": "6.10.2",
+    "node": "6.10.3",
     "npm": ">=3.10.10"
   },
   "dependencies": {
@@ -24,7 +24,7 @@
     "babel-plugin-transform-regenerator": "6.24.1",
     "babel-preset-env": "1.4.0",
     "lodash": "4.17.4",
-    "zapier-platform-core": "4.3.2"
+    "zapier-platform-core": "5.0.0"
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
