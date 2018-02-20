@@ -18,5 +18,9 @@
     "mocha": "4.0.1",
     "should": "13.1.2"
   },
-  "private": true
+  "private": true,
+  "zapier": {
+    "convertedFromAppID": <%= APP_ID %>,
+    "convertedByCLIVersion": "<%= CLI_VERSION %>"
+  }
 }

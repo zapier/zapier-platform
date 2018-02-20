@@ -26,6 +26,11 @@ const convert = (context, appid, location) => {
     return utils
       .callAPI(null, { url })
       .then(legacyApp => {
+        // The JSON dump of the app doesn't have app ID, let's add it here
+        legacyApp.general.app_id = appid;
+        return legacyApp;
+      })
+      .then(legacyApp => {
         utils.printDone();
         return legacyApp;
       })

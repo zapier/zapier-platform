@@ -673,4 +673,21 @@ const getSessionKey = (z, bundle) => {
       });
     });
   });
+
+  describe('render package.json', () => {
+    it('should render track info', () => {
+      const wbDef = {
+        general: {
+          title: 'Example App',
+          description: 'It\'s an "example" app.',
+          app_id: 1234
+        }
+      };
+      return convert.renderPackageJson(wbDef).then(content => {
+        const pkg = JSON.parse(content);
+        pkg.zapier.convertedFromAppID.should.eql(1234);
+        pkg.zapier.convertedByCLIVersion.should.be.ok();
+      });
+    });
+  });
 });

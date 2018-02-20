@@ -5,6 +5,7 @@ const stripComments = require('strip-comments');
 const { camelCase, snakeCase } = require('./misc');
 const { copyFile, readFile, writeFile, ensureDir } = require('./files');
 const { printStarting, printDone } = require('./display');
+const { PACKAGE_VERSION } = require('../constants');
 
 const TEMPLATE_DIR = path.join(__dirname, '../../scaffold/convert');
 const ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION = '1.0.0';
@@ -934,16 +935,21 @@ const writeIndex = (legacyApp, newAppDir) => {
 const renderPackageJson = legacyApp => {
   const { needsLegacyScriptingRunner } = getMetaData(legacyApp);
 
+  // Not using escapeSpecialChars because we don't want to escape single quotes (not allowed in JSON)
+  const description = legacyApp.general.description
+    .replace(/\n/g, '\\n')
+    .replace(/"/g, '\\"');
+
   const templateContext = {
     NAME: _.kebabCase(legacyApp.general.title),
-    DESCRIPTION: escapeSpecialChars(legacyApp.general.description)
+    DESCRIPTION: description,
+    APP_ID: legacyApp.general.app_id,
+    CLI_VERSION: PACKAGE_VERSION
   };
-
-  const zapierCoreVersion = require('../../package.json').version;
 
   const dependencies = [];
 
-  dependencies.push(`"zapier-platform-core": "${zapierCoreVersion}"`);
+  dependencies.push(`"zapier-platform-core": "${PACKAGE_VERSION}"`);
 
   if (needsLegacyScriptingRunner) {
     // TODO: Make conditional
@@ -1068,5 +1074,6 @@ module.exports = {
   getHeader,
   getBeforeRequests,
   getAfterResponses,
-  hasAuth
+  hasAuth,
+  renderPackageJson
 };
