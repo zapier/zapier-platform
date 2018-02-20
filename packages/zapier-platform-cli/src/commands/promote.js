@@ -43,7 +43,7 @@ const promote = (context, version) => {
           `${colors.yellow(
             'Warning!'
           )} Changelog not found. Please create a \`CHANGELOG.md\` file in a format similar to ${colors.cyan(
-            'https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md'
+            'https://gist.github.com/xavdid/b9ede3565f1188ce339292acc29612b2'
           )}, with user-facing descriptions.\n`
         );
         action = () =>
