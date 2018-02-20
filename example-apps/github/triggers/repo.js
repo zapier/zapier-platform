@@ -1,3 +1,4 @@
+const sample = require('../samples/sample_repo_list');
 
 const triggerRepo = (z, bundle) => {
   const responsePromise = z.request({
@@ -21,6 +22,7 @@ module.exports = {
     inputFields: [
 
     ],
-    perform: triggerRepo
+    perform: triggerRepo,
+    sample: sample
   }
 };
