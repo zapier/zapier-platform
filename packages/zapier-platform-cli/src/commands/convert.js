@@ -33,8 +33,12 @@ const convert = (context, appid, location) => {
   };
 
   return utils.initApp(context, location, createApp).then(() => {
+    context.line();
     context.line(
-      '\nFinished! You might need to `npm install` then try `zapier test`!'
+      `Finished! You may try \`npm install\` and then \`zapier test\` in "${location}" directory.`
+    );
+    context.line(
+      "Also, if your app has authentication, don't forget to edit the environment variables in the .environment file."
     );
   });
 };

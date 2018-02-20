@@ -1004,6 +1004,22 @@ const writeScripting = (legacyApp, newAppDir) => {
   });
 };
 
+const renderEnvironment = definition => {
+  const lines = _.map(definition.auth_fields, (field, key) => {
+    const upperKey = key.toUpperCase();
+    return `${upperKey}=YOUR_${upperKey}`;
+  });
+  return lines.join('\n');
+};
+
+const writeEnvironment = (legacyApp, newAppDir) => {
+  const content = renderEnvironment(legacyApp);
+  if (!content) {
+    return Promise.resolve(null);
+  }
+  return createFile(content, '.environment', newAppDir);
+};
+
 const writeGitIgnore = newAppDir => {
   const srcPath = path.join(TEMPLATE_DIR, '/gitignore');
   const destPath = path.join(newAppDir, '/.gitignore');
@@ -1028,6 +1044,7 @@ const convertApp = (legacyApp, newAppDir) => {
   promises.push(writeIndex(legacyApp, newAppDir));
   promises.push(writePackageJson(legacyApp, newAppDir));
   promises.push(writeScripting(legacyApp, newAppDir));
+  promises.push(writeEnvironment(legacyApp, newAppDir));
   promises.push(writeGitIgnore(newAppDir));
 
   if (hasAuth(legacyApp)) {
