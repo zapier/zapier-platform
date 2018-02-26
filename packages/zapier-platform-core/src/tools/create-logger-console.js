@@ -11,6 +11,8 @@ const createLoggerConsole = input => {
     input._zapier.promises.push(promise);
 
     next();
+
+    (console[data.log_type] || console.log)(chunk.toString());
   };
 
   const stdout = new stream.Writable({
