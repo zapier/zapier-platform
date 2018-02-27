@@ -447,7 +447,7 @@ Each of the 3 types of function expects a certain type of object. As of core `v1
 | --- | --- | --- |
 | Trigger | Array | 0 or more objects that will be passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) |
 | Search | Array | 0 or more objects. If len > 0, put the best match first |
-| Action | Object | Can also be [Object] |
+| Action | Object | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject) |
 
 ## Fields
 
