@@ -1,5 +1,5 @@
 module.exports = {
-  createIsSingle: require('./create-is-single'),
+  createIsObject: require('./create-is-object'),
 
   searchIsArray: require('./search-is-array'),
 

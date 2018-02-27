@@ -22,7 +22,9 @@ const triggerIsObject = {
 
     if (nonObjectResult !== undefined) {
       const repr = simpleTruncate(JSON.stringify(nonObjectResult), 50);
-      return [`Got a result missing that was not an object (${repr})`];
+      return [
+        `Got a non-object result in the array, expected only objects (${repr})`
+      ];
     }
     return [];
   }

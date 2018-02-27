@@ -23,7 +23,7 @@ const triggerHasUniqueIds = {
     });
 
     if (doubleId !== undefined) {
-      return [`Got a two or more results with the id of ${doubleId}`];
+      return [`Got a two or more results with the id of "${doubleId}"`];
     }
     return [];
   }

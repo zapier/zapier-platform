@@ -8,14 +8,14 @@ const isCreate = require('./is-create');
 /*
   Makes sure the results are all objects.
 */
-const createIsSingle = {
-  name: 'createIsSingle',
+const createIsObject = {
+  name: 'createIsObject',
   shouldRun: isCreate,
   run: (method, results) => {
-    if (_.isArray(results)) {
+    if (!_.isPlainObject(results)) {
       const repr = simpleTruncate(JSON.stringify(results), 50);
       return [
-        `Got a result with multiple return values, expecting a single object from create (${repr})`
+        `Got a non-object result, expected an object from create (${repr})`
       ];
     }
 
@@ -24,4 +24,4 @@ const createIsSingle = {
   }
 };
 
-module.exports = createIsSingle;
+module.exports = createIsObject;

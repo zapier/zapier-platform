@@ -11,12 +11,14 @@ const isCreate = require('../src/checks/is-create');
 const testMethod = 'some.method';
 
 describe('checks', () => {
-  it('should see create return values with singles via createIsSingle', () => {
-    checks.createIsSingle.run(testMethod, {}).length.should.eql(0);
+  it('should return errors for anything but objects', () => {
+    checks.createIsObject.run(testMethod, {}).length.should.eql(0);
 
-    checks.createIsSingle.run(testMethod, []).length.should.eql(1);
-    checks.createIsSingle.run(testMethod, [{}]).length.should.eql(1);
-    checks.createIsSingle.run(testMethod, [{}, {}]).length.should.eql(1);
+    checks.createIsObject.run(testMethod, []).length.should.eql(1);
+    checks.createIsObject.run(testMethod, '').length.should.eql(1);
+    checks.createIsObject.run(testMethod, 1).length.should.eql(1);
+    checks.createIsObject.run(testMethod, [{}]).length.should.eql(1);
+    checks.createIsObject.run(testMethod, [{}, {}]).length.should.eql(1);
   });
 
   it('should error for objects via searchIsArray', () => {
