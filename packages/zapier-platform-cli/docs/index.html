@@ -350,9 +350,10 @@ a code {
 <li><a href="#example-apps">Example Apps</a></li>
 <li><a href="#faqs">FAQs</a><ul>
 <li><a href="#why-doesnt-zapier-support-newer-versions-of-nodejs">Why doesn&#39;t Zapier support newer versions of Node.js?</a></li>
+<li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
+<li><a href="#when-to-use-placeholders-or-curlies">When to use placeholders or curlies?</a></li>
 <li><a href="#does-zapier-support-xml-soap-apis">Does Zapier support XML (SOAP) APIs?</a></li>
 <li><a href="#is-it-possible-to-iterate-over-pages-in-a-polling-trigger">Is it possible to iterate over pages in a polling trigger?</a></li>
-<li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
 <li><a href="#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</a></li>
 <li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&#39;s the deal with pagination? When is it used and how does it work?</a></li>
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
@@ -536,9 +537,10 @@ a code {
 <li><a href="#example-apps">Example Apps</a></li>
 <li><a href="#faqs">FAQs</a><ul>
 <li><a href="#why-doesnt-zapier-support-newer-versions-of-nodejs">Why doesn&apos;t Zapier support newer versions of Node.js?</a></li>
+<li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
+<li><a href="#when-to-use-placeholders-or-curlies">When to use placeholders or curlies?</a></li>
 <li><a href="#does-zapier-support-xml-soap-apis">Does Zapier support XML (SOAP) APIs?</a></li>
 <li><a href="#is-it-possible-to-iterate-over-pages-in-a-polling-trigger">Is it possible to iterate over pages in a polling trigger?</a></li>
-<li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
 <li><a href="#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</a></li>
 <li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&apos;s the deal with pagination? When is it used and how does it work?</a></li>
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
@@ -2462,7 +2464,7 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Within your app, you can access the environment via the standard <code>process.env</code> - any values set via local <code>export</code> or <code>zapier env</code> will be there.</p><p>For example, you can access the <code>process.env</code> in your perform functions:</p>
+      <p>Within your app, you can access the environment via the standard <code>process.env</code> - any values set via local <code>export</code> or <code>zapier env</code> will be there.</p><p>For example, you can access the <code>process.env</code> in your perform functions and in templates:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> listExample = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
@@ -2482,8 +2484,8 @@ zapier env 1.0.0
   <span class="hljs-comment">// ...</span>
   triggers: {
     <span class="hljs-attr">example</span>: {
-      <span class="hljs-comment">// ...</span>
-      operation: {
+      <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;{{process.env.MY_NOUN}}&apos;</span>,
+      <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// ...</span>
         perform: listExample
       }
@@ -2497,7 +2499,7 @@ zapier env 1.0.0
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note! Be sure to lazily access your environment variables - we generally set the environment variables after your code is already loaded.</p>
+<p>Note! Be sure to lazily access your environment variables - see <a href="#when-to-use-placeholders-or-curclies">When to use placeholders or curlies?</a></p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -3737,6 +3739,44 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Update your <code>zapier-platform-core</code> dependency in <code>package.json</code>.  Each major version ties to a specific version of Node.js. You can find the mapping <a href="https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js">here</a>. We only support the version(s) supported by <a href="https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html">AWS Lambda</a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="when-to-use-placeholders-or-curlies">When to use placeholders or curlies?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>You will see both <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Expression_interpolation">template literal placeholders</a> <code>${var}</code> and (double) &quot;curlies&quot; <code>{{var}}</code> used in examples.</p><p>In general, use <code>${var}</code> within functions and use <code>{{var}}</code> anywhere else.</p><p>Placeholders get evaluated as soon as the line of code is evaluated. This means that if you use <code>${process.env.VAR}</code> in a trigger configuration, <code>zapier push</code> will substitute it with your local environment&apos;s value for <code>VAR</code> when it builds your app and the value set via <code>zapier env</code> will not be used.</p><blockquote>
+<p>If you&apos;re not familiar with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals">template literals</a>, know that <code>const val = &quot;a&quot; + b + &quot;c&quot;</code> is essentially the same as <code>const val = `a${b}c`</code>.</p>
+</blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h3 id="does-zapier-support-xml-soap-apis">Does Zapier support XML (SOAP) APIs?</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -3879,24 +3919,6 @@ npm run zapier-push
   }
 };
 </code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Update your <code>zapier-platform-core</code> dependency in <code>package.json</code>.  Each major version ties to a specific version of Node.js. You can find the mapping <a href="https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js">here</a>. We only support the version(s) supported by <a href="https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html">AWS Lambda</a>.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
     </div>
   </div>
 </div><div class="row">

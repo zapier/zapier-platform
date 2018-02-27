@@ -693,13 +693,13 @@ zapier env 1.0.0
 
 Within your app, you can access the environment via the standard `process.env` - any values set via local `export` or `zapier env` will be there.
 
-For example, you can access the `process.env` in your perform functions:
+For example, you can access the `process.env` in your perform functions and in templates:
 
 ```javascript
 [insert-file:./snippets/process-env.js]
 ```
 
-> Note! Be sure to lazily access your environment variables - we generally set the environment variables after your code is already loaded.
+> Note! Be sure to lazily access your environment variables - see [When to use placeholders or curlies?](#when-to-use-placeholders-or-curclies)
 
 
 ## Making HTTP Requests
@@ -1213,6 +1213,19 @@ See [the wiki](https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps) 
 
 We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html) of Node (the latest of which is `LAMBDA_VERSION`. As that updates, so too will we.
 
+### How do I manually set the Node.js version to run my app with?
+
+Update your `zapier-platform-core` dependency in `package.json`.  Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html).
+
+### When to use placeholders or curlies?
+
+You will see both [template literal placeholders](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Expression_interpolation) `${var}` and (double) "curlies" `{{var}}` used in examples.
+
+In general, use `${var}` within functions and use `{{var}}` anywhere else.
+
+Placeholders get evaluated as soon as the line of code is evaluated. This means that if you use `${process.env.VAR}` in a trigger configuration, `zapier push` will substitute it with your local environment's value for `VAR` when it builds your app and the value set via `zapier env` will not be used.
+
+> If you're not familiar with [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), know that `const val = "a" + b + "c"` is essentially the same as <code>const val = &#96;a${b}c&#96;</code>.
 
 ### Does Zapier support XML (SOAP) APIs?
 
@@ -1239,10 +1252,6 @@ If you need to do more requests conditionally based on the results of an HTTP ca
 ```javascript
 [insert-file:./snippets/async-polling.js]
 ```
-
-### How do I manually set the Node.js version to run my app with?
-
-Update your `zapier-platform-core` dependency in `package.json`.  Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html).
 
 ### How do search-powered fields relate to dynamic dropdowns and why are they both required together?
 

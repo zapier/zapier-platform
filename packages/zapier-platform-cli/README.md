@@ -99,9 +99,10 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 - [Example Apps](#example-apps)
 - [FAQs](#faqs)
   * [Why doesn't Zapier support newer versions of Node.js?](#why-doesnt-zapier-support-newer-versions-of-nodejs)
+  * [How do I manually set the Node.js version to run my app with?](#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with)
+  * [When to use placeholders or curlies?](#when-to-use-placeholders-or-curlies)
   * [Does Zapier support XML (SOAP) APIs?](#does-zapier-support-xml-soap-apis)
   * [Is it possible to iterate over pages in a polling trigger?](#is-it-possible-to-iterate-over-pages-in-a-polling-trigger)
-  * [How do I manually set the Node.js version to run my app with?](#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with)
   * [How do search-powered fields relate to dynamic dropdowns and why are they both required together?](#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together)
   * [What's the deal with pagination? When is it used and how does it work?](#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work)
   * [How does deduplication work?](#how-does-deduplication-work)
@@ -1272,7 +1273,7 @@ zapier env 1.0.0
 
 Within your app, you can access the environment via the standard `process.env` - any values set via local `export` or `zapier env` will be there.
 
-For example, you can access the `process.env` in your perform functions:
+For example, you can access the `process.env` in your perform functions and in templates:
 
 ```javascript
 const listExample = (z, bundle) => {
@@ -1292,7 +1293,7 @@ const App = {
   // ...
   triggers: {
     example: {
-      // ...
+      noun: '{{process.env.MY_NOUN}}',
       operation: {
         // ...
         perform: listExample
@@ -1303,7 +1304,7 @@ const App = {
 
 ```
 
-> Note! Be sure to lazily access your environment variables - we generally set the environment variables after your code is already loaded.
+> Note! Be sure to lazily access your environment variables - see [When to use placeholders or curlies?](#when-to-use-placeholders-or-curclies)
 
 
 ## Making HTTP Requests
@@ -2123,6 +2124,19 @@ See [the wiki](https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps) 
 
 We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html) of Node (the latest of which is `v6.10.3`. As that updates, so too will we.
 
+### How do I manually set the Node.js version to run my app with?
+
+Update your `zapier-platform-core` dependency in `package.json`.  Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html).
+
+### When to use placeholders or curlies?
+
+You will see both [template literal placeholders](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Expression_interpolation) `${var}` and (double) "curlies" `{{var}}` used in examples.
+
+In general, use `${var}` within functions and use `{{var}}` anywhere else.
+
+Placeholders get evaluated as soon as the line of code is evaluated. This means that if you use `${process.env.VAR}` in a trigger configuration, `zapier push` will substitute it with your local environment's value for `VAR` when it builds your app and the value set via `zapier env` will not be used.
+
+> If you're not familiar with [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), know that `const val = "a" + b + "c"` is essentially the same as <code>const val = &#96;a${b}c&#96;</code>.
 
 ### Does Zapier support XML (SOAP) APIs?
 
@@ -2247,10 +2261,6 @@ module.exports = {
 };
 
 ```
-
-### How do I manually set the Node.js version to run my app with?
-
-Update your `zapier-platform-core` dependency in `package.json`.  Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html).
 
 ### How do search-powered fields relate to dynamic dropdowns and why are they both required together?
 
