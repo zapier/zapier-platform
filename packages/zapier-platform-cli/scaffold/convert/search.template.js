@@ -22,20 +22,22 @@ const getList = (z, bundle) => {
     key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preSearchEvent, z, bundle)
-    .then((preSearchResult) => z.request(preSearchResult))
+    .then(preSearchResult => z.request(preSearchResult))
 <% if (resourceFullScripting) { %>
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // Do a _read_resource() from scripting.
       const fullResourceEvent = {
         name: 'search.resource',
         key: '<%= KEY %>',
-        results,
+        results
       };
       return legacyScriptingRunner.runEvent(fullResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -44,7 +46,9 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePreScripting && resourcePostScripting) { %>
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Mimick the "fetch resource" that happened in WB
       const results = z.JSON.parse(response.content);
 
@@ -52,23 +56,25 @@ const getList = (z, bundle) => {
       const preResourceEvent = {
         name: 'search.resource.pre',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(preResourceEvent, z, resourceBundle);
     })
-    .then((preResourceResult) => z.request(preResourceResult))
-    .then((response) => {
+    .then(preResourceResult => z.request(preResourceResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_read_resource() from scripting.
       const postResourceEvent = {
         name: 'search.resource.post',
         key: '<%= KEY %>',
         response,
-        results: resourceBundle.results,
+        results: resourceBundle.results
       };
       return legacyScriptingRunner.runEvent(postResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -77,7 +83,9 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePreScripting) { %>
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Mimick the "fetch resource" that happened in WB
       const results = z.JSON.parse(response.content);
 
@@ -85,13 +93,15 @@ const getList = (z, bundle) => {
       const preResourceEvent = {
         name: 'search.resource.pre',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(preResourceEvent, z, resourceBundle);
     })
-    .then((preResourceResult) => z.request(preResourceResult))
-    .then((response) => {
+    .then(preResourceResult => z.request(preResourceResult))
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // WB would return a single record, but in CLI we expect an array
@@ -102,7 +112,9 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePostScripting) { %>
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Mimick the "fetch resource" that happened in WB
       const results = z.JSON.parse(response.content);
 
@@ -115,17 +127,19 @@ const getList = (z, bundle) => {
       const finalUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, results[0]);
       return z.request({ url: finalUrl });
     })
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_read_resource() from scripting.
       const postResourceEvent = {
         name: 'search.resource.post',
         key: '<%= KEY %>',
         response,
-        results: resourceBundle.results,
+        results: resourceBundle.results
       };
       return legacyScriptingRunner.runEvent(postResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -134,7 +148,9 @@ const getList = (z, bundle) => {
       }
     });
 <% } else { %>
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Mimick the "fetch resource" that happened in WB
       const results = z.JSON.parse(response.content);
 
@@ -145,7 +161,9 @@ const getList = (z, bundle) => {
       const finalUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, results[0]);
       return z.request({ url: finalUrl });
     })
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // WB would return a single record, but in CLI we expect an array
@@ -180,8 +198,10 @@ const getList = (z, bundle) => {
     key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preSearchEvent, z, bundle)
-    .then((preSearchResult) => z.request(preSearchResult))
-    .then((response) => {
+    .then(preSearchResult => z.request(preSearchResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_search() from scripting.
       const postSearchEvent = {
         name: 'search.post',
@@ -191,19 +211,19 @@ const getList = (z, bundle) => {
       return legacyScriptingRunner.runEvent(postSearchEvent, z, bundle);
     })
 <% if (resourceFullScripting) { %>
-    .then((postSearchResult) => {
+    .then(postSearchResult => {
       const results = postSearchResult;
 
       // Do a _read_resource() from scripting.
       const fullResourceEvent = {
         name: 'search.resource',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(fullResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -212,7 +232,7 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePreScripting && resourcePostScripting) { %>
-    .then((postSearchResult) => {
+    .then(postSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       const results = postSearchResult;
 
@@ -220,23 +240,25 @@ const getList = (z, bundle) => {
       const preResourceEvent = {
         name: 'search.resource.pre',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(preResourceEvent, z, resourceBundle);
     })
-    .then((preResourceResult) => z.request(preResourceResult))
-    .then((response) => {
+    .then(preResourceResult => z.request(preResourceResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_read_resource() from scripting.
       const postResourceEvent = {
         name: 'search.resource.post',
         key: '<%= KEY %>',
         response,
-        results: resourceBundle.results,
+        results: resourceBundle.results
       };
       return legacyScriptingRunner.runEvent(postResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -245,7 +267,7 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePreScripting) { %>
-    .then((postSearchResult) => {
+    .then(postSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       const results = postSearchResult;
 
@@ -253,13 +275,15 @@ const getList = (z, bundle) => {
       const preResourceEvent = {
         name: 'search.resource.pre',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(preResourceEvent, z, resourceBundle);
     })
-    .then((preResourceResult) => z.request(preResourceResult))
-    .then((response) => {
+    .then(preResourceResult => z.request(preResourceResult))
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // WB would return a single record, but in CLI we expect an array
@@ -270,7 +294,7 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePostScripting) { %>
-    .then((postSearchResult) => {
+    .then(postSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       const results = postSearchResult;
 
@@ -279,17 +303,19 @@ const getList = (z, bundle) => {
       const finalUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return z.request({ url: finalUrl });
     })
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_read_resource() from scripting.
       const postResourceEvent = {
         name: 'search.resource.post',
         key: '<%= KEY %>',
         response,
-        results: resourceBundle.results,
+        results: resourceBundle.results
       };
       return legacyScriptingRunner.runEvent(postResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -298,18 +324,20 @@ const getList = (z, bundle) => {
       }
     });
 <% } else { %>
-    .then((postSearchResult) => {
+    .then(postSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       if (!postSearchResult || postSearchResult.length === 0) {
         return {
-          content: '[]',
+          content: '[]'
         };
       }
 
       const finalUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, postSearchResult[0]);
       return z.request({ url: finalUrl });
     })
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // WB would return a single record, but in CLI we expect an array
@@ -342,7 +370,9 @@ const getList = (z, bundle) => {
     url: bundle._legacyUrl
   });
   return responsePromise
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_search() from scripting.
       const postSearchEvent = {
         name: 'search.post',
@@ -352,19 +382,19 @@ const getList = (z, bundle) => {
       return legacyScriptingRunner.runEvent(postSearchEvent, z, bundle);
     })
 <% if (resourceFullScripting) { %>
-    .then((postSearchResult) => {
+    .then(postSearchResult => {
       const results = postSearchResult;
 
       // Do a _read_resource() from scripting.
       const fullResourceEvent = {
         name: 'search.resource',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(fullResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -373,7 +403,7 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePreScripting && resourcePostScripting) { %>
-    .then((postSearchResult) => {
+    .then(postSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       const results = postSearchResult;
 
@@ -381,23 +411,25 @@ const getList = (z, bundle) => {
       const preResourceEvent = {
         name: 'search.resource.pre',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(preResourceEvent, z, resourceBundle);
     })
-    .then((preResourceResult) => z.request(preResourceResult))
-    .then((response) => {
+    .then(preResourceResult => z.request(preResourceResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_read_resource() from scripting.
       const postResourceEvent = {
         name: 'search.resource.post',
         key: '<%= KEY %>',
         response,
-        results: resourceBundle.results,
+        results: resourceBundle.results
       };
       return legacyScriptingRunner.runEvent(postResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -406,7 +438,7 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePreScripting) { %>
-    .then((postSearchResult) => {
+    .then(postSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       const results = postSearchResult;
 
@@ -414,13 +446,15 @@ const getList = (z, bundle) => {
       const preResourceEvent = {
         name: 'search.resource.pre',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(preResourceEvent, z, resourceBundle);
     })
-    .then((preResourceResult) => z.request(preResourceResult))
-    .then((response) => {
+    .then(preResourceResult => z.request(preResourceResult))
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // WB would return a single record, but in CLI we expect an array
@@ -431,7 +465,7 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePostScripting) { %>
-    .then((postSearchResult) => {
+    .then(postSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       const results = postSearchResult;
 
@@ -440,17 +474,19 @@ const getList = (z, bundle) => {
       const finalUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0, ));
       return z.request({ url: finalUrl });
     })
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_read_resource() from scripting.
       const postResourceEvent = {
         name: 'search.resource.post',
         key: '<%= KEY %>',
         response,
-        results: resourceBundle.results,
+        results: resourceBundle.results
       };
       return legacyScriptingRunner.runEvent(postResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -459,18 +495,20 @@ const getList = (z, bundle) => {
       }
     });
 <% } else { %>
-    .then((postSearchResult) => {
+    .then(postSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       if (!postSearchResult || postSearchResult.length === 0) {
         return {
-          content: '[]',
+          content: '[]'
         };
       }
 
       const finalUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, postSearchResult[0]);
       return z.request({ url: finalUrl });
     })
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // WB would return a single record, but in CLI we expect an array
@@ -502,23 +540,23 @@ const getList = (z, bundle) => {
   // Do a _search() from scripting.
   const fullSearchEvent = {
     name: 'search.search',
-    key: '<%= KEY %>',
+    key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(fullSearchEvent, z, bundle)
 <% if (resourceFullScripting) { %>
-    .then((fullSearchResult) => {
+    .then(fullSearchResult => {
       const results = fullSearchResult;
 
       // Do a _read_resource() from scripting.
       const fullResourceEvent = {
         name: 'search.resource',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(fullResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -527,7 +565,7 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePreScripting && resourcePostScripting) { %>
-    .then((fullSearchResult) => {
+    .then(fullSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       const results = fullSearchResult;
 
@@ -535,23 +573,25 @@ const getList = (z, bundle) => {
       const preResourceEvent = {
         name: 'search.resource.pre',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(preResourceEvent, z, resourceBundle);
     })
-    .then((preResourceResult) => z.request(preResourceResult))
-    .then((response) => {
+    .then(preResourceResult => z.request(preResourceResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_read_resource() from scripting.
       const postResourceEvent = {
         name: 'search.resource.post',
         key: '<%= KEY %>',
         response,
-        results: resourceBundle.results,
+        results: resourceBundle.results
       };
       return legacyScriptingRunner.runEvent(postResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -560,7 +600,7 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePreScripting) { %>
-    .then((fullSearchResult) => {
+    .then(fullSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       const results = fullSearchResult;
 
@@ -568,13 +608,15 @@ const getList = (z, bundle) => {
       const preResourceEvent = {
         name: 'search.resource.pre',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(preResourceEvent, z, resourceBundle);
     })
-    .then((preResourceResult) => z.request(preResourceResult))
-    .then((response) => {
+    .then(preResourceResult => z.request(preResourceResult))
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // WB would return a single record, but in CLI we expect an array
@@ -585,7 +627,7 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePostScripting) { %>
-    .then((fullSearchResult) => {
+    .then(fullSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       const results = fullSearchResult;
 
@@ -594,17 +636,19 @@ const getList = (z, bundle) => {
       const finalUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return z.request({ url: finalUrl });
     })
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_read_resource() from scripting.
       const postResourceEvent = {
         name: 'search.resource.post',
         key: '<%= KEY %>',
         response,
-        results: resourceBundle.results,
+        results: resourceBundle.results
       };
       return legacyScriptingRunner.runEvent(postResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -613,18 +657,20 @@ const getList = (z, bundle) => {
       }
     });
 <% } else { %>
-    .then((fullSearchResult) => {
+    .then(fullSearchResult => {
       // Mimick the "fetch resource" that happened in WB
       if (!fullSearchResult || fullSearchResult.length === 0) {
         return {
-          content: '[]',
+          content: '[]'
         };
       }
 
       const finalUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, fullSearchResult[0]);
       return z.request({ url: finalUrl });
     })
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // WB would return a single record, but in CLI we expect an array
@@ -659,19 +705,21 @@ const getList = (z, bundle) => {
   });
   return responsePromise
 <% if (resourceFullScripting) { %>
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // Do a _read_resource() from scripting.
       const fullResourceEvent = {
         name: 'search.resource',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(bundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(fullResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -680,7 +728,9 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePreScripting && resourcePostScripting) { %>
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Mimick the "fetch resource" that happened in WB
       const results = z.JSON.parse(response.content);
 
@@ -688,23 +738,25 @@ const getList = (z, bundle) => {
       const preResourceEvent = {
         name: 'search.resource.pre',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(preResourceEvent, z, resourceBundle);
     })
-    .then((preResourceResult) => z.request(preResourceResult))
-    .then((response) => {
+    .then(preResourceResult => z.request(preResourceResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_read_resource() from scripting.
       const postResourceEvent = {
         name: 'search.resource.post',
         key: '<%= KEY %>',
         response,
-        results: resourceBundle.results,
+        results: resourceBundle.results
       };
       return legacyScriptingRunner.runEvent(postResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -713,7 +765,9 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePreScripting) { %>
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Mimick the "fetch resource" that happened in WB
       const results = z.JSON.parse(response.content);
 
@@ -721,13 +775,15 @@ const getList = (z, bundle) => {
       const preResourceEvent = {
         name: 'search.resource.pre',
         key: '<%= KEY %>',
-        results,
+        results
       };
       resourceBundle._legacyUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, _.get(results, 0));
       return legacyScriptingRunner.runEvent(preResourceEvent, z, resourceBundle);
     })
-    .then((preResourceResult) => z.request(preResourceResult))
-    .then((response) => {
+    .then(preResourceResult => z.request(preResourceResult))
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // WB would return a single record, but in CLI we expect an array
@@ -738,7 +794,9 @@ const getList = (z, bundle) => {
       }
     });
 <% } else if (resourcePostScripting) { %>
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Mimick the "fetch resource" that happened in WB
       const results = z.JSON.parse(response.content);
 
@@ -751,17 +809,19 @@ const getList = (z, bundle) => {
       const finalUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, results[0]);
       return z.request({ url: finalUrl });
     })
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_read_resource() from scripting.
       const postResourceEvent = {
         name: 'search.resource.post',
         key: '<%= KEY %>',
         response,
-        results: resourceBundle.results,
+        results: resourceBundle.results
       };
       return legacyScriptingRunner.runEvent(postResourceEvent, z, resourceBundle);
     })
-    .then((results) => {
+    .then(results => {
       // WB would return a single record, but in CLI we expect an array
       if (_.isArray(results)) {
         return results;
@@ -770,7 +830,9 @@ const getList = (z, bundle) => {
       }
     });
 <% } else { %>
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Mimick the "fetch resource" that happened in WB
       const results = z.JSON.parse(response.content);
 
@@ -781,7 +843,9 @@ const getList = (z, bundle) => {
       const finalUrl = replaceVars(resourceBundle._legacyUrl, resourceBundle, results[0]);
       return z.request({ url: finalUrl });
     })
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       const results = z.JSON.parse(response.content);
 
       // WB would return a single record, but in CLI we expect an array
@@ -824,8 +888,11 @@ const getInputFields = (z, bundle) => {
     key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preFieldsEvent, z, bundle)
-    .then((preFieldsResult) => z.request(preFieldsResult))
-    .then((response) => z.JSON.parse(response.content));
+    .then(preFieldsResult => z.request(preFieldsResult))
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content);
+    });
 };
 <% } else if (inputFieldPreScripting && inputFieldPostScripting) { %>
 const getInputFields = (z, bundle) => {
@@ -841,13 +908,15 @@ const getInputFields = (z, bundle) => {
     key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preFieldsEvent, z, bundle)
-    .then((preFieldsResult) => z.request(preFieldsResult))
-    .then((response) => {
+    .then(preFieldsResult => z.request(preFieldsResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_custom_search_fields() from scripting.
       const postFieldsEvent = {
         name: 'search.input.post',
         key: '<%= KEY %>',
-        response,
+        response
       };
       return legacyScriptingRunner.runEvent(postFieldsEvent, z, bundle);
     });
@@ -864,12 +933,14 @@ const getInputFields = (z, bundle) => {
     url: bundle._legacyUrl
   });
   return responsePromise
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_custom_search_fields() from scripting.
       const postFieldsEvent = {
         name: 'search.input.post',
         key: '<%= KEY %>',
-        response,
+        response
       };
       return legacyScriptingRunner.runEvent(postFieldsEvent, z, bundle);
     });
@@ -881,7 +952,10 @@ const getInputFields = (z, bundle) => {
 
   const responsePromise = z.request({ url });
   return responsePromise
-    .then((response) => z.JSON.parse(response.content));
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content);
+    });
 };
 <% }
 
@@ -896,7 +970,7 @@ const getOutputFields = (z, bundle) => {
   // Do a _custom_search_result_fields() from scripting.
   const fullResultFieldsEvent = {
     name: 'search.output',
-    key: '<%= KEY %>',
+    key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(fullResultFieldsEvent, z, bundle);
 };
@@ -911,11 +985,14 @@ const getOutputFields = (z, bundle) => {
   // Do a _pre_custom_search_result_fields() from scripting.
   const preResultFieldsEvent = {
     name: 'search.output.pre',
-    key: '<%= KEY %>',
+    key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preResultFieldsEvent, z, bundle)
-    .then((preResultFieldsResult) => z.request(preResultFieldsResult))
-    .then((response) => z.JSON.parse(response.content));
+    .then(preResultFieldsResult => z.request(preResultFieldsResult))
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content);
+    });
 };
 <% } else if (outputFieldPreScripting && outputFieldPostScripting) { %>
 const getOutputFields = (z, bundle) => {
@@ -928,16 +1005,18 @@ const getOutputFields = (z, bundle) => {
   // Do a _pre_custom_search_result_fields() from scripting.
   const preResultFieldsEvent = {
     name: 'search.output.pre',
-    key: '<%= KEY %>',
+    key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preResultFieldsEvent, z, bundle)
-    .then((preResultFieldsResult) => z.request(preResultFieldsResult))
-    .then((response) => {
+    .then(preResultFieldsResult => z.request(preResultFieldsResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_custom_search_result_fields() from scripting.
       const postResultFieldsEvent = {
         name: 'search.output.post',
         key: '<%= KEY %>',
-        response,
+        response
       };
       return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
     });
@@ -954,12 +1033,14 @@ const getOutputFields = (z, bundle) => {
     url: bundle._legacyUrl
   });
   return responsePromise
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_custom_search_result_fields() from scripting.
       const postResultFieldsEvent = {
         name: 'search.output.post',
         key: '<%= KEY %>',
-        response,
+        response
       };
       return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
     });
@@ -971,7 +1052,10 @@ const getOutputFields = (z, bundle) => {
 
   const responsePromise = z.request({ url });
   return responsePromise
-    .then((response) => z.JSON.parse(response.content));
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content);
+    });
 };
 <% } %>
 module.exports = {

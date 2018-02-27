@@ -795,12 +795,21 @@ ${lines.join(',\n')}
 const renderDefaultInputData = definition => {
   const lines = [];
   _.each(definition.fields, (field, key) => {
-    if (field.default) {
-      const defaultValue = escapeSpecialChars(field.default);
-      lines.push(`'${key}': '${defaultValue}'`);
+    if (field.default || field.required) {
+      const defaultValue = field.default
+        ? quote(escapeSpecialChars(field.default))
+        : null;
+      lines.push(`'${key}': ${defaultValue}`);
     }
   });
-  return '{' + lines.join(',\n') + '}';
+
+  if (lines.length === 0) {
+    return '{}';
+  }
+  return `{
+    // TODO: Pulled from input fields' default values. Edit if necessary.
+    ${lines.join(',\n')}
+  }`;
 };
 
 const renderStepTest = (type, definition, key, legacyApp) => {

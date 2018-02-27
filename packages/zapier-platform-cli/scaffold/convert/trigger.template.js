@@ -16,8 +16,11 @@ const getList = (z, bundle) => {
     key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(prePollEvent, z, bundle)
-    .then((prePollResult) => z.request(prePollResult))
-    .then((response) => z.JSON.parse(response.content));
+    .then(prePollResult => z.request(prePollResult))
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content);
+    });
 };
 <%
 }
@@ -37,8 +40,10 @@ const getList = (z, bundle) => {
     key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(prePollEvent, z, bundle)
-    .then((prePollResult) => z.request(prePollResult))
-    .then((response) => {
+    .then(prePollResult => z.request(prePollResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_poll() from scripting.
       const postPollEvent = {
         name: 'trigger.post',
@@ -64,7 +69,9 @@ const getList = (z, bundle) => {
     url: bundle._legacyUrl
   });
   return responsePromise
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_poll() from scripting.
       const postPollEvent = {
         name: 'trigger.post',
@@ -89,7 +96,7 @@ const getList = (z, bundle) => {
   // Do a _poll() from scripting.
   const fullPollEvent = {
     name: 'trigger.poll',
-    key: '<%= KEY %>',
+    key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(fullPollEvent, z, bundle);
 };
@@ -104,7 +111,10 @@ const getList = (z, bundle) => {
 
   const responsePromise = z.request({ url });
   return responsePromise
-    .then(response => z.JSON.parse(response.content));
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content);
+    });
 };
 <% }
 
@@ -119,11 +129,14 @@ const getOutputFields = (z, bundle) => {
   // Do a _pre_custom_trigger_fields() from scripting.
   const preResultFieldsEvent = {
     name: 'trigger.output.pre',
-    key: '<%= KEY %>',
+    key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preResultFieldsEvent, z, bundle)
-    .then((preResultFieldsResult) => z.request(preResultFieldsResult))
-    .then((response) => z.JSON.parse(response.content));
+    .then(preResultFieldsResult => z.request(preResultFieldsResult))
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content);
+    });
 };
 <% } else if (outputFieldPreScripting && outputFieldPostScripting) { %>
 const getOutputFields = (z, bundle) => {
@@ -136,16 +149,18 @@ const getOutputFields = (z, bundle) => {
   // Do a _pre_custom_trigger_fields() from scripting.
   const preResultFieldsEvent = {
     name: 'trigger.output.pre',
-    key: '<%= KEY %>',
+    key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preResultFieldsEvent, z, bundle)
-    .then((preResultFieldsResult) => z.request(preResultFieldsResult))
-    .then((response) => {
+    .then(preResultFieldsResult => z.request(preResultFieldsResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_custom_trigger_fields() from scripting.
       const postResultFieldsEvent = {
         name: 'trigger.output.post',
         key: '<%= KEY %>',
-        response,
+        response
       };
       return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
     });
@@ -162,12 +177,14 @@ const getOutputFields = (z, bundle) => {
     url: bundle._legacyUrl
   });
   return responsePromise
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_custom_trigger_fields() from scripting.
       const postResultFieldsEvent = {
         name: 'trigger.output.post',
         key: '<%= KEY %>',
-        response,
+        response
       };
       return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
     });
@@ -181,7 +198,10 @@ const getOutputFields = (z, bundle) => {
     url: url
   });
   return responsePromise
-    .then((response) => z.JSON.parse(response.content));
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content);
+    });
 };
 <% } %>
 module.exports = {

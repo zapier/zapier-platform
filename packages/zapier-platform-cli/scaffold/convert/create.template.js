@@ -16,8 +16,11 @@ const makeRequest = (z, bundle) => {
     key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preWriteEvent, z, bundle)
-    .then((preWriteResult) => z.request(preWriteResult))
-    .then((response) => z.JSON.parse(response.content));
+    .then(preWriteResult => z.request(preWriteResult))
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content)
+    });
 };
 <%
 }
@@ -37,8 +40,10 @@ const makeRequest = (z, bundle) => {
     key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preWriteEvent, z, bundle)
-    .then((preWriteResult) => z.request(preWriteResult))
-    .then((response) => {
+    .then(preWriteResult => z.request(preWriteResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_write() from scripting.
       const postWriteEvent = {
         name: 'create.post',
@@ -74,7 +79,9 @@ const makeRequest = (z, bundle) => {
     body: bundle.inputData
   });
   return responsePromise
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_write() from scripting.
       const postWriteEvent = {
         name: 'create.post',
@@ -125,8 +132,10 @@ const makeRequest = (z, bundle) => {
     method: 'POST',
     body: bundle.inputData
   });
-  return responsePromise
-    .then(response => z.JSON.parse(response.content));
+  return responsePromise.then(response => {
+    response.throwForStatus();
+    return z.JSON.parse(response.content);
+  });
 };
 <% }
 
@@ -159,8 +168,11 @@ const getInputFields = (z, bundle) => {
     key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preFieldsEvent, z, bundle)
-    .then((preFieldsResult) => z.request(preFieldsResult))
-    .then((response) => z.JSON.parse(response.content));
+    .then(preFieldsResult => z.request(preFieldsResult))
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content);
+    });
 };
 <% } else if (inputFieldPreScripting && inputFieldPostScripting) { %>
 const getInputFields = (z, bundle) => {
@@ -176,13 +188,15 @@ const getInputFields = (z, bundle) => {
     key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preFieldsEvent, z, bundle)
-    .then((preFieldsResult) => z.request(preFieldsResult))
-    .then((response) => {
+    .then(preFieldsResult => z.request(preFieldsResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_custom_action_fields() from scripting.
       const postFieldsEvent = {
         name: 'create.input.post',
         key: '<%= KEY %>',
-        response,
+        response
       };
       return legacyScriptingRunner.runEvent(postFieldsEvent, z, bundle);
     });
@@ -199,12 +213,14 @@ const getInputFields = (z, bundle) => {
     url: bundle._legacyUrl
   });
   return responsePromise
-    .then((response) => {
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_custom_action_fields() from scripting.
       const postFieldsEvent = {
         name: 'create.input.post',
         key: '<%= KEY %>',
-        response,
+        response
       };
       return legacyScriptingRunner.runEvent(postFieldsEvent, z, bundle);
     });
@@ -217,8 +233,10 @@ const getInputFields = (z, bundle) => {
   const responsePromise = z.request({
     url: url
   });
-  return responsePromise
-    .then((response) => z.JSON.parse(response.content));
+  return responsePromise.then(response => {
+    response.throwForStatus();
+    return z.JSON.parse(response.content);
+  });
 };
 <% }
 
@@ -233,7 +251,7 @@ const getOutputFields = (z, bundle) => {
   // Do a _custom_action_result_fields() from scripting.
   const fullResultFieldsEvent = {
     name: 'create.output',
-    key: '<%= KEY %>',
+    key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(fullResultFieldsEvent, z, bundle);
 };
@@ -248,11 +266,14 @@ const getOutputFields = (z, bundle) => {
   // Do a _pre_custom_action_result_fields() from scripting.
   const preResultFieldsEvent = {
     name: 'create.output.pre',
-    key: '<%= KEY %>',
+    key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preResultFieldsEvent, z, bundle)
-    .then((preResultFieldsResult) => z.request(preResultFieldsResult))
-    .then((response) => z.JSON.parse(response.content));
+    .then(preResultFieldsResult => z.request(preResultFieldsResult))
+    .then(response => {
+      response.throwForStatus();
+      return z.JSON.parse(response.content);
+    });
 };
 <% } else if (outputFieldPreScripting && outputFieldPostScripting) { %>
 const getOutputFields = (z, bundle) => {
@@ -265,16 +286,18 @@ const getOutputFields = (z, bundle) => {
   // Do a _pre_custom_action_result_fields() from scripting.
   const preResultFieldsEvent = {
     name: 'create.output.pre',
-    key: '<%= KEY %>',
+    key: '<%= KEY %>'
   };
   return legacyScriptingRunner.runEvent(preResultFieldsEvent, z, bundle)
-    .then((preResultFieldsResult) => z.request(preResultFieldsResult))
-    .then((response) => {
+    .then(preResultFieldsResult => z.request(preResultFieldsResult))
+    .then(response => {
+      response.throwForStatus();
+
       // Do a _post_custom_action_result_fields() from scripting.
       const postResultFieldsEvent = {
         name: 'create.output.post',
         key: '<%= KEY %>',
-        response,
+        response
       };
       return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
     });
@@ -290,16 +313,17 @@ const getOutputFields = (z, bundle) => {
   const responsePromise = z.request({
     url: bundle._legacyUrl
   });
-  return responsePromise
-    .then((response) => {
-      // Do a _post_custom_action_result_fields() from scripting.
-      const postResultFieldsEvent = {
-        name: 'create.output.post',
-        key: '<%= KEY %>',
-        response,
-      };
-      return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
-    });
+  return responsePromise.then(response => {
+    response.throwForStatus();
+
+    // Do a _post_custom_action_result_fields() from scripting.
+    const postResultFieldsEvent = {
+      name: 'create.output.post',
+      key: '<%= KEY %>',
+      response
+    };
+    return legacyScriptingRunner.runEvent(postResultFieldsEvent, z, bundle);
+  });
 };
 <% } else if (hasCustomOutputFields) { %>
 const getOutputFields = (z, bundle) => {
@@ -309,8 +333,10 @@ const getOutputFields = (z, bundle) => {
   const responsePromise = z.request({
     url: url
   });
-  return responsePromise
-    .then((response) => z.JSON.parse(response.content));
+  return responsePromise.then(response => {
+    response.throwForStatus();
+    return z.JSON.parse(response.content);
+  });
 };
 <% } %>
 module.exports = {
