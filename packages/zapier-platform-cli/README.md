@@ -1304,7 +1304,7 @@ const App = {
 
 ```
 
-> Note! Be sure to lazily access your environment variables - see [When to use placeholders or curlies?](#when-to-use-placeholders-or-curclies)
+> Note! Be sure to lazily access your environment variables - see [When to use placeholders or curlies?](#when-to-use-placeholders-or-curlies)
 
 
 ## Making HTTP Requests

@@ -699,7 +699,7 @@ For example, you can access the `process.env` in your perform functions and in t
 [insert-file:./snippets/process-env.js]
 ```
 
-> Note! Be sure to lazily access your environment variables - see [When to use placeholders or curlies?](#when-to-use-placeholders-or-curclies)
+> Note! Be sure to lazily access your environment variables - see [When to use placeholders or curlies?](#when-to-use-placeholders-or-curlies)
 
 
 ## Making HTTP Requests
