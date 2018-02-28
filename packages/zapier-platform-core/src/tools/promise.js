@@ -34,7 +34,8 @@ const contextifyOnce = (err, attachErrorTrace, frameStack) => {
   // So, define our own stack prop that returns the original stack.
   Object.defineProperty(err, 'stack', {
     value: err.stack,
-    enumerable: false
+    enumerable: false,
+    writable: false
   });
 
   attachErrorTrace = attachErrorTrace || enrichErrorMessage;
