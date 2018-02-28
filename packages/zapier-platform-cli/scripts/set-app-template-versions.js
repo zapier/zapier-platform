@@ -38,19 +38,13 @@ const exec = (cmd, cwd) => {
   });
 };
 
-const hasCurrentVersions = (
-  newVersions,
-  nvmrcNodeVersion,
-  travisNodeVersion,
-  packageJson
-) => {
+const hasCurrentVersions = (newVersion, travisNodeVersion, packageJson) => {
   return (
     packageJson.dependencies['zapier-platform-core'] ===
-      newVersions.coreVersion &&
-    packageJson.engines.node === newVersions.nodeVersion &&
-    packageJson.engines.npm === newVersions.npmVersion &&
-    nvmrcNodeVersion === newVersions.nodeVersion &&
-    travisNodeVersion === newVersions.nodeVersion
+      newVersion.coreVersion &&
+    packageJson.engines.node === newVersion.nodeVersion &&
+    packageJson.engines.npm === newVersion.npmVersion &&
+    travisNodeVersion === newVersion.nodeVersion
   );
 };
 
@@ -76,26 +70,13 @@ const setVersion = (template, rootTmpDir) => {
       );
       const packageJson = require(packageJsonFile);
 
-      const nvmrcFile = path.resolve(rootTmpDir, `${repoName}/.nvmrc`);
-      const nvmrcNodeVersion = fse
-        .readFileSync(nvmrcFile, 'utf8')
-        .trim()
-        .substr(1); // strip off leading 'v'
-
       const travisYamlFile = path.resolve(
         rootTmpDir,
         `${repoName}/.travis.yml`
       );
       const travisYaml = yaml.load(travisYamlFile);
 
-      if (
-        hasCurrentVersions(
-          newVersions,
-          nvmrcNodeVersion,
-          travisYaml.node_js[0],
-          packageJson
-        )
-      ) {
+      if (hasCurrentVersions(newVersions, travisYaml.node_js[0], packageJson)) {
         return 'skip';
       }
 
@@ -106,17 +87,15 @@ const setVersion = (template, rootTmpDir) => {
       const json = JSON.stringify(packageJson, null, 2);
       fse.writeFileSync(packageJsonFile, json);
 
-      fse.writeFileSync(nvmrcFile, `v${newVersions.nodeVersion}`);
-
       travisYaml.node_js[0] = newVersions.nodeVersion;
-      fse.writeFileSync(travisYamlFile, yaml.stringify(travisYaml, null, 2));
+      return fse.writeFile(travisYamlFile, yaml.stringify(travisYaml, null, 2));
     })
     .then(result => {
       if (result === 'skip') {
         return result;
       }
 
-      cmd = `git commit package.json .nvmrc .travis.yml -m "update ${PACKAGES_NAMES} versions to ${packagesVersions} respectively."`;
+      cmd = `git commit package.json .travis.yml -m "update ${PACKAGES_NAMES} versions to ${packagesVersions} respectively."`;
       return exec(cmd, repoDir);
     })
     .then(result => {

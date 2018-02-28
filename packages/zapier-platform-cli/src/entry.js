@@ -5,7 +5,7 @@ const _ = require('lodash');
 const colors = require('colors/safe');
 const updateNotifier = require('update-notifier');
 
-const { DEBUG } = require('./constants');
+const { DEBUG, LAMBDA_VERSION } = require('./constants');
 const commands = require('./commands');
 const utils = require('./utils');
 
@@ -19,7 +19,7 @@ module.exports = argv => {
   if (!utils.isValidNodeVersion()) {
     console.error(
       colors.red(
-        `Requires node version >= ${utils.readNvmVersion()}, found ${
+        `Requires node version >= ${LAMBDA_VERSION}, found ${
           process.versions.node
         }. Please upgrade node.`
       )

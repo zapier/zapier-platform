@@ -7,7 +7,11 @@ const fse = require('fs-extra');
 const os = require('os');
 const semver = require('semver');
 
-const { PLATFORM_PACKAGE, PACKAGE_VERSION } = require('../constants');
+const {
+  PLATFORM_PACKAGE,
+  PACKAGE_VERSION,
+  LAMBDA_VERSION
+} = require('../constants');
 
 const camelCase = str => _.capitalize(_.camelCase(str));
 const snakeCase = str => _.snakeCase(str);
@@ -65,27 +69,10 @@ const runCommand = (command, args, options) => {
   });
 };
 
-const parseVersions = versionString =>
-  versionString.split('.').map(s => parseInt(s, 10));
-
-const readNvmVersion = () => {
-  const nvmrc = path.resolve(__dirname, '../../.nvmrc');
-  const nvmVersion = fse.readFileSync(nvmrc, 'utf8').substr(1); // strip off leading 'v'
-  return nvmVersion;
-};
-
-// verifies that the current node version is >= the version found in .nvmrc
 const isValidNodeVersion = () => {
-  const nvmVersion = readNvmVersion();
+  const v = semver(LAMBDA_VERSION);
 
-  const [nvmMajor, nvmMinor, nvmPatch] = parseVersions(nvmVersion);
-  const [major, minor, patch] = parseVersions(process.versions.node);
-
-  return (
-    major > nvmMajor ||
-    (major === nvmMajor && minor > nvmMinor) ||
-    (major === nvmMajor && minor === nvmMinor && patch >= nvmPatch)
-  );
+  return semver.satisfies(process.version, `>=${v.major}.${v.minor}`);
 };
 
 const isValidAppInstall = command => {
@@ -173,7 +160,6 @@ module.exports = {
   npmInstall,
   promiseDoWhile,
   promiseForever,
-  readNvmVersion,
   runCommand,
   snakeCase
 };
