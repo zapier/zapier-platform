@@ -228,7 +228,7 @@ const listInvitees = () => {
 };
 
 const listLogs = opts => {
-  return listEndpoint(`logs?${qs.stringify(opts)}`, 'logs');
+  return listEndpoint(`logs?${qs.stringify(_.omit(opts, 'debug'))}`, 'logs');
 };
 
 const listEnv = version => {
