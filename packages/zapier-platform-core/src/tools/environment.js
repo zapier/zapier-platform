@@ -6,6 +6,8 @@ const dotenv = require('dotenv');
 
 const ensurePath = require('./ensure-path');
 
+const { IS_TESTING } = require('../constants');
+
 // Copy bundle environment into process.env, and vice versa,
 // for convenience and compatibility with native environment vars.
 const applyEnvironment = event => {
@@ -31,10 +33,29 @@ const cleanEnvironment = () => {
   }
 };
 
+const localFilepath = filename => {
+  return path.join(process.cwd(), filename || '');
+};
+
 const injectEnvironmentFile = filename => {
-  filename = filename || '.environment';
-  const filepath = path.join(process.cwd(), filename);
-  dotenv.load({ path: filepath });
+  if (filename) {
+    filename = localFilepath(filename);
+  }
+  // reads ".env" if filename is falsy, needs full path otherwise
+  let result = dotenv.load({ path: filename });
+  if (result.error) {
+    // backwards compatibility
+    result = dotenv.load({ path: localFilepath('.environment') });
+    if (result.parsed && !IS_TESTING) {
+      console.log(
+        [
+          '\nWARNING: `.environment` files will no longer be read by default in the next major version.',
+          'Either rename your file to `.env` or explicitly call this function with a filename:',
+          '\n    zapier.tools.env.inject(".environment");\n\n'
+        ].join('\n')
+      );
+    }
+  }
 };
 
 module.exports = {
