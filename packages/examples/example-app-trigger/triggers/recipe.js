@@ -2,18 +2,21 @@ const listRecipes = (z, bundle) => {
   // `z.console.log()` is similar to `console.log()`.
   z.console.log('console says hello world!');
 
+  const params = {};
+  if (bundle.inputData.style) {
+    params.style = bundle.inputData.style;
+  }
+
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const requestOptions = {
-    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes',
-    params: {
-      style: bundle.inputData.style
-    }
+    url: 'https://auth-json-server.zapier.ninja/recipes',
+    params: params
   };
 
   // You may return a promise or a normal data structure from any perform method.
   return z.request(requestOptions)
-    .then((response) => JSON.parse(response.content));
+    .then((response) => z.JSON.parse(response.content));
 };
 
 // We recommend writing your triggers separate like this and rolling them
@@ -39,7 +42,7 @@ module.exports = {
     ],
 
     perform: listRecipes,
-    
+
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
     // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
     // returned records, and have obviously dummy values that we can show to any user.

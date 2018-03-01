@@ -11,17 +11,17 @@ describe('triggers', () => {
     it('should load recipes', (done) => {
       const bundle = {
         inputData: {
-          style: 'mediterranean'
+          style: 'style 2'
         }
       };
 
       appTester(App.triggers.recipe.operation.perform, bundle)
         .then(results => {
-          results.length.should.above(1);
+          results.length.should.above(0);
 
           const firstRecipe = results[0];
-          firstRecipe.name.should.eql('name 1');
-          firstRecipe.directions.should.eql('directions 1');
+          firstRecipe.name.should.eql('name 2');
+          firstRecipe.directions.should.eql('directions 2');
 
           done();
         })
