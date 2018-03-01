@@ -23,20 +23,20 @@ module.exports = {
     ],
 
     perform: (z, bundle) => {
-      const url = 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes';
+      const url = 'https://auth-json-server.zapier.ninja/recipes';
 
       // Put the search value in a query param. The details of how to build
       // a search URL will depend on how your API works.
       const options = {
         params: {
-          search: bundle.inputData.style
+          style: bundle.inputData.style
         }
       };
 
       return z.request(url, options)
         .then(response => JSON.parse(response.content));
     },
-    
+
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
     // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
     // returned records, and have obviously dummy values that we can show to any user.
