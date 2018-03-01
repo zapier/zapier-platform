@@ -12,9 +12,14 @@ module.exports = {
   // `operation` is where we make the call to your API
   operation: {
     perform: {
-      url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes'
+      url: 'https://auth-json-server.zapier.ninja/recipes',
+      params: {
+        // Just a demo, this is NOT how you normally do authentication.
+        // Refer to https://zapier.github.io/zapier-platform-cli/#authentication
+        api_key: 'secret'
+      }
     },
-    
+
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
     // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
     // returned records, and have obviously dummy values that we can show to any user.

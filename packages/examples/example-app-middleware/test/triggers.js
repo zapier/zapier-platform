@@ -11,8 +11,17 @@ describe('triggers', () => {
     it('should load recipes', (done) => {
       appTester(App.triggers.recipe.operation.perform)
         .then(results => {
-          const firstRecipe = results[0];
-          firstRecipe.name.should.eql('Smith Family Recipe');
+          results.should.be.an.Array();
+          results.length.should.be.above(1);
+
+          // Make sure the results are ordered by id desc
+          let i = 0;
+          while (i < results.length - 1) {
+            let cur = results[i];
+            let nxt = results[i + 1];
+            cur.id.should.be.aboveOrEqual(nxt.id);
+            i++;
+          }
 
           done();
         })
@@ -24,8 +33,17 @@ describe('triggers', () => {
     it('should load movies', (done) => {
       appTester(App.triggers.movie.operation.perform)
         .then(results => {
-          const firstMovie = results[0];
-          firstMovie.title.should.eql('title 1');
+          results.should.be.an.Array();
+          results.length.should.be.above(1);
+
+          // Make sure the results are ordered by id desc
+          let i = 0;
+          while (i < results.length - 1) {
+            let cur = results[i];
+            let nxt = results[i + 1];
+            cur.id.should.be.aboveOrEqual(nxt.id);
+            i++;
+          }
 
           done();
         })

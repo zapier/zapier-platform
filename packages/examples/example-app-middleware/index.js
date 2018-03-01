@@ -8,8 +8,8 @@ const movie = require('./triggers/movie');
 // Applying this middleware guarantees this.
 const addSortingParams = (request /*, z*/) => {
   request.params = _.extend({}, request.params, {
-    sortBy: 'createdAt',
-    order: 'desc'
+    _sort: 'id',
+    _order: 'desc'
   });
   return request;
 };
