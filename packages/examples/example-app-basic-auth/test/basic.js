@@ -12,14 +12,14 @@ describe('basic auth app', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: 'passwd'
+        password: 'secret'
       }
     };
 
     appTester(App.authentication.test, bundle)
       .then((response) => {
         response.status.should.eql(200);
-        response.request.headers.Authorization.should.eql('Basic dXNlcjpwYXNzd2Q=');
+        response.request.headers.Authorization.should.eql('Basic dXNlcjpzZWNyZXQ=');
         done();
       })
       .catch(done);
