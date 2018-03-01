@@ -22,13 +22,13 @@ describe('My Test', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: 'passwd'
+        password: 'secret'
       }
     };
 
     const response = await appTester(App.authentication.test, bundle);
     should(response.status).eql(200);
-    response.request.headers.Authorization.should.eql('Basic dXNlcjpwYXNzd2Q=');
+    response.request.headers.Authorization.should.eql('Basic dXNlcjpzZWNyZXQ=');
   }));
 
   it('should test the auth fails', mochaAsync(async () => {

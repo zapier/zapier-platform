@@ -3,7 +3,7 @@ const test = (z /*, bundle*/) => {
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
   const promise = z.request({
-    url: 'http://httpbin.org/basic-auth/user/passwd',
+    url: 'https://auth-json-server.zapier.ninja/me',
   });
 
   // This method can return any truthy value to indicate the credentials are valid.
