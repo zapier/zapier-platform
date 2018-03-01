@@ -1,8 +1,8 @@
-const _sharedBaseUrl = 'http://57b20fb546b57d1100a3c405.mockapi.io/api';
+const _sharedBaseUrl = 'https://auth-json-server.zapier.ninja';
 
 const getRecipe = (z, bundle) => {
   return z.request({
-      url: `${_sharedBaseUrl}/recipes/${bundle.inputData.id}`,
+      url: `${_sharedBaseUrl}/recipes/${bundle.inputData.id}`
     })
     .then((response) => JSON.parse(response.content));
 };
@@ -54,6 +54,15 @@ const searchRecipe = (z, bundle) => {
     });
 };
 
+const sample = {
+  id: 1,
+  createdAt: 1472069465,
+  name: 'Best Spagetti Ever',
+  authorId: 1,
+  directions: '1. Boil Noodles\n2.Serve with sauce',
+  style: 'italian',
+};
+
 // This file exports a Recipe resource. The definition below contains all of the keys available,
 // and implements the list and create methods.
 module.exports = {
@@ -72,6 +81,7 @@ module.exports = {
         {key: 'id', required: true},
       ],
       perform: getRecipe,
+      sample: sample
     },
   },
   // The list method on this resource becomes a Trigger on the app. Zapier will use polling to watch for new records
@@ -85,6 +95,7 @@ module.exports = {
         {key: 'style', type: 'string', helpText: 'Explain what style of cuisine this is.'},
       ],
       perform: listRecipes,
+      sample: sample
     },
   },
   // If your app supports webhooks, you can define a hook method instead of a list method.
@@ -107,6 +118,7 @@ module.exports = {
         {key: 'style', required: false, type: 'string', helpText: 'Explain what style of cuisine this is.'},
       ],
       perform: createRecipe,
+      sample: sample
     },
   },
   // The search method on this resource becomes a Search on this app
@@ -120,20 +132,14 @@ module.exports = {
         {key: 'name', required: true, type: 'string'},
       ],
       perform: searchRecipe,
+      sample: sample
     },
   },
 
   // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
   // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
   // returned records, and have obviously dummy values that we can show to any user.
-  sample: {
-    id: 1,
-    createdAt: 1472069465,
-    name: 'Best Spagetti Ever',
-    authorId: 1,
-    directions: '1. Boil Noodles\n2.Serve with sauce',
-    style: 'italian',
-  },
+  sample: sample,
 
   // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
   // field definitions. The result will be used to augment the sample.
