@@ -5,7 +5,7 @@ const authentication = require('./authentication');
 const includeSessionKeyHeader = (request, z, bundle) => {
   if (bundle.authData.sessionKey) {
     request.headers = request.headers || {};
-    request.headers['X-Session-Key'] = bundle.authData.sessionKey;
+    request.headers['X-API-Key'] = bundle.authData.sessionKey;
   }
   return request;
 };
@@ -53,7 +53,7 @@ const App = {
           {key: 'style', type: 'string'}
         ],
         perform: function() { return [{id: 1, name: 'A food!'}] },
-        
+
         // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
         // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
         // returned records, and have obviously dummy values that we can show to any user.

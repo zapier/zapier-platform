@@ -17,7 +17,7 @@ describe('session auth app', () => {
 
     appTester(App.authentication.sessionConfig.perform, bundle)
       .then((newAuthData) => {
-        newAuthData.sessionKey.should.eql('new session key!');
+        newAuthData.sessionKey.should.eql('secret');
         done();
       })
       .catch(done);
@@ -27,14 +27,14 @@ describe('session auth app', () => {
     // Try changing the values of username or password to see how the test method behaves
     const bundle = {
       authData: {
-        sessionKey: 'my session key'
+        sessionKey: 'secret'
       }
     };
 
     appTester(App.authentication.test, bundle)
       .then((response) => {
         response.status.should.eql(200);
-        response.request.headers['X-Session-Key'].should.eql('my session key');
+        response.request.headers['X-API-Key'].should.eql('secret');
         done();
       })
       .catch(done);
