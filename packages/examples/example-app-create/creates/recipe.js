@@ -21,7 +21,7 @@ module.exports = {
     ],
     perform: (z, bundle) => {
       const promise = z.request({
-        url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes',
+        url: 'https://auth-json-server.zapier.ninja/recipes',
         method: 'POST',
         body: JSON.stringify({
           name: bundle.inputData.name,
@@ -30,13 +30,18 @@ module.exports = {
           style: bundle.inputData.style,
         }),
         headers: {
-          'content-type': 'application/json'
+          'content-type': 'application/json',
+
+          // This is NOT how you normally do authentication. This is just to demo how to write a create here.
+          // Refer to this doc to set up authentication:
+          // https://zapier.github.io/zapier-platform-cli/#authentication
+          'X-API-Key': 'secret'
         }
       });
 
       return promise.then((response) => JSON.parse(response.content));
     },
-    
+
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
     // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
     // returned records, and have obviously dummy values that we can show to any user.
