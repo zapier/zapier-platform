@@ -31,7 +31,7 @@ describe('oauth2 app', () => {
 
     appTester(App.authentication.oauth2Config.authorizeUrl, bundle)
       .then((authorizeUrl) => {
-        authorizeUrl.should.eql('https://oauth-test.zapier.com/oauth/authorize?client_id=1234&state=4444&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code');
+        authorizeUrl.should.eql('https://auth-json-server.zapier.ninja/oauth/authorize?client_id=1234&state=4444&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code');
         done();
       })
       .catch(done);
