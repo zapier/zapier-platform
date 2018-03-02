@@ -48,6 +48,41 @@ describe('build', () => {
       .catch(done);
   });
 
+  it('list should not include blacklisted files', done => {
+    const osTmpDir = fse.realpathSync(os.tmpdir());
+    const tmpProjectDir = path.join(
+      osTmpDir,
+      'zapier-' + crypto.randomBytes(4).toString('hex')
+    );
+
+    [
+      'safe.js',
+      '.env',
+      '.environment',
+      '.git/HEAD',
+      'build/the-build.zip'
+    ].forEach(file => {
+      const fileDir = file.split(path.sep);
+      fileDir.pop();
+      if (fileDir.length > 0) {
+        fse.ensureDirSync(path.join(tmpProjectDir, fileDir.join(path.sep)));
+      }
+      fse.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
+    });
+
+    build
+      .listFiles(tmpProjectDir)
+      .then(dumbPaths => {
+        dumbPaths.should.containEql('safe.js');
+        dumbPaths.should.not.containEql('.env');
+        dumbPaths.should.not.containEql('build/the-build.zip');
+        dumbPaths.should.not.containEql('.environment');
+        dumbPaths.should.not.containEql('.git/HEAD');
+        done();
+      })
+      .catch(done);
+  });
+
   it('should error over futurejs files', done => {
     should(() => {
       build.verifyNodeFeatures([path.join(entryDir, 'snippets', 'next.js')]);

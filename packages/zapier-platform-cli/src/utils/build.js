@@ -91,13 +91,20 @@ const requiredFiles = (cwd, entryPoints) => {
 };
 
 const listFiles = dir => {
+  const isBlacklisted = file_path => {
+    return ['.git', '.env', 'build'].find(excluded => {
+      return file_path.search(excluded) === 0;
+    });
+  };
+
   return new Promise((resolve, reject) => {
     const paths = [];
     const cwd = dir + path.sep;
     klaw(dir)
       .on('data', item => {
-        if (!item.stats.isDirectory()) {
-          paths.push(stripPath(cwd, item.path));
+        const stripped_path = stripPath(cwd, item.path);
+        if (!item.stats.isDirectory() && !isBlacklisted(stripped_path)) {
+          paths.push(stripped_path);
         }
       })
       .on('error', reject)
