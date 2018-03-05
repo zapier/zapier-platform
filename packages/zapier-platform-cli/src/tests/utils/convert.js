@@ -213,12 +213,13 @@ describe('convert render functions', () => {
       const wbDef = definitions.apiHeader;
 
       return convert.getHeader(wbDef).then(string => {
-        string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
-  request.headers['Authorization'] = bundle.authData['api_key'];
-
-  return request;
-};
-`);
+        string.should.eql(
+          'const maybeIncludeAuth = (request, z, bundle) => {\n' +
+            "  request.headers['Authorization'] = `AccessKey ${bundle.authData['api_key']}`;\n" +
+            '\n' +
+            '  return request;\n' +
+            '};\n'
+        );
       });
     });
 
@@ -245,12 +246,13 @@ describe('convert render functions', () => {
       const wbDef = definitions.apiQuery;
 
       return convert.getHeader(wbDef).then(string => {
-        string.should.eql(`const maybeIncludeAuth = (request, z, bundle) => {
-  request.params['api_key'] = bundle.authData['api_key'];
-
-  return request;
-};
-`);
+        string.should.eql(
+          'const maybeIncludeAuth = (request, z, bundle) => {\n' +
+            "  request.params['api_key'] = `${bundle.authData['api_key']}`;\n" +
+            '\n' +
+            '  return request;\n' +
+            '};\n'
+        );
       });
     });
 

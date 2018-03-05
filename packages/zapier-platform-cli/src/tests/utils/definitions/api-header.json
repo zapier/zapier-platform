@@ -64,7 +64,7 @@
     "auth_data": {},
     "auth_label": "{{user}}",
     "auth_mapping": {
-      "Authorization": "{{api_key}}"
+      "Authorization": "AccessKey {{api_key}}"
     },
     "auth_type": "API Key (Headers)",
     "auth_urls": {},

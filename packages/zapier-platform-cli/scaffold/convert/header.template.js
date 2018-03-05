@@ -3,16 +3,14 @@ const { replaceVars } = require('./utils');
 <% } %>
 <% if (before && !session && !oauth && !customBasic) { %>const maybeIncludeAuth = (request, z, bundle) => {
 <%
-  Object.keys(mapping).forEach((mapperKey) => {
-    fields.forEach((field) => {
-      if (mapping[mapperKey].indexOf(`{{${field}}}`) !== -1) {
-        if (query) { %>
-  request.params['<%= mapperKey %>'] = bundle.authData['<%= field %>'];
-<% } else { %>
-  request.headers['<%= mapperKey %>'] = bundle.authData['<%= field %>'];
-<%      }
-      }
-    });
+  Object.keys(mapping).forEach(key => {
+    let value = mapping[key];
+    value = value.replace(/\{\{(\w+)\}\}/g, "${bundle.authData['$1']}");
+    if (query) { %>
+      request.params['<%= key %>'] = `<%= value %>`;
+<%  } else { %>
+      request.headers['<%= key %>'] = `<%= value %>`;
+<%  }
   });
 %>
   return request;
