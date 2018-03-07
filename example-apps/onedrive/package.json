@@ -10,8 +10,8 @@
   "scripts": {
     "lint": "node_modules/.bin/eslint .",
     "posttest": "npm run lint",
-    "test": "node node_modules/mocha/bin/mocha --recursive --timeout 25000",
-    "coverage": "node node_modules/.bin/istanbul cover _mocha -- --recursive --timeout 25000"
+    "test": "mocha --recursive --timeout 25000",
+    "coverage": "istanbul cover _mocha -- --recursive --timeout 25000"
   },
   "engines": {
     "node": ">=6.10.2",
