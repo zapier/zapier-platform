@@ -5,7 +5,7 @@
 * :tada: (new) The CLI can now run, test, and build on any version of Node.js! ([PR](https://github.com/zapier/zapier-platform-cli/pull/234))
 * :tada: (new) Read deploy key from env if available ([PR](https://github.com/zapier/zapier-platform-cli/pull/239))
 * (improvement) More specific error messages for invalid installs ([PR](https://github.com/zapier/zapier-platform-cli/pull/238))
-* (fix) `zaiper env` no longer throws an error on Node versions >=8.0 ([PR](https://github.com/zapier/zapier-platform-cli/pull/242))
+* (fix) `zapier env` no longer throws an error on Node versions >=8.0 ([PR](https://github.com/zapier/zapier-platform-cli/pull/242))
 * (improvement) `zapier convert` creates a .gitignore for new apps ([PR](https://github.com/zapier/zapier-platform-cli/pull/237))
 * (improvement) `zapier convert` properly escapes labels and descriptions ([PR](https://github.com/zapier/zapier-platform-cli/pull/233), [commit](https://github.com/zapier/zapier-platform-cli/commit/6d8014e9c04abb5f939affd19888c447ae1abca1))
 * (improvement) `zapier convert` only sends a token when it exists, not before ([PR](https://github.com/zapier/zapier-platform-cli/pull/236))
