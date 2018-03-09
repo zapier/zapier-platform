@@ -586,6 +586,7 @@ Defines a field an app either needs as input, or gives as output.
 * `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }`
 * `{ key: 'abc', choices: 'mobile' }`
 * `{ key: 'abc', type: 'loltype' }`
+* `{ key: 'abc', children: [ '$func$2$f$' ] }`
 
 #### Properties
 
@@ -602,7 +603,7 @@ Key | Required | Type | Description
 `search` | no | [/RefResourceSchema](#refresourceschema) | A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.
 `choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
 `list` | no | `boolean` | Can a user provide multiples of this field?
-`children` | no | _n/a_ | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
+`children` | no | `array`[[/FieldSchema](#fieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?
 `computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)?
 `altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?

@@ -2,8 +2,6 @@
 
 const makeSchema = require('../utils/makeSchema');
 
-const FieldsSchema = require('./FieldsSchema');
-
 const RefResourceSchema = require('./RefResourceSchema');
 
 const FieldChoicesSchema = require('./FieldChoicesSchema');
@@ -34,7 +32,8 @@ module.exports = makeSchema(
       { key: 'abc', choices: [3] },
       { key: 'abc', choices: [{ label: 'Red', value: '#f00' }] },
       { key: 'abc', choices: 'mobile' },
-      { key: 'abc', type: 'loltype' }
+      { key: 'abc', type: 'loltype' },
+      { key: 'abc', children: ['$func$2$f$'] }
     ],
     required: ['key'],
     properties: {
@@ -110,9 +109,10 @@ module.exports = makeSchema(
         type: 'boolean'
       },
       children: {
+        type: 'array',
+        items: { $ref: '/FieldSchema' },
         description:
-          'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
-        $ref: FieldsSchema.id
+          'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.'
       },
       dict: {
         description: 'Is this field a key/value input?',
