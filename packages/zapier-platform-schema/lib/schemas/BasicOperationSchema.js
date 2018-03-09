@@ -14,7 +14,7 @@ module.exports = makeSchema(
     description:
       'Represents the fundamental mechanics of triggers, searches, or creates.',
     type: 'object',
-    required: ['perform', 'sample'],
+    required: ['perform'],
     properties: {
       resource: {
         description:
@@ -38,7 +38,7 @@ module.exports = makeSchema(
       },
       sample: {
         description:
-          'What does a sample of data look like? Will use resource sample if missing.',
+          'What does a sample of data look like? Will use resource sample if missing. Required, if the display is not hidden.',
         type: 'object',
         // TODO: require id, ID, Id property?
         minProperties: 1

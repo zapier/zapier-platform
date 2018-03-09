@@ -12,6 +12,50 @@ module.exports = makeSchema(
       'How will we get a list of new objects? Will be turned into a trigger automatically.',
     type: 'object',
     required: ['display', 'operation'],
+    examples: [
+      {
+        display: {
+          label: 'New User',
+          description: 'Trigger when a new User is created in your account.'
+        },
+        operation: {
+          perform: {
+            url: 'http://fake-crm.getsandbox.com/users'
+          },
+          sample: {
+            id: 49,
+            name: 'Veronica Kuhn',
+            email: 'veronica.kuhn@company.com'
+          }
+        }
+      },
+      {
+        display: {
+          label: 'New User',
+          description: 'Trigger when a new User is created in your account.',
+          hidden: true
+        },
+        operation: {
+          perform: {
+            url: 'http://fake-crm.getsandbox.com/users'
+          }
+        }
+      }
+    ],
+    antiExamples: [
+      {
+        display: {
+          label: 'New User',
+          description: 'Trigger when a new User is created in your account.'
+        },
+        operation: {
+          perform: {
+            url: 'http://fake-crm.getsandbox.com/users'
+          }
+          // missing sample
+        }
+      }
+    ],
     properties: {
       display: {
         description:

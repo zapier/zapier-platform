@@ -13,6 +13,47 @@ module.exports = makeSchema(
     description: 'How will Zapier get notified of new objects?',
     type: 'object',
     required: ['key', 'noun', 'display', 'operation'],
+    examples: [
+      {
+        key: 'new_recipe',
+        noun: 'Recipe',
+        display: {
+          label: 'New Recipe',
+          description: 'Triggers when a new recipe is added.'
+        },
+        operation: {
+          type: 'polling',
+          perform: '$func$0$f$',
+          sample: { id: 1 }
+        }
+      },
+      {
+        key: 'new_recipe',
+        noun: 'Recipe',
+        display: {
+          label: 'New Recipe',
+          description: 'Triggers when a new recipe is added.',
+          hidden: true
+        },
+        operation: {
+          type: 'polling',
+          perform: '$func$0$f$'
+        }
+      }
+    ],
+    antiExamples: [
+      {
+        key: 'new_recipe',
+        noun: 'Recipe',
+        display: {
+          label: 'New Recipe',
+          description: 'Triggers when a new recipe is added.'
+        },
+        operation: {
+          perform: '$func$0$f$'
+        }
+      }
+    ],
     properties: {
       key: {
         description: 'A key to uniquely identify this trigger.',

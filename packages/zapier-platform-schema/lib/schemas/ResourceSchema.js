@@ -17,6 +17,127 @@ module.exports = makeSchema(
       'Represents a resource, which will in turn power triggers, searches, or creates.',
     type: 'object',
     required: ['key', 'noun'],
+    examples: [
+      {
+        key: 'tag',
+        noun: 'Tag',
+        get: {
+          display: {
+            label: 'Get Tag by ID',
+            description: 'Grab a specific Tag by ID.'
+          },
+          operation: {
+            perform: {
+              url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+            },
+            sample: {
+              id: 385,
+              name: 'proactive enable ROI'
+            }
+          }
+        }
+      },
+      {
+        key: 'tag',
+        noun: 'Tag',
+        sample: {
+          id: 385,
+          name: 'proactive enable ROI'
+        },
+        get: {
+          display: {
+            label: 'Get Tag by ID',
+            description: 'Grab a specific Tag by ID.'
+          },
+          operation: {
+            perform: {
+              url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+            }
+            // resource sample is used
+          }
+        }
+      },
+      {
+        key: 'tag',
+        noun: 'Tag',
+        get: {
+          display: {
+            label: 'Get Tag by ID',
+            description: 'Grab a specific Tag by ID.',
+            hidden: true
+          },
+          operation: {
+            perform: {
+              url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+            }
+          }
+        },
+        list: {
+          display: {
+            label: 'New Tag',
+            description: 'Trigger when a new Tag is created in your account.'
+          },
+          operation: {
+            perform: {
+              url: 'http://fake-crm.getsandbox.com/tags'
+            },
+            sample: {
+              id: 385,
+              name: 'proactive enable ROI'
+            }
+          }
+        }
+      }
+    ],
+    antiExamples: [
+      {
+        key: 'tag',
+        noun: 'Tag',
+        get: {
+          display: {
+            label: 'Get Tag by ID',
+            description: 'Grab a specific Tag by ID.'
+          },
+          operation: {
+            perform: {
+              url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+            }
+            // missing sample (and no sample on resource)
+          }
+        },
+        list: {
+          display: {
+            label: 'New Tag',
+            description: 'Trigger when a new Tag is created in your account.'
+          },
+          operation: {
+            perform: {
+              url: 'http://fake-crm.getsandbox.com/tags'
+            },
+            sample: {
+              id: 385,
+              name: 'proactive enable ROI'
+            }
+          }
+        }
+      },
+      {
+        key: 'tag',
+        noun: 'Tag',
+        get: {
+          display: {
+            label: 'Get Tag by ID',
+            description: 'Grab a specific Tag by ID.'
+          },
+          operation: {
+            perform: {
+              url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+            }
+            // missing sample (and no sample on resource)
+          }
+        }
+      }
+    ],
     properties: {
       key: {
         description: 'A key to uniquely identify this resource.',

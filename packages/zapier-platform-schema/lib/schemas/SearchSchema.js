@@ -12,6 +12,45 @@ module.exports = makeSchema(
     description: 'How will Zapier search for existing objects?',
     type: 'object',
     required: ['key', 'noun', 'display', 'operation'],
+    examples: [
+      {
+        key: 'recipe',
+        noun: 'Recipe',
+        display: {
+          label: 'Find a Recipe',
+          description: 'Search for recipe by cuisine style.'
+        },
+        operation: {
+          perform: '$func$2$f$',
+          sample: { id: 1 }
+        }
+      },
+      {
+        key: 'recipe',
+        noun: 'Recipe',
+        display: {
+          label: 'Find a Recipe',
+          description: 'Search for recipe by cuisine style.',
+          hidden: true
+        },
+        operation: { perform: '$func$2$f$' }
+      }
+    ],
+    antiExamples: [
+      'abc',
+      {
+        key: 'recipe',
+        noun: 'Recipe',
+        display: {
+          label: 'Find a Recipe',
+          description: 'Search for recipe by cuisine style.'
+        },
+        operation: {
+          perform: '$func$2$f$'
+          // missing sample
+        }
+      }
+    ],
     properties: {
       key: {
         description: 'A key to uniquely identify this search.',

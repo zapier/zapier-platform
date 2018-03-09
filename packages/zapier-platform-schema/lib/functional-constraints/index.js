@@ -13,12 +13,13 @@
 const checks = [
   require('./searchOrCreateKeys'),
   require('./deepNestedFields'),
-  require('./mutuallyExclusiveFields')
+  require('./mutuallyExclusiveFields'),
+  require('./requiredSamples')
 ];
 
-const runFunctionalConstraints = definition => {
+const runFunctionalConstraints = (definition, mainSchema) => {
   return checks.reduce((errors, checkFunc) => {
-    const errorsForCheck = checkFunc(definition);
+    const errorsForCheck = checkFunc(definition, mainSchema);
     if (errorsForCheck) {
       errors = errors.concat(errorsForCheck);
     }

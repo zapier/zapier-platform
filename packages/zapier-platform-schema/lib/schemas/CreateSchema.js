@@ -34,6 +34,18 @@ module.exports = makeSchema(
           sample: { id: 1 },
           shouldLock: true
         }
+      },
+      {
+        key: 'recipe',
+        noun: 'Recipe',
+        display: {
+          label: 'Create Recipe',
+          description: 'Creates a new recipe.',
+          hidden: true
+        },
+        operation: {
+          perform: '$func$2$f$'
+        }
       }
     ],
     antiExamples: [
@@ -46,6 +58,18 @@ module.exports = makeSchema(
           description: 'Creates a new recipe.'
         },
         operation: { perform: '$func$2$f$', shouldLock: 'yes' }
+      },
+      {
+        key: 'recipe',
+        noun: 'Recipe',
+        display: {
+          label: 'Create Recipe',
+          description: 'Creates a new recipe.'
+        },
+        operation: {
+          perform: '$func$2$f$'
+          // sample is missing!
+        }
       }
     ],
     properties: {

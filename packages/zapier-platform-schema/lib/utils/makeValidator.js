@@ -28,7 +28,7 @@ const makeValidator = (mainSchema, subSchemas) => {
     validate: definition => {
       const results = v.validate(definition, mainSchema);
       results.errors = results.errors.concat(
-        functionalConstraints.run(definition)
+        functionalConstraints.run(definition, mainSchema)
       );
       results.errors = results.errors.map(error => {
         error.codeLinks = makeLinks(error, links.makeCodeLink);
