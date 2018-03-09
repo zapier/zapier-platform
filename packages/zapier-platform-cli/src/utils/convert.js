@@ -162,6 +162,19 @@ const renderField = (definition, key, indent = 0) => {
     );
   }
 
+  if (definition.choices) {
+    const choices = {};
+    _.each(definition.choices.split(','), choice => {
+      const parts = choice.split('|');
+      const choiceKey = parts[0].trim();
+      const choiceLabel =
+        parts.length > 1 ? parts[1].trim() : _.startCase(choiceKey);
+      choices[choiceKey] = choiceLabel;
+    });
+
+    props.push(renderProp('choices', JSON.stringify(choices)));
+  }
+
   props = props.map(s => ' '.repeat(indent + 2) + s);
   const padding = ' '.repeat(indent);
 

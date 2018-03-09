@@ -100,6 +100,26 @@ describe('convert render functions', () => {
       field.helpText.should.eql("That's ok");
     });
 
+    it('should convert a static dropdown', () => {
+      const wbKey = 'genre';
+      const wbDef = {
+        key: 'genre',
+        label: 'Genre',
+        type: 'Unicode',
+        required: true,
+        choices: 'drama,scifi|Sci-Fi,super-hero|Super Hero,thriller'
+      };
+
+      const string = convert.renderField(wbDef, wbKey);
+      const field = s2js(string);
+      field.choices.should.eql({
+        drama: 'Drama',
+        scifi: 'Sci-Fi',
+        'super-hero': 'Super Hero',
+        thriller: 'Thriller'
+      });
+    });
+
     it('should convert a dynamic dropdown', () => {
       const wbKey = 'test';
       const wbDef = {
