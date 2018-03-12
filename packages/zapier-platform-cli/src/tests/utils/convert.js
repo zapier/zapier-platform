@@ -646,7 +646,7 @@ const getSessionKey = (z, bundle) => {
     });
   });
 
-  describe('render sample', () => {
+  describe('render sample fields', () => {
     it('should render sample output fields', () => {
       const wbFields = [
         { type: 'float', key: 'bounds__northeast__lat' },
@@ -662,7 +662,7 @@ const getSessionKey = (z, bundle) => {
         }
       ];
 
-      const string = '[' + convert.renderSample(wbFields) + ']';
+      const string = '[' + convert.renderSampleFields(wbFields) + ']';
       const cliFields = s2js(string);
       cliFields.should.eql([
         { type: 'number', key: 'bounds__northeast__lat' },

@@ -220,9 +220,10 @@ module.exports = {
 <%= FIELDS %>
     ],
     outputFields: [
-<%= SAMPLE %><% if (hasCustomOutputFields) { %><% if (SAMPLE) { %>,<% } %>
+<%= SAMPLE_FIELDS %><% if (hasCustomOutputFields) { %><% if (SAMPLE_FIELDS) { %>,<% } %>
       getOutputFields<% } %>
     ],
-    perform: getList
+    perform: getList,
+    sample: <%= SAMPLE %>
   }
 };

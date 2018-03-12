@@ -212,7 +212,7 @@ ${props.join(',\n')}
 ${padding}}`;
 };
 
-const renderSample = (fields, indent = 0) => {
+const renderSampleFields = (fields, indent = 0) => {
   const results = [];
   _.each(fields, field => {
     results.push(renderSampleField(field, indent));
@@ -675,7 +675,8 @@ const renderStep = (type, definition, key, legacyApp) => {
   const stepMeta = getStepMetaData(legacyApp, type, key);
 
   const fields = renderFields(definition.fields, 6);
-  const sample = renderSample(definition.sample_result_fields, 6);
+  const sampleFields = renderSampleFields(definition.sample_result_fields, 6);
+  const sample = JSON.stringify(definition.sample_result) || 'null';
 
   const url = definition.url
     ? definition.url
@@ -700,6 +701,7 @@ const renderStep = (type, definition, key, legacyApp) => {
     HIDDEN: hidden,
     IMPORTANT: important,
     FIELDS: fields,
+    SAMPLE_FIELDS: sampleFields,
     SAMPLE: sample,
     URL: url,
     scripting: stepMeta.hasScripting,
@@ -1087,7 +1089,7 @@ module.exports = {
   renderAuth,
   renderField,
   renderIndex,
-  renderSample,
+  renderSampleFields,
   renderScripting,
   renderStep,
   renderTemplate,
