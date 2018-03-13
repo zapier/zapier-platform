@@ -11,7 +11,7 @@
     "test": "node node_modules/mocha/bin/mocha --recursive"
   },
   "engines": {
-    "node": "6.10.3",
+    "node": ">=6.10.3",
     "npm": ">=3.10.10"
   },
   "dependencies": {
