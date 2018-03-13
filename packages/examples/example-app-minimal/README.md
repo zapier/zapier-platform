@@ -4,4 +4,4 @@
 
 A barebones app.
 
-> We recommend using the zapier-platform-cli and `zapier init --template=minimal` to create an app.
+> We recommend using the zapier-platform-cli and `zapier init . --template=minimal` to create an app.
