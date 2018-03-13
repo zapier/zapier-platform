@@ -101,5 +101,7 @@ module.exports = {
   },
   // The test method allows Zapier to verify that the access token is valid. We'll execute this
   // method after the OAuth flow is complete to ensure everything is setup properly.
-  test: testAuth
+  test: testAuth,
+  // assuming "username" is a key returned from the test
+  connectionLabel: '{{username}}'
 };
