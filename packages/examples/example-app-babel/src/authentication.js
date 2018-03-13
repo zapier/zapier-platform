@@ -21,5 +21,7 @@ module.exports = {
 
   // The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this
   // method whenver a user connects their account for the first time.
-  test: test
+  test: test,
+  // assuming "username" is a key returned from the test
+  connectionLabel: '{{username}}'
 };

@@ -23,4 +23,4 @@ To push, instead of `zapier push`, we do:
 npm run zapier-push # compiles first
 ```
 
-> We recommend using the zapier-platform-cli and `zapier init --template=babel` to create an app.
+> We recommend using the zapier-platform-cli and `zapier init . --template=babel` to create an app.

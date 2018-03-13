@@ -14,7 +14,7 @@
     "test": "npm run zapier-build && node node_modules/mocha/bin/mocha --recursive lib"
   },
   "engines": {
-    "node": "6.10.3",
+    "node": ">=6.10.3",
     "npm": ">=3.10.10"
   },
   "dependencies": {
