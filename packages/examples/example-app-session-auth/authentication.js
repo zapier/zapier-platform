@@ -51,5 +51,7 @@ module.exports = {
   // The method that will exchange the fields provided by the user for session credentials.
   sessionConfig: {
     perform: getSessionKey
-  }
+  },
+  // assuming "username" is a key returned from the test
+  connectionLabel: '{{username}}'
 };
