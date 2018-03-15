@@ -2,6 +2,11 @@
 const { replaceVars } = require('./utils');
 <% } %>
 <% if (before && !session && !oauth && !customBasic) { %>const maybeIncludeAuth = (request, z, bundle) => {
+  <% if (!query) { %>
+    if (!request.headers) {
+      request.headers = {};
+    }
+  <% } %>
 <%
   Object.keys(mapping).forEach(key => {
     let value = mapping[key];
@@ -30,10 +35,12 @@ const maybeIncludeAuth = (request, z, bundle) => {
 <% }
 
 if (before && session) { %>const maybeIncludeAuth = (request, z, bundle) => {
-<%
-  if (query) { %>
+<% if (query) { %>
   request.params['<%= Object.keys(mapping)[0] %>'] = bundle.authData.sessionKey;;
 <% } else { %>
+  if (!request.headers) {
+    request.headers = {};
+  }
   request.headers['<%= Object.keys(mapping)[0] %>'] = bundle.authData.sessionKey;
 <% } %>
   return request;
@@ -42,6 +49,9 @@ if (before && session) { %>const maybeIncludeAuth = (request, z, bundle) => {
 
 if (before && oauth) { %>const maybeIncludeAuth = (request, z, bundle) => {
   if (bundle.authData.access_token) {
+    if (!request.headers) {
+      request.headers = {};
+    }
     request.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
   }
   return request;

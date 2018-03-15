@@ -4,7 +4,7 @@
   "description": "<%= DESCRIPTION %>",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --recursive"
+    "test": "node node_modules/mocha/bin/mocha --recursive -t 10000"
   },
   "engines": {
     "node": ">=6.10.0",

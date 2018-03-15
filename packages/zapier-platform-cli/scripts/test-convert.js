@@ -18,7 +18,8 @@ const appsToConvert = [
   { id: 83195, name: 'search-or-create' },
   { id: 80444, name: 'custom-basic' },
   { id: 83073, name: 'send-in-json' },
-  { id: 83342, name: 'replace-vars' }
+  { id: 83342, name: 'replace-vars' },
+  { id: 88339, name: 'create-oauth' }
   // TODO: Add more apps that use different scripting methods, as we start to support them
 ];
 
@@ -26,7 +27,7 @@ const testConvertedApp = (appToConvert, rootTmpDir) => {
   const zapierCmd = path.resolve(__dirname, '../zapier.js');
   // Prepare all env variables the apps might need
   const exportCmd =
-    'export CLIENT_ID=1234 CLIENT_SECRET=asdf USERNAME=user PASSWORD=passwd API_KEY=anything-goes ACCESS_TOKEN=a_token REFRESH_TOKEN=a_refresh_token';
+    'export CLIENT_ID=1234 CLIENT_SECRET=asdf USERNAME=user PASSWORD=secret API_KEY=secret SESSION_KEY=secret ACCESS_TOKEN=a_token REFRESH_TOKEN=a_refresh_token';
 
   const logFile = path.resolve(__dirname, '..', `${appToConvert.name}.log`);
   const logStream = fse.createWriteStream(logFile);

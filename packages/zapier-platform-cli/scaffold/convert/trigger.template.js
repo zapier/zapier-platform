@@ -1,5 +1,9 @@
 // Trigger stub created by 'zapier convert'. This is just a stub - you will need to edit!
 const { replaceVars } = require('../utils');
+<% if (fullScripting) { %>
+  const { runBeforeMiddlewares } = require('../utils');
+<% } %>
+
 <%
 // Template for just _pre_poll()
 if (preScripting && !postScripting && !fullScripting) { %>
@@ -92,13 +96,19 @@ const getList = (z, bundle) => {
 
   bundle._legacyUrl = '<%= URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+  bundle.request = { url: bundle._legacyUrl };
 
-  // Do a _poll() from scripting.
-  const fullPollEvent = {
-    name: 'trigger.poll',
-    key: '<%= KEY %>'
-  };
-  return legacyScriptingRunner.runEvent(fullPollEvent, z, bundle);
+  return runBeforeMiddlewares(bundle.request, z, bundle)
+    .then(request => {
+      bundle.request = request;
+
+      // Do a _poll() from scripting.
+      const fullPollEvent = {
+        name: 'trigger.poll',
+        key: '<%= KEY %>'
+      };
+      return legacyScriptingRunner.runEvent(fullPollEvent, z, bundle);
+    });
 };
 <%
 }
