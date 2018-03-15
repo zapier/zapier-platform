@@ -106,7 +106,7 @@ const isValidAppInstall = command => {
   } catch (err) {
     return {
       valid: false,
-      reason: `Looks like you're missing a local installaction of ${PLATFORM_PACKAGE}. Run \`npm install\` to resolve`
+      reason: `Looks like you're missing a local installation of ${PLATFORM_PACKAGE}. Run \`npm install\` to resolve`
     };
   }
 
