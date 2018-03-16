@@ -18,6 +18,10 @@ const replaceVars = (templateString, bundle, result) => {
 const runBeforeMiddlewares = (request, z, bundle) => {
   const app = require('./');
 
+  // Do it here so middlewares don't have to
+  request.params = request.params || {};
+  request.headers = request.headers || {};
+
   const befores = app.beforeRequest || [];
   return befores.reduce((prevResult, before) => {
     return Promise.resolve(prevResult).then(newRequest => {
