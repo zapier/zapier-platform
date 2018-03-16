@@ -1,8 +1,8 @@
 {
   "extends": "eslint:recommended",
-  "parser": "babel-eslint",
   "env": {
     "node": true,
+    "es6": true,
     "mocha": true
   },
   "globals": {
@@ -62,13 +62,13 @@
     "no-undef": 2,
     "no-undef-init": 2,
     "no-unused-expressions": 2,
-    "no-unused-vars": [2, {"vars": "all", "args": "after-used"}],
+    "no-unused-vars": [2, { "vars": "all", "args": "after-used" }],
     "no-use-before-define": 2,
     "no-with": 2,
     "semi": 2,
-    "semi-spacing": [2, {"before": false, "after": true}],
+    "semi-spacing": [2, { "before": false, "after": true }],
     "space-infix-ops": 2,
-    "space-unary-ops": [2, {"words": true, "nonwords": false}],
-    "yoda": [2, "never"],
+    "space-unary-ops": [2, { "words": true, "nonwords": false }],
+    "yoda": [2, "never"]
   }
 }
