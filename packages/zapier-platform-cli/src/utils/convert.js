@@ -8,7 +8,7 @@ const { printStarting, printDone } = require('./display');
 const { PACKAGE_VERSION } = require('../constants');
 
 const TEMPLATE_DIR = path.join(__dirname, '../../scaffold/convert');
-const ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION = '1.1.0';
+const ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION = '1.2.0';
 
 // map WB auth types to CLI
 const authTypeMap = {
