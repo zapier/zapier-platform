@@ -766,6 +766,8 @@ const renderAuthData = definition => {
   const authType = getAuthType(definition);
   let result;
   switch (authType) {
+    case 'api-header': // fall through
+    case 'api-query': // fall through
     case 'basic': {
       let lines = _.map(definition.auth_fields, (field, key) => {
         const upperKey = key.toUpperCase();
@@ -785,12 +787,6 @@ ${lines.join(',\n')}
       result = `{
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN
-      }`;
-      break;
-    case 'api-header': // Fall through
-    case 'api-query':
-      result = `{
-        apiKey: process.env.API_KEY
       }`;
       break;
     case 'session':
