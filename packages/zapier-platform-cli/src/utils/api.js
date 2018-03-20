@@ -137,12 +137,21 @@ const writeLinkedAppConfig = (app, appDir) => {
     ? path.resolve(appDir, constants.CURRENT_APP_FILE)
     : constants.CURRENT_APP_FILE;
 
-  return writeFile(
-    file,
-    prettyJSONstringify({
-      id: app.id,
-      key: app.key
-    })
+  // read contents of existing config before writing
+  return (
+    readFile(file)
+      .then(configBuff => {
+        return Promise.resolve(JSON.parse(configBuff.toString()));
+      })
+      // we want to eat errors about bad json and missing files
+      // and ensure the below code is passes a js object
+      .catch(() => Promise.resolve({}))
+      .then(config => {
+        return Object.assign({}, config, { id: app.id, key: app.key });
+      })
+      .then(updatedConfig =>
+        writeFile(file, prettyJSONstringify(updatedConfig))
+      )
   );
 };
 
