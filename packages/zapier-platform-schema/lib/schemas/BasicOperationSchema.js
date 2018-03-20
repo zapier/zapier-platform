@@ -38,10 +38,16 @@ module.exports = makeSchema(
       },
       sample: {
         description:
-          'What does a sample of data look like? Will use resource sample if missing. Required, if the display is not hidden.',
+          'What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample',
         type: 'object',
         // TODO: require id, ID, Id property?
-        minProperties: 1
+        minProperties: 1,
+        docAnnotation: {
+          required: {
+            type: 'replace', // replace or append
+            value: '**yes** (with exceptions, see description)'
+          }
+        }
       }
     },
     additionalProperties: false

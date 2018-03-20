@@ -90,6 +90,24 @@ ${examples
 `;
 };
 
+const processProperty = (key, property, propIsRequired) => {
+  let isRequired = propIsRequired ? '**yes**' : 'no';
+  if (_.get(property, 'docAnnotation.required')) {
+    // can also support keys besides "required"
+    const annotation = property.docAnnotation.required;
+    if (annotation.type === 'replace') {
+      isRequired = annotation.value;
+    } else if (annotation.type === 'append') {
+      isRequired += annotation.value;
+    } else {
+      throw new Error(`unrecognized docAnnotation type: ${annotation.type}`);
+    }
+  }
+  return `${quoteOrNa(key)} | ${isRequired} | ${typeOrLink(
+    property
+  )} | ${property.description || NO_DESCRIPTION}`;
+};
+
 // Enumerate the properties as a table.
 const makePropertiesSection = Schema => {
   const properties =
@@ -106,10 +124,7 @@ Key | Required | Type | Description
 ${Object.keys(properties)
     .map(key => {
       const property = properties[key];
-      const isRequired = required.indexOf(key) !== -1 ? '**yes**' : 'no';
-      return `${quoteOrNa(key)} | ${isRequired} | ${typeOrLink(
-        property
-      )} | ${property.description || NO_DESCRIPTION}`;
+      return processProperty(key, property, required.includes(key));
     })
     .join('\n')}
 `;
