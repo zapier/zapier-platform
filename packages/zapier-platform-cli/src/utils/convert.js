@@ -1043,7 +1043,7 @@ const writeEnvironment = (legacyApp, newAppDir) => {
   if (!content) {
     return Promise.resolve(null);
   }
-  return createFile(content, '.environment', newAppDir);
+  return createFile(content, '.env', newAppDir);
 };
 
 const writeGitIgnore = newAppDir => {

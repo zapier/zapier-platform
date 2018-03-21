@@ -43,7 +43,7 @@ const convert = (context, appid, location) => {
       `Finished! You may try \`npm install\` and then \`zapier test\` in "${location}" directory.`
     );
     context.line(
-      "Also, if your app has authentication, don't forget to edit the environment variables in the .environment file."
+      "Also, if your app has authentication, don't forget to edit the environment variables in the .env file."
     );
   });
 };
