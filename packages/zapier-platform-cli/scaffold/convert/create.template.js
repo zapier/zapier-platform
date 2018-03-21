@@ -154,9 +154,14 @@ const getInputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
   bundle.request = { url: bundle._legacyUrl };
+<% } else { %>
+  bundle._legacyUrl = null;
+  bundle.request = {};
+<% } %>
 
   return runBeforeMiddlewares(bundle.request, z, bundle)
     .then(request => {
@@ -175,8 +180,12 @@ const getInputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+<% } else { %>
+  bundle._legacyUrl = null;
+<% } %>
 
   // Do a _pre_custom_action_fields() from scripting.
   const preFieldsEvent = {
@@ -195,8 +204,12 @@ const getInputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+<% } else { %>
+  bundle._legacyUrl = null;
+<% } %>
 
   // Do a _pre_custom_action_fields() from scripting.
   const preFieldsEvent = {
@@ -222,8 +235,12 @@ const getInputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+<% } else { %>
+  bundle._legacyUrl = null;
+<% } %>
 
   const responsePromise = z.request({
     url: bundle._legacyUrl
@@ -261,9 +278,14 @@ const getOutputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_RESULT_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_RESULT_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
   bundle.request = { url: bundle._legacyUrl };
+<% } else { %>
+  bundle._legacyUrl = null;
+  bundle.request = {};
+<% } %>
 
   return runBeforeMiddlewares(bundle.request, z, bundle)
     .then(request => {
@@ -282,8 +304,12 @@ const getOutputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_RESULT_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_RESULT_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+<% } else { %>
+  bundle._legacyUrl = null;
+<% } %>
 
   // Do a _pre_custom_action_result_fields() from scripting.
   const preResultFieldsEvent = {
@@ -302,8 +328,12 @@ const getOutputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_RESULT_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_RESULT_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+<% } else { %>
+  bundle._legacyUrl = null;
+<% } %>
 
   // Do a _pre_custom_action_result_fields() from scripting.
   const preResultFieldsEvent = {
@@ -329,8 +359,12 @@ const getOutputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_RESULT_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_RESULT_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+<% } else { %>
+  bundle._legacyUrl = null;
+<% } %>
 
   const responsePromise = z.request({
     url: bundle._legacyUrl

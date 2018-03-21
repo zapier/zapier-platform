@@ -704,6 +704,8 @@ const renderStep = (type, definition, key, legacyApp) => {
     SAMPLE_FIELDS: sampleFields,
     SAMPLE: sample,
     URL: url,
+    CUSTOM_FIELDS_URL: null,
+    CUSTOM_FIELDS_RESULT_URL: null,
     scripting: stepMeta.hasScripting,
     preScripting: stepMeta.hasPreScripting,
     postScripting: stepMeta.hasPostScripting,

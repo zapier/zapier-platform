@@ -133,8 +133,12 @@ const getOutputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+<% } else { %>
+  bundle._legacyUrl = null;
+<% } %>
 
   // Do a _pre_custom_trigger_fields() from scripting.
   const preResultFieldsEvent = {
@@ -153,8 +157,12 @@ const getOutputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+<% } else { %>
+  bundle._legacyUrl = null;
+<% } %>
 
   // Do a _pre_custom_trigger_fields() from scripting.
   const preResultFieldsEvent = {
@@ -180,8 +188,12 @@ const getOutputFields = (z, bundle) => {
   const scripting = require('../scripting');
   const legacyScriptingRunner = require('zapier-platform-legacy-scripting-runner')(scripting);
 
+<% if (CUSTOM_FIELDS_URL) { %>
   bundle._legacyUrl = '<%= CUSTOM_FIELDS_URL %>';
   bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+<% } else { %>
+  bundle._legacyUrl = null;
+<% } %>
 
   const responsePromise = z.request({
     url: bundle._legacyUrl
