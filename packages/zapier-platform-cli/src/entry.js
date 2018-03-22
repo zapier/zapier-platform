@@ -8,6 +8,25 @@ const updateNotifier = require('update-notifier');
 const { DEBUG, LAMBDA_VERSION } = require('./constants');
 const commands = require('./commands');
 const utils = require('./utils');
+const leven = require('leven');
+
+const commandSuggestion = command => {
+  const availableCommands = Object.keys(commands);
+  // the lower the score, the more identical the words
+  const suggestion = _.sortBy(
+    availableCommands.map(c => {
+      return { command: c, score: leven(command, c) };
+    }),
+    'score'
+  )[0];
+
+  // after some brief testing, ~3 is a reasonable threshold for a typo vs an unrelated word
+  if (suggestion.score <= 3) {
+    return suggestion.command;
+  } else {
+    return null;
+  }
+};
 
 module.exports = argv => {
   process.on('exit', utils.clearSpinner);
@@ -73,9 +92,18 @@ module.exports = argv => {
 
   let commandFunc = commands[command];
   if (!commandFunc) {
-    context.line(
-      `\`zapier ${command}\` is not a command! Try running \`zapier help\`?`
-    );
+    let message = [`\`zapier ${command}\` is not a command!`];
+    const suggestion = commandSuggestion(command);
+    if (suggestion) {
+      message.push(`Did you mean \`zapier ${suggestion}\`?`);
+    } else {
+      message.push(
+        'Run `zapier help` to see a full list of available commands.'
+      );
+    }
+
+    context.line(message.join(' '));
+
     return;
   }
 
