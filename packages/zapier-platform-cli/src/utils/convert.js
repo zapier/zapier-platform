@@ -763,46 +763,46 @@ const writeStep = (type, definition, key, legacyApp, newAppDir) => {
   );
 };
 
-// render the authData used in the trigger/search/create test code
-const renderAuthData = definition => {
+// Get auth field keys that will be put into test code
+const getAuthFieldKeys = definition => {
   const authType = getAuthType(definition);
-  let result;
+  let fieldKeys;
   switch (authType) {
     case 'api-header': // fall through
     case 'api-query': // fall through
     case 'basic': {
-      let lines = _.map(definition.auth_fields, (field, key) => {
-        const upperKey = key.toUpperCase();
-        return `        ${key}: process.env.${upperKey}`;
-      });
-      result = `{
-${lines.join(',\n')}
-      }`;
+      fieldKeys = _.keys(definition.auth_fields);
       break;
     }
     case 'oauth2':
-      result = `{
-        access_token: process.env.ACCESS_TOKEN
-      }`;
+      fieldKeys = ['access_token'];
       break;
     case 'oauth2-refresh':
-      result = `{
-        access_token: process.env.ACCESS_TOKEN,
-        refresh_token: process.env.REFRESH_TOKEN
-      }`;
+      fieldKeys = ['access_token', 'refresh_token'];
       break;
     case 'session':
-      result = `{
-        sessionKey: process.env.SESSION_KEY
-      }`;
+      fieldKeys = ['sessionKey'];
       break;
     default:
-      result = `{
-        // TODO: Put your custom auth data here
-      }`;
+      fieldKeys = [];
       break;
   }
-  return result;
+  return fieldKeys;
+};
+
+// Render authData for test code
+const renderAuthData = definition => {
+  const fieldKeys = getAuthFieldKeys(definition);
+  const lines = _.map(fieldKeys, key => {
+    const upperKey = _.snakeCase(key).toUpperCase();
+    return `${key}: process.env.${upperKey}`;
+  });
+  if (_.isEmpty(lines)) {
+    return `{
+      // TODO: Put your custom auth data here
+    }`;
+  }
+  return '{' + lines.join(',\n') + '}';
 };
 
 const renderDefaultInputData = definition => {
@@ -1033,8 +1033,9 @@ const writeScripting = (legacyApp, newAppDir) => {
 };
 
 const renderEnvironment = definition => {
-  const lines = _.map(definition.auth_fields, (field, key) => {
-    const upperKey = key.toUpperCase();
+  const authFields = getAuthFieldKeys(definition);
+  const lines = _.map(authFields, key => {
+    const upperKey = _.snakeCase(key).toUpperCase();
     return `${upperKey}=YOUR_${upperKey}`;
   });
   return lines.join('\n');
