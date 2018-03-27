@@ -1,5 +1,6 @@
 const colors = require('colors/safe');
 const utils = require('../utils');
+const _ = require('lodash');
 
 const hasCancelled = answer =>
   answer.toLowerCase() === 'n' ||
@@ -48,7 +49,7 @@ const promote = (context, version) => {
         );
         action = () =>
           utils.getInput(
-            'Would you like to continue promoting without a changelog? (y/n) (Ctrl-C to cancel)\n\n'
+            'Would you like to continue promoting without a changelog? (y/n)\n\n'
           );
       }
 
@@ -74,43 +75,50 @@ const promote = (context, version) => {
         body.changelog = changelog;
       }
 
-      utils.printStarting(`Promoting ${version}`);
+      utils.printStarting(`Verifying and promoting ${version}`);
       return utils.callAPI(
         url,
         {
           method: 'PUT',
           body
         },
-        false
+        false,
+        true
       );
     })
     .then(() => {
       utils.printDone();
       context.line('  Promotion successful!\n');
       context.line(
-        'Optionally try the `zapier migrate 1.0.0 1.0.1 [10%]` command to move users to this version.'
+        'Optionally, run the `zapier migrate` command to move users to this version.'
       );
     })
-    .catch(error => {
-      // The server 403's when the app hasn't been approved yet
-      if (
-        error.message.indexOf(
-          'You cannot promote until we have approved your app.'
-        ) !== -1
-      ) {
+    .catch(response => {
+      // we probalby have a raw response, might have a thrown error
+      // The server 403s when the app hasn't been approved yet
+      if (_.get(response, 'json.activationInfo')) {
         utils.printDone();
         context.line(
           '\nGood news! Your app passes validation and has the required number of testers and active Zaps.\n'
         );
         context.line(
           `The next step is to visit: ${colors.cyan(
-            `https://zapier.com/developer/builder/cli-app/${
-              app.id
-            }/activate/${version}`
+            `${response.json.activationInfo.url}`
           )} to request public activation of your app.\n`
         );
       } else {
-        throw error;
+        const errorList = _.get(response, 'json.errors');
+        if (errorList) {
+          const message = `Promotion failed for the following reasons:\n\n${errorList
+            .map(e => `* ${e}`)
+            .join('\n')}\n`;
+          throw new Error(message);
+        } else if (response.errText) {
+          throw new Error(response.errText);
+        } else {
+          // is an actual error
+          throw response;
+        }
       }
     });
 };
