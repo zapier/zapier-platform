@@ -98,6 +98,9 @@ const makeRowBasedTable = (rows, columnDefs, { includeIndex = true } = {}) => {
     1
   );
   const widthForValue = process.stdout.columns - maxLabelLength - 15; // The last bit accounts for some padding and borders
+  if (widthForValue < 1) {
+    return makePlain(rows, columnDefs); // There's not enough space to display the table
+  }
 
   rows.forEach((row, index) => {
     if (includeIndex) {
