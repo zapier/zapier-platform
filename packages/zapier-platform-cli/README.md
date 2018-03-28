@@ -121,6 +121,8 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 
 ## Getting Started
 
+> If you're new to Zapier Platform CLI, we strongly recommend you to walk through the [Tutorial](https://zapier.com/developer/start) for a more thorough introduction.
+
 ### What is an App?
 
 A CLI App is an implementation of your app's API. You build a Node.js application
@@ -164,8 +166,6 @@ Then you can either swap to that version with `nvm use v6.10.3`, or do `nvm exec
 
 
 ### Quick Setup Guide
-
-> Be sure to check the [Requirements](#requirements) before you start! Also, we recommend the [Tutorial](https://github.com/zapier/zapier-platform-cli/wiki/Tutorial) for a more thorough introduction.
 
 First up is installing the CLI and setting up your auth to create a working "Zapier Example" application. It will be private to you and visible in your live [Zap editor](https://zapier.com/app/editor).
 
@@ -212,7 +212,7 @@ zapier push
 
 ### Tutorial
 
-For a full tutorial, head over to our [wiki](https://github.com/zapier/zapier-platform-cli/wiki/Tutorial) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
+For a full tutorial, head over to our [Tutorial](https://zapier.com/developer/start) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
 
 ## Creating a Local App
 
@@ -1236,11 +1236,13 @@ You will likely also want to set the value locally for testing.
 export MY_SECRET_VALUE=1234
 ```
 
-Alternatively, we provide some extra tooling to work with an `.environment` that looks like this:
+Alternatively, we provide some extra tooling to work with an `.env` (or `.environment`, see below note) that looks like this:
 
 ```
 MY_SECRET_VALUE=1234
 ```
+
+> `.env` is the new recommended name for the environment file since v5.1.0. The old name `.environment` is depreated but will continue to work for backward compatibility.
 
 And then in your `test/basic.js` file:
 
@@ -1972,16 +1974,18 @@ zapier test
 
 ### Testing & Environment Variables
 
-The best way to store sensitive values (like API keys, OAuth secrets, or passwords) is in an `.environment` file ([learn more](https://github.com/motdotla/dotenv#faq)). Then, you can include the following before your tests run:
+The best way to store sensitive values (like API keys, OAuth secrets, or passwords) is in an `.env` (or `.environment`, see below note) file ([learn more](https://github.com/motdotla/dotenv#faq)). Then, you can include the following before your tests run:
 
 ```js
 const zapier = require('zapier-platform-core');
-zapier.tools.env.inject(); // inject() can take a filename; defaults to ".environment"
+zapier.tools.env.inject(); // inject() can take a filename; defaults to ".env"
 
-// now process.env has all the values in your .environment file
+// now process.env has all the values in your .env file
 ```
 
-> Remember: don't add your secrets file to version control!
+> `.env` is the new recommended name for the environment file since v5.1.0. The old name `.environment` is depreated but will continue to work for backward compatibility.
+
+> Remember: **NEVER** add your secrets file to version control!
 
 Additionally, you can provide them dynamically at runtime:
 

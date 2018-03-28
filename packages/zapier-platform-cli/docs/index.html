@@ -573,6 +573,17 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>If you&apos;re new to Zapier Platform CLI, we strongly recommend you to walk through the <a href="https://zapier.com/developer/start">Tutorial</a> for a more thorough introduction.</p>
+</blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h3 id="what-is-an-app">What is an App?</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -669,9 +680,7 @@ Then you can either swap to that version with <code>nvm use v6.10.3</code>, or d
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <blockquote>
-<p>Be sure to check the <a href="#requirements">Requirements</a> before you start! Also, we recommend the <a href="https://github.com/zapier/zapier-platform-cli/wiki/Tutorial">Tutorial</a> for a more thorough introduction.</p>
-</blockquote><p>First up is installing the CLI and setting up your auth to create a working &quot;Zapier Example&quot; application. It will be private to you and visible in your live <a href="https://zapier.com/app/editor">Zap editor</a>.</p>
+      <p>First up is installing the CLI and setting up your auth to create a working &quot;Zapier Example&quot; application. It will be private to you and visible in your live <a href="https://zapier.com/app/editor">Zap editor</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># install the CLI globally</span>
@@ -747,7 +756,7 @@ zapier push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For a full tutorial, head over to our <a href="https://github.com/zapier/zapier-platform-cli/wiki/Tutorial">wiki</a> for a comprehensive walkthrough for creating your first app. If this isn&apos;t your first rodeo, read on!</p>
+      <p>For a full tutorial, head over to our <a href="https://zapier.com/developer/start">Tutorial</a> for a comprehensive walkthrough for creating your first app. If this isn&apos;t your first rodeo, read on!</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2412,7 +2421,7 @@ zapier env 1.0.0 MY_SECRET_VALUE 1234
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Alternatively, we provide some extra tooling to work with an <code>.environment</code> that looks like this:</p>
+      <p>Alternatively, we provide some extra tooling to work with an <code>.env</code> (or <code>.environment</code>, see below note) that looks like this:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code>MY_SECRET_VALUE=1234
@@ -2422,7 +2431,9 @@ zapier env 1.0.0 MY_SECRET_VALUE 1234
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>And then in your <code>test/basic.js</code> file:</p>
+      <blockquote>
+<p><code>.env</code> is the new recommended name for the environment file since v5.1.0. The old name <code>.environment</code> is depreated but will continue to work for backward compatibility.</p>
+</blockquote><p>And then in your <code>test/basic.js</code> file:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
@@ -3480,13 +3491,13 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The best way to store sensitive values (like API keys, OAuth secrets, or passwords) is in an <code>.environment</code> file (<a href="https://github.com/motdotla/dotenv#faq">learn more</a>). Then, you can include the following before your tests run:</p>
+      <p>The best way to store sensitive values (like API keys, OAuth secrets, or passwords) is in an <code>.env</code> (or <code>.environment</code>, see below note) file (<a href="https://github.com/motdotla/dotenv#faq">learn more</a>). Then, you can include the following before your tests run:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
-zapier.tools.env.inject(); <span class="hljs-comment">// inject() can take a filename; defaults to &quot;.environment&quot;</span>
+zapier.tools.env.inject(); <span class="hljs-comment">// inject() can take a filename; defaults to &quot;.env&quot;</span>
 
-<span class="hljs-comment">// now process.env has all the values in your .environment file</span>
+<span class="hljs-comment">// now process.env has all the values in your .env file</span>
 </code></pre>
     </div>
   </div>
@@ -3494,7 +3505,9 @@ zapier.tools.env.inject(); <span class="hljs-comment">// inject() can take a fil
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Remember: don&apos;t add your secrets file to version control!</p>
+<p><code>.env</code> is the new recommended name for the environment file since v5.1.0. The old name <code>.environment</code> is depreated but will continue to work for backward compatibility.</p>
+</blockquote><blockquote>
+<p>Remember: <strong>NEVER</strong> add your secrets file to version control!</p>
 </blockquote><p>Additionally, you can provide them dynamically at runtime:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
