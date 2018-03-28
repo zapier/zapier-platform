@@ -52,7 +52,7 @@
     "prettier": "1.9.1",
     "read": "1.0.7",
     "readable-stream": "2.2.2",
-    "semver": "5.3.0",
+    "semver": "5.5.0",
     "string-length": "1.0.1",
     "strip-comments": "0.4.4",
     "tar-stream": "1.5.2",

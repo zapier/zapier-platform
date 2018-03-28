@@ -5,7 +5,11 @@ const _ = require('lodash');
 const colors = require('colors/safe');
 const updateNotifier = require('update-notifier');
 
-const { DEBUG, LAMBDA_VERSION } = require('./constants');
+const {
+  DEBUG,
+  LAMBDA_VERSION,
+  UPDATE_NOTIFICATION_INTERVAL
+} = require('./constants');
 const commands = require('./commands');
 const utils = require('./utils');
 const leven = require('leven');
@@ -46,15 +50,16 @@ module.exports = argv => {
     process.exit(1);
   }
 
-  const notifier = updateNotifier({ pkg: require('../package.json') });
-
-  if (notifier.update) {
+  const pkg = require('../package.json');
+  const notifier = updateNotifier({
+    pkg: pkg,
+    updateCheckInterval: UPDATE_NOTIFICATION_INTERVAL
+  });
+  if (notifier.update && notifier.update.latest !== pkg.version) {
     notifier.notify({
-      message: `Update available ${colors.grey(
-        notifier.update.current
-      )} → ${colors.green(notifier.update.latest)}\nRun ${colors.cyan(
-        'npm i -g zapier-platform-cli'
-      )} to update, and then ${colors.blue('re-test your integration')}.`
+      message: `Update available ${pkg.version} → ${colors.green(
+        notifier.update.latest
+      )}\nRun ${colors.cyan('npm i -g ' + pkg.name)} to update`
     });
   }
 
@@ -81,12 +86,7 @@ module.exports = argv => {
   const context = utils.createContext({ command, args, argOpts });
 
   if (command === 'help' && (argOpts.version || argOpts.v)) {
-    context.line(
-      [
-        `zapier-platform-cli/${require('../package.json').version}`,
-        `node/${process.version}`
-      ].join('\n')
-    );
+    utils.printVersionInfo(context);
     return;
   }
 

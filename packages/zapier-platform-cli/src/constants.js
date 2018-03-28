@@ -24,6 +24,7 @@ const nodeVersion = semver.Comparator(
 const LAMBDA_VERSION = `v${nodeVersion}`;
 const AUTH_KEY = 'deployKey';
 const PACKAGE_VERSION = require('../package.json').version;
+const UPDATE_NOTIFICATION_INTERVAL = 1000 * 60 * 60 * 24 * 7; // one week
 
 const ART = `\
                 zzzzzzzz
@@ -61,5 +62,6 @@ module.exports = {
   LAMBDA_VERSION,
   PACKAGE_VERSION,
   PLATFORM_PACKAGE,
-  STARTER_REPO
+  STARTER_REPO,
+  UPDATE_NOTIFICATION_INTERVAL
 };

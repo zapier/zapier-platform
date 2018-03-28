@@ -9,7 +9,6 @@ const fs = require('fs');
 const AdmZip = require('adm-zip');
 const fetch = require('node-fetch');
 const path = require('path');
-const semver = require('semver');
 
 const { writeFile, readFile } = require('./files');
 
@@ -283,18 +282,8 @@ const upload = (zipPath, appDir) => {
         }
       });
     })
-    .then(appVersion => {
+    .then(() => {
       printDone();
-
-      if (semver.lt(appVersion.platform_version, appVersion.core_npm_version)) {
-        console.log(
-          `\n**NOTE:** Your app is using zapier-platform-core@${
-            appVersion.platform_version
-          }, and there's a new version: ${
-            appVersion.core_npm_version
-          }. Please consider updating it: https://zapier.github.io/zapier-platform-cli/#upgrading-zapier-platform-cli-or-zapier-platform-core`
-        );
-      }
     });
 };
 

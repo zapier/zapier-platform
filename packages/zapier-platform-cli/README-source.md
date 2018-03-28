@@ -471,7 +471,7 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 [insert-file:./snippets/custom-fields.js]
 ```
 
-Additionally, if there is a field that affects the generation of dynamic fields, you can set the `altersDynamicFields: true` property. This informs the Zapier UI that whenver the value of that field changes, fields need to be recomputed. An example could be a static dropdown of "dessert type" that will change whether the function that generates dynamic fields includes a field "with sprinkles."
+Additionally, if there is a field that affects the generation of dynamic fields, you can set the `altersDynamicFields: true` property. This informs the Zapier UI that whenever the value of that field changes, fields need to be recomputed. An example could be a static dropdown of "dessert type" that will change whether the function that generates dynamic fields includes a field "with sprinkles."
 
 ```javascript
 [insert-file:./snippets/alters-dynamic-fields.js]
@@ -982,7 +982,7 @@ various kinds of errors occur.
 
 Errors due to a misconfiguration in a user's Zap should be handled in your app
 by throwing a standard JavaScript `Error` with a user-friendly message.
-Typically, this will be prettifying 4xx responses or API's that return errors as
+Typically, this will be prettifying 4xx responses or APIs that return errors as
 200s with a payload that describes the error.
 
 Example: `throw new Error('Your error message.');`
@@ -1366,39 +1366,34 @@ source ~/.bash_completion.d/_zapier
 
 Finally, restart your shell and start hitting TAB with the `zapier` command!
 
-## Upgrading Zapier Platform CLI or Zapier Platform Core
+## The Zapier Platform Packages
 
-The CLI version of the Platform has 3 public packages:
+The Zapier Platform consists of 3 npm packages that are released simultaneously as a trio.
 
-- [`zapier-platform-cli`](https://github.com/zapier/zapier-platform-cli): This is the `zapier` command. Should be installed with `npm install -g zapier-platform-cli` and is used to interact with your app and Zapier, but doesn't run in nor is included by your app.
+- [`zapier-platform-cli`](https://github.com/zapier/zapier-platform-cli) is the code that powers the `zapier` command. You use it most commonly with the `test`, `scaffold`, and `push` commands. It's installed with `npm install -g zapier-platform-cli` and does not correspond to a particular app.
 
-- [`zapier-platform-core`](https://github.com/zapier/zapier-platform-core): This is what allows your app to interact with Zapier. Apps require this package in their `package.json` file, and a specific version by design, so you can keep using an older "core" version without having to upgrade your code, but still being able to update your app. Should be installed with `npm install` in your app. You should manually keep this version number in sync with your `zapier-platform-cli` global one, but it's not required for all upgrades.
+- [`zapier-platform-core`](https://github.com/zapier/zapier-platform-core) is what allows your app to interact with Zapier. It holds the `z` object and app tester code. Your app depends on a specific version of `zapier-platform-core` in the `package.json` file. It's installed via `npm install` along with the rest of your app's dependencies.
 
-- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform-schema): This is a separate package for maintainability purposes. It's a dependency installed automatically by `zapier-platform-core`. It's basically the package that enforces app schemas to match what Zapier has in the backend.
+- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform-schema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
 
-### Upgrading Zapier Platform CLI
+### Updating
 
-Check your version with `$ zapier --version` and update with `$ npm -g update zapier-platform-cli`.
+The Zapier platform and its tools are under active development. While you don't need to install every release, we release new versions because they are better than the last. We do our best to adhere to [Semantic Versioning](https://semver.org/) wherein we won't break your code unless there's a `major` release. Otherwise, we're just fixing bugs (`patch`) and adding features (`minor`).
 
-You can also [look at the Changelog](https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md) to understand what changed between versions.
+Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
-#### When to Update CLI
+<!-- TODO: if we decouple releases, change this -->
+The most recently released version of `cli` and `core` is `PACKAGE_VERSION`. You can see the versions you're working with by running `zapier -v`.
 
-You should keep your `zapier-platform-cli` global package up-to-date to get the latest features and bug fixes for interacting with your app, but it's not mandatory. You should be able to use any publicly available `zapier-platform-cli` version.
+To update `cli`, run `npm install -g zapier-platform-cli`.
 
-### Upgrading Zapier Platform Core
+To update the version of `core` your app depends on, set the `zapier-platform-core` dependency in your `package.json` to a version listed [here](https://github.com/zapier/zapier-platform-core/releases) and run `npm install`.
 
-Open your app's `package.json` file and update the number for the `zapier-platform-core` entry to what the latest public version is. You can see it on the right side of the [NPM registry page](https://www.npmjs.com/package/zapier-platform-core). After that you should be able to run `npm update` and get the latest goodies!
-
-#### When To Update Core
-
-You should keep your `zapier-platform-core` package up-to-date to get the latest features and bug fixes for your app when interacting with Zapier, but it's not mandatory. You should be able to use any publicly available `zapier-platform-core` version.
-
-While not always required, it's also recommended you use the same `zapier-platform-cli` global package as the app's `zapier-platform-core` one, to ensure maximum compatibility.
+For maximum compatibility, keep the versions of `cli` and `core` in sync.
 
 ## Development of the CLI
 
-This section is only relevant if you're editing the `zapier-platform-cli` package
+This section is only relevant if you're editing the `zapier-platform-cli` package itself.
 
 ### Commands
 

@@ -13,6 +13,8 @@ const {
   LAMBDA_VERSION
 } = require('../constants');
 
+const { fileExistsSync } = require('./files');
+
 const camelCase = str => _.capitalize(_.camelCase(str));
 const snakeCase = str => _.snakeCase(str);
 
@@ -151,6 +153,64 @@ const entryPoint = dir => {
   return fse.realpathSync(path.resolve(dir, packageJson.main));
 };
 
+const printVersionInfo = context => {
+  const versions = [
+    `zapier-platform-cli/${PACKAGE_VERSION}`,
+    `node/${process.version}`
+  ];
+
+  if (fileExistsSync(path.resolve('./package.json'))) {
+    let requiredVersion = _.get(
+      require(path.resolve('./package.json')),
+      `dependencies.${PLATFORM_PACKAGE}`
+    );
+    if (requiredVersion) {
+      // might be a caret, have to coerce for later comparison
+      requiredVersion = semver.coerce(requiredVersion).version;
+
+      // the single version their package.json requires
+      versions.splice(1, 0, `zapier-platform-core/${requiredVersion}`);
+
+      if (requiredVersion !== PACKAGE_VERSION) {
+        versions.push(
+          `${colors.yellow('\nWarning!')} "CLI" (${colors.green(
+            PACKAGE_VERSION
+          )}) and "core" (${colors.green(
+            requiredVersion
+          )}) versions are out of sync. This is probably fine, but if you're epxeriencing issues, update the ${colors.cyan(
+            PLATFORM_PACKAGE
+          )} dependency in your ${colors.cyan(
+            'package.json'
+          )} to ${colors.green(PACKAGE_VERSION)}.`
+        );
+      }
+
+      if (
+        fileExistsSync(
+          path.resolve(`./node_modules/${PLATFORM_PACKAGE}/package.json`)
+        )
+      ) {
+        // double check they have the right version installed
+        const installedPkgVersion = require(path.resolve(
+          `./node_modules/${PLATFORM_PACKAGE}/package.json`
+        )).version;
+
+        if (requiredVersion !== installedPkgVersion) {
+          versions.push(
+            `${colors.yellow('\nWarning!')} Required version (${colors.green(
+              requiredVersion
+            )}) and installed version (${colors.green(
+              installedPkgVersion
+            )}) are out of sync. Run ${colors.cyan('`npm install`')} to fix.\n`
+          );
+        }
+      }
+    }
+  }
+
+  context.line(versions.join('\n'));
+};
+
 module.exports = {
   camelCase,
   entryPoint,
@@ -158,6 +218,7 @@ module.exports = {
   isValidNodeVersion,
   isWindows,
   npmInstall,
+  printVersionInfo,
   promiseDoWhile,
   promiseForever,
   runCommand,

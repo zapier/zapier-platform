@@ -754,7 +754,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
 <p>Note: this doesn&apos;t register or deploy the app with Zapier - try <code>zapier register &quot;Example&quot;</code> and <code>zapier push</code> for that!</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
 <li><code>path [value]</code> -- <strong>required</strong>,</li>
-<li><code>--template={minimal,resource,trigger,create,search,middleware,basic-auth,custom-auth,oauth2,session-auth,babel,rest-hooks,files}</code> -- <em>optional</em>, select a starting app template. Default is <code>minimal</code></li>
+<li><code>--template={minimal,resource,trigger,create,search,middleware,basic-auth,custom-auth,oauth2,session-auth,babel,rest-hooks,files,github}</code> -- <em>optional</em>, select a starting app template. Default is <code>minimal</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -948,7 +948,7 @@ All personal keys deactivated - now try `zapier login` to login again.
 <li><code>--status={any,success,error}</code> -- <em>optional</em>, display only success logs (status code &lt; 400 / info) or error (status code &gt; 400 / tracebacks). Default is <code>any</code></li>
 <li><code>--type={console,http}</code> -- <em>optional</em>, display only console or http logs. Default is <code>console</code></li>
 <li><code>--detailed</code> -- <em>optional</em>, show detailed logs (like request/response body and headers)</li>
-<li><code>--user=user@example.com</code> -- <em>optional</em>, display only this user&apos;s logs. Default is <code>me</code></li>
+<li><a href="mailto:`--user=user@example.com">`--user=user@example.com</a><code>-- _optional_, display only this user&apos;s logs. Default is</code>me`</li>
 <li><code>--limit=50</code> -- <em>optional</em>, control the maximum result size. Default is <code>50</code></li>
 <li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
@@ -1029,12 +1029,13 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http --detailed --format
 <p>Migrate users from one version of your app to another.</p>
 </blockquote><p>  <strong>Usage:</strong> <code>zapier migrate 1.0.0 1.0.1 [10%]</code></p><p>Starts a migration to move users between different versions of your app. You may also &quot;revert&quot; by simply swapping the from/to verion strings in the command line arguments (IE: <code>zapier migrate 1.0.1 1.0.0</code>).</p><p>Only migrate users between non-breaking versions, use <code>zapier deprecate</code> if you have breaking changes!</p><p>Migrations can take between 5-10 minutes, so be patient and check <code>zapier history</code> to track the status</p><p>Note: since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.</p><blockquote>
 <p>Tip! We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.</p>
+</blockquote><blockquote>
 <p>Tip 2! You can migrate a single user by using <code>--user</code> (IE: <code>zapier migrate 1.0.0 1.0.1 --user=user@example.com</code>).</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
 <li><code>fromVersion [1.0.0]</code> -- <strong>required</strong>, the version <strong>from</strong> which to migrate users</li>
 <li><code>toVersion [1.0.1]</code> -- <strong>required</strong>, the version <strong>to</strong> which to migrate users</li>
 <li><code>percent [100%]</code> -- <em>optional</em>, percent of users to migrate. Default is <code>100%</code></li>
-<li><code>--user=user@example.com</code> -- <em>optional</em>, migrate only this user</li>
+<li><a href="mailto:`--user=user@example.com">`--user=user@example.com</a>` -- <em>optional</em>, migrate only this user</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">

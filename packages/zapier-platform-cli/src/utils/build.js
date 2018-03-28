@@ -9,6 +9,8 @@ const archiver = require('archiver');
 const fs = require('fs');
 const fse = require('fs-extra');
 const klaw = require('klaw');
+const updateNotifier = require('update-notifier');
+const colors = require('colors/safe');
 
 const eslint = require('eslint');
 
@@ -258,6 +260,32 @@ const build = (zipPath, wdir) => {
     osTmpDir,
     'zapier-' + crypto.randomBytes(4).toString('hex')
   );
+
+  // find a package.json for the app and notify on the core dep
+  // `build` won't run if package.json isn't there, so if we get to here we're good
+  const requiredVersion = _.get(
+    require(path.resolve('./package.json')),
+    `dependencies.${constants.PLATFORM_PACKAGE}`
+  );
+
+  if (requiredVersion) {
+    const notifier = updateNotifier({
+      pkg: { name: constants.PLATFORM_PACKAGE, version: requiredVersion },
+      updateCheckInterval: constants.UPDATE_NOTIFICATION_INTERVAL
+    });
+
+    if (notifier.update && notifier.update.latest !== requiredVersion) {
+      notifier.notify({
+        message: `There's a newer version of ${colors.cyan(
+          constants.PLATFORM_PACKAGE
+        )} available.\nConsider updating the dependency in your\n${colors.cyan(
+          'package.json'
+        )} (${colors.grey(notifier.update.current)} → ${colors.green(
+          notifier.update.latest
+        )}) and then running ${colors.red('zapier test')}.`
+      });
+    }
+  }
 
   return ensureDir(tmpDir)
     .then(() => ensureDir(constants.BUILD_DIR))

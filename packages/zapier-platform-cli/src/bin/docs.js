@@ -13,7 +13,7 @@ const commands = require('../commands');
 
 const block = str => '> ' + str.split('\n').join('\n> ');
 
-const LAMBDA_VERSION = require('../constants').LAMBDA_VERSION;
+const { LAMBDA_VERSION, PACKAGE_VERSION } = require('../constants');
 
 // Takes all the cmd.docs and puts them into a big md file.
 const generateCliMarkdown = () => {
@@ -72,6 +72,10 @@ const fillLambdaVersion = line => {
   return line.replace(/LAMBDA_VERSION/g, LAMBDA_VERSION);
 };
 
+const fillPackageVersion = line => {
+  return line.replace(/PACKAGE_VERSION/g, PACKAGE_VERSION);
+};
+
 // Inserts code snippets from README-source.md into README.md
 const buildReadme = () => {
   const readmeSrc = path.resolve(__dirname, '../../README-source.md');
@@ -81,6 +85,7 @@ const buildReadme = () => {
   const newLines = lines
     .map(maybeInsertSnippet)
     .map(fillLambdaVersion)
+    .map(fillPackageVersion)
     .join('\n');
   const tocInstered = toc.insert(newLines);
   fs.writeFileSync(
