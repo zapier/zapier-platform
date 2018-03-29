@@ -9,7 +9,7 @@
 * (fix) Don't overwrite `.zapierapprc` completely ([PR](https://github.com/zapier/zapier-platform-cli/pull/275))
 * (fix) Fix "CUSTOM_FIELDS_URL is not defined" error for `zapier convert` ([PR](https://github.com/zapier/zapier-platform-cli/pull/277))
 * (improvement) Less nagging about updating packages ([PR](https://github.com/zapier/zapier-platform-cli/pull/282))
-* (improvement) Add "github" example app from tutorial ([PR](https://github.com/zapier/zapier-platform-cli/pull/259))
+* (improvement) Add "github" and "search-or-create" example apps ([PR](https://github.com/zapier/zapier-platform-cli/pull/259), [PR2](https://github.com/zapier/zapier-platform-cli/pull/287))
 * (improvement) `zapier promote` error messages now look better ([PR](https://github.com/zapier/zapier-platform-cli/pull/280))
 * (improvement) Remove unnecessary `.nvmrc` logic ([PR](https://github.com/zapier/zapier-platform-cli/pull/256))
 * (improvement) `zapier convert` supports static dropdown ([PR](https://github.com/zapier/zapier-platform-cli/pull/267))
