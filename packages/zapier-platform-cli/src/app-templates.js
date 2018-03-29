@@ -14,5 +14,6 @@ module.exports = [
   'babel',
   'rest-hooks',
   'files',
-  'github'
+  'github',
+  'search-or-create'
 ];
