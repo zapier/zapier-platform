@@ -11,13 +11,13 @@
     "test": "node node_modules/mocha/bin/mocha --recursive --timeout=10000"
   },
   "engines": {
-    "node": ">=6.10.3",
+    "node": "6.10.3",
     "npm": ">=3.10.10"
   },
   "dependencies": {
     "form-data": "2.1.4",
     "request": "2.81.0",
-    "zapier-platform-core": "5.0.0"
+    "zapier-platform-core": "5.1.0"
   },
   "devDependencies": {
     "mocha": "2.5.3",
