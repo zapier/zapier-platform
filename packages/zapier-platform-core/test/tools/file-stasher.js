@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const should = require('should');
+const nock = require('nock');
 
 const mocky = require('./mocky');
 
@@ -110,6 +111,27 @@ describe('file upload', () => {
             mocky.fakeSignedPostData.fields.key
           }`
         );
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should throwForStatus if bad status', done => {
+    mocky.mockRpcCall(mocky.fakeSignedPostData);
+    mocky.mockUpload();
+
+    nock('http://example.com')
+      .get('/stream-bytes')
+      .reply(401);
+
+    const request = createAppRequestClient(input);
+    const file = request({
+      url: 'http://example.com/stream-bytes',
+      raw: true
+    });
+    stashFile(file)
+      .catch(err => {
+        should(err.message).containEql('Received 401 code from');
         done();
       })
       .catch(done);

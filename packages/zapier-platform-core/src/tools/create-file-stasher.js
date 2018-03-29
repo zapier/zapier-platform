@@ -117,7 +117,6 @@ const createFileStasher = input => {
                 } else {
                   newBufferStringStream = response.content;
                 }
-
                 knownLength =
                   knownLength || response.getHeader('content-length');
                 const cd = response.getHeader('content-disposition');
@@ -141,8 +140,8 @@ const createFileStasher = input => {
                 fileContentType
               );
             };
-
             if (isStreamed) {
+              maybeResponse.throwForStatus();
               return maybeResponse.buffer().then(parseFinalResponse);
             } else {
               return parseFinalResponse(maybeResponse);
