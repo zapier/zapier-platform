@@ -20,7 +20,6 @@
 * (improvement) `zapier convert` generates `.env` instead of `.environment` ([PR](https://github.com/zapier/zapier-platform-cli/pull/276))
 * (improvement) `zapier convert` includes input fields to test code ([PR](https://github.com/zapier/zapier-platform-cli/pull/246))
 * (improvement) Fix session auth environment variable name for `zapier convert` ([PR](https://github.com/zapier/zapier-platform-cli/pull/281))
-* (improvement) `zapier convert` adds track info to converted app ([PR](https://github.com/zapier/zapier-platform-cli/pull/245))
 * (docs) FAQ about when to use placeholders or curlies ([PR](https://github.com/zapier/zapier-platform-cli/pull/252))
 
 ### schema
