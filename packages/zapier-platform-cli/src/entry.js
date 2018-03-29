@@ -56,11 +56,7 @@ module.exports = argv => {
     updateCheckInterval: UPDATE_NOTIFICATION_INTERVAL
   });
   if (notifier.update && notifier.update.latest !== pkg.version) {
-    notifier.notify({
-      message: `Update available ${pkg.version} → ${colors.green(
-        notifier.update.latest
-      )}\nRun ${colors.cyan('npm i -g ' + pkg.name)} to update`
-    });
+    notifier.notify({ isGlobal: true });
   }
 
   if (DEBUG) {
