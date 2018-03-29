@@ -350,10 +350,9 @@ a code {
 <li><a href="#example-apps">Example Apps</a></li>
 <li><a href="#faqs">FAQs</a><ul>
 <li><a href="#why-doesnt-zapier-support-newer-versions-of-nodejs">Why doesn&#39;t Zapier support newer versions of Node.js?</a></li>
-<li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
-<li><a href="#when-to-use-placeholders-or-curlies">When to use placeholders or curlies?</a></li>
 <li><a href="#does-zapier-support-xml-soap-apis">Does Zapier support XML (SOAP) APIs?</a></li>
 <li><a href="#is-it-possible-to-iterate-over-pages-in-a-polling-trigger">Is it possible to iterate over pages in a polling trigger?</a></li>
+<li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
 <li><a href="#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</a></li>
 <li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&#39;s the deal with pagination? When is it used and how does it work?</a></li>
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
@@ -365,8 +364,15 @@ a code {
 <li><a href="#bash-completion-script">Bash Completion Script</a></li>
 </ul>
 </li>
-<li><a href="#the-zapier-platform-packages">The Zapier Platform Packages</a><ul>
-<li><a href="#updating">Updating</a></li>
+<li><a href="#upgrading-zapier-platform-cli-or-zapier-platform-core">Upgrading Zapier Platform CLI or Zapier Platform Core</a><ul>
+<li><a href="#upgrading-zapier-platform-cli">Upgrading Zapier Platform CLI</a><ul>
+<li><a href="#when-to-update-cli">When to Update CLI</a></li>
+</ul>
+</li>
+<li><a href="#upgrading-zapier-platform-core">Upgrading Zapier Platform Core</a><ul>
+<li><a href="#when-to-update-core">When To Update Core</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#development-of-the-cli">Development of the CLI</a><ul>
@@ -530,10 +536,9 @@ a code {
 <li><a href="#example-apps">Example Apps</a></li>
 <li><a href="#faqs">FAQs</a><ul>
 <li><a href="#why-doesnt-zapier-support-newer-versions-of-nodejs">Why doesn&apos;t Zapier support newer versions of Node.js?</a></li>
-<li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
-<li><a href="#when-to-use-placeholders-or-curlies">When to use placeholders or curlies?</a></li>
 <li><a href="#does-zapier-support-xml-soap-apis">Does Zapier support XML (SOAP) APIs?</a></li>
 <li><a href="#is-it-possible-to-iterate-over-pages-in-a-polling-trigger">Is it possible to iterate over pages in a polling trigger?</a></li>
+<li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
 <li><a href="#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</a></li>
 <li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&apos;s the deal with pagination? When is it used and how does it work?</a></li>
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
@@ -545,8 +550,15 @@ a code {
 <li><a href="#bash-completion-script">Bash Completion Script</a></li>
 </ul>
 </li>
-<li><a href="#the-zapier-platform-packages">The Zapier Platform Packages</a><ul>
-<li><a href="#updating">Updating</a></li>
+<li><a href="#upgrading-zapier-platform-cli-or-zapier-platform-core">Upgrading Zapier Platform CLI or Zapier Platform Core</a><ul>
+<li><a href="#upgrading-zapier-platform-cli">Upgrading Zapier Platform CLI</a><ul>
+<li><a href="#when-to-update-cli">When to Update CLI</a></li>
+</ul>
+</li>
+<li><a href="#upgrading-zapier-platform-core">Upgrading Zapier Platform Core</a><ul>
+<li><a href="#when-to-update-core">When To Update Core</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#development-of-the-cli">Development of the CLI</a><ul>
@@ -565,17 +577,6 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h2 id="getting-started">Getting Started</h2>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <blockquote>
-<p>If you&apos;re new to Zapier Platform CLI, we strongly recommend you to walk through the <a href="https://zapier.com/developer/start">Tutorial</a> for a more thorough introduction.</p>
-</blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -680,7 +681,9 @@ Then you can either swap to that version with <code>nvm use v6.10.3</code>, or d
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>First up is installing the CLI and setting up your auth to create a working &quot;Zapier Example&quot; application. It will be private to you and visible in your live <a href="https://zapier.com/app/editor">Zap editor</a>.</p>
+      <blockquote>
+<p>Be sure to check the <a href="#requirements">Requirements</a> before you start! Also, we recommend the <a href="https://github.com/zapier/zapier-platform-cli/wiki/Tutorial">Tutorial</a> for a more thorough introduction.</p>
+</blockquote><p>First up is installing the CLI and setting up your auth to create a working &quot;Zapier Example&quot; application. It will be private to you and visible in your live <a href="https://zapier.com/app/editor">Zap editor</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># install the CLI globally</span>
@@ -756,7 +759,7 @@ zapier push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For a full tutorial, head over to our <a href="https://zapier.com/developer/start">Tutorial</a> for a comprehensive walkthrough for creating your first app. If this isn&apos;t your first rodeo, read on!</p>
+      <p>For a full tutorial, head over to our <a href="https://github.com/zapier/zapier-platform-cli/wiki/Tutorial">wiki</a> for a comprehensive walkthrough for creating your first app. If this isn&apos;t your first rodeo, read on!</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -884,7 +887,6 @@ npm install
 };
 
 <span class="hljs-built_in">module</span>.exports = App;
-
 </code></pre>
     </div>
   </div>
@@ -1083,7 +1085,6 @@ zapier convert 1234 my-app
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Your CLI app will be created and you can continue working on it.</p><blockquote>
 <p>Since v3.3.0, <code>zapier convert</code> has been improved a lot. But this is still in an alpha state - you&apos;ll likely have to edit the code to make it work.</p>
-</blockquote><blockquote>
 <p>Note - there is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.</p>
 </blockquote>
     </div>
@@ -1125,7 +1126,6 @@ zapier convert 1234 my-app
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Useful if your app requires two pieces of information to authentication: <code>username</code> and <code>password</code> which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).</p><blockquote>
 <p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-basic-auth">https://github.com/zapier/zapier-platform-example-app-basic-auth</a> for a working example app for basic auth.</p>
-</blockquote><blockquote>
 <p>Note: if you do the common API Key pattern like <code>Authorization: Basic APIKEYHERE:x</code> you should look at the &quot;Custom&quot; authentication method instead.</p>
 </blockquote>
     </div>
@@ -1145,7 +1145,6 @@ zapier convert 1234 my-app
   authentication: authentication
   <span class="hljs-comment">// ...</span>
 };
-
 </code></pre>
     </div>
   </div>
@@ -1202,7 +1201,6 @@ zapier convert 1234 my-app
   <span class="hljs-attr">beforeRequest</span>: [addApiKeyToHeader]
   <span class="hljs-comment">// ...</span>
 };
-
 </code></pre>
     </div>
   </div>
@@ -1240,7 +1238,6 @@ zapier convert 1234 my-app
   authentication: authentication
   <span class="hljs-comment">// ...</span>
 };
-
 </code></pre>
     </div>
   </div>
@@ -1335,7 +1332,6 @@ zapier convert 1234 my-app
   <span class="hljs-attr">afterResponse</span>: [sessionRefreshIf401]
   <span class="hljs-comment">// ...</span>
 };
-
 </code></pre>
     </div>
   </div>
@@ -1453,7 +1449,6 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 };
 
 <span class="hljs-built_in">module</span>.exports = App;
-
 </code></pre>
     </div>
   </div>
@@ -1498,7 +1493,6 @@ read, and search operations on that resource.</p>
     <span class="hljs-comment">//...</span>
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -1561,7 +1555,6 @@ For now, let&apos;s focus on two:</p><ul>
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -1596,7 +1589,6 @@ For now, let&apos;s focus on two:</p><ul>
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -1652,7 +1644,6 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -1662,11 +1653,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <p>You can find more details on the definition for each by looking at the <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#triggerschema">Trigger Schema</a>,
 <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#searchschema">Search Schema</a>, and <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#createschema">Create Schema</a>.</p><blockquote>
 <p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-trigger">https://github.com/zapier/zapier-platform-example-app-trigger</a> for a working example app using triggers.</p>
-</blockquote><blockquote>
 <p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-rest-hooks">https://github.com/zapier/zapier-platform-example-app-rest-hooks</a> for a working example app using REST hook triggers.</p>
-</blockquote><blockquote>
 <p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-search">https://github.com/zapier/zapier-platform-example-app-search</a> for a working example app using searches.</p>
-</blockquote><blockquote>
 <p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-create">https://github.com/zapier/zapier-platform-example-app-create</a> for a working example app using creates.</p>
 </blockquote>
     </div>
@@ -1717,7 +1705,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 <tr>
 <td>Action</td>
 <td>Object</td>
-<td>Return values are evaluated by <a href="https://lodash.com/docs#isPlainObject"><code>isPlainObject</code></a></td>
+<td>Can also be [Object]</td>
 </tr>
 </tbody>
 </table>
@@ -1766,7 +1754,6 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -1819,14 +1806,13 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Additionally, if there is a field that affects the generation of dynamic fields, you can set the <code>altersDynamicFields: true</code> property. This informs the Zapier UI that whenever the value of that field changes, fields need to be recomputed. An example could be a static dropdown of &quot;dessert type&quot; that will change whether the function that generates dynamic fields includes a field &quot;with sprinkles.&quot;</p>
+      <p>Additionally, if there is a field that affects the generation of dynamic fields, you can set the <code>altersDynamicFields: true</code> property. This informs the Zapier UI that whenver the value of that field changes, fields need to be recomputed. An example could be a static dropdown of &quot;dessert type&quot; that will change whether the function that generates dynamic fields includes a field &quot;with sprinkles.&quot;</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-built_in">module</span>.exports = {
@@ -1856,7 +1842,6 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -1915,7 +1900,6 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -1986,7 +1970,6 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -2421,7 +2404,7 @@ zapier env 1.0.0 MY_SECRET_VALUE 1234
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Alternatively, we provide some extra tooling to work with an <code>.env</code> (or <code>.environment</code>, see below note) that looks like this:</p>
+      <p>Alternatively, we provide some extra tooling to work with an <code>.environment</code> that looks like this:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code>MY_SECRET_VALUE=1234
@@ -2431,9 +2414,7 @@ zapier env 1.0.0 MY_SECRET_VALUE 1234
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <blockquote>
-<p><code>.env</code> is the new recommended name for the environment file since v5.1.0. The old name <code>.environment</code> is depreated but will continue to work for backward compatibility.</p>
-</blockquote><p>And then in your <code>test/basic.js</code> file:</p>
+      <p>And then in your <code>test/basic.js</code> file:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
@@ -2451,7 +2432,6 @@ should(<span class="hljs-string">&apos;some tests&apos;</span>, () =&gt; {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>This is a popular way to provide <code>process.env.ACCESS_TOKEN || bundle.authData.access_token</code> for convenient testing.</p>
-</blockquote><blockquote>
 <p><strong>NOTE</strong> Variables defined via <code>zapier env</code> will <em>always</em> be uppercased. For example, you would access the variable defined by <code>zapier env 1.0.0 foo_bar 1234</code> with <code>process.env.FOO_BAR</code>.</p>
 </blockquote>
     </div>
@@ -2482,7 +2462,7 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Within your app, you can access the environment via the standard <code>process.env</code> - any values set via local <code>export</code> or <code>zapier env</code> will be there.</p><p>For example, you can access the <code>process.env</code> in your perform functions and in templates:</p>
+      <p>Within your app, you can access the environment via the standard <code>process.env</code> - any values set via local <code>export</code> or <code>zapier env</code> will be there.</p><p>For example, you can access the <code>process.env</code> in your perform functions:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-javascript"><span class="hljs-keyword">const</span> listExample = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
@@ -2502,15 +2482,14 @@ zapier env 1.0.0
   <span class="hljs-comment">// ...</span>
   triggers: {
     <span class="hljs-attr">example</span>: {
-      <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;{{process.env.MY_NOUN}}&apos;</span>,
-      <span class="hljs-attr">operation</span>: {
+      <span class="hljs-comment">// ...</span>
+      operation: {
         <span class="hljs-comment">// ...</span>
         perform: listExample
       }
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -2518,7 +2497,7 @@ zapier env 1.0.0
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note! Be sure to lazily access your environment variables - see <a href="#when-to-use-placeholders-or-curlies">When to use placeholders or curlies?</a></p>
+<p>Note! Be sure to lazily access your environment variables - we generally set the environment variables after your code is already loaded.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -2592,7 +2571,6 @@ zapier env 1.0.0
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -2653,7 +2631,6 @@ zapier env 1.0.0
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -2703,7 +2680,6 @@ zapier env 1.0.0
     }
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -2758,7 +2734,6 @@ zapier env 1.0.0
   <span class="hljs-attr">afterResponse</span>: [mustBe200, autoParseJson]
   <span class="hljs-comment">// ...</span>
 };
-
 </code></pre>
     </div>
   </div>
@@ -2797,7 +2772,7 @@ zapier env 1.0.0
 <li><code>compress</code>: support gzip/deflate content encoding. Set to <code>false</code> to disable. Default is <code>true</code>.</li>
 <li><code>agent</code>: Node.js <code>http.Agent</code> instance, allows custom proxy, certificate etc. Default is <code>null</code>.</li>
 <li><code>timeout</code>: request / response timeout in ms. Set to <code>0</code> to disable (OS limit still applies), timeout reset on <code>redirect</code>. Default is <code>0</code> (disabled).</li>
-<li><code>size</code>: maximum response body size in bytes. Set to <code>0`</code> to disable. Default is <code>0</code> (disabled).</li>
+<li><code>size</code>: maximum response body size in bytes. Set to <code>0`` to disable. Default is</code>0` (disabled).</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -2939,7 +2914,6 @@ zapier env 1.0.0
 };
 
 <span class="hljs-built_in">module</span>.exports = App;
-
 </code></pre>
     </div>
   </div>
@@ -3047,7 +3021,6 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 };
 
 <span class="hljs-built_in">module</span>.exports = App;
-
 </code></pre>
     </div>
   </div>
@@ -3219,7 +3192,7 @@ various kinds of errors occur.</p>
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Errors due to a misconfiguration in a user&apos;s Zap should be handled in your app
 by throwing a standard JavaScript <code>Error</code> with a user-friendly message.
-Typically, this will be prettifying 4xx responses or APIs that return errors as
+Typically, this will be prettifying 4xx responses or API&apos;s that return errors as
 200s with a payload that describes the error.</p><p>Example: <code>throw new Error(&apos;Your error message.&apos;);</code></p><p>A couple best practices to keep in mind:</p><ul>
 <li>Elaborate on terse messages. &quot;not_authenticated&quot; -&gt; &quot;Your API Key is invalid. Please reconnect your account.&quot;</li>
 <li>If the error calls out a specific field, surface that information to the user. &quot;Invalid Request&quot; -&gt; &quot;contact name is invalid&quot;</li>
@@ -3352,7 +3325,6 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
     });
   });
 });
-
 </code></pre>
     </div>
   </div>
@@ -3436,7 +3408,6 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
     });
   });
 });
-
 </code></pre>
     </div>
   </div>
@@ -3491,13 +3462,13 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The best way to store sensitive values (like API keys, OAuth secrets, or passwords) is in an <code>.env</code> (or <code>.environment</code>, see below note) file (<a href="https://github.com/motdotla/dotenv#faq">learn more</a>). Then, you can include the following before your tests run:</p>
+      <p>The best way to store sensitive values (like API keys, OAuth secrets, or passwords) is in an <code>.environment</code> file (<a href="https://github.com/motdotla/dotenv#faq">learn more</a>). Then, you can include the following before your tests run:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
-zapier.tools.env.inject(); <span class="hljs-comment">// inject() can take a filename; defaults to &quot;.env&quot;</span>
+zapier.tools.env.inject(); <span class="hljs-comment">// inject() can take a filename; defaults to &quot;.environment&quot;</span>
 
-<span class="hljs-comment">// now process.env has all the values in your .env file</span>
+<span class="hljs-comment">// now process.env has all the values in your .environment file</span>
 </code></pre>
     </div>
   </div>
@@ -3505,9 +3476,7 @@ zapier.tools.env.inject(); <span class="hljs-comment">// inject() can take a fil
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p><code>.env</code> is the new recommended name for the environment file since v5.1.0. The old name <code>.environment</code> is depreated but will continue to work for backward compatibility.</p>
-</blockquote><blockquote>
-<p>Remember: <strong>NEVER</strong> add your secrets file to version control!</p>
+<p>Remember: don&apos;t add your secrets file to version control!</p>
 </blockquote><p>Additionally, you can provide them dynamically at runtime:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -3632,7 +3601,6 @@ zapier <span class="hljs-built_in">test</span>
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>During the <code>zapier build</code> or <code>zapier push</code> step - we&apos;ll copy all your code to <code>/tmp</code> folder and do a fresh re-install of modules.</p><blockquote>
 <p>Note: If your package isn&apos;t being pushed correctly (IE: you get &quot;Error: Cannot find module &apos;whatever&apos;&quot; in production), try adding the <code>--disable-dependency-detection</code> flag to <code>zapier push</code>.</p>
-</blockquote><blockquote>
 <p>Note 2: You can also try adding a &quot;includeInBuild&quot; array property (with paths to include, which will be evaluated to RegExp, with a case insensitive flag) to your <code>.zapierapprc</code> file, to make it look like:</p>
 </blockquote>
     </div>
@@ -3645,7 +3613,6 @@ zapier <span class="hljs-built_in">test</span>
     <span class="hljs-string">&quot;testing.json&quot;</span>
   ]
 }
-
 </code></pre>
     </div>
   </div>
@@ -3770,44 +3737,6 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Update your <code>zapier-platform-core</code> dependency in <code>package.json</code>.  Each major version ties to a specific version of Node.js. You can find the mapping <a href="https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js">here</a>. We only support the version(s) supported by <a href="https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html">AWS Lambda</a>.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="when-to-use-placeholders-or-curlies">When to use placeholders or curlies?</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You will see both <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Expression_interpolation">template literal placeholders</a> <code>${var}</code> and (double) &quot;curlies&quot; <code>{{var}}</code> used in examples.</p><p>In general, use <code>${var}</code> within functions and use <code>{{var}}</code> anywhere else.</p><p>Placeholders get evaluated as soon as the line of code is evaluated. This means that if you use <code>${process.env.VAR}</code> in a trigger configuration, <code>zapier push</code> will substitute it with your local environment&apos;s value for <code>VAR</code> when it builds your app and the value set via <code>zapier env</code> will not be used.</p><blockquote>
-<p>If you&apos;re not familiar with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals">template literals</a>, know that <code>const val = &quot;a&quot; + b + &quot;c&quot;</code> is essentially the same as <code>const val = `a${b}c`</code>.</p>
-</blockquote>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h3 id="does-zapier-support-xml-soap-apis">Does Zapier support XML (SOAP) APIs?</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -3836,7 +3765,6 @@ npm run zapier-push
   ]
   <span class="hljs-comment">// ...</span>
 };
-
 </code></pre>
     </div>
   </div>
@@ -3902,7 +3830,6 @@ npm run zapier-push
     <span class="hljs-attr">perform</span>: performPaging
   }
 };
-
 </code></pre>
     </div>
   </div>
@@ -3951,8 +3878,25 @@ npm run zapier-push
     }
   }
 };
-
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Update your <code>zapier-platform-core</code> dependency in <code>package.json</code>.  Each major version ties to a specific version of Node.js. You can find the mapping <a href="https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js">here</a>. We only support the version(s) supported by <a href="https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html">AWS Lambda</a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -4162,7 +4106,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="the-zapier-platform-packages">The Zapier Platform Packages</h2>
+      <h2 id="upgrading-zapier-platform-cli-or-zapier-platform-core">Upgrading Zapier Platform CLI or Zapier Platform Core</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4171,12 +4115,12 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The Zapier Platform consists of 3 npm packages that are released simultaneously as a trio.</p><ul>
-<li><p><a href="https://github.com/zapier/zapier-platform-cli"><code>zapier-platform-cli</code></a> is the code that powers the <code>zapier</code> command. You use it most commonly with the <code>test</code>, <code>scaffold</code>, and <code>push</code> commands. It&apos;s installed with <code>npm install -g zapier-platform-cli</code> and does not correspond to a particular app.</p>
+      <p>The CLI version of the Platform has 3 public packages:</p><ul>
+<li><p><a href="https://github.com/zapier/zapier-platform-cli"><code>zapier-platform-cli</code></a>: This is the <code>zapier</code> command. Should be installed with <code>npm install -g zapier-platform-cli</code> and is used to interact with your app and Zapier, but doesn&apos;t run in nor is included by your app.</p>
 </li>
-<li><p><a href="https://github.com/zapier/zapier-platform-core"><code>zapier-platform-core</code></a> is what allows your app to interact with Zapier. It holds the <code>z</code> object and app tester code. Your app depends on a specific version of <code>zapier-platform-core</code> in the <code>package.json</code> file. It&apos;s installed via <code>npm install</code> along with the rest of your app&apos;s dependencies.</p>
+<li><p><a href="https://github.com/zapier/zapier-platform-core"><code>zapier-platform-core</code></a>: This is what allows your app to interact with Zapier. Apps require this package in their <code>package.json</code> file, and a specific version by design, so you can keep using an older &quot;core&quot; version without having to upgrade your code, but still being able to update your app. Should be installed with <code>npm install</code> in your app. You should manually keep this version number in sync with your <code>zapier-platform-cli</code> global one, but it&apos;s not required for all upgrades.</p>
 </li>
-<li><p><a href="https://github.com/zapier/zapier-platform-schema"><code>zapier-platform-schema</code></a> enforces app structure behind the scenes. It&apos;s a dependency of <code>core</code>, so it will be installed automatically.</p>
+<li><p><a href="https://github.com/zapier/zapier-platform-schema"><code>zapier-platform-schema</code></a>: This is a separate package for maintainability purposes. It&apos;s a dependency installed automatically by <code>zapier-platform-core</code>. It&apos;s basically the package that enforces app schemas to match what Zapier has in the backend.</p>
 </li>
 </ul>
     </div>
@@ -4187,7 +4131,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="updating">Updating</h3>
+      <h3 id="upgrading-zapier-platform-cli">Upgrading Zapier Platform CLI</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4196,7 +4140,61 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <code>5.1.0</code>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://github.com/zapier/zapier-platform-core/releases">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
+      <p>Check your version with <code>$ zapier --version</code> and update with <code>$ npm -g update zapier-platform-cli</code>.</p><p>You can also <a href="https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md">look at the Changelog</a> to understand what changed between versions.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h4 id="when-to-update-cli">When to Update CLI</h4>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>You should keep your <code>zapier-platform-cli</code> global package up-to-date to get the latest features and bug fixes for interacting with your app, but it&apos;s not mandatory. You should be able to use any publicly available <code>zapier-platform-cli</code> version.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="upgrading-zapier-platform-core">Upgrading Zapier Platform Core</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Open your app&apos;s <code>package.json</code> file and update the number for the <code>zapier-platform-core</code> entry to what the latest public version is. You can see it on the right side of the <a href="https://www.npmjs.com/package/zapier-platform-core">NPM registry page</a>. After that you should be able to run <code>npm update</code> and get the latest goodies!</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h4 id="when-to-update-core">When To Update Core</h4>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>You should keep your <code>zapier-platform-core</code> package up-to-date to get the latest features and bug fixes for your app when interacting with Zapier, but it&apos;s not mandatory. You should be able to use any publicly available <code>zapier-platform-core</code> version.</p><p>While not always required, it&apos;s also recommended you use the same <code>zapier-platform-cli</code> global package as the app&apos;s <code>zapier-platform-core</code> one, to ensure maximum compatibility.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4214,7 +4212,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>This section is only relevant if you&apos;re editing the <code>zapier-platform-cli</code> package itself.</p>
+      <p>This section is only relevant if you&apos;re editing the <code>zapier-platform-cli</code> package</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4280,7 +4278,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can get help by either emailing <a href="mailto:partners@zapier.com">partners@zapier.com</a> or by joining our Slack channel <a href="https://zapier-platform-slack.herokuapp.com">https://zapier-platform-slack.herokuapp.com</a>.</p>
+      <p>You can get help by either emailing partners@zapier.com or by joining our Slack channel <a href="https://zapier-platform-slack.herokuapp.com">https://zapier-platform-slack.herokuapp.com</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

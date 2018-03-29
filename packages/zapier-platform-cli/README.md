@@ -2393,7 +2393,7 @@ The Zapier platform and its tools are under active development. While you don't 
 Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is `5.0.0`. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is `5.1.0`. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 
