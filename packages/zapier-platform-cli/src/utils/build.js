@@ -309,6 +309,20 @@ const build = (zipPath, wdir) => {
       printStarting('Installing project dependencies');
       return runCommand('npm', ['install', '--production'], { cwd: tmpDir });
     })
+    .then(output => {
+      // `npm install` may fail silently without returning a non-zero exit code, need to check further here
+      const corePath = path.join(
+        tmpDir,
+        'node_modules',
+        constants.PLATFORM_PACKAGE
+      );
+      if (!fs.existsSync(corePath)) {
+        throw new Error(
+          'Could not install dependencies properly. Error log:\n' +
+            output.stderr
+        );
+      }
+    })
     .then(() => {
       printDone();
       printStarting('Applying entry point file');

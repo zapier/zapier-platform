@@ -43,9 +43,10 @@ const runCommand = (command, args, options) => {
     let stdout = '';
     if (result.stdout) {
       result.stdout.on('data', data => {
-        stdout += data.toString();
+        const str = data.toString();
+        stdout += str;
         if (global.argOpts.debug) {
-          console.log(colors.green(stdout));
+          process.stdout.write(colors.green(str));
         }
       });
     }
@@ -53,9 +54,10 @@ const runCommand = (command, args, options) => {
     let stderr = '';
     if (result.stderr) {
       result.stderr.on('data', data => {
-        stderr += data.toString();
+        const str = data.toString();
+        stderr += str;
         if (global.argOpts.debug) {
-          console.log(colors.red(stdout));
+          process.stderr.write(colors.red(str));
         }
       });
     }
@@ -66,7 +68,7 @@ const runCommand = (command, args, options) => {
       if (code !== 0) {
         reject(new Error(stderr));
       }
-      resolve(stdout);
+      resolve({ stdout, stderr });
     });
   });
 };

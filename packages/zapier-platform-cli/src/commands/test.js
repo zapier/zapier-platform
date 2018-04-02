@@ -48,9 +48,9 @@ const test = context => {
       context.line('Running test suite.');
       return utils
         .runCommand('npm', commands, { stdio: 'inherit', env })
-        .then(stdout => {
-          if (stdout) {
-            context.line(stdout);
+        .then(output => {
+          if (output.stdout) {
+            context.line(output.stdout);
           }
         });
     });
