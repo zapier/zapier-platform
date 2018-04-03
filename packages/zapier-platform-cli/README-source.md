@@ -915,7 +915,7 @@ See a full example with dehydration/hydration wired in correctly:
 
 There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the `z.console.log` method ([see below for details](#console-logging)). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use `z.request([url], options)` or shorthand request objects).
 
-To view the logs for your application, use the `zapier logs` command. There are two types of logs, `http` (logged automatically by Zapier on HTTP requests) and `console` (manual logs via `z.console.log()` statements).
+To view the logs for your application, use the `zapier logs` command. There are three types of logs, `http` (logged automatically by Zapier on HTTP requests), `bundle` (logged automatically on every method execution), and `console` (manual logs via `z.console.log()` statements).
 
 For advanced logging options including only displaying the logs for a certain user or app version, look at the help for the logs command:
 
@@ -939,6 +939,14 @@ To see your `z.console.log` logs, do:
 
 ```bash
 zapier logs --type=console
+```
+
+### Viewing Bundle Logs
+
+To see the bundle logs, do:
+
+```bash
+zapier logs --type=bundle
 ```
 
 ### HTTP Logging

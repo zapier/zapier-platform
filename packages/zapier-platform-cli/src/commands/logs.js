@@ -28,6 +28,15 @@ const logs = context => {
         columns.push(['Response Headers', 'response_headers']);
         columns.push(['Response Body', 'response_content']);
       }
+    } else if (type === 'bundle') {
+      columns = [
+        ['Log', 'message'],
+        ['Input', 'input'],
+        ['Output', 'output'],
+        ['Version', 'app_cli_version'],
+        // ['ID', 'id'],
+        ['Timestamp', 'timestamp']
+      ];
     } else {
       columns = [
         ['Log', 'full_message'],
@@ -69,8 +78,8 @@ logs.argOptsSpec = {
     default: 'any'
   },
   type: {
-    help: 'display only console or http logs',
-    choices: ['console', 'http'],
+    help: 'display only console, bundle, or http logs',
+    choices: ['console', 'bundle', 'http'],
     default: 'console'
   },
   detailed: {
@@ -121,37 +130,6 @@ $ zapier logs --type=http
 # │     Step        │ 99c16565-1547-4b16-bcb5-45189d9d8afa │
 # │     Timestamp   │ 2016-01-01T23:04:36-05:00            │
 # └─────────────────┴──────────────────────────────────────┘
-
-$ zapier logs --type=http --detailed --format=plain
-# The logs of your app "Example" listed below.
-#
-# == Status
-# 200
-# == URL
-# http://httpbin.org/get
-# == Querystring
-# hello=world
-# == Version
-# 1.0.0
-# == Step
-# 99c16565-1547-4b16-bcb5-45189d9d8afa
-# == Timestamp
-# 2016-08-03T23:04:36-05:00
-# == Request Body
-# == Response Body
-# {
-#   "args": {
-#     "hello": "world"
-#   },
-#   "headers": {
-#     "Accept": "*/*",
-#     "Accept-Encoding": "gzip,deflate",
-#     "Host": "httpbin.org",
-#     "User-Agent": "Zapier"
-#   },
-#   "origin": "123.123.123.123",
-#   "url": "http://httpbin.org/get?hello=world"
-# }
 ${'```'}
 `;
 

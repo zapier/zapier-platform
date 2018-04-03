@@ -326,6 +326,7 @@ a code {
 <li><a href="#logging">Logging</a><ul>
 <li><a href="#console-logging">Console Logging</a></li>
 <li><a href="#viewing-console-logs">Viewing Console Logs</a></li>
+<li><a href="#viewing-bundle-logs">Viewing Bundle Logs</a></li>
 <li><a href="#http-logging">HTTP Logging</a></li>
 <li><a href="#viewing-http-logs">Viewing HTTP Logs</a></li>
 </ul>
@@ -506,6 +507,7 @@ a code {
 <li><a href="#logging">Logging</a><ul>
 <li><a href="#console-logging">Console Logging</a></li>
 <li><a href="#viewing-console-logs">Viewing Console Logs</a></li>
+<li><a href="#viewing-bundle-logs">Viewing Bundle Logs</a></li>
 <li><a href="#http-logging">HTTP Logging</a></li>
 <li><a href="#viewing-http-logs">Viewing HTTP Logs</a></li>
 </ul>
@@ -3074,7 +3076,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the <code>z.console.log</code> method (<a href="#console-logging">see below for details</a>). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use <code>z.request([url], options)</code> or shorthand request objects).</p><p>To view the logs for your application, use the <code>zapier logs</code> command. There are two types of logs, <code>http</code> (logged automatically by Zapier on HTTP requests) and <code>console</code> (manual logs via <code>z.console.log()</code> statements).</p><p>For advanced logging options including only displaying the logs for a certain user or app version, look at the help for the logs command:</p>
+      <p>There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the <code>z.console.log</code> method (<a href="#console-logging">see below for details</a>). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use <code>z.request([url], options)</code> or shorthand request objects).</p><p>To view the logs for your application, use the <code>zapier logs</code> command. There are three types of logs, <code>http</code> (logged automatically by Zapier on HTTP requests), <code>bundle</code> (logged automatically on every method execution), and <code>console</code> (manual logs via <code>z.console.log()</code> statements).</p><p>For advanced logging options including only displaying the logs for a certain user or app version, look at the help for the logs command:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier <span class="hljs-built_in">help</span> logs
@@ -3125,6 +3127,25 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=console
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="viewing-bundle-logs">Viewing Bundle Logs</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>To see the bundle logs, do:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=bundle
 </code></pre>
     </div>
   </div>

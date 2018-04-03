@@ -946,7 +946,7 @@ All personal keys deactivated - now try `zapier login` to login again.
 </blockquote><p><strong>Arguments</strong></p><ul>
 <li><code>--version=value</code> -- <em>optional</em>, display only this version&apos;s logs (default is all versions)</li>
 <li><code>--status={any,success,error}</code> -- <em>optional</em>, display only success logs (status code &lt; 400 / info) or error (status code &gt; 400 / tracebacks). Default is <code>any</code></li>
-<li><code>--type={console,http}</code> -- <em>optional</em>, display only console or http logs. Default is <code>console</code></li>
+<li><code>--type={console,bundle,http}</code> -- <em>optional</em>, display only console, bundle, or http logs. Default is <code>console</code></li>
 <li><code>--detailed</code> -- <em>optional</em>, show detailed logs (like request/response body and headers)</li>
 <li><a href="mailto:`--user=user@example.com">`--user=user@example.com</a><code>-- _optional_, display only this user&apos;s logs. Default is</code>me`</li>
 <li><code>--limit=50</code> -- <em>optional</em>, control the maximum result size. Default is <code>50</code></li>
@@ -979,37 +979,6 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
 <span class="hljs-comment"># &#x2502;     Step        &#x2502; 99c16565-1547-4b16-bcb5-45189d9d8afa &#x2502;</span>
 <span class="hljs-comment"># &#x2502;     Timestamp   &#x2502; 2016-01-01T23:04:36-05:00            &#x2502;</span>
 <span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-
-$ zapier logs --<span class="hljs-built_in">type</span>=http --detailed --format=plain
-<span class="hljs-comment"># The logs of your app &quot;Example&quot; listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># == Status</span>
-<span class="hljs-comment"># 200</span>
-<span class="hljs-comment"># == URL</span>
-<span class="hljs-comment"># http://httpbin.org/get</span>
-<span class="hljs-comment"># == Querystring</span>
-<span class="hljs-comment"># hello=world</span>
-<span class="hljs-comment"># == Version</span>
-<span class="hljs-comment"># 1.0.0</span>
-<span class="hljs-comment"># == Step</span>
-<span class="hljs-comment"># 99c16565-1547-4b16-bcb5-45189d9d8afa</span>
-<span class="hljs-comment"># == Timestamp</span>
-<span class="hljs-comment"># 2016-08-03T23:04:36-05:00</span>
-<span class="hljs-comment"># == Request Body</span>
-<span class="hljs-comment"># == Response Body</span>
-<span class="hljs-comment"># {</span>
-<span class="hljs-comment">#   &quot;args&quot;: {</span>
-<span class="hljs-comment">#     &quot;hello&quot;: &quot;world&quot;</span>
-<span class="hljs-comment">#   },</span>
-<span class="hljs-comment">#   &quot;headers&quot;: {</span>
-<span class="hljs-comment">#     &quot;Accept&quot;: &quot;*/*&quot;,</span>
-<span class="hljs-comment">#     &quot;Accept-Encoding&quot;: &quot;gzip,deflate&quot;,</span>
-<span class="hljs-comment">#     &quot;Host&quot;: &quot;httpbin.org&quot;,</span>
-<span class="hljs-comment">#     &quot;User-Agent&quot;: &quot;Zapier&quot;</span>
-<span class="hljs-comment">#   },</span>
-<span class="hljs-comment">#   &quot;origin&quot;: &quot;123.123.123.123&quot;,</span>
-<span class="hljs-comment">#   &quot;url&quot;: &quot;http://httpbin.org/get?hello=world&quot;</span>
-<span class="hljs-comment"># }</span>
 </code></pre>
     </div>
   </div>
