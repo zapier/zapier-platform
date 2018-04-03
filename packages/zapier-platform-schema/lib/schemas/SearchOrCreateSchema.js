@@ -14,7 +14,8 @@ module.exports = makeSchema(
     required: ['key', 'display', 'search', 'create'],
     properties: {
       key: {
-        description: 'A key to uniquely identify this search-or-create.',
+        description:
+          'A key to uniquely identify this search-or-create. Must match the search key.',
         $ref: KeySchema.id
       },
       display: {

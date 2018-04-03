@@ -1,6 +1,7 @@
 'use strict';
 
 require('should');
+const { SKIP_KEY } = require('../lib/constants');
 
 const testInlineSchemaExamples = name => {
   const Schema = require('../lib/schemas/' + name);
@@ -12,7 +13,7 @@ const testInlineSchemaExamples = name => {
       if (!goods.length) {
         this.skip();
       } else {
-        goods.forEach(good => {
+        goods.filter(t => !t[SKIP_KEY]).forEach(good => {
           const errors = Schema.validate(good).errors;
           errors.should.have.length(0);
         });
@@ -23,7 +24,7 @@ const testInlineSchemaExamples = name => {
       if (!bads.length) {
         this.skip();
       } else {
-        bads.forEach(bad => {
+        bads.filter(t => !t[SKIP_KEY]).forEach(bad => {
           const errors = Schema.validate(bad).errors;
           errors.should.not.have.length(0);
         });
@@ -33,5 +34,5 @@ const testInlineSchemaExamples = name => {
 };
 
 module.exports = {
-  testInlineSchemaExamples: testInlineSchemaExamples
+  testInlineSchemaExamples
 };

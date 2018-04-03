@@ -10,6 +10,7 @@ const links = require('./links');
 
 const NO_DESCRIPTION = '_No description given._';
 const COMBOS = ['anyOf', 'allOf', 'oneOf'];
+const { SKIP_KEY } = require('../constants');
 
 const walkSchemas = (InitSchema, callback) => {
   const recurse = (Schema, parents) => {
@@ -32,6 +33,15 @@ const collectSchemas = InitSchema => {
 };
 
 const quoteOrNa = val => (val ? `\`${val.replace('`', '')}\`` : '_n/a_');
+
+const formatExample = example => {
+  const ex = _.isPlainObject(example) ? _.omit(example, SKIP_KEY) : example;
+  return `* ${quoteOrNa(
+    // GH parses the newlines in bullets correctly, but it's a good thing to fix
+    // docs say Infinity for no line break at all
+    util.inspect(ex, { depth: null, breakLength: Infinity })
+  )}`;
+};
 
 // Generate a display of the type (or link to a $ref).
 const typeOrLink = schema => {
@@ -65,11 +75,7 @@ const makeExampleSection = Schema => {
   return `\
 #### Examples
 
-${examples
-    .map(example => {
-      return `* ${quoteOrNa(util.inspect(example))}`;
-    })
-    .join('\n')}
+${examples.map(formatExample).join('\n')}
 `;
 };
 
@@ -82,11 +88,7 @@ const makeAntiExampleSection = Schema => {
   return `\
 #### Anti-Examples
 
-${examples
-    .map(example => {
-      return `* ${quoteOrNa(util.inspect(example))}`;
-    })
-    .join('\n')}
+${examples.map(formatExample).join('\n')}
 `;
 };
 

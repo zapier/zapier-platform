@@ -6,11 +6,22 @@ const RefResourceSchema = require('./RefResourceSchema');
 
 const FieldChoicesSchema = require('./FieldChoicesSchema');
 
+const { SKIP_KEY, INCOMPATIBLE_FIELD_SCHEMA_KEYS } = require('../constants');
+
+// the following takes an array of string arrays (string[][]) and returns the follwing string:
+// * `a` & `b`
+// * `c` & `d`
+// ... etc
+const wrapInBackticks = s => `\`${s}\``;
+const formatBullet = f => `* ${f.map(wrapInBackticks).join(' & ')}`;
+const incompatibleFieldsList = INCOMPATIBLE_FIELD_SCHEMA_KEYS.map(
+  formatBullet
+).join('\n');
+
 module.exports = makeSchema(
   {
     id: '/FieldSchema',
-    description:
-      'Defines a field an app either needs as input, or gives as output.',
+    description: `Defines a field an app either needs as input, or gives as output. In addition to the requirements below, the following keys are mutually exclusive:\n\n${incompatibleFieldsList}`,
     type: 'object',
     examples: [
       { key: 'abc' },
@@ -20,9 +31,7 @@ module.exports = makeSchema(
         key: 'abc',
         choices: [{ label: 'Red', sample: '#f00', value: '#f00' }]
       },
-      { key: 'abc', children: [] },
       { key: 'abc', children: [{ key: 'abc' }] },
-      { key: 'abc', children: [{ key: 'abc', children: [] }] },
       { key: 'abc', type: 'integer' }
     ],
     antiExamples: [
@@ -33,6 +42,16 @@ module.exports = makeSchema(
       { key: 'abc', choices: [{ label: 'Red', value: '#f00' }] },
       { key: 'abc', choices: 'mobile' },
       { key: 'abc', type: 'loltype' },
+      { key: 'abc', children: [] },
+      {
+        key: 'abc',
+        children: [{ key: 'def', children: [] }]
+      },
+      {
+        key: 'abc',
+        children: [{ key: 'def', children: [{ key: 'dhi' }] }],
+        [SKIP_KEY]: true
+      },
       { key: 'abc', children: ['$func$2$f$'] }
     ],
     required: ['key'],
@@ -112,7 +131,8 @@ module.exports = makeSchema(
         type: 'array',
         items: { $ref: '/FieldSchema' },
         description:
-          'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.'
+          'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
+        minItems: 1
       },
       dict: {
         description: 'Is this field a key/value input?',

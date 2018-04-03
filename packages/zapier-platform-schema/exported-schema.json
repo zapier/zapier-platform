@@ -129,7 +129,7 @@
     "FieldSchema": {
       "id": "/FieldSchema",
       "description":
-        "Defines a field an app either needs as input, or gives as output.",
+        "Defines a field an app either needs as input, or gives as output. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "type": "object",
       "required": ["key"],
       "properties": {
@@ -206,7 +206,8 @@
             "$ref": "/FieldSchema"
           },
           "description":
-            "An array of child fields that define the structure of a sub-object for this field. Usually used for line items."
+            "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
+          "minItems": 1
         },
         "dict": {
           "description": "Is this field a key/value input?",
@@ -1101,7 +1102,8 @@
       "required": ["key", "display", "search", "create"],
       "properties": {
         "key": {
-          "description": "A key to uniquely identify this search-or-create.",
+          "description":
+            "A key to uniquely identify this search-or-create. Must match the search key.",
           "$ref": "/KeySchema"
         },
         "display": {
