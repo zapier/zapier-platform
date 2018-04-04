@@ -20,7 +20,7 @@ const collectErrors = (inputFields, path) => {
           )
         );
       } else {
-        const hasDeeplyNestedChildren = _.every(
+        const hasDeeplyNestedChildren = _.some(
           inputField.children,
           child => child.children
         );

@@ -60,6 +60,7 @@ describe('deepNestedFields', () => {
               {
                 key: 'line_items',
                 children: [
+                  { key: 'some do not have children' },
                   {
                     key: 'product',
                     children: [{ key: 'name', type: 'string' }]
