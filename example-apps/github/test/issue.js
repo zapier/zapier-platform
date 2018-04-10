@@ -6,6 +6,8 @@ const zapier = require('zapier-platform-core');
 const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
+const REPO = 'username/reponame' // CHANGE THIS
+
 //These are automated tests for the Issue create and Issue Trigger.
 //They will run every time the `zapier test` command is executed.
 describe('issue trigger', () => {
@@ -21,7 +23,7 @@ describe('issue trigger', () => {
       inputData: {
         filter: 'all',
         state: 'all',
-        repo: process.env.TEST_REPO
+        repo: REPO
       }
     };
     appTester(App.triggers.issue.operation.perform, bundle)
@@ -39,7 +41,7 @@ describe('issue trigger', () => {
         password: process.env.TEST_PASSWORD
       },
       inputData: {
-        repo: process.env.TEST_REPO,
+        repo: REPO,
         title: 'Test Issue',
         body: 'This is a test issue created from an automated test for the Zapier GitHub Example App'
       }
