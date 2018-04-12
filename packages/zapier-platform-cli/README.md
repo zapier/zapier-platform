@@ -905,6 +905,8 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 
 > You should see `bundle.inputData` partially filled in as users provide data - even in field retrieval. This allows you to build hierarchical relationships into fields (EG: only show issues from the previously selected project).
 
+> A function that returns a list of dynamic fields cannot include additional functions in that list to call for dynamic fields.
+
 ```javascript
 const recipeFields = (z, bundle) => {
   const response = z.request('http://example.com/api/v2/fields.json');
@@ -973,6 +975,8 @@ module.exports = {
 };
 
 ```
+
+> Only dropdowns support `altersDynamicFields`.
 
 ### Dynamic Dropdowns
 
