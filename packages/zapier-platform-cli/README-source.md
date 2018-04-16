@@ -360,7 +360,7 @@ Your auth definition would look something like this:
 [insert-file:./snippets/oauth2.js]
 ```
 
-> Note - For OAuth, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken`  will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty the first time the Zap runs.
+> Note - For OAuth, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken`  will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty the first time the Zap runs. Also note that `authentication.oauth2Config.getAccessToken` has access to the users return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example from the query string)
 
 
 ## Resources
@@ -609,7 +609,7 @@ This object holds the user's auth details and the data for the API requests.
 | limit | `-1` | the number of items to fetch. `-1` indicates there's no limit (which will almost always be the case) |
 | page | `0` | used in [paging](#paging) to uniquely identify which page of results should be returned |
 
-**`bundle.meta.zap.id` is only available in the `performSubscribe` and `performUnsubscribe` methods**
+> `bundle.meta.zap.id` is only available in the `performSubscribe` and `performUnsubscribe` methods
 
 The user's Zap ID is available during the [subscribe and unsubscribe](https://zapier.github.io/zapier-platform-schema/build/schema.html#basichookoperationschema) methods.
 
@@ -636,6 +636,46 @@ module.exports = {
   // ...
 };
 ```
+
+### `bundle.rawRequest`
+> `bundle.rawRequest` is only available in the `perform` for web hooks and `getAccessToken` for oauth authentication methods
+
+`bundle.rawRequest` holds raw information about the HTTP request that triggered the `perform` method or that represents the users browser request that triggered the `getAccessToken` call:
+
+```
+{
+  method: 'POST',
+  querystring: 'foo=bar&baz=qux',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  content: '{"hello": "world"}'
+}
+```
+
+
+
+### `bundle.cleanedRequest`
+> `bundle.cleanedRequest` is only available in the `perform` for web hooks and `getAccessToken` for oauth authentication methods
+
+`bundle.cleanedRequest` will return a formatted and parsed version of the request. Some or all of the following will be available:
+
+```
+{
+  method: 'POST',
+  querystring: {
+    foo: 'bar',
+    baz: 'qux'
+  },
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  content: {
+    hello: 'world'
+  }
+}
+```
+
 
 ## Environment
 
