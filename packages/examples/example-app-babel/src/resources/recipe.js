@@ -1,24 +1,24 @@
 const _sharedBaseUrl = 'https://auth-json-server.zapier.ninja';
 
-const getRecipe = (z, bundle) => {
-  return z.request({
-      url: `${_sharedBaseUrl}/recipes/${bundle.inputData.id}`,
-    })
-    .then((response) => JSON.parse(response.content));
+const getRecipe = async (z, bundle) => {
+  const response = await z.request({
+    url: `${_sharedBaseUrl}/recipes/${bundle.inputData.id}`,
+  });
+  return z.JSON.parse(response.content);
 };
 
-const listRecipes = (z, bundle) => {
-  return z.request({
-      url: _sharedBaseUrl + '/recipes',
-      params: {
-        style: bundle.inputData.style
-      }
-    })
-    .then((response) => JSON.parse(response.content));
+const listRecipes = async (z, bundle) => {
+  const response = await z.request({
+    url: _sharedBaseUrl + '/recipes',
+    params: {
+      style: bundle.inputData.style
+    }
+  });
+  return z.JSON.parse(response.content);
 };
 
-const createRecipe = (z, bundle) => {
-  const requestOptions = {
+const createRecipe = async (z, bundle) => {
+  const response = await z.request({
     url: _sharedBaseUrl + '/recipes',
     method: 'POST',
     body: JSON.stringify({
@@ -29,29 +29,25 @@ const createRecipe = (z, bundle) => {
     headers: {
       'content-type': 'application/json'
     }
-  };
-
-  return z.request(requestOptions)
-    .then((response) => JSON.parse(response.content));
+  });
+  return z.JSON.parse(response.content);
 };
 
-const searchRecipe = (z, bundle) => {
-  return z.request({
-      url: _sharedBaseUrl + '/recipes',
-      params: {
-        nameSearch: bundle.inputData.name
-      }
-    })
-    .then((response) => {
-      const matchingRecipes = JSON.parse(response.content);
+const searchRecipe = async (z, bundle) => {
+  const response = await z.request({
+    url: _sharedBaseUrl + '/recipes',
+    params: {
+      nameSearch: bundle.inputData.name
+    }
+  });
+  const matchingRecipes = z.JSON.parse(response.content);
 
-      // Only return the first matching recipe
-      if (matchingRecipes && matchingRecipes.length) {
-        return matchingRecipes[0];
-      }
+  // Only return the first matching recipe
+  if (matchingRecipes && matchingRecipes.length) {
+    return matchingRecipes[0];
+  }
 
-      return [];
-    });
+  return [];
 };
 
 const sample = {
@@ -65,7 +61,7 @@ const sample = {
 
 // This file exports a Recipe resource. The definition below contains all of the keys available,
 // and implements the list and create methods.
-module.exports = {
+const Recipe = {
   key: 'recipe',
   noun: 'Recipe',
   // The get method is used by Zapier to fetch a complete representation of a record. This is helpful when the HTTP
@@ -81,7 +77,7 @@ module.exports = {
         {key: 'id', required: true},
       ],
       perform: getRecipe,
-      sample: sample
+      sample
     },
   },
   // The list method on this resource becomes a Trigger on the app. Zapier will use polling to watch for new records
@@ -95,7 +91,7 @@ module.exports = {
         {key: 'style', type: 'string', helpText: 'Explain what style of cuisine this is.'},
       ],
       perform: listRecipes,
-      sample: sample
+      sample
     },
   },
   // If your app supports webhooks, you can define a hook method instead of a list method.
@@ -118,7 +114,7 @@ module.exports = {
         {key: 'style', required: false, type: 'string', helpText: 'Explain what style of cuisine this is.'},
       ],
       perform: createRecipe,
-      sample: sample
+      sample
     },
   },
   // The search method on this resource becomes a Search on this app
@@ -132,14 +128,14 @@ module.exports = {
         {key: 'name', required: true, type: 'string'},
       ],
       perform: searchRecipe,
-      sample: sample
+      sample
     },
   },
 
   // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
   // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
   // returned records, and have obviously dummy values that we can show to any user.
-  sample: sample,
+  sample,
 
   // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
   // field definitions. The result will be used to augment the sample.
@@ -154,3 +150,5 @@ module.exports = {
     {key: 'style', label: 'Style'},
   ]
 };
+
+export default Recipe;

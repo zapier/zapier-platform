@@ -13,25 +13,24 @@
     "zapier-push": "npm run zapier-build && zapier push",
     "prepare": "npm run zapier-build",
     "pretest": "npm run zapier-build",
-    "test": "mocha --recursive lib"
+    "test": "mocha --recursive lib --require babel-polyfill"
   },
   "engines": {
     "node": "6.10.3",
     "npm": ">=3.10.10"
   },
   "dependencies": {
-    "lodash": "4.17.4",
+    "babel-polyfill": "6.26.0",
     "zapier-platform-core": "5.1.0"
   },
   "devDependencies": {
-    "babel-cli": "6.24.1",
-    "babel-core": "6.24.1",
-    "babel-eslint": "7.2.2",
+    "babel-cli": "6.26.0",
+    "babel-core": "6.26.0",
+    "babel-eslint": "8.2.3",
     "babel-plugin-add-module-exports": "0.2.1",
-    "babel-plugin-transform-regenerator": "6.24.1",
-    "babel-polyfill": "6.23.0",
-    "babel-preset-env": "1.4.0",
-    "mocha": "2.5.3",
-    "should": "11.2.1"
+    "babel-plugin-transform-regenerator": "6.26.0",
+    "babel-preset-env": "1.6.1",
+    "mocha": "5.1.0",
+    "should": "13.2.1"
   }
 }

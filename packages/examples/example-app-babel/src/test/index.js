@@ -2,23 +2,12 @@ import should from 'should';
 
 import zapier from 'zapier-platform-core';
 
-const App = require('../index');
+import App from '../index';
 const appTester = zapier.createAppTester(App);
-
-const mochaAsync = (fn) => {
-  return async (done) => {
-    try {
-      await fn();
-      done();
-    } catch (err) {
-      done(err);
-    }
-  };
-};
 
 describe('My Test', () => {
 
-  it('should test the auth succeeds', mochaAsync(async () => {
+  it('should test the auth succeeds', async () => {
     const bundle = {
       authData: {
         username: 'user',
@@ -29,9 +18,9 @@ describe('My Test', () => {
     const response = await appTester(App.authentication.test, bundle);
     should(response.status).eql(200);
     response.request.headers.Authorization.should.eql('Basic dXNlcjpzZWNyZXQ=');
-  }));
+  });
 
-  it('should test the auth fails', mochaAsync(async () => {
+  it('should test the auth fails', async () => {
     const bundle = {
       authData: {
         username: 'user',
@@ -44,6 +33,6 @@ describe('My Test', () => {
     } catch(e) {
       e.message.should.containEql('The username and/or password you supplied is incorrect');
     }
-  }));
+  });
 
 });
