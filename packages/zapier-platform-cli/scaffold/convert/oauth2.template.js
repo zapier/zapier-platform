@@ -78,6 +78,7 @@ const getAccessToken = (z, bundle) => {
     };
     return legacyScriptingRunner.runEvent(postOAuth2TokenEvent, z, bundle);
   });
+};
 <% }
 
    if (withRefresh && hasPreOAuthRefreshScripting) { %>
