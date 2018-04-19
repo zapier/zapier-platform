@@ -65,7 +65,7 @@ const requiredFiles = (cwd, entryPoints) => {
       'Buffer.isBuffer': undefined,
       Buffer: undefined
     },
-    ignoreMissing: false,
+    ignoreMissing: true,
     debug: false,
     standalone: undefined
   };
@@ -79,7 +79,6 @@ const requiredFiles = (cwd, entryPoints) => {
       through
         .obj((row, enc, next) => {
           const filePath = row.file || row.id;
-          // why does browserify add /private + filePath?
           paths.push(stripPath(cwd, filePath));
           next();
         })
