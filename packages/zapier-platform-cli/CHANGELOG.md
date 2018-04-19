@@ -1,3 +1,24 @@
+## 5.2.0
+
+### cli
+
+* :tada: (new) Add option to `zapier logs` to show bundle logs ([PR](https://github.com/zapier/zapier-platform-cli/pull/291))
+* (fix) Fix `zapier build` from crashing on missing packages ([PR](https://github.com/zapier/zapier-platform-cli/pull/301))
+* (fix) Fix `zapier convert` from crashing on certain OAuth config ([PR](https://github.com/zapier/zapier-platform-cli/pull/299))
+* (improvement) `zapier build` prints any errors from `npm install` ([PR](https://github.com/zapier/zapier-platform-cli/pull/288))
+* (docs) Add note about nested dynamic functions ([PR](https://github.com/zapier/zapier-platform-cli/pull/296))
+* (docs) Add docs about `bundle.cleanedRequest` and `bundle.rawRequest` ([PR](https://github.com/zapier/zapier-platform-cli/pull/298))
+
+### schema
+
+* (fix) Correctly invalidate field grandchildren ([PR](https://github.com/zapier/zapier-platform-schema/pull/40))
+* (docs) More examples on functional constraints ([PR](https://github.com/zapier/zapier-platform-schema/pull/39))
+
+### core
+
+* (fix) Raise exception for bad requests when stashing a file ([PR](https://github.com/zapier/zapier-platform-core/pull/75))
+* (fix) Better log censoring ([PR](https://github.com/zapier/zapier-platform-core/pull/77))
+
 ## 5.1.0
 
 ### cli
