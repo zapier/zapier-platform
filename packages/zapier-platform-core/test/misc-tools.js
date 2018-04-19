@@ -185,6 +185,30 @@ describe('Tools', () => {
     });
   });
 
+  describe('recurseExtract', () => {
+    it('should extract values that match', () => {
+      const obj = {
+        secret_key: '1234',
+        another: {
+          secret_key: '5678',
+          deep: {
+            secret: 'abcd'
+          }
+        },
+        name: 'dont_care',
+        id: 88
+      };
+      const matcher = (key, value) => {
+        if (typeof value === 'string') {
+          return key.indexOf('secret') >= 0;
+        }
+        return false;
+      };
+      const values = dataTools.recurseExtract(obj, matcher);
+      values.should.eql(['1234', '5678', 'abcd']);
+    });
+  });
+
   describe('recurseCleanFuncs', () => {
     it('should handle objects, arrays and function->str', () => {
       var output = cleaner.recurseCleanFuncs({

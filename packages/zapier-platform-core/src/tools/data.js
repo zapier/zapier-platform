@@ -108,6 +108,22 @@ const recurseReplace = (obj, replacer) => {
   return obj;
 };
 
+// Recursively extract values from a nested object based on the matcher function.
+const recurseExtract = (obj, matcher) => {
+  const values = [];
+  Object.keys(obj).map(key => {
+    const value = obj[key];
+    if (matcher(key, value)) {
+      values.push(value);
+    } else if (isPlainObj(value)) {
+      recurseExtract(value, matcher).map(v => {
+        values.push(v);
+      });
+    }
+  });
+  return values;
+};
+
 const _IGNORE = {};
 
 // Flatten a nested object.
@@ -160,6 +176,7 @@ module.exports = {
   jsonCopy,
   deepFreeze,
   recurseReplace,
+  recurseExtract,
   flattenPaths,
   simpleTruncate
 };

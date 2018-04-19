@@ -118,4 +118,50 @@ describe('logger', () => {
       })
       .catch(done);
   });
+
+  it('should replace sensitive data inside response', done => {
+    const bundle = {
+      authData: {
+        refresh_token: 'whatever'
+      }
+    };
+    const logger = createlogger({ bundle }, options);
+
+    const data = {
+      response_json: {
+        access_token: 'super_secret',
+        PASSWORD: 'top_secret',
+        name: 'not so secret'
+      },
+      response_content: `{
+        "access_token": "super_secret",
+        "PASSWORD": "top_secret",
+        "name": "not so secret"
+      }`
+    };
+
+    logger('test', data)
+      .then(response => {
+        response.status.should.eql(200);
+        response.content.json.should.eql({
+          token: 'fake-token',
+          message: 'test',
+          data: {
+            response_json: {
+              access_token: ':censored:12:8e4a58294b:',
+              PASSWORD: ':censored:10:b0c55acfea:',
+              name: 'not so secret'
+            },
+            response_content: `{
+        "access_token": ":censored:12:8e4a58294b:",
+        "PASSWORD": ":censored:10:b0c55acfea:",
+        "name": "not so secret"
+      }`,
+            log_type: 'console'
+          }
+        });
+        done();
+      })
+      .catch(done);
+  });
 });

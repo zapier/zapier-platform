@@ -60,28 +60,43 @@ const toStdout = (event, msg, data) => {
   }
 };
 
-const makeSensitiveBank = event => {
+const makeSensitiveBank = (event, data) => {
   const bundle = event.bundle || {};
-  const sensitiveData = _.extend(
-    {},
-    bundle.authData || {},
-    _.extend({}, process.env || {})
+  const sensitiveValues = _.values(
+    _.extend({}, bundle.authData || {}, _.extend({}, process.env || {}))
   );
-  return _.values(sensitiveData).reduce((bank, val) => {
-    // keeps short values from spamming censor strings in logs, < 6 chars is not a proper secret
-    // see https://github.com/zapier/zapier-platform-core/issues/4#issuecomment-277855071
-    if (val && String(val).length > 5) {
-      bank[val] = hashing.snipify(val);
+
+  const matcher = (key, value) => {
+    if (typeof value === 'string') {
+      const lowerKey = key.toLowerCase();
+      return _.some(constants.SENSITIVE_KEYS, k => lowerKey.indexOf(k) >= 0);
     }
-    return bank;
-  }, {});
+    return false;
+  };
+
+  dataTools.recurseExtract(data, matcher).map(value => {
+    sensitiveValues.push(value);
+  });
+
+  return _.reduce(
+    sensitiveValues,
+    (bank, val) => {
+      // keeps short values from spamming censor strings in logs, < 6 chars is not a proper secret
+      // see https://github.com/zapier/zapier-platform-core/issues/4#issuecomment-277855071
+      if (val && String(val).length > 5) {
+        bank[val] = hashing.snipify(val);
+      }
+      return bank;
+    },
+    {}
+  );
 };
 
 const sendLog = (options, event, message, data) => {
   data = _.extend({}, data || {}, event.logExtra || {});
   data.log_type = data.log_type || 'console';
 
-  const sensitiveBank = makeSensitiveBank(event);
+  const sensitiveBank = makeSensitiveBank(event, data);
   const safeMessage = truncate(
     cleaner.recurseReplaceBank(message, sensitiveBank)
   );
