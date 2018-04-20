@@ -5,7 +5,7 @@ const { replaceVars } = require('./utils');
 <%
   Object.keys(mapping).forEach(key => {
     let value = mapping[key];
-    value = value.replace(/\{\{(\w+)\}\}/g, "${bundle.authData['$1']}");
+    value = value.toString().replace(/\{\{(\w+)\}\}/g, "${bundle.authData['$1']}");
     if (query) { %>
       request.params['<%= key %>'] = `<%= value %>`;
 <%  } else { %>

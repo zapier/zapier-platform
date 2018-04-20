@@ -20,7 +20,8 @@ const appsToConvert = [
   { id: 83073, name: 'send-in-json' },
   { id: 83342, name: 'replace-vars' },
   { id: 88339, name: 'create-oauth' },
-  { id: 88722, name: 'no-custom-fields-url' }
+  { id: 88722, name: 'no-custom-fields-url' },
+  { id: 90353, name: 'auth-mapping-has-number' }
   // TODO: Add more apps that use different scripting methods, as we start to support them
 ];
 
