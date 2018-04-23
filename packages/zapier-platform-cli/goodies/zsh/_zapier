@@ -6,7 +6,7 @@ getOptions() {
     local envOpts=("--remove:'optionally remove environment variable with this key'")
     local initOpts=("--template:'select a starting app template'")
     local inviteOpts=("--remove:'elect to remove this user'")
-    local logsOpts=("--version:'display only this versions logs (default is all versions)'" "--status:'display only success logs (status code < 400 / info) or error (status code > 400 / tracebacks)'" "--type:'display only console or http logs'" "--detailed:'show detailed logs (like request/response body and headers)'" "--user:'display only this users logs'" "--limit:'control the maximum result size'")
+    local logsOpts=("--version:'display only this versions logs (default is all versions)'" "--status:'display only success logs (status code < 400 / info) or error (status code > 400 / tracebacks)'" "--type:'display only console, bundle, or http logs'" "--detailed:'show detailed logs (like request/response body and headers)'" "--user:'display only this users logs'" "--limit:'control the maximum result size'")
     local migrateOpts=("--user:'migrate only this user'")
     local pushOpts=("--disable-dependency-detection:'disables walking required files to slim the build'" "--include-js-map:'include .js.map files (usually source maps)'")
     local scaffoldOpts=("--dest:'sets the new files path'" "--entry:'where to import the new file'")
