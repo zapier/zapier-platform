@@ -5,6 +5,7 @@
 * :tada: (new) Add option to `zapier logs` to show bundle logs ([PR](https://github.com/zapier/zapier-platform-cli/pull/291))
 * (fix) Fix `zapier build` from crashing on missing packages ([PR](https://github.com/zapier/zapier-platform-cli/pull/301))
 * (fix) Fix `zapier convert` from crashing on certain OAuth config ([PR](https://github.com/zapier/zapier-platform-cli/pull/299))
+* (fix) Fix `zapier convert` from crashing on a number in auth mapping ([PR](https://github.com/zapier/zapier-platform-cli/pull/305))
 * (improvement) `zapier build` prints any errors from `npm install` ([PR](https://github.com/zapier/zapier-platform-cli/pull/288))
 * (docs) Add note about nested dynamic functions ([PR](https://github.com/zapier/zapier-platform-cli/pull/296))
 * (docs) Add docs about `bundle.cleanedRequest` and `bundle.rawRequest` ([PR](https://github.com/zapier/zapier-platform-cli/pull/298))
