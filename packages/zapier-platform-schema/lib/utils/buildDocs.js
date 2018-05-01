@@ -32,14 +32,29 @@ const collectSchemas = InitSchema => {
   return schemas;
 };
 
-const quoteOrNa = val => (val ? `\`${val.replace('`', '')}\`` : '_n/a_');
+const BREAK_LENGTH = 96;
+const prepQuote = val => val.replace('`', '');
+const quote = (val, triple, indent = '') =>
+  // either ``` with optional indentation or `
+  triple && val.length > BREAK_LENGTH
+    ? '```\n' +
+      val
+        .match(/[^\r\n]+/g)
+        .map(line => indent + line)
+        .join('\n') +
+      '\n' +
+      indent +
+      '```'
+    : `\`${prepQuote(val)}\``;
+const quoteOrNa = (val, triple = false, indent = '') =>
+  val ? quote(val, triple, indent) : '_n/a_';
 
 const formatExample = example => {
   const ex = _.isPlainObject(example) ? _.omit(example, SKIP_KEY) : example;
   return `* ${quoteOrNa(
-    // GH parses the newlines in bullets correctly, but it's a good thing to fix
-    // docs say Infinity for no line break at all
-    util.inspect(ex, { depth: null, breakLength: Infinity })
+    util.inspect(ex, { depth: null, breakLength: BREAK_LENGTH }),
+    true,
+    '  '
   )}`;
 };
 
