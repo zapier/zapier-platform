@@ -5,10 +5,10 @@ const zapier = require('zapier-platform-core');
 const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
-describe('custom auth app', () => {
+describe('App.authentication.test', () => {
 
-  it('has auth details added to every request', (done) => {
-    // Try changing the values of username or password to see how the test method behaves
+  it('passes authentication and returns json', (done) => {
+
     const bundle = {
       authData: {
         apiKey: 'secret'
@@ -16,11 +16,12 @@ describe('custom auth app', () => {
     };
 
     appTester(App.authentication.test, bundle)
-      .then((response) => {
-        response.status.should.eql(200);
-        response.request.url.should.containEql('?api_key=secret');
+      .then((json_response) => {
+        json_response.should.have.property('username')
         done();
       })
       .catch(done);
+
   });
+
 });

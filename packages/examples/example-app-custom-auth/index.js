@@ -1,12 +1,16 @@
 
 const authentication = require('./authentication');
 
-// To include the API key header on all outbound requests, simply define a function here.
-// It runs runs before each request is sent out, allowing you to make tweaks to the request in a centralized spot
-const includeApiKeyHeader = (request, z, bundle) => {
+// To include the API key on all outbound requests, simply define a function here.
+// It runs runs before each request is sent out, allowing you to make tweaks to the request in a centralized spot.
+const includeApiKey = (request, z, bundle) => {
   if (bundle.authData.apiKey) {
     request.params = request.params || {};
     request.params.api_key = bundle.authData.apiKey;
+    //
+    // request.headers.Authorization = bundle.authData.apiKey;
+    // (If you want to include the key as a header instead)
+    //
   }
   return request;
 };
@@ -20,7 +24,7 @@ const App = {
   authentication: authentication,
 
   beforeRequest: [
-    includeApiKeyHeader
+    includeApiKey
   ],
 
   afterResponse: [
