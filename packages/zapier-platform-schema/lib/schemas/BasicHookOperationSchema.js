@@ -19,12 +19,16 @@ BasicHookOperationSchema.description =
 
 BasicHookOperationSchema.properties = {
   type: {
-    // TODO: not a fan of this...
     description:
-      'Clarify how this operation works (polling == pull or hook == push).',
+      'Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it\'s optional.',
     type: 'string',
-    default: 'hook',
-    enum: ['hook']
+    enum: ['hook'],
+    docAnnotation: {
+      required: {
+        type: 'replace',
+        value: '**yes** (with exceptions, see description)'
+      }
+    }
   },
   resource: BasicHookOperationSchema.properties.resource,
   perform: {

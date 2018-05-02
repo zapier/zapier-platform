@@ -316,7 +316,7 @@ Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. D
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`type` | no | `string` in (`'hook'`) | Clarify how this operation works (polling == pull or hook == push).
+`type` | **yes** (with exceptions, see description) | `string` in (`'hook'`) | Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it's optional.
 `resource` | no | [/RefResourceSchema](#refresourceschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | [/FunctionSchema](#functionschema) | A function that processes the inbound webhook request.
 `performList` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods.
