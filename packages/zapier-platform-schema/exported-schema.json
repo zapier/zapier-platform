@@ -232,6 +232,33 @@
       },
       "additionalProperties": false
     },
+    "FunctionRequireSchema": {
+      "id": "/FunctionRequireSchema",
+      "description":
+        "A path to a file that might have content like `module.exports = (z, bundle) => [{id: 123}];`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["require"],
+      "properties": {
+        "require": {
+          "type": "string"
+        }
+      }
+    },
+    "FunctionSourceSchema": {
+      "id": "/FunctionSourceSchema",
+      "description":
+        "Source code like {source: \"return 1 + 2\"} which the system will wrap in a function for you.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "return"
+        }
+      }
+    },
     "FlatObjectSchema": {
       "id": "/FlatObjectSchema",
       "description": "An object whose values can only be primitives",
@@ -264,9 +291,19 @@
     "FunctionSchema": {
       "id": "/FunctionSchema",
       "description":
-        "Internal pointer to a function from the original source. Encodes arity and if `arguments` is used in the body. Note - just write normal functions and the system will encode the pointers for you.",
-      "type": "string",
-      "pattern": "^\\$func\\$\\d+\\$[tf]\\$$"
+        "Internal pointer to a function from the original source or the source code itself. Encodes arity and if `arguments` is used in the body. Note - just write normal functions and the system will encode the pointers for you. Or, provide {source: \"return 1 + 2\"} and the system will wrap in a function for you.",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\$func\\$\\d+\\$[tf]\\$$"
+        },
+        {
+          "$ref": "/FunctionRequireSchema"
+        },
+        {
+          "$ref": "/FunctionSourceSchema"
+        }
+      ]
     },
     "RedirectRequestSchema": {
       "id": "/RedirectRequestSchema",
