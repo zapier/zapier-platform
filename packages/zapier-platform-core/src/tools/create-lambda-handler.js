@@ -16,7 +16,10 @@ const createHttpPatch = require('./create-http-patch');
 
 // Sometimes tests want to pass in an app object defined directly in the test,
 // so allow for that.
-const loadApp = appRawOrPath => {
+const loadApp = (event, appRawOrPath) => {
+  if (event && event.appRawOverride) {
+    return event.appRawOverride;
+  }
   if (_.isString(appRawOrPath)) {
     return require(appRawOrPath);
   }
@@ -83,7 +86,7 @@ const createLambdaHandler = appRawOrPath => {
       // Copy bundle environment into process.env *before* loading app code,
       // so that top level app code can get bundle environment vars via process.env.
       environmentTools.applyEnvironment(event);
-      const appRaw = loadApp(appRawOrPath);
+      const appRaw = loadApp(event, appRawOrPath);
       const app = createApp(appRaw);
       const rpc = createRpcClient(event);
 

@@ -114,6 +114,33 @@ const doTest = runner => {
         .catch(done);
     });
 
+    it('should handle appRawOverride', done => {
+      const event = {
+        command: 'execute',
+        method: 'triggers.fooList.operation.perform',
+        appRawOverride: {
+          resources: {
+            foo: {
+              key: 'foo',
+              noun: 'Foo',
+              list: {
+                display: {},
+                operation: {
+                  perform: { source: 'return [{id: 45678}]' }
+                }
+              }
+            }
+          }
+        }
+      };
+      runner(event)
+        .then(response => {
+          response.results.should.deepEqual([{ id: 45678 }]);
+          done();
+        })
+        .catch(done);
+    });
+
     it('should log requests', done => {
       const event = {
         command: 'execute',

@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const cleaner = require('./cleaner');
 const dataTools = require('./data');
+const schemaTools = require('./schema-tools');
 const zapierSchema = require('zapier-platform-schema');
 
 // Take a resource with methods like list/hook and turn it into triggers, etc.
@@ -99,6 +100,7 @@ const copyPropertiesFromResource = (type, action, appRaw) => {
 
 const compileApp = appRaw => {
   appRaw = dataTools.deepCopy(appRaw);
+  appRaw = schemaTools.findSourceRequireFunctions(appRaw);
   const extras = convertResourceDos(appRaw);
 
   const actions = ['triggers', 'searches', 'creates', 'searchOrCreates'];

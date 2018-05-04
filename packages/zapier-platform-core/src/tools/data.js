@@ -90,16 +90,19 @@ const deepFreeze = obj => {
 };
 
 // Recurse a nested object replace stuff according to the function.
-const recurseReplace = (obj, replacer) => {
+const recurseReplace = (obj, replacer, options = {}) => {
+  if (options.all) {
+    obj = replacer(obj);
+  }
   if (Array.isArray(obj)) {
     return obj.map(value => {
-      return recurseReplace(value, replacer);
+      return recurseReplace(value, replacer, options);
     });
   } else if (isPlainObj(obj)) {
     const newObj = {};
     Object.keys(obj).map(key => {
       const value = obj[key];
-      newObj[key] = recurseReplace(value, replacer);
+      newObj[key] = recurseReplace(value, replacer, options);
     });
     return newObj;
   } else {
