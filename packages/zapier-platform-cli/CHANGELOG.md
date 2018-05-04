@@ -1,3 +1,20 @@
+## 6.0.0
+
+### cli
+
+* :exclamation: (improvement, **breaking**) JSON format only outputs valid JSON ([#260](https://github.com/zapier/zapier-platform-cli/pull/260))
+* (improvement) Better spinner ([#260](https://github.com/zapier/zapier-platform-cli/pull/260))
+
+### schema
+
+* :exclamation: (improvement, **breaking**) Force top-level key to match trigger/search/create's `.key` ([#41](https://github.com/zapier/zapier-platform-schema/pull/41))
+* (docs) Add doc annotation for hook type ([#44](https://github.com/zapier/zapier-platform-schema/pull/44))
+* (docs) Make long examples more readable ([#42](https://github.com/zapier/zapier-platform-schema/pull/42))
+
+### core
+
+* :exclamation: (improvement, **breaking**) Check for key collisions with resources ([#73](https://github.com/zapier/zapier-platform-core/pull/73))
+
 ## 5.2.0
 
 ### cli
