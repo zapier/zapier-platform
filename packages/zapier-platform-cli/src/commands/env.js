@@ -22,7 +22,7 @@ const env = (context, version, key, value) => {
         const startMsg = isRemove
           ? `Deleting ${key}`
           : `Setting ${key} to "${value}"`;
-        utils.printStarting(startMsg);
+        utils.startSpinner(startMsg);
 
         const method = isRemove ? 'DELETE' : 'PUT';
         return utils.callAPI(url, {
@@ -31,7 +31,7 @@ const env = (context, version, key, value) => {
         });
       })
       .then(() => {
-        utils.printDone();
+        utils.endSpinner();
         context.line();
         context.line(
           `Environment updated! Try viewing it with \`zapier env ${version}\`.`

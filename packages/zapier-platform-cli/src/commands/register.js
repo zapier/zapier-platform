@@ -10,8 +10,7 @@ const register = (context, title, { printWhenDone = true } = {}) => {
   return utils
     .checkCredentials()
     .then(() => {
-      utils.printDone();
-      utils.printStarting(`Confirming registation of app "${title}"`);
+      utils.startSpinner(`Confirming registation of app "${title}"`);
       return utils.callAPI('/apps', {
         method: 'POST',
         body: {
@@ -20,8 +19,8 @@ const register = (context, title, { printWhenDone = true } = {}) => {
       });
     })
     .then(app => {
-      utils.printDone();
-      utils.printStarting(
+      utils.endSpinner();
+      utils.startSpinner(
         `Linking app to current directory with \`${
           constants.CURRENT_APP_FILE
         }\``
@@ -29,7 +28,7 @@ const register = (context, title, { printWhenDone = true } = {}) => {
       return utils.writeLinkedAppConfig(app, appDir);
     })
     .then(() => {
-      utils.printDone();
+      utils.endSpinner();
       if (printWhenDone) {
         context.line(
           '\nFinished! Now that your app is registered with Zapier, you can `zapier push` a version!'

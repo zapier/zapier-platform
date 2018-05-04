@@ -9,7 +9,7 @@ const logout = context => {
 
   return Promise.resolve()
     .then(() => {
-      utils.printStarting('Deactivating personal deploy keys');
+      utils.startSpinner('Deactivating personal deploy keys');
       return utils
         .callAPI('/keys', {
           method: 'DELETE'
@@ -18,12 +18,12 @@ const logout = context => {
         .catch(() => true);
     })
     .then(() => {
-      utils.printDone();
-      utils.printStarting(`Destroying \`${constants.AUTH_LOCATION_RAW}\``);
+      utils.endSpinner();
+      utils.startSpinner(`Destroying \`${constants.AUTH_LOCATION_RAW}\``);
       return utils.deleteFile(constants.AUTH_LOCATION);
     })
     .then(() => {
-      utils.printDone();
+      utils.endSpinner();
       context.line();
       context.line(
         'All personal deploy keys deactivated - now try `zapier login` to login again.'

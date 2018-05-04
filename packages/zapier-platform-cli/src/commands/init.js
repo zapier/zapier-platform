@@ -13,13 +13,13 @@ const init = (context, location) => {
 
   const template = global.argOpts.template || 'minimal';
   const createApp = tempAppDir => {
-    utils.printStarting(
+    utils.startSpinner(
       `Downloading zapier/zapier-platform-example-app-${template} starter app`
     );
     return exampleApps
       .downloadAndUnzipTo(template, tempAppDir)
       .then(() => exampleApps.removeReadme(tempAppDir))
-      .then(() => utils.printDone());
+      .then(() => utils.endSpinner());
   };
 
   return utils.initApp(context, location, createApp).then(() => {

@@ -12,7 +12,7 @@ const path = require('path');
 
 const { writeFile, readFile } = require('./files');
 
-const { prettyJSONstringify, printStarting, printDone } = require('./display');
+const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
 
 const { localAppCommand } = require('./local');
 
@@ -40,7 +40,7 @@ const readCredentials = (explodeIfMissing = true) => {
 };
 
 // Calls the underlying platform REST API with proper authentication.
-const callAPI = (route, options, displayError = true, rawError = false) => {
+const callAPI = (route, options, rawError = false) => {
   options = options || {};
   const url = options.url || constants.ENDPOINT + route;
 
@@ -94,8 +94,6 @@ const callAPI = (route, options, displayError = true, rawError = false) => {
         }
         console.log(`<< ${res.status}`);
         console.log(`<< ${(text || '').substring(0, 2500)}\n`);
-      } else if (hitError && displayError) {
-        printDone(false);
       }
 
       if (hitError) {
@@ -274,7 +272,7 @@ const upload = (zipPath, appDir) => {
       const binaryZip = fs.readFileSync(fullZipPath);
       const buffer = Buffer.from(binaryZip).toString('base64');
 
-      printStarting(`Uploading version ${definition.version}`);
+      startSpinner(`Uploading version ${definition.version}`);
       return callAPI(`/apps/${app.id}/versions/${definition.version}`, {
         method: 'PUT',
         body: {
@@ -283,7 +281,7 @@ const upload = (zipPath, appDir) => {
       });
     })
     .then(() => {
-      printDone();
+      endSpinner();
     });
 };
 

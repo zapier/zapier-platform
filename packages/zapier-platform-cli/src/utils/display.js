@@ -1,7 +1,3 @@
-const readline = require('readline');
-
-const { isWindows } = require('./misc');
-
 // could we explore https://www.npmjs.com/package/columnify
 // to simplify the columns/tables? the | - decoration is big
 const Table = require('cli-table2');
@@ -9,6 +5,7 @@ const colors = require('colors/safe');
 const stringLength = require('string-length');
 const _ = require('lodash');
 const read = require('read');
+const ora = require('ora');
 
 const notUndef = s => String(s === undefined ? '' : s).trim();
 
@@ -222,89 +219,34 @@ const printData = (
     (global.argOpts || {}).format || (useRowBasedTable ? 'row' : DEFAULT_STYLE);
   const formatter = formatStyles[formatStyle] || formatStyles[DEFAULT_STYLE];
   if (rows && !rows.length) {
-    console.log(ifEmptyMessage);
+    if (['json', 'raw'].includes(formatStyle)) {
+      console.log([]);
+    } else {
+      console.log(ifEmptyMessage);
+    }
   } else {
     console.log(formatter(rows, columnDefs));
   }
 };
 
-let spinner;
-let currentIter = 0;
-let spinSpeed;
-let spinTransitions;
+// single global instance of the spinner
+const spinner = ora();
 
-if (isWindows()) {
-  spinSpeed = 240;
-  spinTransitions = ['   ', '.  ', '.. ', '...'];
-} else {
-  spinSpeed = 80;
-  spinTransitions = ['⠃', '⠉', '⠘', '⠰', '⠤', '⠆'];
-}
-const finalTransition = spinTransitions[0];
-
-const clearSpinner = () => {
-  process.stdout.write('\x1b[?25h'); // set cursor to white...
-  clearInterval(spinner);
-  spinner = undefined;
+const startSpinner = msg => {
+  spinner.start(msg);
 };
 
-const writeNextSpinnerTick = (
-  final = false,
-  _finalTransition = finalTransition
-) => {
-  readline.moveCursor(process.stdout, -spinTransitions[currentIter].length, 0);
-  currentIter++;
-  if (currentIter >= spinTransitions.length) {
-    currentIter = 0;
-  }
-  process.stdout.write(final ? _finalTransition : spinTransitions[currentIter]);
-};
-
-const startSpinner = () => {
-  process.stdout.write(spinTransitions[currentIter]);
-  clearSpinner();
-  process.stdout.write('\x1b[?25l'); // set cursor to black...
-  spinner = setInterval(() => {
-    writeNextSpinnerTick();
-  }, spinSpeed);
-};
-
-const endSpinner = _finalTransition => {
-  if (!spinner) {
+const endSpinner = (success = true, message) => {
+  // only stop if it was started in the first place
+  if (!spinner.isSpinning) {
     return;
   }
-  clearSpinner();
-  writeNextSpinnerTick(true, _finalTransition);
-};
 
-const printStarting = msg => {
-  if (spinner) {
-    return;
-  }
-  if (msg) {
-    msg = '  ' + msg + ' ';
+  if (success) {
+    spinner.succeed(message);
   } else {
-    msg = '';
+    spinner.fail(message);
   }
-  process.stdout.write(msg);
-  startSpinner();
-};
-
-const printDone = (success = true, message) => {
-  if (!spinner) {
-    return;
-  }
-  endSpinner();
-
-  if (message) {
-    message = ` ${message}`;
-  }
-
-  const logMsg = success
-    ? colors.green(message || ' done!')
-    : colors.red(message || ' fail!');
-
-  console.log(logMsg);
 };
 
 // Get input from a user.
@@ -327,8 +269,6 @@ const getInput = (question, { secret = false } = {}) => {
 };
 
 module.exports = {
-  clearSpinner,
-  endSpinner,
   formatStyles,
   getInput,
   makeRowBasedTable,
@@ -336,7 +276,6 @@ module.exports = {
   markdownLog,
   prettyJSONstringify,
   printData,
-  printDone,
-  printStarting,
+  endSpinner,
   startSpinner
 };

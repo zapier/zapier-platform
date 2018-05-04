@@ -23,7 +23,7 @@ const makeAccess = (command, recordType) => {
                 app.title
               }".\n`
             );
-            utils.printStarting(`Removing ${email}`);
+            utils.startSpinner(`Removing ${email}`);
             return utils.callAPI(url, { method: 'DELETE' });
           } else {
             context.line(
@@ -31,12 +31,12 @@ const makeAccess = (command, recordType) => {
                 app.title
               }${msgExtra}".\n`
             );
-            utils.printStarting(`Adding ${email}`);
+            utils.startSpinner(`Adding ${email}`);
             return utils.callAPI(url, { method: 'POST' });
           }
         })
         .then(() => {
-          utils.printDone();
+          utils.endSpinner();
           context.line(
             `\n${_.capitalize(
               recordTypePlural

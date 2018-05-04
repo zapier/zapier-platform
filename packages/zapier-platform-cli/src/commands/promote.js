@@ -64,6 +64,7 @@ const promote = (context, version) => {
       return utils.promiseDoWhile(action, stop);
     })
     .then(answer => {
+      context.line();
       if (hasCancelled(answer)) {
         throw new Error('Cancelled promote.');
       }
@@ -75,19 +76,18 @@ const promote = (context, version) => {
         body.changelog = changelog;
       }
 
-      utils.printStarting(`Verifying and promoting ${version}`);
+      utils.startSpinner(`Verifying and promoting ${version}`);
       return utils.callAPI(
         url,
         {
           method: 'PUT',
           body
         },
-        false,
         true
       );
     })
     .then(() => {
-      utils.printDone();
+      utils.endSpinner();
       context.line('  Promotion successful!\n');
       context.line(
         'Optionally, run the `zapier migrate` command to move users to this version.'
@@ -97,7 +97,7 @@ const promote = (context, version) => {
       // we probalby have a raw response, might have a thrown error
       // The server 403s when the app hasn't been approved yet
       if (_.get(response, 'json.activationInfo')) {
-        utils.printDone();
+        utils.endSpinner();
         context.line(
           '\nGood news! Your app passes validation and has the required number of testers and active Zaps.\n'
         );

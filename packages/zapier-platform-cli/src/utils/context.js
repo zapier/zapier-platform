@@ -3,7 +3,12 @@ const createContext = ({ command, args, argOpts } = {}) => {
     command,
     args,
     argOpts,
-    line: _line => console.log(_line || '')
+    line: _line => {
+      // json-like formats should only print json output, not text
+      if (!['json', 'raw'].includes(argOpts.format)) {
+        console.log(_line || '');
+      }
+    }
   };
 };
 

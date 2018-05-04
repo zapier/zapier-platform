@@ -22,7 +22,7 @@ const convert = (context, appid, location) => {
       constants.BASE_ENDPOINT
     }/api/developer/v1/apps/${appid}/dump`;
 
-    utils.printStarting('Downloading app from Zapier');
+    utils.startSpinner('Downloading app from Zapier');
     return utils
       .callAPI(null, { url })
       .then(legacyApp => {
@@ -31,7 +31,7 @@ const convert = (context, appid, location) => {
         return legacyApp;
       })
       .then(legacyApp => {
-        utils.printDone();
+        utils.endSpinner();
         return legacyApp;
       })
       .then(legacyApp => utils.convertApp(legacyApp, tempAppDir));

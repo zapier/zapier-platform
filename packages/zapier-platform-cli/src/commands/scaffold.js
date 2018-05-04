@@ -13,12 +13,12 @@ const writeTemplateFile = (templatePath, templateContext, dest) => {
       _.template(template, { interpolate: /<%=([\s\S]+?)%>/g })(templateContext)
     )
     .then(rendered => {
-      utils.printStarting(`Writing new ${dest}.js`);
+      utils.startSpinner(`Writing new ${dest}.js`);
       return utils
         .ensureDir(path.dirname(destPath))
         .then(() => utils.writeFile(destPath, rendered));
     })
-    .then(() => utils.printDone());
+    .then(() => utils.endSpinner());
 };
 
 const scaffold = (context, type, name) => {
@@ -83,7 +83,7 @@ const scaffold = (context, type, name) => {
     .then(() => utils.readFile(entryFile))
     .then(entryBuf => entryBuf.toString())
     .then(entryJs => {
-      utils.printStarting(`Rewriting your ${entry}`);
+      utils.startSpinner(`Rewriting your ${entry}`);
       let lines = entryJs.split('\n');
 
       // this is very dumb and will definitely break, it inserts lines of code
@@ -101,7 +101,7 @@ const scaffold = (context, type, name) => {
         _.endsWith(line, injectAfter)
       );
       if (linesDefIndex === -1) {
-        utils.printDone(false);
+        utils.endSpinner(false);
         context.line();
         context.line(
           colors.bold(`Oops, we could not reliably rewrite your ${entry}.`) +
@@ -116,7 +116,7 @@ const scaffold = (context, type, name) => {
         lines.splice(linesDefIndex + 1, 0, '    ' + injectorLine);
         return utils
           .writeFile(entryFile, lines.join('\n'))
-          .then(() => utils.printDone());
+          .then(() => utils.endSpinner());
       }
     })
     .then(() =>

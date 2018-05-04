@@ -4,9 +4,9 @@ const colors = require('colors/safe');
 const logs = context => {
   context.line('The logs of your app listed below.\n');
 
-  utils.startSpinner();
+  utils.startSpinner('Loading your logs');
   return utils.listLogs(global.argOpts).then(data => {
-    utils.endSpinner('');
+    utils.endSpinner();
 
     let columns;
     const type = global.argOpts.type || logs.argOptsSpec.type.default;

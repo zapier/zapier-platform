@@ -54,17 +54,17 @@ const link = context => {
       if (hasCancelled(answer)) {
         throw new Error('Cancelled link operation.');
       } else {
-        utils.printStarting(`Selecting existing app "${appMap[answer].title}"`);
+        utils.startSpinner(`Selecting existing app "${appMap[answer].title}"`);
         return appMap[answer];
       }
     })
     .then(app => {
-      utils.printDone();
-      utils.printStarting(`Setting up \`${constants.CURRENT_APP_FILE}\` file`);
+      utils.endSpinner();
+      utils.startSpinner(`Setting up \`${constants.CURRENT_APP_FILE}\` file`);
       return utils.writeLinkedAppConfig(app);
     })
     .then(() => {
-      utils.printDone();
+      utils.endSpinner();
       context.line(
         '\nFinished! You can `zapier push` now to build & upload a version!'
       );

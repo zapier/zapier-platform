@@ -30,7 +30,7 @@ const migrate = (context, fromVersion, toVersion, optionalPercent = '100%') => {
             app.title
           }" from ${fromVersion} to ${toVersion}.\n`
         );
-        utils.printStarting(
+        utils.startSpinner(
           `Starting migration from ${fromVersion} to ${toVersion} for ${user}`
         );
       } else {
@@ -39,7 +39,7 @@ const migrate = (context, fromVersion, toVersion, optionalPercent = '100%') => {
             app.title
           }" from ${fromVersion} to ${toVersion}.\n`
         );
-        utils.printStarting(
+        utils.startSpinner(
           `Starting migration from ${fromVersion} to ${toVersion} for ${optionalPercent}%`
         );
       }
@@ -53,7 +53,7 @@ const migrate = (context, fromVersion, toVersion, optionalPercent = '100%') => {
       );
     })
     .then(() => {
-      utils.printDone();
+      utils.endSpinner();
       context.line(
         '\nMigration successfully queued, please check `zapier history` to track the status. Migrations usually take between 5-10 minutes.'
       );

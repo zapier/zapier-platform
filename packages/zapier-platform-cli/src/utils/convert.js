@@ -4,7 +4,7 @@ const prettier = require('prettier');
 const stripComments = require('strip-comments');
 const { camelCase, snakeCase } = require('./misc');
 const { copyFile, readFile, writeFile, ensureDir } = require('./files');
-const { printStarting, printDone } = require('./display');
+const { startSpinner, endSpinner } = require('./display');
 const { PACKAGE_VERSION } = require('../constants');
 
 const TEMPLATE_DIR = path.join(__dirname, '../../scaffold/convert');
@@ -101,8 +101,8 @@ const createFile = (content, fileName, dir) => {
   return ensureDir(path.dirname(destFile))
     .then(() => writeFile(destFile, content))
     .then(() => {
-      printStarting(`Writing ${fileName}`);
-      printDone();
+      startSpinner(`Writing ${fileName}`);
+      endSpinner();
     });
 };
 
@@ -1053,8 +1053,8 @@ const writeGitIgnore = newAppDir => {
   const srcPath = path.join(TEMPLATE_DIR, '/gitignore');
   const destPath = path.join(newAppDir, '/.gitignore');
   return copyFile(srcPath, destPath).then(() => {
-    printStarting('Writing .gitignore');
-    printDone();
+    startSpinner('Writing .gitignore');
+    endSpinner();
   });
 };
 

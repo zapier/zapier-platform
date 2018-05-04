@@ -33,12 +33,6 @@ const commandSuggestion = command => {
 };
 
 module.exports = argv => {
-  process.on('exit', utils.clearSpinner);
-  process.on('SIGINT', () => {
-    utils.clearSpinner();
-    process.exit();
-  });
-
   if (!utils.isValidNodeVersion()) {
     console.error(
       colors.red(
@@ -115,7 +109,6 @@ module.exports = argv => {
   };
   const errors = utils.enforceArgSpec(spec, args, argOpts);
   if (errors.length) {
-    utils.clearSpinner();
     context.line();
     context.line(
       colors.red(
@@ -130,28 +123,24 @@ module.exports = argv => {
     process.exit(1);
   }
 
-  commandFunc
-    .apply(commands, [context].concat(args))
-    .then(() => {
-      utils.clearSpinner();
-    })
-    .catch(err => {
-      utils.clearSpinner();
-      if (DEBUG || global.argOpts.debug) {
-        context.line();
-        context.line(err.stack);
-        context.line();
-        context.line(colors.red('Error!'));
-      } else {
-        context.line();
-        context.line();
-        context.line(colors.red('Error!') + ' ' + colors.red(err.message));
-        context.line(
-          colors.grey(
-            '(Use --debug flag and run this command again to get more details.)'
-          )
-        );
-      }
-      process.exit(1);
-    });
+  commandFunc.apply(commands, [context].concat(args)).catch(err => {
+    utils.endSpinner(false);
+
+    if (DEBUG || global.argOpts.debug) {
+      context.line();
+      context.line(err.stack);
+      context.line();
+      context.line(colors.red('Error!'));
+    } else {
+      context.line();
+      context.line();
+      context.line(colors.red('Error!') + ' ' + colors.red(err.message));
+      context.line(
+        colors.grey(
+          '(Use --debug flag and run this command again to get more details.)'
+        )
+      );
+    }
+    process.exit(1);
+  });
 };

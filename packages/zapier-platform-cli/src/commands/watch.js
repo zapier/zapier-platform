@@ -76,13 +76,13 @@ const watch = context => {
     if (fileName.startsWith('.git')) {
       return;
     }
-    utils.printStarting(`Reloading for ${fileName}`);
+    utils.startSpinner(`Reloading for ${fileName}`);
     resetHandler()
       .then(reloadDefinition)
       .then(pingZapierForTunnel)
-      .then(() => utils.printDone())
+      .then(() => utils.endSpinner())
       .catch(err => {
-        utils.printDone(false);
+        utils.endSpinner(false);
         context.line(err);
         // don't print err.stack until we use require('syntax-error') or similar
       });
@@ -94,16 +94,16 @@ const watch = context => {
     .checkCredentials()
     .then(() => utils.getLinkedApp())
     .then(app => {
-      utils.printStarting('Starting local server on port ' + options.port);
+      utils.startSpinner('Starting local server on port ' + options.port);
       return Promise.all([app, utils.localAppTunnelServer(options)]);
     })
     .then(([app, server]) => {
-      utils.printDone();
-      utils.printStarting('Starting local tunnel for port ' + options.port);
+      utils.endSpinner();
+      utils.startSpinner('Starting local tunnel for port ' + options.port);
       return Promise.all([app, server, utils.makeTunnelUrl(options.port)]);
     })
     .then(([app, server, _proxyUrl]) => {
-      utils.printDone();
+      utils.endSpinner();
 
       localAppId = app.id;
       localProxyUrl = _proxyUrl;

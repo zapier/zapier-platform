@@ -1,7 +1,7 @@
 const path = require('path');
 const tmp = require('tmp');
 
-const { printStarting, printDone, getInput } = require('./display');
+const { startSpinner, endSpinner, getInput } = require('./display');
 const { isEmptyDir, copyDir, removeDir, ensureDir } = require('./files');
 
 const confirmNonEmptyDir = location => {
@@ -30,12 +30,12 @@ const initApp = (context, location, createApp) => {
   const copyOpts = {
     clobber: false,
     onCopy: file => {
-      printStarting(`Copy ${file}`);
-      printDone();
+      startSpinner(`Copy ${file}`);
+      endSpinner();
     },
     onSkip: file => {
-      printStarting(`File ${file} already exists`);
-      printDone(true, 'skipped');
+      startSpinner(`File ${file} already exists (skipped)`);
+      endSpinner();
     }
   };
 

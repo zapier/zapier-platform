@@ -24,7 +24,7 @@ const {
   removeDir
 } = require('./files');
 
-const { prettyJSONstringify, printStarting, printDone } = require('./display');
+const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
 
 const {
   getLinkedAppConfig,
@@ -289,7 +289,7 @@ const build = (zipPath, wdir) => {
   return ensureDir(tmpDir)
     .then(() => ensureDir(constants.BUILD_DIR))
     .then(() => {
-      printStarting('Copying project to temp directory');
+      startSpinner('Copying project to temp directory');
 
       let filter;
       if (process.env.SKIP_NPM_INSTALL) {
@@ -304,8 +304,8 @@ const build = (zipPath, wdir) => {
       if (process.env.SKIP_NPM_INSTALL) {
         return {};
       }
-      printDone();
-      printStarting('Installing project dependencies');
+      endSpinner();
+      startSpinner('Installing project dependencies');
       return runCommand('npm', ['install', '--production'], { cwd: tmpDir });
     })
     .then(output => {
@@ -323,8 +323,8 @@ const build = (zipPath, wdir) => {
       }
     })
     .then(() => {
-      printDone();
-      printStarting('Applying entry point file');
+      endSpinner();
+      startSpinner('Applying entry point file');
       // TODO: should this routine for include exist elsewhere?
       return readFile(
         path.join(
@@ -339,8 +339,8 @@ const build = (zipPath, wdir) => {
       );
     })
     .then(() => {
-      printDone();
-      printStarting('Building app definition.json');
+      endSpinner();
+      startSpinner('Building app definition.json');
       return _appCommandZapierWrapper(tmpDir, { command: 'definition' });
     })
     .then(rawDefinition => {
@@ -364,8 +364,8 @@ const build = (zipPath, wdir) => {
         );
       }
 
-      printDone();
-      printStarting('Validating project');
+      endSpinner();
+      startSpinner('Validating project');
 
       return Promise.all([
         _appCommandZapierWrapper(tmpDir, { command: 'validate' }),
@@ -399,16 +399,16 @@ const build = (zipPath, wdir) => {
         );
       }
 
-      printDone();
-      printStarting('Zipping project and dependencies');
+      endSpinner();
+      startSpinner('Zipping project and dependencies');
       return makeZip(tmpDir, wdir + path.sep + zipPath);
     })
     .then(() => {
       // tries to do a reproducible build at least
       // https://blog.pivotal.io/labs/labs/barriers-deterministic-reproducible-zip-files
       // https://reproducible-builds.org/tools/ or strip-nondeterminism
-      printDone();
-      printStarting('Testing build');
+      endSpinner();
+      startSpinner('Testing build');
 
       if (isWindows()) {
         return {}; // TODO err, what should we do on windows?
@@ -420,12 +420,12 @@ const build = (zipPath, wdir) => {
       );
     })
     .then(() => {
-      printDone();
-      printStarting('Cleaning up temp directory');
+      endSpinner();
+      startSpinner('Cleaning up temp directory');
       return removeDir(tmpDir);
     })
     .then(() => {
-      printDone();
+      endSpinner();
       return zipPath;
     });
 };

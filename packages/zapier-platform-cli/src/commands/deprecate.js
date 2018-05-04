@@ -14,7 +14,7 @@ const deprecate = (context, version, deprecationDate) => {
         `Preparing to deprecate version ${version} your app "${app.title}".\n`
       );
       const url = '/apps/' + app.id + '/versions/' + version + '/deprecate';
-      utils.printStarting(`Deprecating ${version}`);
+      utils.startSpinner(`Deprecating ${version}`);
       return utils.callAPI(url, {
         method: 'PUT',
         body: {
@@ -23,7 +23,7 @@ const deprecate = (context, version, deprecationDate) => {
       });
     })
     .then(() => {
-      utils.printDone();
+      utils.endSpinner();
       context.line('  Deprecation successful!\n');
       context.line(
         `We'll let users know that this version is no longer recommended and will cease to work on ${deprecationDate}.`

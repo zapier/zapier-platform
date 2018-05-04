@@ -4,7 +4,7 @@ const deleteApp = (context, app) => {
   context.line(
     `Preparing to delete all versions of your app "${app.title}".\n`
   );
-  utils.printStarting('Deleting app');
+  utils.startSpinner('Deleting app');
   return utils.callAPI(`/apps/${app.id}`, {
     method: 'DELETE'
   });
@@ -14,7 +14,7 @@ const deleteVersion = (context, app, version) => {
   context.line(
     `Preparing to delete version ${version} of your app "${app.title}".\n`
   );
-  utils.printStarting(`Deleting version ${version}`);
+  utils.startSpinner(`Deleting version ${version}`);
   return utils.callAPI(`/apps/${app.id}/versions/${version}`, {
     method: 'DELETE'
   });
@@ -36,7 +36,7 @@ const _delete = (context, appOrVersion, version) => {
           : deleteApp(context, app)
     )
     .then(() => {
-      utils.printDone();
+      utils.endSpinner();
       context.line('  Deletion successful!\n');
     });
 };
