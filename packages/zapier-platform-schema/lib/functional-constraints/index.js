@@ -14,7 +14,8 @@ const checks = [
   require('./searchOrCreateKeys'),
   require('./deepNestedFields'),
   require('./mutuallyExclusiveFields'),
-  require('./requiredSamples')
+  require('./requiredSamples'),
+  require('./matchingKeys')
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {
