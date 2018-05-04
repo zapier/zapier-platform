@@ -11,12 +11,8 @@ const { IS_TESTING } = require('../constants');
 // Copy bundle environment into process.env, and vice versa,
 // for convenience and compatibility with native environment vars.
 const applyEnvironment = event => {
-  event = ensurePath(event, 'bundle.environment'); // deprecated
-  _.extend(
-    process.env,
-    event.bundle.environment || {}, // deprecated
-    event.environment || {}
-  );
+  event = ensurePath(event, 'bundle');
+  _.extend(process.env, event.environment || {});
 };
 
 // Remove junk from process.env.
