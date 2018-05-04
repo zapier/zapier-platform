@@ -360,5 +360,29 @@ describe('schema', () => {
         'name'
       );
     });
+
+    it('should error when there is a collision', () => {
+      const appRaw = {
+        resources: {
+          foo: {
+            key: 'foo',
+            list: {
+              operation: {},
+              display: {}
+            }
+          }
+        },
+        triggers: {
+          fooList: {
+            key: 'fooList',
+            operation: {},
+            display: {}
+          }
+        }
+      };
+
+      const buildFunc = () => schema.compileApp(appRaw);
+      buildFunc.should.throw();
+    });
   });
 });
