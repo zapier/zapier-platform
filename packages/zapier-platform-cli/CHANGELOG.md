@@ -2,18 +2,19 @@
 
 ### cli
 
-* :exclamation: (improvement, **breaking**) JSON format only outputs valid JSON ([#260](https://github.com/zapier/zapier-platform-cli/pull/260))
+* :exclamation: (improvement, **breaking**) JSON format only outputs valid JSON. This is only breaking if you were working around the formatting to process the JSON before ([#260](https://github.com/zapier/zapier-platform-cli/pull/260))
 * (improvement) Better spinner ([#260](https://github.com/zapier/zapier-platform-cli/pull/260))
 
 ### schema
 
-* :exclamation: (improvement, **breaking**) Force top-level key to match trigger/search/create's `.key` ([#41](https://github.com/zapier/zapier-platform-schema/pull/41))
+* :exclamation: (improvement, **breaking**) Fail validation if the top-level key doesn't match trigger/search/creates' `.key`. This fixes a bug where a trigger could be duplicated in the UI ([#41](https://github.com/zapier/zapier-platform-schema/pull/41))
 * (docs) Add doc annotation for hook type ([#44](https://github.com/zapier/zapier-platform-schema/pull/44))
 * (docs) Make long examples more readable ([#42](https://github.com/zapier/zapier-platform-schema/pull/42))
 
 ### core
 
-* :exclamation: (improvement, **breaking**) Check for key collisions with resources ([#73](https://github.com/zapier/zapier-platform-core/pull/73))
+* :exclamation: (improvement, **breaking**) Throw an error for key collisions between resources and standalone objects. This was previously a warning, so it shouldn't catch anyone by surprise ([#73](https://github.com/zapier/zapier-platform-core/pull/73))
+* :exclamation: (improvement, **breaking**) Remove `bundle.environment`. This has always been deprecated, but now it shouldn't show up in the bundle anymore. Given that it hasn't held data, this shouldn't cause a lot of friction ([#72](https://github.com/zapier/zapier-platform-core/pull/72))
 
 ## 5.2.0
 
