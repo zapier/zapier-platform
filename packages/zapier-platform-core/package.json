@@ -18,7 +18,8 @@
     "lint": "eslint src test",
     "build": "bin/build.sh local.bundle.zip",
     "upload": "bin/upload-lambda.js local.bundle.zip",
-    "deploy": "bin/build.sh local.bundle.zip && bin/upload-lambda.js local.bundle.zip",
+    "deploy": "npm run build && npm run upload",
+    "build-boilerplate": "bin/build-boilerplate.sh",
     "precommit": "lint-staged"
   },
   "engines": {

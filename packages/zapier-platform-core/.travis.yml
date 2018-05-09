@@ -6,10 +6,19 @@ node_js:
 notifications:
   email: false
 deploy:
-  provider: npm
-  email: engineering@zapier.com
-  api_key: $NPM_TOKEN
+  - provider: npm
+    email: engineering@zapier.com
+    api_key: $NPM_TOKEN
+    skip_cleanup: true
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: "zapier-dev-platform-cli-boilerplates"
+    acl: private
+    local_dir: "build-boilerplate"
+    skip_cleanup: true
   on:
     tags: true
     node: "6.10.3"
-  skip_cleanup: true
+before_deploy:
+  - npm run build-boilerplate
