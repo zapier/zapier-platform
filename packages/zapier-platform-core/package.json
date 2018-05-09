@@ -7,6 +7,7 @@
   "author": "Bryan Helmig <bryan@zapier.com>",
   "license": "UNLICENSED",
   "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
     "preversion": "git pull && npm test",
     "version": "node bin/bump-dependencies.js && git add package.json",
