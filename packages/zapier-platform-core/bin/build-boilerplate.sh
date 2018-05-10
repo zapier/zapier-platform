@@ -5,7 +5,6 @@
 
 CONTENTS_DIR='boilerplate'
 BUILD_DIR='build-boilerplate'
-FILE="$BUILD_DIR/boilerplate.zip"
 
 # This allows us to avoid duplicating files in git
 FILES_TO_COPY='zapierwrapper.js'
@@ -22,6 +21,8 @@ cp "include/$FILES_TO_COPY" "$CONTENTS_DIR/"
 
 # Get new version
 NEW_VERSION="$(node -p "require('./package.json').version")"
+
+FILE="$BUILD_DIR/$NEW_VERSION.zip"
 
 FIND_DEP_STRING='"zapier-platform-core": "CORE_PLATFORM_VERSION"'
 FIND_DEF_STRING='"platformVersion": "CORE_PLATFORM_VERSION"'
