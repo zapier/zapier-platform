@@ -14,7 +14,7 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     bucket: "zapier-dev-platform-cli-boilerplates"
-    acl: private
+    acl: public_read
     local_dir: "build-boilerplate"
     skip_cleanup: true
   on:
