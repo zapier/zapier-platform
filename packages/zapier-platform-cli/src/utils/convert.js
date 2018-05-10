@@ -201,7 +201,7 @@ const renderSampleField = (def, indent = 0) => {
   props.push(renderProp('type', quote(type)));
 
   if (def.label) {
-    props.push(renderProp('label', quote(def.label)));
+    props.push(renderProp('label', quote(escapeSpecialChars(def.label))));
   }
 
   props = props.map(s => ' '.repeat(indent + 2) + s);
