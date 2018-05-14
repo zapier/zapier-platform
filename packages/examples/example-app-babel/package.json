@@ -13,7 +13,7 @@
     "zapier-push": "npm run zapier-build && zapier push",
     "prepare": "npm run zapier-build",
     "pretest": "npm run zapier-build",
-    "test": "mocha --recursive lib --require babel-polyfill"
+    "test": "mocha --recursive lib/test --require babel-polyfill"
   },
   "engines": {
     "node": "6.10.3",
