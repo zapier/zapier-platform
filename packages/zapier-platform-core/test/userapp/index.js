@@ -319,16 +319,12 @@ const DynamicAsyncInputFields = {
       description: 'input fields are a promise'
     },
     operation: {
-      inputFields: Promise.resolve([
-        { key: 'key 1' },
-        { key: 'key 2' },
-        { key: 'key 3' }
-      ]),
-      outputFields: Promise.resolve([
-        { key: 'key 1' },
-        { key: 'key 2' },
-        { key: 'key 3' }
-      ]),
+      inputFields: [
+        Promise.resolve([{ key: 'key 1' }, { key: 'key 2' }, { key: 'key 3' }])
+      ],
+      outputFields: [
+        Promise.resolve([{ key: 'key 1' }, { key: 'key 2' }, { key: 'key 3' }])
+      ],
       perform: () => {}
     }
   }

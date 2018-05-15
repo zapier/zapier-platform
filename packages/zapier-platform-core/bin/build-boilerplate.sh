@@ -2,6 +2,7 @@
 
 # Usage like so:
 # ./build-boilerplate.sh
+# ./build-boilerplate.sh --debug  # For pushing local changes into the zip file
 
 CONTENTS_DIR='boilerplate'
 BUILD_DIR='build-boilerplate'
@@ -9,8 +10,7 @@ BUILD_DIR='build-boilerplate'
 # This allows us to avoid duplicating files in git
 FILES_TO_COPY='zapierwrapper.js'
 
-if [ -d $BUILD_DIR ]
-then
+if [ -d $BUILD_DIR ]; then
    rm -fr $BUILD_DIR
 fi
 
@@ -35,6 +35,11 @@ sed -i '' -e "s/$FIND_DEF_STRING/$REPLACE_DEF_STRING/g" "$CONTENTS_DIR/definitio
 
 # Install dependencies
 cd $CONTENTS_DIR && npm install
+
+# Allow pushing "local changes" into the zip file
+if [ "$1" == "--debug" ]; then
+  cp -R ../src/* node_modules/zapier-platform-core/src/
+fi
 
 # Build the zip file!
 zip -R ../$FILE '*.js' '*.json'

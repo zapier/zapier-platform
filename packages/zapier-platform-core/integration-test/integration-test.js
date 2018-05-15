@@ -1,5 +1,6 @@
 'use strict';
 
+const crypto = require('crypto');
 const should = require('should');
 const path = require('path');
 const createLambdaHandler = require('../src/tools/create-lambda-handler');
@@ -56,7 +57,7 @@ runLocally.testName = 'runLocally';
 
 const doTest = runner => {
   describe(`${runner.testName} integration tests`, () => {
-    it('should return data from app function call', done => {
+    it('should return data from app function call', () => {
       const event = {
         command: 'execute',
         method: 'resources.list.list.operation.perform',
@@ -65,40 +66,31 @@ const doTest = runner => {
           'param b': 'oh, can u see me too?'
         }
       };
-      runner(event)
-        .then(response => {
-          should.exist(response.results);
-          response.results.should.eql([{ id: 1234 }, { id: 5678 }]);
-          done();
-        })
-        .catch(done);
+      return runner(event).then(response => {
+        should.exist(response.results);
+        response.results.should.eql([{ id: 1234 }, { id: 5678 }]);
+      });
     });
 
-    it('should validate an app', done => {
+    it('should validate an app', () => {
       const event = {
         command: 'validate'
       };
-      runner(event)
-        .then(response => {
-          should.exist(response.results);
-          done();
-        })
-        .catch(done);
+      return runner(event).then(response => {
+        should.exist(response.results);
+      });
     });
 
-    it('should provide the definition for an app', done => {
+    it('should provide the definition for an app', () => {
       const event = {
         command: 'definition'
       };
-      runner(event)
-        .then(response => {
-          should.exist(response.results);
-          done();
-        })
-        .catch(done);
+      return runner(event).then(response => {
+        should.exist(response.results);
+      });
     });
 
-    it('should do a logging function', done => {
+    it('should do a logging function', () => {
       const event = {
         command: 'execute',
         method: 'resources.loggingfunc.list.operation.perform',
@@ -106,15 +98,12 @@ const doTest = runner => {
           app_cli_id: 666
         }
       };
-      runner(event)
-        .then(response => {
-          should.exist(response.results);
-          done();
-        })
-        .catch(done);
+      return runner(event).then(response => {
+        should.exist(response.results);
+      });
     });
 
-    it('should handle appRawOverride', done => {
+    it('should handle appRawOverride', () => {
       const event = {
         command: 'execute',
         method: 'triggers.fooList.operation.perform',
@@ -133,15 +122,50 @@ const doTest = runner => {
           }
         }
       };
-      runner(event)
-        .then(response => {
-          response.results.should.deepEqual([{ id: 45678 }]);
-          done();
-        })
-        .catch(done);
+      return runner(event).then(response => {
+        response.results.should.deepEqual([{ id: 45678 }]);
+      });
     });
 
-    it('should log requests', done => {
+    it('should handle appRawOverride as hash', () => {
+      const definition = {
+        resources: {
+          foo: {
+            key: 'foo',
+            noun: 'Foo',
+            list: {
+              display: {},
+              operation: {
+                perform: { source: 'return [{id: 45678}]' }
+              }
+            }
+          }
+        }
+      };
+
+      const definitionHash = crypto
+        .createHash('md5')
+        .update(JSON.stringify(definition))
+        .digest('hex');
+
+      const event = {
+        command: 'execute',
+        method: 'triggers.fooList.operation.perform',
+        appRawOverride: definitionHash
+      };
+
+      return runner(event)
+        .then(() => {
+          should(true).eql(false, 'Should not have gotten results!');
+        })
+        .catch(err => {
+          // We're not mocking RPC here (a bit convoluted to do so), so it'll fail at that point
+          err.message.should.startWith('No deploy key found.');
+          err.message.should.containEql('rely on the RPC API');
+        });
+    });
+
+    it('should log requests', () => {
       const event = {
         command: 'execute',
         method: 'resources.requestfunc.list.operation.perform',
@@ -149,29 +173,25 @@ const doTest = runner => {
           app_cli_id: 666
         }
       };
-      runner(event)
-        .then(response => {
-          should.exist(response.results);
-          done();
-        })
-        .catch(done);
+      return runner(event).then(response => {
+        should.exist(response.results);
+      });
     });
 
     describe('error handling', () => {
       const testError = (method, errorMessage) => {
-        it(`should catch errors from ${method}`, done => {
+        it(`should catch errors from ${method}`, () => {
           const event = {
             command: 'execute',
             method
           };
-          runner(event)
+          return runner(event)
             .then(() => {
-              done('expected an eror');
+              should(true).eql(false, 'Expected an error!');
             })
             .catch(err => {
               should.exist(err);
               err.message.should.startWith(errorMessage);
-              done();
             });
         });
       };
@@ -193,8 +213,14 @@ const doTest = runner => {
 };
 
 if (process.argv.indexOf('integration-test') > 0) {
-  doTest(runLambda);
-  doTest(runLocally);
+  if (process.argv.indexOf('--lambda') > 0) {
+    doTest(runLambda);
+  } else if (process.argv.indexOf('--local') > 0) {
+    doTest(runLocally);
+  } else {
+    doTest(runLambda);
+    doTest(runLocally);
+  }
 }
 
 module.exports = {

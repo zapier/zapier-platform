@@ -1,6 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
+const fs = require('fs');
+const path = require('path');
 const domain = require('domain');
 
 const constants = require('../constants');
@@ -14,16 +16,57 @@ const checkMemory = require('./memory-checker');
 const createRpcClient = require('./create-rpc-client');
 const createHttpPatch = require('./create-http-patch');
 
+const getAppRawOverride = (rpc, appRawOverride) => {
+  return new ZapierPromise((resolve, reject) => {
+    // Lambda keeps the container and /tmp directory around for a bit,
+    // so we can use that to "cache" the hash and override we fetched
+    // from RPC before.
+    const overridePath = path.join('/tmp', 'cli-override.json');
+    const hashPath = path.join('/tmp', 'cli-hash.txt');
+
+    // If appRawOverride is too big, we send an md5 hash instead of JSON
+    if (!_.isString(appRawOverride)) {
+      return resolve(appRawOverride);
+    }
+
+    // Check if it's "cached", to prevent unnecessary RPC calls
+    if (
+      fs.existsSync(hashPath) &&
+      fs.existsSync(overridePath) &&
+      fs.readFileSync(hashPath).toString() === appRawOverride
+    ) {
+      return resolve(JSON.parse(fs.readFileSync(overridePath).toString()));
+    }
+
+    // Otherwise just get it via RPC
+    return rpc('get_definition_override')
+      .then(fetchedOverride => {
+        // "cache" it.
+        fs.writeFileSync(hashPath, appRawOverride);
+        fs.writeFileSync(overridePath, JSON.stringify(fetchedOverride));
+
+        resolve(fetchedOverride);
+      })
+      .catch(err => reject(err));
+  });
+};
+
 // Sometimes tests want to pass in an app object defined directly in the test,
-// so allow for that.
-const loadApp = (event, appRawOrPath) => {
-  if (event && event.appRawOverride) {
-    return event.appRawOverride;
-  }
-  if (_.isString(appRawOrPath)) {
-    return require(appRawOrPath);
-  }
-  return appRawOrPath;
+// so allow for that, and an event.appRawOverride for "buildless" apps.
+const loadApp = (event, rpc, appRawOrPath) => {
+  return new ZapierPromise((resolve, reject) => {
+    if (event && event.appRawOverride) {
+      return getAppRawOverride(rpc, event.appRawOverride)
+        .then(appRawOverride => resolve(appRawOverride))
+        .catch(err => reject(err));
+    }
+
+    if (_.isString(appRawOrPath)) {
+      return resolve(require(appRawOrPath));
+    }
+
+    return resolve(appRawOrPath);
+  });
 };
 
 const createLambdaHandler = appRawOrPath => {
@@ -86,12 +129,15 @@ const createLambdaHandler = appRawOrPath => {
       // Copy bundle environment into process.env *before* loading app code,
       // so that top level app code can get bundle environment vars via process.env.
       environmentTools.applyEnvironment(event);
-      const appRaw = loadApp(event, appRawOrPath);
-      const app = createApp(appRaw);
+
       const rpc = createRpcClient(event);
 
-      const input = createInput(appRaw, event, logger, logBuffer, rpc);
-      return app(input)
+      return loadApp(event, rpc, appRawOrPath)
+        .then(appRaw => {
+          const app = createApp(appRaw);
+          const input = createInput(appRaw, event, logger, logBuffer, rpc);
+          return app(input);
+        })
         .then(output => {
           callbackOnce(null, cleaner.maskOutput(output));
         })

@@ -5,8 +5,9 @@ This is the code that powers our [Zapier Platform CLI](https://zapier.github.io/
 ## Development
 
 * `npm install` for getting started
-* `npm test` for running tests
-* `npm run build-boilerplate` for building a `boilerplate.zip` (if you want to test buildless locally)
+* `npm test` for running unit tests
+* `npm run local-integration-test` for running integration tests
+* `npm run build-boilerplate -- --debug` for building a `build-boilerplate/*.zip` (if you want to test buildless locally)
 
 ## Publishing (after merging)
 

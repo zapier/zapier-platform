@@ -16,6 +16,8 @@
     "posttest": "npm run lint",
     "plain-test": "mocha -t 3000 --recursive test",
     "integration-test": "mocha -t 10000 integration-test",
+    "local-integration-test": "mocha -t 10000 integration-test --local",
+    "lambda-integration-test": "mocha -t 10000 integration-test --lambda",
     "lint": "eslint src test",
     "build": "bin/build.sh local.bundle.zip",
     "upload": "bin/upload-lambda.js local.bundle.zip",
