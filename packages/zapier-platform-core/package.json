@@ -35,21 +35,21 @@
     "content-disposition": "0.5.2",
     "dotenv": "5.0.1",
     "form-data": "2.2.0",
-    "lodash": "4.17.4",
+    "lodash": "4.17.10",
     "node-fetch": "1.7.1",
     "zapier-platform-schema": "6.0.0"
   },
   "devDependencies": {
-    "aws-sdk": "2.70.0",
+    "aws-sdk": "2.238.1",
     "babel": "6.23.0",
-    "babel-eslint": "7.2.3",
-    "eslint": "4.0.0",
+    "babel-eslint": "8.2.3",
+    "eslint": "4.19.1",
     "husky": "0.14.3",
-    "lint-staged": "^7.0.0",
-    "mocha": "3.4.2",
+    "lint-staged": "7.1.0",
+    "mocha": "5.1.1",
     "mock-fs": "4.4.1",
     "nock": "9.0.13",
-    "prettier": "^1.10.2",
+    "prettier": "1.11.0",
     "should": "11.2.1"
   },
   "prettier": {
