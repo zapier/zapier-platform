@@ -20,7 +20,7 @@ export const createAppTester: (
 // export const integrationTestHandler: () => any;
 // export const createAppHandler: (appRaw: object) => any
 
-type HTTPMethod =
+type HttpMethod =
   | 'GET'
   | 'POST'
   | 'PUT'
@@ -29,9 +29,9 @@ type HTTPMethod =
   | 'OPTIONS'
   | 'HEAD';
 
-export interface Bundle {
+export interface Bundle<InputData = { [x: string]: any }> {
   authData: { [x: string]: string };
-  inputData: { [x: string]: string };
+  inputData: InputData;
   inputDataRaw: { [x: string]: string };
   meta: {
     frontend: boolean;
@@ -45,13 +45,13 @@ export interface Bundle {
     zap?: { id: string };
   };
   rawRequest?: Partial<{
-    method: HTTPMethod;
+    method: HttpMethod;
     querystring: string;
     headers: { [x: string]: string };
     content: string;
   }>;
   cleanedRequest?: Partial<{
-    method: HTTPMethod;
+    method: HttpMethod;
     querystring: { [x: string]: string };
     headers: { [x: string]: string };
     content: { [x: string]: string };
@@ -65,7 +65,7 @@ declare class RefreshAuthError extends Error {}
 // copied http stuff from external typings
 export interface HttpRequestOptions {
   url?: string;
-  method?: HTTPMethod;
+  method?: HttpMethod;
   body?: string | Buffer | ReadableStream | object;
   headers?: { [name: string]: string };
   json?: object | any[];
@@ -80,7 +80,7 @@ export interface HttpRequestOptions {
   size?: number;
 }
 
-interface BaseHTTPResponse {
+interface BaseHttpResponse {
   status: number;
   headers: { [key: string]: string };
   getHeader(key: string): string | undefined;
@@ -88,12 +88,12 @@ interface BaseHTTPResponse {
   request: HttpRequestOptions;
 }
 
-export interface HTTPResponse extends BaseHTTPResponse {
+export interface HttpResponse extends BaseHttpResponse {
   content: string;
   json?: object;
 }
 
-export interface RawHTTPResponse extends BaseHTTPResponse {
+export interface RawHttpResponse extends BaseHttpResponse {
   content: Buffer;
   json: Promise<object | undefined>;
   body: ReadableStream;
@@ -103,20 +103,20 @@ export interface zObject {
   request: {
     // most specific overloads go first
     (url: string, options: HttpRequestOptions & { raw: true }): Promise<
-      RawHTTPResponse
+      RawHttpResponse
     >;
     (options: HttpRequestOptions & { raw: true; url: string }): Promise<
-      RawHTTPResponse
+      RawHttpResponse
     >;
 
-    (url: string, options?: HttpRequestOptions): Promise<HTTPResponse>;
-    (options: HttpRequestOptions & { url: string }): Promise<HTTPResponse>;
+    (url: string, options?: HttpRequestOptions): Promise<HttpResponse>;
+    (options: HttpRequestOptions & { url: string }): Promise<HttpResponse>;
   };
 
   console: Console;
 
-  dehyrate: (
-    func: (z: this, bundle: Bundle) => any,
+  dehydrate: <T>(
+    func: (z: this, bundle: Bundle<T>) => any,
     inputData: object
   ) => string;
 
