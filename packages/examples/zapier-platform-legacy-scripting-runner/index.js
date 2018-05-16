@@ -131,53 +131,58 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       return undefined;
     });
 
+  const runTrigger = (bundle, key) => {
+    let promise = null;
+    const funcs = [];
+
+    bundle._legacyUrl = _.get(app, `triggers.${key}.operation.legacyProps.url`);
+    bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
+
+    const fullMethod = Zap[`${key}_poll`];
+    if (fullMethod) {
+      promise = runEvent({ key, name: 'trigger.poll' }, zobj, bundle);
+    } else {
+      const preMethod = Zap[`${key}_pre_poll`];
+      if (preMethod) {
+        promise = runEvent({ key, name: 'trigger.pre' }, zobj, bundle);
+      } else {
+        promise = Promise.resolve({
+          url: bundle._legacyUrl
+        });
+      }
+
+      funcs.push(request => {
+        return zobj.request(request);
+      });
+
+      const postMethod = Zap[`${key}_post_poll`];
+      if (postMethod) {
+        funcs.push(response => {
+          response.throwForStatus();
+          return runEvent(
+            { key, name: 'trigger.post', response },
+            zobj,
+            bundle
+          );
+        });
+      } else {
+        funcs.push(response => {
+          response.throwForStatus();
+          return zobj.JSON.parse(response.content);
+        });
+      }
+    }
+
+    // Equivalent to promise.then(funcs[0]).then(funcs[1])...
+    return funcs.reduce((prev, cur) => prev.then(cur), promise);
+  };
+
   // Simulates how backend run legacy scripting. core exposes this as
   // z.legacyScripting.run() method that we can run legacy scripting easily
   // like z.legacyScripting.run(bundle, 'trigger', 'KEY') in CLI.
   const run = (bundle, typeOf, key) => {
-    const z = zobj;
-
     if (typeOf === 'trigger') {
-      let promise = null;
-      const funcs = [];
-
-      bundle._legacyUrl = _.get(
-        app,
-        `triggers.${key}.operation.legacyProps.url`
-      );
-      bundle._legacyUrl = replaceVars(bundle._legacyUrl, bundle);
-
-      const fullMethod = Zap[`${key}_poll`];
-      if (fullMethod) {
-        promise = runEvent({ key, name: 'trigger.poll' }, z, bundle);
-      } else {
-        const preMethod = Zap[`${key}_pre_poll`];
-        if (preMethod) {
-          promise = runEvent({ key, name: 'trigger.pre' }, z, bundle);
-        } else {
-          promise = Promise.resolve({
-            method: app.triggers[key].operation.perform.method,
-            url: app.triggers[key].operation.perform.url
-          });
-        }
-
-        funcs.push(request => z.request(request));
-
-        const postMethod = Zap[`${key}_post_poll`];
-        if (postMethod) {
-          funcs.push(response => {
-            response.throwForStatus();
-            return runEvent({ key, name: 'trigger.post' }, z, bundle);
-          });
-        } else {
-          funcs.push(response => {
-            response.throwForStatus();
-            return z.JSON.parse(response.content);
-          });
-        }
-      }
-
-      return funcs.reduce((prev, cur) => prev.then(cur), promise);
+      return runTrigger(bundle, key);
     }
 
     // TODO: auth, create, and search
