@@ -22,7 +22,7 @@
   "dependencies": {
     "deasync": "0.1.10",
     "node-jquery-param": "0.0.2",
-    "lodash": "4.17.4",
+    "lodash": "4.17.10",
     "request": "2.83.0",
     "xmldom": "0.1.27"
   },

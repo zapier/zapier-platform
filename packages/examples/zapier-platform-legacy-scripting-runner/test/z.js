@@ -1,39 +1,42 @@
-require('should');
+const should = require('should');
 
 const z = require('../z');
 
 describe('z', () => {
-
-  it('z.hash', (done) => {
+  it('z.hash', done => {
     const result = z.hash('sha256', 'my awesome string');
-    result.should.equal('97f13a1635524dd41daca6601e5d9fe07e10e62790851e527b039851b1f8b9a1');
+    result.should.equal(
+      '97f13a1635524dd41daca6601e5d9fe07e10e62790851e527b039851b1f8b9a1'
+    );
     done();
   });
 
-  it('z.hmac', (done) => {
+  it('z.hmac', done => {
     const result = z.hmac('sha256', 'key', 'string');
-    result.should.equal('473287f8298dba7163a897908958f7c0eae733e25d2e027992ea2edc9bed2fa8');
+    result.should.equal(
+      '473287f8298dba7163a897908958f7c0eae733e25d2e027992ea2edc9bed2fa8'
+    );
     done();
   });
 
-  it('z.snipify', (done) => {
+  it('z.snipify', done => {
     const result = z.snipify('something');
     result.should.equal(':censored:9:720a531ca0:');
     done();
   });
 
-  it('z.request - sync', (done) => {
+  it('z.request - sync', done => {
     const bundleRequest = {
-      'method': 'GET',
-      'url': 'http://httpbin.org/get',
-      'params': {
-        'hello': 'world',
+      method: 'GET',
+      url: 'http://httpbin.org/get',
+      params: {
+        hello: 'world'
       },
-      'headers': {
-        'Accept': 'application/json',
+      headers: {
+        Accept: 'application/json'
       },
-      'auth': null,
-      'data': null,
+      auth: null,
+      data: null
     };
 
     const response = z.request(bundleRequest);
@@ -49,20 +52,20 @@ describe('z', () => {
     done();
   });
 
-  it('z.request - async', (done) => {
+  it('z.request - async', done => {
     const bundleRequest = {
-      'method': 'POST',
-      'url': 'http://httpbin.org/post',
-      'params': {
-        'hello': 'world',
+      method: 'POST',
+      url: 'http://httpbin.org/post',
+      params: {
+        hello: 'world'
       },
-      'headers': {
-        'Accept': 'application/json',
+      headers: {
+        Accept: 'application/json'
       },
-      'auth': null,
-      'data': JSON.stringify({
-        'world': 'hello',
-      }),
+      auth: null,
+      data: JSON.stringify({
+        world: 'hello'
+      })
     };
 
     z.request(bundleRequest, (error, response) => {
@@ -81,7 +84,7 @@ describe('z', () => {
     });
   });
 
-  it('z.JSON.parse', (done) => {
+  it('z.JSON.parse', done => {
     const result = z.JSON.parse('{"hello": "world"}');
     result.should.have.property('hello');
     result.hello.should.eql('world');
@@ -92,22 +95,23 @@ describe('z', () => {
       z.JSON.parse(invalidJsonString);
     } catch (e) {
       e.name.should.eql('Error');
-      e.message.should.eql(`Error parsing response. We got: "${invalidJsonString}"`);
+      e.message.should.eql(
+        `Error parsing response. We got: "${invalidJsonString}"`
+      );
       done();
     }
   });
 
-  it('z.JSON.stringify', (done) => {
+  it('z.JSON.stringify', done => {
     const result = z.JSON.stringify({
-      hello: 'world',
+      hello: 'world'
     });
     result.should.equal('{"hello":"world"}');
     done();
   });
 
-  it('z.AWS', (done) => {
+  it('z.AWS', done => {
     const AWS = z.AWS();
     AWS.config.getCredentials(done);
   });
-
 });
