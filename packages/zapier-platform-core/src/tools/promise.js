@@ -14,7 +14,13 @@ const enrichErrorMessage = (err, frameStack) => {
     return;
   }
   const details = frameStack.map(f => `  ${f}`).join('\n');
-  err.message = `${err.message}\nWhat happened:\n${details}\n  ${err.message}`;
+  try {
+    err.message = `${err.message}\nWhat happened:\n${details}\n  ${
+      err.message
+    }`;
+  } catch (e) {
+    // Do nothing
+  }
 };
 
 // Because reject callbacks stack, we have to skip errors we've already seen.

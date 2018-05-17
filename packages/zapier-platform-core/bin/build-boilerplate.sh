@@ -39,10 +39,16 @@ cd $CONTENTS_DIR && npm install
 # Allow pushing "local changes" into the zip file
 if [ "$1" == "--debug" ]; then
   cp -R ../src/* node_modules/zapier-platform-core/src/
+  cp -R ../node_modules/zapier-platform-legacy-scripting-runner/* node_modules/zapier-platform-legacy-scripting-runner/
+  rm -rf node_modules/zapier-platform-core/node_modules
+  rm -rf node_modules/zapier-platform-legacy-scripting-runner/node_modules
+  rm -rf node_modules/zapier-platform-schema/node_modules
 fi
 
 # Build the zip file!
-zip -R ../$FILE '*.js' '*.json'
+zip -R ../$FILE '*.js' '*.json'\
+    '*/darwin*node-6/*.node' '*/darwin*node-7/*.node' '*/darwin*node-8/*.node'\
+    '*/linux*node-6/*.node' '*/linux*node-7/*.node' '*/linux*node-8/*.node'
 
 # Revert copied files
 rm -f $FILES_TO_COPY

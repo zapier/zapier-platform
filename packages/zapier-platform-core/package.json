@@ -40,6 +40,7 @@
     "zapier-platform-schema": "6.0.0"
   },
   "devDependencies": {
+    "async": "2.6.0",
     "aws-sdk": "2.238.1",
     "babel": "6.23.0",
     "babel-eslint": "8.2.3",
@@ -48,9 +49,11 @@
     "lint-staged": "7.1.0",
     "mocha": "5.1.1",
     "mock-fs": "4.4.1",
+    "moment-timezone": "0.5.17",
     "nock": "9.0.13",
     "prettier": "1.11.0",
-    "should": "11.2.1"
+    "should": "11.2.1",
+    "zapier-platform-legacy-scripting-runner": "1.2.0"
   },
   "prettier": {
     "singleQuote": true

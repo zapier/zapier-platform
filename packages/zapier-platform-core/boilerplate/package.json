@@ -11,6 +11,9 @@
     "npm": ">=3.10.10"
   },
   "dependencies": {
-    "zapier-platform-core": "CORE_PLATFORM_VERSION"
+    "async": "2.6.0",
+    "moment-timezone": "0.5.16",
+    "zapier-platform-core": "CORE_PLATFORM_VERSION",
+    "zapier-platform-legacy-scripting-runner": "1.2.0"
   }
 }
