@@ -36,4 +36,14 @@ describe('schema-tools', () => {
       func.should.throw(/Cannot find module/);
     });
   });
+
+  describe('findSourceRequireFunctions', () => {
+    it('should replace beforeRequest source', () => {
+      const appRaw = {
+        beforeRequest: [{ source: 'return a - b;', args: ['a', 'b'] }]
+      };
+      const app = schemaTools.findSourceRequireFunctions(appRaw);
+      app.beforeRequest[0](123, 23).should.eql(100);
+    });
+  });
 });
