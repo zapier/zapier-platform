@@ -15,6 +15,7 @@ const environmentTools = require('./environment');
 const checkMemory = require('./memory-checker');
 const createRpcClient = require('./create-rpc-client');
 const createHttpPatch = require('./create-http-patch');
+const schemaTools = require('./schema');
 
 const getAppRawOverride = (rpc, appRawOverride) => {
   return new ZapierPromise((resolve, reject) => {
@@ -135,7 +136,12 @@ const createLambdaHandler = appRawOrPath => {
       return loadApp(event, rpc, appRawOrPath)
         .then(appRaw => {
           const app = createApp(appRaw);
-          const input = createInput(appRaw, event, logger, logBuffer, rpc);
+
+          // TODO: Avoid calling prepareApp(appRaw) repeatedly here as createApp()
+          // already calls prepareApp() but just doesn't return it.
+          const compiledApp = schemaTools.prepareApp(appRaw);
+
+          const input = createInput(compiledApp, event, logger, logBuffer, rpc);
           return app(input);
         })
         .then(output => {

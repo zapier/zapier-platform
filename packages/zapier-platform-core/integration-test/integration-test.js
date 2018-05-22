@@ -165,6 +165,37 @@ const doTest = runner => {
         });
     });
 
+    it('should handle function source in beforeRequest', () => {
+      const definition = {
+        beforeRequest: [
+          {
+            source: "request.headers['X-Foo'] = 'it worked!'; return request",
+            args: ['request', 'z', 'bundle']
+          }
+        ],
+        creates: {
+          foo: {
+            operation: {
+              perform: {
+                method: 'POST',
+                url: 'https://zapier-httpbin.herokuapp.com/post'
+              }
+            }
+          }
+        }
+      };
+
+      const event = {
+        command: 'execute',
+        method: 'creates.foo.operation.perform',
+        appRawOverride: definition
+      };
+
+      return runner(event).then(response => {
+        response.results.headers['X-Foo'].should.eql('it worked!');
+      });
+    });
+
     it('should log requests', () => {
       const event = {
         command: 'execute',
