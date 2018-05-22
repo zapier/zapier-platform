@@ -12,9 +12,9 @@ const build = context => {
     .then(() => utils.build())
     .then(() => {
       context.line(
-        `\nBuild complete! Moved to ${
-          constants.BUILD_PATH
-        }! Try the \`zapier upload\` command now.`
+        `\nBuild complete! Moved ${constants.BUILD_PATH} and ${
+          constants.SOURCE_PATH
+        } ! Try the \`zapier upload\` command now.`
       );
     });
 };
@@ -45,7 +45,7 @@ It does the following steps:
 * Zips up all needed \`.js\` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your \`${
   constants.CURRENT_APP_FILE
 }\`.
-* Moves the zip to \`${constants.BUILD_PATH}\`
+* Moves the zip to \`${constants.BUILD_PATH}\` and \`${constants.SOURCE_PATH}\`
 
 > If you get live errors like \`Error: Cannot find module 'some-path'\`, try disabling dependency detection.
 

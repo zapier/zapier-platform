@@ -11,6 +11,8 @@ const fse = require('fs-extra');
 const klaw = require('klaw');
 const updateNotifier = require('update-notifier');
 const colors = require('colors/safe');
+const ignore = require('ignore');
+const gitIgnore = require('parse-gitignore');
 
 const eslint = require('eslint');
 
@@ -92,9 +94,9 @@ const requiredFiles = (cwd, entryPoints) => {
 };
 
 const listFiles = dir => {
-  const isBlacklisted = file_path => {
-    return ['.git', '.env', 'build'].find(excluded => {
-      return file_path.search(excluded) === 0;
+  const isBlacklisted = filePath => {
+    return constants.BLACKLISTED_PATHS.find(excluded => {
+      return filePath.search(excluded) === 0;
     });
   };
 
@@ -103,9 +105,9 @@ const listFiles = dir => {
     const cwd = dir + path.sep;
     klaw(dir)
       .on('data', item => {
-        const stripped_path = stripPath(cwd, item.path);
-        if (!item.stats.isDirectory() && !isBlacklisted(stripped_path)) {
-          paths.push(stripped_path);
+        const strippedPath = stripPath(cwd, item.path);
+        if (!item.stats.isDirectory() && !isBlacklisted(strippedPath)) {
+          paths.push(strippedPath);
         }
       })
       .on('error', reject)
@@ -113,6 +115,16 @@ const listFiles = dir => {
         paths.sort();
         resolve(paths);
       });
+  });
+};
+
+// Exclude file paths in .gitignore
+const respectGitIgnore = (dir, paths) => {
+  return new Promise(resolve => {
+    const gitIgnorePath = path.join(dir, '.gitignore');
+    const gitIgnoredPaths = gitIgnore(gitIgnorePath);
+    const gitFilter = ignore().add(gitIgnoredPaths);
+    resolve(gitFilter.filter(paths));
   });
 };
 
@@ -172,6 +184,38 @@ const forceIncludeDumbPath = (appConfig, filePath) => {
   );
 };
 
+const writeZipFromPaths = (dir, zipPath, paths) => {
+  return new Promise((resolve, reject) => {
+    const output = fs.createWriteStream(zipPath);
+    const zip = archiver('zip', {
+      store: true // Sets the compression method to STORE.
+    });
+
+    // listen for all archive data to be written
+    output.on('close', function() {
+      resolve();
+    });
+
+    zip.on('error', function(err) {
+      reject(err);
+    });
+
+    // pipe archive data to the file
+    zip.pipe(output);
+
+    paths.forEach(function(filePath) {
+      var basePath = path.dirname(filePath);
+      if (basePath === '.') {
+        basePath = undefined;
+      }
+      var name = path.join(dir, filePath);
+      zip.file(name, { name: filePath, mode: 0o755 });
+    });
+
+    zip.finalize();
+  });
+};
+
 const makeZip = (dir, zipPath) => {
   const entryPoints = [
     path.resolve(dir, 'zapierwrapper.js'),
@@ -200,37 +244,22 @@ const makeZip = (dir, zipPath) => {
       return finalPaths;
     })
     .then(verifyNodeFeatures)
-    .then(paths => {
-      return new Promise((resolve, reject) => {
-        const output = fs.createWriteStream(zipPath);
-        const zip = archiver('zip', {
-          store: true // Sets the compression method to STORE.
-        });
+    .then(writeZipFromPaths.bind(this, dir, zipPath));
+};
 
-        // listen for all archive data to be written
-        output.on('close', function() {
-          resolve();
-        });
-
-        zip.on('error', function(err) {
-          reject(err);
-        });
-
-        // pipe archive data to the file
-        zip.pipe(output);
-
-        paths.forEach(function(filePath) {
-          var basePath = path.dirname(filePath);
-          if (basePath === '.') {
-            basePath = undefined;
-          }
-          var name = path.join(dir, filePath);
-          zip.file(name, { name: filePath, mode: 0o755 });
-        });
-
-        zip.finalize();
-      });
-    });
+const makeSourceZip = (dir, zipPath) => {
+  return listFiles(dir)
+    .then(respectGitIgnore.bind(this, dir))
+    .then(finalPaths => {
+      finalPaths.sort();
+      if (global.argOpts.debug) {
+        console.log('\nSource Zip files:');
+        finalPaths.map(filePath => console.log(`  ${filePath}`));
+        console.log('');
+      }
+      return finalPaths;
+    })
+    .then(writeZipFromPaths.bind(this, dir, zipPath));
 };
 
 // Similar to utils.appCommand, but given a ready to go app
@@ -251,9 +280,10 @@ const _appCommandZapierWrapper = (dir, event) => {
   });
 };
 
-const build = (zipPath, wdir) => {
+const build = (zipPath, sourceZipPath, wdir) => {
   wdir = wdir || process.cwd();
   zipPath = zipPath || constants.BUILD_PATH;
+  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
   const osTmpDir = fse.realpathSync(os.tmpdir());
   const tmpDir = path.join(
     osTmpDir,
@@ -394,6 +424,12 @@ const build = (zipPath, wdir) => {
     .then(styleChecksResponse => {
       const errors = styleChecksResponse.errors;
       if (!_.isEmpty(errors)) {
+        if (global.argOpts.debug) {
+          console.log('\nErrors:');
+          console.log(errors);
+          console.log('');
+        }
+
         throw new Error(
           'We hit some validation errors, try running `zapier validate` to see them!'
         );
@@ -402,6 +438,9 @@ const build = (zipPath, wdir) => {
       endSpinner();
       startSpinner('Zipping project and dependencies');
       return makeZip(tmpDir, wdir + path.sep + zipPath);
+    })
+    .then(() => {
+      return makeSourceZip(tmpDir, wdir + path.sep + sourceZipPath);
     })
     .then(() => {
       // tries to do a reproducible build at least
@@ -430,15 +469,16 @@ const build = (zipPath, wdir) => {
     });
 };
 
-const buildAndUploadDir = (zipPath, appDir) => {
+const buildAndUploadDir = (zipPath, sourceZipPath, appDir) => {
   zipPath = zipPath || constants.BUILD_PATH;
   appDir = appDir || '.';
+  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
   return checkCredentials()
     .then(() => {
-      return build(zipPath, appDir);
+      return build(zipPath, sourceZipPath, appDir);
     })
     .then(() => {
-      return upload(zipPath, appDir);
+      return upload(zipPath, sourceZipPath, appDir);
     });
 };
 
@@ -446,6 +486,7 @@ module.exports = {
   build,
   buildAndUploadDir,
   makeZip,
+  makeSourceZip,
   listFiles,
   requiredFiles,
   verifyNodeFeatures

@@ -256,9 +256,13 @@ const listEnv = version => {
   return listEndpoint(endpoint, 'environment');
 };
 
-const upload = (zipPath, appDir) => {
+const upload = (zipPath, sourceZipPath, appDir) => {
   zipPath = zipPath || constants.BUILD_PATH;
+  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
+  appDir = appDir || '.';
+
   const fullZipPath = path.resolve(appDir, zipPath);
+  const fullSourceZipPath = path.resolve(appDir, sourceZipPath);
 
   return getLinkedApp(appDir)
     .then(app => {
@@ -272,11 +276,15 @@ const upload = (zipPath, appDir) => {
       const binaryZip = fs.readFileSync(fullZipPath);
       const buffer = Buffer.from(binaryZip).toString('base64');
 
+      const binarySourceZip = fs.readFileSync(fullSourceZipPath);
+      const sourceBuffer = Buffer.from(binarySourceZip).toString('base64');
+
       startSpinner(`Uploading version ${definition.version}`);
       return callAPI(`/apps/${app.id}/versions/${definition.version}`, {
         method: 'PUT',
         body: {
-          zip_file: buffer
+          zip_file: buffer,
+          source_zip_file: sourceBuffer
         }
       });
     })
