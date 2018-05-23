@@ -1,0 +1,33 @@
+{
+  "name": "zapier-platform-example-app-typescript",
+  "version": "1.0.0",
+  "description": "An example app for the Zapier platform.",
+  "repository": "zapier/zapier-platform-example-app-typescript",
+  "homepage": "https://zapier.com/",
+  "author": "Bryan Helmig <bryan@zapier.com>",
+  "license": "BSD-3-Clause",
+  "main": "index.js",
+  "scripts": {
+    "zapier-build": "tsc",
+    "zapier-dev": "tsc --watch",
+    "zapier-push": "npm run zapier-build && zapier push",
+    "prepare": "npm run zapier-build",
+    "pretest": "npm run zapier-build",
+    "test": "mocha --recursive lib/test"
+  },
+  "engines": {
+    "node": "6.10.3",
+    "npm": ">=3.10.10"
+  },
+  "dependencies": {
+    "zapier-platform-core": "zapier/zapier-platform-core"
+  },
+  "devDependencies": {
+    "@types/mocha": "5.2.0",
+    "@types/node": "^10.1.2",
+    "@types/should": "13.0.0",
+    "mocha": "5.1.0",
+    "should": "13.2.1",
+    "typescript": "2.8.3"
+  }
+}
