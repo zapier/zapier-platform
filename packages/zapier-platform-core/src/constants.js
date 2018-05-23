@@ -31,6 +31,26 @@ const SENSITIVE_KEYS = [
   'token'
 ];
 
+const SAFE_LOG_KEYS = [
+  'account_id',
+  'api_title',
+  'app_cli_id',
+  'app_cli_title',
+  'app_cli_version',
+  'app_cli_version_id',
+  'customuser_id',
+  'facility',
+  'object_action',
+  'object_id',
+  'object_root_id',
+  'object_type',
+  'request_method',
+  'request_type',
+  'response_status_code',
+  'selected_api',
+  'timestamp'
+];
+
 module.exports = {
   IS_TESTING,
   KILL_MIN_LIMIT,
@@ -41,5 +61,6 @@ module.exports = {
   REQUEST_OBJECT_SHORTHAND_OPTIONS,
   DEFAULT_LOGGING_HTTP_ENDPOINT,
   DEFAULT_LOGGING_HTTP_API_KEY,
-  SENSITIVE_KEYS
+  SENSITIVE_KEYS,
+  SAFE_LOG_KEYS
 };

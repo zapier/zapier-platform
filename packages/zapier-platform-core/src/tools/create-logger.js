@@ -106,13 +106,19 @@ const sendLog = (options, event, message, data) => {
   );
   const unsafeData = dataTools.recurseReplace(data, truncate);
 
+  // Keep safe log keys uncensored
+  Object.keys(safeData).forEach(key => {
+    if (constants.SAFE_LOG_KEYS.indexOf(key) !== -1) {
+      safeData[key] = unsafeData[key];
+    }
+  });
+
   const body = {
     message: safeMessage,
     data: safeData,
     token: options.token
   };
 
-  // TODO: auth data
   const httpOptions = {
     url: options.endpoint,
     method: 'POST',

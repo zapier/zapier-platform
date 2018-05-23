@@ -11,52 +11,46 @@ describe('logger', () => {
 
   // httpbin/post echoes all the input body and headers in the response
 
-  it('should log to graylog', done => {
+  it('should log to graylog', () => {
     const event = {};
     const logger = createlogger(event, options);
     const data = { key: 'val' };
 
-    logger('test', data)
-      .then(response => {
-        response.headers.get('content-type').should.eql('application/json');
-        response.status.should.eql(200);
-        response.content.json.should.eql({
-          token: 'fake-token',
-          message: 'test',
-          data: {
-            log_type: 'console',
-            key: 'val'
-          }
-        });
-        done();
-      })
-      .catch(done);
+    return logger('test', data).then(response => {
+      response.headers.get('content-type').should.eql('application/json');
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: options.token,
+        message: 'test',
+        data: {
+          log_type: 'console',
+          key: 'val'
+        }
+      });
+    });
   });
 
-  it('should include bundle meta', done => {
+  it('should include bundle meta', () => {
     const logExtra = {
       'meta-key': 'meta-value'
     };
 
     const logger = createlogger({ logExtra }, options);
 
-    logger('test')
-      .then(response => {
-        response.status.should.eql(200);
-        response.content.json.should.eql({
-          token: 'fake-token',
-          message: 'test',
-          data: {
-            log_type: 'console',
-            'meta-key': 'meta-value'
-          }
-        });
-        done();
-      })
-      .catch(done);
+    return logger('test').then(response => {
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: options.token,
+        message: 'test',
+        data: {
+          log_type: 'console',
+          'meta-key': 'meta-value'
+        }
+      });
+    });
   });
 
-  it('should replace auth data', done => {
+  it('should replace auth data', () => {
     const bundle = {
       authData: {
         password: 'secret',
@@ -67,24 +61,21 @@ describe('logger', () => {
 
     const data = bundle.authData;
 
-    logger('test', data)
-      .then(response => {
-        response.status.should.eql(200);
-        response.content.json.should.eql({
-          token: 'fake-token',
-          message: 'test',
-          data: {
-            password: ':censored:6:a5023f748d:',
-            log_type: 'console',
-            key: ':censored:6:8f63f9ff57:'
-          }
-        });
-        done();
-      })
-      .catch(done);
+    return logger('test', data).then(response => {
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: options.token,
+        message: 'test',
+        data: {
+          password: ':censored:6:a5023f748d:',
+          log_type: 'console',
+          key: ':censored:6:8f63f9ff57:'
+        }
+      });
+    });
   });
 
-  it('should replace sensitive data inside strings', done => {
+  it('should replace sensitive data inside strings', () => {
     const bundle = {
       authData: {
         password: 'secret',
@@ -100,26 +91,23 @@ describe('logger', () => {
       }`
     };
 
-    logger('test', data)
-      .then(response => {
-        response.status.should.eql(200);
-        response.content.json.should.eql({
-          token: 'fake-token',
-          message: 'test',
-          data: {
-            response_content: `{
+    return logger('test', data).then(response => {
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: options.token,
+        message: 'test',
+        data: {
+          response_content: `{
         "something": ":censored:6:a5023f748d:",
         "somethingElse": ":censored:6:8f63f9ff57:",
       }`,
-            log_type: 'console'
-          }
-        });
-        done();
-      })
-      .catch(done);
+          log_type: 'console'
+        }
+      });
+    });
   });
 
-  it('should replace sensitive data inside response', done => {
+  it('should replace sensitive data inside response', () => {
     const bundle = {
       authData: {
         refresh_token: 'whatever'
@@ -140,28 +128,54 @@ describe('logger', () => {
       }`
     };
 
-    logger('test', data)
-      .then(response => {
-        response.status.should.eql(200);
-        response.content.json.should.eql({
-          token: 'fake-token',
-          message: 'test',
-          data: {
-            response_json: {
-              access_token: ':censored:12:8e4a58294b:',
-              PASSWORD: ':censored:10:b0c55acfea:',
-              name: 'not so secret'
-            },
-            response_content: `{
+    return logger('test', data).then(response => {
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: options.token,
+        message: 'test',
+        data: {
+          response_json: {
+            access_token: ':censored:12:8e4a58294b:',
+            PASSWORD: ':censored:10:b0c55acfea:',
+            name: 'not so secret'
+          },
+          response_content: `{
         "access_token": ":censored:12:8e4a58294b:",
         "PASSWORD": ":censored:10:b0c55acfea:",
         "name": "not so secret"
       }`,
-            log_type: 'console'
-          }
-        });
-        done();
-      })
-      .catch(done);
+          log_type: 'console'
+        }
+      });
+    });
+  });
+
+  it('should not replace safe log keys', () => {
+    const bundle = {
+      authData: {
+        password: 'secret',
+        key: '123456789'
+      }
+    };
+    const logExtra = {
+      customuser_id: '123456789' // This is a safe log key
+    };
+    const logger = createlogger({ bundle, logExtra }, options);
+
+    const data = bundle.authData;
+
+    return logger('test', data).then(response => {
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: options.token,
+        message: 'test',
+        data: {
+          password: ':censored:6:a5023f748d:',
+          log_type: 'console',
+          key: ':censored:9:699f352527:',
+          customuser_id: logExtra.customuser_id
+        }
+      });
+    });
   });
 });
