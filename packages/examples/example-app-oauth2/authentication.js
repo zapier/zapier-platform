@@ -68,7 +68,7 @@ const testAuth = (z /*, bundle*/) => {
     if (response.status === 401) {
       throw new Error('The access token you supplied is not valid');
     }
-    return response;
+    return z.JSON.parse(response.content);
   });
 };
 
