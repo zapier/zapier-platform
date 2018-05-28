@@ -1,10 +1,9 @@
-const generateID = require('../utils').generateID;
+const generateID = require("../utils").generateID;
 
 // fetches a list of records from the endpoint
 const fetchList = (z, bundle) => {
-
   const request = {
-    url: 'http://swapi.co/api/species/',
+    url: "http://swapi.co/api/species/",
     params: {}
   };
 
@@ -13,24 +12,24 @@ const fetchList = (z, bundle) => {
     request.params.page = 1 + bundle.meta.page;
   }
 
-  return z.request(request)
-    .then((response) => {
-      var speciesArray = JSON.parse(response.content).results;
-      speciesArray.forEach( (species) => {
-        // copy the "url" field into an "id" field
-        species.id = generateID(species.url);
-      });
-      return speciesArray;
+  return z.request(request).then(response => {
+    const speciesArray = JSON.parse(response.content).results;
+    speciesArray.forEach(species => {
+      // copy the "url" field into an "id" field
+      species.id = generateID(species.url);
     });
+    return speciesArray;
+  });
 };
 
 module.exports = {
-  key: 'species',
-  noun: 'Species',
+  key: "species",
+  noun: "Species",
   display: {
-    label: 'List of Species',
-    description: 'This is a hidden trigger, and is used in a Dynamic Dropdown within this app',
-    hidden: true,
+    label: "List of Species",
+    description:
+      "This is a hidden trigger, and is used in a Dynamic Dropdown within this app",
+    hidden: true
   },
 
   operation: {
@@ -39,6 +38,5 @@ module.exports = {
     // the folowing is a "hint" to the Zap Editor that this trigger returns data "in pages", and
     //   that the UI should display an option to "load next page" to the human.
     canPaginate: true
-  },
-
+  }
 };
