@@ -362,7 +362,7 @@ a code {
 <li>Generates and validates app definition.</li>
 <li>Detects dependencies via browserify (optional)</li>
 <li>Zips up all needed <code>.js</code> files. If you want to include more files, add a &quot;includeInBuild&quot; property (array with strings of regexp paths) to your <code>.zapierapprc</code>.</li>
-<li>Moves the zip to <code>build/build.zip</code></li>
+<li>Moves the zip to <code>build/build.zip</code> and <code>build/source.zip</code></li>
 </ul><blockquote>
 <p>If you get live errors like <code>Error: Cannot find module &apos;some-path&apos;</code>, try disabling dependency detection.</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
@@ -1218,7 +1218,7 @@ $ zapier scaffold resource <span class="hljs-string">&quot;Tag&quot;</span> --en
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Upload the last build as a version.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier upload</code></p><p>Upload the zip file already built by <code>zapier build</code> in build/build.zip. The version and other app details are read by Zapier from the zip file.</p><blockquote>
+</blockquote><p>  <strong>Usage:</strong> <code>zapier upload</code></p><p>Upload the zip files already built by <code>zapier build</code> in build/build.zip and build/source.zip. The version and other app details are read by Zapier from the zip files.</p><blockquote>
 <p>Note: we generally recommend using <code>zapier push</code> which does both <code>zapier build &amp;&amp; zapier upload</code> in one step.</p>
 </blockquote>
     </div>
@@ -1228,7 +1228,7 @@ $ zapier scaffold resource <span class="hljs-string">&quot;Tag&quot;</span> --en
 <span class="hljs-comment">#</span>
 <span class="hljs-comment">#   Uploading version 1.0.0 - done!</span>
 <span class="hljs-comment">#</span>
-<span class="hljs-comment"># Upload of build/build.zip complete! Try `zapier versions` now!</span>
+<span class="hljs-comment"># Upload of build/build.zip and build/source.zip complete! Try `zapier versions` now!</span>
 </code></pre>
     </div>
   </div>

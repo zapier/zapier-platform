@@ -41,7 +41,6 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 - [Authentication](#authentication)
   * [Basic](#basic)
   * [Custom](#custom)
-  * [Digest](#digest)
   * [Session](#session)
   * [OAuth2](#oauth2)
 - [Resources](#resources)
@@ -481,33 +480,6 @@ const App = {
   // ...
   authentication: authentication,
   beforeRequest: [addApiKeyToHeader]
-  // ...
-};
-
-```
-
-### Digest
-
-Very similar to the "Basic" authentication method above, but uses digest authentication instead of Basic authentication.
-
-```javascript
-const authentication = {
-  type: 'digest',
-  // "test" could also be a function
-  test: {
-    url: 'https://example.com/api/accounts/me.json'
-  },
-  connectionLabel: (z, bundle) => {
-    // Can also be a string, check basic auth above for an example
-    // bundle.inputData has whatever comes back from the .test function/request, assuming it returns a JSON object
-    return bundle.inputData.email;
-  }
-  // you can provide additional fields, but Zapier will provide `username`/`password` automatically
-};
-
-const App = {
-  // ...
-  authentication: authentication
   // ...
 };
 

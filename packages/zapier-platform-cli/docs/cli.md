@@ -58,7 +58,7 @@ It does the following steps:
 * Generates and validates app definition.
 * Detects dependencies via browserify (optional)
 * Zips up all needed `.js` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your `.zapierapprc`.
-* Moves the zip to `build/build.zip`
+* Moves the zip to `build/build.zip` and `build/source.zip`
 
 > If you get live errors like `Error: Cannot find module 'some-path'`, try disabling dependency detection.
 
@@ -844,7 +844,7 @@ $ zapier test
   **Usage:** `zapier upload`
 
   
-Upload the zip file already built by `zapier build` in build/build.zip. The version and other app details are read by Zapier from the zip file.
+Upload the zip files already built by `zapier build` in build/build.zip and build/source.zip. The version and other app details are read by Zapier from the zip files.
 
 > Note: we generally recommend using `zapier push` which does both `zapier build && zapier upload` in one step.
 
@@ -854,7 +854,7 @@ $ zapier upload
 #
 #   Uploading version 1.0.0 - done!
 #
-# Upload of build/build.zip complete! Try `zapier versions` now!
+# Upload of build/build.zip and build/source.zip complete! Try `zapier versions` now!
 ```
 
 

@@ -309,14 +309,6 @@ This is what most "API Key" driven apps should default to using. You'll likely p
 [insert-file:./snippets/custom-auth.js]
 ```
 
-### Digest
-
-Very similar to the "Basic" authentication method above, but uses digest authentication instead of Basic authentication.
-
-```javascript
-[insert-file:./snippets/digest-auth.js]
-```
-
 ### Session
 
 Probably the most "powerful" mechanism for authentication - it gives you the ability to exchange some user provided data for some authentication data (IE: username & password for a session key).
