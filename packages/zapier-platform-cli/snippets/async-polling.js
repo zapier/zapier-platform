@@ -1,39 +1,39 @@
-module.exports = {
-  key: 'paging',
-  noun: 'Paging',
+// a hypothetical API where payloads are big so we want to heavily limit how much comes back
+// we want to only return items created in the last hour
 
-  display: {
-    label: 'Get Paging',
-    description: 'Triggers on a new paging.'
-  },
+const asyncExample = async (z, bundle) => {
+  const limit = 3;
+  let start = 0;
+  const twoHourMilliseconds = 60 * 60 * 2 * 1000;
+  const hoursAgo = new Date() - twoHourMilliseconds;
 
-  operation: {
-    inputFields: [],
-    perform: async (z, bundle) => {
-      let response = await z.request({
-        url: 'https://jsonplaceholder.typicode.com/posts',
-        params: {
-          _start: 0,
-          _limit: 3
-        }
-      });
-
-      let results = response.json;
-
-      // conditionally make a second request
-      if (results[0].id < 5) {
-        response = await z.request({
-          url: 'https://jsonplaceholder.typicode.com/posts',
-          params: {
-            _start: 3,
-            _limit: 3
-          }
-        });
-
-        results = results.concat(response.json);
-      }
-
-      return results;
+  let response = await z.request({
+    url: 'https://jsonplaceholder.typicode.com/posts',
+    params: {
+      _start: start,
+      _limit: limit
     }
+  });
+
+  let results = response.json;
+
+  // keep paging until the last item was created over two hours ago
+  // then we know we almost certainly haven't missed anything and can let
+  //   deduper handle the rest
+
+  while (new Date(results[results.length - 1].createdAt) > hoursAgo) {
+    start += limit; // next page
+
+    response = await z.request({
+      url: 'https://jsonplaceholder.typicode.com/posts',
+      params: {
+        _start: start,
+        _limit: limit
+      }
+    });
+
+    results = results.concat(response.json);
   }
+
+  return results;
 };

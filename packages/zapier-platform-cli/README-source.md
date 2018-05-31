@@ -173,7 +173,7 @@ $ tree .
 
 The core definition of your `App` will look something like this, and is what your `index.js` should provide as the _only_ export:
 
-```javascript
+```js
 [insert-file:./snippets/app-def.js]
 ```
 
@@ -295,7 +295,7 @@ Useful if your app requires two pieces of information to authentication: `userna
 
 > Note: if you do the common API Key pattern like `Authorization: Basic APIKEYHERE:x` you should look at the "Custom" authentication method instead.
 
-```javascript
+```js
 [insert-file:./snippets/basic-auth.js]
 ```
 
@@ -305,7 +305,7 @@ This is what most "API Key" driven apps should default to using. You'll likely p
 
 > Example App: check out https://github.com/zapier/zapier-platform-example-app-custom-auth for a working example app for custom auth.
 
-```javascript
+```js
 [insert-file:./snippets/custom-auth.js]
 ```
 
@@ -315,7 +315,7 @@ Probably the most "powerful" mechanism for authentication - it gives you the abi
 
 > Example App: check out https://github.com/zapier/zapier-platform-example-app-session-auth for a working example app for session auth.
 
-```javascript
+```js
 [insert-file:./snippets/session-auth.js]
 ```
 
@@ -348,7 +348,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 
 Your auth definition would look something like this:
 
-```javascript
+```js
 [insert-file:./snippets/oauth2.js]
 ```
 
@@ -361,7 +361,7 @@ A `resource` is a representation (as a JavaScript object) of one of the REST res
 endpoint for working with recipes; you can define a recipe resource in your app that will tell Zapier how to do create,
 read, and search operations on that resource.
 
-```javascript
+```js
 [insert-file:./snippets/resources.js]
 ```
 
@@ -390,7 +390,7 @@ For now, let's focus on two:
 
 Here is a complete example of what the list method might look like
 
-```javascript
+```js
 [insert-file:./snippets/recipe-list.js]
 ```
 
@@ -398,7 +398,7 @@ The method is made up of two properties, a `display` and an `operation`. The `di
 
 Adding a create method looks very similar.
 
-```javascript
+```js
 [insert-file:./snippets/recipe-create.js]
 ```
 
@@ -416,7 +416,7 @@ new records in your system (add a recipe to the catalog).
 
 The definition for each of these follows the same structure. Here is an example of a trigger:
 
-```javascript
+```js
 [insert-file:./snippets/trigger.js]
 ```
 
@@ -449,7 +449,7 @@ You can find more details on each and every field option at [Field Schema](https
 
 Those fields have various options you can provide, here is a succinct example:
 
-```javascript
+```js
 [insert-file:./snippets/fields.js]
 ```
 
@@ -461,13 +461,13 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 
 > A function that returns a list of dynamic fields cannot include additional functions in that list to call for dynamic fields.
 
-```javascript
+```js
 [insert-file:./snippets/custom-fields.js]
 ```
 
 Additionally, if there is a field that affects the generation of dynamic fields, you can set the `altersDynamicFields: true` property. This informs the Zapier UI that whenever the value of that field changes, fields need to be recomputed. An example could be a static dropdown of "dessert type" that will change whether the function that generates dynamic fields includes a field "with sprinkles."
 
-```javascript
+```js
 [insert-file:./snippets/alters-dynamic-fields.js]
 ```
 
@@ -481,7 +481,7 @@ Our solution is to present users a dropdown that is populated by making a live A
 
 To define one, you can provide the `dynamic` property on your field to specify the trigger that should be used to populate the options for the dropdown. The value for the property is a dot-separated concatenation of a trigger's key, the field to use for the value, and the field to use for the label.
 
-```javascript
+```js
 [insert-file:./snippets/dynamic-dropdowns.js]
 ```
 
@@ -495,7 +495,7 @@ In the UI, users will see something like this:
 
 For fields that take id of another object to create a relationship between the two (EG: a project id for a ticket), you can specify the `search` property on the field to indicate that Zapier needs to prompt the user to setup a Search step to populate the value for this field. Similar to dynamic dropdowns, the value for this property is a dot-separated concatenation of a search's key and the field to use for the value.
 
-```javascript
+```js
 [insert-file:./snippets/search-field.js]
 ```
 
@@ -545,12 +545,21 @@ We provide several methods off of the `z` object, which is provided as the first
 
 The available errors are:
 
-  * HaltedError - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
-  * ExpiredAuthError - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
-  * RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
+* HaltedError - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
+* ExpiredAuthError - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
+* RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
 
 
 For more details on error handling in general, see [here](#error-handling).
+
+### `z.cursor`
+
+The `z.cursor` object exposes two methods:
+
+* `z.cursor.get(): Promise<string|null>`
+* `z.cursor.set(string): Promise<null>`
+
+Any data you `set` will be available to that Zap for about an hour (or until it's overwritten). For more information, see: [paging](#paging).
 
 ## Bundle Object
 
@@ -566,7 +575,7 @@ This object holds the user's auth details and the data for the API requests.
 
 `bundle.inputData` is user-provided data for this particular run of the trigger/search/create, as defined by the inputFields. For example:
 
-```javascript
+```js
 {
   createdBy: 'his name is Bobby Flay'
   style: 'he cooks mediterranean'
@@ -577,7 +586,7 @@ This object holds the user's auth details and the data for the API requests.
 
 `bundle.inputDataRaw` is kind of like `inputData`, but before rendering `{{curlies}}`:
 
-```javascript
+```js
 {
   createdBy: 'his name is {{123__chef_name}}'
   style: 'he cooks {{456__style}}'
@@ -607,7 +616,7 @@ The user's Zap ID is available during the [subscribe and unsubscribe](https://za
 
 For example - you could do:
 
-```javascript
+```js
 const subscribeHook = (z, bundle) => {
 
   const options = {
@@ -705,7 +714,7 @@ MY_SECRET_VALUE=1234
 
 And then in your `test/basic.js` file:
 
-```javascript
+```js
 const zapier = require('zapier-platform-core');
 
 should('some tests', () => {
@@ -733,7 +742,7 @@ Within your app, you can access the environment via the standard `process.env` -
 
 For example, you can access the `process.env` in your perform functions and in templates:
 
-```javascript
+```js
 [insert-file:./snippets/process-env.js]
 ```
 
@@ -765,7 +774,7 @@ This features:
 2. JSON de-serialization.
 3. Automatic non-2xx error raising.
 
-```javascript
+```js
 [insert-file:./snippets/shorthand-request.js]
 ```
 
@@ -779,7 +788,7 @@ When you need to do custom processing of the response, or need to process non-JS
 
 To make a manual HTTP request, use the `request` method of the `z` object:
 
-```javascript
+```js
 [insert-file:./snippets/manual-request.js]
 ```
 
@@ -787,7 +796,7 @@ To make a manual HTTP request, use the `request` method of the `z` object:
 
 To POST or PUT data to your API you can do this:
 
-```javascript
+```js
 [insert-file:./snippets/put.js]
 ```
 
@@ -801,7 +810,7 @@ If you need to process all HTTP requests in a certain way, you may be able to us
 
 Try putting them in your app definition:
 
-```javascript
+```js
 [insert-file:./snippets/middleware.js]
 ```
 
@@ -828,9 +837,9 @@ Shorthand requests and manual `z.request([url], options)` calls support the foll
 * `compress`: support gzip/deflate content encoding. Set to `false` to disable. Default is `true`.
 * `agent`: Node.js `http.Agent` instance, allows custom proxy, certificate etc. Default is `null`.
 * `timeout`: request / response timeout in ms. Set to `0` to disable (OS limit still applies), timeout reset on `redirect`. Default is `0` (disabled).
-* `size`: maximum response body size in bytes. Set to `0`` to disable. Default is `0` (disabled).
+* `size`: maximum response body size in bytes. Set to `0` to disable. Default is `0` (disabled).
 
-```javascript
+```js
 z.request({
   url: 'http://example.com',
   method: 'POST',
@@ -865,7 +874,7 @@ The response object returned by `z.request([url], options)` supports the followi
 * `throwForStatus()`: Throw error if final `response.status > 300`. Will throw `z.error.RefreshAuthError` if 401.
 * `request`: The original request options object (see above).
 
-```javascript
+```js
 z.request({
   // ..
 }).then((response) => {
@@ -905,7 +914,7 @@ The method `z.dehydrate(func, inputData)` has two required arguments:
 
 Here is an example that pulls in extra data for a movie:
 
-```javascript
+```js
 [insert-file:./snippets/dehydration.js]
 ```
 
@@ -920,7 +929,7 @@ It can be expensive to download and stream files or they can require complex han
 
 The interface `z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])` takes a single required argument - the extra three arguments will be automatically populated in most cases. For example - a full example is this:
 
-```javascript
+```js
 const content = 'Hello world!';
 z.stashFile(content, content.length, 'hello.txt', 'text/plain')
   .then(url => z.console.log(url));
@@ -929,7 +938,7 @@ z.stashFile(content, content.length, 'hello.txt', 'text/plain')
 
 Most likely you'd want to stream from another URL - note the usage of `z.request({raw: true})`:
 
-```javascript
+```js
 const fileRequest = z.request({url: 'http://example.com/file.pdf', raw: true});
 z.stashFile(fileRequest) // knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream
   .then(url => z.console.log(url));
@@ -940,7 +949,7 @@ z.stashFile(fileRequest) // knownLength and filename will be sniffed from the re
 
 See a full example with dehydration/hydration wired in correctly:
 
-```javascript
+```js
 [insert-file:./snippets/stash-file.js]
 ```
 
@@ -963,7 +972,7 @@ zapier help logs
 
 To manually print a log statement in your code, use `z.console.log`:
 
-```javascript
+```js
 z.console.log('Here are the input fields', bundle.inputData);
 ```
 
@@ -989,7 +998,7 @@ zapier logs --type=bundle
 
 If you are using the `z.request()` shortcut that we provide - HTTP logging is handled automatically for you. For example:
 
-```javascript
+```js
 z.request('http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
   .then((res) => {
     // do whatever you like, this request is already getting logged! :-D
@@ -1084,7 +1093,7 @@ You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
 We recommend using the [Mocha](https://mochajs.org/) testing framework. After running
 `zapier init` you should find an example test to start from in the `test` directory.
 
-```javascript
+```js
 [insert-file:./snippets/mocha-test.js]
 ```
 
@@ -1190,7 +1199,7 @@ npm install --save jwt
 
 And then `package.json` will be updated, and you can use them like anything else:
 
-```javascript
+```js
 const jwt = require('jwt');
 ```
 
@@ -1230,7 +1239,7 @@ We do not yet support transpilers out of the box, but if you would like to use `
 
 And then you can have your fancy ES7 code in `src/*` and a root `index.js` like this:
 
-```javascript
+```js
 module.exports = require('./lib');
 ```
 
@@ -1283,7 +1292,7 @@ Not natively, but it can! Users have reported that the following `npm` modules a
 * [xml2js](https://github.com/Leonidas-from-XIV/node-xml2js)
 * [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser)
 
-```javascript
+```js
 [insert-file:./snippets/xml.js]
 ```
 
@@ -1291,13 +1300,13 @@ Not natively, but it can! Users have reported that the following `npm` modules a
 
 Yes, though there are caveats. Your entire function only gets 30 seconds to run. HTTP requests are costly, so paging through a list may time out (which you should avoid at all costs).
 
-```javascript
+```js
 [insert-file:./snippets/paging-poll.js]
 ```
 
 If you need to do more requests conditionally based on the results of an HTTP call (such as getting "next url" param, using `async/await` with a transpiler is the way to go. If you go this route, only page as far as you need to. Keep an eye on the polling [guidelines](https://zapier.com/developer/documentation/v2/deduplication/), namely the part about only iterating until you hit items that have probably been seen in a previous poll.
 
-```javascript
+```js
 [insert-file:./snippets/async-polling.js]
 ```
 
@@ -1329,10 +1338,10 @@ This is paired most often with "update" actions, where a required parameter will
 
 Paging is **only used when a trigger is part of a dynamic dropdown**. Depending on how many items exist and how many are returned in the first poll, it's possible that the resource the user is looking for isn't in the initial poll. If they hit the "see more" button, we'll increment the value of `bundle.meta.page` and poll again.
 
-Paging is a lot like a regular trigger except the range of items returned is dynamic. The most common example of this is when you can pass a `start` parameter:
+Paging is a lot like a regular trigger except the range of items returned is dynamic. The most common example of this is when you can pass a `offset` parameter:
 
-```javascript
-const getList = (z, bundle) => {
+```js
+(z, bundle) => {
   const promise = z.request({
     url: 'http://example.com/api/list.json',
     params: {
@@ -1344,7 +1353,15 @@ const getList = (z, bundle) => {
 };
 ```
 
-Lastly, you need to set `canPaginate` to `true` in your polling definition (per the [schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#basicpollingoperationschema)).
+If your API uses cursor-based paging instead of an offset, you can use `z.cursor.get` and `z.cursor.set`:
+
+```js
+[insert-file:./snippets/paging-cursor.js]
+```
+
+Cursors are stored per-zap and last about an hour. Per the above, make sure to only include the cursor if `bundle.meta.page !== 0`, so you don't accidentally reuse a cursor from a previous poll.
+
+Lastly, you need to set `canPaginate` to `true` in your polling definition (per the [schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#basicpollingoperationschema)) for the `z.cursor` methods to work as expected.
 
 <a id="dedup"></a>
 ### How does deduplication work?
@@ -1368,8 +1385,6 @@ items.forEach(item => {
 
 return items;
 ```
-
-
 
 ## Command Line Tab Completion
 
