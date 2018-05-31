@@ -4,6 +4,7 @@ const _ = require('lodash');
 
 const constants = require('../constants');
 const request = require('./request-client-internal');
+const { genId } = require('./data');
 
 const FALLBACK_RPC = process.env.ZAPIER_BASE_ENDPOINT + '/platform/rpc/cli';
 
@@ -12,9 +13,10 @@ const createRpcClient = event => {
     const params = _.toArray(arguments);
     params.shift();
 
-    const id = parseInt(Math.random() * 100000000);
+    const id = genId();
     const body = JSON.stringify({
       id: id,
+      storeKey: event.storeKey,
       method,
       params
     });

@@ -5,7 +5,8 @@ const createRpcClient = require('../../src/tools/create-rpc-client');
 const makeRpc = () => {
   return createRpcClient({
     rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
-    token: 'debug:4001:1'
+    token: 'debug:4001:1',
+    storeKey: 'test_key'
   });
 };
 

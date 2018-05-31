@@ -1,6 +1,7 @@
 'use strict';
 
 const mocky = require('./mocky');
+const should = require('should');
 
 describe('rpc client', () => {
   const rpc = mocky.makeRpc();
@@ -36,5 +37,38 @@ describe('rpc client', () => {
     return rpc('get_definition_override').then(result => {
       result.should.eql(fakeDefinition);
     });
+  });
+
+  it('should set a cursor key', done => {
+    mocky.mockRpcCall(null);
+
+    rpc('set_cursor', 'blah')
+      .then(res => {
+        should(res).eql(null);
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should get a cursor key', done => {
+    mocky.mockRpcCall('abc');
+
+    rpc('get_cursor')
+      .then(res => {
+        should(res).eql('abc');
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should get a missing cursor key', done => {
+    mocky.mockRpcCall(null);
+
+    rpc('get_cursor')
+      .then(res => {
+        should(res).eql(null);
+        done();
+      })
+      .catch(done);
   });
 });
