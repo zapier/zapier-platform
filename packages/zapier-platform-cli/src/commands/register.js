@@ -10,7 +10,7 @@ const register = (context, title, { printWhenDone = true } = {}) => {
   return utils
     .checkCredentials()
     .then(() => {
-      utils.startSpinner(`Confirming registation of app "${title}"`);
+      utils.startSpinner(`Confirming registration of app "${title}"`);
       return utils.callAPI('/apps', {
         method: 'POST',
         body: {
