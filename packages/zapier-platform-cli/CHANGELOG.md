@@ -1,3 +1,25 @@
+## 6.1.0
+
+### cli
+
+* (fix) Fix typo in `zapier register` text ([#324](https://github.com/zapier/zapier-platform-cli/pull/324))
+* (fix) Fix `npm audit` security warnings ([#320](https://github.com/zapier/zapier-platform-cli/pull/320))
+* (fix) `zapier convert` doesn't escape sample field labels ([#313](https://github.com/zapier/zapier-platform-cli/pull/313))
+* (docs) Remove Digest auth references ([#323](https://github.com/zapier/zapier-platform-cli/pull/323))
+* (docs) Add cursor docs ([#309](https://github.com/zapier/zapier-platform-cli/pull/309))
+
+### schema
+
+* (fix) Fix `npm audit` security warnings ([#46](https://github.com/zapier/zapier-platform-schema/pull/46))
+
+### core
+
+* :tada: (new) `z.cursor` store ([#76](https://github.com/zapier/zapier-platform-core/pull/76))
+* (fix) Fix missed logs ([#91](https://github.com/zapier/zapier-platform-core/pull/91))
+* (fix) Middleware isn't compiled ([#90](https://github.com/zapier/zapier-platform-core/pull/90))
+* (fix) Fix `npm audit` security warnings ([#87](https://github.com/zapier/zapier-platform-core/pull/87))
+* (improvement) Add typings ([#82](https://github.com/zapier/zapier-platform-core/pull/82))
+
 ## 6.0.0
 
 ### cli
