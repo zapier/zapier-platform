@@ -9,12 +9,14 @@ import { Agent } from 'http';
 // The EXPORTED OBJECT
 export const version: string;
 export const tools: { env: { inject: (filename?: string) => void } };
+
+// see: https://github.com/zapier/zapier-platform-cli/issues/15#issuecomment-393154191
 export const createAppTester: (
   appRaw: object
-) => (
-  func: (z: zObject, bundle: Bundle) => any,
+) => <T extends any>(
+  func: (z: zObject, bundle: Bundle) => Promise<T>,
   bundle?: Partial<Bundle> // partial so we don't have to make a full bundle in tests
-) => Promise<any>;
+) => T extends Promise<T> ? T : Promise<T>;
 
 // internal only
 // export const integrationTestHandler: () => any;
