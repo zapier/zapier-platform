@@ -24,14 +24,8 @@ NEW_VERSION="$(node -p "require('./package.json').version")"
 
 FILE="$BUILD_DIR/$NEW_VERSION.zip"
 
-FIND_DEP_STRING='"zapier-platform-core": "CORE_PLATFORM_VERSION"'
-FIND_DEF_STRING='"platformVersion": "CORE_PLATFORM_VERSION"'
-REPLACE_DEP_STRING='"zapier-platform-core": "'"$NEW_VERSION"'"'
-REPLACE_DEF_STRING='"platformVersion": "'"$NEW_VERSION"'"'
-
 # Update version
-sed -i '' -e "s/$FIND_DEP_STRING/$REPLACE_DEP_STRING/g" "$CONTENTS_DIR/package.json"
-sed -i '' -e "s/$FIND_DEF_STRING/$REPLACE_DEF_STRING/g" "$CONTENTS_DIR/definition.json"
+bin/update-boilerplate-dependencies.js
 
 # Install dependencies
 cd $CONTENTS_DIR && npm install
@@ -57,5 +51,4 @@ rm -f $FILES_TO_COPY
 rm -fr node_modules && cd ..
 
 # Revert version
-sed -i '' -e "s/$REPLACE_DEP_STRING/$FIND_DEP_STRING/g" "$CONTENTS_DIR/package.json"
-sed -i '' -e "s/$REPLACE_DEF_STRING/$FIND_DEF_STRING/g" "$CONTENTS_DIR/definition.json"
+bin/update-boilerplate-dependencies.js revert

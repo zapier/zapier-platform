@@ -23,6 +23,8 @@ deploy:
   on:
     tags: true
     node: 6.10.3
+before_deploy:
+- npm run build-boilerplate
 env:
   global:
   - secure: xNr5WtDD37r2iYQBxnnMULuVlKfSNfC9PvuW4dwDtiJcVeeOL/bw8B2g54gxQEEMQWg6gvxqUAVegoRKAA2p9eQtagdtbMu5rasKJ3jKjhOCWCxyskPE4kheJJ6vWkbpm+O4XPAzHjuSWqt7rrF4RTNAIpilggD87A2Dj/GGyHi6+LP2BGo1dbTRU3mBn03AnyGbB6PSleTsPdi+JYSc8bAhcA6KcyQ/2RiaDFPOdsIWU0ZniY+Pur2v4szIVNrHr2ENPUryHlsQjfDMH/B7sO7BPxvQWstza2qpawCHt0K8irgaPLp3jDY0LUWRlUgSeZe1pXvjSWzqp+GhgxVTI6XyVWn355LnFS8pII7eQCipMe1TXaZuNwKvR6n5pPiCDgKrkA7jTZYWeqaYfhoOmTr1qmLdcnKXgEGk4A3ZWBW2bdCi8/L7gL9qM4Md0ph0qzX/id7fWK+1SD1V8BVhKZEsB6yKAWJXvEFUezlYIy1vst/kHt6hSnCfS4njS8iNX+M61RrbzmMxHcIMIksNW4birWi1Z8uRmT6mlCfldhiY+PRUYcKbfd+FmxpnJAnO4grUP177zzNuvLAmdvFFiM8AZ8rtgqmIyvD2PPJNjtFWlPYc4ZvsOHo2DN3qf00lliFPo01DCGOWMB+6+PfjsrEDdPGBL+n7Bx6iDEEiDUM=
