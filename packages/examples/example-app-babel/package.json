@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "babel-polyfill": "6.26.0",
-    "zapier-platform-core": "6.0.0"
+    "zapier-platform-core": "6.1.0"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",
