@@ -1,17 +1,18 @@
 const path = require('path');
 const tmp = require('tmp');
 
-const { startSpinner, endSpinner, getInput } = require('./display');
+const { startSpinner, endSpinner, getYesNoInput } = require('./display');
 const { isEmptyDir, copyDir, removeDir, ensureDir } = require('./files');
 
 const confirmNonEmptyDir = location => {
   if (location === '.') {
     return isEmptyDir(location).then(isEmpty => {
       if (!isEmpty) {
-        return getInput(
-          'Current directory not empty, continue anyway? (y/n) '
-        ).then(answer => {
-          if (!answer.match(/^y/i)) {
+        return getYesNoInput(
+          'Current directory not empty, continue anyway?',
+          false
+        ).then(yes => {
+          if (!yes) {
             /*eslint no-process-exit: 0 */
             process.exit(0);
           }

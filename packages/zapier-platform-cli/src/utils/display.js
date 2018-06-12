@@ -268,9 +268,31 @@ const getInput = (question, { secret = false } = {}) => {
   });
 };
 
+const hasAccepted = answer =>
+  answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes';
+
+const hasRejected = answer =>
+  answer.toLowerCase() === 'n' || answer.toLowerCase() === 'no';
+
+const getYesNoInput = (question, showCtrlC = true) => {
+  let message = question + ' (y/n) ';
+  if (showCtrlC) {
+    message += '(Ctrl-C to cancel) ';
+  }
+  return getInput(message).then(answer => {
+    const yes = hasAccepted(answer);
+    const no = hasRejected(answer);
+    if (!yes && !no) {
+      throw new Error('That answer is not valid. Please try "y" or "n".');
+    }
+    return yes;
+  });
+};
+
 module.exports = {
   formatStyles,
   getInput,
+  getYesNoInput,
   makeRowBasedTable,
   makeTable,
   markdownLog,
