@@ -20,17 +20,20 @@
     "npm": ">=3.0.0"
   },
   "dependencies": {
+    "async": "2.6.1",
     "deasync": "0.1.10",
-    "node-jquery-param": "0.0.2",
     "lodash": "4.17.10",
-    "request": "2.83.0",
+    "moment-timezone": "0.5.17",
+    "node-jquery-param": "0.0.2",
+    "request": "2.87.0",
     "xmldom": "0.1.27"
   },
   "devDependencies": {
     "aws-sdk": "2.140.0",
     "eslint": "4.9.0",
     "eslint-plugin-zapier": "3.1.0",
-    "mocha": "3.5.0",
-    "should": "13.0.1"
+    "mocha": "5.2.0",
+    "should": "13.0.1",
+    "zapier-platform-core": "6.1.0"
   }
 }

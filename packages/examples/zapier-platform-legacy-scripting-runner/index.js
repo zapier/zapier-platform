@@ -186,9 +186,9 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
   const run = (bundle, typeOf, key) => {
     switch (typeOf) {
       case 'auth.session':
-        return runEvent({name: 'auth.session'}, zobj, bundle);
+        return runEvent({ name: 'auth.session' }, zobj, bundle);
       case 'auth.connectionLabel':
-        return runEvent({name: 'auth.connectionLabel'}, zobj, bundle);
+        return runEvent({ name: 'auth.connectionLabel' }, zobj, bundle);
       case 'trigger':
         return runTrigger(bundle, key);
     }
@@ -203,5 +203,37 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     replaceVars
   };
 };
+
+legacyScriptingRunner.initScope = () => {
+  const { DOMParser, XMLSerializer } = require('xmldom');
+  const {
+    ErrorException,
+    HaltedException,
+    StopRequestException,
+    ExpiredAuthException,
+    RefreshTokenException,
+    InvalidSessionException
+  } = require('./exceptions');
+
+  return {
+    _,
+    crypto: require('crypto'),
+    async: require('async'),
+    moment: require('moment-timezone'),
+    DOMParser,
+    XMLSerializer,
+    atob: require('./atob'),
+    btoa: require('./btoa'),
+    z: require('./z'),
+    $: require('./$'),
+    ErrorException,
+    HaltedException,
+    StopRequestException,
+    ExpiredAuthException,
+    RefreshTokenException,
+    InvalidSessionException
+  };
+};
+
 
 module.exports = legacyScriptingRunner;
