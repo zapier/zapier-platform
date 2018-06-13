@@ -1,3 +1,1 @@
-global._babelPolyfill || require('babel-polyfill');
-
-module.exports = require('./lib');
+module.exports = require("./lib").default;

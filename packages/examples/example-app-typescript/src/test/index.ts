@@ -16,7 +16,9 @@ describe("My Test", () => {
 
     const response = await appTester(App.authentication.test, bundle);
     should(response.status).eql(200);
-    response.request.headers.Authorization.should.eql("Basic dXNlcjpzZWNyZXQ=");
+    response.request.headers!.Authorization.should.eql(
+      "Basic dXNlcjpzZWNyZXQ="
+    );
   });
 
   it("should test the auth fails", async () => {

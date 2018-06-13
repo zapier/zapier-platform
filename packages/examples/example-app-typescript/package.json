@@ -16,15 +16,15 @@
     "test": "mocha --recursive lib/test"
   },
   "engines": {
-    "node": "6.10.3",
+    "node": ">=6.10.3",
     "npm": ">=3.10.10"
   },
   "dependencies": {
-    "zapier-platform-core": "6.0.0"
+    "zapier-platform-core": "6.1.0"
   },
   "devDependencies": {
     "@types/mocha": "5.2.0",
-    "@types/node": "^10.1.2",
+    "@types/node": "10.1.2",
     "@types/should": "13.0.0",
     "mocha": "5.1.0",
     "should": "13.2.1",
