@@ -24,6 +24,10 @@ const legacyScriptingSource = `
         };
       },
 
+      get_connection_label: function(bundle) {
+        return 'Hi ' + bundle.test_result.name;
+      },
+
       contact_full_poll: function(bundle) {
         var response = z.request({
           url: 'https://auth-json-server.zapier.ninja/users',
