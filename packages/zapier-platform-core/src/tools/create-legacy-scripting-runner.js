@@ -1,6 +1,6 @@
 'use strict';
 
-const _ = require('lodash');
+const path = require('path');
 
 const createLegacyScriptingRunner = (z, app) => {
   const source = app.legacyScriptingSource;
@@ -14,18 +14,23 @@ const createLegacyScriptingRunner = (z, app) => {
   try {
     LegacyScriptingRunner = require('zapier-platform-legacy-scripting-runner');
   } catch (e) {
+    // Find it in cwd, in case we're developing legacy-scripting-runner itself
+    const cwd = process.cwd();
+    try {
+      const pkg = require(path.join(cwd, 'package.json'));
+      if (pkg.name === 'zapier-platform-legacy-scripting-runner') {
+        LegacyScriptingRunner = require(cwd);
+      }
+    } catch (e2) {
+      // Do nothing
+    }
+  }
+
+  if (!LegacyScriptingRunner) {
     return null;
   }
 
-  const { DOMParser, XMLSerializer } = require('xmldom');
-  const {
-    ErrorException,
-    HaltedException,
-    StopRequestException,
-    ExpiredAuthException,
-    RefreshTokenException,
-    InvalidSessionException
-  } = require('zapier-platform-legacy-scripting-runner/exceptions');
+  const scope = LegacyScriptingRunner.initScope();
 
   const Zap = new Function( // eslint-disable-line no-new-func
     '_',
@@ -46,22 +51,22 @@ const createLegacyScriptingRunner = (z, app) => {
     'InvalidSessionException',
     source + '\nreturn Zap;'
   )(
-    _,
-    require('crypto'),
-    require('async'),
-    require('moment-timezone'),
-    DOMParser,
-    XMLSerializer,
-    require('zapier-platform-legacy-scripting-runner/atob'),
-    require('zapier-platform-legacy-scripting-runner/btoa'),
-    require('zapier-platform-legacy-scripting-runner/z'),
-    require('zapier-platform-legacy-scripting-runner/$'),
-    ErrorException,
-    HaltedException,
-    StopRequestException,
-    ExpiredAuthException,
-    RefreshTokenException,
-    InvalidSessionException
+    scope._,
+    scope.crypto,
+    scope.async,
+    scope.moment,
+    scope.DOMParser,
+    scope.XMLSerializer,
+    scope.atob,
+    scope.btoa,
+    scope.z,
+    scope.$,
+    scope.ErrorException,
+    scope.HaltedException,
+    scope.StopRequestException,
+    scope.ExpiredAuthException,
+    scope.RefreshTokenException,
+    scope.InvalidSessionException
   );
 
   return LegacyScriptingRunner(Zap, z, app);
