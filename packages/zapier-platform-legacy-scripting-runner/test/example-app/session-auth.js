@@ -16,6 +16,10 @@ const getSessionKeySource = `
   return z.legacyScripting.run(bundle, 'auth.session');
 `;
 
+const getConnectionLabelSource = `
+  return z.legacyScripting.run(bundle, 'auth.connectionLabel');
+`;
+
 const maybeIncludeAuthSource = `
   if (bundle.authData && Object.keys(bundle.authData).length > 0) {
     request.headers['X-API-Key'] = \`\${bundle.authData.key1}\${bundle.authData.key2}\`;
@@ -50,7 +54,8 @@ module.exports = {
     ],
     sessionConfig: {
       perform: { source: getSessionKeySource }
-    }
+    },
+    connectionLabel: { source: getConnectionLabelSource }
   },
   beforeRequest: [{ source: maybeIncludeAuthSource }],
   afterResponse: [{ source: maybeRefreshAuthSource }]

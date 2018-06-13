@@ -28,7 +28,7 @@ describe.skip('Integration Test', () => {
     return createInput(appDefinition, event, testLogger);
   };
 
-  describe('auth.session', () => {
+  describe('auth', () => {
     const appDefWithAuth = withAuth(appDefinition, sessionAuthConfig);
     const app = createApp(appDefWithAuth);
 
@@ -41,6 +41,16 @@ describe.skip('Integration Test', () => {
       return app(input).then(output => {
         should.equal(output.results.key1, 'sec');
         should.equal(output.results.key2, 'ret');
+      });
+    });
+
+    it('get_connection_label', () => {
+      const input = createTestInput('authentication.connectionLabel');
+      input.bundle.inputData = {
+        name: 'Mark'
+      };
+      return app(input).then(output => {
+        should.equal(output.results, 'Hi Mark');
       });
     });
   });
