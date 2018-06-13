@@ -1,7 +1,17 @@
 language: node_js
 node_js:
-  - "6.10.2"
+  - "6.10.3"
+  - "7"
+  - "8"
 before_script: npm install -g zapier-platform-cli
 script: npm run ci-test
 notifications:
   email: false
+deploy:
+  provider: npm
+  email: engineering@zapier.com
+  api_key: $NPM_TOKEN
+  on:
+    tags: true
+    node: "6.10.3"
+  skip_cleanup: true

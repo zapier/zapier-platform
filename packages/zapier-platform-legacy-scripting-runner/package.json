@@ -7,12 +7,15 @@
   "author": "Zapier <partners@zapier.com>",
   "license": "UNLICENSED",
   "main": "index.js",
+  "files": [
+      "/*.js"
+  ],
   "scripts": {
     "lint": "node_modules/.bin/eslint .",
     "test": "export CLIENT_ID=1234 CLIENT_SECRET=asdf && node node_modules/mocha/bin/mocha --recursive",
     "posttest": "npm run lint",
     "preversion": "git pull && npm test",
-    "postversion": "git push && git push --tags && npm publish",
+    "postversion": "git push && git push --tags",
     "ci-test": "npm test && ./ci-test.js"
   },
   "engines": {
