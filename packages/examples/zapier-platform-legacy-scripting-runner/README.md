@@ -39,7 +39,8 @@ Note this section is intended for Zapier engineers, not for App Developers.
 
 ## Releasing
 
-`npm version [patch|minor|major]` should be enough.
+1. Run `npm version [patch|minor|major]` to update the version in `package.json` and push a version tag to GitHub.
+2. Wait for [Travis](https://travis-ci.org/zapier/zapier-platform-legacy-scripting-runner) to publish the package to npm.
 
 ## Test Repos
 
