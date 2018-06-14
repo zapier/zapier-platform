@@ -15,5 +15,6 @@ module.exports = [
   'rest-hooks',
   'files',
   'github',
-  'search-or-create'
+  'search-or-create',
+  'typescript'
 ];
