@@ -7,6 +7,11 @@
   "author": "Bryan Helmig <bryan@zapier.com>",
   "license": "UNLICENSED",
   "main": "schema.js",
+  "files": [
+      "/exported-schema.json",
+      "/lib/**/*.js",
+      "/schema.js"
+  ],
   "scripts": {
     "preversion": "git pull && npm test",
     "version": "npm run build && npm run add",
