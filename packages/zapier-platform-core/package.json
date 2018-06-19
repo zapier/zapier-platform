@@ -9,10 +9,10 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "files": [
-      "/include/",
-      "/index.d.ts",
-      "/index.js",
-      "/src/"
+    "/include/",
+    "/index.d.ts",
+    "/index.js",
+    "/src/"
   ],
   "scripts": {
     "preversion": "git pull && npm test",

@@ -29,47 +29,7 @@ const createLegacyScriptingRunner = (z, app) => {
   if (!LegacyScriptingRunner) {
     return null;
   }
-
-  const scope = LegacyScriptingRunner.initScope();
-
-  const Zap = new Function( // eslint-disable-line no-new-func
-    '_',
-    'crypto',
-    'async',
-    'moment',
-    'DOMParser',
-    'XMLSerializer',
-    'atob',
-    'btoa',
-    'z',
-    '$',
-    'ErrorException',
-    'HaltedException',
-    'StopRequestException',
-    'ExpiredAuthException',
-    'RefreshTokenException',
-    'InvalidSessionException',
-    source + '\nreturn Zap;'
-  )(
-    scope._,
-    scope.crypto,
-    scope.async,
-    scope.moment,
-    scope.DOMParser,
-    scope.XMLSerializer,
-    scope.atob,
-    scope.btoa,
-    scope.z,
-    scope.$,
-    scope.ErrorException,
-    scope.HaltedException,
-    scope.StopRequestException,
-    scope.ExpiredAuthException,
-    scope.RefreshTokenException,
-    scope.InvalidSessionException
-  );
-
-  return LegacyScriptingRunner(Zap, z, app);
+  return LegacyScriptingRunner(source, z, app);
 };
 
 module.exports = createLegacyScriptingRunner;
