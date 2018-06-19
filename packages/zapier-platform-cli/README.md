@@ -156,16 +156,16 @@ From a user perspective, both the CLI and the existing web builder platform offe
 
 ### Requirements
 
-All Zapier CLI apps are run using Node.js `v6.10.3`.
+All Zapier CLI apps are run using Node.js `v8.10.0`.
 
-You can develop using any version of Node you'd like, but your eventual code must be compatible with `v6.10.3`. If you're using features not yet available in `v6.10.3`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
+You can develop using any version of Node you'd like, but your eventual code must be compatible with `v8.10.0`. If you're using features not yet available in `v8.10.0`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
 
-To ensure stability for our users, we strongly encourage you run tests on `v6.10.3` sometime before your code reaches users. This can be done multiple ways.
+To ensure stability for our users, we strongly encourage you run tests on `v8.10.0` sometime before your code reaches users. This can be done multiple ways.
 
 Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform-example-app-minimal/blob/master/.travis.yml) file in our template apps to get you started.
 
 Alternatively, you can change your local node version with tools such as [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation).
-Then you can either swap to that version with `nvm use v6.10.3`, or do `nvm exec v6.10.3 zapier test` so you can run tests without having to switch versions while developing.
+Then you can either swap to that version with `nvm use v8.10.0`, or do `nvm exec v8.10.0 zapier test` so you can run tests without having to switch versions while developing.
 
 
 ### Quick Setup Guide
@@ -2071,7 +2071,7 @@ This makes it pretty straightforward to integrate into your testing interface. I
 ```yaml
 language: node_js
 node_js:
-  - "6.10.2"
+  - "8.10.0"
 before_script: npm install -g zapier-platform-cli
 script: CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
@@ -2160,7 +2160,7 @@ See [the wiki](https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps) 
 
 ### Why doesn't Zapier support newer versions of Node.js?
 
-We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html) of Node (the latest of which is `v6.10.3`. As that updates, so too will we.
+We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html) of Node (the latest of which is `v8.10.0`. As that updates, so too will we.
 
 ### How do I manually set the Node.js version to run my app with?
 

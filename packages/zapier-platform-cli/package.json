@@ -15,7 +15,7 @@
       "/zapier.js"
   ],
   "engines": {
-    "node": ">=v6.10.2"
+    "node": ">=8.10.0"
   },
   "scripts": {
     "docs": "npm run build && node lib/bin/docs.js",
@@ -26,7 +26,7 @@
     "build": "rm -rf lib && node_modules/babel-cli/bin/babel.js src -d lib --copy-files",
     "watch": "rm -rf lib && node_modules/babel-cli/bin/babel.js --watch src -d lib --copy-files",
     "lint": "node_modules/.bin/eslint zapier.js src",
-    "lint-snippets": "node_modules/.bin/eslint snippets --rule 'no-unused-vars: 0'",
+    "lint-snippets": "node_modules/.bin/eslint snippets --rule 'no-unused-vars: 0' --ignore-pattern snippets/next.js",
     "test": "npm run build && NODE_ENV=test node_modules/mocha/bin/mocha -t 30000 --recursive lib/tests && npm run lint && npm run lint-snippets",
     "zapier": "zapier.js",
     "validate-templates": "./scripts/validate-app-templates.js",

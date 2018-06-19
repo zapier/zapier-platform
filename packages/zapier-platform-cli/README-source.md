@@ -1179,7 +1179,7 @@ This makes it pretty straightforward to integrate into your testing interface. I
 ```yaml
 language: node_js
 node_js:
-  - "6.10.2"
+  - "LAMBDA_VERSION"
 before_script: npm install -g zapier-platform-cli
 script: CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
