@@ -28,7 +28,60 @@ const parseFinalResult = (result, event) => {
   return result;
 };
 
+const compileLegacyScriptingSource = source => {
+  const { DOMParser, XMLSerializer } = require('xmldom');
+  const {
+    ErrorException,
+    HaltedException,
+    StopRequestException,
+    ExpiredAuthException,
+    RefreshTokenException,
+    InvalidSessionException
+  } = require('./exceptions');
+
+  return new Function( // eslint-disable-line no-new-func
+    '_',
+    'crypto',
+    'async',
+    'moment',
+    'DOMParser',
+    'XMLSerializer',
+    'atob',
+    'btoa',
+    'z',
+    '$',
+    'ErrorException',
+    'HaltedException',
+    'StopRequestException',
+    'ExpiredAuthException',
+    'RefreshTokenException',
+    'InvalidSessionException',
+    source + '\nreturn Zap;'
+  )(
+    _,
+    require('crypto'),
+    require('async'),
+    require('moment-timezone'),
+    DOMParser,
+    XMLSerializer,
+    require('./atob'),
+    require('./btoa'),
+    require('./z'),
+    require('./$'),
+    ErrorException,
+    HaltedException,
+    StopRequestException,
+    ExpiredAuthException,
+    RefreshTokenException,
+    InvalidSessionException
+  );
+};
+
 const legacyScriptingRunner = (Zap, zobj, app) => {
+  if (typeof Zap === 'string') {
+    Zap = compileLegacyScriptingSource(Zap);
+  }
+
   // Does string replacement ala WB, using bundle and a potential result object
   const replaceVars = (templateString, bundle, result) => {
     const options = {
@@ -203,37 +256,5 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     replaceVars
   };
 };
-
-legacyScriptingRunner.initScope = () => {
-  const { DOMParser, XMLSerializer } = require('xmldom');
-  const {
-    ErrorException,
-    HaltedException,
-    StopRequestException,
-    ExpiredAuthException,
-    RefreshTokenException,
-    InvalidSessionException
-  } = require('./exceptions');
-
-  return {
-    _,
-    crypto: require('crypto'),
-    async: require('async'),
-    moment: require('moment-timezone'),
-    DOMParser,
-    XMLSerializer,
-    atob: require('./atob'),
-    btoa: require('./btoa'),
-    z: require('./z'),
-    $: require('./$'),
-    ErrorException,
-    HaltedException,
-    StopRequestException,
-    ExpiredAuthException,
-    RefreshTokenException,
-    InvalidSessionException
-  };
-};
-
 
 module.exports = legacyScriptingRunner;
