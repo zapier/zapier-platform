@@ -1,3 +1,20 @@
+## 6.2.0
+
+### cli
+
+* (improvement) Ask for promote when fully migrating a public app ([#326](https://github.com/zapier/zapier-platform-cli/pull/326))
+* (improvement) Add typescript example app ([#329](https://github.com/zapier/zapier-platform-cli/pull/329))
+* (improvement) Reduce package size ([#330](https://github.com/zapier/zapier-platform-cli/pull/330))
+
+### schema
+
+* (improvement) Reduce package size ([#49](https://github.com/zapier/zapier-platform-schema/pull/49))
+
+### core
+
+* (fix) Add cursor to typings ([#95](https://github.com/zapier/zapier-platform-core/pull/95))
+* (improvement) Reduce package size ([#97](https://github.com/zapier/zapier-platform-core/pull/97))
+
 ## 6.1.0
 
 ### cli
