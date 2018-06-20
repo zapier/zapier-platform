@@ -47,8 +47,10 @@ zip -R ../$FILE '*.js' '*.json'\
 # Revert copied files
 rm -f $FILES_TO_COPY
 
-# Remove node_modules
-rm -fr node_modules && cd ..
+# Remove generated package-lock.json and node_modules
+rm -f package-lock.json
+rm -fr node_modules
+cd ..
 
 # Revert version
 bin/update-boilerplate-dependencies.js revert
