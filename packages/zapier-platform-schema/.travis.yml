@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - "6.10.3"
   - "8.10.0"
+  - "10"
 script:
   - npm run coverage
 notifications:
@@ -12,4 +12,5 @@ deploy:
   api_key: $NPM_TOKEN
   on:
     tags: true
+    node: "8.10.0"
   skip_cleanup: true
