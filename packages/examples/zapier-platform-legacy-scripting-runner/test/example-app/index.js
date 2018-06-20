@@ -24,6 +24,23 @@ const legacyScriptingSource = `
         };
       },
 
+      pre_oauthv2_token: function(bundle) {
+        bundle.request.url += 'token';
+        return bundle.request;
+      },
+
+      post_oauthv2_token: function(bundle) {
+        var data = z.JSON.parse(bundle.response.content);
+        data.something_custom += '!!';
+        data.name = 'Jane Doe';
+        return data;
+      },
+
+      pre_oauthv2_refresh: function(bundle) {
+        bundle.request.url += 'token';
+        return bundle.request;
+      },
+
       get_connection_label: function(bundle) {
         return 'Hi ' + bundle.test_result.name;
       },

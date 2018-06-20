@@ -4,36 +4,41 @@ const _ = require('lodash');
 const should = require('should');
 
 const appDefinition = require('./example-app');
+const oauth2Config = require('./example-app/oauth2');
 const sessionAuthConfig = require('./example-app/session-auth');
 const createApp = require('zapier-platform-core/src/create-app');
 const createInput = require('zapier-platform-core/src/tools/create-input');
+const schemaTools = require('zapier-platform-core/src/tools/schema');
 
 const withAuth = (appDef, authConfig) => {
-  return _.extend(_.cloneDeep(appDef), authConfig);
+  return _.extend(_.cloneDeep(appDef), _.cloneDeep(authConfig));
 };
 
-// TODO: This is currently failing. Remove .skip once core 6.2.0 is released.
+// TODO: This is currently failing. Remove .skip once core 7.0.0 is released.
 describe.skip('Integration Test', () => {
   const testLogger = (/* message, data */) => {
     // console.log(message, data);
     return Promise.resolve({});
   };
 
-  const createTestInput = method => {
+  const createTestInput = (compiledApp, method) => {
     const event = {
       bundle: {},
       method
     };
-
-    return createInput(appDefinition, event, testLogger);
+    return createInput(compiledApp, event, testLogger);
   };
 
-  describe('auth', () => {
+  describe('session auth', () => {
     const appDefWithAuth = withAuth(appDefinition, sessionAuthConfig);
+    const compiledApp = schemaTools.prepareApp(appDefWithAuth);
     const app = createApp(appDefWithAuth);
 
     it('get_session_info', () => {
-      const input = createTestInput('authentication.sessionConfig.perform');
+      const input = createTestInput(
+        compiledApp,
+        'authentication.sessionConfig.perform'
+      );
       input.bundle.authData = {
         username: 'user',
         password: 'secret'
@@ -45,7 +50,10 @@ describe.skip('Integration Test', () => {
     });
 
     it('get_connection_label', () => {
-      const input = createTestInput('authentication.connectionLabel');
+      const input = createTestInput(
+        compiledApp,
+        'authentication.connectionLabel'
+      );
       input.bundle.inputData = {
         name: 'Mark'
       };
@@ -55,11 +63,117 @@ describe.skip('Integration Test', () => {
     });
   });
 
+  describe('oauth2', () => {
+    let origEnv;
+
+    beforeEach(() => {
+      origEnv = process.env;
+      process.env = {
+        CLIENT_ID: '1234',
+        CLIENT_SECRET: 'asdf'
+      };
+    });
+
+    afterEach(() => {
+      process.env = origEnv;
+    });
+
+    it('pre_oauthv2_token', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'post_oauthv2_token',
+        'dont_care'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.getAccessToken'
+      );
+      input.bundle.inputData = {
+        redirect_uri: 'https://example.com',
+        code: 'one_time_code'
+      };
+      return app(input).then(output => {
+        should.equal(output.results.access_token, 'a_token');
+        should.equal(output.results.something_custom, 'alright!');
+        should.not.exist(output.results.name);
+      });
+    });
+
+    it('post_oauthv2_token', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'pre_oauthv2_token',
+        'dont_care'
+      );
+      appDefWithAuth.authentication.oauth2Config.legacyProperties.accessTokenUrl +=
+        'token';
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.getAccessToken'
+      );
+      input.bundle.inputData = {
+        redirect_uri: 'https://example.com',
+        code: 'one_time_code'
+      };
+      return app(input).then(output => {
+        should.equal(output.results.access_token, 'a_token');
+        should.equal(output.results.something_custom, 'alright!!!');
+        should.equal(output.results.name, 'Jane Doe');
+      });
+    });
+
+    it('pre_oauthv2_token & post_oauthv2_token', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.getAccessToken'
+      );
+      input.bundle.inputData = {
+        redirect_uri: 'https://example.com',
+        code: 'one_time_code'
+      };
+      return app(input).then(output => {
+        should.equal(output.results.access_token, 'a_token');
+        should.equal(output.results.something_custom, 'alright!!!');
+        should.equal(output.results.name, 'Jane Doe');
+      });
+    });
+
+    it('pre_oauthv2_refresh', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.refreshAccessToken'
+      );
+      input.bundle.authData = {
+        refresh_token: 'a_refresh_token'
+      };
+      return app(input).then(output => {
+        should.equal(output.results.access_token, 'a_new_token');
+      });
+    });
+  });
+
   describe('trigger', () => {
     const app = createApp(appDefinition);
 
     it('KEY_poll', () => {
-      const input = createTestInput('triggers.contact_full.operation.perform');
+      const input = createTestInput(
+        appDefinition,
+        'triggers.contact_full.operation.perform'
+      );
       return app(input).then(output => {
         output.results.length.should.greaterThan(1);
 
@@ -69,7 +183,10 @@ describe.skip('Integration Test', () => {
     });
 
     it('KEY_pre_poll', () => {
-      const input = createTestInput('triggers.contact_pre.operation.perform');
+      const input = createTestInput(
+        appDefinition,
+        'triggers.contact_pre.operation.perform'
+      );
       return app(input).then(output => {
         output.results.length.should.equal(1);
 
@@ -79,7 +196,10 @@ describe.skip('Integration Test', () => {
     });
 
     it('KEY_post_poll', () => {
-      const input = createTestInput('triggers.contact_post.operation.perform');
+      const input = createTestInput(
+        appDefinition,
+        'triggers.contact_post.operation.perform'
+      );
       return app(input).then(output => {
         output.results.length.should.greaterThan(1);
 
@@ -90,6 +210,7 @@ describe.skip('Integration Test', () => {
 
     it('KEY_pre_poll & KEY_post_poll', () => {
       const input = createTestInput(
+        appDefinition,
         'triggers.contact_pre_post.operation.perform'
       );
       return app(input).then(output => {

@@ -57,6 +57,10 @@ module.exports = {
     },
     connectionLabel: { source: getConnectionLabelSource }
   },
-  beforeRequest: [{ source: maybeIncludeAuthSource }],
-  afterResponse: [{ source: maybeRefreshAuthSource }]
+  beforeRequest: [
+    { source: maybeIncludeAuthSource, args: ['request', 'z', 'bundle'] }
+  ],
+  afterResponse: [
+    { source: maybeRefreshAuthSource, args: ['response', 'z', 'bundle'] }
+  ]
 };
