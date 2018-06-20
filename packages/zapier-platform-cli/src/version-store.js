@@ -10,5 +10,5 @@ module.exports = [
   { nodeVersion: '6.10.2', npmVersion: '>=3.10.10' }, // 4.x
   { nodeVersion: '6.10.3', npmVersion: '>=3.10.10' }, // 5.x // patch version change on AWS
   { nodeVersion: '6.10.3', npmVersion: '>=3.10.10' }, // 6.x
-  { nodeVersion: '8.10.0', npmVersion: '>=5.6.0' } // 8.x
+  { nodeVersion: '8.10.0', npmVersion: '>=5.6.0' } // 7.x
 ];
