@@ -8,7 +8,7 @@
   "license": "UNLICENSED",
   "main": "index.js",
   "files": [
-      "/*.js"
+    "/*.js"
   ],
   "scripts": {
     "lint": "node_modules/.bin/eslint .",
@@ -19,12 +19,12 @@
     "ci-test": "npm test && ./ci-test.js"
   },
   "engines": {
-    "node": ">=6.10.2",
-    "npm": ">=3.0.0"
+    "node": ">=8.10.0",
+    "npm": ">=5.6.0"
   },
   "dependencies": {
     "async": "2.6.1",
-    "deasync": "0.1.10",
+    "deasync": "0.1.12",
     "lodash": "4.17.10",
     "moment-timezone": "0.5.17",
     "node-jquery-param": "0.0.2",

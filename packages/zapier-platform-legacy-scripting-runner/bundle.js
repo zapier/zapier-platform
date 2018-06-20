@@ -11,8 +11,12 @@ const unflattenObject = (data, separator = '__') => {
 
   const keys = Object.keys(data);
 
-  _.each(keys, (key) => {
-    if (key.includes(separator) && !key.startsWith(separator) && !key.endsWith(separator)) {
+  _.each(keys, key => {
+    if (
+      key.includes(separator) &&
+      !key.startsWith(separator) &&
+      !key.endsWith(separator)
+    ) {
       const value = data[key];
       const keyParts = key.split(separator, MAX_KEY_PARTS);
 
@@ -26,7 +30,7 @@ const unflattenObject = (data, separator = '__') => {
         currentProp = currentProp[keyParts[i]];
       }
 
-      previousProp[keyParts[(i - 1)]] = value;
+      previousProp[keyParts[i - 1]] = value;
 
       delete data[key];
     }
@@ -35,13 +39,13 @@ const unflattenObject = (data, separator = '__') => {
   return data;
 };
 
-const convertToQueryString = (object) => {
+const convertToQueryString = object => {
   if (!object) {
     return '';
   }
 
   const objectKeys = Object.keys(object);
-  const queryStringItems = _.map(objectKeys, (key) => `${key}=${object[key]}`);
+  const queryStringItems = _.map(objectKeys, key => `${key}=${object[key]}`);
 
   return queryStringItems.join('&');
 };
@@ -52,26 +56,28 @@ const convertToQueryString = (object) => {
 
 const addAuthData = (event, bundle, convertedBundle) => {
   // Get authData only for basic auth here, to include in the request
-  const {
-    username,
-    password,
-  } = _.get(bundle, 'authData', {});
+  const { username, password } = _.get(bundle, 'authData', {});
 
   if (username && password) {
     convertedBundle.request.auth = [username, password];
   }
 
-  const headers = _.get(bundle, ['request', 'headers'], {});
+  const headers = _.get(bundle, 'request.headers', {});
   _.extend(convertedBundle.request.headers, headers);
 
-  const params = _.get(bundle, ['request', 'params'], {});
+  const params = _.get(bundle, 'request.params', {});
   _.extend(convertedBundle.request.params, params);
+
+  const body = _.get(bundle, 'request.body');
+  if (body) {
+    convertedBundle.request.data = body;
+  }
 
   // OAuth2 specific
   if (event.name.startsWith('auth.oauth2')) {
     convertedBundle.oauth_data = {
       client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
+      client_secret: process.env.CLIENT_SECRET
     };
     convertedBundle.load = _.get(bundle, 'inputData', {});
   }
@@ -82,7 +88,8 @@ const addInputData = (event, bundle, convertedBundle) => {
     convertedBundle.test_result = bundle.inputData;
   } else if (event.name.startsWith('trigger.')) {
     convertedBundle.trigger_fields = bundle.inputData;
-    convertedBundle.trigger_fields_raw = bundle.inputDataRaw || bundle.inputData;
+    convertedBundle.trigger_fields_raw =
+      bundle.inputDataRaw || bundle.inputData;
   } else if (event.name.startsWith('create.')) {
     convertedBundle.action_fields = bundle.inputData;
     convertedBundle.action_fields_full = bundle.inputData;
@@ -103,7 +110,9 @@ const addHookData = (event, bundle, convertedBundle) => {
     convertedBundle.cleaned_request = bundle.cleanedRequest;
 
     if (!convertedBundle.request.querystring) {
-      convertedBundle.request.querystring = convertToQueryString(convertedBundle.request.params);
+      convertedBundle.request.querystring = convertToQueryString(
+        convertedBundle.request.params
+      );
     }
     if (!convertedBundle.request.content) {
       convertedBundle.request.content = convertedBundle.request.data;
@@ -132,9 +141,10 @@ const addResponse = (event, bundle, convertedBundle) => {
 const bundleConverter = (bundle, event) => {
   let method = 'GET';
 
-  if (event.name.startsWith('create')
-    || event.name.startsWith('auth.oauth2')
-    || event.name.startsWith('trigger.hook.subscribe')
+  if (
+    event.name.startsWith('create') ||
+    event.name.startsWith('auth.oauth2') ||
+    event.name.startsWith('trigger.hook.subscribe')
   ) {
     method = 'POST';
   }
@@ -142,19 +152,23 @@ const bundleConverter = (bundle, event) => {
   const convertedBundle = {
     request: {
       method,
-      url: _.get(bundle, '_legacyUrl', ''),
+      url: _.get(bundle, '_legacyUrl', '') || _.get(bundle, 'request.url', ''),
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      params: event.name.startsWith('create') ? {} : _.get(bundle, 'inputData', {}),
-      data: event.name.startsWith('create') ? JSON.stringify(unflattenObject(_.get(bundle, 'inputData', {}))) : '',
+      params: event.name.startsWith('create')
+        ? {}
+        : _.get(bundle, 'inputData', {}),
+      data: event.name.startsWith('create')
+        ? JSON.stringify(unflattenObject(_.get(bundle, 'inputData', {})))
+        : ''
     },
     auth_fields: _.get(bundle, 'authData', {}),
     meta: _.get(bundle, 'meta', {}),
     zap: {
-      id: _.get(bundle, ['meta', 'zap', 'id'], 0),
+      id: _.get(bundle, ['meta', 'zap', 'id'], 0)
     },
-    url_raw: _.get(bundle, '_legacyUrl', ''),
+    url_raw: _.get(bundle, '_legacyUrl', '')
   };
 
   addAuthData(event, bundle, convertedBundle);
