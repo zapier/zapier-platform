@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-legacy-scripting-runner",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Zapier's Legacy Scripting Runner, used by Web Builder apps converted to CLI.",
   "repository": "zapier/zapier-platform-legacy-scripting-runner",
   "homepage": "https://zapier.com/",
