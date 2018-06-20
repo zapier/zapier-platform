@@ -1,17 +1,20 @@
-## 6.2.0
+## 7.0.0
 
 ### cli
 
+* (improvement) Bump Node.js version to 8 ([#328](https://github.com/zapier/zapier-platform-cli/pull/328))
 * (improvement) Ask for promote when fully migrating a public app ([#326](https://github.com/zapier/zapier-platform-cli/pull/326))
 * (improvement) Add typescript example app ([#329](https://github.com/zapier/zapier-platform-cli/pull/329))
 * (improvement) Reduce package size ([#330](https://github.com/zapier/zapier-platform-cli/pull/330))
 
 ### schema
 
+* (improvement) Bump Node.js version to 8 ([#48](https://github.com/zapier/zapier-platform-schema/pull/48))
 * (improvement) Reduce package size ([#49](https://github.com/zapier/zapier-platform-schema/pull/49))
 
 ### core
 
+* :exclamation: (improvement, **breaking**) Bump Node.js version to **8.10.0**. Apps with dependency `zapier-platform-core >= 7.0.0` run only on Node.js **8.10.0** in AWS Lambda. If you need to continue running on Node.js 6.10.3, use `zapier-platform-core <= 6.1.0`" ([#94](https://github.com/zapier/zapier-platform-core/pull/94))
 * (fix) Add cursor to typings ([#95](https://github.com/zapier/zapier-platform-core/pull/95))
 * (improvement) Reduce package size ([#97](https://github.com/zapier/zapier-platform-core/pull/97))
 
