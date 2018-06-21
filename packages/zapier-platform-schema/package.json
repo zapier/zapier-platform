@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-schema",
-  "version": "6.1.0",
+  "version": "7.0.0",
   "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-schema",
   "homepage": "https://zapier.com/",
@@ -8,9 +8,9 @@
   "license": "UNLICENSED",
   "main": "schema.js",
   "files": [
-      "/exported-schema.json",
-      "/lib/**/*.js",
-      "/schema.js"
+    "/exported-schema.json",
+    "/lib/**/*.js",
+    "/schema.js"
   ],
   "scripts": {
     "preversion": "git pull && npm test",
