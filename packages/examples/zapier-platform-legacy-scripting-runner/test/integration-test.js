@@ -14,8 +14,7 @@ const withAuth = (appDef, authConfig) => {
   return _.extend(_.cloneDeep(appDef), _.cloneDeep(authConfig));
 };
 
-// TODO: This is currently failing. Remove .skip once core 7.0.0 is released.
-describe.skip('Integration Test', () => {
+describe('Integration Test', () => {
   const testLogger = (/* message, data */) => {
     // console.log(message, data);
     return Promise.resolve({});
