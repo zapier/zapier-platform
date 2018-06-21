@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-cli",
-  "version": "6.1.0",
+  "version": "7.0.0",
   "description": "The CLI for apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-cli",
   "homepage": "https://zapier.com/",
@@ -8,11 +8,11 @@
   "license": "UNLICENSED",
   "main": "zapier.js",
   "files": [
-      "/lib/*.js",
-      "/lib/commands/",
-      "/lib/utils/",
-      "/scaffold/",
-      "/zapier.js"
+    "/lib/*.js",
+    "/lib/commands/",
+    "/lib/utils/",
+    "/scaffold/",
+    "/zapier.js"
   ],
   "engines": {
     "node": ">=8.10.0"
