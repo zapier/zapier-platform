@@ -3,9 +3,16 @@
 const path = require('path');
 
 const createLegacyScriptingRunner = (z, app) => {
-  const source = app.legacyScriptingSource;
-  if (!source) {
+  let source = app.legacyScriptingSource;
+  if (source === undefined) {
+    // Don't initialize z.legacyScripting for a pure CLI app
     return null;
+  }
+
+  if (!source) {
+    // Even if the app has no scripting, we still rely on legacy-scripting-runner
+    // to run some scriptingless operations
+    source = 'var Zap = {};';
   }
 
   // Only UI-built app will have this legacy-scripting-runner dependency, so we
