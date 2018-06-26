@@ -220,5 +220,73 @@ describe('Integration Test', () => {
         should.equal(contact.name, 'Patched by KEY_pre_poll & KEY_post_poll!');
       });
     });
+
+    it('scriptingless hook', () => {
+      const input = createTestInput(
+        appDefinition,
+        'triggers.contact_hook_scriptingless.operation.perform'
+      );
+      input.bundle.cleanedRequest = {
+        id: 9,
+        name: 'Amy'
+      };
+      return app(input).then(output => {
+        output.results.length.should.equal(1);
+        const contact = output.results[0];
+        should.deepEqual(contact, {
+          id: 9,
+          name: 'Amy'
+        });
+      });
+    });
+
+    it('KEY_catch_hook returns an object', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_catch_hook_returning_object',
+        'contact_hook_scripting_catch_hook'
+      );
+
+      const input = createTestInput(
+        appDef,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      input.bundle.cleanedRequest = {
+        id: 10,
+        name: 'Bob'
+      };
+      return app(input).then(output => {
+        output.results.length.should.equal(1);
+        const contact = output.results[0];
+        should.deepEqual(contact, {
+          id: 10,
+          name: 'Bob',
+          luckyNumber: 777
+        });
+      });
+    });
+
+    it('KEY_catch_hook returns an array', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_catch_hook_returning_array',
+        'contact_hook_scripting_catch_hook'
+      );
+
+      const input = createTestInput(
+        appDef,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      input.bundle.cleanedRequest = [
+        {id: 11, name: 'Cate'},
+        {id: 22, name: 'Dave'}
+      ];
+      return app(input).then(output => {
+        output.results.should.deepEqual([
+          {id: 11, name: 'Cate', luckyNumber: 110},
+          {id: 22, name: 'Dave', luckyNumber: 220}
+        ]);
+      });
+    });
   });
 });
