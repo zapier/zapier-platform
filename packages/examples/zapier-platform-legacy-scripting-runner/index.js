@@ -197,7 +197,8 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     key,
     preEventName,
     postEventName,
-    fullEventName
+    fullEventName,
+    ensureArray = false
   ) => {
     let promise;
     const funcs = [];
@@ -235,7 +236,23 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       } else {
         funcs.push(response => {
           response.throwForStatus();
-          return zobj.JSON.parse(response.content);
+          const data = zobj.JSON.parse(response.content);
+          if (!ensureArray) {
+            return data;
+          }
+
+          if (Array.isArray(data)) {
+            return data;
+          } else if (data && typeof data === 'object') {
+            // Find the first array in the response
+            for (const k in data) {
+              const value = data[k];
+              if (Array.isArray(value)) {
+                return value;
+              }
+            }
+          }
+          throw new Error('JSON results array could not be located.');
         });
       }
     }
@@ -301,8 +318,22 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       key,
       'trigger.pre',
       'trigger.post',
-      'trigger.poll'
+      'trigger.poll',
+      true
     );
+  };
+
+  const runHook = (bundle, key) => {
+    const methodName = `${key}_catch_hook`;
+    const promise = Zap[methodName]
+      ? runEvent({ key, name: 'trigger.hook' }, zobj, bundle)
+      : new Promise(resolve => resolve(bundle.cleanedRequest));
+    return promise.then(result => {
+      if (!Array.isArray(result)) {
+        result = [result];
+      }
+      return result;
+    });
   };
 
   // core exposes this function as z.legacyScripting.run() method that we can
@@ -320,6 +351,8 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
         return runOAuth2RefreshAccessToken(bundle);
       case 'trigger':
         return runTrigger(bundle, key);
+      case 'trigger.hook':
+        return runHook(bundle, key);
     }
 
     // TODO: auth, create, and search
