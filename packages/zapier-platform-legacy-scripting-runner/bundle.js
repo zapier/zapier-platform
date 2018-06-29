@@ -62,17 +62,6 @@ const addAuthData = (event, bundle, convertedBundle) => {
     convertedBundle.request.auth = [username, password];
   }
 
-  const headers = _.get(bundle, 'request.headers', {});
-  _.extend(convertedBundle.request.headers, headers);
-
-  const params = _.get(bundle, 'request.params', {});
-  _.extend(convertedBundle.request.params, params);
-
-  const body = _.get(bundle, 'request.body');
-  if (body) {
-    convertedBundle.request.data = body;
-  }
-
   // OAuth2 specific
   if (event.name.startsWith('auth.oauth2')) {
     convertedBundle.oauth_data = {
@@ -130,6 +119,22 @@ const addHookData = (event, bundle, convertedBundle) => {
   }
 };
 
+const addRequest = (event, bundle, convertedBundle) => {
+  const headers = _.get(bundle, 'request.headers', {});
+  _.extend(convertedBundle.request.headers, headers);
+
+  const params = _.get(bundle, 'request.params', {});
+  _.extend(convertedBundle.request.params, params);
+
+  let body = _.get(bundle, 'request.body');
+  if (body) {
+    if (typeof body !== 'string') {
+      body = JSON.stringify(body);
+    }
+    convertedBundle.request.data = body;
+  }
+};
+
 const addResponse = (event, bundle, convertedBundle) => {
   if (event.name.endsWith('.post') || event.name.endsWith('.output')) {
     convertedBundle.response = event.response;
@@ -172,11 +177,9 @@ const bundleConverter = (bundle, event) => {
   };
 
   addAuthData(event, bundle, convertedBundle);
-
   addInputData(event, bundle, convertedBundle);
-
   addHookData(event, bundle, convertedBundle);
-
+  addRequest(event, bundle, convertedBundle);
   addResponse(event, bundle, convertedBundle);
 
   return convertedBundle;

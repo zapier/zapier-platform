@@ -82,6 +82,14 @@ const promiseChain = (initialPromise, callbacks) => {
   return callbacks.reduce((prev, cur) => prev.then(cur), initialPromise);
 };
 
+const applyBeforeMiddleware = (befores, request, z, bundle) => {
+  befores = befores || [];
+  return befores.reduce(
+    (prev, cur) => prev.then(req => cur(req, z, bundle)),
+    Promise.resolve(request)
+  );
+};
+
 const createEventNameToMethodMapping = key => {
   return {
     //
@@ -265,20 +273,18 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       app,
       'authentication.oauth2Config.legacyProperties.accessTokenUrl'
     );
-    bundle.request = {
-      method: 'POST',
-      url,
-      body: {
-        code: bundle.inputData.code,
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
-        redirect_uri: bundle.inputData.redirect_uri,
-        grant_type: 'authorization_code'
-      },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
+
+    const request = bundle.request;
+    request.method = 'POST';
+    request.url = url;
+    request.headers['Content-Type'] = 'application/json';
+
+    const body = request.body;
+    body.code = bundle.inputData.code;
+    body.client_id = process.env.CLIENT_ID;
+    body.client_secret = process.env.CLIENT_SECRET;
+    body.redirect_uri = bundle.inputData.redirect_uri;
+    body.grant_type = 'authorization_code';
 
     return runEventCombo(
       bundle,
@@ -293,26 +299,25 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       app,
       'authentication.oauth2Config.legacyProperties.refreshTokenUrl'
     );
-    bundle.request = {
-      method: 'POST',
-      url,
-      body: {
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
-        refresh_token: bundle.authData.refresh_token,
-        grant_type: 'refresh_token'
-      },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
+
+    const request = bundle.request;
+    request.method = 'POST';
+    request.url = url;
+    request.headers['Content-Type'] = 'application/json';
+
+    const body = request.body;
+    body.client_id = process.env.CLIENT_ID;
+    body.client_secret = process.env.CLIENT_SECRET;
+    body.refresh_token = bundle.authData.refresh_token;
+    body.grant_type = 'refresh_token';
 
     return runEventCombo(bundle, '', 'auth.oauth2.refresh.pre');
   };
 
   const runTrigger = (bundle, key) => {
     const url = _.get(app, `triggers.${key}.operation.legacyProperties.url`);
-    bundle.request = { url };
+    bundle.request.url = url;
+
     return runEventCombo(
       bundle,
       key,
@@ -340,23 +345,47 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
   // run legacy scripting easily like z.legacyScripting.run(bundle, 'trigger', 'KEY')
   // in CLI to simulate how WB backend runs legacy scripting.
   const run = (bundle, typeOf, key) => {
-    switch (typeOf) {
-      case 'auth.session':
-        return runEvent({ name: 'auth.session' }, zobj, bundle);
-      case 'auth.connectionLabel':
-        return runEvent({ name: 'auth.connectionLabel' }, zobj, bundle);
-      case 'auth.oauth2.token':
-        return runOAuth2GetAccessToken(bundle);
-      case 'auth.oauth2.refresh':
-        return runOAuth2RefreshAccessToken(bundle);
-      case 'trigger':
-        return runTrigger(bundle, key);
-      case 'trigger.hook':
-        return runHook(bundle, key);
-    }
+    const initRequest = {
+      headers: {},
+      params: {},
+      body: {}
+    };
+    return applyBeforeMiddleware(
+      app.beforeRequest,
+      initRequest,
+      zobj,
+      bundle
+    ).then(preparedRequest => {
+      bundle.request = preparedRequest;
 
-    // TODO: auth, create, and search
-    return Promise.resolve();
+      switch (typeOf) {
+        case 'auth.session':
+          return runEvent({ name: 'auth.session' }, zobj, bundle);
+        case 'auth.connectionLabel':
+          return runEvent({ name: 'auth.connectionLabel' }, zobj, bundle);
+        case 'auth.oauth2.token':
+          return runOAuth2GetAccessToken(bundle);
+        case 'auth.oauth2.refresh':
+          return runOAuth2RefreshAccessToken(bundle);
+        case 'trigger':
+          return runTrigger(bundle, key);
+        case 'trigger.hook':
+          return runHook(bundle, key);
+
+        // TODO: Add support for these:
+        // trigger.hook.subscribe
+        // trigger.hook.unsubscribe
+        // trigger.output
+        // create
+        // create.input
+        // create.output
+        // search
+        // search.resource
+        // search.input
+        // search.output
+      }
+      throw new Error(`unrecognizable typeOf '${typeOf}'`);
+    });
   };
 
   return {

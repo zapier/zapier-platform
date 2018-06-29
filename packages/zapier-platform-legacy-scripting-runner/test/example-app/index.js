@@ -46,20 +46,16 @@ const legacyScriptingSource = `
       },
 
       contact_full_poll: function(bundle) {
-        var response = z.request({
-          url: 'https://auth-json-server.zapier.ninja/users',
-          params: { api_key: 'secret' }
-        });
+        bundle.request.url = 'https://auth-json-server.zapier.ninja/users';
+        var response = z.request(bundle.request);
         var contacts = z.JSON.parse(response.content);
         contacts[0].name = 'Patched by KEY_poll!';
         return contacts;
       },
 
       contact_pre_pre_poll: function(bundle) {
-        bundle.request = {
-          url: 'https://auth-json-server.zapier.ninja/users',
-          params: { api_key: 'secret', id: 3 }
-        };
+        bundle.request.url = 'https://auth-json-server.zapier.ninja/users';
+        bundle.request.params.id = 3;
         return bundle.request;
       },
 
@@ -70,10 +66,8 @@ const legacyScriptingSource = `
       },
 
       contact_pre_post_pre_poll: function(bundle) {
-        bundle.request = {
-          url: 'https://auth-json-server.zapier.ninja/users',
-          params: { api_key: 'secret', id: 4 }
-        };
+        bundle.request.url = 'https://auth-json-server.zapier.ninja/users';
+        bundle.request.params.id = 4;
         return bundle.request;
       },
 
@@ -135,7 +129,7 @@ const ContactTrigger_post = {
   },
   operation: {
     legacyProperties: {
-      url: 'https://auth-json-server.zapier.ninja/users?api_key=secret'
+      url: 'https://auth-json-server.zapier.ninja/users'
     },
     perform: {
       source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_post');"
