@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const should = require('should');
 
+const apiKeyAuth = require('./example-app/api-key-auth');
 const appDefinition = require('./example-app');
 const oauth2Config = require('./example-app/oauth2');
 const sessionAuthConfig = require('./example-app/session-auth');
@@ -166,13 +167,16 @@ describe('Integration Test', () => {
   });
 
   describe('trigger', () => {
-    const app = createApp(appDefinition);
+    const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+    const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+    const app = createApp(appDefWithAuth);
 
     it('KEY_poll', () => {
       const input = createTestInput(
-        appDefinition,
+        compiledApp,
         'triggers.contact_full.operation.perform'
       );
+      input.bundle.authData = { api_key: 'secret' };
       return app(input).then(output => {
         output.results.length.should.greaterThan(1);
 
@@ -183,9 +187,10 @@ describe('Integration Test', () => {
 
     it('KEY_pre_poll', () => {
       const input = createTestInput(
-        appDefinition,
+        compiledApp,
         'triggers.contact_pre.operation.perform'
       );
+      input.bundle.authData = { api_key: 'secret' };
       return app(input).then(output => {
         output.results.length.should.equal(1);
 
@@ -196,9 +201,10 @@ describe('Integration Test', () => {
 
     it('KEY_post_poll', () => {
       const input = createTestInput(
-        appDefinition,
+        compiledApp,
         'triggers.contact_post.operation.perform'
       );
+      input.bundle.authData = { api_key: 'secret' };
       return app(input).then(output => {
         output.results.length.should.greaterThan(1);
 
@@ -209,9 +215,10 @@ describe('Integration Test', () => {
 
     it('KEY_pre_poll & KEY_post_poll', () => {
       const input = createTestInput(
-        appDefinition,
+        compiledApp,
         'triggers.contact_pre_post.operation.perform'
       );
+      input.bundle.authData = { api_key: 'secret' };
       return app(input).then(output => {
         output.results.length.should.equal(1);
 
@@ -278,13 +285,13 @@ describe('Integration Test', () => {
         'triggers.contact_hook_scripting.operation.perform'
       );
       input.bundle.cleanedRequest = [
-        {id: 11, name: 'Cate'},
-        {id: 22, name: 'Dave'}
+        { id: 11, name: 'Cate' },
+        { id: 22, name: 'Dave' }
       ];
       return app(input).then(output => {
         output.results.should.deepEqual([
-          {id: 11, name: 'Cate', luckyNumber: 110},
-          {id: 22, name: 'Dave', luckyNumber: 220}
+          { id: 11, name: 'Cate', luckyNumber: 110 },
+          { id: 22, name: 'Dave', luckyNumber: 220 }
         ]);
       });
     });
