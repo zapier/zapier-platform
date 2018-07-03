@@ -9,13 +9,21 @@ const migrate = (context, fromVersion, toVersion, optionalPercent = '100%') => {
     return Promise.resolve();
   }
   optionalPercent = parseInt(optionalPercent, 10);
+  const user = global.argOpts.user;
 
   return utils
     .getLinkedApp()
     .then(app => {
+      if (user && optionalPercent !== 100) {
+        throw new Error(
+          'Cannot define percent and user. Use only one or the other.'
+        );
+      }
+
       let promoteFirst = false;
       if (
         optionalPercent === 100 &&
+        !user &&
         app.public &&
         toVersion !== app.latest_version
       ) {
@@ -40,15 +48,8 @@ const migrate = (context, fromVersion, toVersion, optionalPercent = '100%') => {
       const body = {
         percent: optionalPercent
       };
-      const user = global.argOpts.user;
 
       if (user) {
-        if (optionalPercent !== 100) {
-          throw new Error(
-            'Cannot define percent and user. Use only one or the other.'
-          );
-        }
-
         body.user = user;
 
         context.line(
