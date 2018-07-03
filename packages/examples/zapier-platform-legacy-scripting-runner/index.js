@@ -77,11 +77,6 @@ const compileLegacyScriptingSource = source => {
   );
 };
 
-const promiseChain = (initialPromise, callbacks) => {
-  // Equivalent to initialPromise.then(callbacks[0]).then(callbacks[1])...
-  return callbacks.reduce((prev, cur) => prev.then(cur), initialPromise);
-};
-
 const applyBeforeMiddleware = (befores, request, z, bundle) => {
   befores = befores || [];
   return befores.reduce(
@@ -206,10 +201,28 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     preEventName,
     postEventName,
     fullEventName,
-    ensureArray = false
+    options
   ) => {
+    options = _.extend(
+      {
+        // Options to deal with the response when post method is not defined
+        // * checkResponseStatus: throws an error if response status is not 2xx
+        // * parseResponse: assumes response content is JSON and parse it
+        // * ensureArray: could be one of the following values:
+        //   - false: returns whatever data parsed from response content
+        //   - 'wrap': returns [obj] if response is an object
+        //   - 'first':
+        //       returns the first top-level array in the response if response
+        //       is an object. This is the fallback behavior if ensureArray is
+        //       not false nor 'wrap'.
+        checkResponseStatus: true,
+        parseResponse: true,
+        ensureArray: false
+      },
+      options
+    );
+
     let promise;
-    const funcs = [];
 
     const eventNameToMethod = createEventNameToMethodMapping(key);
 
@@ -233,30 +246,42 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
         promise = Promise.resolve(bundle.request);
       }
 
-      funcs.push(request => zobj.request(request));
+      promise = promise.then(request => zobj.request(request));
 
       const postMethod = postMethodName ? Zap[postMethodName] : null;
       if (postMethod) {
-        funcs.push(response => {
+        promise = promise.then(response => {
           response.throwForStatus();
           return runEvent({ key, name: postEventName, response }, zobj, bundle);
         });
       } else {
-        funcs.push(response => {
-          response.throwForStatus();
+        promise = promise.then(response => {
+          if (options.checkResponseStatus) {
+            response.throwForStatus();
+          }
+          if (!options.parseResponse) {
+            return response;
+          }
+
           const data = zobj.JSON.parse(response.content);
-          if (!ensureArray) {
+
+          if (!options.ensureArray) {
             return data;
           }
 
           if (Array.isArray(data)) {
             return data;
           } else if (data && typeof data === 'object') {
-            // Find the first array in the response
-            for (const k in data) {
-              const value = data[k];
-              if (Array.isArray(value)) {
-                return value;
+            if (options.ensureArray === 'wrap') {
+              // Used by auth label and auth test
+              return [data];
+            } else {
+              // Find the first array in the response
+              for (const k in data) {
+                const value = data[k];
+                if (Array.isArray(value)) {
+                  return value;
+                }
               }
             }
           }
@@ -265,7 +290,7 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       }
     }
 
-    return promiseChain(promise, funcs);
+    return promise;
   };
 
   const runOAuth2GetAccessToken = bundle => {
@@ -318,13 +343,16 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     const url = _.get(app, `triggers.${key}.operation.legacyProperties.url`);
     bundle.request.url = url;
 
+    // For auth test we wrap the resposne as an array if it isn't one
+    const ensureArray = _.get(bundle, 'meta.test_poll') ? 'wrap' : 'first';
+
     return runEventCombo(
       bundle,
       key,
       'trigger.pre',
       'trigger.post',
       'trigger.poll',
-      true
+      { ensureArray }
     );
   };
 
@@ -339,6 +367,56 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       }
       return result;
     });
+  };
+
+  const runHookSubscribe = (bundle, key) => {
+    const url = _.get(app, 'legacyProperties.subscribeUrl');
+    const event = _.get(
+      app,
+      `triggers.${key}.operation.legacyProperties.event`
+    );
+
+    const request = bundle.request;
+    request.method = 'POST';
+    request.url = url;
+
+    const body = request.body;
+    body.subscription_url = bundle.targetUrl; // backward compatibility
+    body.target_url = bundle.targetUrl;
+    body.event = event;
+
+    return runEventCombo(
+      bundle,
+      key,
+      'trigger.hook.subscribe.pre',
+      'trigger.hook.subscribe.post'
+    );
+  };
+
+  const runHookUnsubscribe = (bundle, key) => {
+    const url = _.get(app, 'legacyProperties.unsubscribeUrl');
+    const event = _.get(
+      app,
+      `triggers.${key}.operation.legacyProperties.event`
+    );
+
+    const request = bundle.request;
+    request.method = 'POST';
+    request.url = url;
+
+    const body = request.body;
+    body.subscription_url = bundle.targetUrl; // backward compatibility
+    body.target_url = bundle.targetUrl;
+    body.event = event;
+
+    return runEventCombo(
+      bundle,
+      key,
+      'trigger.hook.unsubscribe.pre',
+      undefined,
+      undefined,
+      { parseResponse: false }
+    );
   };
 
   // core exposes this function as z.legacyScripting.run() method that we can
@@ -371,10 +449,12 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
           return runTrigger(bundle, key);
         case 'trigger.hook':
           return runHook(bundle, key);
+        case 'trigger.hook.subscribe':
+          return runHookSubscribe(bundle, key);
+        case 'trigger.hook.unsubscribe':
+          return runHookUnsubscribe(bundle, key);
 
         // TODO: Add support for these:
-        // trigger.hook.subscribe
-        // trigger.hook.unsubscribe
         // trigger.output
         // create
         // create.input
