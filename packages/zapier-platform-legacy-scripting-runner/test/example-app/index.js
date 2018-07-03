@@ -91,6 +91,28 @@ const legacyScriptingSource = `
           contact.luckyNumber = contact.id * 10;
         }
         return results;
+      },
+
+      pre_subscribe: function(bundle) {
+        var data = z.JSON.parse(bundle.request.data);
+        data.hidden_message = 'pre_subscribe was here!';
+        bundle.request.data = z.JSON.stringify(data);
+        return bundle.request;
+      },
+
+      post_subscribe: function(bundle) {
+        // This will go to bundle.subscribe_data in pre_unsubscribe
+        var data = z.JSON.parse(bundle.response.content);
+        data.hiddenMessage = 'post_subscribe was here!';
+        return data;
+      },
+
+      pre_unsubscribe: function(bundle) {
+        var data = z.JSON.parse(bundle.request.data);
+        data.hidden_message = 'pre_unsubscribe was here!';
+        bundle.request.data = z.JSON.stringify(data);
+        bundle.request.method = 'DELETE';
+        return bundle.request;
       }
     };
 `;
@@ -175,6 +197,32 @@ const ContactHook_scripting = {
     perform: {
       source:
         "return z.legacyScripting.run(bundle, 'trigger.hook', 'contact_hook_scripting');"
+    },
+    performSubscribe: {
+      source:
+        "return z.legacyScripting.run(bundle, 'trigger.hook.subscribe', 'contact_hook_scripting');"
+    },
+    performUnsubscribe: {
+      source:
+        "return z.legacyScripting.run(bundle, 'trigger.hook.unsubscribe', 'contact_hook_scripting');"
+    },
+    legacyProperties: {
+      event: 'contact.created'
+    }
+  }
+};
+
+const TestTrigger = {
+  key: 'test',
+  display: {
+    label: 'Test Auth'
+  },
+  operation: {
+    perform: {
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'test');"
+    },
+    legacyProperties: {
+      url: 'https://auth-json-server.zapier.ninja/me'
     }
   }
 };
@@ -187,7 +235,12 @@ const App = {
     [ContactTrigger_post.key]: ContactTrigger_post,
     [ContactTrigger_pre_post.key]: ContactTrigger_pre_post,
     [ContactHook_scriptingless.key]: ContactHook_scriptingless,
-    [ContactHook_scripting.key]: ContactHook_scripting
+    [ContactHook_scripting.key]: ContactHook_scripting,
+    [TestTrigger.key]: TestTrigger
+  },
+  legacyProperties: {
+    subscribeUrl: 'http://zapier-httpbin.herokuapp.com/post',
+    unsubscribeUrl: 'https://zapier-httpbin.herokuapp.com/delete'
   },
   legacyScriptingSource
 };

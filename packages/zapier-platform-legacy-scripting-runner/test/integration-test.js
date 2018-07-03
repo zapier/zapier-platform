@@ -228,6 +228,22 @@ describe('Integration Test', () => {
       });
     });
 
+    it("auth test shouldn't require array result", () => {
+      const input = createTestInput(
+        compiledApp,
+        'triggers.test.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.meta = { test_poll: true };
+      return app(input).then(output => {
+        should.equal(output.results.length, 1);
+
+        const user = output.results[0];
+        should.equal(user.id, 1);
+        should.equal(user.username, 'Bret');
+      });
+    });
+
     it('scriptingless hook', () => {
       const input = createTestInput(
         appDefinition,
@@ -293,6 +309,39 @@ describe('Integration Test', () => {
           { id: 11, name: 'Cate', luckyNumber: 110 },
           { id: 22, name: 'Dave', luckyNumber: 220 }
         ]);
+      });
+    });
+
+    it('pre_subscribe & post_subscribe', () => {
+      const input = createTestInput(
+        compiledApp,
+        'triggers.contact_hook_scripting.operation.performSubscribe'
+      );
+      input.bundle.authData = { api_key: 'hey hey' };
+      return app(input).then(output => {
+        should.equal(output.results.json.event, 'contact.created');
+        should.equal(
+          output.results.json.hidden_message,
+          'pre_subscribe was here!'
+        );
+        should.equal(output.results.headers['X-Api-Key'], 'hey hey');
+        should.equal(output.results.hiddenMessage, 'post_subscribe was here!');
+      });
+    });
+
+    it('pre_unsubscribe', () => {
+      const input = createTestInput(
+        compiledApp,
+        'triggers.contact_hook_scripting.operation.performUnsubscribe'
+      );
+      input.bundle.authData = { api_key: 'yo yo' };
+      return app(input).then(output => {
+        should.equal(output.results.request.method, 'DELETE');
+
+        const echoed = output.results.json;
+        should.equal(echoed.json.event, 'contact.created');
+        should.equal(echoed.json.hidden_message, 'pre_unsubscribe was here!');
+        should.equal(echoed.headers['X-Api-Key'], 'yo yo');
       });
     });
   });
