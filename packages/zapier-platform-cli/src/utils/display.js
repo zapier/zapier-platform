@@ -1,6 +1,6 @@
 // could we explore https://www.npmjs.com/package/columnify
 // to simplify the columns/tables? the | - decoration is big
-const Table = require('cli-table2');
+const Table = require('cli-table3');
 const colors = require('colors/safe');
 const stringLength = require('string-length');
 const _ = require('lodash');
@@ -148,7 +148,7 @@ const makeRowBasedTable = (rows, columnDefs, { includeIndex = true } = {}) => {
   return strTable;
 };
 
-// Wraps the cli-table2 library. Rows is an array of objects, columnDefs
+// Wraps the cli-table3 library. Rows is an array of objects, columnDefs
 // an ordered sub-array [[label, key, (optional_default)], ...].
 const makeTable = (rows, columnDefs) => {
   const tableOptions = {
