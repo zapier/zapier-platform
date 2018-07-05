@@ -205,14 +205,18 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
   ) => {
     options = _.extend(
       {
-        // Options to deal with the response when post method is not defined
-        // * checkResponseStatus: throws an error if response status is not 2xx
-        // * parseResponse: assumes response content is JSON and parse it
+        // Options to deal with the final result returned by this function.
+        // * checkResponseStatus: throws an error if response status is not 2xx.
+        // * parseResponse:
+        //     assumes response content is JSON and parse it. post method won't
+        //     run if this is false.
         // * ensureArray: could be one of the following values:
-        //   - false: returns whatever data parsed from response content
-        //   - 'wrap': returns [obj] if response is an object
+        //   - false:
+        //       returns whatever data parsed from response content or returned
+        //       by the post method.
+        //   - 'wrap': returns [result] if result is an object.
         //   - 'first':
-        //       returns the first top-level array in the response if response
+        //       returns the first top-level array in the result if result
         //       is an object. This is the fallback behavior if ensureArray is
         //       not false nor 'wrap'.
         checkResponseStatus: true,
@@ -248,46 +252,47 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
 
       promise = promise.then(request => zobj.request(request));
 
-      const postMethod = postMethodName ? Zap[postMethodName] : null;
-      if (postMethod) {
+      if (options.checkResponseStatus) {
         promise = promise.then(response => {
           response.throwForStatus();
-          return runEvent({ key, name: postEventName, response }, zobj, bundle);
+          return response;
         });
+      }
+
+      if (!options.parseResponse) {
+        return promise;
+      }
+
+      const postMethod = postMethodName ? Zap[postMethodName] : null;
+      if (postMethod) {
+        promise = promise.then(response =>
+          runEvent({ key, name: postEventName, response }, zobj, bundle)
+        );
       } else {
-        promise = promise.then(response => {
-          if (options.checkResponseStatus) {
-            response.throwForStatus();
-          }
-          if (!options.parseResponse) {
-            return response;
-          }
+        promise = promise.then(response => zobj.JSON.parse(response.content));
+      }
+    }
 
-          const data = zobj.JSON.parse(response.content);
-
-          if (!options.ensureArray) {
-            return data;
-          }
-
-          if (Array.isArray(data)) {
-            return data;
-          } else if (data && typeof data === 'object') {
-            if (options.ensureArray === 'wrap') {
-              // Used by auth label and auth test
-              return [data];
-            } else {
-              // Find the first array in the response
-              for (const k in data) {
-                const value = data[k];
-                if (Array.isArray(value)) {
-                  return value;
-                }
+    if (options.ensureArray) {
+      promise = promise.then(result => {
+        if (Array.isArray(result)) {
+          return result;
+        } else if (result && typeof result === 'object') {
+          if (options.ensureArray === 'wrap') {
+            // Used by auth label and auth test
+            return [result];
+          } else {
+            // Find the first array in the response
+            for (const k in result) {
+              const value = result[k];
+              if (Array.isArray(value)) {
+                return value;
               }
             }
           }
-          throw new Error('JSON results array could not be located.');
-        });
-      }
+        }
+        throw new Error('JSON results array could not be located.');
+      });
     }
 
     return promise;
@@ -356,17 +361,54 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     );
   };
 
-  const runHook = (bundle, key) => {
+  const runCatchHook = (bundle, key) => {
     const methodName = `${key}_catch_hook`;
     const promise = Zap[methodName]
       ? runEvent({ key, name: 'trigger.hook' }, zobj, bundle)
-      : new Promise(resolve => resolve(bundle.cleanedRequest));
+      : Promise.resolve(bundle.cleanedRequest);
     return promise.then(result => {
       if (!Array.isArray(result)) {
         result = [result];
       }
       return result;
     });
+  };
+
+  const runPrePostHook = (bundle, key) => {
+    return runEventCombo(bundle, key, 'trigger.hook.pre', 'trigger.hook.post');
+  };
+
+  const runHook = (bundle, key) => {
+    const hookType = _.get(
+      app,
+      `triggers.${key}.operation.legacyProperties.hookType`
+    );
+
+    let cleanedArray;
+    if (Array.isArray(bundle.cleanedRequest)) {
+      cleanedArray = bundle.cleanedRequest;
+    } else if (
+      bundle.cleanedRequest &&
+      typeof bundle.cleanedRequest === 'object'
+    ) {
+      cleanedArray = [bundle.cleanedRequest];
+    }
+
+    const shouldRunPrePostHook =
+      hookType === 'notification' &&
+      cleanedArray &&
+      cleanedArray.every(x => x.resource_url);
+
+    if (shouldRunPrePostHook) {
+      const promises = cleanedArray.map(obj => {
+        const bund = _.cloneDeep(bundle);
+        bund.request.url = obj.resource_url;
+        return runPrePostHook(bund, key);
+      });
+      return Promise.all(promises).then(_.flatten);
+    }
+
+    return runCatchHook(bundle, key);
   };
 
   const runHookSubscribe = (bundle, key) => {

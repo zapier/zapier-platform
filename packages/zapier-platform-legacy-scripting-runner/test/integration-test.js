@@ -166,7 +166,7 @@ describe('Integration Test', () => {
     });
   });
 
-  describe('trigger', () => {
+  describe('polling trigger', () => {
     const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
     const compiledApp = schemaTools.prepareApp(appDefWithAuth);
     const app = createApp(appDefWithAuth);
@@ -243,8 +243,11 @@ describe('Integration Test', () => {
         should.equal(user.username, 'Bret');
       });
     });
+  });
 
-    it('scriptingless hook', () => {
+  describe('hook trigger', () => {
+    it('scriptingless', () => {
+      const app = createApp(appDefinition);
       const input = createTestInput(
         appDefinition,
         'triggers.contact_hook_scriptingless.operation.perform'
@@ -263,13 +266,13 @@ describe('Integration Test', () => {
       });
     });
 
-    it('KEY_catch_hook returns an object', () => {
+    it('KEY_catch_hook => object', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_object',
         'contact_hook_scripting_catch_hook'
       );
-
+      const app = createApp(appDef);
       const input = createTestInput(
         appDef,
         'triggers.contact_hook_scripting.operation.perform'
@@ -280,22 +283,21 @@ describe('Integration Test', () => {
       };
       return app(input).then(output => {
         output.results.length.should.equal(1);
+
         const contact = output.results[0];
-        should.deepEqual(contact, {
-          id: 10,
-          name: 'Bob',
-          luckyNumber: 777
-        });
+        should.equal(contact.id, 10);
+        should.equal(contact.name, 'Bob');
+        should.equal(contact.luckyNumber, 777);
       });
     });
 
-    it('KEY_catch_hook returns an array', () => {
+    it('KEY_catch_hook => array', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_array',
         'contact_hook_scripting_catch_hook'
       );
-
+      const app = createApp(appDef);
       const input = createTestInput(
         appDef,
         'triggers.contact_hook_scripting.operation.perform'
@@ -305,14 +307,227 @@ describe('Integration Test', () => {
         { id: 22, name: 'Dave' }
       ];
       return app(input).then(output => {
-        output.results.should.deepEqual([
-          { id: 11, name: 'Cate', luckyNumber: 110 },
-          { id: 22, name: 'Dave', luckyNumber: 220 }
-        ]);
+        const contacts = output.results;
+        should.equal(contacts.length, 2);
+        should.equal(contacts[0].id, 11);
+        should.equal(contacts[0].name, 'Cate');
+        should.equal(contacts[0].luckyNumber, 110);
+        should.equal(contacts[1].id, 22);
+        should.equal(contacts[1].name, 'Dave');
+        should.equal(contacts[1].luckyNumber, 220);
+      });
+    });
+
+    it('REST Hook should ignore KEY_pre_hook', () => {
+      // Not a Notication REST hook, KEY_pre_hook should be ignored
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_catch_hook_returning_object',
+        'contact_hook_scripting_catch_hook'
+      );
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_pre_hook_disabled',
+        'contact_hook_scripting_pre_hook'
+      );
+      const appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.cleanedRequest = {
+        id: 3,
+        name: 'Eric',
+        resource_url: 'https://dont.care'
+      };
+      return app(input).then(output => {
+        output.results.length.should.equal(1);
+
+        const contact = output.results[0];
+        should.equal(contact.id, 3);
+        should.equal(contact.name, 'Eric');
+        should.equal(contact.luckyNumber, 777);
+      });
+    });
+
+    it('Notification REST Hook w/o resource_url should ignore KEY_pre_hook', () => {
+      // Notication REST hook should fall back what REST Hook does when the
+      // hook doesn't have resource_url
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.triggers.contact_hook_scripting.operation.legacyProperties.hookType =
+        'notification';
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_catch_hook_returning_object',
+        'contact_hook_scripting_catch_hook'
+      );
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_pre_hook_disabled',
+        'contact_hook_scripting_pre_hook'
+      );
+      const appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.cleanedRequest = {
+        id: 3,
+        name: 'Eric'
+      };
+      return app(input).then(output => {
+        output.results.length.should.equal(1);
+
+        const contact = output.results[0];
+        should.equal(contact.id, 3);
+        should.equal(contact.name, 'Eric');
+        should.equal(contact.luckyNumber, 777);
+      });
+    });
+
+    it('KEY_pre_hook', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.triggers.contact_hook_scripting.operation.legacyProperties.hookType =
+        'notification';
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_pre_hook_disabled',
+        'contact_hook_scripting_pre_hook'
+      );
+      const appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.cleanedRequest = {
+        id: 3,
+        name: 'Dont Care',
+        resource_url: 'https://auth-json-server.zapier.ninja/users/3'
+      };
+      return app(input).then(output => {
+        output.results.length.should.equal(1);
+
+        const movie = output.results[0];
+        should.equal(movie.id, 3);
+        should.equal(movie.title, 'title 3');
+      });
+    });
+
+    it('KEY_post_hook => object', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.triggers.contact_hook_scripting.operation.legacyProperties.hookType =
+        'notification';
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_post_hook_returning_object',
+        'contact_hook_scripting_post_hook'
+      );
+      const appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.cleanedRequest = {
+        id: 3,
+        name: 'Dont Care',
+        resource_url: 'https://auth-json-server.zapier.ninja/users/3'
+      };
+      return app(input).then(output => {
+        output.results.length.should.equal(1);
+
+        const contact = output.results[0];
+        should.equal(contact.id, 3);
+        should.equal(contact.name, 'Clementine Bauch');
+        should.equal(contact.year, 2018);
+      });
+    });
+
+    it('KEY_post_hook => array', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.triggers.contact_hook_scripting.operation.legacyProperties.hookType =
+        'notification';
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_post_hook_returning_array',
+        'contact_hook_scripting_post_hook'
+      );
+      const appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.cleanedRequest = {
+        id: 3,
+        name: 'Dont Care',
+        resource_url: 'https://auth-json-server.zapier.ninja/users/3'
+      };
+      return app(input).then(output => {
+        const things = output.results;
+        should.equal(things.length, 2);
+        should.equal(things[0].id, 3);
+        should.equal(things[0].name, 'Clementine Bauch');
+        should.equal(things[0].year, 2017);
+        should.equal(things[1].id, 5555);
+        should.equal(things[1].name, 'The Thing');
+        should.equal(things[1].year, 2016);
+      });
+    });
+
+    it('KEY_pre_hook & KEY_post_hook => object', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.triggers.contact_hook_scripting.operation.legacyProperties.hookType =
+        'notification';
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_pre_hook_disabled',
+        'contact_hook_scripting_pre_hook'
+      );
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_hook_scripting_post_hook_returning_object',
+        'contact_hook_scripting_post_hook'
+      );
+      const appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.cleanedRequest = {
+        id: 3,
+        name: 'Dont Care',
+        resource_url: 'https://auth-json-server.zapier.ninja/users/3'
+      };
+      return app(input).then(output => {
+        output.results.length.should.equal(1);
+
+        const movie = output.results[0];
+        should.equal(movie.id, 3);
+        should.equal(movie.title, 'title 3');
+        should.equal(movie.year, 2018);
       });
     });
 
     it('pre_subscribe & post_subscribe', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
       const input = createTestInput(
         compiledApp,
         'triggers.contact_hook_scripting.operation.performSubscribe'
@@ -330,6 +545,10 @@ describe('Integration Test', () => {
     });
 
     it('pre_unsubscribe', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
       const input = createTestInput(
         compiledApp,
         'triggers.contact_hook_scripting.operation.performUnsubscribe'

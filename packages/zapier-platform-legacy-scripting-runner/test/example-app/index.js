@@ -77,20 +77,47 @@ const legacyScriptingSource = `
         return contacts;
       },
 
-      // To be replaced to 'contact_hook_scripting_catch_hook' on runtime
+      // To be replaced to 'contact_hook_scripting_catch_hook' at runtime
       contact_hook_scripting_catch_hook_returning_object: function(bundle) {
         var result = bundle.cleaned_request;
         result.luckyNumber = 777;
         return result;
       },
 
-      // To be replaced to 'contact_hook_scripting_catch_hook' on runtime
+      // To be replaced to 'contact_hook_scripting_catch_hook' at runtime
       contact_hook_scripting_catch_hook_returning_array: function(bundle) {
         var results = bundle.cleaned_request;
         for (const contact of results) {
           contact.luckyNumber = contact.id * 10;
         }
         return results;
+      },
+
+      // To be replaced with 'contact_hook_scripting_pre_hook' at runtime to enable
+      contact_hook_scripting_pre_hook_disabled: function(bundle) {
+        bundle.request.url = bundle.request.url.replace('/users/', '/movies/');
+        return bundle.request;
+      },
+
+      // To be replaced with 'contact_hook_scripting_post_hook' at runtime to enable
+      contact_hook_scripting_post_hook_returning_object: function(bundle) {
+        var thing = z.JSON.parse(bundle.response.content);
+        thing.year = 2018;
+        return thing;
+      },
+
+      // To be replaced with 'contact_hook_scripting_post_hook' at runtime to enable
+      contact_hook_scripting_post_hook_returning_array: function(bundle) {
+        var thing = z.JSON.parse(bundle.response.content);
+        thing.year = 2017;
+
+        var anotherThing = {
+          id: 5555,
+          name: 'The Thing',
+          year: 2016
+        };
+
+        return [thing, anotherThing];
       },
 
       pre_subscribe: function(bundle) {
@@ -207,7 +234,8 @@ const ContactHook_scripting = {
         "return z.legacyScripting.run(bundle, 'trigger.hook.unsubscribe', 'contact_hook_scripting');"
     },
     legacyProperties: {
-      event: 'contact.created'
+      event: 'contact.created',
+      hookType: 'rest'
     }
   }
 };
