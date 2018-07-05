@@ -45,12 +45,31 @@ const legacyScriptingSource = `
         return 'Hi ' + bundle.test_result.name;
       },
 
+      /*
+       * Polling Trigger
+       */
+
       contact_full_poll: function(bundle) {
         bundle.request.url = 'https://auth-json-server.zapier.ninja/users';
         var response = z.request(bundle.request);
         var contacts = z.JSON.parse(response.content);
         contacts[0].name = 'Patched by KEY_poll!';
         return contacts;
+      },
+
+      contact_full_pre_custom_trigger_fields: function(bundle) {
+        bundle.request.url += 's';
+        return bundle.request;
+      },
+
+      contact_full_post_custom_trigger_fields: function(bundle) {
+        var fields = z.JSON.parse(bundle.response.content);
+        fields.push({
+          key: 'spin',
+          label: 'Spin',
+          type: 'string'
+        });
+        return fields;
       },
 
       contact_pre_pre_poll: function(bundle) {
@@ -76,6 +95,10 @@ const legacyScriptingSource = `
         contacts[0].name = 'Patched by KEY_pre_poll & KEY_post_poll!';
         return contacts;
       },
+
+      /*
+       * Hook Trigger
+       */
 
       // To be replaced to 'contact_hook_scripting_catch_hook' at runtime
       contact_hook_scripting_catch_hook_returning_object: function(bundle) {
@@ -153,6 +176,27 @@ const ContactTrigger_full = {
   operation: {
     perform: {
       source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_full');"
+    },
+    outputFields: [
+      {
+        key: 'id',
+        label: 'ID',
+        type: 'integer'
+      },
+      {
+        key: 'name',
+        label: 'Name',
+        type: 'string'
+      },
+      {
+        source:
+          "return z.legacyScripting.run(bundle, 'trigger.output', 'contact_full');"
+      }
+    ],
+    legacyProperties: {
+      // Misses an 's' at the end on purpose for KEY_pre_custom_trigger_fields
+      // to fix
+      outputFieldsUrl: 'https://auth-json-server.zapier.ninja/output-field'
     }
   }
 };

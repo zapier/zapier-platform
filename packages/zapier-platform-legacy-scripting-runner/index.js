@@ -461,6 +461,20 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     );
   };
 
+  const runTriggerOutputFields = (bundle, key) => {
+    const url = _.get(app, `triggers.${key}.operation.legacyProperties.outputFieldsUrl`);
+    bundle.request.url = url;
+
+    return runEventCombo(
+      bundle,
+      key,
+      'trigger.output.pre',
+      'trigger.output.post',
+      undefined,
+      { ensureArray: 'wrap' }
+    );
+  };
+
   // core exposes this function as z.legacyScripting.run() method that we can
   // run legacy scripting easily like z.legacyScripting.run(bundle, 'trigger', 'KEY')
   // in CLI to simulate how WB backend runs legacy scripting.
@@ -495,9 +509,10 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
           return runHookSubscribe(bundle, key);
         case 'trigger.hook.unsubscribe':
           return runHookUnsubscribe(bundle, key);
+        case 'trigger.output':
+          return runTriggerOutputFields(bundle, key);
 
         // TODO: Add support for these:
-        // trigger.output
         // create
         // create.input
         // create.output
