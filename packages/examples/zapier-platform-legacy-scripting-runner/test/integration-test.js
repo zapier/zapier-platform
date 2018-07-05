@@ -243,6 +243,79 @@ describe('Integration Test', () => {
         should.equal(user.username, 'Bret');
       });
     });
+
+    it('KEY_pre_custom_trigger_fields', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_full_post_custom_trigger_fields',
+        'contact_full_post_custom_trigger_fields_disabled'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.contact_full.operation.outputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 5);
+        should.equal(fields[0].key, 'id');
+        should.equal(fields[1].key, 'name');
+        should.equal(fields[2].key, 'id');
+        should.equal(fields[3].key, 'color');
+        should.equal(fields[4].key, 'age');
+      });
+    });
+
+    it('KEY_post_custom_trigger_fields', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.triggers.contact_full.operation.legacyProperties.outputFieldsUrl +=
+        's';
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'contact_full_pre_custom_trigger_fields',
+        'contact_full_pre_custom_trigger_fields_disabled'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.contact_full.operation.outputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 6);
+        should.equal(fields[0].key, 'id');
+        should.equal(fields[1].key, 'name');
+        should.equal(fields[2].key, 'id');
+        should.equal(fields[3].key, 'color');
+        should.equal(fields[4].key, 'age');
+        should.equal(fields[5].key, 'spin');
+      });
+    });
+
+    it('KEY_pre_custom_trigger_fields & KEY_post_custom_trigger_fields', () => {
+      const input = createTestInput(
+        compiledApp,
+        'triggers.contact_full.operation.outputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 6);
+        should.equal(fields[0].key, 'id');
+        should.equal(fields[1].key, 'name');
+        should.equal(fields[2].key, 'id');
+        should.equal(fields[3].key, 'color');
+        should.equal(fields[4].key, 'age');
+        should.equal(fields[5].key, 'spin');
+      });
+    });
   });
 
   describe('hook trigger', () => {
