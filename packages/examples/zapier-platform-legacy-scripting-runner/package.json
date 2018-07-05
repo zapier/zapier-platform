@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "lint": "node_modules/.bin/eslint .",
-    "test": "export CLIENT_ID=1234 CLIENT_SECRET=asdf && node node_modules/mocha/bin/mocha --recursive",
+    "test": "export CLIENT_ID=1234 CLIENT_SECRET=asdf && node node_modules/mocha/bin/mocha --recursive -t 10000",
     "posttest": "npm run lint",
     "preversion": "git pull && npm test",
     "postversion": "git push && git push --tags",
