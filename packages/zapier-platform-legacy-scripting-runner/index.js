@@ -462,7 +462,10 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
   };
 
   const runTriggerOutputFields = (bundle, key) => {
-    const url = _.get(app, `triggers.${key}.operation.legacyProperties.outputFieldsUrl`);
+    const url = _.get(
+      app,
+      `triggers.${key}.operation.legacyProperties.outputFieldsUrl`
+    );
     bundle.request.url = url;
 
     return runEventCombo(
@@ -472,6 +475,32 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       'trigger.output.post',
       undefined,
       { ensureArray: 'wrap' }
+    );
+  };
+
+  const runCreate = (bundle, key) => {
+    const legacyProps =
+      _.get(app, `creates.${key}.operation.legacyProperties`) || {};
+    const url = legacyProps.url;
+    const fieldsExcludedFromBody = legacyProps.fieldsExcludedFromBody || [];
+
+    const body = {};
+    _.each(bundle.inputData, (v, k) => {
+      if (fieldsExcludedFromBody.indexOf(k) === -1) {
+        body[k] = v;
+      }
+    });
+
+    bundle.request.method = 'POST';
+    bundle.request.url = url;
+    bundle.request.body = body;
+
+    return runEventCombo(
+      bundle,
+      key,
+      'create.pre',
+      'create.post',
+      'create.write'
     );
   };
 
@@ -511,9 +540,10 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
           return runHookUnsubscribe(bundle, key);
         case 'trigger.output':
           return runTriggerOutputFields(bundle, key);
+        case 'create':
+          return runCreate(bundle, key);
 
         // TODO: Add support for these:
-        // create
         // create.input
         // create.output
         // search

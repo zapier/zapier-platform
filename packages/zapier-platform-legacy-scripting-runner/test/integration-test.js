@@ -637,4 +637,174 @@ describe('Integration Test', () => {
       });
     });
   });
+
+  describe('create', () => {
+    it('scriptingless', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.creates.movie.operation.legacyProperties.url += 's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'It',
+        genre: 'Horror'
+      };
+      return app(input).then(output => {
+        const movie = output.results;
+        should.exist(movie.id);
+        should.not.exist(movie.title);
+        should.equal(movie.genre, 'Horror');
+      });
+    });
+
+    it('KEY_pre_write', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_pre_write_disabled',
+        'movie_pre_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'The Shape of Water',
+        genre: 'Fantasy'
+      };
+      return app(input).then(output => {
+        const movie = output.results;
+        should.exist(movie.id);
+        should.equal(movie.title, 'The Shape of Water');
+        should.equal(movie.genre, 'Fantasy');
+      });
+    });
+
+    it('KEY_post_write', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.creates.movie.operation.legacyProperties.url += 's';
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_post_write_disabled',
+        'movie_post_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'Get Out',
+        genre: 'Comedy'
+      };
+      return app(input).then(output => {
+        const movie = output.results;
+        should.exist(movie.id);
+        should.not.exist(movie.title);
+        should.equal(movie.genre, 'Comedy');
+        should.equal(movie.year, 2017);
+      });
+    });
+
+    it('KEY_pre_write & KEY_post_write', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_pre_write_disabled',
+        'movie_pre_write'
+      );
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_post_write_disabled',
+        'movie_post_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'Phantom Thread',
+        genre: 'Drama'
+      };
+      return app(input).then(output => {
+        const movie = output.results;
+        should.exist(movie.id);
+        should.equal(movie.title, 'Phantom Thread');
+        should.equal(movie.genre, 'Drama');
+        should.equal(movie.year, 2017);
+      });
+    });
+
+    it('async KEY_write', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_write_async',
+        'movie_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'Room',
+        genre: 'Drama'
+      };
+      return app(input).then(output => {
+        const movie = output.results;
+        should.exist(movie.id);
+        should.equal(movie.title, 'Room');
+        should.equal(movie.genre, 'Drama');
+        should.equal(movie.year, 2015);
+      });
+    });
+
+    it('sync KEY_write', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_write_sync',
+        'movie_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'Arrival',
+        genre: 'Sci-fi'
+      };
+      return app(input).then(output => {
+        const movie = output.results;
+        should.exist(movie.id);
+        should.equal(movie.title, 'Arrival');
+        should.equal(movie.genre, 'Sci-fi');
+        should.equal(movie.year, 2016);
+      });
+    });
+  });
 });
