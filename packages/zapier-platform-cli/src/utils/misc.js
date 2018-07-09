@@ -179,7 +179,7 @@ const printVersionInfo = context => {
             PACKAGE_VERSION
           )}) and "core" (${colors.green(
             requiredVersion
-          )}) versions are out of sync. This is probably fine, but if you're epxeriencing issues, update the ${colors.cyan(
+          )}) versions are out of sync. This is probably fine, but if you're experiencing issues, update the ${colors.cyan(
             PLATFORM_PACKAGE
           )} dependency in your ${colors.cyan(
             'package.json'
