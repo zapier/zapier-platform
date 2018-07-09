@@ -163,7 +163,50 @@ const legacyScriptingSource = `
         bundle.request.data = z.JSON.stringify(data);
         bundle.request.method = 'DELETE';
         return bundle.request;
-      }
+      },
+
+      /*
+       * Create/Action
+       */
+
+      // To be replaced with 'movie_pre_write' at runtime
+      movie_pre_write_disabled: function(bundle) {
+        bundle.request.url += 's';
+        bundle.request.data = z.JSON.stringify(bundle.action_fields_full);
+        return bundle.request;
+      },
+
+      // To be replaced with 'movie_post_write' at runtime
+      movie_post_write_disabled: function(bundle) {
+        var data = z.JSON.parse(bundle.response.content);
+        data.year = 2017;
+        return data;
+      },
+
+      // To be replaced with 'movie_write' at runtime
+      movie_write_sync: function(bundle) {
+        bundle.request.url += 's';
+        bundle.request.data = z.JSON.stringify(bundle.action_fields_full);
+        var response = z.request(bundle.request);
+        var data = z.JSON.parse(response.content);
+        data.year = 2016;
+        return data;
+      },
+
+      // To be replaced with 'movie_write' at runtime
+      movie_write_async: function(bundle, callback) {
+        bundle.request.url += 's';
+        bundle.request.data = z.JSON.stringify(bundle.action_fields_full);
+        z.request(bundle.request, function(err, response) {
+          if (err) {
+            callback(err, response);
+          } else {
+            var data = z.JSON.parse(response.content);
+            data.year = 2015;
+            callback(err, data);
+          }
+        });
+      },
     };
 `;
 
@@ -299,6 +342,28 @@ const TestTrigger = {
   }
 };
 
+const MovieCreate = {
+  key: 'movie',
+  noun: 'Movie',
+  display: {
+    label: 'Create a Movie'
+  },
+  operation: {
+    perform: {
+      source: "return z.legacyScripting.run(bundle, 'create', 'movie');"
+    },
+    inputFields: [
+      { key: 'title', label: 'Title', type: 'string' },
+      { key: 'genre', label: 'Genre', type: 'string' }
+    ],
+    legacyProperties: {
+      // Misses an 's' at the end on purpose for scripting to fix it
+      url: 'https://auth-json-server.zapier.ninja/movie',
+      fieldsExcludedFromBody: ['title']
+    }
+  }
+};
+
 const App = {
   title: 'Example App',
   triggers: {
@@ -309,6 +374,9 @@ const App = {
     [ContactHook_scriptingless.key]: ContactHook_scriptingless,
     [ContactHook_scripting.key]: ContactHook_scripting,
     [TestTrigger.key]: TestTrigger
+  },
+  creates: {
+    [MovieCreate.key]: MovieCreate
   },
   legacyProperties: {
     subscribeUrl: 'http://zapier-httpbin.herokuapp.com/post',
