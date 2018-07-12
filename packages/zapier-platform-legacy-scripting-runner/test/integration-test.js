@@ -639,7 +639,7 @@ describe('Integration Test', () => {
   });
 
   describe('create', () => {
-    it('scriptingless', () => {
+    it('scriptingless perform', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.creates.movie.operation.legacyProperties.url += 's';
 
@@ -804,6 +804,282 @@ describe('Integration Test', () => {
         should.equal(movie.title, 'Arrival');
         should.equal(movie.genre, 'Sci-fi');
         should.equal(movie.year, 2016);
+      });
+    });
+
+    it('scriptingless input fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.creates.movie.operation.legacyProperties.inputFieldsUrl +=
+        's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 3);
+        should.equal(fields[0].key, 'title');
+        should.equal(fields[1].key, 'genre');
+        should.equal(fields[2].key, 'luckyNumber');
+      });
+    });
+
+    it('KEY_pre_custom_action_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_pre_custom_action_fields_disabled',
+        'movie_pre_custom_action_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 3);
+        should.equal(fields[0].key, 'title');
+        should.equal(fields[1].key, 'genre');
+        should.equal(fields[2].key, 'luckyNumber');
+      });
+    });
+
+    it('KEY_post_custom_action_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.creates.movie.operation.legacyProperties.inputFieldsUrl +=
+        's';
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_post_custom_action_fields_disabled',
+        'movie_post_custom_action_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 4);
+        should.equal(fields[0].key, 'title');
+        should.equal(fields[1].key, 'genre');
+        should.equal(fields[2].key, 'luckyNumber');
+        should.equal(fields[3].key, 'year');
+        should.equal(fields[3].type, 'integer');
+      });
+    });
+
+    it('KEY_pre_custom_action_fields & KEY_post_custom_action_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_pre_custom_action_fields_disabled',
+        'movie_pre_custom_action_fields'
+      );
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_post_custom_action_fields_disabled',
+        'movie_post_custom_action_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 4);
+        should.equal(fields[0].key, 'title');
+        should.equal(fields[1].key, 'genre');
+        should.equal(fields[2].key, 'luckyNumber');
+        should.equal(fields[3].key, 'year');
+        should.equal(fields[3].type, 'integer');
+      });
+    });
+
+    it('KEY_custom_action_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_custom_action_fields_disabled',
+        'movie_custom_action_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 4);
+        should.equal(fields[0].key, 'title');
+        should.equal(fields[1].key, 'genre');
+        should.equal(fields[2].key, 'luckyNumber');
+        should.equal(fields[3].key, 'year');
+        should.equal(fields[3].type, 'integer');
+      });
+    });
+
+    it('scriptingless output fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.creates.movie.operation.legacyProperties.outputFieldsUrl +=
+        's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.outputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 6);
+        should.equal(fields[0].key, 'id');
+        should.equal(fields[1].key, 'title');
+        should.equal(fields[2].key, 'genre');
+        should.equal(fields[3].key, 'id');
+        should.equal(fields[4].key, 'color');
+        should.equal(fields[5].key, 'age');
+      });
+    });
+
+
+    it('KEY_pre_custom_action_result_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_pre_custom_action_result_fields_disabled',
+        'movie_pre_custom_action_result_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.outputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 6);
+        should.equal(fields[0].key, 'id');
+        should.equal(fields[1].key, 'title');
+        should.equal(fields[2].key, 'genre');
+        should.equal(fields[3].key, 'id');
+        should.equal(fields[4].key, 'color');
+        should.equal(fields[5].key, 'age');
+      });
+    });
+
+    it('KEY_post_custom_action_result_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.creates.movie.operation.legacyProperties.outputFieldsUrl +=
+        's';
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_post_custom_action_result_fields_disabled',
+        'movie_post_custom_action_result_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.outputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 7);
+        should.equal(fields[0].key, 'id');
+        should.equal(fields[1].key, 'title');
+        should.equal(fields[2].key, 'genre');
+        should.equal(fields[3].key, 'id');
+        should.equal(fields[4].key, 'color');
+        should.equal(fields[5].key, 'age');
+        should.equal(fields[6].key, 'tagline');
+        should.equal(fields[6].type, 'string');
+      });
+    });
+
+    it('KEY_pre_custom_action_result_fields & KEY_post_custom_action_result_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_pre_custom_action_result_fields_disabled',
+        'movie_pre_custom_action_result_fields'
+      );
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_post_custom_action_result_fields_disabled',
+        'movie_post_custom_action_result_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.outputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 7);
+        should.equal(fields[0].key, 'id');
+        should.equal(fields[1].key, 'title');
+        should.equal(fields[2].key, 'genre');
+        should.equal(fields[3].key, 'id');
+        should.equal(fields[4].key, 'color');
+        should.equal(fields[5].key, 'age');
+        should.equal(fields[6].key, 'tagline');
+        should.equal(fields[6].type, 'string');
+      });
+    });
+
+    it('KEY_custom_action_result_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+        'movie_custom_action_result_fields_disabled',
+        'movie_custom_action_result_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.outputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 7);
+        should.equal(fields[0].key, 'id');
+        should.equal(fields[1].key, 'title');
+        should.equal(fields[2].key, 'genre');
+        should.equal(fields[3].key, 'id');
+        should.equal(fields[4].key, 'color');
+        should.equal(fields[5].key, 'age');
+        should.equal(fields[6].key, 'tagline');
+        should.equal(fields[6].type, 'string');
       });
     });
   });

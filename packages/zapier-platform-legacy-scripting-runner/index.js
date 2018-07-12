@@ -4,6 +4,20 @@ const _ = require('lodash');
 
 const bundleConverter = require('./bundle');
 
+const FIELD_TYPE_CONVERT_MAP = {
+  // field_type_in_wb: field_type_in_cli
+  bool: 'boolean',
+  copy: 'copy',
+  datetime: 'datetime',
+  dict: 'string',
+  file: 'file',
+  float: 'number',
+  int: 'integer',
+  password: 'password',
+  text: 'text',
+  unicode: 'string'
+};
+
 const parseFinalResult = (result, event) => {
   // Old request was .data (string), new is .body (object), which matters for _pre
   if (event.name.endsWith('.pre')) {
@@ -16,13 +30,26 @@ const parseFinalResult = (result, event) => {
 
   // Old writes accepted a list, but CLI doesn't anymore, which matters for _write and _post_write
   if (event.name === 'create.write' || event.name === 'create.post') {
-    if (_.isArray(result) && result.length) {
+    if (Array.isArray(result) && result.length) {
       return result[0];
-    } else if (!_.isArray(result)) {
+    } else if (!Array.isArray(result)) {
       return result;
     }
 
     return {};
+  }
+
+  if (
+    event.name.endsWith('.input') ||
+    event.name.endsWith('.output') ||
+    event.name.endsWith('.input.post') ||
+    event.name.endsWith('.output.post')
+  ) {
+    if (Array.isArray(result)) {
+      result.forEach(field => {
+        field.type = FIELD_TYPE_CONVERT_MAP[field.type] || field.type;
+      });
+    }
   }
 
   return result;
@@ -221,7 +248,9 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
         //       not false nor 'wrap'.
         checkResponseStatus: true,
         parseResponse: true,
-        ensureArray: false
+        ensureArray: false,
+
+        resetRequestForFullMethod: false
       },
       options
     );
@@ -240,6 +269,14 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
 
     const fullMethod = fullMethodName ? Zap[fullMethodName] : null;
     if (fullMethod) {
+      if (options.resetRequestForFullMethod) {
+        // Used by custom fields
+        _.extend(bundle.request, {
+          method: 'GET',
+          url: ''
+        });
+      }
+
       // Running "full" scripting method like KEY_poll
       promise = runEvent({ key, name: fullEventName }, zobj, bundle);
     } else {
@@ -461,21 +498,42 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     );
   };
 
+  const runCustomFields = (
+    bundle,
+    key,
+    typeOf,
+    url,
+    supportFullMethod = true
+  ) => {
+    let preEventName, postEventName, fullEventName;
+    if (url) {
+      preEventName = typeOf + '.pre';
+      postEventName = typeOf + '.post';
+      bundle.request.url = url;
+    }
+
+    if (supportFullMethod) {
+      fullEventName = typeOf;
+    }
+
+    bundle.request.method = 'GET';
+
+    return runEventCombo(
+      bundle,
+      key,
+      preEventName,
+      postEventName,
+      fullEventName,
+      { ensureArray: 'wrap', resetRequestForFullMethod: true }
+    );
+  };
+
   const runTriggerOutputFields = (bundle, key) => {
     const url = _.get(
       app,
       `triggers.${key}.operation.legacyProperties.outputFieldsUrl`
     );
-    bundle.request.url = url;
-
-    return runEventCombo(
-      bundle,
-      key,
-      'trigger.output.pre',
-      'trigger.output.post',
-      undefined,
-      { ensureArray: 'wrap' }
-    );
+    return runCustomFields(bundle, key, 'trigger.output', url, false);
   };
 
   const runCreate = (bundle, key) => {
@@ -504,11 +562,28 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     );
   };
 
+  const runCreateInputFields = (bundle, key) => {
+    const url = _.get(
+      app,
+      `creates.${key}.operation.legacyProperties.inputFieldsUrl`
+    );
+    return runCustomFields(bundle, key, 'create.input', url);
+  };
+
+  const runCreateOutputFields = (bundle, key) => {
+    const url = _.get(
+      app,
+      `creates.${key}.operation.legacyProperties.outputFieldsUrl`
+    );
+    return runCustomFields(bundle, key, 'create.output', url);
+  };
+
   // core exposes this function as z.legacyScripting.run() method that we can
   // run legacy scripting easily like z.legacyScripting.run(bundle, 'trigger', 'KEY')
   // in CLI to simulate how WB backend runs legacy scripting.
   const run = (bundle, typeOf, key) => {
     const initRequest = {
+      url: '',
       headers: {},
       params: {},
       body: {}
@@ -542,10 +617,12 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
           return runTriggerOutputFields(bundle, key);
         case 'create':
           return runCreate(bundle, key);
+        case 'create.input':
+          return runCreateInputFields(bundle, key);
+        case 'create.output':
+          return runCreateOutputFields(bundle, key);
 
         // TODO: Add support for these:
-        // create.input
-        // create.output
         // search
         // search.resource
         // search.input

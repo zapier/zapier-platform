@@ -207,6 +207,73 @@ const legacyScriptingSource = `
           }
         });
       },
+
+      // To be replaced with 'movie_pre_custom_action_fields' at runtime
+      movie_pre_custom_action_fields_disabled: function(bundle) {
+        bundle.request.url += 's';
+        return bundle.request;
+      },
+
+      // To be replaced with 'movie_post_custom_action_fields' at runtime
+      movie_post_custom_action_fields_disabled: function(bundle) {
+        var fields = z.JSON.parse(bundle.response.content);
+        fields.push({
+          key: 'year',
+          label: 'Year',
+          type: 'int'
+        });
+        return fields;
+      },
+
+      // To be replaced with 'movie_custom_action_fields' at runtime
+      movie_custom_action_fields_disabled: function(bundle) {
+        // bundle.request.url should be an empty string to start with
+        bundle.request.url += 'https://auth-json-server.zapier.ninja/input-fields';
+        var response = z.request(bundle.request);
+        var fields = z.JSON.parse(response.content);
+        fields.push({
+          key: 'year',
+          label: 'Year',
+          type: 'int'
+        });
+        return fields;
+      },
+
+      // To be replaced with 'movie_pre_custom_action_result_fields' at runtime
+      movie_pre_custom_action_result_fields_disabled: function(bundle) {
+        bundle.request.url += 's';
+        return bundle.request;
+      },
+
+      // To be replaced with 'movie_post_custom_action_result_fields' at runtime
+      movie_post_custom_action_result_fields_disabled: function(bundle) {
+        var fields = z.JSON.parse(bundle.response.content);
+        fields.push({
+          key: 'tagline',
+          label: 'Tagline',
+          type: 'unicode'
+        });
+        return fields;
+      },
+
+      // To be replaced with 'movie_custom_action_result_fields' at runtime
+      movie_custom_action_result_fields_disabled: function(bundle, callback) {
+        // bundle.request.url should be an empty string to start with
+        bundle.request.url += 'https://auth-json-server.zapier.ninja/output-fields';
+        z.request(bundle.request, function(err, response) {
+          if (err) {
+            callback(err, response);
+          } else {
+            var fields = z.JSON.parse(response.content);
+            fields.push({
+              key: 'tagline',
+              label: 'Tagline',
+              type: 'unicode'
+            });
+            callback(err, fields);
+          }
+        });
+      }
     };
 `;
 
@@ -354,11 +421,25 @@ const MovieCreate = {
     },
     inputFields: [
       { key: 'title', label: 'Title', type: 'string' },
-      { key: 'genre', label: 'Genre', type: 'string' }
+      { key: 'genre', label: 'Genre', type: 'string' },
+      {
+        source: "return z.legacyScripting.run(bundle, 'create.input', 'movie');"
+      }
+    ],
+    outputFields: [
+      { key: 'id', label: 'ID', type: 'integer' },
+      { key: 'title', label: 'Title', type: 'string' },
+      { key: 'genre', label: 'Genre', type: 'string' },
+      {
+        source:
+          "return z.legacyScripting.run(bundle, 'create.output', 'movie');"
+      }
     ],
     legacyProperties: {
-      // Misses an 's' at the end on purpose for scripting to fix it
+      // The URLs miss an 's' at the end on purpose for scripting to fix it
       url: 'https://auth-json-server.zapier.ninja/movie',
+      inputFieldsUrl: 'https://auth-json-server.zapier.ninja/input-field',
+      outputFieldsUrl: 'https://auth-json-server.zapier.ninja/output-field',
       fieldsExcludedFromBody: ['title']
     }
   }
