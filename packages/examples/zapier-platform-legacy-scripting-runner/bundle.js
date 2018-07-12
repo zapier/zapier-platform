@@ -136,7 +136,7 @@ const addRequest = (event, bundle, convertedBundle) => {
 };
 
 const addResponse = (event, bundle, convertedBundle) => {
-  if (event.name.endsWith('.post') || event.name.endsWith('.output')) {
+  if (event.name.endsWith('.post')) {
     convertedBundle.response = event.response;
     convertedBundle.response.status_code = event.response.status;
   }
@@ -144,19 +144,19 @@ const addResponse = (event, bundle, convertedBundle) => {
 
 // Convert bundle from CLI to WB based on which event to run
 const bundleConverter = (bundle, event) => {
-  let method = 'GET';
+  let defaultMethod = 'GET';
 
   if (
     event.name.startsWith('create') ||
     event.name.startsWith('auth.oauth2') ||
     event.name.startsWith('trigger.hook.subscribe')
   ) {
-    method = 'POST';
+    defaultMethod = 'POST';
   }
 
   const convertedBundle = {
     request: {
-      method,
+      method: _.get(bundle, 'request.method') || defaultMethod,
       url: _.get(bundle, '_legacyUrl', '') || _.get(bundle, 'request.url', ''),
       headers: {
         'Content-Type': 'application/json'

@@ -517,7 +517,6 @@ describe('bundleConverter', () => {
   it('should convert a bundle for _post_write, _custom_action_result_fields, _post_custom_action_fields, and _post_custom_action_result_fields', (done) => {
     const events = [
       'create.post',
-      'create.output',
       'create.input.post',
       'create.output.post',
     ];
@@ -633,7 +632,6 @@ describe('bundleConverter', () => {
   it('should convert a bundle for _post_search, _custom_search_result_fields, _post_custom_search_fields, and _post_custom_search_result_fields', (done) => {
     const events = [
       'search.post',
-      'search.output',
       'search.input.post',
       'search.output.post',
     ];
