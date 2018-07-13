@@ -87,8 +87,10 @@ const callAPI = (route, options, rawError = false) => {
       if (constants.DEBUG || global.argOpts.debug) {
         console.log(`>> ${requestOptions.method} ${requestOptions.url}`);
         if (requestOptions.body) {
+          const replacementStr = 'raw zip removed in logs';
           let cleanedBody = _.assign({}, JSON.parse(requestOptions.body), {
-            zip_file: 'raw zip removed in logs'
+            zip_file: replacementStr,
+            source_zip_file: replacementStr
           });
           console.log(`>> ${JSON.stringify(cleanedBody)}`);
         }
