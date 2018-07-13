@@ -578,6 +578,22 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     return runCustomFields(bundle, key, 'create.output', url);
   };
 
+  const runSearchInputFields = (bundle, key) => {
+    const url = _.get(
+      app,
+      `searches.${key}.operation.legacyProperties.inputFieldsUrl`
+    );
+    return runCustomFields(bundle, key, 'search.input', url);
+  };
+
+  const runSearchOutputFields = (bundle, key) => {
+    const url = _.get(
+      app,
+      `searches.${key}.operation.legacyProperties.outputFieldsUrl`
+    );
+    return runCustomFields(bundle, key, 'search.output', url);
+  };
+
   // core exposes this function as z.legacyScripting.run() method that we can
   // run legacy scripting easily like z.legacyScripting.run(bundle, 'trigger', 'KEY')
   // in CLI to simulate how WB backend runs legacy scripting.
@@ -621,12 +637,14 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
           return runCreateInputFields(bundle, key);
         case 'create.output':
           return runCreateOutputFields(bundle, key);
+        case 'search.input':
+          return runSearchInputFields(bundle, key);
+        case 'search.output':
+          return runSearchOutputFields(bundle, key);
 
         // TODO: Add support for these:
         // search
         // search.resource
-        // search.input
-        // search.output
       }
       throw new Error(`unrecognizable typeOf '${typeOf}'`);
     });
