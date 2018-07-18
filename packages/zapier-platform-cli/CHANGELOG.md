@@ -1,3 +1,14 @@
+## 7.1.0
+
+### cli
+
+* (fix) Migrating by email shouldn't ask for promote ([#341](https://github.com/zapier/zapier-platform-cli/pull/341))
+* (fix) Fix "epxeriencing" -> "experiencing" typo ([#338](https://github.com/zapier/zapier-platform-cli/pull/338))
+* (fix) Fix failing Travis badge ([#343](https://github.com/zapier/zapier-platform-cli/pull/343))
+* (improvement) Truncate `source_zip` in logs ([#348](https://github.com/zapier/zapier-platform-cli/pull/348))
+* (improvement) Migrate to cli-table3 ([#327](https://github.com/zapier/zapier-platform-cli/pull/327))
+* (docs) Session auth should be using `authData` instead of `inputData` ([#346](https://github.com/zapier/zapier-platform-cli/pull/346))
+
 ## 7.0.0
 
 ### cli
