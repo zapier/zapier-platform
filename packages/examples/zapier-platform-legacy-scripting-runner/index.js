@@ -2,6 +2,8 @@
 
 const _ = require('lodash');
 
+const cleaner = require('zapier-platform-core/src/tools/cleaner');
+
 const bundleConverter = require('./bundle');
 
 const FIELD_TYPE_CONVERT_MAP = {
@@ -53,6 +55,11 @@ const parseFinalResult = (result, event) => {
   }
 
   return result;
+};
+
+const replaceCurliesInRequest = (request, bundle) => {
+  const bank = cleaner.createBundleBank(undefined, { bundle: bundle });
+  return cleaner.recurseReplaceBank(request, bank);
 };
 
 const compileLegacyScriptingSource = source => {
@@ -254,6 +261,10 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       },
       options
     );
+
+    if (bundle.request) {
+      bundle.request = replaceCurliesInRequest(bundle.request, bundle);
+    }
 
     let promise;
 
@@ -578,6 +589,38 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     return runCustomFields(bundle, key, 'create.output', url);
   };
 
+  const runSearch = (bundle, key) => {
+    const url = _.get(app, `searches.${key}.operation.legacyProperties.url`);
+
+    bundle.request.url = url;
+
+    return runEventCombo(
+      bundle,
+      key,
+      'search.pre',
+      'search.post',
+      'search.search',
+      { ensureArray: 'first' }
+    );
+  };
+
+  const runSearchResource = (bundle, key) => {
+    const url = _.get(
+      app,
+      `searches.${key}.operation.legacyProperties.resourceUrl`
+    );
+    bundle.request.url = url;
+
+    return runEventCombo(
+      bundle,
+      key,
+      'search.resource.pre',
+      'search.resource.post',
+      'search.resource',
+      { parseResponseForPostMethod: true }
+    );
+  };
+
   const runSearchInputFields = (bundle, key) => {
     const url = _.get(
       app,
@@ -637,14 +680,14 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
           return runCreateInputFields(bundle, key);
         case 'create.output':
           return runCreateOutputFields(bundle, key);
+        case 'search':
+          return runSearch(bundle, key);
+        case 'search.resource':
+          return runSearchResource(bundle, key);
         case 'search.input':
           return runSearchInputFields(bundle, key);
         case 'search.output':
           return runSearchOutputFields(bundle, key);
-
-        // TODO: Add support for these:
-        // search
-        // search.resource
       }
       throw new Error(`unrecognizable typeOf '${typeOf}'`);
     });

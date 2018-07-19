@@ -87,7 +87,7 @@ const addInputData = (event, bundle, convertedBundle) => {
     convertedBundle.search_fields = bundle.inputData;
 
     if (event.name.startsWith('search.resource')) {
-      convertedBundle.read_fields = event.results;
+      convertedBundle.read_fields = event.results || bundle.inputData;
       convertedBundle.read_context = bundle.inputData;
     }
   }
