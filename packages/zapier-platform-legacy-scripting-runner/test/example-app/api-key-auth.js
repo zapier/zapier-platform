@@ -1,8 +1,8 @@
-'use strict';
+const { AUTH_JSON_SERVER_URL } = require('../auth-json-server');
 
 const testAuthSource = `
   const responsePromise = z.request({
-    url: 'https://auth-json-server.zapier.ninja/me'
+    url: '${AUTH_JSON_SERVER_URL}/me'
   });
   return responsePromise.then(response => {
     if (response.status !== 200) {

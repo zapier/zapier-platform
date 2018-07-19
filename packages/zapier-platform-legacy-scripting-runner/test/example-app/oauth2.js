@@ -1,8 +1,8 @@
-'use strict';
+const { AUTH_JSON_SERVER_URL } = require('../auth-json-server');
 
 const testAuthSource = `
   const responsePromise = z.request({
-    url: 'https://auth-json-server.zapier.ninja/me'
+    url: '${AUTH_JSON_SERVER_URL}/me'
   });
   return responsePromise.then(response => {
     if (response.status !== 200) {
@@ -44,12 +44,12 @@ module.exports = {
     oauth2Config: {
       legacyProperties: {
         // Incomplete URLs on purpose to test pre_oauthv2_token
-        accessTokenUrl: 'https://auth-json-server.zapier.ninja/oauth/access-',
-        refreshTokenUrl: 'https://auth-json-server.zapier.ninja/oauth/refresh-'
+        accessTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/access-`,
+        refreshTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/refresh-`
       },
       authorizeUrl: {
         method: 'GET',
-        url: 'https://auth-json-server.zapier.ninja/oauth/authorize',
+        url: `${AUTH_JSON_SERVER_URL}/oauth/authorize`,
         params: {
           client_id: '{{process.env.CLIENT_ID}}',
           state: '{{bundle.inputData.state}}',
@@ -66,7 +66,9 @@ module.exports = {
       autoRefresh: true
     }
   },
-  beforeRequest: [{ source: maybeIncludeAuthSource, args: ['request', 'z', 'bundle'] }]
+  beforeRequest: [
+    { source: maybeIncludeAuthSource, args: ['request', 'z', 'bundle'] }
+  ]
 
   // We don't need afterResponse to refresh auth as core appends one
   // automatically when autoRefresh is true
