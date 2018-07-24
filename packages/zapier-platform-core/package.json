@@ -58,6 +58,9 @@
     "prettier": "1.11.1",
     "should": "11.2.1"
   },
+  "optionalDependencies": {
+    "@types/node": "8.10.20"
+  },
   "prettier": {
     "singleQuote": true
   },

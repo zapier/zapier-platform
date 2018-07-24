@@ -10,12 +10,12 @@ import { Agent } from 'http';
 export const version: string;
 export const tools: { env: { inject: (filename?: string) => void } };
 
-// see: https://github.com/zapier/zapier-platform-cli/issues/15#issuecomment-393154191
+// see: https://github.com/zapier/zapier-platform-cli/issues/339#issue-336888249
 export const createAppTester: (
   appRaw: object
-) => <T extends any>(
-  func: (z: zObject, bundle: Bundle) => Promise<T>,
-  bundle?: Partial<Bundle> // partial so we don't have to make a full bundle in tests
+) => <T extends any, B extends Bundle>(
+  func: (z: ZObject, bundle: B) => Promise<T>,
+  bundle?: Partial<B> // partial so we don't have to make a full bundle in tests
 ) => T extends Promise<T> ? T : Promise<T>;
 
 // internal only
@@ -101,7 +101,7 @@ export interface RawHttpResponse extends BaseHttpResponse {
   body: ReadableStream;
 }
 
-export interface zObject {
+export interface ZObject {
   request: {
     // most specific overloads go first
     (url: string, options: HttpRequestOptions & { raw: true }): Promise<
