@@ -13,6 +13,7 @@ const updateNotifier = require('update-notifier');
 const colors = require('colors/safe');
 const ignore = require('ignore');
 const gitIgnore = require('parse-gitignore');
+const semver = require('semver');
 
 const eslint = require('eslint');
 
@@ -172,10 +173,12 @@ const forceIncludeDumbPath = (appConfig, filePath) => {
     return true; // Because of consistent-return
   });
 
+  const nodeMajorVersion = semver(constants.LAMBDA_VERSION).major;
+
   return (
     filePath.endsWith('package.json') ||
     filePath.endsWith('definition.json') ||
-    filePath.endsWith('/bin/linux-x64-node-6/deasync.node') || // Special, for zapier-platform-legacy-scripting-runner
+    filePath.endsWith(`/bin/linux-x64-node-${nodeMajorVersion}/deasync.node`) || // Special, for zapier-platform-legacy-scripting-runner
     filePath.match(
       path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/
     ) ||
