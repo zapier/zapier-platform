@@ -90,7 +90,8 @@ module.exports = makeSchema(
           'boolean',
           'datetime',
           'file',
-          'password'
+          'password',
+          'copy'
         ]
       },
       required: {
