@@ -42,7 +42,7 @@ module.exports = makeSchema({
     },
     directions: {
       description:
-        'A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application.',
+        'A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application. Only evaluated for static webhooks.',
       type: 'string',
       minLength: 12,
       maxLength: 1000
