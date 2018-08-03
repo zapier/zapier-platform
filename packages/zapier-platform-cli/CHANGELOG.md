@@ -1,3 +1,18 @@
+## 7.2.0
+
+### cli
+
+* (fix) Include required binary in the build ([#350](https://github.com/zapier/zapier-platform-cli/pull/350))
+
+### schema
+
+* (fix) Add `copy` field type to `FieldSchema` ([#52](https://github.com/zapier/zapier-platform-schema/pull/52))
+* (docs) Clarify `BasicDisplaySchema` directions description ([#51](https://github.com/zapier/zapier-platform-schema/pull/51))
+
+### core
+
+* (improvement) Better `AppTester` typescript bindings ([#103](https://github.com/zapier/zapier-platform-core/pull/103))
+
 ## 7.1.0
 
 ### cli
