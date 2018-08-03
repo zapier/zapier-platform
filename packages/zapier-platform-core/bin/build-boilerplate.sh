@@ -24,25 +24,21 @@ NEW_VERSION="$(node -p "require('./package.json').version")"
 
 FILE="$BUILD_DIR/$NEW_VERSION.zip"
 
-# Update version
-bin/update-boilerplate-dependencies.js
-
-# Install dependencies
-cd $CONTENTS_DIR && npm install
-
 # Allow pushing "local changes" into the zip file
 if [ "$1" == "--debug" ]; then
-  cp -R ../src/* node_modules/zapier-platform-core/src/
-  cp -R ../node_modules/zapier-platform-legacy-scripting-runner/* node_modules/zapier-platform-legacy-scripting-runner/
-  rm -rf node_modules/zapier-platform-core/node_modules
-  rm -rf node_modules/zapier-platform-legacy-scripting-runner/node_modules
-  rm -rf node_modules/zapier-platform-schema/node_modules
-fi
+  npm pack
+  cd node_modules/zapier-platform-legacy-scripting-runner && npm pack
+  cd ../..
+  bin/update-boilerplate-dependencies.js debug
+  cd $CONTENTS_DIR && npm install
 
-# Build the zip file!
-zip -R ../$FILE '*.js' '*.json'\
-    '*/darwin*node-6/*.node' '*/darwin*node-7/*.node' '*/darwin*node-8/*.node'\
-    '*/linux*node-6/*.node' '*/linux*node-7/*.node' '*/linux*node-8/*.node'
+  zip -R ../$FILE '*.js' '*.json' '*/darwin-x64-node-8/*.node' '*/linux-x64-node-8/*.node'
+else
+  bin/update-boilerplate-dependencies.js
+  cd $CONTENTS_DIR && npm install
+
+  zip -R ../$FILE '*.js' '*.json' '*/linux-x64-node-8/*.node'
+fi
 
 # Revert copied files
 rm -f $FILES_TO_COPY
