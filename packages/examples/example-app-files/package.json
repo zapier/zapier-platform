@@ -17,7 +17,7 @@
   "dependencies": {
     "form-data": "2.1.4",
     "request": "2.81.0",
-    "zapier-platform-core": "7.1.0"
+    "zapier-platform-core": "7.2.0"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
