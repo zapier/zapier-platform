@@ -5,19 +5,18 @@ const _ = require('lodash');
 const bundleConverter = require('../bundle');
 
 describe('bundleConverter', () => {
-
   const defaultBundle = {
     _legacyUrl: 'https://zapier.com',
     inputData: {
-      user: 'Zapier',
+      user: 'Zapier'
     },
     authData: {
-      apiKey: 'Zapier-API-Key',
+      apiKey: 'Zapier-API-Key'
     },
     meta: {
       frontend: false,
-      prefill: false,
-    },
+      prefill: false
+    }
   };
 
   const defaultHookBundle = {
@@ -25,82 +24,81 @@ describe('bundleConverter', () => {
     _legacyEvent: 'message',
     targetUrl: 'https://hooks.zapier.com/abc',
     inputData: {
-      user: 'Zapier',
+      user: 'Zapier'
     },
     authData: {
-      apiKey: 'Zapier-API-Key',
+      apiKey: 'Zapier-API-Key'
     },
     meta: {
       frontend: false,
-      prefill: false,
-    },
+      prefill: false
+    }
   };
 
   //
   // Triggers
   //
 
-  it('should convert a bundle for _pre_poll, _poll, and _pre_custom_trigger_fields', (done) => {
-    const events = [
-      'trigger.pre',
-      'trigger.poll',
-      'trigger.output.pre',
-    ];
+  it('should convert a bundle for _pre_poll, _poll, and _pre_custom_trigger_fields', async () => {
+    const events = ['trigger.pre', 'trigger.poll', 'trigger.output.pre'];
     const bundle = defaultBundle;
     const expectedBundle = {
       request: {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       trigger_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       trigger_fields_raw: {
-        user: 'Zapier',
-      },
+        user: 'Zapier'
+      }
     };
 
-    _.each(events, (eventName) => {
-      const event = {
-        name: eventName,
-        key: 'trigger',
-      };
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-    });
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = {
+          name: eventName,
+          key: 'trigger'
+        };
+        return bundleConverter(bundle, event);
+      })
+    );
 
-    done();
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
+    });
   });
 
-  it('should convert a bundle for _post_poll and _post_custom_trigger_fields', (done) => {
-    const events = [
-      'trigger.post',
-      'trigger.output.post',
-    ];
+  it('should convert a bundle for _post_poll and _post_custom_trigger_fields', async () => {
+    const events = ['trigger.post', 'trigger.output.post'];
     const eventData = {
       key: 'trigger',
       response: {
         status: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
     const bundle = defaultBundle;
     const expectedBundle = {
@@ -108,109 +106,116 @@ describe('bundleConverter', () => {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       trigger_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       trigger_fields_raw: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       response: {
         status: 200,
         status_code: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
 
-    _.each(events, (eventName) => {
-      const event = eventData;
-      event.name = eventName;
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-    });
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = _.cloneDeep(eventData);
+        event.name = eventName;
+        return bundleConverter(bundle, event);
+      })
+    );
 
-    done();
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
+    });
   });
 
   // Hooks
-  it('should convert a bundle for _catch_hook', (done) => {
+  it('should convert a bundle for _catch_hook', async () => {
     const event = {
       name: 'trigger.hook',
-      key: 'hook',
+      key: 'hook'
     };
     const bundle = {
       _legacyUrl: 'https://zapier.com',
       inputData: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       authData: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       cleanedRequest: {
         id: 1,
-        name: 'Zapier',
-      },
+        name: 'Zapier'
+      }
     };
     const expectedBundle = {
       request: {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         querystring: 'user=Zapier',
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
         data: '',
-        content: '',
+        content: ''
       },
       cleaned_request: {
         id: 1,
-        name: 'Zapier',
+        name: 'Zapier'
       },
       meta: {},
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       trigger_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       trigger_fields_raw: {
-        user: 'Zapier',
-      },
+        user: 'Zapier'
+      }
     };
 
-    const result = bundleConverter(bundle, event);
-    result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-
-    done();
+    const result = await bundleConverter(bundle, event);
+    result.should.eql(
+      expectedBundle,
+      `Expected bundle mismatch for "${event.name}".`
+    );
   });
 
-  it('should convert a bundle for pre_subscribe', (done) => {
+  it('should convert a bundle for pre_subscribe', async () => {
     const event = {
-      name: 'trigger.hook.subscribe.pre',
+      name: 'trigger.hook.subscribe.pre'
     };
     const bundle = defaultHookBundle;
     const expectedBundle = {
@@ -218,47 +223,48 @@ describe('bundleConverter', () => {
         method: 'POST',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       trigger_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       trigger_fields_raw: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       target_url: 'https://hooks.zapier.com/abc',
-      event: 'message',
+      event: 'message'
     };
 
-    const result = bundleConverter(bundle, event);
-    result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-
-    done();
+    const result = await bundleConverter(bundle, event);
+    result.should.eql(
+      expectedBundle,
+      `Expected bundle mismatch for "${event.name}".`
+    );
   });
 
-  it('should convert a bundle for post_subscribe', (done) => {
+  it('should convert a bundle for post_subscribe', async () => {
     const event = {
       name: 'trigger.hook.subscribe.post',
       response: {
         status: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
     const bundle = defaultHookBundle;
     const expectedBundle = {
@@ -266,106 +272,108 @@ describe('bundleConverter', () => {
         method: 'POST',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       trigger_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       trigger_fields_raw: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       response: {
         status: 200,
         status_code: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
+        content: '[{"id": 1, "name": "Zapier"}]'
       },
       target_url: 'https://hooks.zapier.com/abc',
-      event: 'message',
+      event: 'message'
     };
 
-    const result = bundleConverter(bundle, event);
-    result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-
-    done();
+    const result = await bundleConverter(bundle, event);
+    result.should.eql(
+      expectedBundle,
+      `Expected bundle mismatch for "${event.name}".`
+    );
   });
 
-  it('should convert a bundle for pre_unsubscribe', (done) => {
+  it('should convert a bundle for pre_unsubscribe', async () => {
     const event = {
-      name: 'trigger.hook.unsubscribe.pre',
+      name: 'trigger.hook.unsubscribe.pre'
     };
     const bundle = {
       _legacyUrl: 'https://zapier.com',
       _legacyEvent: 'message',
       targetUrl: 'https://hooks.zapier.com/abc',
       inputData: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       authData: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       subscribeData: {
-        id: 1,
-      },
+        id: 1
+      }
     };
     const expectedBundle = {
       request: {
         method: 'DELETE',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       meta: {},
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       trigger_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       trigger_fields_raw: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       target_url: 'https://hooks.zapier.com/abc',
       event: 'message',
       subscribe_data: {
-        id: 1,
-      },
+        id: 1
+      }
     };
 
-    const result = bundleConverter(bundle, event);
-    result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-
-    done();
+    const result = await bundleConverter(bundle, event);
+    result.should.eql(
+      expectedBundle,
+      `Expected bundle mismatch for "${event.name}".`
+    );
   });
 
-  it('should convert a bundle for _pre_hook', (done) => {
+  it('should convert a bundle for _pre_hook', async () => {
     const event = {
       name: 'trigger.hook.pre',
-      key: 'hook',
+      key: 'hook'
     };
     const bundle = defaultBundle;
     const expectedBundle = {
@@ -373,45 +381,46 @@ describe('bundleConverter', () => {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       trigger_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       trigger_fields_raw: {
-        user: 'Zapier',
-      },
+        user: 'Zapier'
+      }
     };
 
-    const result = bundleConverter(bundle, event);
-    result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-
-    done();
+    const result = await bundleConverter(bundle, event);
+    result.should.eql(
+      expectedBundle,
+      `Expected bundle mismatch for "${event.name}".`
+    );
   });
 
-  it('should convert a bundle for _post_hook', (done) => {
+  it('should convert a bundle for _post_hook', async () => {
     const event = {
       name: 'trigger.hook.post',
       response: {
         status: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
     const bundle = defaultBundle;
     const expectedBundle = {
@@ -419,54 +428,55 @@ describe('bundleConverter', () => {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       trigger_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       trigger_fields_raw: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       response: {
         status: 200,
         status_code: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
 
-    const result = bundleConverter(bundle, event);
-    result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-
-    done();
+    const result = await bundleConverter(bundle, event);
+    result.should.eql(
+      expectedBundle,
+      `Expected bundle mismatch for "${event.name}".`
+    );
   });
 
   //
   // Creates
   //
 
-  it('should convert a bundle for _pre_write, _write, _custom_action_fields, _pre_custom_action_fields, and _pre_custom_action_result_fields', (done) => {
+  it('should convert a bundle for _pre_write, _write, _custom_action_fields, _pre_custom_action_fields, and _pre_custom_action_result_fields', async () => {
     const events = [
       'create.pre',
       'create.write',
       'create.input',
       'create.input.pre',
-      'create.output.pre',
+      'create.output.pre'
     ];
     const bundle = defaultBundle;
     const expectedBundle = {
@@ -474,58 +484,59 @@ describe('bundleConverter', () => {
         method: 'POST',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {},
-        data: '{"user":"Zapier"}',
+        data: '{"user":"Zapier"}'
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       action_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       action_fields_full: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       action_fields_raw: {
-        user: 'Zapier',
-      },
+        user: 'Zapier'
+      }
     };
 
-    _.each(events, (eventName) => {
-      const event = {
-        name: eventName,
-        key: 'create',
-      };
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = {
+          name: eventName,
+          key: 'create'
+        };
+        return bundleConverter(bundle, event);
+      })
+    );
 
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
     });
-
-    done();
   });
 
-  it('should convert a bundle for _post_write, _custom_action_result_fields, _post_custom_action_fields, and _post_custom_action_result_fields', (done) => {
-    const events = [
-      'create.post',
-      'create.input.post',
-      'create.output.post',
-    ];
+  it('should convert a bundle for _post_write, _custom_action_result_fields, _post_custom_action_fields, and _post_custom_action_result_fields', async () => {
+    const events = ['create.post', 'create.input.post', 'create.output.post'];
     const eventData = {
       key: 'create',
       response: {
         status: 200,
-        content: '{"id": 1, "name": "Zapier"}',
-      },
+        content: '{"id": 1, "name": "Zapier"}'
+      }
     };
     const bundle = defaultBundle;
     const expectedBundle = {
@@ -533,59 +544,65 @@ describe('bundleConverter', () => {
         method: 'POST',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {},
-        data: '{"user":"Zapier"}',
+        data: '{"user":"Zapier"}'
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       action_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       action_fields_full: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       action_fields_raw: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       response: {
         status: 200,
         status_code: 200,
-        content: '{"id": 1, "name": "Zapier"}',
-      },
+        content: '{"id": 1, "name": "Zapier"}'
+      }
     };
 
-    _.each(events, (eventName) => {
-      const event = eventData;
-      event.name = eventName;
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-    });
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = _.cloneDeep(eventData);
+        event.name = eventName;
+        return bundleConverter(bundle, event);
+      })
+    );
 
-    done();
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
+    });
   });
 
   //
   // Searches
   //
 
-  it('should convert a bundle for _pre_search, _search, _custom_search_fields, _pre_custom_search_fields, and _pre_custom_search_result_fields', (done) => {
+  it('should convert a bundle for _pre_search, _search, _custom_search_fields, _pre_custom_search_fields, and _pre_custom_search_result_fields', async () => {
     const events = [
       'search.pre',
       'search.search',
       'search.input',
       'search.input.pre',
-      'search.output.pre',
+      'search.output.pre'
     ];
     const bundle = defaultBundle;
     const expectedBundle = {
@@ -593,54 +610,55 @@ describe('bundleConverter', () => {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       search_fields: {
-        user: 'Zapier',
-      },
+        user: 'Zapier'
+      }
     };
 
-    _.each(events, (eventName) => {
-      const event = {
-        name: eventName,
-        key: 'search',
-      };
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = {
+          name: eventName,
+          key: 'search'
+        };
+        return bundleConverter(bundle, event);
+      })
+    );
 
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
     });
-
-    done();
   });
 
-  it('should convert a bundle for _post_search, _custom_search_result_fields, _post_custom_search_fields, and _post_custom_search_result_fields', (done) => {
-    const events = [
-      'search.post',
-      'search.input.post',
-      'search.output.post',
-    ];
+  it('should convert a bundle for _post_search, _custom_search_result_fields, _post_custom_search_fields, and _post_custom_search_result_fields', async () => {
+    const events = ['search.post', 'search.input.post', 'search.output.post'];
     const eventData = {
       key: 'search',
       response: {
         status: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
     const bundle = defaultBundle;
     const expectedBundle = {
@@ -648,55 +666,60 @@ describe('bundleConverter', () => {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       search_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       response: {
         status: 200,
         status_code: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
 
-    _.each(events, (eventName) => {
-      const event = eventData;
-      event.name = eventName;
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-    });
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = _.cloneDeep(eventData);
+        event.name = eventName;
+        return bundleConverter(bundle, event);
+      })
+    );
 
-    done();
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
+    });
   });
 
-  it('should convert a bundle for _pre_read_resource and _read_resource', (done) => {
-    const events = [
-      'search.resource.pre',
-      'search.resource',
-    ];
+  it('should convert a bundle for _pre_read_resource and _read_resource', async () => {
+    const events = ['search.resource.pre', 'search.resource'];
     const eventData = {
       key: 'search',
-      results: [{
-        id: 1,
-        name: 'Zapier',
-      }],
+      results: [
+        {
+          id: 1,
+          name: 'Zapier'
+        }
+      ]
     };
     const bundle = defaultBundle;
     const expectedBundle = {
@@ -704,60 +727,68 @@ describe('bundleConverter', () => {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       search_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       read_context: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
-      read_fields: [{
-        id: 1,
-        name: 'Zapier',
-      }],
+      read_fields: [
+        {
+          id: 1,
+          name: 'Zapier'
+        }
+      ]
     };
 
-    _.each(events, (eventName) => {
-      const event = eventData;
-      event.name = eventName;
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-    });
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = _.cloneDeep(eventData);
+        event.name = eventName;
+        return bundleConverter(bundle, event);
+      })
+    );
 
-    done();
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
+    });
   });
 
-  it('should convert a bundle for _post_read_resource', (done) => {
-    const events = [
-      'search.resource.post',
-    ];
+  it('should convert a bundle for _post_read_resource', async () => {
+    const events = ['search.resource.post'];
     const eventData = {
       key: 'search',
-      results: [{
-        id: 1,
-        name: 'Zapier',
-      }],
+      results: [
+        {
+          id: 1,
+          name: 'Zapier'
+        }
+      ],
       response: {
         status: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
     const bundle = defaultBundle;
     const expectedBundle = {
@@ -765,265 +796,287 @@ describe('bundleConverter', () => {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       auth_fields: {
-        apiKey: 'Zapier-API-Key',
+        apiKey: 'Zapier-API-Key'
       },
       meta: {
         frontend: false,
-        prefill: false,
+        prefill: false
       },
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       search_fields: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       read_context: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
-      read_fields: [{
-        id: 1,
-        name: 'Zapier',
-      }],
+      read_fields: [
+        {
+          id: 1,
+          name: 'Zapier'
+        }
+      ],
       response: {
         status: 200,
         status_code: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
 
-    _.each(events, (eventName) => {
-      const event = eventData;
-      event.name = eventName;
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-    });
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = _.cloneDeep(eventData);
+        event.name = eventName;
+        return bundleConverter(bundle, event);
+      })
+    );
 
-    done();
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
+    });
   });
 
   //
   // Authentication
   //
 
-  it('should convert a bundle for pre_oauthv2_token and pre_oauthv2_refresh', (done) => {
-    const events = [
-      'auth.oauth2.token.pre',
-      'auth.oauth2.refresh.pre',
-    ];
+  it('should convert a bundle for pre_oauthv2_token and pre_oauthv2_refresh', async () => {
+    const events = ['auth.oauth2.token.pre', 'auth.oauth2.refresh.pre'];
     const bundle = {
       _legacyUrl: 'https://zapier.com',
       inputData: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
-      authData: {},
+      authData: {}
     };
     const expectedBundle = {
       request: {
         method: 'POST',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       auth_fields: {},
       load: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       meta: {},
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       oauth_data: {
         client_id: '1234',
-        client_secret: 'asdf',
-      },
+        client_secret: 'asdf'
+      }
     };
 
-    _.each(events, (eventName) => {
-      const event = {
-        name: eventName,
-      };
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-    });
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = {
+          name: eventName
+        };
+        return bundleConverter(bundle, event);
+      })
+    );
 
-    done();
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
+    });
   });
 
-  it('should convert a bundle for post_oauthv2_token', (done) => {
-    const events = [
-      'auth.oauth2.token.post',
-    ];
+  it('should convert a bundle for post_oauthv2_token', async () => {
+    const events = ['auth.oauth2.token.post'];
     const eventData = {
       response: {
         status: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
     const bundle = {
       _legacyUrl: 'https://zapier.com',
       inputData: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       authData: {
         access_token: 'qwerty',
-        refresh_token: 'zxcvb',
-      },
+        refresh_token: 'zxcvb'
+      }
     };
     const expectedBundle = {
       request: {
         method: 'POST',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       auth_fields: {
         access_token: 'qwerty',
-        refresh_token: 'zxcvb',
+        refresh_token: 'zxcvb'
       },
       load: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       meta: {},
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       oauth_data: {
         client_id: '1234',
-        client_secret: 'asdf',
+        client_secret: 'asdf'
       },
       response: {
         status: 200,
         status_code: 200,
-        content: '[{"id": 1, "name": "Zapier"}]',
-      },
+        content: '[{"id": 1, "name": "Zapier"}]'
+      }
     };
 
-    _.each(events, (eventName) => {
-      const event = eventData;
-      event.name = eventName;
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-    });
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = _.cloneDeep(eventData);
+        event.name = eventName;
+        return bundleConverter(bundle, event);
+      })
+    );
 
-    done();
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
+    });
   });
 
-  it('should convert a bundle for get_session_info', (done) => {
-    const events = [
-      'auth.session',
-    ];
+  it('should convert a bundle for get_session_info', async () => {
+    const events = ['auth.session'];
     const bundle = {
       _legacyUrl: 'https://zapier.com',
       inputData: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       authData: {
         user: 'qwerty',
-        pass: 'zxcvb',
-      },
+        pass: 'zxcvb'
+      }
     };
     const expectedBundle = {
       request: {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       auth_fields: {
         user: 'qwerty',
-        pass: 'zxcvb',
+        pass: 'zxcvb'
       },
       meta: {},
       zap: {
-        id: 0,
+        id: 0
       },
-      url_raw: 'https://zapier.com',
+      url_raw: 'https://zapier.com'
     };
 
-    _.each(events, (eventName) => {
-      const event = {
-        name: eventName,
-      };
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
-    });
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = {
+          name: eventName
+        };
+        return bundleConverter(bundle, event);
+      })
+    );
 
-    done();
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
+    });
   });
 
-  it('should convert a bundle for get_connection_label', (done) => {
-    const events = [
-      'auth.connectionLabel',
-    ];
+  it('should convert a bundle for get_connection_label', async () => {
+    const events = ['auth.connectionLabel'];
     const bundle = {
       _legacyUrl: 'https://zapier.com',
       inputData: {
-        user: 'Zapier',
+        user: 'Zapier'
       },
       authData: {
-        email: 'contact@zapier.com',
-      },
+        email: 'contact@zapier.com'
+      }
     };
     const expectedBundle = {
       request: {
         method: 'GET',
         url: 'https://zapier.com',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         params: {
-          user: 'Zapier',
+          user: 'Zapier'
         },
-        data: '',
+        data: ''
       },
       auth_fields: {
-        email: 'contact@zapier.com',
+        email: 'contact@zapier.com'
       },
       meta: {},
       zap: {
-        id: 0,
+        id: 0
       },
       url_raw: 'https://zapier.com',
       test_result: {
-        user: 'Zapier',
-      },
+        user: 'Zapier'
+      }
     };
 
-    _.each(events, (eventName) => {
-      const event = {
-        name: eventName,
-      };
-      const result = bundleConverter(bundle, event);
-      result.should.eql(expectedBundle, `Expected bundle mismatch for "${event.name}".`);
+    const results = await Promise.all(
+      events.map(eventName => {
+        const event = {
+          name: eventName
+        };
+        return bundleConverter(bundle, event);
+      })
+    );
+
+    _.zip(events, results).forEach(([eventName, result]) => {
+      result.should.eql(
+        expectedBundle,
+        `Expected bundle mismatch for "${eventName}".`
+      );
     });
-
-    done();
   });
-
 });

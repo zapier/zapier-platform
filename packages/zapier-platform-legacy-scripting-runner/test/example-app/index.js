@@ -277,6 +277,63 @@ const legacyScriptingSource = `
         });
       },
 
+      // To be replaced with 'file_pre_write' at runtime
+      file_pre_write_tweak_filename: function(bundle) {
+        bundle.request.files.file[0] = bundle.request.files.file[0].toUpperCase();
+        return bundle.request;
+      },
+
+      // To be replaced with 'file_pre_write' at runtime
+      file_pre_write_replace_hydrate_url: function(bundle) {
+        var file = bundle.request.files.file;
+        file[0] = 'file_pre_write_was_here.' + file[0];
+        file[1] = file[1].replace('/png', '/jpeg');
+        file[2] = file[2].replace('png', 'jpeg');
+        return bundle.request;
+      },
+
+      // To be replaced with 'file_pre_write' at runtime
+      file_pre_write_replace_with_string_content: function(bundle) {
+        var file = bundle.request.files.file;
+        file[0] = file[0] + '.txt';
+        file[1] = 'file_pre_write was here';
+        file[2] = file[2].replace('image', 'text').replace('png', 'plain');
+        return bundle.request;
+      },
+
+      // To be replaced with 'file_pre_write' at runtime
+      file_pre_write_fully_replace_url: function(bundle) {
+        bundle.request.files.file = 'https://zapier-httpbin.herokuapp.com/image/jpeg';
+        return bundle.request;
+      },
+
+      // To be replaced with 'file_pre_write' at runtime
+      file_pre_write_fully_replace_content: function(bundle) {
+        bundle.request.files.file = 'fully replaced by file_pre_write';
+        return bundle.request;
+      },
+
+      file_pre_write_content_dispoistion_with_quotes: function(bundle) {
+        bundle.request.files.file =
+          'https://zapier-httpbin.herokuapp.com/response-headers?' +
+          'Content-Disposition=filename=%22an%20example.json%22';
+        return bundle.request;
+      },
+
+      file_pre_write_content_dispoistion_no_quotes: function(bundle) {
+        bundle.request.files.file =
+          'https://zapier-httpbin.herokuapp.com/response-headers?' +
+          'Content-Disposition=filename=example.json';
+        return bundle.request;
+      },
+
+      file_pre_write_content_dispoistion_non_ascii: function(bundle) {
+        bundle.request.files.file =
+          'https://zapier-httpbin.herokuapp.com/response-headers?' +
+          'Content-Disposition=filename*=UTF-8%27%27%25E4%25B8%25AD%25E6%2596%2587.json';
+        return bundle.request;
+      },
+
       /*
        * Search
        */
@@ -567,6 +624,27 @@ const MovieCreate = {
   }
 };
 
+const FileUpload = {
+  key: 'file',
+  noun: 'File',
+  display: {
+    label: 'Upload a File'
+  },
+  operation: {
+    perform: {
+      source: "return z.legacyScripting.run(bundle, 'create', 'file');"
+    },
+    inputFields: [
+      { key: 'filename', label: 'Filename', type: 'string' },
+      { key: 'file', label: 'File', type: 'file' }
+    ],
+    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }],
+    legacyProperties: {
+      url: `${AUTH_JSON_SERVER_URL}/upload`
+    }
+  }
+};
+
 const MovieSearch = {
   key: 'movie',
   noun: 'Movie',
@@ -620,7 +698,8 @@ const App = {
     [TestTrigger.key]: TestTrigger
   },
   creates: {
-    [MovieCreate.key]: MovieCreate
+    [MovieCreate.key]: MovieCreate,
+    [FileUpload.key]: FileUpload
   },
   searches: {
     [MovieSearch.key]: MovieSearch

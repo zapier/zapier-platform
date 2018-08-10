@@ -1,10 +1,15 @@
-'use strict';
-
 const _ = require('lodash');
+const FormData = require('form-data');
 
 const cleaner = require('zapier-platform-core/src/tools/cleaner');
 
 const bundleConverter = require('./bundle');
+const {
+  markFileFieldsInBundle,
+  hasFileFields,
+  isFileField,
+  LazyFile
+} = require('./file');
 
 const FIELD_TYPE_CONVERT_MAP = {
   // field_type_in_wb: field_type_in_cli
@@ -20,25 +25,109 @@ const FIELD_TYPE_CONVERT_MAP = {
   unicode: 'string'
 };
 
-const parseFinalResult = (result, event) => {
-  // Old request was .data (string), new is .body (object), which matters for _pre
+// Makes a multipart/form-data request body that can be set to request.body for
+// node-fetch.
+const makeMultipartBody = async (data, lazyFilesObject) => {
+  const form = new FormData();
+  if (data) {
+    if (typeof data !== 'string') {
+      data = JSON.stringify(data);
+    }
+    form.append('data', data);
+  }
+
+  const fileFieldKeys = Object.keys(lazyFilesObject);
+  const lazyFiles = Object.values(lazyFilesObject);
+
+  const fileMetas = await Promise.all(lazyFiles.map(f => f.meta()));
+  const fileStreams = await Promise.all(lazyFiles.map(f => f.readStream()));
+
+  _.zip(fileFieldKeys, fileMetas, fileStreams).forEach(
+    ([k, meta, fileStream]) => {
+      form.append(k, fileStream, meta);
+    }
+  );
+
+  return form;
+};
+
+// Prepares request body from results.files and assign it to result.body. This
+// accepts the request object returned by a KEY_pre_ method.
+const addFilesToRequestBodyFromPreResult = async (request, event) => {
+  const lazyFiles = _.reduce(
+    request.files,
+    (result, file, k) => {
+      let lazyFile;
+      if (Array.isArray(file) && file.length === 3) {
+        const [filename, newFileValue, contentType] = file;
+        // If pre_write changes the hydrate URL, file[1], we take it as a
+        // string content even if it looks like a URL
+        const loadUrl = newFileValue === event.originalFiles[k][1];
+        lazyFile = LazyFile(
+          newFileValue,
+          { filename, contentType },
+          { dontLoadUrl: !loadUrl }
+        );
+      } else if (typeof file === 'string') {
+        lazyFile = LazyFile(file);
+      }
+
+      if (lazyFile) {
+        result[k] = lazyFile;
+      }
+      return result;
+    },
+    {}
+  );
+
+  request.body = await makeMultipartBody(request.data || '{}', lazyFiles);
+  return request;
+};
+
+// Reformats request.body into multipart/form-data for file upload. This
+// accepts the CLI's bundle.request object.
+const addFilesToRequestBodyFromBody = async (request, bundle) => {
+  const data = {};
+  const lazyFiles = {};
+
+  _.each(request.body, (v, k) => {
+    if (!isFileField(k, bundle)) {
+      data[k] = v;
+    } else if (typeof v === 'string') {
+      lazyFiles[k] = LazyFile(v);
+    }
+  });
+
+  request.body = await makeMultipartBody(data, lazyFiles);
+  return request;
+};
+
+const parseFinalResult = async (result, event) => {
   if (event.name.endsWith('.pre')) {
+    if (!_.isEmpty(result.files)) {
+      return await addFilesToRequestBodyFromPreResult(result, event);
+    }
+
+    // Old request was .data (string), new is .body (object), which matters for _pre
     try {
       result.body = JSON.parse(result.data || '{}');
     } catch (e) {
       result.body = result.data;
     }
+    return Promise.resolve(result);
   }
 
   // Old writes accepted a list, but CLI doesn't anymore, which matters for _write and _post_write
   if (event.name === 'create.write' || event.name === 'create.post') {
+    let resultObj;
     if (Array.isArray(result) && result.length) {
-      return result[0];
+      resultObj = result[0];
     } else if (!Array.isArray(result)) {
-      return result;
+      resultObj = result;
+    } else {
+      resultObj = {};
     }
-
-    return {};
+    return Promise.resolve(resultObj);
   }
 
   if (
@@ -54,7 +143,7 @@ const parseFinalResult = (result, event) => {
     }
   }
 
-  return result;
+  return Promise.resolve(result);
 };
 
 const replaceCurliesInRequest = (request, bundle) => {
@@ -193,43 +282,52 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
   const runEvent = (event, z, bundle) =>
     new Promise((resolve, reject) => {
       if (!Zap || _.isEmpty(Zap) || !event || !event.name || !z) {
-        return resolve();
+        resolve();
+        return;
       }
 
-      const convertedBundle = bundleConverter(bundle, event);
-      const eventNameToMethod = createEventNameToMethodMapping(event.key);
-      const methodName = eventNameToMethod[event.name];
+      bundleConverter(bundle, event, z).then(convertedBundle => {
+        const eventNameToMethod = createEventNameToMethodMapping(event.key);
+        const methodName = eventNameToMethod[event.name];
 
-      if (methodName && _.isFunction(Zap[methodName])) {
-        let result;
-
-        try {
+        if (methodName && _.isFunction(Zap[methodName])) {
           // Handle async
-          const optionalCallback = (error, asyncResult) => {
-            if (error) {
-              return reject(error);
+          const optionalCallback = (err, asyncResult) => {
+            if (err) {
+              reject(err);
+            } else {
+              parseFinalResult(asyncResult, event).then(res => {
+                resolve(res);
+              });
             }
-            return resolve(parseFinalResult(asyncResult, event));
           };
 
-          result = Zap[methodName](convertedBundle, optionalCallback);
+          // To know if request.files is changed by scripting
+          event.originalFiles = _.cloneDeep(
+            _.get(convertedBundle, 'request.files') || {}
+          );
+
+          let result;
+          try {
+            result = Zap[methodName](convertedBundle, optionalCallback);
+          } catch (err) {
+            reject(err);
+          }
 
           // Handle sync
-          if (typeof result !== 'undefined') {
-            return resolve(parseFinalResult(result, event));
+          if (result !== undefined) {
+            parseFinalResult(result, event).then(res => {
+              resolve(res);
+            });
           }
-        } catch (e) {
-          return reject(e);
+        } else {
+          resolve({});
         }
-      } else {
-        return resolve({});
-      }
-
-      return undefined;
+      });
     });
 
   // Simulates how WB backend runs JS scripting methods
-  const runEventCombo = (
+  const runEventCombo = async (
     bundle,
     key,
     preEventName,
@@ -266,7 +364,7 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       bundle.request = replaceCurliesInRequest(bundle.request, bundle);
     }
 
-    let promise;
+    let result;
 
     const eventNameToMethod = createEventNameToMethodMapping(key);
 
@@ -289,61 +387,56 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       }
 
       // Running "full" scripting method like KEY_poll
-      promise = runEvent({ key, name: fullEventName }, zobj, bundle);
+      result = await runEvent({ key, name: fullEventName }, zobj, bundle);
     } else {
       const preMethod = preMethodName ? Zap[preMethodName] : null;
-      if (preMethod) {
-        promise = runEvent({ key, name: preEventName }, zobj, bundle);
-      } else {
-        promise = Promise.resolve(bundle.request);
+      const request = preMethod
+        ? await runEvent({ key, name: preEventName }, zobj, bundle)
+        : bundle.request;
+
+      const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
+      if (hasFileFields(bundle) && !isBodyStream) {
+        // Runs only when there's no KEY_pre_ method
+        await addFilesToRequestBodyFromBody(request, bundle);
       }
 
-      promise = promise.then(request => zobj.request(request));
+      const response = await zobj.request(request);
 
       if (options.checkResponseStatus) {
-        promise = promise.then(response => {
-          response.throwForStatus();
-          return response;
-        });
+        response.throwForStatus();
       }
 
       if (!options.parseResponse) {
-        return promise;
+        return response;
       }
 
       const postMethod = postMethodName ? Zap[postMethodName] : null;
-      if (postMethod) {
-        promise = promise.then(response =>
-          runEvent({ key, name: postEventName, response }, zobj, bundle)
-        );
-      } else {
-        promise = promise.then(response => zobj.JSON.parse(response.content));
-      }
+      result = postMethod
+        ? await runEvent({ key, name: postEventName, response }, zobj, bundle)
+        : zobj.JSON.parse(response.content);
     }
 
     if (options.ensureArray) {
-      promise = promise.then(result => {
-        if (Array.isArray(result)) {
-          return result;
-        } else if (result && typeof result === 'object') {
-          if (options.ensureArray === 'wrap') {
-            // Used by auth label and auth test
-            return [result];
-          } else {
-            // Find the first array in the response
-            for (const k in result) {
-              const value = result[k];
-              if (Array.isArray(value)) {
-                return value;
-              }
+      if (Array.isArray(result)) {
+        return result;
+      } else if (result && typeof result === 'object') {
+        if (options.ensureArray === 'wrap') {
+          // Used by auth label and auth test
+          return [result];
+        } else {
+          // Find the first array in the response
+          for (const k in result) {
+            const value = result[k];
+            if (Array.isArray(value)) {
+              return value;
             }
           }
         }
-        throw new Error('JSON results array could not be located.');
-      });
+      }
+      throw new Error('JSON results array could not be located.');
     }
 
-    return promise;
+    return result;
   };
 
   const runOAuth2GetAccessToken = bundle => {
@@ -552,6 +645,11 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       _.get(app, `creates.${key}.operation.legacyProperties`) || {};
     const url = legacyProps.url;
     const fieldsExcludedFromBody = legacyProps.fieldsExcludedFromBody || [];
+
+    const inputFields =
+      _.get(app, `creates.${key}.operation.inputFields`) || [];
+
+    markFileFieldsInBundle(bundle, inputFields);
 
     const body = {};
     _.each(bundle.inputData, (v, k) => {
