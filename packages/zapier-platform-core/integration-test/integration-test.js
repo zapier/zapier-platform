@@ -1,11 +1,17 @@
 'use strict';
 
-const crypto = require('crypto');
-const should = require('should');
+const fs = require('fs');
+const os = require('os');
 const path = require('path');
-const createLambdaHandler = require('../src/tools/create-lambda-handler');
 
 const AWS = require('aws-sdk');
+const crypto = require('crypto');
+const nock = require('nock');
+const should = require('should');
+
+const createLambdaHandler = require('../src/tools/create-lambda-handler');
+const mocky = require('../test/tools/mocky');
+
 const lambda = new AWS.Lambda({
   apiVersion: '2015-03-31',
   region: 'us-east-1'
@@ -57,6 +63,21 @@ runLocally.testName = 'runLocally';
 
 const doTest = runner => {
   describe(`${runner.testName} integration tests`, () => {
+    afterEach(() => {
+      // Clear cache files
+      const tmpdir = os.tmpdir();
+      const cacheFilenames = ['cli-override.json', 'cli-hash.txt'];
+      cacheFilenames.forEach(filename => {
+        const filepath = path.join(tmpdir, filename);
+        if (fs.existsSync(filepath)) {
+          fs.unlinkSync(filepath);
+        }
+      });
+
+      // Remove all the mocked requests
+      nock.cleanAll();
+    });
+
     it('should return data from app function call', () => {
       const event = {
         command: 'execute',
@@ -143,6 +164,8 @@ const doTest = runner => {
         }
       };
 
+      mocky.mockRpcCall(definition);
+
       const definitionHash = crypto
         .createHash('md5')
         .update(JSON.stringify(definition))
@@ -151,18 +174,66 @@ const doTest = runner => {
       const event = {
         command: 'execute',
         method: 'triggers.fooList.operation.perform',
-        appRawOverride: definitionHash
+        appRawOverride: definitionHash,
+        rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
+        token: 'fake'
       };
 
-      return runner(event)
-        .then(() => {
-          should(true).eql(false, 'Should not have gotten results!');
-        })
-        .catch(err => {
-          // We're not mocking RPC here (a bit convoluted to do so), so it'll fail at that point
-          err.message.should.startWith('No deploy key found.');
-          err.message.should.containEql('rely on the RPC API');
-        });
+      return runner(event).then(response => {
+        response.results.length.should.eql(1);
+        response.results[0].id.should.eql(45678);
+      });
+    });
+
+    it('should handle array of [appRawOverrideHash, appRawExtension]', () => {
+      const definition = {
+        creates: {
+          foo: {
+            key: 'foo',
+            noun: 'Foo',
+            operation: {
+              perform: { source: 'return [{id: 12345}]' },
+              inputFields: [{ key: 'name', type: 'string' }]
+            }
+          }
+        }
+      };
+
+      mocky.mockRpcCall(definition);
+
+      const definitionExtension = {
+        creates: {
+          foo: {
+            noun: 'Foobar',
+            operation: {
+              inputFields: [{ key: 'message', type: 'string' }],
+              sample: {
+                id: 678
+              }
+            }
+          }
+        }
+      };
+
+      const definitionHash = crypto
+        .createHash('md5')
+        .update(JSON.stringify(definition))
+        .digest('hex');
+
+      const event = {
+        command: 'execute',
+        method: 'creates.foo.operation.inputFields',
+        appRawOverride: [definitionHash, definitionExtension],
+        rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
+        token: 'fake'
+      };
+
+      return runner(event).then(response => {
+        response.results.should.eql([
+          { key: 'name', type: 'string' },
+          { key: 'message', type: 'string' }
+        ]);
+      });
     });
 
     it('should handle function source in beforeRequest', () => {
