@@ -1,3 +1,9 @@
+## 7.2.1
+
+### core
+
+* (fix) Allow to disable SSL certificate check ([#110](https://github.com/zapier/zapier-platform-core/pull/110))
+
 ## 7.2.0
 
 ### cli
