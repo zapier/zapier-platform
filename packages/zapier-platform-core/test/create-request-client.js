@@ -1,9 +1,10 @@
 'use strict';
 
-const should = require('should');
-
 const fs = require('fs');
 const path = require('path');
+
+const _ = require('lodash');
+const should = require('should');
 
 const createAppRequestClient = require('../src/tools/create-app-request-client');
 const createInput = require('../src/tools/create-input');
@@ -344,5 +345,22 @@ describe('request client', () => {
         done();
       })
       .catch(done);
+  });
+
+  it('should block self-signed SSL certificate', () => {
+    const request = createAppRequestClient(input);
+    return request('https://self-signed.badssl.com').should.be.rejectedWith({
+      name: 'FetchError',
+      code: 'DEPTH_ZERO_SELF_SIGNED_CERT'
+    });
+  });
+
+  it('should allow to disable SSL certificate check', () => {
+    const newInput = _.cloneDeep(input);
+    newInput._zapier.event.verifySSL = false;
+    const request = createAppRequestClient(newInput);
+    return request('https://self-signed.badssl.com').then(response => {
+      response.status.should.eql(200);
+    });
   });
 });
