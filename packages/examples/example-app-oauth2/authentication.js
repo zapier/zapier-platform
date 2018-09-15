@@ -2,6 +2,8 @@ const getAccessToken = (z, bundle) => {
   const promise = z.request(`${process.env.BASE_URL}/oauth/access-token`, {
     method: 'POST',
     body: {
+      //extra data pulled from the users query string
+      accountDomain: bundle.cleanedRequest.querystring.accountDomain,
       code: bundle.inputData.code,
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,

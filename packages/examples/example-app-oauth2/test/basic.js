@@ -45,6 +45,15 @@ describe('oauth2 app', () => {
       environment: {
         CLIENT_ID: process.env.CLIENT_ID,
         CLIENT_SECRET: process.env.CLIENT_SECRET
+      },
+      cleanedRequest: {
+        querystring: {
+          accountDomain: 'test-account',
+          code: 'one_time_code'
+        }
+      },
+      rawRequest: {
+        querystring: "?accountDomain=test-account&code=one_time_code"
       }
     };
 
