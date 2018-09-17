@@ -1,3 +1,9 @@
+## 7.2.2
+
+### core
+
+* (fix) Sign dehydrated payloads for better security ([#111](https://github.com/zapier/zapier-platform-core/pull/111))
+
 ## 7.2.1
 
 ### core
