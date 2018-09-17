@@ -25,9 +25,9 @@
     "local-integration-test": "mocha -t 10000 integration-test --local",
     "lambda-integration-test": "mocha -t 10000 integration-test --lambda",
     "lint": "eslint src test",
-    "build": "bin/build.sh local.bundle.zip",
-    "upload": "bin/upload-lambda.js local.bundle.zip",
-    "deploy": "npm run build && npm run upload",
+    "build-integration-test": "bin/build.sh local.bundle.zip",
+    "upload-integration-test": "bin/upload-lambda.js local.bundle.zip",
+    "deploy-integration-test": "npm run build-integration-test && npm run upload-integration-test",
     "build-boilerplate": "bin/build-boilerplate.sh",
     "precommit": "lint-staged"
   },

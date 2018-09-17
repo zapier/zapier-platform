@@ -19,6 +19,10 @@ const dehydrate = createDehydrator({
 
 describe('hydration', () => {
   describe('dehydrate', () => {
+    afterEach(() => {
+      delete process.env._ZAPIER_ONE_TIME_SECRET;
+    });
+
     it('should not allow orphaned dehydrate', () => {
       const inputData = { key: 'value' };
       try {
@@ -61,6 +65,15 @@ describe('hydration', () => {
           `Oops! You passed too much data (${payloadSize} bytes) to your dehydration function - try slimming it down under 2048 bytes (usually by just passing the needed IDs).`
         );
       }
+    });
+
+    it('should sign payload', () => {
+      process.env._ZAPIER_ONE_TIME_SECRET = 'super secret';
+      const inputData = { key: 'value' };
+      const result = dehydrate(funcToFind, inputData);
+      result.should.eql(
+        'hydrate|||eyJ0eXBlIjoibWV0aG9kIiwibWV0aG9kIjoic29tZS5wYXRoLnRvIiwiYnVuZGxlIjp7ImtleSI6InZhbHVlIn19:Xp29ksdiVvXpnXXA3jXSdA3JkbM=|||hydrate'
+      );
     });
   });
 });

@@ -10,7 +10,8 @@ const List = {
   noun: 'List',
   list: {
     display: {
-      description: 'Trigger on new thing in list.'
+      description: 'Trigger on new thing in list.',
+      label: 'List'
     },
     operation: {
       perform: (z, bundle) => {
@@ -26,8 +27,7 @@ const Contact = {
   list: {
     display: {
       label: 'New Contact',
-      description: 'Trigger on new contacts.',
-      visible: true
+      description: 'Trigger on new contacts.'
     },
     operation: {
       perform: {
@@ -53,7 +53,8 @@ const Contact = {
   },
   create: {
     display: {
-      label: 'Create Contact'
+      label: 'Create Contact',
+      description: 'Create a contact.'
     },
     operation: {
       perform: () => {}
@@ -275,7 +276,7 @@ const StaticInputFields = {
   noun: 'staticinputfields',
   list: {
     display: {
-      label: 'static input fields',
+      label: 'Static Input Fields',
       description: 'has static input fields'
     },
     operation: {
@@ -291,19 +292,23 @@ const DynamicSyncInputFields = {
   noun: 'dynamicsyncinputfields',
   list: {
     display: {
-      label: 'dynamic sync fields',
+      label: 'Dynamic Sync Fields',
       description: 'sync function input fields'
     },
     operation: {
-      inputFields: (z, bundle) => [
-        { key: bundle.key1 },
-        { key: bundle.key2 },
-        { key: bundle.key3 }
+      inputFields: [
+        (z, bundle) => [
+          { key: bundle.key1 },
+          { key: bundle.key2 },
+          { key: bundle.key3 }
+        ]
       ],
-      outputFields: (z, bundle) => [
-        { key: bundle.key1 },
-        { key: bundle.key2 },
-        { key: bundle.key3 }
+      outputFields: [
+        (z, bundle) => [
+          { key: bundle.key1 },
+          { key: bundle.key2 },
+          { key: bundle.key3 }
+        ]
       ],
       perform: () => {}
     }
@@ -315,15 +320,27 @@ const DynamicAsyncInputFields = {
   noun: 'dynamicasyncinputfields',
   list: {
     display: {
-      label: 'dynamic async fields',
+      label: 'Dynamic Async Fields',
       description: 'input fields are a promise'
     },
     operation: {
       inputFields: [
-        Promise.resolve([{ key: 'key 1' }, { key: 'key 2' }, { key: 'key 3' }])
+        function(z, bundle) {
+          return Promise.resolve([
+            { key: 'key 1' },
+            { key: 'key 2' },
+            { key: 'key 3' }
+          ]);
+        }
       ],
       outputFields: [
-        Promise.resolve([{ key: 'key 1' }, { key: 'key 2' }, { key: 'key 3' }])
+        function(z, bundle) {
+          return Promise.resolve([
+            { key: 'key 1' },
+            { key: 'key 2' },
+            { key: 'key 3' }
+          ]);
+        }
       ],
       perform: () => {}
     }
@@ -335,7 +352,7 @@ const MixedInputFields = {
   noun: 'mixedinputfields',
   list: {
     display: {
-      label: 'mixed input fields',
+      label: 'Mixed Input Fields',
       description:
         'input fields are static, a sync function, and an async promise'
     },
@@ -343,12 +360,12 @@ const MixedInputFields = {
       inputFields: [
         { key: 'key 1' },
         (z, bundle) => Promise.resolve({ key: bundle.key2 }),
-        Promise.resolve({ key: 'key 3' })
+        (z, bundle) => Promise.resolve({ key: 'key 3' })
       ],
       outputFields: [
         { key: 'key 1' },
         (z, bundle) => Promise.resolve({ key: bundle.key2 }),
-        Promise.resolve({ key: 'key 3' })
+        (z, bundle) => Promise.resolve({ key: 'key 3' })
       ],
       perform: () => {}
     }
@@ -369,7 +386,7 @@ const HonkerDonker = {
   },
   list: {
     display: {
-      label: 'Trigger on new thing in list',
+      label: 'Trigger on New Thing in List',
       description: 'Will include dehydrated data'
     },
     operation: {
@@ -390,7 +407,7 @@ const ExecuteRequestAsFunc = {
   noun: 'Request',
   list: {
     display: {
-      label: 'Configurable Request (func)',
+      label: 'Configurable Request (Func)',
       description: 'Used for one-offs in the tests.'
     },
     operation: {
@@ -413,7 +430,7 @@ const ExecuteRequestAsShorthand = {
   noun: 'Request',
   list: {
     display: {
-      label: 'Configurable Request (shorthand)',
+      label: 'Configurable Request (Shorthand)',
       description: 'Used for one-offs in the tests.'
     },
     operation: {
@@ -426,6 +443,28 @@ const ExecuteRequestAsShorthand = {
           default: 'http://zapier-httpbin.herokuapp.com/status/403'
         }
       ]
+    }
+  }
+};
+
+const EnvironmentVariable = {
+  key: 'env',
+  noun: 'Environment Variable',
+  list: {
+    display: {
+      label: 'New Environment Variable',
+      description: 'Trigger on new environment variables.'
+    },
+    operation: {
+      perform: (z, bundle) => {
+        const results = [];
+        _.each(process.env || {}, (value, key) => {
+          if (key.startsWith('_ZAPIER_')) {
+            results.push({ key, value });
+          }
+        });
+        return results;
+      }
     }
   }
 };
@@ -466,7 +505,6 @@ const changeStatusOnErrorResponses = response => {
 };
 
 const App = {
-  title: 'Example App',
   beforeRequest: addRequestHeader,
   afterResponse: [changeStatusOnErrorResponses],
   resources: {
@@ -490,11 +528,14 @@ const App = {
     [MixedInputFields.key]: MixedInputFields,
     [HonkerDonker.key]: HonkerDonker,
     [ExecuteRequestAsFunc.key]: ExecuteRequestAsFunc,
-    [ExecuteRequestAsShorthand.key]: ExecuteRequestAsShorthand
+    [ExecuteRequestAsShorthand.key]: ExecuteRequestAsShorthand,
+    [EnvironmentVariable.key]: EnvironmentVariable
   },
   hydrators: {
     getBigStuff: () => {}
-  }
+  },
+  version: '1.0.0',
+  platformVersion: '7.2.0'
 };
 
 module.exports = App;

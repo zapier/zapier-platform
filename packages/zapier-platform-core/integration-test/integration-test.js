@@ -20,7 +20,7 @@ const lambda = new AWS.Lambda({
 const runLambda = event => {
   return new Promise((resolve, reject) => {
     const params = {
-      FunctionName: 'integration-test-dev-cli',
+      FunctionName: 'integration-test-cli',
       Payload: JSON.stringify(event),
       LogType: 'Tail'
     };
@@ -278,6 +278,27 @@ const doTest = runner => {
       return runner(event).then(response => {
         should.exist(response.results);
       });
+    });
+
+    it('should not leave leftover env vars', () => {
+      const event = {
+        environment: {
+          _ZAPIER_ONE_TIME_SECRET: 'foo'
+        },
+        method: 'resources.env.list.operation.perform'
+      };
+      return runner(event)
+        .then(response => {
+          response.results.length.should.eql(1);
+          response.results[0].key.should.eql('_ZAPIER_ONE_TIME_SECRET');
+          response.results[0].value.should.eql('foo');
+
+          delete event.environment;
+          return runner(event);
+        })
+        .then(response => {
+          response.results.length.should.eql(0);
+        });
     });
 
     describe('error handling', () => {

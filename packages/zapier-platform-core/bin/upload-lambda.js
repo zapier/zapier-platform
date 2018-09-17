@@ -18,7 +18,7 @@ var params = {
   FunctionName: 'integration-test-cli',
   Handler: 'index.integrationTestHandler',
   Role: 'arn:aws:iam::996097627176:role/allow_nothing_role',
-  Runtime: 'nodejs4.3',
+  Runtime: 'nodejs8.10',
   Description: 'Via node ./lambda-upload.js for dev-platform-cli.',
   MemorySize: 512,
   Timeout: 30
@@ -34,6 +34,7 @@ lambda.updateFunctionCode(
       console.log(err, err.stack); // an error occurred
     } else {
       console.log(data); // successful response
+      console.log('Now you can try `npm run lambda-integration-test`.');
     }
   }
 );
