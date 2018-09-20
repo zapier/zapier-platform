@@ -3993,7 +3993,7 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>If you need to do more requests conditionally based on the results of an HTTP call (such as getting &quot;next url&quot; param, using <code>async/await</code> with a transpiler is the way to go. If you go this route, only page as far as you need to. Keep an eye on the polling <a href="https://zapier.com/developer/documentation/v2/deduplication/">guidelines</a>, namely the part about only iterating until you hit items that have probably been seen in a previous poll.</p>
+      <p>If you need to do more requests conditionally based on the results of an HTTP call (such as the &quot;next url&quot; param or similar value), using <code>async/await</code> (as shown in the example below) is a good way to go. If you go this route, only page as far as you need to. Keep an eye on the polling <a href="https://zapier.com/developer/documentation/v2/deduplication/">guidelines</a>, namely the part about only iterating until you hit items that have probably been seen in a previous poll.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-comment">// a hypothetical API where payloads are big so we want to heavily limit how much comes back</span>

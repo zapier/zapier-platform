@@ -2255,7 +2255,7 @@ module.exports = {
 
 ```
 
-If you need to do more requests conditionally based on the results of an HTTP call (such as getting "next url" param, using `async/await` with a transpiler is the way to go. If you go this route, only page as far as you need to. Keep an eye on the polling [guidelines](https://zapier.com/developer/documentation/v2/deduplication/), namely the part about only iterating until you hit items that have probably been seen in a previous poll.
+If you need to do more requests conditionally based on the results of an HTTP call (such as the "next url" param or similar value), using `async/await` (as shown in the example below) is a good way to go. If you go this route, only page as far as you need to. Keep an eye on the polling [guidelines](https://zapier.com/developer/documentation/v2/deduplication/), namely the part about only iterating until you hit items that have probably been seen in a previous poll.
 
 ```js
 // a hypothetical API where payloads are big so we want to heavily limit how much comes back
