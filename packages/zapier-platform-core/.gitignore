@@ -4,3 +4,4 @@ node_modules
 .zapier-*
 .DS_Store
 build-boilerplate
+*.tgz

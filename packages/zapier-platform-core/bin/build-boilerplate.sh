@@ -27,8 +27,12 @@ FILE="$BUILD_DIR/$NEW_VERSION.zip"
 # Allow pushing "local changes" into the zip file
 if [ "$1" == "--debug" ]; then
   npm pack
-  cd node_modules/zapier-platform-legacy-scripting-runner && npm pack
-  cd ../..
+
+  LOCAL_LEGACY_DIR="node_modules/zapier-platform-legacy-scripting-runner"
+  if [ -e "$LOCAL_LEGACY_DIR" ]; then
+    cd "$LOCAL_LEGACY_DIR" && npm pack && cd ../..
+  fi
+
   bin/update-boilerplate-dependencies.js debug
   cd $CONTENTS_DIR && npm install
 

@@ -19,14 +19,42 @@ const environmentTools = require('./environment');
 const schemaTools = require('./schema');
 const ZapierPromise = require('./promise');
 
+const RequestSchema = require('zapier-platform-schema/lib/schemas/RequestSchema');
+const FunctionSchema = require('zapier-platform-schema/lib/schemas/FunctionSchema');
+
+const isRequestOrFunction = obj => {
+  return (
+    RequestSchema.validate(obj).valid || FunctionSchema.validate(obj).valid
+  );
+};
+
 const extendAppRaw = (base, extension) => {
-  const concatArray = (objValue, srcValue) => {
+  const keysToOverride = [
+    'test',
+    'perform',
+    'performList',
+    'performSubscribe',
+    'performUnsubscribe'
+  ];
+  const concatArrayAndOverrideKeys = (objValue, srcValue, key) => {
     if (Array.isArray(objValue) && Array.isArray(srcValue)) {
       return objValue.concat(srcValue);
     }
+
+    if (
+      // Do full replacement when it comes to keysToOverride
+      keysToOverride.indexOf(key) !== -1 &&
+      _.isPlainObject(srcValue) &&
+      _.isPlainObject(objValue) &&
+      isRequestOrFunction(srcValue) &&
+      isRequestOrFunction(objValue)
+    ) {
+      return srcValue;
+    }
+
     return undefined;
   };
-  return _.mergeWith(base, extension, concatArray);
+  return _.mergeWith(base, extension, concatArrayAndOverrideKeys);
 };
 
 const getAppRawOverride = (rpc, appRawOverride) => {
