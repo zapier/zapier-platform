@@ -402,6 +402,38 @@ describe('create-app', () => {
           done();
         });
     });
+
+    it('should be applied to session auth app on z.request in functions', done => {
+      const sessionAuthAppDefinition = dataTools.deepCopy(appDefinition);
+      sessionAuthAppDefinition.authentication = {
+        type: 'session',
+        test: {},
+        sessionConfig: {
+          perform: {} // stub, not needed for this test
+        }
+      };
+      const sessionAuthApp = createApp(sessionAuthAppDefinition);
+
+      const event = {
+        command: 'execute',
+        bundle: {
+          inputData: {
+            options: {
+              url: 'http://zapier-httpbin.herokuapp.com/status/401'
+            }
+          }
+        },
+        method: 'resources.executeRequestAsFunc.list.operation.perform'
+      };
+      sessionAuthApp(createInput(sessionAuthAppDefinition, event, testLogger))
+        .then(() => {
+          done('expected an error, got success');
+        })
+        .catch(error => {
+          error.name.should.eql('RefreshAuthError');
+          done();
+        });
+    });
   });
 
   describe('inputFields', () => {

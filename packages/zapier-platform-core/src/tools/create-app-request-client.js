@@ -51,8 +51,9 @@ const createAppRequestClient = (input, options) => {
 
   if (app.authentication) {
     if (
-      app.authentication.type === 'oauth2' &&
-      _.get(app, 'authentication.oauth2Config.autoRefresh')
+      app.authentication.type === 'session' ||
+      (app.authentication.type === 'oauth2' &&
+        _.get(app, 'authentication.oauth2Config.autoRefresh'))
     ) {
       httpOriginalAfters.push(throwForStaleAuth);
     }

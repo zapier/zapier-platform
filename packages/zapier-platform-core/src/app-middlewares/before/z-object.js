@@ -4,6 +4,7 @@ const _ = require('lodash');
 
 const createAppRequestClient = require('../../tools/create-app-request-client');
 const createDehydrator = require('../../tools/create-dehydrator');
+const createFileDehydrator = require('../../tools/create-file-dehydrator');
 const createFileStasher = require('../../tools/create-file-stasher');
 const createJSONtool = require('../../tools/create-json-tool');
 const createStoreKeyTool = require('../../tools/create-storekey-tool');
@@ -22,6 +23,7 @@ const injectZObject = input => {
     JSON: createJSONtool(),
     hash: hashing.hashify,
     dehydrate: createDehydrator(input),
+    dehydrateFile: createFileDehydrator(input),
     stashFile: createFileStasher(input),
     cursor: createStoreKeyTool(input),
     errors
