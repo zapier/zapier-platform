@@ -57,7 +57,11 @@ module.exports = {
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
     // field definitions. The result will be used to augment the sample.
-    // outputFields: () => { return []; }
+    //   outputFields: [
+    //    () => { return []; }
+    //   ]
+    // For a more complete example of using dynamic fields see
+    // https://github.com/zapier/zapier-platform-cli#customdynamic-fields.
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
       {key: 'id', label: 'ID'},
