@@ -1,20 +1,30 @@
 // list of template (example) apps
-// https://github.com/zapier/zapier-platform-example-app-*
+// https://github.com/zapier?utf8=%E2%9C%93&q=zapier-platform-example-app-&type=&language=
 module.exports = [
+  // basic
   'minimal',
-  'resource',
   'trigger',
-  'create',
   'search',
-  'middleware',
+  'create',
+
+  // auth types
   'basic-auth',
   'custom-auth',
   'oauth2',
   'session-auth',
-  'babel',
-  'rest-hooks',
+
+  // features
+  'dynamic-dropdown',
   'files',
-  'github',
+  'middleware',
+  'resource',
+  'rest-hooks',
   'search-or-create',
-  'typescript'
+
+  // transpilers
+  'babel',
+  'typescript',
+
+  // full examples
+  'github'
 ];
