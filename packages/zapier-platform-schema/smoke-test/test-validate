@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+
+const zapierSchema = require('zapier-platform-schema');
+
+const validApp = {
+  version: '1.0.0',
+  platformVersion: '7.0.0'
+};
+
+const invalidApp = {};
+
+const testApps = [validApp, invalidApp];
+
+const results = testApps.map(app =>
+  zapierSchema.validateAppDefinition(app).errors.map(err => err.message)
+);
+
+console.log(JSON.stringify(results));

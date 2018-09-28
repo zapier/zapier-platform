@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+const zapierSchema = require('zapier-platform-schema');
+console.log(JSON.stringify(zapierSchema.exportSchema()));

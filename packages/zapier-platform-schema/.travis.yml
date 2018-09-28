@@ -4,6 +4,7 @@ node_js:
   - "10"
 script:
   - npm run coverage
+  - npm run smoke-test
 notifications:
   email: false
 deploy:
