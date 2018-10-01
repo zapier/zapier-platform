@@ -43,7 +43,7 @@ module.exports = {
   // they connect their account.
   fields: [
     {key: 'username', label: 'Username', required: true, type: 'string'},
-    {key: 'password', label: 'Password', required: true, type: 'string'}
+    {key: 'password', label: 'Password', required: true, type: 'password'}
   ],
   // The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this
   // method whenver a user connects their account for the first time.
