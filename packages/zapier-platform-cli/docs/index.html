@@ -280,11 +280,15 @@ a code {
 <li><a href="#return-types">Return Types</a></li>
 </ul>
 </li>
-<li><a href="#fields">Fields</a><ul>
+<li><a href="#input-fields">Input Fields</a><ul>
 <li><a href="#customdynamic-fields">Custom/Dynamic Fields</a></li>
 <li><a href="#dynamic-dropdowns">Dynamic Dropdowns</a></li>
 <li><a href="#search-powered-fields">Search-Powered Fields</a></li>
 <li><a href="#computed-fields">Computed Fields</a></li>
+</ul>
+</li>
+<li><a href="#output-fields">Output Fields</a><ul>
+<li><a href="#nested--children-line-item-fields">Nested &amp; Children (Line Item) Fields</a></li>
 </ul>
 </li>
 <li><a href="#z-object">Z Object</a><ul>
@@ -463,11 +467,15 @@ a code {
 <li><a href="#return-types">Return Types</a></li>
 </ul>
 </li>
-<li><a href="#fields">Fields</a><ul>
+<li><a href="#input-fields">Input Fields</a><ul>
 <li><a href="#customdynamic-fields">Custom/Dynamic Fields</a></li>
 <li><a href="#dynamic-dropdowns">Dynamic Dropdowns</a></li>
 <li><a href="#search-powered-fields">Search-Powered Fields</a></li>
 <li><a href="#computed-fields">Computed Fields</a></li>
+</ul>
+</li>
+<li><a href="#output-fields">Output Fields</a><ul>
+<li><a href="#nested--children-line-item-fields">Nested &amp; Children (Line Item) Fields</a></li>
 </ul>
 </li>
 <li><a href="#z-object">Z Object</a><ul>
@@ -1697,7 +1705,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="fields">Fields</h2>
+      <h2 id="input-fields">Input Fields</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1706,7 +1714,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>On each trigger, search, or create in the <code>operation</code> directive - you can provide an array of objects as fields under the <code>inputFields</code>. Fields are what your users would see in the main Zapier user interface. For example, you might have a &quot;create contact&quot; action with fields like &quot;First name&quot;, &quot;Last name&quot;, &quot;Email&quot;, etc.</p><p>You can find more details on each and every field option at <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema">Field Schema</a>.</p><p>Those fields have various options you can provide, here is a succinct example:</p>
+      <p>On each trigger, search, or create in the <code>operation</code> directive - you can provide an array of objects as fields under the <code>inputFields</code>. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a &quot;create contact&quot; action with fields like &quot;First name&quot;, &quot;Last name&quot;, &quot;Email&quot;, etc.</p><p>You can find more details on each and every field option at <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema">Field Schema</a>.</p><p>Those fields have various options you can provide, here is a succinct example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
@@ -1996,6 +2004,93 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="output-fields">Output Fields</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>On each trigger, search, or create in the operation directive - you can provide an array of objects as fields under the <code>outputFields</code>. Output Fields are what your users would see when they select a field provided by your trigger, search or create to map it to another.</p><p>Output Fields are optional, but can be used to:</p><ul>
+<li>Define friendly labels for the returned fields. By default, we will <em>humanize</em> for example <code>my_key</code> as <em>My Key</em>.</li>
+<li>Mark certain fields as <code>important</code> to sort them higher in the list of available fields to map.</li>
+<li>Make sure that custom fields that may not be found in every live sample and - since they&apos;re custom to the connected account - cannot be defined in the static sample, can still be mapped.</li>
+</ul><p>The <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema">schema</a> for <code>outputFields</code> is shared with <code>inputFields</code> but only the <code>key</code>, <code>required</code> and <code>important</code> properties are relevant.</p><p>Custom/Dynamic Output Fields are defined in the same way as <a href="#customdynamic-fields">Custom/Dynamic Input Fields</a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="nested--children-line-item-fields">Nested &amp; Children (Line Item) Fields</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>To define an Output Field for a nested field use <code>{{parent}}__{{key}}</code>. For children (line item) fields use <code>{{parent}}[]{{key}}</code>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeOutputFields = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> response = z.request(<span class="hljs-string">&apos;http://example.com/api/v2/fields.json&apos;</span>);
+  <span class="hljs-comment">// json is like [{&quot;key&quot;:&quot;field_1&quot;,&quot;label&quot;:&quot;Label for Custom Field&quot;}]</span>
+  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json);
+};
+
+<span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">//...</span>
+  triggers: {
+    <span class="hljs-attr">new_recipe</span>: {
+      <span class="hljs-comment">//...</span>
+      operation: {
+        <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {},
+        <span class="hljs-attr">sample</span>: {
+          <span class="hljs-attr">id</span>: <span class="hljs-number">1</span>,
+          <span class="hljs-attr">nested_parent</span>: {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;Nested Field&apos;</span>
+          },
+          <span class="hljs-attr">children_parent</span>: [
+            {
+              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;Children Field&apos;</span>
+            }
+          ]
+        },
+        <span class="hljs-comment">// an array of objects is the simplest way</span>
+        outputFields: [
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;id&apos;</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Label for Simple Field&apos;</span>,
+          },
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;nested_parent__key&apos;</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Label for Nested Field&apos;</span>,
+            <span class="hljs-attr">important</span>: <span class="hljs-literal">true</span>,
+          },
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;children_parent[]key&apos;</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Label for Children Field&apos;</span>,
+            <span class="hljs-attr">important</span>: <span class="hljs-literal">true</span>,
+          },
+          recipeOutputFields <span class="hljs-comment">// provide a function inline - we&apos;ll merge the results!</span>
+        ],
+      }
+    }
+  }
+};
+
+</code></pre>
     </div>
   </div>
 </div><div class="row">

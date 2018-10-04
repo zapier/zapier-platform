@@ -47,11 +47,13 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [Resource Definition](#resource-definition)
 - [Triggers/Searches/Creates](#triggerssearchescreates)
   * [Return Types](#return-types)
-- [Fields](#fields)
+- [Input Fields](#input-fields)
   * [Custom/Dynamic Fields](#customdynamic-fields)
   * [Dynamic Dropdowns](#dynamic-dropdowns)
   * [Search-Powered Fields](#search-powered-fields)
   * [Computed Fields](#computed-fields)
+- [Output Fields](#output-fields)
+  * [Nested & Children (Line Item) Fields](#nested--children-line-item-fields)
 - [Z Object](#z-object)
   * [`z.request([url], options)`](#zrequesturl-options)
   * [`z.console`](#zconsole)
@@ -837,9 +839,9 @@ Each of the 3 types of function expects a certain type of object. As of core `v1
 | Search | Array | 0 or more objects. If len > 0, put the best match first |
 | Action | Object | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject) |
 
-## Fields
+## Input Fields
 
-On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Fields are what your users would see in the main Zapier user interface. For example, you might have a "create contact" action with fields like "First name", "Last name", "Email", etc.
+On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a "create contact" action with fields like "First name", "Last name", "Email", etc.
 
 You can find more details on each and every field option at [Field Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema).
 
@@ -1069,6 +1071,74 @@ If you don't define a trigger for the `dynamic` property, the search connector w
 In OAuth and Session Auth, you might want to store fields in `bundle.authData` (other than `access_token`, `refresh_token` — for OAuth —, or `sessionKey` — for Session Auth), that you don't want the user to fill in.
 
 For those situations, you need a computed field. It's just like another field, but with a `computed: true` property (don't forget to also make it `required: false`). You can see examples in the [OAuth](#oauth2) or [Session Auth](#session) example sections.
+
+## Output Fields
+
+On each trigger, search, or create in the operation directive - you can provide an array of objects as fields under the `outputFields`. Output Fields are what your users would see when they select a field provided by your trigger, search or create to map it to another.
+
+Output Fields are optional, but can be used to:
+
+- Define friendly labels for the returned fields. By default, we will *humanize* for example `my_key` as *My Key*.
+- Mark certain fields as `important` to sort them higher in the list of available fields to map.
+- Make sure that custom fields that may not be found in every live sample and - since they're custom to the connected account - cannot be defined in the static sample, can still be mapped.
+
+The [schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema) for `outputFields` is shared with `inputFields` but only the `key`, `required` and `important` properties are relevant.
+
+Custom/Dynamic Output Fields are defined in the same way as [Custom/Dynamic Input Fields](#customdynamic-fields).
+
+### Nested & Children (Line Item) Fields
+
+To define an Output Field for a nested field use `{{parent}}__{{key}}`. For children (line item) fields use `{{parent}}[]{{key}}`.
+
+```js
+const recipeOutputFields = (z, bundle) => {
+  const response = z.request('http://example.com/api/v2/fields.json');
+  // json is like [{"key":"field_1","label":"Label for Custom Field"}]
+  return response.then(res => res.json);
+};
+
+const App = {
+  //...
+  triggers: {
+    new_recipe: {
+      //...
+      operation: {
+        perform: () => {},
+        sample: {
+          id: 1,
+          nested_parent: {
+            key: 'Nested Field'
+          },
+          children_parent: [
+            {
+              key: 'Children Field'
+            }
+          ]
+        },
+        // an array of objects is the simplest way
+        outputFields: [
+          {
+            key: 'id',
+            label: 'Label for Simple Field',
+          },
+          {
+            key: 'nested_parent__key',
+            label: 'Label for Nested Field',
+            important: true,
+          },
+          {
+            key: 'children_parent[]key',
+            label: 'Label for Children Field',
+            important: true,
+          },
+          recipeOutputFields // provide a function inline - we'll merge the results!
+        ],
+      }
+    }
+  }
+};
+
+```
 
 ## Z Object
 

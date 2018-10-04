@@ -429,7 +429,7 @@ After running this, you'll have a new example app in your directory. If you re-r
 **Arguments**
 
 * `path [value]` -- **required**,
-* `--template={minimal,resource,trigger,create,search,middleware,basic-auth,custom-auth,oauth2,session-auth,babel,rest-hooks,files,github,search-or-create,typescript}` -- _optional_, select a starting app template. Default is `minimal`
+* `--template={minimal,trigger,search,create,basic-auth,custom-auth,oauth2,session-auth,dynamic-dropdown,files,middleware,resource,rest-hooks,search-or-create,babel,typescript,github}` -- _optional_, select a starting app template. Default is `minimal`
 
 ```bash
 $ zapier init example-app --template=minimal
