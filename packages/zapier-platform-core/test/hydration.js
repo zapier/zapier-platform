@@ -2,9 +2,7 @@
 
 require('should');
 
-const { DEFAULT_FILE_HYDRATOR_NAME } = require('../src/constants');
 const createDehydrator = require('../src/tools/create-dehydrator');
-const createFileDehydrator = require('../src/tools/create-file-dehydrator');
 const funcToFind = () => {};
 const funcToMiss = () => {};
 
@@ -21,7 +19,7 @@ const input = {
 };
 
 const dehydrate = createDehydrator(input);
-const dehydrateFile = createFileDehydrator(input);
+const dehydrateFile = createDehydrator(input, 'file');
 
 describe('hydration', () => {
   describe('dehydrate', () => {
@@ -76,14 +74,6 @@ describe('hydration', () => {
       delete process.env._ZAPIER_ONE_TIME_SECRET;
     });
 
-    it('should not allow request as the first argument', () => {
-      (() => {
-        dehydrateFile({ url: 'https://zpr.io/file' });
-      }).should.throw(
-        'First argument must be either null, a URL (string), or a hydrator function! We got object.'
-      );
-    });
-
     it('should not allow missing function', () => {
       const inputData = { key: 'value' };
       (() => {
@@ -99,32 +89,6 @@ describe('hydration', () => {
       result.should.eql(
         'hydrate|||{"type":"file","method":"some.path.to","bundle":{"key":"value"}}|||hydrate'
       );
-    });
-
-    it('should accept url', () => {
-      const result = dehydrateFile('https://zpr.io/file');
-      result.should.eql(
-        `hydrate|||{"type":"file","method":"hydrators.${DEFAULT_FILE_HYDRATOR_NAME}","bundle":{"url":"https://zpr.io/file"}}|||hydrate`
-      );
-    });
-
-    it('should accept url, request, meta', () => {
-      const request = {
-        url: 'https://zpr.io/file',
-        params: { dl: 1 }
-      };
-      const meta = {
-        filename: 'test.txt',
-        contentType: 'text/plain',
-        knownLength: 100
-      };
-      const result = dehydrateFile('https://zpr.io/newfile', request, meta);
-      const expected = {
-        type: 'file',
-        method: `hydrators.${DEFAULT_FILE_HYDRATOR_NAME}`,
-        bundle: { url: 'https://zpr.io/newfile', request, meta }
-      };
-      result.should.eql(`hydrate|||${JSON.stringify(expected)}|||hydrate`);
     });
 
     it('should not accept payload size bigger than 2048 bytes.', () => {

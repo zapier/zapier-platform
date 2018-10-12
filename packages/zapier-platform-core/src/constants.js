@@ -51,8 +51,6 @@ const SAFE_LOG_KEYS = [
   'timestamp'
 ];
 
-const DEFAULT_FILE_HYDRATOR_NAME = 'zapierDefaultFileHydrator';
-
 module.exports = {
   IS_TESTING,
   KILL_MIN_LIMIT,
@@ -64,6 +62,5 @@ module.exports = {
   DEFAULT_LOGGING_HTTP_ENDPOINT,
   DEFAULT_LOGGING_HTTP_API_KEY,
   SENSITIVE_KEYS,
-  SAFE_LOG_KEYS,
-  DEFAULT_FILE_HYDRATOR_NAME
+  SAFE_LOG_KEYS
 };

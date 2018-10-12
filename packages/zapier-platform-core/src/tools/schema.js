@@ -2,10 +2,8 @@
 
 const _ = require('lodash');
 
-const { DEFAULT_FILE_HYDRATOR_NAME } = require('../constants');
 const cleaner = require('./cleaner');
 const dataTools = require('./data');
-const defaultFileHydrator = require('./default-file-hydrator');
 const schemaTools = require('./schema-tools');
 const zapierSchema = require('zapier-platform-schema');
 
@@ -101,12 +99,6 @@ const copyPropertiesFromResource = (type, action, appRaw) => {
   return action;
 };
 
-const injectDefaultFileHydrator = appRaw => {
-  appRaw.hydrators = appRaw.hydrators || {};
-  appRaw.hydrators[DEFAULT_FILE_HYDRATOR_NAME] = defaultFileHydrator;
-  return appRaw;
-};
-
 const compileApp = appRaw => {
   appRaw = dataTools.deepCopy(appRaw);
   appRaw = schemaTools.findSourceRequireFunctions(appRaw);
@@ -167,8 +159,6 @@ const compileApp = appRaw => {
       appRaw
     );
   });
-
-  injectDefaultFileHydrator(appRaw);
 
   return appRaw;
 };
