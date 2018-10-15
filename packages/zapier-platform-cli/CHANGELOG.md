@@ -1,3 +1,23 @@
+## 7.3.0
+
+### cli
+
+* (improvement) Add Dynamic Dropdown example app ([#363](https://github.com/zapier/zapier-platform-cli/pull/363))
+* (improvement) Add smoke tests ([#361](https://github.com/zapier/zapier-platform-cli/pull/361), [#362](https://github.com/zapier/zapier-platform-cli/pull/362))
+* (doc) Document `z.dehydrateFile` ([#360](https://github.com/zapier/zapier-platform-cli/pull/360))
+* (doc) Document `outputFields` ([#365](https://github.com/zapier/zapier-platform-cli/pull/365))
+* (doc) Update docs to reflect support for `async/await` ([#359](https://github.com/zapier/zapier-platform-cli/pull/359))
+
+### schema
+
+* (improvement) Add smoke tests ([#55](https://github.com/zapier/zapier-platform-schema/pull/55))
+
+### core
+
+* :tada: (new) Introduce `z.dehydrateFile` - a new recommended method to dehydrate a file. Read [doc](https://zapier.github.io/zapier-platform-cli/#file-dehydration) for detail. ([#112](https://github.com/zapier/zapier-platform-core/pull/112), [#120](https://github.com/zapier/zapier-platform-core/pull/120))
+* (fix) Fix null error handling ([#117](https://github.com/zapier/zapier-platform-core/pull/117))
+* (improvement) Add smoke tests ([#116](https://github.com/zapier/zapier-platform-core/pull/116))
+
 ## 7.2.2
 
 ### core
