@@ -49,6 +49,12 @@ module.exports = makeSchema(
           minProperties: 2,
           maxProperties: 2
         }
+      },
+      omitEmptyParams: {
+        description:
+          'Should empty params not be sent? (empty strings, `null`, and `undefined` only — `[]`, `{}`, and `false` will still be sent)',
+        type: 'boolean',
+        default: false
       }
     },
     additionalProperties: false
