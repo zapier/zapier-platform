@@ -363,4 +363,103 @@ describe('request client', () => {
       response.status.should.eql(200);
     });
   });
+
+  it('should not omit empty params by default', () => {
+    const request = createAppRequestClient(input);
+    return request({
+      url: 'http://zapier-httpbin.herokuapp.com/get',
+      params: {
+        something: '',
+        cool: 'true'
+      }
+    }).then(responseBefore => {
+      const response = JSON.parse(JSON.stringify(responseBefore));
+
+      response.json.args.something.should.eql('');
+      response.json.args.cool.should.eql('true');
+      response.status.should.eql(200);
+
+      const body = JSON.parse(response.content);
+      body.url.should.eql(
+        'http://zapier-httpbin.herokuapp.com/get?something=&cool=true'
+      );
+    });
+  });
+
+  it('should not omit empty params when set as false', () => {
+    const request = createAppRequestClient(input);
+    return request({
+      url: 'http://zapier-httpbin.herokuapp.com/get',
+      params: {
+        something: '',
+        cool: 'true'
+      },
+      omitEmptyParams: false
+    }).then(responseBefore => {
+      const response = JSON.parse(JSON.stringify(responseBefore));
+
+      response.json.args.something.should.eql('');
+      response.json.args.cool.should.eql('true');
+      response.status.should.eql(200);
+
+      const body = JSON.parse(response.content);
+      body.url.should.eql(
+        'http://zapier-httpbin.herokuapp.com/get?something=&cool=true'
+      );
+    });
+  });
+
+  it('should omit empty params when set as true', () => {
+    const request = createAppRequestClient(input);
+    return request({
+      url: 'http://zapier-httpbin.herokuapp.com/get',
+      params: {
+        something: '',
+        cool: 'false',
+        foo: null,
+        bar: undefined,
+        zzz: '[]',
+        yyy: '{}',
+        qqq: ' '
+      },
+      omitEmptyParams: true
+    }).then(responseBefore => {
+      const response = JSON.parse(JSON.stringify(responseBefore));
+
+      should(response.json.args.something).eql(undefined);
+      should(response.json.args.foo).eql(undefined);
+      should(response.json.args.bar).eql(undefined);
+      response.json.args.cool.should.eql('false');
+      response.json.args.zzz.should.eql('[]');
+      response.json.args.yyy.should.eql('{}');
+      response.json.args.qqq.should.eql(' ');
+      response.status.should.eql(200);
+
+      const body = JSON.parse(response.content);
+      body.url.should.eql(
+        'http://zapier-httpbin.herokuapp.com/get?cool=false&zzz=[]&yyy={}&qqq= '
+      );
+    });
+  });
+
+  it('should not include ? if there are no params after cleaning', () => {
+    const request = createAppRequestClient(input);
+    return request({
+      url: 'http://zapier-httpbin.herokuapp.com/get',
+      params: {
+        something: '',
+        cool: ''
+      },
+      omitEmptyParams: true
+    }).then(responseBefore => {
+      const response = JSON.parse(JSON.stringify(responseBefore));
+
+      should(response.json.args.something).eql(undefined);
+      should(response.json.args.cool).eql(undefined);
+      response.status.should.eql(200);
+
+      const body = JSON.parse(response.content);
+      body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+    });
+  });
 });
