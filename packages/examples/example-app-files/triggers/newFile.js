@@ -16,7 +16,7 @@ const listFiles = (z, bundle) => {
 
       // Make it possible to get the actual file contents if necessary (no need to make the request now)
       return files.map((file) => {
-        file.file = z.dehydrate(hydrators.downloadFile, {
+        file.file = z.dehydrateFile(hydrators.downloadFile, {
           fileId: file.id,
         });
 
