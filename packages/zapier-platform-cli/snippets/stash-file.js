@@ -16,7 +16,7 @@ const pdfList = (z, bundle) => {
       return results.map(result => {
         // lazily convert a secret_download_url to a stashed url
         // zapier won't do this until we need it
-        result.file = z.dehydrate(stashPDFfunction, {
+        result.file = z.dehydrateFile(stashPDFfunction, {
           downloadUrl: result.secret_download_url
         });
         delete result.secret_download_url;
