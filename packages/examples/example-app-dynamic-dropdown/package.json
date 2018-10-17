@@ -10,11 +10,11 @@
     "test": "node node_modules/mocha/bin/mocha --recursive"
   },
   "engines": {
-    "node": ">=4.3.0",
-    "npm": ">=2.0.0"
+    "node": "8.10.0",
+    "npm": ">=5.6.0"
   },
   "dependencies": {
-    "zapier-platform-core": "6.0.0"
+    "zapier-platform-core": "7.3.0"
   },
   "devDependencies": {
     "mocha": "3.2.0",
