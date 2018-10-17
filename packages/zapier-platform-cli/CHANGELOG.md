@@ -10,11 +10,13 @@
 
 ### schema
 
+* :tada: (new) Add `omitEmptyParams` to `RequestSchema` ([#57](https://github.com/zapier/zapier-platform-schema/pull/57))
 * (improvement) Add smoke tests ([#55](https://github.com/zapier/zapier-platform-schema/pull/55))
 
 ### core
 
 * :tada: (new) Introduce `z.dehydrateFile` - a new recommended method to dehydrate a file. Read [doc](https://zapier.github.io/zapier-platform-cli/#file-dehydration) for detail. ([#112](https://github.com/zapier/zapier-platform-core/pull/112), [#120](https://github.com/zapier/zapier-platform-core/pull/120))
+* :tada: (new) Add `omitEmptyParams` option to clean up empty request params automatically. Read [doc](https://zapier.github.io/zapier-platform-schema/build/schema.html#requestschema) for detail. ([#121](https://github.com/zapier/zapier-platform-core/pull/121))
 * (fix) Fix null error handling ([#117](https://github.com/zapier/zapier-platform-core/pull/117))
 * (improvement) Add smoke tests ([#116](https://github.com/zapier/zapier-platform-core/pull/116))
 
