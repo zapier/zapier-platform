@@ -30,6 +30,16 @@ module.exports = makeSchema(
           'A version identifier for the Zapier execution environment.',
         $ref: VersionSchema.id
       },
+      beforeApp: {
+        description:
+          'EXPERIMENTAL: Before the perform method is called on your app, you can modify the execution context.',
+        $ref: MiddlewaresSchema.id
+      },
+      afterApp: {
+        description:
+          'EXPERIMENTAL: After the perform method is called on your app, you can modify the response.',
+        $ref: MiddlewaresSchema.id
+      },
       authentication: {
         description: 'Choose what scheme your API uses for authentication.',
         $ref: AuthenticationSchema.id

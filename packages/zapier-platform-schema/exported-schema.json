@@ -16,6 +16,16 @@
             "A version identifier for the Zapier execution environment.",
           "$ref": "/VersionSchema"
         },
+        "beforeApp": {
+          "description":
+            "EXPERIMENTAL: Before the perform method is called on your app, you can modify the execution context.",
+          "$ref": "/MiddlewaresSchema"
+        },
+        "afterApp": {
+          "description":
+            "EXPERIMENTAL: After the perform method is called on your app, you can modify the response.",
+          "$ref": "/MiddlewaresSchema"
+        },
         "authentication": {
           "description": "Choose what scheme your API uses for authentication.",
           "$ref": "/AuthenticationSchema"
@@ -1309,7 +1319,7 @@
     "MiddlewaresSchema": {
       "id": "/MiddlewaresSchema",
       "description":
-        "List of HTTP before or after middlewares. Can be an array of functions or a single function",
+        "List of before or after middlewares. Can be an array of functions or a single function",
       "oneOf": [
         {
           "type": "array",
