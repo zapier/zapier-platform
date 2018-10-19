@@ -3,6 +3,34 @@ const FormData = require('form-data');
 
 const cleaner = require('zapier-platform-core/src/tools/cleaner');
 
+const createInternalRequestClient = input => {
+  const addQueryParams = require('zapier-platform-core/src/http-middlewares/before/add-query-params');
+  const createInjectInputMiddleware = require('zapier-platform-core/src/http-middlewares/before/inject-input');
+  const createRequestClient = require('zapier-platform-core/src/tools/create-request-client');
+  const disableSSLCertCheck = require('zapier-platform-core/src/http-middlewares/before/disable-ssl-cert-check');
+  const logResponse = require('zapier-platform-core/src/http-middlewares/after/log-response');
+  const prepareRequest = require('zapier-platform-core/src/http-middlewares/before/prepare-request');
+  const prepareResponse = require('zapier-platform-core/src/http-middlewares/after/prepare-response');
+
+  const options = {
+    skipDefaultMiddle: true
+  };
+  const httpBefores = [
+    createInjectInputMiddleware(input),
+    prepareRequest,
+    addQueryParams
+  ];
+
+
+  const verifySSL = _.get(input, '_zapier.event.verifySSL');
+  if (verifySSL === false) {
+    httpBefores.push(disableSSLCertCheck);
+  }
+
+  const httpAfters = [prepareResponse, logResponse];
+  return createRequestClient(httpBefores, httpAfters, options);
+};
+
 const bundleConverter = require('./bundle');
 const {
   markFileFieldsInBundle,
@@ -151,7 +179,7 @@ const replaceCurliesInRequest = (request, bundle) => {
   return cleaner.recurseReplaceBank(request, bank);
 };
 
-const compileLegacyScriptingSource = source => {
+const compileLegacyScriptingSource = (source, zcli, app) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
   const {
     ErrorException,
@@ -189,7 +217,7 @@ const compileLegacyScriptingSource = source => {
     XMLSerializer,
     require('./atob'),
     require('./btoa'),
-    require('./z'),
+    require('./zfactory')(zcli, app),
     require('./$'),
     ErrorException,
     HaltedException,
@@ -265,9 +293,11 @@ const createEventNameToMethodMapping = key => {
   };
 };
 
-const legacyScriptingRunner = (Zap, zobj, app) => {
+const legacyScriptingRunner = (Zap, zcli, input) => {
+  const app = _.get(input, '_zapier.app');
+
   if (typeof Zap === 'string') {
-    Zap = compileLegacyScriptingSource(Zap);
+    Zap = compileLegacyScriptingSource(Zap, zcli, app);
   }
 
   // Does string replacement ala WB, using bundle and a potential result object
@@ -387,11 +417,11 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
       }
 
       // Running "full" scripting method like KEY_poll
-      result = await runEvent({ key, name: fullEventName }, zobj, bundle);
+      result = await runEvent({ key, name: fullEventName }, zcli, bundle);
     } else {
       const preMethod = preMethodName ? Zap[preMethodName] : null;
       const request = preMethod
-        ? await runEvent({ key, name: preEventName }, zobj, bundle)
+        ? await runEvent({ key, name: preEventName }, zcli, bundle)
         : bundle.request;
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
@@ -400,7 +430,7 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
         await addFilesToRequestBodyFromBody(request, bundle);
       }
 
-      const response = await zobj.request(request);
+      const response = await zcli.request(request);
 
       if (options.checkResponseStatus) {
         response.throwForStatus();
@@ -412,8 +442,8 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
 
       const postMethod = postMethodName ? Zap[postMethodName] : null;
       result = postMethod
-        ? await runEvent({ key, name: postEventName, response }, zobj, bundle)
-        : zobj.JSON.parse(response.content);
+        ? await runEvent({ key, name: postEventName, response }, zcli, bundle)
+        : zcli.JSON.parse(response.content);
     }
 
     if (options.ensureArray) {
@@ -505,7 +535,7 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
   const runCatchHook = (bundle, key) => {
     const methodName = `${key}_catch_hook`;
     const promise = Zap[methodName]
-      ? runEvent({ key, name: 'trigger.hook' }, zobj, bundle)
+      ? runEvent({ key, name: 'trigger.hook' }, zcli, bundle)
       : Promise.resolve(bundle.cleanedRequest);
     return promise.then(result => {
       if (!Array.isArray(result)) {
@@ -735,6 +765,24 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     return runCustomFields(bundle, key, 'search.output', url);
   };
 
+  const runHydrateFile = bundle => {
+    const meta = bundle.inputData.meta || {};
+    const requestOptions = bundle.inputData.request || {};
+
+    // Legacy z.dehydrateFile(url, request, meta) behavior: if request argument is
+    // provided, the dev is responsible for doing auth themselves, so we use an internal
+    // request client to avoid running the app's http middlewares.
+    const request = _.isEmpty(requestOptions)
+      ? zcli.request
+      : createInternalRequestClient(input);
+
+    requestOptions.url = bundle.inputData.url || requestOptions.url;
+    requestOptions.raw = true;
+
+    const filePromise = request(requestOptions);
+    return zcli.stashFile(filePromise, meta.length, meta.name);
+  };
+
   // core exposes this function as z.legacyScripting.run() method that we can
   // run legacy scripting easily like z.legacyScripting.run(bundle, 'trigger', 'KEY')
   // in CLI to simulate how WB backend runs legacy scripting.
@@ -748,16 +796,16 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
     return applyBeforeMiddleware(
       app.beforeRequest,
       initRequest,
-      zobj,
+      zcli,
       bundle
     ).then(preparedRequest => {
       bundle.request = preparedRequest;
 
       switch (typeOf) {
         case 'auth.session':
-          return runEvent({ name: 'auth.session' }, zobj, bundle);
+          return runEvent({ name: 'auth.session' }, zcli, bundle);
         case 'auth.connectionLabel':
-          return runEvent({ name: 'auth.connectionLabel' }, zobj, bundle);
+          return runEvent({ name: 'auth.connectionLabel' }, zcli, bundle);
         case 'auth.oauth2.token':
           return runOAuth2GetAccessToken(bundle);
         case 'auth.oauth2.refresh':
@@ -786,6 +834,8 @@ const legacyScriptingRunner = (Zap, zobj, app) => {
           return runSearchInputFields(bundle, key);
         case 'search.output':
           return runSearchOutputFields(bundle, key);
+        case 'hydrate.file':
+          return runHydrateFile(bundle);
       }
       throw new Error(`unrecognizable typeOf '${typeOf}'`);
     });
