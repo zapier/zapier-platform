@@ -1,6 +1,7 @@
 'use strict';
 
 const applyMiddleware = require('./middleware');
+const ensureArray = require('./tools/ensure-array');
 const schemaTools = require('./tools/schema');
 
 // before middles
@@ -24,10 +25,19 @@ const createApp = appRaw => {
   const frozenCompiledApp = schemaTools.prepareApp(appRaw);
 
   // standard before middlewares
-  const befores = [addAppContext, injectZObject];
+  const befores = [
+    addAppContext,
+    injectZObject,
+    ...ensureArray(frozenCompiledApp.beforeApp)
+  ];
 
   // standard after middlewares
-  const afters = [checkOutput, largeResponseCachePointer, waitForPromises];
+  const afters = [
+    checkOutput,
+    largeResponseCachePointer,
+    waitForPromises,
+    ...ensureArray(frozenCompiledApp.afterApp)
+  ];
 
   const app = createCommandHandler(frozenCompiledApp);
   return applyMiddleware(befores, afters, app);
