@@ -34,8 +34,7 @@ const injectZObject = input => {
     request: createAppRequestClient(input, { extraArgs: [zSkinny, bundle] })
   });
 
-  const app = _.get(input, '_zapier.app');
-  const runner = createLegacyScriptingRunner(z, app);
+  const runner = createLegacyScriptingRunner(z, input);
   if (runner) {
     z.legacyScripting = runner;
   }
