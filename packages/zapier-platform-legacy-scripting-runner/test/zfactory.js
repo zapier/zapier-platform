@@ -1,6 +1,6 @@
 const should = require('should');
 
-const z = require('../z');
+const z = require('../zfactory')();
 
 describe('z', () => {
   it('z.hash', done => {

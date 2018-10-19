@@ -14,6 +14,26 @@ const withAuth = (appDef, authConfig) => {
   return _.extend(_.cloneDeep(appDef), _.cloneDeep(authConfig));
 };
 
+// XXX: Allow to add custom app befores. Kind of hacky, but we can remove this once
+// https://github.com/zapier/zapier-platform-core/pull/119 is shipped
+const createAppWithCustomBefores = (appRaw, customBefores) => {
+  const addAppContext = require('zapier-platform-core/src/app-middlewares/before/add-app-context');
+  const injectZObject = require('zapier-platform-core/src/app-middlewares/before/z-object');
+  const checkOutput = require('zapier-platform-core/src/app-middlewares/after/checks');
+  const largeResponseCachePointer = require('zapier-platform-core/src/app-middlewares/after/large-response-cacher');
+  const waitForPromises = require('zapier-platform-core/src/app-middlewares/after/wait-for-promises');
+  const createCommandHandler = require('zapier-platform-core/src/create-command-handler');
+  const applyMiddleware = require('zapier-platform-core/src/middleware');
+
+  const frozenCompiledApp = schemaTools.prepareApp(appRaw);
+
+  const befores = [addAppContext, injectZObject].concat(customBefores || []);
+  const afters = [checkOutput, largeResponseCachePointer, waitForPromises];
+
+  const app = createCommandHandler(frozenCompiledApp);
+  return applyMiddleware(befores, afters, app);
+};
+
 describe('Integration Test', () => {
   const testLogger = (/* message, data */) => {
     // console.log(message, data);
@@ -313,6 +333,42 @@ describe('Integration Test', () => {
         should.equal(fields[3].key, 'color');
         should.equal(fields[4].key, 'age');
         should.equal(fields[5].key, 'spin');
+      });
+    });
+
+    it('z.dehydrateFile', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'movie_post_poll_file_dehydration',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then(output => {
+        const movies = output.results;
+        movies.length.should.greaterThan(1);
+        movies.forEach(movie => {
+          movie.trailer.should.startWith('hydrate|||');
+          movie.trailer.should.endWith('|||hydrate');
+
+          const payload = JSON.parse(movie.trailer.split('|||')[1]);
+          should.equal(payload.type, 'file');
+          should.equal(payload.method, 'hydrators.legacyFileHydrator');
+          should.equal(
+            payload.bundle.url,
+            'https://auth-json-server.zapier.ninja/movies'
+          );
+          should.equal(payload.bundle.request.params.id, movie.id);
+          should.equal(payload.bundle.meta.name, `movie ${movie.id}.json`);
+          should.equal(payload.bundle.meta.length, 1234);
+        });
       });
     });
   });
@@ -1428,6 +1484,152 @@ describe('Integration Test', () => {
 
         const data = JSON.parse(output.results.data);
         should.equal(data.filename, 'dont.care');
+      });
+    });
+
+    describe('legacyFileHydrator', () => {
+      const mockFileStahser = input => {
+        // Mock z.stashFile to do nothing but return file content and meta
+        input.z.stashFile = async (
+          filePromise,
+          knownLength,
+          filename,
+          contentType
+        ) => {
+          // Assuming filePromise gives us a JSON string
+          const response = await filePromise;
+          const buffer = await response.buffer();
+          const content = buffer.toString('utf8');
+          return {
+            response,
+            content: JSON.parse(content),
+            knownLength,
+            filename,
+            contentType
+          };
+        };
+        return input;
+      };
+
+      it('should send auth when no request options', () => {
+        const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+        const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+        const app = createAppWithCustomBefores(appDefWithAuth, [
+          mockFileStahser
+        ]);
+
+        const input = createTestInput(
+          compiledApp,
+          'hydrators.legacyFileHydrator'
+        );
+        input.bundle.authData = { api_key: 'super secret' };
+        input.bundle.inputData = {
+          // This endpoint echoes what we send to it, so we know if auth info was sent
+          url: 'https://zapier-httpbin.herokuapp.com/get'
+        };
+        return app(input).then(output => {
+          const {
+            response,
+            content,
+            knownLength,
+            filename,
+            contentType
+          } = output.results;
+          should.equal(content.headers['X-Api-Key'], 'super secret');
+          should.not.exist(knownLength);
+          should.not.exist(filename);
+          should.not.exist(contentType);
+
+          // Make sure prepareResponse middleware was run
+          response.getHeader.should.be.Function();
+          should.equal(response.getHeader('content-type'), 'application/json');
+        });
+      });
+
+      it('should not send auth when request options are present', () => {
+        const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+        const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+        const app = createAppWithCustomBefores(appDefWithAuth, [
+          mockFileStahser
+        ]);
+
+        const input = createTestInput(
+          compiledApp,
+          'hydrators.legacyFileHydrator'
+        );
+        input.bundle.authData = { api_key: 'super secret' };
+        input.bundle.inputData = {
+          // This endpoint echoes what we send to it, so we know if auth info was sent
+          url: 'https://zapier-httpbin.herokuapp.com/get',
+          request: {
+            params: { foo: 1, bar: 'hello' }
+          }
+        };
+        return app(input).then(output => {
+          const {
+            response,
+            content,
+            knownLength,
+            filename,
+            contentType
+          } = output.results;
+
+          should.equal(content.args.foo, '1');
+          should.equal(content.args.bar, 'hello');
+          should.not.exist(content.headers['X-Api-Key']);
+          should.not.exist(knownLength);
+          should.not.exist(filename);
+          should.not.exist(contentType);
+
+          // Make sure prepareResponse middleware was run
+          response.getHeader.should.be.Function();
+          should.equal(response.getHeader('content-type'), 'application/json');
+        });
+      });
+
+      it('should send file meta', () => {
+        const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+        const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+        const app = createAppWithCustomBefores(appDefWithAuth, [
+          mockFileStahser
+        ]);
+
+        const input = createTestInput(
+          compiledApp,
+          'hydrators.legacyFileHydrator'
+        );
+        input.bundle.authData = { api_key: 'super secret' };
+        input.bundle.inputData = {
+          // This endpoint echoes what we send to it, so we know if auth info was sent
+          url: 'https://zapier-httpbin.herokuapp.com/get',
+          request: {
+            params: { foo: 1, bar: 'hello' }
+          },
+          meta: {
+            length: 1234,
+            name: 'hello.json'
+          }
+        };
+        return app(input).then(output => {
+          const {
+            response,
+            content,
+            knownLength,
+            filename,
+            contentType
+          } = output.results;
+
+          should.equal(content.args.foo, '1');
+          should.equal(content.args.bar, 'hello');
+          should.not.exist(content.headers['X-Api-Key']);
+          should.equal(knownLength, 1234);
+          should.equal(filename, 'hello.json');
+          should.not.exist(contentType);
+
+          // Make sure prepareResponse middleware was run
+          response.getHeader.should.be.Function();
+          should.equal(response.getHeader('content-type'), 'application/json');
+        });
       });
     });
   });

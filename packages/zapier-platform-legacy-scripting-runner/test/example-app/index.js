@@ -167,6 +167,22 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_post_poll_file_dehydration: function(bundle) {
+        var movies = z.JSON.parse(bundle.response.content);
+        var url = '${AUTH_JSON_SERVER_URL}/movies';
+        return movies.map(movie => {
+          // Just a JSON file, not a real trailer
+          movie.trailer = z.dehydrateFile(url, {
+            params: { id: movie.id }
+          }, {
+            name: 'movie ' + movie.id + '.json',
+            length: 1234
+          });
+          return movie;
+        });
+      },
+
+
       /*
        * Create/Action
        */
@@ -586,6 +602,21 @@ const TestTrigger = {
   }
 };
 
+const MovieTrigger = {
+  key: 'movie',
+  display: {
+    label: 'New Movie'
+  },
+  operation: {
+    perform: {
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'movie');"
+    },
+    legacyProperties: {
+      url: `${AUTH_JSON_SERVER_URL}/movies`
+    }
+  }
+};
+
 const MovieCreate = {
   key: 'movie',
   noun: 'Movie',
@@ -695,7 +726,8 @@ const App = {
     [ContactTrigger_pre_post.key]: ContactTrigger_pre_post,
     [ContactHook_scriptingless.key]: ContactHook_scriptingless,
     [ContactHook_scripting.key]: ContactHook_scripting,
-    [TestTrigger.key]: TestTrigger
+    [TestTrigger.key]: TestTrigger,
+    [MovieTrigger.key]: MovieTrigger
   },
   creates: {
     [MovieCreate.key]: MovieCreate,
@@ -703,6 +735,11 @@ const App = {
   },
   searches: {
     [MovieSearch.key]: MovieSearch
+  },
+  hydrators: {
+    legacyFileHydrator: {
+      source: "return z.legacyScripting.run(bundle, 'hydrate.file');"
+    }
   },
   legacyProperties: {
     subscribeUrl: 'http://zapier-httpbin.herokuapp.com/post',

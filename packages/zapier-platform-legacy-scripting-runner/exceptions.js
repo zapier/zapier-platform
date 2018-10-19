@@ -4,7 +4,7 @@ const _ = require('lodash');
 const util = require('util');
 
 // Make some of the errors we'll use!
-const createError = (name) => {
+const createError = name => {
   const NewError = function(message) {
     this.name = name;
     this.message = message || '';
@@ -20,12 +20,17 @@ const names = [
   'StopRequestError',
   'ExpiredAuthError',
   'RefreshAuthError',
+  'DehydrateError'
 ];
 
-const cliErrors = _.reduce(names, (error, name) => {
-  error[name] = createError(name);
-  return error;
-}, {});
+const cliErrors = _.reduce(
+  names,
+  (error, name) => {
+    error[name] = createError(name);
+    return error;
+  },
+  {}
+);
 
 const exceptions = {
   ErrorException: Error,
@@ -34,6 +39,7 @@ const exceptions = {
   ExpiredAuthException: cliErrors.ExpiredAuthError,
   RefreshTokenException: cliErrors.RefreshAuthError,
   InvalidSessionException: cliErrors.RefreshAuthError, // In CLI, RefreshAuthError works the same for both OAuth and Session
+  DehydrateException: cliErrors.DehydrateError
 };
 
 module.exports = exceptions;
