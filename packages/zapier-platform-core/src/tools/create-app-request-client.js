@@ -11,6 +11,7 @@ const createInjectInputMiddleware = require('../http-middlewares/before/inject-i
 const prepareRequest = require('../http-middlewares/before/prepare-request');
 const addQueryParams = require('../http-middlewares/before/add-query-params');
 const addBasicAuthHeader = require('../http-middlewares/before/add-basic-auth-header');
+const addDigestAuthHeader = require('../http-middlewares/before/add-digest-auth-header');
 const disableSSLCertCheck = require('../http-middlewares/before/disable-ssl-cert-check');
 
 // after middles
@@ -36,7 +37,7 @@ const createAppRequestClient = (input, options) => {
     if (app.authentication.type === 'basic') {
       httpBefores.push(addBasicAuthHeader);
     } else if (app.authentication.type === 'digest') {
-      console.warn('Digest Auth is not yet available');
+      httpBefores.push(addDigestAuthHeader);
     }
   }
 
