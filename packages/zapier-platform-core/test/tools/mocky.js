@@ -39,9 +39,9 @@ const fakeSignedPostData = {
   }
 };
 
-const mockUpload = () => {
+const mockUpload = bodyMatcher => {
   nock('http://s3-fake.zapier.com')
-    .post('/')
+    .post('/', bodyMatcher)
     .reply(204, '');
 };
 

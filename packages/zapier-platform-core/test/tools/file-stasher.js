@@ -226,4 +226,32 @@ describe('file upload', () => {
       })
       .catch(done);
   });
+
+  it('should get filename from content-disposition', done => {
+    mocky.mockRpcCall(mocky.fakeSignedPostData);
+
+    // Expect to have this part in the request body sent to S3
+    mocky.mockUpload(
+      /name="Content-Disposition"\r\n\r\nattachment; filename="an example\.json"/
+    );
+
+    const request = createAppRequestClient(input);
+    const file = request({
+      url: 'https://zapier-httpbin.herokuapp.com/response-headers',
+      params: {
+        'Content-Disposition': 'inline; filename="an example.json"'
+      },
+      raw: true
+    });
+    stashFile(file)
+      .then(url => {
+        should(url).eql(
+          `${mocky.fakeSignedPostData.url}${
+            mocky.fakeSignedPostData.fields.key
+          }`
+        );
+        done();
+      })
+      .catch(done);
+  });
 });

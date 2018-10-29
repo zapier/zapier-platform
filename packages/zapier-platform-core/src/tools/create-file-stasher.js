@@ -111,27 +111,36 @@ const createFileStasher = input => {
               let newBufferStringStream = response;
               if (_.isString(response)) {
                 newBufferStringStream = response;
-              } else if (response && response.headers) {
-                if (response.body && typeof response.body.pipe === 'function') {
+              } else if (response) {
+                if (Buffer.isBuffer(response)) {
+                  newBufferStringStream = response;
+                } else if (Buffer.isBuffer(response.dataBuffer)) {
+                  newBufferStringStream = response.dataBuffer;
+                } else if (
+                  response.body &&
+                  typeof response.body.pipe === 'function'
+                ) {
                   newBufferStringStream = response.body;
                 } else {
                   newBufferStringStream = response.content;
                 }
-                knownLength =
-                  knownLength || response.getHeader('content-length');
-                const cd = response.getHeader('content-disposition');
-                if (cd) {
-                  filename =
-                    filename ||
-                    contentDisposition.parse(cd).parameters.filename;
+
+                if (response.headers) {
+                  knownLength =
+                    knownLength || response.getHeader('content-length');
+                  const cd = response.getHeader('content-disposition');
+                  if (cd) {
+                    filename =
+                      filename ||
+                      contentDisposition.parse(cd).parameters.filename;
+                  }
                 }
-              } else if (Buffer.isBuffer(response)) {
-                newBufferStringStream = response;
               } else {
                 throw new Error(
                   'Cannot stash a Promise wrapped file of unknown type.'
                 );
               }
+
               return uploader(
                 result,
                 newBufferStringStream,
@@ -140,9 +149,13 @@ const createFileStasher = input => {
                 fileContentType
               );
             };
+
             if (isStreamed) {
               maybeResponse.throwForStatus();
-              return maybeResponse.buffer().then(parseFinalResponse);
+              return maybeResponse.buffer().then(buffer => {
+                maybeResponse.dataBuffer = buffer;
+                return parseFinalResponse(maybeResponse);
+              });
             } else {
               return parseFinalResponse(maybeResponse);
             }

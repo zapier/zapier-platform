@@ -18,7 +18,7 @@
     "preversion": "git pull && npm test",
     "version": "node bin/bump-dependencies.js && git add package.json",
     "postversion": "git push && git push --tags",
-    "test": "mocha -t 5000 --recursive test",
+    "test": "mocha -t 10000 --recursive test",
     "posttest": "npm run lint",
     "plain-test": "mocha -t 5000 --recursive test",
     "integration-test": "mocha -t 10000 integration-test",
