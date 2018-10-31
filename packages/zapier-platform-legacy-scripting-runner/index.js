@@ -289,7 +289,12 @@ const createEventNameToMethodMapping = key => {
     'search.input.post': `${key}_post_custom_search_fields`,
     'search.output': `${key}_custom_search_result_fields`,
     'search.output.pre': `${key}_pre_custom_search_result_fields`,
-    'search.output.post': `${key}_post_custom_search_result_fields`
+    'search.output.post': `${key}_post_custom_search_result_fields`,
+
+    //
+    // Hydration
+    //
+    'hydrate.method': key
   };
 };
 
@@ -765,6 +770,11 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return runCustomFields(bundle, key, 'search.output', url);
   };
 
+  const runHydrateMethod = bundle => {
+    const methodName = bundle.inputData.method;
+    return runEvent({ name: 'hydrate.method', key: methodName }, zcli, bundle);
+  };
+
   const runHydrateFile = bundle => {
     const meta = bundle.inputData.meta || {};
     const requestOptions = bundle.inputData.request || {};
@@ -834,6 +844,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           return runSearchInputFields(bundle, key);
         case 'search.output':
           return runSearchOutputFields(bundle, key);
+        case 'hydrate.method':
+          return runHydrateMethod(bundle);
         case 'hydrate.file':
           return runHydrateFile(bundle);
       }
