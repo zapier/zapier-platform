@@ -1722,7 +1722,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>On each trigger, search, or create in the <code>operation</code> directive - you can provide an array of objects as fields under the <code>inputFields</code>. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a &quot;create contact&quot; action with fields like &quot;First name&quot;, &quot;Last name&quot;, &quot;Email&quot;, etc.</p><p>You can find more details on each and every field option at <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema">Field Schema</a>.</p><p>Those fields have various options you can provide, here is a succinct example:</p>
+      <p>On each trigger, search, or create in the <code>operation</code> directive - you can provide an array of objects as fields under the <code>inputFields</code>. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a &quot;Create Contact&quot; action with fields like &quot;First name&quot;, &quot;Last name&quot;, &quot;Email&quot;, etc. These fields will be able to accept input from previous steps in a Zap, for example:</p><p><img src="https://cdn.zapier.com/storage/photos/6bd938f7cad7e34c75ba1c1d3be75ac5.gif" alt="gif of setting up an action field in Zap Editor"></p><p>You can find more details about setting action fields from a user perspective in <a href="https://zapier.com/help/creating-zap/#set-up-action-template">our help documentation</a>.</p><p>Those fields have various options you can provide, here is a succinct example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
@@ -1752,6 +1752,15 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 };
 
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>You can find more details on the different field schema options at <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema">our Field Schema</a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">

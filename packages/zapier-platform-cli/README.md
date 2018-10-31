@@ -843,9 +843,11 @@ Each of the 3 types of function expects a certain type of object. As of core `v1
 
 ## Input Fields
 
-On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a "create contact" action with fields like "First name", "Last name", "Email", etc.
+On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a "Create Contact" action with fields like "First name", "Last name", "Email", etc. These fields will be able to accept input from previous steps in a Zap, for example:
 
-You can find more details on each and every field option at [Field Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema).
+![gif of setting up an action field in Zap Editor](https://cdn.zapier.com/storage/photos/6bd938f7cad7e34c75ba1c1d3be75ac5.gif)
+
+You can find more details about setting action fields from a user perspective in [our help documentation](https://zapier.com/help/creating-zap/#set-up-action-template).
 
 Those fields have various options you can provide, here is a succinct example:
 
@@ -877,6 +879,8 @@ const App = {
 };
 
 ```
+
+You can find more details on the different field schema options at [our Field Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema).
 
 ### Custom/Dynamic Fields
 
