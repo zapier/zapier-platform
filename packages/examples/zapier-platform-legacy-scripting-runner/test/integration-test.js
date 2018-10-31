@@ -336,6 +336,37 @@ describe('Integration Test', () => {
       });
     });
 
+    it('z.dehydrate', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+        'movie_post_poll_method_dehydration',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then(output => {
+        const movies = output.results;
+        movies.length.should.greaterThan(1);
+        movies.forEach(movie => {
+          movie.user.should.startWith('hydrate|||');
+          movie.user.should.endWith('|||hydrate');
+
+          const payload = JSON.parse(movie.user.split('|||')[1]);
+          should.equal(payload.type, 'method');
+          should.equal(payload.method, 'hydrators.legacyMethodHydrator');
+          should.equal(payload.bundle.method, 'getUser');
+          should.equal(payload.bundle.bundle.userId, movie.id);
+        });
+      });
+    });
+
     it('z.dehydrateFile', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
@@ -1484,6 +1515,60 @@ describe('Integration Test', () => {
 
         const data = JSON.parse(output.results.data);
         should.equal(data.filename, 'dont.care');
+      });
+    });
+
+    describe('legacyMethodHydrator', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      it('should get data if auth is correct', () => {
+        const input = createTestInput(
+          compiledApp,
+          'hydrators.legacyMethodHydrator'
+        );
+        input.bundle.authData = { api_key: 'secret' };
+        input.bundle.inputData = {
+          method: 'getUser',
+          bundle: {
+            userId: 3
+          }
+        };
+        return app(input).then(output => {
+          const user = output.results;
+          should.equal(user.id, 3);
+          should.equal(user.name, 'Clementine Bauch');
+        });
+      });
+
+      it('should fail if bad auth', () => {
+        const input = createTestInput(
+          compiledApp,
+          'hydrators.legacyMethodHydrator'
+        );
+        input.bundle.authData = { api_key: 'bad key' };
+        input.bundle.inputData = {
+          method: 'getUser',
+          bundle: {
+            userId: 3
+          }
+        };
+        return app(input).should.be.rejectedWith(/Unauthorized/);
+      });
+
+      it('should fail if no auth', () => {
+        const input = createTestInput(
+          compiledApp,
+          'hydrators.legacyMethodHydrator'
+        );
+        input.bundle.inputData = {
+          method: 'getUser',
+          bundle: {
+            userId: 3
+          }
+        };
+        return app(input).should.be.rejectedWith(/Unauthorized/);
       });
     });
 

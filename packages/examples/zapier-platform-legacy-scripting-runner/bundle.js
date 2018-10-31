@@ -92,6 +92,8 @@ const addInputData = (event, bundle, convertedBundle) => {
       convertedBundle.read_fields = event.results || bundle.inputData;
       convertedBundle.read_context = bundle.inputData;
     }
+  } else if (event.name === 'hydrate.method') {
+    _.extend(convertedBundle, bundle.inputData.bundle);
   }
 };
 

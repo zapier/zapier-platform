@@ -137,6 +137,13 @@ const zfactory = (zcli, app) => {
     return `:censored:${length}:${result.substr(0, 10)}:`;
   };
 
+  const dehydrate = (method, bundle) => {
+    return zcli.dehydrate(app.hydrators.legacyMethodHydrator, {
+      method,
+      bundle
+    });
+  };
+
   const dehydrateFile = (url, requestOptions, meta) => {
     return zcli.dehydrateFile(app.hydrators.legacyFileHydrator, {
       url,
@@ -155,6 +162,7 @@ const zfactory = (zcli, app) => {
     hash,
     hmac,
     snipify,
+    dehydrate,
     dehydrateFile
   };
 };

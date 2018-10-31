@@ -2,6 +2,16 @@ const { AUTH_JSON_SERVER_URL } = require('../auth-json-server');
 
 const legacyScriptingSource = `
     var Zap = {
+      getUser: function(bundle) {
+        var response = z.request({
+          url: '${AUTH_JSON_SERVER_URL}/users',
+          params: { id: bundle.userId },
+          headers: { 'X-Api-Key': bundle.auth_fields.api_key }
+        });
+        const users = z.JSON.parse(response.content);
+        return users.length > 0 ? users[0] : null;
+      },
+
       get_session_info: function(bundle) {
         var encodedCredentials = btoa(bundle.auth_fields.username + ':' + bundle.auth_fields.password);
         var response = z.request({
@@ -167,6 +177,15 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_post_poll_method_dehydration: function(bundle) {
+        var movies = z.JSON.parse(bundle.response.content);
+        var url = '${AUTH_JSON_SERVER_URL}/movies';
+        return movies.map(movie => {
+          movie.user = z.dehydrate('getUser', { userId: movie.id });
+          return movie;
+        });
+      },
+
       movie_post_poll_file_dehydration: function(bundle) {
         var movies = z.JSON.parse(bundle.response.content);
         var url = '${AUTH_JSON_SERVER_URL}/movies';
@@ -181,7 +200,6 @@ const legacyScriptingSource = `
           return movie;
         });
       },
-
 
       /*
        * Create/Action
@@ -737,6 +755,9 @@ const App = {
     [MovieSearch.key]: MovieSearch
   },
   hydrators: {
+    legacyMethodHydrator: {
+      source: "return z.legacyScripting.run(bundle, 'hydrate.method');"
+    },
     legacyFileHydrator: {
       source: "return z.legacyScripting.run(bundle, 'hydrate.file');"
     }
