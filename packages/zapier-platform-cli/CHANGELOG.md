@@ -1,3 +1,20 @@
+## 7.4.0
+
+### cli
+
+* (fix) deasync binary is missing in Windows build ([#370](https://github.com/zapier/zapier-platform-cli/pull/370))
+* (doc) Document digest auth ([#368](https://github.com/zapier/zapier-platform-cli/pull/368))
+
+### schema
+
+* :tada: (new) Add support for App Middlewares ([#56](https://github.com/zapier/zapier-platform-schema/pull/56))
+
+### core
+
+* :tada: (new) Add support for digest auth. Read [doc](https://zapier.github.io/zapier-platform-cli/#digest) for detail. ([#123](https://github.com/zapier/zapier-platform-core/pull/123))
+* :tada: (new) Add Support for App Middlewares ([#119](https://github.com/zapier/zapier-platform-core/pull/119))
+* (fix) `z.stashFile` doesn't pick up filename in `Content-Disposition` ([#124](https://github.com/zapier/zapier-platform-core/pull/124))
+
 ## 7.3.0
 
 ### cli
