@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "lodash": "4.17.4",
-    "zapier-platform-core": "7.3.0"
+    "zapier-platform-core": "7.4.0"
   },
   "devDependencies": {
     "mocha": "^5.2.0",
