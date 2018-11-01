@@ -28,7 +28,7 @@
     "lint": "node_modules/.bin/eslint zapier.js src",
     "lint-snippets": "node_modules/.bin/eslint snippets --rule 'no-unused-vars: 0' --ignore-pattern snippets/next.js",
     "pretest": "npm run build",
-    "test": "NODE_ENV=test mocha -t 30000 --recursive lib/tests && npm run lint && npm run lint-snippets",
+    "test": "NODE_ENV=test mocha -t 50000 --recursive lib/tests && npm run lint && npm run lint-snippets",
     "smoke-test": "npm run build && NODE_ENV=test mocha -t 30000 --recursive lib/smoke-tests",
     "zapier": "zapier.js",
     "validate-templates": "./scripts/validate-app-templates.js",
