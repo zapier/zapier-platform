@@ -299,6 +299,20 @@ Useful if your app requires two pieces of information to authentication: `userna
 [insert-file:./snippets/basic-auth.js]
 ```
 
+### Digest
+
+*New in v7.4.0.*
+
+The setup and user experience of Digest Auth is identical to Basic Auth. Users will provide Zapier their username and password and Zapier will handle all the nonce and quality of protection details automatically.
+
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-digest-auth for a working example app for digest auth.
+
+> Limitation: Currently, MD5-sess and SHA are not implemented. Only the MD5 algorithm is supported. In addition, server nonces are not reused. That means for every `z.request` call, Zapier will sends an additional request beforehand to get the server nonce.
+
+```js
+[insert-file:./snippets/digest-auth.js]
+```
+
 ### Custom
 
 This is what most "API Key" driven apps should default to using. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` to complete the authentication by adding/computing needed headers.
@@ -954,6 +968,8 @@ And in future steps of the Zap - if Zapier encounters a pointer as returned by `
 
 
 ### File Dehydration
+
+*New in v7.3.0.*
 
 The method `z.dehydrateFile(func, inputData)` allows you to download a file lazily. It takes the identical arguments as `z.dehydrate(func, inputData)` does.
 

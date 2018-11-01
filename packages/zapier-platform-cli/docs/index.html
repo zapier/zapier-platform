@@ -267,6 +267,7 @@ a code {
 <li><a href="#converting-an-existing-app">Converting an Existing App</a></li>
 <li><a href="#authentication">Authentication</a><ul>
 <li><a href="#basic">Basic</a></li>
+<li><a href="#digest">Digest</a></li>
 <li><a href="#custom">Custom</a></li>
 <li><a href="#session">Session</a></li>
 <li><a href="#oauth2">OAuth2</a></li>
@@ -458,6 +459,7 @@ a code {
 <li><a href="#converting-an-existing-app">Converting an Existing App</a></li>
 <li><a href="#authentication">Authentication</a><ul>
 <li><a href="#basic">Basic</a></li>
+<li><a href="#digest">Digest</a></li>
 <li><a href="#custom">Custom</a></li>
 <li><a href="#session">Session</a></li>
 <li><a href="#oauth2">OAuth2</a></li>
@@ -1154,6 +1156,44 @@ zapier convert 1234 my-app
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> authentication = {
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;basic&apos;</span>,
+  <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
+  test: {
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
+  },
+  <span class="hljs-attr">connectionLabel</span>: <span class="hljs-string">&apos;{{bundle.authData.username}}&apos;</span> <span class="hljs-comment">// Can also be a function, check digest auth below for an example</span>
+  <span class="hljs-comment">// you can provide additional fields, but we&apos;ll provide `username`/`password` automatically</span>
+};
+
+<span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">// ...</span>
+  authentication: authentication
+  <span class="hljs-comment">// ...</span>
+};
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="digest">Digest</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p><em>New in v7.4.0.</em></p><p>The setup and user experience of Digest Auth is identical to Basic Auth. Users will provide Zapier their username and password and Zapier will handle all the nonce and quality of protection details automatically.</p><blockquote>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-digest-auth">https://github.com/zapier/zapier-platform-example-app-digest-auth</a> for a working example app for digest auth.</p>
+</blockquote><blockquote>
+<p>Limitation: Currently, MD5-sess and SHA are not implemented. Only the MD5 algorithm is supported. In addition, server nonces are not reused. That means for every <code>z.request</code> call, Zapier will sends an additional request beforehand to get the server nonce.</p>
+</blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> authentication = {
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;digest&apos;</span>,
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
   test: {
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
@@ -3161,7 +3201,7 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The method <code>z.dehydrateFile(func, inputData)</code> allows you to download a file lazily. It takes the identical arguments as <code>z.dehydrate(func, inputData)</code> does.</p><p>An example can be found in the <a href="#stashing-files">Stashing Files</a> section.</p><p>What makes <code>z.dehydrateFile</code> different from <code>z.dehydrate</code> has to do with efficiency and when Zapier chooses to hydrate data. Knowing which pointers give us back files helps us delay downloading files until its absolutely necessary. A good example is users creating Zaps in the Zap Editor. If a pointer is made by <code>z.dehydrate</code>, the Zap Editor will hydrate the data immediately after pulling in samples. This allows users to map fields from the hydrated data into the subsequent steps of the Zap. If, however, the pointer is made by <code>z.dehydrateFile</code>, the Zap Editor will wait to hydrate the file. There&apos;s nothing in binary file data for users to map in the subsequent steps.</p><blockquote>
+      <p><em>New in v7.3.0.</em></p><p>The method <code>z.dehydrateFile(func, inputData)</code> allows you to download a file lazily. It takes the identical arguments as <code>z.dehydrate(func, inputData)</code> does.</p><p>An example can be found in the <a href="#stashing-files">Stashing Files</a> section.</p><p>What makes <code>z.dehydrateFile</code> different from <code>z.dehydrate</code> has to do with efficiency and when Zapier chooses to hydrate data. Knowing which pointers give us back files helps us delay downloading files until its absolutely necessary. A good example is users creating Zaps in the Zap Editor. If a pointer is made by <code>z.dehydrate</code>, the Zap Editor will hydrate the data immediately after pulling in samples. This allows users to map fields from the hydrated data into the subsequent steps of the Zap. If, however, the pointer is made by <code>z.dehydrateFile</code>, the Zap Editor will wait to hydrate the file. There&apos;s nothing in binary file data for users to map in the subsequent steps.</p><blockquote>
 <p><code>z.dehydrateFile(func, inputData)</code> is new in v7.3.0. We used to recommend to use <code>z.dehydrate(func, inputData)</code> for files, but it&apos;s not the case anymore. Please change it to <code>z.dehydrateFile(func, inputData)</code> for a better user expereience.</p>
 </blockquote>
     </div>

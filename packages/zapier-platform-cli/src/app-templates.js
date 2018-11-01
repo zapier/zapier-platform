@@ -10,6 +10,7 @@ module.exports = [
   // auth types
   'basic-auth',
   'custom-auth',
+  'digest-auth',
   'oauth2',
   'session-auth',
 
