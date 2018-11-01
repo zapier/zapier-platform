@@ -12,6 +12,9 @@ const BasicHookOperationSchema = JSON.parse(
   JSON.stringify(BasicOperationSchema.schema)
 );
 
+const hookTechnicallyRequired =
+  'Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.';
+
 BasicHookOperationSchema.id = '/BasicHookOperationSchema';
 
 BasicHookOperationSchema.description =
@@ -37,18 +40,39 @@ BasicHookOperationSchema.properties = {
   },
   performList: {
     description:
-      'Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods.',
-    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
+      'Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods. ' +
+      hookTechnicallyRequired,
+    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
+    docAnnotation: {
+      required: {
+        type: 'replace',
+        value: '**yes** (with exceptions, see description)'
+      }
+    }
   },
   performSubscribe: {
     description:
-      'Takes a URL and any necessary data from the user and subscribes.',
-    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
+      'Takes a URL and any necessary data from the user and subscribes. ' +
+      hookTechnicallyRequired,
+    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
+    docAnnotation: {
+      required: {
+        type: 'replace',
+        value: '**yes** (with exceptions, see description)'
+      }
+    }
   },
   performUnsubscribe: {
     description:
-      'Takes a URL and data from a previous subscribe call and unsubscribes.',
-    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
+      'Takes a URL and data from a previous subscribe call and unsubscribes. ' +
+      hookTechnicallyRequired,
+    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
+    docAnnotation: {
+      required: {
+        type: 'replace',
+        value: '**yes** (with exceptions, see description)'
+      }
+    }
   },
   inputFields: BasicHookOperationSchema.properties.inputFields,
   outputFields: BasicHookOperationSchema.properties.outputFields,
