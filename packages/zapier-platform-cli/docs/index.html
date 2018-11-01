@@ -311,6 +311,8 @@ a code {
 <li><a href="#bundlemeta"><code>bundle.meta</code></a></li>
 <li><a href="#bundlerawrequest"><code>bundle.rawRequest</code></a></li>
 <li><a href="#bundlecleanedrequest"><code>bundle.cleanedRequest</code></a></li>
+<li><a href="#bundletargeturl"><code>bundle.targetUrl</code></a></li>
+<li><a href="#bundlesubscribedata"><code>bundle.subscribeData</code></a></li>
 </ul>
 </li>
 <li><a href="#environment">Environment</a><ul>
@@ -503,6 +505,8 @@ a code {
 <li><a href="#bundlemeta"><code>bundle.meta</code></a></li>
 <li><a href="#bundlerawrequest"><code>bundle.rawRequest</code></a></li>
 <li><a href="#bundlecleanedrequest"><code>bundle.cleanedRequest</code></a></li>
+<li><a href="#bundletargeturl"><code>bundle.targetUrl</code></a></li>
+<li><a href="#bundlesubscribedata"><code>bundle.subscribeData</code></a></li>
 </ul>
 </li>
 <li><a href="#environment">Environment</a><ul>
@@ -997,6 +1001,7 @@ zapier versions
 <li><code>zapier migrate [1.0.0] [1.0.1] [100%]</code> - move users between versions, regardless of deployment status</li>
 <li><code>zapier deprecate [1.0.0] [YYYY-MM-DD]</code> - mark a version as deprecated, but let users continue to use it (we&apos;ll email them)</li>
 <li><code>zapier env 1.0.0 [KEY] [value]</code> - set an environment variable to some value</li>
+<li><code>zapier delete version [1.0.0]</code> - delete a version entirely. This is mostly for clearing out old test apps you used personally. It will fail if there are any users. You probably want <code>deprecate</code> instead.</li>
 </ul><blockquote>
 <p>Note: To see the changes that were just pushed reflected in the browser, you have to manually refresh the browser each time you push.</p>
 </blockquote>
@@ -2580,7 +2585,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p><code>bundle.cleanedRequest</code> is only available in the <code>perform</code> for web hooks and <code>getAccessToken</code> for oauth authentication methods</p>
+<p><code>bundle.cleanedRequest</code> is only available in the <code>perform</code> for webhooks and <code>getAccessToken</code> for oauth authentication methods</p>
 </blockquote><p><code>bundle.cleanedRequest</code> will return a formatted and parsed version of the request. Some or all of the following will be available:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -2598,6 +2603,46 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   }
 }
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="bundletargeturl"><code>bundle.targetUrl</code></h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p><code>bundle.targetUrl</code> is only available in the <code>performSubscribe</code> and <code>performUnsubscribe</code> methods for webhooks</p>
+</blockquote><p>This the url to which you should send hook data. It&apos;ll look something like <code>https://hooks.zapier.com/1234/abcd</code>. We provide it so you can make some sort of POST request to your server and store this as a destination for new info.</p><p>Read more in the <a href="https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js">REST hook example</a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="bundlesubscribedata"><code>bundle.subscribeData</code></h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p><code>bundle.subscribeData</code> is only available in the <code>performUnsubscribe</code> method for webhooks</p>
+</blockquote><p>This is an object that contains the data you returned from the <code>performSubscribe</code> function. It should contain whatever information you need send a <code>DELETE</code> request to your server to stop sending webhooks to Zapier.</p><p>Read more in the <a href="https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js">REST hook example</a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">

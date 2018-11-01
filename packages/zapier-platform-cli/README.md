@@ -72,6 +72,8 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [`bundle.meta`](#bundlemeta)
   * [`bundle.rawRequest`](#bundlerawrequest)
   * [`bundle.cleanedRequest`](#bundlecleanedrequest)
+  * [`bundle.targetUrl`](#bundletargeturl)
+  * [`bundle.subscribeData`](#bundlesubscribedata)
 - [Environment](#environment)
   * [Defining Environment Variables](#defining-environment-variables)
   * [Accessing Environment Variables](#accessing-environment-variables)
@@ -355,6 +357,7 @@ If you'd like to manage your **Version**, use these commands:
 * `zapier migrate [1.0.0] [1.0.1] [100%]` - move users between versions, regardless of deployment status
 * `zapier deprecate [1.0.0] [YYYY-MM-DD]` - mark a version as deprecated, but let users continue to use it (we'll email them)
 * `zapier env 1.0.0 [KEY] [value]` - set an environment variable to some value
+* `zapier delete version [1.0.0]` - delete a version entirely. This is mostly for clearing out old test apps you used personally. It will fail if there are any users. You probably want `deprecate` instead.
 
 > Note: To see the changes that were just pushed reflected in the browser, you have to manually refresh the browser each time you push.
 
@@ -1328,7 +1331,7 @@ module.exports = {
 
 
 ### `bundle.cleanedRequest`
-> `bundle.cleanedRequest` is only available in the `perform` for web hooks and `getAccessToken` for oauth authentication methods
+> `bundle.cleanedRequest` is only available in the `perform` for webhooks and `getAccessToken` for oauth authentication methods
 
 `bundle.cleanedRequest` will return a formatted and parsed version of the request. Some or all of the following will be available:
 
@@ -1348,6 +1351,21 @@ module.exports = {
 }
 ```
 
+### `bundle.targetUrl`
+
+> `bundle.targetUrl` is only available in the `performSubscribe` and `performUnsubscribe` methods for webhooks
+
+This the url to which you should send hook data. It'll look something like `https://hooks.zapier.com/1234/abcd`. We provide it so you can make some sort of POST request to your server and store this as a destination for new info.
+
+Read more in the [REST hook example](https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js).
+
+### `bundle.subscribeData`
+
+> `bundle.subscribeData` is only available in the `performUnsubscribe` method for webhooks
+
+This is an object that contains the data you returned from the `performSubscribe` function. It should contain whatever information you need send a `DELETE` request to your server to stop sending webhooks to Zapier.
+
+Read more in the [REST hook example](https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js).
 
 ## Environment
 

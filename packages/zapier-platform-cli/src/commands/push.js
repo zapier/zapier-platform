@@ -37,7 +37,9 @@ A shortcut for \`zapier build && zapier upload\` - this is our recommended way t
 
 > Note: this is always a safe operation as live/production apps are protected from pushes. You must use \`zapier promote\` or \`zapier migrate\` to impact live users.
 
-If you have not yet registered your app, this command will prompt you for your app title and register the app.
+> Note: this command will create (or overwrite) an AppVersion that matches the ones listed in your \`package.json\`. If you want to push to a new version, increment the "version" key in \`package.json\`.
+
+If you have not yet registered your app, this command will prompt you for your app title and to register the app.
 
 ${'```'}bash
 $ zapier push
