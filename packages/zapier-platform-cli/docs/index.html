@@ -740,7 +740,7 @@ npm install
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note: there are plenty of templates &amp; example apps to choose from! <a href="#example-apps">View all Example Apps here.</a></p>
+<p>Note: there are plenty of templates &amp; example apps to choose from! <a href="#example-apps">View all Example Apps here.</a>.</p>
 </blockquote><p>You should now have a working local app. You can run several local commands to try it out.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1490,7 +1490,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note - For OAuth, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code>  will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty the first time the Zap runs. Also note that <code>authentication.oauth2Config.getAccessToken</code> has access to the users return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string)</p>
+<p>Note - For OAuth, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code>  will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty the first time the Zap runs. Also note that <code>authentication.oauth2Config.getAccessToken</code> has access to the users return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string).</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1866,7 +1866,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Additionally, if there is a field that affects the generation of dynamic fields, you can set the <code>altersDynamicFields: true</code> property. This informs the Zapier UI that whenever the value of that field changes, fields need to be recomputed. An example could be a static dropdown of &quot;dessert type&quot; that will change whether the function that generates dynamic fields includes a field &quot;with sprinkles.&quot;</p>
+      <p>Additionally, if there is a field that affects the generation of dynamic fields, you can set the <code>altersDynamicFields: true</code> property. This informs the Zapier UI that whenever the value of that field changes, fields need to be recomputed. An example could be a static dropdown of &quot;dessert type&quot; that will change whether the function that generates dynamic fields includes a field &quot;with sprinkles.&quot; If your field affects others, this is an important property to set.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-built_in">module</span>.exports = {
@@ -1973,9 +1973,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>In the UI, users will see something like this:</p><p><img src="https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png" alt="screenshot of dynamic dropdown in Zap Editor"></p><blockquote>
-<p>Dynamic dropdowns are one of the few fields that automatically invalidate Zapier&apos;s field cache, so it is not necessary to set <code>altersDynamicFields</code> to true for these fields.</p>
-</blockquote>
+      <p>In the UI, users will see something like this:</p><p><img src="https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png" alt="screenshot of dynamic dropdown in Zap Editor"></p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2518,7 +2516,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p><code>bundle.meta.zap.id</code> is only available in the <code>performSubscribe</code> and <code>performUnsubscribe</code> methods</p>
+<p><code>bundle.meta.zap.id</code> is only available in the <code>performSubscribe</code> and <code>performUnsubscribe</code> methods.</p>
 </blockquote><p>The user&apos;s Zap ID is available during the <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#basichookoperationschema">subscribe and unsubscribe</a> methods.</p><p>For example - you could do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -2557,7 +2555,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p><code>bundle.rawRequest</code> is only available in the <code>perform</code> for web hooks and <code>getAccessToken</code> for oauth authentication methods</p>
+<p><code>bundle.rawRequest</code> is only available in the <code>perform</code> for web hooks and <code>getAccessToken</code> for oauth authentication methods.</p>
 </blockquote><p><code>bundle.rawRequest</code> holds raw information about the HTTP request that triggered the <code>perform</code> method or that represents the users browser request that triggered the <code>getAccessToken</code> call:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -2585,7 +2583,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p><code>bundle.cleanedRequest</code> is only available in the <code>perform</code> for webhooks and <code>getAccessToken</code> for oauth authentication methods</p>
+<p><code>bundle.cleanedRequest</code> is only available in the <code>perform</code> for webhooks and <code>getAccessToken</code> for oauth authentication methods.</p>
 </blockquote><p><code>bundle.cleanedRequest</code> will return a formatted and parsed version of the request. Some or all of the following will be available:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -2618,8 +2616,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p><code>bundle.targetUrl</code> is only available in the <code>performSubscribe</code> and <code>performUnsubscribe</code> methods for webhooks</p>
-</blockquote><p>This the url to which you should send hook data. It&apos;ll look something like <code>https://hooks.zapier.com/1234/abcd</code>. We provide it so you can make some sort of POST request to your server and store this as a destination for new info.</p><p>Read more in the <a href="https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js">REST hook example</a>.</p>
+<p><code>bundle.targetUrl</code> is only available in the <code>performSubscribe</code> and <code>performUnsubscribe</code> methods for webhooks.</p>
+</blockquote><p>This the URL to which you should send hook data. It&apos;ll look something like <code>https://hooks.zapier.com/1234/abcd</code>. We provide it so you can make a POST request to your server.Your server should store this URL and use is as a destination when there&apos;s new data to report.</p><p>Read more in the <a href="https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js">REST hook example</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2638,7 +2636,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p><code>bundle.subscribeData</code> is only available in the <code>performUnsubscribe</code> method for webhooks</p>
+<p><code>bundle.subscribeData</code> is only available in the <code>performUnsubscribe</code> method for webhooks.</p>
 </blockquote><p>This is an object that contains the data you returned from the <code>performSubscribe</code> function. It should contain whatever information you need send a <code>DELETE</code> request to your server to stop sending webhooks to Zapier.</p><p>Read more in the <a href="https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js">REST hook example</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -2798,7 +2796,7 @@ zapier env 1.0.0
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note! Be sure to lazily access your environment variables - see <a href="#when-to-use-placeholders-or-curlies">When to use placeholders or curlies?</a></p>
+<p>Note! Be sure to lazily access your environment variables - see <a href="#when-to-use-placeholders-or-curlies">When to use placeholders or curlies?</a>.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -2879,7 +2877,7 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>In the url above, <code>{{bundle.authData.subdomain}}</code> is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.</p><p>An error will be raised if the response is not valid JSON, so <em>do not use shorthand HTTP requests with non-JSON responses</em>.</p>
+      <p>In the URL above, <code>{{bundle.authData.subdomain}}</code> is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.</p><p>An error will be raised if the response is not valid JSON, so <em>do not use shorthand HTTP requests with non-JSON responses</em>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4228,7 +4226,7 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>If you need to do more requests conditionally based on the results of an HTTP call (such as the &quot;next url&quot; param or similar value), using <code>async/await</code> (as shown in the example below) is a good way to go. If you go this route, only page as far as you need to. Keep an eye on the polling <a href="https://zapier.com/developer/documentation/v2/deduplication/">guidelines</a>, namely the part about only iterating until you hit items that have probably been seen in a previous poll.</p>
+      <p>If you need to do more requests conditionally based on the results of an HTTP call (such as the &quot;next URL&quot; param or similar value), using <code>async/await</code> (as shown in the example below) is a good way to go. If you go this route, only page as far as you need to. Keep an eye on the polling <a href="https://zapier.com/developer/documentation/v2/deduplication/">guidelines</a>, namely the part about only iterating until you hit items that have probably been seen in a previous poll.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-comment">// a hypothetical API where payloads are big so we want to heavily limit how much comes back</span>

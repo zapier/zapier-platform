@@ -1080,7 +1080,7 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
 </ol><blockquote>
 <p>Note: this is always a safe operation as live/production apps are protected from pushes. You must use <code>zapier promote</code> or <code>zapier migrate</code> to impact live users.</p>
 </blockquote><blockquote>
-<p>Note: this will overwrite the version specified in your <code>package.json</code>. If you want to push to a new version, increment the &quot;version&quot; key.</p>
+<p>Note: this command will create (or overwrite) an AppVersion that matches the ones listed in your <code>package.json</code>. If you want to push to a new version, increment the &quot;version&quot; key in <code>package.json</code>.</p>
 </blockquote><p>If you have not yet registered your app, this command will prompt you for your app title and to register the app.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">

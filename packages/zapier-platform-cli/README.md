@@ -200,7 +200,7 @@ cd example-app
 npm install
 ```
 
-> Note: there are plenty of templates & example apps to choose from! [View all Example Apps here.](#example-apps)
+> Note: there are plenty of templates & example apps to choose from! [View all Example Apps here.](#example-apps).
 
 You should now have a working local app. You can run several local commands to try it out.
 
@@ -705,7 +705,7 @@ module.exports = App;
 
 ```
 
-> Note - For OAuth, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken`  will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty the first time the Zap runs. Also note that `authentication.oauth2Config.getAccessToken` has access to the users return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example from the query string)
+> Note - For OAuth, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken`  will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty the first time the Zap runs. Also note that `authentication.oauth2Config.getAccessToken` has access to the users return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example from the query string).
 
 
 ## Resources
@@ -959,7 +959,7 @@ const App = {
 
 ```
 
-Additionally, if there is a field that affects the generation of dynamic fields, you can set the `altersDynamicFields: true` property. This informs the Zapier UI that whenever the value of that field changes, fields need to be recomputed. An example could be a static dropdown of "dessert type" that will change whether the function that generates dynamic fields includes a field "with sprinkles."
+Additionally, if there is a field that affects the generation of dynamic fields, you can set the `altersDynamicFields: true` property. This informs the Zapier UI that whenever the value of that field changes, fields need to be recomputed. An example could be a static dropdown of "dessert type" that will change whether the function that generates dynamic fields includes a field "with sprinkles." If your field affects others, this is an important property to set.
 
 ```js
 module.exports = {
@@ -1049,8 +1049,6 @@ const App = {
 In the UI, users will see something like this:
 
 ![screenshot of dynamic dropdown in Zap Editor](https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png)
-
-> Dynamic dropdowns are one of the few fields that automatically invalidate Zapier's field cache, so it is not necessary to set `altersDynamicFields` to true for these fields.
 
 ### Search-Powered Fields
 
@@ -1284,7 +1282,7 @@ This object holds the user's auth details and the data for the API requests.
 | limit | `-1` | the number of items to fetch. `-1` indicates there's no limit (which will almost always be the case) |
 | page | `0` | used in [paging](#paging) to uniquely identify which page of results should be returned |
 
-> `bundle.meta.zap.id` is only available in the `performSubscribe` and `performUnsubscribe` methods
+> `bundle.meta.zap.id` is only available in the `performSubscribe` and `performUnsubscribe` methods.
 
 The user's Zap ID is available during the [subscribe and unsubscribe](https://zapier.github.io/zapier-platform-schema/build/schema.html#basichookoperationschema) methods.
 
@@ -1313,7 +1311,7 @@ module.exports = {
 ```
 
 ### `bundle.rawRequest`
-> `bundle.rawRequest` is only available in the `perform` for web hooks and `getAccessToken` for oauth authentication methods
+> `bundle.rawRequest` is only available in the `perform` for web hooks and `getAccessToken` for oauth authentication methods.
 
 `bundle.rawRequest` holds raw information about the HTTP request that triggered the `perform` method or that represents the users browser request that triggered the `getAccessToken` call:
 
@@ -1331,7 +1329,7 @@ module.exports = {
 
 
 ### `bundle.cleanedRequest`
-> `bundle.cleanedRequest` is only available in the `perform` for webhooks and `getAccessToken` for oauth authentication methods
+> `bundle.cleanedRequest` is only available in the `perform` for webhooks and `getAccessToken` for oauth authentication methods.
 
 `bundle.cleanedRequest` will return a formatted and parsed version of the request. Some or all of the following will be available:
 
@@ -1353,15 +1351,15 @@ module.exports = {
 
 ### `bundle.targetUrl`
 
-> `bundle.targetUrl` is only available in the `performSubscribe` and `performUnsubscribe` methods for webhooks
+> `bundle.targetUrl` is only available in the `performSubscribe` and `performUnsubscribe` methods for webhooks.
 
-This the url to which you should send hook data. It'll look something like `https://hooks.zapier.com/1234/abcd`. We provide it so you can make some sort of POST request to your server and store this as a destination for new info.
+This the URL to which you should send hook data. It'll look something like `https://hooks.zapier.com/1234/abcd`. We provide it so you can make a POST request to your server.Your server should store this URL and use is as a destination when there's new data to report.
 
 Read more in the [REST hook example](https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js).
 
 ### `bundle.subscribeData`
 
-> `bundle.subscribeData` is only available in the `performUnsubscribe` method for webhooks
+> `bundle.subscribeData` is only available in the `performUnsubscribe` method for webhooks.
 
 This is an object that contains the data you returned from the `performSubscribe` function. It should contain whatever information you need send a `DELETE` request to your server to stop sending webhooks to Zapier.
 
@@ -1460,7 +1458,7 @@ const App = {
 
 ```
 
-> Note! Be sure to lazily access your environment variables - see [When to use placeholders or curlies?](#when-to-use-placeholders-or-curlies)
+> Note! Be sure to lazily access your environment variables - see [When to use placeholders or curlies?](#when-to-use-placeholders-or-curlies).
 
 
 ## Making HTTP Requests
@@ -1513,7 +1511,7 @@ const App = {
 
 ```
 
-In the url above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.
+In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.
 
 An error will be raised if the response is not valid JSON, so _do not use shorthand HTTP requests with non-JSON responses_.
 
@@ -2395,7 +2393,7 @@ module.exports = {
 
 ```
 
-If you need to do more requests conditionally based on the results of an HTTP call (such as the "next url" param or similar value), using `async/await` (as shown in the example below) is a good way to go. If you go this route, only page as far as you need to. Keep an eye on the polling [guidelines](https://zapier.com/developer/documentation/v2/deduplication/), namely the part about only iterating until you hit items that have probably been seen in a previous poll.
+If you need to do more requests conditionally based on the results of an HTTP call (such as the "next URL" param or similar value), using `async/await` (as shown in the example below) is a good way to go. If you go this route, only page as far as you need to. Keep an eye on the polling [guidelines](https://zapier.com/developer/documentation/v2/deduplication/), namely the part about only iterating until you hit items that have probably been seen in a previous poll.
 
 ```js
 // a hypothetical API where payloads are big so we want to heavily limit how much comes back
