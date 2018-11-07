@@ -1,11 +1,10 @@
 'use strict';
 
-const crypto = require('crypto');
 const urllib = require('url');
-
 const fetch = require('node-fetch');
 
 const { NotImplementedError } = require('../../errors');
+const { md5 } = require('../../tools/hashing');
 
 // This function splits a comma-separated string described by RFC 2068 Section 2.
 // Ported from https://github.com/python/cpython/blob/f081fd83/Lib/urllib/request.py#L1399-L1440
@@ -79,12 +78,6 @@ const parseDictHeader = s => {
 
   return res;
 };
-
-const md5 = s =>
-  crypto
-    .createHash('md5')
-    .update(s)
-    .digest('hex');
 
 const buildDigestHeader = (username, password, url, method, creds) => {
   if (creds.algorithm && creds.algorithm.toUpperCase() !== 'MD5') {

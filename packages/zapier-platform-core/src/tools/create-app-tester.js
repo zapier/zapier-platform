@@ -40,6 +40,8 @@ const createAppTester = appRaw => {
   const handler = createLambdaHandler(appRaw);
   const createHandlerPromise = promisifyHandler(handler);
 
+  const randomSeed = genId();
+
   return (methodOrFunc, bundle) => {
     bundle = bundle || {};
 
@@ -49,7 +51,10 @@ const createAppTester = appRaw => {
       command: 'execute',
       method,
       bundle,
-      storeKey: shouldPaginate(appRaw, method) ? `testKey-${genId()}` : null
+      storeKey: shouldPaginate(appRaw, method)
+        ? // this key will be consistent across runs but unique to each test so we don't lose cursors
+          `testKey-${method}-${randomSeed}`
+        : null
     };
 
     if (process.env.LOG_TO_STDOUT) {

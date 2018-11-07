@@ -22,7 +22,14 @@ const snipify = s => {
   return `:censored:${length}:${result.substr(0, 10)}:`;
 };
 
+const md5 = s =>
+  crypto
+    .createHash('md5')
+    .update(s)
+    .digest('hex');
+
 module.exports = {
   hashify,
+  md5,
   snipify
 };
