@@ -1,0 +1,25 @@
+{
+  "name": "oauth1-tumblr",
+  "version": "1.0.0",
+  "description": "Tumblr OAuth V1 Example",
+  "repository": "zapier/zapier-platform-example-app-oauth1-tumblr",
+  "homepage": "https://zapier.com/",
+  "author": "Chang-Hung Liang <chang-hung.liang@zapier.com>",
+  "license": "BSD-3-Clause",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "engines": {
+    "node": "8.10.0",
+    "npm": ">=5.6.0"
+  },
+  "dependencies": {
+    "zapier-platform-core": "7.4.0",
+    "zapier-platform-schema": "7.4.0"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "should": "^13.2.0"
+  }
+}
