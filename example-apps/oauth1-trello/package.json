@@ -1,10 +1,10 @@
 {
-  "name": "zapier-platform-example-app-oauth1",
+  "name": "oauth1-trello",
   "version": "1.0.0",
   "description": "Trello OAuth V1 Example",
-  "repository": "zapier/zapier-platform-example-app-oauth1",
+  "repository": "zapier/zapier-platform-example-app-oauth1-trello",
   "homepage": "https://zapier.com/",
-  "author": "Fokke Zandbergen <fokke.zandbergen@zapier.com>",
+  "author": "Zapier <partners@zapier.com>",
   "license": "BSD-3-Clause",
   "main": "index.js",
   "scripts": {
