@@ -1,3 +1,4 @@
+const LikeTrigger = require('./triggers/like');
 const authentication = require('./authentication');
 
 // We can roll up all our behaviors in an App.
@@ -18,7 +19,9 @@ const App = {
   resources: {},
 
   // If you want your trigger to show up, you better include it here!
-  triggers: {},
+  triggers: {
+    [LikeTrigger.key]: LikeTrigger
+  },
 
   // If you want your searches to show up, you better include it here!
   searches: {},
