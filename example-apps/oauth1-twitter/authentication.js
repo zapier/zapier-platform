@@ -15,14 +15,13 @@ const config = {
         oauth_consumer_secret: '{{process.env.CLIENT_SECRET}}',
         oauth_signature_method: 'HMAC-SHA1',
         oauth_callback: '{{bundle.inputData.redirect_uri}}',
-        oauth_version: '1.0'
+        oauth_version: '1.0'  // must be 1.0 for Twitter
       }
     },
     authorizeUrl: {
       url: AUTHORIZE_URL,
       params: {
-        oauth_token: '{{bundle.inputData.oauth_token}}',
-        name: 'Zapier/Twitter OAuth1 Test'
+        oauth_token: '{{bundle.inputData.oauth_token}}'
       }
     },
     getAccessToken: {
@@ -43,9 +42,8 @@ const config = {
   connectionLabel: '{{screen_name}}'
 };
 
-// To include the Authorization header on all outbound requests, simply define a
-// function here. It runs runs before each request is sent out, allowing you to make
-// tweaks to the request in a centralized spot.
+// A middleware that is run before z.request() actually makes the request. Here we're
+// adding necessary OAuth1 parameters to `auth` property of the request object.
 const includeAccessToken = (req, z, bundle) => {
   if (
     bundle.authData &&
