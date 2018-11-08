@@ -88,7 +88,10 @@ const describe = context => {
         authentication.paths = authenticationPaths
           .filter(path => _.has(definition, path))
           .join('\n');
-        if (authentication.type === 'oauth2') {
+        if (
+          authentication.type === 'oauth2' ||
+          authentication.type === 'oauth1'
+        ) {
           if (appConfig && version) {
             authentication.redirect_uri = version.oauth_redirect_uri;
           } else {
