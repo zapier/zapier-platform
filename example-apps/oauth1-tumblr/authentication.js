@@ -28,8 +28,7 @@ const config = {
     authorizeUrl: {
       url: AUTHORIZE_URL,
       params: {
-        oauth_token: '{{bundle.inputData.oauth_token}}',
-        name: 'Zapier OAuth1 Test'
+        oauth_token: '{{bundle.inputData.oauth_token}}'
       }
     },
     getAccessToken: {
@@ -50,9 +49,8 @@ const config = {
   connectionLabel: getConnectionLabel
 };
 
-// A middleware that includes the Authorization header on all outbound requests. It runs
-// runs before each request is sent out, allowing you to make tweaks to the request in a
-// centralized spot.
+// A middleware that is run before z.request() actually makes the request. Here we're
+// adding necessary OAuth1 parameters to `auth` property of the request object.
 const includeAccessToken = (req, z, bundle) => {
   if (
     bundle.authData &&
