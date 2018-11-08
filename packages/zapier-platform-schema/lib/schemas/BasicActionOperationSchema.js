@@ -19,6 +19,11 @@ BasicActionOperationSchema.description =
 BasicActionOperationSchema.properties = {
   resource: BasicActionOperationSchema.properties.resource,
   perform: BasicActionOperationSchema.properties.perform,
+  performResume: {
+    description:
+      'A function that parses data from a perform + callback to resume this action. For use with callback semantics',
+    $ref: FunctionSchema.id
+  },
   performGet: {
     description:
       'How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.',
