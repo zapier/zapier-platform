@@ -1,8 +1,8 @@
 const _ = require('lodash');
 
-const REQUEST_TOKEN_URL = `https://trello.com/1/OAuthGetRequestToken`;
-const ACCESS_TOKEN_URL = `https://trello.com/1/OAuthGetAccessToken`;
-const AUTHORIZE_URL = `https://trello.com/1/OAuthAuthorizeToken`;
+const REQUEST_TOKEN_URL = 'https://trello.com/1/OAuthGetRequestToken';
+const ACCESS_TOKEN_URL = 'https://trello.com/1/OAuthGetAccessToken';
+const AUTHORIZE_URL = 'https://trello.com/1/OAuthAuthorizeToken';
 
 const config = {
   type: 'oauth1',
@@ -22,7 +22,7 @@ const config = {
       url: AUTHORIZE_URL,
       params: {
         oauth_token: '{{bundle.inputData.oauth_token}}',
-        name: 'Zapier OAuth1 Test'
+        name: 'Zapier/Trello OAuth1 Test'
       }
     },
     getAccessToken: {
@@ -43,9 +43,8 @@ const config = {
   connectionLabel: '{{username}}'
 };
 
-// A middleware that includes the Authorization header on all outbound requests. It runs
-// runs before each request is sent out, allowing you to make tweaks to the request in a
-// centralized spot.
+// A middleware that is run before z.request() actually makes the request. Here we're
+// adding necessary OAuth1 parameters to `auth` property of the request object.
 const includeAccessToken = (req, z, bundle) => {
   if (
     bundle.authData &&
