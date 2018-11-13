@@ -17,7 +17,8 @@ describe('create-app', () => {
   const createTestInput = method => {
     const event = {
       bundle: {},
-      method
+      method,
+      callbackUrl: 'calback_url'
     };
 
     return createInput(appDefinition, event, testLogger);
@@ -515,5 +516,22 @@ describe('create-app', () => {
         })
         .catch(done);
     });
+  });
+  describe('calling a callback method', () => {
+    let results;
+    before(() =>
+      app(
+        createTestInput(
+          'resources.executeCallbackRequest.list.operation.perform'
+        )
+      ).then(output => {
+        results = output;
+      })
+    );
+
+    it('returns a CALLBACK envelope', () =>
+      results.status.should.eql('CALLBACK'));
+    it('returns the methods values', () =>
+      results.results.should.eql({ callbackUrl: 'calback_url' }));
   });
 });

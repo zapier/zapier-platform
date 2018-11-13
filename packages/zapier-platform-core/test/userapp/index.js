@@ -446,7 +446,6 @@ const ExecuteRequestAsShorthand = {
     }
   }
 };
-
 const EnvironmentVariable = {
   key: 'env',
   noun: 'Environment Variable',
@@ -465,6 +464,29 @@ const EnvironmentVariable = {
         });
         return results;
       }
+    }
+  }
+};
+const ExecuteCallbackRequest = {
+  key: 'executeCallbackRequest',
+  noun: 'Callback',
+  list: {
+    display: {
+      label: 'Callback Usage in a perform',
+      description: 'Used for one-offs in the tests.'
+    },
+    operation: {
+      perform: z => {
+        //we need to access the callback url
+        let callbackUrl = z.generateCallbackUrl();
+        return { callbackUrl };
+      },
+      inputFields: [
+        {
+          key: 'test',
+          default: 'Manual Value'
+        }
+      ]
     }
   }
 };
@@ -529,6 +551,7 @@ const App = {
     [HonkerDonker.key]: HonkerDonker,
     [ExecuteRequestAsFunc.key]: ExecuteRequestAsFunc,
     [ExecuteRequestAsShorthand.key]: ExecuteRequestAsShorthand,
+    [ExecuteCallbackRequest.key]: ExecuteCallbackRequest,
     [EnvironmentVariable.key]: EnvironmentVariable
   },
   hydrators: {

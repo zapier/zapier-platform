@@ -70,7 +70,7 @@ const createBundleBank = (appRaw, event) => {
   }, {});
 };
 
-const maskOutput = output => _.pick(output, 'results');
+const maskOutput = output => _.pick(output, 'results', 'status');
 
 module.exports = {
   recurseCleanFuncs,

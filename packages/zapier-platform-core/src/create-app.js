@@ -11,6 +11,7 @@ const addAppContext = require('./app-middlewares/before/add-app-context');
 // after middles
 const checkOutput = require('./app-middlewares/after/checks');
 const largeResponseCachePointer = require('./app-middlewares/after/large-response-cacher');
+const callbackStatusCatcher = require('./app-middlewares/after/callback-status-catcher');
 const waitForPromises = require('./app-middlewares/after/wait-for-promises');
 
 const createCommandHandler = require('./create-command-handler');
@@ -36,6 +37,7 @@ const createApp = appRaw => {
     checkOutput,
     largeResponseCachePointer,
     waitForPromises,
+    callbackStatusCatcher,
     ...ensureArray(frozenCompiledApp.afterApp)
   ];
 

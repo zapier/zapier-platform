@@ -50,6 +50,10 @@ const SAFE_LOG_KEYS = [
   'selected_api',
   'timestamp'
 ];
+const STATUSES = {
+  CALLBACK: 'CALLBACK',
+  SUCCESS: 'SUCCESS'
+};
 
 module.exports = {
   IS_TESTING,
@@ -62,5 +66,6 @@ module.exports = {
   DEFAULT_LOGGING_HTTP_ENDPOINT,
   DEFAULT_LOGGING_HTTP_API_KEY,
   SENSITIVE_KEYS,
-  SAFE_LOG_KEYS
+  SAFE_LOG_KEYS,
+  STATUSES
 };

@@ -7,6 +7,7 @@ const createDehydrator = require('../../tools/create-dehydrator');
 const createFileStasher = require('../../tools/create-file-stasher');
 const createJSONtool = require('../../tools/create-json-tool');
 const createStoreKeyTool = require('../../tools/create-storekey-tool');
+const createCallbackHigherOrderFunction = require('../../tools/create-callback-wrapper');
 const createLegacyScriptingRunner = require('../../tools/create-legacy-scripting-runner');
 const createLoggerConsole = require('../../tools/create-logger-console');
 const errors = require('../../errors');
@@ -25,6 +26,7 @@ const injectZObject = input => {
     dehydrateFile: createDehydrator(input, 'file'),
     stashFile: createFileStasher(input),
     cursor: createStoreKeyTool(input),
+    generateCallbackUrl: createCallbackHigherOrderFunction(input),
     errors
   };
 

@@ -126,6 +126,7 @@ export interface ZObject {
     get: () => Promise<string>;
     set: (cursor: string) => Promise<null>;
   };
+  generateCallbackUrl: () => string;
 
   /**
    * turns a file or request into a file into a publicly accessible url

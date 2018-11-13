@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-
+const STATUSES = require('../constants').STATUSES;
 /*
 An envelope is a dumb "wrapper" for results - allowing us
 to do fancy things in the future like add more context or
@@ -15,7 +15,7 @@ const isOutputEnvelope = obj =>
 const ensureOutputEnvelope = results =>
   isOutputEnvelope(results)
     ? results
-    : { __type: OUTPUT_ENVELOPE_TYPE, results };
+    : { __type: OUTPUT_ENVELOPE_TYPE, results, status: STATUSES.SUCCESS };
 
 module.exports = {
   ensureOutputEnvelope,
