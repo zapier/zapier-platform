@@ -42,6 +42,7 @@ describe('Integration Test', () => {
 
   const createTestInput = (compiledApp, method) => {
     const event = {
+      command: 'execute',
       bundle: {},
       method
     };
@@ -78,6 +79,23 @@ describe('Integration Test', () => {
       };
       return app(input).then(output => {
         should.equal(output.results, 'Hi Mark');
+      });
+    });
+
+    it('authentication.test', () => {
+      const input = createTestInput(
+        compiledApp,
+        'authentication.test'
+      );
+      input.bundle.authData = {
+        key1: 'sec',
+        key2: 'ret'
+      };
+      input.bundle.meta = { test_poll: true };
+      return app(input).then(output => {
+        const user = output.results;
+        should.equal(user.id, 1);
+        should.equal(user.username, 'Bret');
       });
     });
   });
@@ -244,22 +262,6 @@ describe('Integration Test', () => {
         const contact = output.results[0];
         should.equal(contact.id, 4);
         should.equal(contact.name, 'Patched by KEY_pre_poll & KEY_post_poll!');
-      });
-    });
-
-    it("auth test shouldn't require array result", () => {
-      const input = createTestInput(
-        compiledApp,
-        'triggers.test.operation.perform'
-      );
-      input.bundle.authData = { api_key: 'secret' };
-      input.bundle.meta = { test_poll: true };
-      return app(input).then(output => {
-        should.equal(output.results.length, 1);
-
-        const user = output.results[0];
-        should.equal(user.id, 1);
-        should.equal(user.username, 'Bret');
       });
     });
 

@@ -21,7 +21,6 @@ const createInternalRequestClient = input => {
     addQueryParams
   ];
 
-
   const verifySSL = _.get(input, '_zapier.event.verifySSL');
   if (verifySSL === false) {
     httpBefores.push(disableSSLCertCheck);
@@ -377,18 +376,18 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         // * parseResponse:
         //     assumes response content is JSON and parse it. post method won't
         //     run if this is false.
-        // * ensureArray: could be one of the following values:
+        // * ensureType: ensures the result type. Could be one of the following values:
         //   - false:
         //       returns whatever data parsed from response content or returned
         //       by the post method.
-        //   - 'wrap': returns [result] if result is an object.
-        //   - 'first':
+        //   - 'array-wrap': returns [result] if result is an object.
+        //   - 'array-first':
         //       returns the first top-level array in the result if result
-        //       is an object. This is the fallback behavior if ensureArray is
-        //       not false nor 'wrap'.
+        //       is an object.
+        //   - 'object-first': returns the first object if result is an array.
         checkResponseStatus: true,
         parseResponse: true,
-        ensureArray: false,
+        ensureType: false,
 
         resetRequestForFullMethod: false
       },
@@ -451,24 +450,37 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         : zcli.JSON.parse(response.content);
     }
 
-    if (options.ensureArray) {
-      if (Array.isArray(result)) {
-        return result;
-      } else if (result && typeof result === 'object') {
-        if (options.ensureArray === 'wrap') {
-          // Used by auth label and auth test
-          return [result];
-        } else {
-          // Find the first array in the response
-          for (const k in result) {
-            const value = result[k];
-            if (Array.isArray(value)) {
-              return value;
+    if (options.ensureType) {
+      if (options.ensureType.startsWith('array-')) {
+        if (Array.isArray(result)) {
+          return result;
+        } else if (result && typeof result === 'object') {
+          if (options.ensureType === 'array-wrap') {
+            return [result];
+          } else {
+            // Find the first array in the response
+            for (const k in result) {
+              const value = result[k];
+              if (Array.isArray(value)) {
+                return value;
+              }
             }
           }
         }
+        throw new Error('JSON results array could not be located.');
+      } else if (options.ensureType.startsWith('object-')) {
+        if (_.isPlainObject(result)) {
+          return result;
+        } else if (
+          Array.isArray(result) &&
+          result.length > 0 &&
+          _.isPlainObject(result[0])
+        ) {
+          // Used by auth test and auth label
+          return result[0];
+        }
+        throw new Error('JSON results object could not be located.');
       }
-      throw new Error('JSON results array could not be located.');
     }
 
     return result;
@@ -524,8 +536,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const url = _.get(app, `triggers.${key}.operation.legacyProperties.url`);
     bundle.request.url = url;
 
-    // For auth test we wrap the resposne as an array if it isn't one
-    const ensureArray = _.get(bundle, 'meta.test_poll') ? 'wrap' : 'first';
+    // For auth test we want to make sure we return an object instead of an array
+    const ensureType = _.get(bundle, 'meta.test_poll')
+      ? 'object-first'
+      : 'array-first';
 
     return runEventCombo(
       bundle,
@@ -533,7 +547,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'trigger.pre',
       'trigger.post',
       'trigger.poll',
-      { ensureArray }
+      { ensureType }
     );
   };
 
@@ -663,7 +677,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       preEventName,
       postEventName,
       fullEventName,
-      { ensureArray: 'wrap', resetRequestForFullMethod: true }
+      { ensureType: 'array-wrap', resetRequestForFullMethod: true }
     );
   };
 
@@ -733,7 +747,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'search.pre',
       'search.post',
       'search.search',
-      { ensureArray: 'first' }
+      { ensureType: 'array-first' }
     );
   };
 
