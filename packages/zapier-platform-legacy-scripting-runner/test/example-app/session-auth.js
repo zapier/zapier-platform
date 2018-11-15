@@ -1,15 +1,7 @@
 'use strict';
 
 const testAuthSource = `
-  const responsePromise = z.request({
-    url: 'https://auth-json-server.zapier.ninja/me'
-  });
-  return responsePromise.then(response => {
-    if (response.status !== 200) {
-      throw new Error('Auth failed');
-    }
-    return z.JSON.parse(response.content);
-  });
+  return z.legacyScripting.run(bundle, 'trigger', 'contact_full');
 `;
 
 const getSessionKeySource = `
