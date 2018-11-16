@@ -2,6 +2,7 @@
 
 require('should');
 const createlogger = require('../src/tools/create-logger');
+const querystring = require('querystring');
 
 describe('logger', () => {
   const options = {
@@ -79,7 +80,8 @@ describe('logger', () => {
     const bundle = {
       authData: {
         password: 'secret',
-        key: 'notell'
+        key: 'notell',
+        api_key: 'pa$$word'
       }
     };
     const logger = createlogger({ bundle }, options);
@@ -88,7 +90,10 @@ describe('logger', () => {
       response_content: `{
         "something": "secret",
         "somethingElse": "notell",
-      }`
+      }`,
+      request_url: `https://test.com/?${querystring.stringify({
+        api_key: 'pa$$word'
+      })}`
     };
 
     return logger('test', data).then(response => {
@@ -101,6 +106,7 @@ describe('logger', () => {
         "something": ":censored:6:a5023f748d:",
         "somethingElse": ":censored:6:8f63f9ff57:",
       }`,
+          request_url: 'https://test.com/?api_key=:censored:8:f274744218:',
           log_type: 'console'
         }
       });

@@ -67,7 +67,7 @@ const makeSensitiveBank = (event, data) => {
   );
 
   const matcher = (key, value) => {
-    if (typeof value === 'string') {
+    if (_.isString(value)) {
       const lowerKey = key.toLowerCase();
       return _.some(constants.SENSITIVE_KEYS, k => lowerKey.indexOf(k) >= 0);
     }
@@ -84,7 +84,9 @@ const makeSensitiveBank = (event, data) => {
       // keeps short values from spamming censor strings in logs, < 6 chars is not a proper secret
       // see https://github.com/zapier/zapier-platform-core/issues/4#issuecomment-277855071
       if (val && String(val).length > 5) {
-        bank[val] = hashing.snipify(val);
+        const censored = hashing.snipify(val);
+        bank[val] = censored;
+        bank[encodeURIComponent(val)] = censored;
       }
       return bank;
     },
