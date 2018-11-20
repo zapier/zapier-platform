@@ -1,3 +1,21 @@
+## 7.5.0
+
+### cli
+
+* (doc) Various doc improvements ([#374](https://github.com/zapier/zapier-platform-cli/pull/374))
+
+### schema
+
+* :tada: (new) Add OAuth1 support. Read [doc](https://zapier.github.io/zapier-platform-cli/#oauth1) for detail. [doc] ([#59](https://github.com/zapier/zapier-platform-schema/pull/59))
+* (doc) Be more clear about whether hook methods are required ([#58](https://github.com/zapier/zapier-platform-schema/pull/58))
+
+### core
+
+* :tada: (new) Add OAuth1 support. Read [doc](https://zapier.github.io/zapier-platform-cli/#oauth1) for detail. ([#126](https://github.com/zapier/zapier-platform-core/pull/126))
+* (fix) Make sure to censor URL-encoded values ([#129](https://github.com/zapier/zapier-platform-core/pull/129))
+* (fix) Cursor reading didn't work in tests ([#125](https://github.com/zapier/zapier-platform-core/pull/125))
+* (improvement) [Shorthand HTTP requests](https://zapier.github.io/zapier-platform-cli/#shorthand-http-requests) now parse `x-www-form-urlencoded` response bodies as well. Your app **could** break if your application server returns a JSON response body but with a `Content-Type: application/x-www-form-urlencoded` header. Switch to `z.request` if that's the case. ([#126](https://github.com/zapier/zapier-platform-core/pull/126))
+
 ## 7.4.0
 
 ### cli
