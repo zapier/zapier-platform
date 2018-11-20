@@ -1,3 +1,5 @@
+const querystring = require('querystring');
+
 const _ = require('lodash');
 const FormData = require('form-data');
 
@@ -486,6 +488,43 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return result;
   };
 
+  const fetchOAuth1Token = async (url, authParams) => {
+    const response = await zcli.request({
+      method: 'POST',
+      url,
+      auth: authParams
+    });
+    response.throwForStatus();
+    return querystring.parse(response.content);
+  };
+
+  const runOAuth1GetRequestToken = async bundle => {
+    const url = _.get(
+      app,
+      'authentication.oauth1Config.legacyProperties.requestTokenUrl'
+    );
+    return await fetchOAuth1Token(url, {
+      oauth_consumer_key: process.env.CLIENT_ID,
+      oauth_consumer_secret: process.env.CLIENT_SECRET,
+      oauth_signature_method: 'HMAC-SHA1',
+      oauth_callback: bundle.inputData.redirect_uri
+    });
+  };
+
+  const runOAuth1GetAccessToken = async bundle => {
+    const url = _.get(
+      app,
+      'authentication.oauth1Config.legacyProperties.accessTokenUrl'
+    );
+    return await fetchOAuth1Token(url, {
+      oauth_consumer_key: process.env.CLIENT_ID,
+      oauth_consumer_secret: process.env.CLIENT_SECRET,
+      oauth_token: bundle.inputData.oauth_token,
+      oauth_token_secret: bundle.inputData.oauth_token_secret,
+      oauth_verifier: bundle.inputData.oauth_verifier
+    });
+  };
+
   const runOAuth2GetAccessToken = bundle => {
     const url = _.get(
       app,
@@ -830,6 +869,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           return runEvent({ name: 'auth.session' }, zcli, bundle);
         case 'auth.connectionLabel':
           return runEvent({ name: 'auth.connectionLabel' }, zcli, bundle);
+        case 'auth.oauth1.requestToken':
+          return runOAuth1GetRequestToken(bundle);
+        case 'auth.oauth1.accessToken':
+          return runOAuth1GetAccessToken(bundle);
         case 'auth.oauth2.token':
           return runOAuth2GetAccessToken(bundle);
         case 'auth.oauth2.refresh':
