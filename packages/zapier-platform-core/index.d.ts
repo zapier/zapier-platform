@@ -58,6 +58,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
     headers: { [x: string]: string };
     content: { [x: string]: string };
   }>;
+  targetUrl?: string;
 }
 
 declare class HaltedError extends Error {}
