@@ -387,13 +387,20 @@
         },
         "auth": {
           "description":
-            "The username and password for Basic Auth. Like `['AzureDiamond', 'hunter2']`.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minProperties": 2,
-            "maxProperties": 2
-          }
+            "An object holding the auth parameters for OAuth1 request signing, like `{oauth_token: 'abcd', oauth_token_secret: '1234'}`. Or an array reserved (i.e. not implemented yet) to hold the username and password for Basic Auth. Like `['AzureDiamond', 'hunter2']`.",
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minProperties": 2,
+                "maxProperties": 2
+              }
+            },
+            {
+              "$ref": "/FlatObjectSchema"
+            }
+          ]
         },
         "omitEmptyParams": {
           "description":
@@ -434,6 +441,51 @@
         "Config for Digest Authentication. No extra properties are required to setup Digest Auth, so you can leave this empty if your app uses Digets Auth.",
       "type": "object",
       "properties": {},
+      "additionalProperties": false
+    },
+    "AuthenticationOAuth1ConfigSchema": {
+      "id": "/AuthenticationOAuth1ConfigSchema",
+      "description": "Config for OAuth1 authentication.",
+      "type": "object",
+      "required": ["getRequestToken", "authorizeUrl", "getAccessToken"],
+      "properties": {
+        "getRequestToken": {
+          "description":
+            "Define where Zapier will acquire a request token which is used for the rest of the three legged authentication process.",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "authorizeUrl": {
+          "description":
+            "Define where Zapier will redirect the user to authorize our app. Typically, you should append an `oauth_token` querystring parameter to the request.",
+          "oneOf": [
+            {
+              "$ref": "/RedirectRequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "getAccessToken": {
+          "description":
+            "Define how Zapier fetches an access token from the API",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        }
+      },
       "additionalProperties": false
     },
     "AuthenticationOAuth2ConfigSchema": {
@@ -1219,7 +1271,7 @@
         "type": {
           "description": "Choose which scheme you want to use.",
           "type": "string",
-          "enum": ["basic", "custom", "digest", "oauth2", "session"]
+          "enum": ["basic", "custom", "digest", "oauth1", "oauth2", "session"]
         },
         "test": {
           "description":
@@ -1261,6 +1313,9 @@
         },
         "digestConfig": {
           "$ref": "/AuthenticationDigestConfigSchema"
+        },
+        "oauth1Config": {
+          "$ref": "/AuthenticationOAuth1ConfigSchema"
         },
         "oauth2Config": {
           "$ref": "/AuthenticationOAuth2ConfigSchema"

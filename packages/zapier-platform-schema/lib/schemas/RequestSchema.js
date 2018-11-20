@@ -42,13 +42,18 @@ module.exports = makeSchema(
       },
       auth: {
         description:
-          "The username and password for Basic Auth. Like `['AzureDiamond', 'hunter2']`.",
-        type: 'array',
-        items: {
-          type: 'string',
-          minProperties: 2,
-          maxProperties: 2
-        }
+          "An object holding the auth parameters for OAuth1 request signing, like `{oauth_token: 'abcd', oauth_token_secret: '1234'}`. Or an array reserved (i.e. not implemented yet) to hold the username and password for Basic Auth. Like `['AzureDiamond', 'hunter2']`.",
+        oneOf: [
+          {
+            type: 'array',
+            items: {
+              type: 'string',
+              minProperties: 2,
+              maxProperties: 2
+            }
+          },
+          { $ref: FlatObjectSchema.id }
+        ]
       },
       omitEmptyParams: {
         description:
