@@ -7,6 +7,8 @@ const prepareRequest = require('../src/http-middlewares/before/prepare-request')
 const addBasicAuthHeader = require('../src/http-middlewares/before/add-basic-auth-header');
 const prepareResponse = require('../src/http-middlewares/after/prepare-response');
 const applyMiddleware = require('../src/middleware');
+const oauth1SignRequest = require('../src/http-middlewares/before/oauth1-sign-request');
+const { parseDictHeader } = require('../src/tools/http');
 
 describe('http requests', () => {
   it('should support async before middleware', done => {
@@ -340,5 +342,48 @@ describe('http addBasicAuthHeader before middelware', () => {
     delete bundle.authData;
     req = addBasicAuthHeader(origReq, z, bundle);
     should.not.exist(req.headers);
+  });
+
+  it('should sign request for oauth1', () => {
+    const origReq = {
+      method: 'post',
+      url: 'https://example.com/foo/bar?hello=world',
+      params: {
+        hi: 'earth',
+        name: 'alice'
+      },
+      body: 'number=555&message=hi',
+      auth: {
+        realm: 'a_realm',
+        oauth_callback: 'https://example.com/callback',
+        oauth_consumer_key: 'a_consumer_key',
+        oauth_consumer_secret: 'a_consumer_secret',
+        oauth_token: 'a_token',
+        oauth_token_secret: 'a_token_secret',
+        oauth_nonce: 'a_nonce',
+        oauth_timestamp: '1555555555'
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    };
+
+    const req = oauth1SignRequest(origReq);
+    req.headers.Authorization.should.startWith('OAuth ');
+
+    const params = parseDictHeader(req.headers.Authorization.substr(6));
+
+    // Can use http://bettiolo.github.io/oauth-reference-page/ to verify the result
+    params.should.eql({
+      oauth_callback: 'https%3A%2F%2Fexample.com%2Fcallback',
+      oauth_consumer_key: 'a_consumer_key',
+      oauth_nonce: 'a_nonce',
+      oauth_signature: '5Cltv9y0u%2FCqa5HXf0NdDljCmD4%3D',
+      oauth_signature_method: 'HMAC-SHA1',
+      oauth_timestamp: '1555555555',
+      oauth_token: 'a_token',
+      oauth_version: '1.0A',
+      realm: 'a_realm'
+    });
   });
 });

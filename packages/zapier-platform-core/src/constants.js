@@ -13,7 +13,10 @@ const RESPONSE_SIZE_LIMIT = 6291456;
 
 const HYDRATE_DIRECTIVE_HOIST = '$HOIST$';
 
-const RENDER_ONLY_METHODS = ['authentication.oauth2Config.authorizeUrl'];
+const RENDER_ONLY_METHODS = [
+  'authentication.oauth2Config.authorizeUrl',
+  'authentication.oauth1Config.authorizeUrl'
+];
 
 const REQUEST_OBJECT_SHORTHAND_OPTIONS = { replace: true };
 

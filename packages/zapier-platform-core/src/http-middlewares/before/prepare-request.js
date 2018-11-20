@@ -6,28 +6,14 @@ const querystring = require('querystring');
 
 const cleaner = require('../../tools/cleaner');
 const requestMerge = require('../../tools/request-merge');
-
-const FORM_TYPE = 'application/x-www-form-urlencoded';
-const JSON_TYPE = 'application/json; charset=utf-8';
+const {
+  getContentType,
+  FORM_TYPE,
+  JSON_TYPE_UTF8
+} = require('../../tools/http');
 
 const isStream = obj => obj instanceof stream.Stream;
 const isPromise = obj => obj && typeof obj.then === 'function';
-
-const getContentType = headers => {
-  const headerKeys = Object.keys(headers);
-  let foundKey = '';
-
-  _.each(headerKeys, key => {
-    if (key.toLowerCase() === 'content-type') {
-      foundKey = key;
-      return false;
-    }
-
-    return true;
-  });
-
-  return _.get(headers, foundKey, '');
-};
 
 const sugarBody = req => {
   // move into the body as raw, set headers for coerce, merge to work
@@ -42,7 +28,7 @@ const sugarBody = req => {
 
   if (!req.body && req.json) {
     req.body = req.json;
-    req.headers['content-type'] = JSON_TYPE;
+    req.headers['content-type'] = JSON_TYPE_UTF8;
     delete req.json;
   }
 
@@ -74,7 +60,7 @@ const coerceBody = req => {
     req.body = JSON.stringify(req.body);
 
     if (!contentType) {
-      req.headers['content-type'] = JSON_TYPE;
+      req.headers['content-type'] = JSON_TYPE_UTF8;
     }
   }
 
