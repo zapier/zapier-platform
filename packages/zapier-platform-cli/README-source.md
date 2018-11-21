@@ -342,7 +342,7 @@ Probably the most "powerful" mechanism for authentication - it gives you the abi
 
 Zapier's OAuth1 implementation matches [Twitter's](https://developer.twitter.com/en/docs/basics/authentication/overview) and [Trello's](https://developers.trello.com/page/authorization) implementation of the 3-legged OAuth flow.
 
-> Example Apps: check out [oauth1-trello](https://github.com/zapier/zapier-platform-example-app-oauth1-trello), [oauth1-tumblr]((https://github.com/zapier/zapier-platform-example-app-oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform-example-app-oauth1-twitter) for working example apps with OAuth1.
+> Example Apps: check out [oauth1-trello](https://github.com/zapier/zapier-platform-example-app-oauth1-trello), [oauth1-tumblr](https://github.com/zapier/zapier-platform-example-app-oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform-example-app-oauth1-twitter) for working example apps with OAuth1.
 
 The flow works like this:
 
