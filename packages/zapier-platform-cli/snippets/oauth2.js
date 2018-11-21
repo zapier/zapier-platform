@@ -40,10 +40,10 @@ const authentication = {
   // If you need any fields upfront, put them here
   fields: [
     { key: 'subdomain', type: 'string', required: true, default: 'app' }
-    // For OAuth we store `access_token` and `refresh_token` automatically
+    // For OAuth2 we store `access_token` and `refresh_token` automatically
     // in `bundle.authData` for future use. If you need to save/use something
     // that the user shouldn't need to type/choose, add a "computed" field, like:
-    // {key: 'something': type: 'string', required: false, computed: true}
+    // {key: 'user_id': type: 'string', required: false, computed: true}
     // And remember to return it in oauth2Config.getAccessToken/refreshAccessToken
   ]
 };

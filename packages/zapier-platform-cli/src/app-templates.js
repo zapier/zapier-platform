@@ -12,6 +12,9 @@ module.exports = [
   'custom-auth',
   'digest-auth',
   'oauth2',
+  'oauth1-trello',
+  'oauth1-tumblr',
+  'oauth1-twitter',
   'session-auth',
 
   // features

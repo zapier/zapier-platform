@@ -43,6 +43,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [Digest](#digest)
   * [Custom](#custom)
   * [Session](#session)
+  * [OAuth1](#oauth1)
   * [OAuth2](#oauth2)
 - [Resources](#resources)
   * [Resource Definition](#resource-definition)
@@ -609,17 +610,137 @@ const App = {
 
 > Note - For Session auth, `authentication.sessionConfig.perform` will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty the first time the Zap runs.
 
+### OAuth1
+
+*New in v7.5.0.*
+
+Zapier's OAuth1 implementation matches [Twitter's](https://developer.twitter.com/en/docs/basics/authentication/overview) and [Trello's](https://developers.trello.com/page/authorization) implementation of the 3-legged OAuth flow.
+
+> Example Apps: check out [oauth1-trello](https://github.com/zapier/zapier-platform-example-app-oauth1-trello), [oauth1-tumblr]((https://github.com/zapier/zapier-platform-example-app-oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform-example-app-oauth1-twitter) for working example apps with OAuth1.
+
+The flow works like this:
+
+  1. Zapier makes a call to your API requesting a "request token" (also known as "temporary credentials")
+  2. Zapier sends the user to the authorization URL, defined by your app, along with the request token
+  3. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png)
+  4. Zapier makes a call on our backend to your API to exchange the request token for an "access token" (also known as "long-lived credentials")
+  5. Zapier remembers the access token and makes calls on behalf of the user
+
+You are required to define:
+
+  * `getRequestToken`: The API call to fetch the request token
+  * `authorzeUrl`: The authorization URL
+  * `getAccessToken`: The API call to fetch the access token
+
+You'll also likely need to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables. These are the consumer key and secret in OAuth1 terminology.
+
+```bash
+# setting the environment variables on Zapier.com
+$ zapier env 1.0.0 CLIENT_ID 1234
+$ zapier env 1.0.0 CLIENT_SECRET abcd
+
+# and when running tests locally, don't forget to define them in .env or in the command!
+$ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
+```
+
+Your auth definition would look something like this:
+
+```js
+const _ = require('lodash');
+
+const authentication = {
+  type: 'oauth1',
+  oauth1Config: {
+    getRequestToken: {
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/request-token',
+      method: 'POST',
+      auth: {
+        oauth_consumer_key: '{{process.env.CLIENT_ID}}',
+        oauth_consumer_secret: '{{process.env.CLIENT_SECRET}}',
+
+        // 'HMAC-SHA1' is used by default if not specified.
+        // 'HMAC-SHA256', 'RSA-SHA1', 'PLAINTEXT' are also supported.
+        oauth_signature_method: 'HMAC-SHA1',
+        oauth_callback: '{{bundle.inputData.redirect_uri}}'
+      }
+    },
+    authorizeUrl: {
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/authorize',
+      params: {
+        oauth_token: '{{bundle.inputData.oauth_token}}'
+      }
+    },
+    getAccessToken: {
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/access-token',
+      method: 'POST',
+      auth: {
+        oauth_consumer_key: '{{process.env.CLIENT_ID}}',
+        oauth_consumer_secret: '{{process.env.CLIENT_SECRET}}',
+        oauth_token: '{{bundle.inputData.oauth_token}}',
+        oauth_token_secret: '{{bundle.inputData.oauth_token_secret}}',
+        oauth_verifier: '{{bundle.inputData.oauth_verifier}}'
+      }
+    }
+  },
+  test: {
+    url: 'https://{{bundle.authData.subdomain}}.example.com/me'
+  },
+  // If you need any fields upfront, put them here
+  fields: [
+    { key: 'subdomain', type: 'string', required: true, default: 'app' }
+    // For OAuth1 we store `oauth_token` and `oauth_token_secret` automatically
+    // in `bundle.authData` for future use. If you need to save/use something
+    // that the user shouldn't need to type/choose, add a "computed" field, like:
+    // {key: 'user_id': type: 'string', required: false, computed: true}
+    // And remember to return it in oauth1Config.getAccessToken
+  ]
+};
+
+// A middleware that is run before z.request() actually makes the request. Here we're
+// adding necessary OAuth1 parameters to `auth` property of the request object.
+const includeAccessToken = (req, z, bundle) => {
+  if (
+    bundle.authData &&
+    bundle.authData.oauth_token &&
+    bundle.authData.oauth_token_secret
+  ) {
+    // Just put your OAuth1 credentials in req.auth, Zapier will sign the request for
+    // you.
+    req.auth = req.auth || {};
+    _.defaults(req.auth, {
+      oauth_consumer_key: process.env.CLIENT_ID,
+      oauth_consumer_secret: process.env.CLIENT_SECRET,
+      oauth_token: bundle.authData.oauth_token,
+      oauth_token_secret: bundle.authData.oauth_token_secret
+    });
+  }
+  return req;
+};
+
+const App = {
+  // ...
+  authentication: authentication,
+  beforeRequest: [includeAccessToken]
+  // ...
+};
+
+module.exports = App;
+
+```
+
+> Note - For OAuth1, `authentication.oauth1Config.getRequestToken`, `authentication.oauth1Config.authorizeUrl`, and `authentication.oauth1Config.getAccessToken` will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty when the user hasn't connected their account on your service to Zapier. Also note that `authentication.oauth1Config.getAccessToken` has access to the users return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example from the query string).
+
 ### OAuth2
 
 Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](http://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-oauth2 for a working example app for oauth2.
+> Example App: check out https://github.com/zapier/zapier-platform-example-app-oauth2 for a working example app for OAuth2.
 
 It looks like this:
 
-  1. Zapier sends the user to the authorization URL defined by your App
-  2. Once authorized, your website sends the user to the `redirect_uri` Zapier provided (`zapier describe` to find out what it is)
-  3. Zapier makes a call on the backend to your API to exchange the `code` for an `access_token`
+  1. Zapier sends the user to the authorization URL defined by your app
+  2. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png)
+  3. Zapier makes a call on our backend to your API to exchange the `code` for an `access_token`
   4. Zapier remembers the `access_token` and makes calls on behalf of the user
   5. (Optionally) Zapier can refresh the token if it expires
 
@@ -630,7 +751,7 @@ You are required to define the authorization URL and the API call to fetch the a
 $ zapier env 1.0.0 CLIENT_ID 1234
 $ zapier env 1.0.0 CLIENT_SECRET abcd
 
-# and when running tests locally, don't forget to define them!
+# and when running tests locally, don't forget to define them in .env or in the command!
 $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
 
@@ -679,10 +800,10 @@ const authentication = {
   // If you need any fields upfront, put them here
   fields: [
     { key: 'subdomain', type: 'string', required: true, default: 'app' }
-    // For OAuth we store `access_token` and `refresh_token` automatically
+    // For OAuth2 we store `access_token` and `refresh_token` automatically
     // in `bundle.authData` for future use. If you need to save/use something
     // that the user shouldn't need to type/choose, add a "computed" field, like:
-    // {key: 'something': type: 'string', required: false, computed: true}
+    // {key: 'user_id': type: 'string', required: false, computed: true}
     // And remember to return it in oauth2Config.getAccessToken/refreshAccessToken
   ]
 };
@@ -705,7 +826,7 @@ module.exports = App;
 
 ```
 
-> Note - For OAuth, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken`  will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty the first time the Zap runs. Also note that `authentication.oauth2Config.getAccessToken` has access to the users return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example from the query string).
+> Note - For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken`  will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty when the user hasn't connected their account on your service to Zapier. Also note that `authentication.oauth2Config.getAccessToken` has access to the users return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example from the query string).
 
 
 ## Resources
@@ -1107,7 +1228,7 @@ If you don't define a trigger for the `dynamic` property, the search connector w
 
 In OAuth and Session Auth, you might want to store fields in `bundle.authData` (other than `access_token`, `refresh_token` — for OAuth —, or `sessionKey` — for Session Auth), that you don't want the user to fill in.
 
-For those situations, you need a computed field. It's just like another field, but with a `computed: true` property (don't forget to also make it `required: false`). You can see examples in the [OAuth](#oauth2) or [Session Auth](#session) example sections.
+For those situations, you need a computed field. It's just like another field, but with a `computed: true` property (don't forget to also make it `required: false`). You can see examples in the [OAuth2](#oauth2) or [Session Auth](#session) example sections.
 
 ## Output Fields
 
@@ -1483,7 +1604,7 @@ For simple HTTP requests that do not require special pre or post processing, you
 This features:
 
 1. Lazy `{{curly}}` replacement.
-2. JSON de-serialization.
+2. JSON and form body de-serialization.
 3. Automatic non-2xx error raising.
 
 ```js

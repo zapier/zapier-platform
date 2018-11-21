@@ -270,6 +270,7 @@ a code {
 <li><a href="#digest">Digest</a></li>
 <li><a href="#custom">Custom</a></li>
 <li><a href="#session">Session</a></li>
+<li><a href="#oauth1">OAuth1</a></li>
 <li><a href="#oauth2">OAuth2</a></li>
 </ul>
 </li>
@@ -464,6 +465,7 @@ a code {
 <li><a href="#digest">Digest</a></li>
 <li><a href="#custom">Custom</a></li>
 <li><a href="#session">Session</a></li>
+<li><a href="#oauth1">OAuth1</a></li>
 <li><a href="#oauth2">OAuth2</a></li>
 </ul>
 </li>
@@ -1382,6 +1384,142 @@ zapier convert 1234 my-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="oauth1">OAuth1</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p><em>New in v7.5.0.</em></p><p>Zapier&apos;s OAuth1 implementation matches <a href="https://developer.twitter.com/en/docs/basics/authentication/overview">Twitter&apos;s</a> and <a href="https://developers.trello.com/page/authorization">Trello&apos;s</a> implementation of the 3-legged OAuth flow.</p><blockquote>
+<p>Example Apps: check out <a href="https://github.com/zapier/zapier-platform-example-app-oauth1-trello">oauth1-trello</a>, <a href="(https://github.com/zapier/zapier-platform-example-app-oauth1-tumblr">oauth1-tumblr</a>, and <a href="https://github.com/zapier/zapier-platform-example-app-oauth1-twitter">oauth1-twitter</a> for working example apps with OAuth1.</p>
+</blockquote><p>The flow works like this:</p><ol>
+<li>Zapier makes a call to your API requesting a &quot;request token&quot; (also known as &quot;temporary credentials&quot;)</li>
+<li>Zapier sends the user to the authorization URL, defined by your app, along with the request token</li>
+<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png" alt=""></li>
+<li>Zapier makes a call on our backend to your API to exchange the request token for an &quot;access token&quot; (also known as &quot;long-lived credentials&quot;)</li>
+<li>Zapier remembers the access token and makes calls on behalf of the user</li>
+</ol><p>You are required to define:</p><ul>
+<li><code>getRequestToken</code>: The API call to fetch the request token</li>
+<li><code>authorzeUrl</code>: The authorization URL</li>
+<li><code>getAccessToken</code>: The API call to fetch the access token</li>
+</ul><p>You&apos;ll also likely need to set your <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> as environment variables. These are the consumer key and secret in OAuth1 terminology.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-bash"><span class="hljs-comment"># setting the environment variables on Zapier.com</span>
+$ zapier env 1.0.0 CLIENT_ID 1234
+$ zapier env 1.0.0 CLIENT_SECRET abcd
+
+<span class="hljs-comment"># and when running tests locally, don&apos;t forget to define them in .env or in the command!</span>
+$ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</span>
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Your auth definition would look something like this:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;lodash&apos;</span>);
+
+<span class="hljs-keyword">const</span> authentication = {
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;oauth1&apos;</span>,
+  <span class="hljs-attr">oauth1Config</span>: {
+    <span class="hljs-attr">getRequestToken</span>: {
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/request-token&apos;</span>,
+      <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
+      <span class="hljs-attr">auth</span>: {
+        <span class="hljs-attr">oauth_consumer_key</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
+        <span class="hljs-attr">oauth_consumer_secret</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_SECRET}}&apos;</span>,
+
+        <span class="hljs-comment">// &apos;HMAC-SHA1&apos; is used by default if not specified.</span>
+        <span class="hljs-comment">// &apos;HMAC-SHA256&apos;, &apos;RSA-SHA1&apos;, &apos;PLAINTEXT&apos; are also supported.</span>
+        oauth_signature_method: <span class="hljs-string">&apos;HMAC-SHA1&apos;</span>,
+        <span class="hljs-attr">oauth_callback</span>: <span class="hljs-string">&apos;{{bundle.inputData.redirect_uri}}&apos;</span>
+      }
+    },
+    <span class="hljs-attr">authorizeUrl</span>: {
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/authorize&apos;</span>,
+      <span class="hljs-attr">params</span>: {
+        <span class="hljs-attr">oauth_token</span>: <span class="hljs-string">&apos;{{bundle.inputData.oauth_token}}&apos;</span>
+      }
+    },
+    <span class="hljs-attr">getAccessToken</span>: {
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/access-token&apos;</span>,
+      <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
+      <span class="hljs-attr">auth</span>: {
+        <span class="hljs-attr">oauth_consumer_key</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
+        <span class="hljs-attr">oauth_consumer_secret</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_SECRET}}&apos;</span>,
+        <span class="hljs-attr">oauth_token</span>: <span class="hljs-string">&apos;{{bundle.inputData.oauth_token}}&apos;</span>,
+        <span class="hljs-attr">oauth_token_secret</span>: <span class="hljs-string">&apos;{{bundle.inputData.oauth_token_secret}}&apos;</span>,
+        <span class="hljs-attr">oauth_verifier</span>: <span class="hljs-string">&apos;{{bundle.inputData.oauth_verifier}}&apos;</span>
+      }
+    }
+  },
+  <span class="hljs-attr">test</span>: {
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/me&apos;</span>
+  },
+  <span class="hljs-comment">// If you need any fields upfront, put them here</span>
+  fields: [
+    { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> }
+    <span class="hljs-comment">// For OAuth1 we store `oauth_token` and `oauth_token_secret` automatically</span>
+    <span class="hljs-comment">// in `bundle.authData` for future use. If you need to save/use something</span>
+    <span class="hljs-comment">// that the user shouldn&apos;t need to type/choose, add a &quot;computed&quot; field, like:</span>
+    <span class="hljs-comment">// {key: &apos;user_id&apos;: type: &apos;string&apos;, required: false, computed: true}</span>
+    <span class="hljs-comment">// And remember to return it in oauth1Config.getAccessToken</span>
+  ]
+};
+
+<span class="hljs-comment">// A middleware that is run before z.request() actually makes the request. Here we&apos;re</span>
+<span class="hljs-comment">// adding necessary OAuth1 parameters to `auth` property of the request object.</span>
+<span class="hljs-keyword">const</span> includeAccessToken = <span class="hljs-function">(<span class="hljs-params">req, z, bundle</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (
+    bundle.authData &amp;&amp;
+    bundle.authData.oauth_token &amp;&amp;
+    bundle.authData.oauth_token_secret
+  ) {
+    <span class="hljs-comment">// Just put your OAuth1 credentials in req.auth, Zapier will sign the request for</span>
+    <span class="hljs-comment">// you.</span>
+    req.auth = req.auth || {};
+    _.defaults(req.auth, {
+      <span class="hljs-attr">oauth_consumer_key</span>: process.env.CLIENT_ID,
+      <span class="hljs-attr">oauth_consumer_secret</span>: process.env.CLIENT_SECRET,
+      <span class="hljs-attr">oauth_token</span>: bundle.authData.oauth_token,
+      <span class="hljs-attr">oauth_token_secret</span>: bundle.authData.oauth_token_secret
+    });
+  }
+  <span class="hljs-keyword">return</span> req;
+};
+
+<span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">// ...</span>
+  authentication: authentication,
+  <span class="hljs-attr">beforeRequest</span>: [includeAccessToken]
+  <span class="hljs-comment">// ...</span>
+};
+
+<span class="hljs-built_in">module</span>.exports = App;
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Note - For OAuth1, <code>authentication.oauth1Config.getRequestToken</code>, <code>authentication.oauth1Config.authorizeUrl</code>, and <code>authentication.oauth1Config.getAccessToken</code> will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty when the user hasn&apos;t connected their account on your service to Zapier. Also note that <code>authentication.oauth1Config.getAccessToken</code> has access to the users return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string).</p>
+</blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h3 id="oauth2">OAuth2</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1392,11 +1530,11 @@ zapier convert 1234 my-app
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Zapier&apos;s OAuth2 implementation is based on the <code>authorization_code</code> flow, similar to <a href="http://developer.github.com/v3/oauth/">GitHub</a> and <a href="https://developers.facebook.com/docs/authentication/server-side/">Facebook</a>.</p><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-oauth2">https://github.com/zapier/zapier-platform-example-app-oauth2</a> for a working example app for oauth2.</p>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-oauth2">https://github.com/zapier/zapier-platform-example-app-oauth2</a> for a working example app for OAuth2.</p>
 </blockquote><p>It looks like this:</p><ol>
-<li>Zapier sends the user to the authorization URL defined by your App</li>
-<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided (<code>zapier describe</code> to find out what it is)</li>
-<li>Zapier makes a call on the backend to your API to exchange the <code>code</code> for an <code>access_token</code></li>
+<li>Zapier sends the user to the authorization URL defined by your app</li>
+<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png" alt=""></li>
+<li>Zapier makes a call on our backend to your API to exchange the <code>code</code> for an <code>access_token</code></li>
 <li>Zapier remembers the <code>access_token</code> and makes calls on behalf of the user</li>
 <li>(Optionally) Zapier can refresh the token if it expires</li>
 </ol><p>You are required to define the authorization URL and the API call to fetch the access token. You&apos;ll also likely want to set your <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> as environment variables:</p>
@@ -1406,7 +1544,7 @@ zapier convert 1234 my-app
 $ zapier env 1.0.0 CLIENT_ID 1234
 $ zapier env 1.0.0 CLIENT_SECRET abcd
 
-<span class="hljs-comment"># and when running tests locally, don&apos;t forget to define them!</span>
+<span class="hljs-comment"># and when running tests locally, don&apos;t forget to define them in .env or in the command!</span>
 $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</span>
 </code></pre>
     </div>
@@ -1459,10 +1597,10 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   <span class="hljs-comment">// If you need any fields upfront, put them here</span>
   fields: [
     { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> }
-    <span class="hljs-comment">// For OAuth we store `access_token` and `refresh_token` automatically</span>
+    <span class="hljs-comment">// For OAuth2 we store `access_token` and `refresh_token` automatically</span>
     <span class="hljs-comment">// in `bundle.authData` for future use. If you need to save/use something</span>
     <span class="hljs-comment">// that the user shouldn&apos;t need to type/choose, add a &quot;computed&quot; field, like:</span>
-    <span class="hljs-comment">// {key: &apos;something&apos;: type: &apos;string&apos;, required: false, computed: true}</span>
+    <span class="hljs-comment">// {key: &apos;user_id&apos;: type: &apos;string&apos;, required: false, computed: true}</span>
     <span class="hljs-comment">// And remember to return it in oauth2Config.getAccessToken/refreshAccessToken</span>
   ]
 };
@@ -1490,7 +1628,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note - For OAuth, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code>  will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty the first time the Zap runs. Also note that <code>authentication.oauth2Config.getAccessToken</code> has access to the users return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string).</p>
+<p>Note - For OAuth2, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code>  will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty when the user hasn&apos;t connected their account on your service to Zapier. Also note that <code>authentication.oauth2Config.getAccessToken</code> has access to the users return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string).</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -2060,7 +2198,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>In OAuth and Session Auth, you might want to store fields in <code>bundle.authData</code> (other than <code>access_token</code>, <code>refresh_token</code> &#x2014; for OAuth &#x2014;, or <code>sessionKey</code> &#x2014; for Session Auth), that you don&apos;t want the user to fill in.</p><p>For those situations, you need a computed field. It&apos;s just like another field, but with a <code>computed: true</code> property (don&apos;t forget to also make it <code>required: false</code>). You can see examples in the <a href="#oauth2">OAuth</a> or <a href="#session">Session Auth</a> example sections.</p>
+      <p>In OAuth and Session Auth, you might want to store fields in <code>bundle.authData</code> (other than <code>access_token</code>, <code>refresh_token</code> &#x2014; for OAuth &#x2014;, or <code>sessionKey</code> &#x2014; for Session Auth), that you don&apos;t want the user to fill in.</p><p>For those situations, you need a computed field. It&apos;s just like another field, but with a <code>computed: true</code> property (don&apos;t forget to also make it <code>required: false</code>). You can see examples in the <a href="#oauth2">OAuth2</a> or <a href="#session">Session Auth</a> example sections.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2844,7 +2982,7 @@ zapier env 1.0.0
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>For simple HTTP requests that do not require special pre or post processing, you can specify the HTTP options as an object literal in your app definition.</p><p>This features:</p><ol>
 <li>Lazy <code>{{curly}}</code> replacement.</li>
-<li>JSON de-serialization.</li>
+<li>JSON and form body de-serialization.</li>
 <li>Automatic non-2xx error raising.</li>
 </ol>
     </div>
