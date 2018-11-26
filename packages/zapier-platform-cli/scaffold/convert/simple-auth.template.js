@@ -1,3 +1,5 @@
+const { ensureObject } = require('./utils');
+
 <% if (TEST_TRIGGER_MODULE) { %>
 const testTrigger = require('<%= TEST_TRIGGER_MODULE %>');
 <% } %>
@@ -17,7 +19,7 @@ const authentication = {
   // TODO: just an example stub - you'll need to complete
   type: '<%= TYPE %>',
 <% if (TEST_TRIGGER_MODULE) { %>
-  test: testTrigger.operation.perform,
+  test: ensureObject(testTrigger.operation.perform),
 <% } %>
   fields: [
 <%= FIELDS %>

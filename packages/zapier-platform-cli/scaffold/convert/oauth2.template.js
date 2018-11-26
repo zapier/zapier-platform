@@ -1,4 +1,4 @@
-const { replaceVars } = require('./utils');
+const { replaceVars, ensureObject } = require('./utils');
 const testTrigger = require('<%= TEST_TRIGGER_MODULE %>');
 <% if (hasPreOAuthTokenScripting && hasPostOAuthTokenScripting) { %>
 const getAccessToken = (z, bundle) => {
@@ -120,7 +120,7 @@ const getConnectionLabel = (z, bundle) => {
 const authentication = {
   // TODO: just an example stub - you'll need to complete
   type: 'oauth2',
-  test: testTrigger.operation.perform,
+  test: ensureObject(testTrigger.operation.perform),
   oauth2Config: {
     authorizeUrl: {
       method: 'GET',

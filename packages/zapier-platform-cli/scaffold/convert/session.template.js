@@ -1,3 +1,4 @@
+const { ensureObject } = require('./utils');
 const testTrigger = require('<%= TEST_TRIGGER_MODULE %>');
 
 const getSessionKey = (z, bundle) => {
@@ -40,7 +41,7 @@ const getConnectionLabel = (z, bundle) => {
 const authentication = {
   // TODO: just an example stub - you'll need to complete
   type: 'session',
-  test: testTrigger.operation.perform,
+  test: ensureObject(testTrigger.operation.perform),
   fields: [
 <%= FIELDS %>
   ],
