@@ -8,7 +8,8 @@ const semver = require('semver');
 const createLegacyScriptingRunner = (z, input) => {
   const app = _.get(input, '_zapier.app');
 
-  let source = app.legacyScriptingSource;
+  let source =
+    _.get(app, 'legacy.scriptingSource') || app.legacyScriptingSource;
   if (source === undefined) {
     // Don't initialize z.legacyScripting for a pure CLI app
     return null;

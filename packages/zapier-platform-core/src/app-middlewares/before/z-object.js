@@ -38,7 +38,7 @@ const injectZObject = input => {
 
   const runner = createLegacyScriptingRunner(z, input);
   if (runner) {
-    z.legacyScripting = runner;
+    z.legacyScripting = zSkinny.legacyScripting = runner;
   }
 
   return _.extend({}, input, { z });
