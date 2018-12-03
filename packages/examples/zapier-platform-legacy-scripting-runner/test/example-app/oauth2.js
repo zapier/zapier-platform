@@ -42,11 +42,6 @@ module.exports = {
       }
     ],
     oauth2Config: {
-      legacyProperties: {
-        // Incomplete URLs on purpose to test pre_oauthv2_token
-        accessTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/access-`,
-        refreshTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/refresh-`
-      },
       authorizeUrl: {
         method: 'GET',
         url: `${AUTH_JSON_SERVER_URL}/oauth/authorize`,

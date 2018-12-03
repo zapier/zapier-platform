@@ -83,10 +83,7 @@ describe('Integration Test', () => {
     });
 
     it('authentication.test', () => {
-      const input = createTestInput(
-        compiledApp,
-        'authentication.test'
-      );
+      const input = createTestInput(compiledApp, 'authentication.test');
       input.bundle.authData = {
         key1: 'sec',
         key2: 'ret'
@@ -117,7 +114,7 @@ describe('Integration Test', () => {
 
     it('pre_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'post_oauthv2_token',
         'dont_care'
       );
@@ -141,12 +138,11 @@ describe('Integration Test', () => {
 
     it('post_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'pre_oauthv2_token',
         'dont_care'
       );
-      appDefWithAuth.authentication.oauth2Config.legacyProperties.accessTokenUrl +=
-        'token';
+      appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl += 'token';
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -267,7 +263,7 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_trigger_fields', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_full_post_custom_trigger_fields',
         'contact_full_post_custom_trigger_fields_disabled'
       );
@@ -293,9 +289,8 @@ describe('Integration Test', () => {
 
     it('KEY_post_custom_trigger_fields', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.triggers.contact_full.operation.legacyProperties.outputFieldsUrl +=
-        's';
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.triggers.contact_full.operation.outputFieldsUrl += 's';
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_full_pre_custom_trigger_fields',
         'contact_full_pre_custom_trigger_fields_disabled'
       );
@@ -340,7 +335,7 @@ describe('Integration Test', () => {
 
     it('z.dehydrate', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_method_dehydration',
         'movie_post_poll'
       );
@@ -371,7 +366,7 @@ describe('Integration Test', () => {
 
     it('z.dehydrateFile', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_file_dehydration',
         'movie_post_poll'
       );
@@ -429,7 +424,7 @@ describe('Integration Test', () => {
 
     it('KEY_catch_hook => object', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_object',
         'contact_hook_scripting_catch_hook'
       );
@@ -454,7 +449,7 @@ describe('Integration Test', () => {
 
     it('KEY_catch_hook => array', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_array',
         'contact_hook_scripting_catch_hook'
       );
@@ -482,11 +477,11 @@ describe('Integration Test', () => {
     it('REST Hook should ignore KEY_pre_hook', () => {
       // Not a Notication REST hook, KEY_pre_hook should be ignored
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_object',
         'contact_hook_scripting_catch_hook'
       );
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_pre_hook_disabled',
         'contact_hook_scripting_pre_hook'
       );
@@ -518,13 +513,12 @@ describe('Integration Test', () => {
       // Notication REST hook should fall back what REST Hook does when the
       // hook doesn't have resource_url
       const appDef = _.cloneDeep(appDefinition);
-      appDef.triggers.contact_hook_scripting.operation.legacyProperties.hookType =
-        'notification';
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.triggers.contact_hook_scripting.operation.hookType = 'notification';
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_object',
         'contact_hook_scripting_catch_hook'
       );
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_pre_hook_disabled',
         'contact_hook_scripting_pre_hook'
       );
@@ -553,9 +547,8 @@ describe('Integration Test', () => {
 
     it('KEY_pre_hook', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.triggers.contact_hook_scripting.operation.legacyProperties.hookType =
-        'notification';
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.triggers.contact_hook_scripting.operation.hookType = 'notification';
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_pre_hook_disabled',
         'contact_hook_scripting_pre_hook'
       );
@@ -584,9 +577,8 @@ describe('Integration Test', () => {
 
     it('KEY_post_hook => object', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.triggers.contact_hook_scripting.operation.legacyProperties.hookType =
-        'notification';
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.triggers.contact_hook_scripting.operation.hookType = 'notification';
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_post_hook_returning_object',
         'contact_hook_scripting_post_hook'
       );
@@ -616,9 +608,8 @@ describe('Integration Test', () => {
 
     it('KEY_post_hook => array', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.triggers.contact_hook_scripting.operation.legacyProperties.hookType =
-        'notification';
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.triggers.contact_hook_scripting.operation.hookType = 'notification';
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_post_hook_returning_array',
         'contact_hook_scripting_post_hook'
       );
@@ -650,13 +641,12 @@ describe('Integration Test', () => {
 
     it('KEY_pre_hook & KEY_post_hook => object', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.triggers.contact_hook_scripting.operation.legacyProperties.hookType =
-        'notification';
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.triggers.contact_hook_scripting.operation.hookType = 'notification';
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_pre_hook_disabled',
         'contact_hook_scripting_pre_hook'
       );
-      appDef.legacyScriptingSource = appDef.legacyScriptingSource.replace(
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_post_hook_returning_object',
         'contact_hook_scripting_post_hook'
       );
@@ -729,7 +719,7 @@ describe('Integration Test', () => {
   describe('create', () => {
     it('scriptingless perform', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.creates.movie.operation.legacyProperties.url += 's';
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -753,8 +743,7 @@ describe('Integration Test', () => {
 
     it('scriptingless perform, curlies in URL', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      const legacyProps =
-        appDefWithAuth.creates.movie.operation.legacyProperties;
+      const legacyProps = appDefWithAuth.legacy.creates.movie.operation;
       legacyProps.url = legacyProps.url.replace(
         '/movie',
         '/{{bundle.inputData.resource_name}}'
@@ -783,7 +772,7 @@ describe('Integration Test', () => {
 
     it('KEY_pre_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_write_disabled',
         'movie_pre_write'
       );
@@ -810,8 +799,8 @@ describe('Integration Test', () => {
 
     it('KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.creates.movie.operation.legacyProperties.url += 's';
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_write_disabled',
         'movie_post_write'
       );
@@ -839,11 +828,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_write & KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_write_disabled',
         'movie_pre_write'
       );
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_write_disabled',
         'movie_post_write'
       );
@@ -871,7 +860,7 @@ describe('Integration Test', () => {
 
     it('async KEY_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_write_async',
         'movie_write'
       );
@@ -899,7 +888,7 @@ describe('Integration Test', () => {
 
     it('sync KEY_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_write_sync',
         'movie_write'
       );
@@ -927,12 +916,11 @@ describe('Integration Test', () => {
 
     it('sync KEY_write, curlies in URL', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_write_sync',
         'movie_write'
       );
-      const legacyProps =
-        appDefWithAuth.creates.movie.operation.legacyProperties;
+      const legacyProps = appDefWithAuth.legacy.creates.movie.operation;
       legacyProps.url = legacyProps.url.replace(
         '/movie',
         '/{{bundle.inputData.resource_name}}'
@@ -962,8 +950,7 @@ describe('Integration Test', () => {
 
     it('scriptingless input fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.creates.movie.operation.legacyProperties.inputFieldsUrl +=
-        's';
+      appDefWithAuth.legacy.creates.movie.operation.inputFieldsUrl += 's';
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -984,7 +971,7 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_custom_action_fields_disabled',
         'movie_pre_custom_action_fields'
       );
@@ -1008,9 +995,8 @@ describe('Integration Test', () => {
 
     it('KEY_post_custom_action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.creates.movie.operation.legacyProperties.inputFieldsUrl +=
-        's';
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.creates.movie.operation.inputFieldsUrl += 's';
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_custom_action_fields_disabled',
         'movie_post_custom_action_fields'
       );
@@ -1036,11 +1022,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_action_fields & KEY_post_custom_action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_custom_action_fields_disabled',
         'movie_pre_custom_action_fields'
       );
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_custom_action_fields_disabled',
         'movie_post_custom_action_fields'
       );
@@ -1066,7 +1052,7 @@ describe('Integration Test', () => {
 
     it('KEY_custom_action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_custom_action_fields_disabled',
         'movie_custom_action_fields'
       );
@@ -1092,8 +1078,7 @@ describe('Integration Test', () => {
 
     it('scriptingless output fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.creates.movie.operation.legacyProperties.outputFieldsUrl +=
-        's';
+      appDefWithAuth.legacy.creates.movie.operation.outputFieldsUrl += 's';
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -1117,7 +1102,7 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_action_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_custom_action_result_fields_disabled',
         'movie_pre_custom_action_result_fields'
       );
@@ -1144,9 +1129,8 @@ describe('Integration Test', () => {
 
     it('KEY_post_custom_action_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.creates.movie.operation.legacyProperties.outputFieldsUrl +=
-        's';
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.creates.movie.operation.outputFieldsUrl += 's';
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_custom_action_result_fields_disabled',
         'movie_post_custom_action_result_fields'
       );
@@ -1175,11 +1159,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_action_result_fields & KEY_post_custom_action_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_custom_action_result_fields_disabled',
         'movie_pre_custom_action_result_fields'
       );
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_custom_action_result_fields_disabled',
         'movie_post_custom_action_result_fields'
       );
@@ -1208,7 +1192,7 @@ describe('Integration Test', () => {
 
     it('KEY_custom_action_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_custom_action_result_fields_disabled',
         'movie_custom_action_result_fields'
       );
@@ -1290,7 +1274,7 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write tweaks filename', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'file_pre_write_tweak_filename',
         'file_pre_write'
       );
@@ -1319,7 +1303,7 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write replaces hydrate url', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'file_pre_write_replace_hydrate_url',
         'file_pre_write'
       );
@@ -1348,7 +1332,7 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write replaces with string content', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'file_pre_write_replace_with_string_content',
         'file_pre_write'
       );
@@ -1377,7 +1361,7 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write fully replaces URL', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'file_pre_write_fully_replace_url',
         'file_pre_write'
       );
@@ -1406,7 +1390,7 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write fully replaces content', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'file_pre_write_fully_replace_content',
         'file_pre_write'
       );
@@ -1435,7 +1419,7 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write, content disposition with quotes', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'file_pre_write_content_dispoistion_with_quotes',
         'file_pre_write'
       );
@@ -1464,7 +1448,7 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write, content disposition without quotes', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'file_pre_write_content_dispoistion_no_quotes',
         'file_pre_write'
       );
@@ -1493,7 +1477,7 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write, content disposition non-ascii', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'file_pre_write_content_dispoistion_non_ascii',
         'file_pre_write'
       );
@@ -1724,8 +1708,7 @@ describe('Integration Test', () => {
   describe('search', () => {
     it('scriptingless perform', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      const legacyProps =
-        appDefWithAuth.searches.movie.operation.legacyProperties;
+      const legacyProps = appDefWithAuth.legacy.searches.movie.operation;
       legacyProps.url = legacyProps.url.replace('movie?', 'movies?');
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -1749,7 +1732,7 @@ describe('Integration Test', () => {
 
     it('KEY_pre_search', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_search_disabled',
         'movie_pre_search'
       );
@@ -1775,10 +1758,9 @@ describe('Integration Test', () => {
 
     it('KEY_post_search', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      const legacyProps =
-        appDefWithAuth.searches.movie.operation.legacyProperties;
+      const legacyProps = appDefWithAuth.legacy.searches.movie.operation;
       legacyProps.url = legacyProps.url.replace('movie?', 'movies?');
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_search_disabled',
         'movie_post_search'
       );
@@ -1804,11 +1786,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_search & KEY_post_search', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_search_disabled',
         'movie_pre_search'
       );
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_search_disabled',
         'movie_post_search'
       );
@@ -1834,7 +1816,7 @@ describe('Integration Test', () => {
 
     it('KEY_search', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_search_disabled',
         'movie_search'
       );
@@ -1860,8 +1842,7 @@ describe('Integration Test', () => {
 
     it('scriptingless resource', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      const legacyProps =
-        appDefWithAuth.searches.movie.operation.legacyProperties;
+      const legacyProps = appDefWithAuth.legacy.searches.movie.operation;
       legacyProps.resourceUrl = legacyProps.resourceUrl.replace(
         '/movie/',
         '/movies/'
@@ -1887,7 +1868,7 @@ describe('Integration Test', () => {
 
     it('KEY_pre_read_resource', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_read_resource_disabled',
         'movie_pre_read_resource'
       );
@@ -1910,13 +1891,12 @@ describe('Integration Test', () => {
 
     it('KEY_post_read_resource', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      const legacyProps =
-        appDefWithAuth.searches.movie.operation.legacyProperties;
+      const legacyProps = appDefWithAuth.legacy.searches.movie.operation;
       legacyProps.resourceUrl = legacyProps.resourceUrl.replace(
         '/movie/',
         '/movies/'
       );
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_read_resource_disabled',
         'movie_post_read_resource'
       );
@@ -1943,11 +1923,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_read_resource & KEY_post_read_resource', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_read_resource_disabled',
         'movie_pre_read_resource'
       );
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_read_resource_disabled',
         'movie_post_read_resource'
       );
@@ -1974,7 +1954,7 @@ describe('Integration Test', () => {
 
     it('KEY_read_resource', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_read_resource_disabled',
         'movie_read_resource'
       );
@@ -1997,8 +1977,7 @@ describe('Integration Test', () => {
 
     it('scriptingless input fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.searches.movie.operation.legacyProperties.inputFieldsUrl +=
-        's';
+      appDefWithAuth.legacy.searches.movie.operation.inputFieldsUrl += 's';
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2018,7 +1997,7 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_search_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_custom_search_fields_disabled',
         'movie_pre_custom_search_fields'
       );
@@ -2041,9 +2020,8 @@ describe('Integration Test', () => {
 
     it('KEY_post_custom_search_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.searches.movie.operation.legacyProperties.inputFieldsUrl +=
-        's';
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.searches.movie.operation.inputFieldsUrl += 's';
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_custom_search_fields_disabled',
         'movie_post_custom_search_fields'
       );
@@ -2068,11 +2046,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_search_fields & KEY_post_custom_search_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_custom_search_fields_disabled',
         'movie_pre_custom_search_fields'
       );
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_custom_search_fields_disabled',
         'movie_post_custom_search_fields'
       );
@@ -2097,7 +2075,7 @@ describe('Integration Test', () => {
 
     it('KEY_custom_search_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_custom_search_fields_disabled',
         'movie_custom_search_fields'
       );
@@ -2122,8 +2100,7 @@ describe('Integration Test', () => {
 
     it('scriptingless output fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.searches.movie.operation.legacyProperties.outputFieldsUrl +=
-        's';
+      appDefWithAuth.legacy.searches.movie.operation.outputFieldsUrl += 's';
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2147,7 +2124,7 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_search_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_custom_search_result_fields_disabled',
         'movie_pre_custom_search_result_fields'
       );
@@ -2174,9 +2151,8 @@ describe('Integration Test', () => {
 
     it('KEY_post_custom_search_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.searches.movie.operation.legacyProperties.outputFieldsUrl +=
-        's';
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.searches.movie.operation.outputFieldsUrl += 's';
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_custom_search_result_fields_disabled',
         'movie_post_custom_search_result_fields'
       );
@@ -2205,11 +2181,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_search_result_fields & KEY_post_custom_search_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_custom_search_result_fields_disabled',
         'movie_pre_custom_search_result_fields'
       );
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_post_custom_search_result_fields_disabled',
         'movie_post_custom_search_result_fields'
       );
@@ -2238,7 +2214,7 @@ describe('Integration Test', () => {
 
     it('KEY_custom_search_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacyScriptingSource = appDefWithAuth.legacyScriptingSource.replace(
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_custom_search_result_fields_disabled',
         'movie_custom_search_result_fields'
       );

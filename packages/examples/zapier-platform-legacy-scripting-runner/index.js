@@ -499,10 +499,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runOAuth1GetRequestToken = async bundle => {
-    const url = _.get(
-      app,
-      'authentication.oauth1Config.legacyProperties.requestTokenUrl'
-    );
+    const url = _.get(app, 'legacy.authentication.oauth1Config.requestTokenUrl');
     return await fetchOAuth1Token(url, {
       oauth_consumer_key: process.env.CLIENT_ID,
       oauth_consumer_secret: process.env.CLIENT_SECRET,
@@ -512,10 +509,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runOAuth1GetAccessToken = async bundle => {
-    const url = _.get(
-      app,
-      'authentication.oauth1Config.legacyProperties.accessTokenUrl'
-    );
+    const url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
     return await fetchOAuth1Token(url, {
       oauth_consumer_key: process.env.CLIENT_ID,
       oauth_consumer_secret: process.env.CLIENT_SECRET,
@@ -526,10 +520,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runOAuth2GetAccessToken = bundle => {
-    const url = _.get(
-      app,
-      'authentication.oauth2Config.legacyProperties.accessTokenUrl'
-    );
+    const url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
 
     const request = bundle.request;
     request.method = 'POST';
@@ -552,10 +543,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runOAuth2RefreshAccessToken = bundle => {
-    const url = _.get(
-      app,
-      'authentication.oauth2Config.legacyProperties.refreshTokenUrl'
-    );
+    const url = _.get(app, 'legacy.authentication.oauth2Config.refreshTokenUrl');
 
     const request = bundle.request;
     request.method = 'POST';
@@ -572,7 +560,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runTrigger = (bundle, key) => {
-    const url = _.get(app, `triggers.${key}.operation.legacyProperties.url`);
+    const url = _.get(app, `legacy.triggers.${key}.operation.url`);
     bundle.request.url = url;
 
     // For auth test we want to make sure we return an object instead of an array
@@ -608,10 +596,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runHook = (bundle, key) => {
-    const hookType = _.get(
-      app,
-      `triggers.${key}.operation.legacyProperties.hookType`
-    );
+    const hookType = _.get(app, `legacy.triggers.${key}.operation.hookType`);
 
     let cleanedArray;
     if (Array.isArray(bundle.cleanedRequest)) {
@@ -641,11 +626,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runHookSubscribe = (bundle, key) => {
-    const url = _.get(app, 'legacyProperties.subscribeUrl');
-    const event = _.get(
-      app,
-      `triggers.${key}.operation.legacyProperties.event`
-    );
+    const url = _.get(app, 'legacy.subscribeUrl');
+    const event = _.get(app, `legacy.triggers.${key}.operation.event`);
 
     const request = bundle.request;
     request.method = 'POST';
@@ -665,11 +647,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runHookUnsubscribe = (bundle, key) => {
-    const url = _.get(app, 'legacyProperties.unsubscribeUrl');
-    const event = _.get(
-      app,
-      `triggers.${key}.operation.legacyProperties.event`
-    );
+    const url = _.get(app, 'legacy.unsubscribeUrl');
+    const event = _.get(app, `legacy.triggers.${key}.operation.event`);
 
     const request = bundle.request;
     request.method = 'POST';
@@ -721,16 +700,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runTriggerOutputFields = (bundle, key) => {
-    const url = _.get(
-      app,
-      `triggers.${key}.operation.legacyProperties.outputFieldsUrl`
-    );
+    const url = _.get(app, `legacy.triggers.${key}.operation.outputFieldsUrl`);
     return runCustomFields(bundle, key, 'trigger.output', url, false);
   };
 
   const runCreate = (bundle, key) => {
-    const legacyProps =
-      _.get(app, `creates.${key}.operation.legacyProperties`) || {};
+    const legacyProps = _.get(app, `legacy.creates.${key}.operation`) || {};
     const url = legacyProps.url;
     const fieldsExcludedFromBody = legacyProps.fieldsExcludedFromBody || [];
 
@@ -760,23 +735,17 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runCreateInputFields = (bundle, key) => {
-    const url = _.get(
-      app,
-      `creates.${key}.operation.legacyProperties.inputFieldsUrl`
-    );
+    const url = _.get(app, `legacy.creates.${key}.operation.inputFieldsUrl`);
     return runCustomFields(bundle, key, 'create.input', url);
   };
 
   const runCreateOutputFields = (bundle, key) => {
-    const url = _.get(
-      app,
-      `creates.${key}.operation.legacyProperties.outputFieldsUrl`
-    );
+    const url = _.get(app, `legacy.creates.${key}.operation.outputFieldsUrl`);
     return runCustomFields(bundle, key, 'create.output', url);
   };
 
   const runSearch = (bundle, key) => {
-    const url = _.get(app, `searches.${key}.operation.legacyProperties.url`);
+    const url = _.get(app, `legacy.searches.${key}.operation.url`);
 
     bundle.request.url = url;
 
@@ -791,10 +760,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runSearchResource = (bundle, key) => {
-    const url = _.get(
-      app,
-      `searches.${key}.operation.legacyProperties.resourceUrl`
-    );
+    const url = _.get(app, `legacy.searches.${key}.operation.resourceUrl`);
     bundle.request.url = url;
 
     return runEventCombo(
@@ -808,18 +774,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runSearchInputFields = (bundle, key) => {
-    const url = _.get(
-      app,
-      `searches.${key}.operation.legacyProperties.inputFieldsUrl`
-    );
+    const url = _.get(app, `legacy.searches.${key}.operation.inputFieldsUrl`);
     return runCustomFields(bundle, key, 'search.input', url);
   };
 
   const runSearchOutputFields = (bundle, key) => {
-    const url = _.get(
-      app,
-      `searches.${key}.operation.legacyProperties.outputFieldsUrl`
-    );
+    const url = _.get(app, `legacy.searches.${key}.operation.outputFieldsUrl`);
     return runCustomFields(bundle, key, 'search.output', url);
   };
 

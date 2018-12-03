@@ -512,13 +512,7 @@ const ContactTrigger_full = {
         source:
           "return z.legacyScripting.run(bundle, 'trigger.output', 'contact_full');"
       }
-    ],
-    legacyProperties: {
-      // The URL misses an 's' at the end of the resource names. That is,
-      // 'output-field' where it should be 'output-fields'. Done purposely for
-      // scripting to fix it.
-      outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`
-    }
+    ]
   }
 };
 
@@ -542,9 +536,6 @@ const ContactTrigger_post = {
     label: 'New Contact with Post Scripting'
   },
   operation: {
-    legacyProperties: {
-      url: `${AUTH_JSON_SERVER_URL}/users`
-    },
     perform: {
       source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_post');"
     }
@@ -597,10 +588,6 @@ const ContactHook_scripting = {
     performUnsubscribe: {
       source:
         "return z.legacyScripting.run(bundle, 'trigger.hook.unsubscribe', 'contact_hook_scripting');"
-    },
-    legacyProperties: {
-      event: 'contact.created',
-      hookType: 'rest'
     }
   }
 };
@@ -613,9 +600,6 @@ const TestTrigger = {
   operation: {
     perform: {
       source: "return z.legacyScripting.run(bundle, 'trigger', 'test');"
-    },
-    legacyProperties: {
-      url: `${AUTH_JSON_SERVER_URL}/me`
     }
   }
 };
@@ -628,9 +612,6 @@ const MovieTrigger = {
   operation: {
     perform: {
       source: "return z.legacyScripting.run(bundle, 'trigger', 'movie');"
-    },
-    legacyProperties: {
-      url: `${AUTH_JSON_SERVER_URL}/movies`
     }
   }
 };
@@ -660,16 +641,7 @@ const MovieCreate = {
         source:
           "return z.legacyScripting.run(bundle, 'create.output', 'movie');"
       }
-    ],
-    legacyProperties: {
-      // These URLs miss an 's' at the end of the resource names. That is,
-      // 'movie' where it should be 'movies' and 'input-field' where it should
-      // be 'input-fields'. Done purposely for scripting to fix it.
-      url: `${AUTH_JSON_SERVER_URL}/movie`,
-      inputFieldsUrl: `${AUTH_JSON_SERVER_URL}/input-field`,
-      outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`,
-      fieldsExcludedFromBody: ['title']
-    }
+    ]
   }
 };
 
@@ -687,10 +659,7 @@ const FileUpload = {
       { key: 'filename', label: 'Filename', type: 'string' },
       { key: 'file', label: 'File', type: 'file' }
     ],
-    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }],
-    legacyProperties: {
-      url: `${AUTH_JSON_SERVER_URL}/upload`
-    }
+    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }]
   }
 };
 
@@ -722,16 +691,7 @@ const MovieSearch = {
         source:
           "return z.legacyScripting.run(bundle, 'search.output', 'movie');"
       }
-    ],
-    legacyProperties: {
-      // These URLs miss an 's' at the end of the resource names. That is,
-      // 'movie' where it should be 'movies' and 'input-field' where it should
-      // be 'input-fields'. Done purposely for scripting to fix it.
-      url: `${AUTH_JSON_SERVER_URL}/movie?q={{bundle.inputData.query}}`,
-      resourceUrl: `${AUTH_JSON_SERVER_URL}/movie/{{bundle.inputData.id}}`,
-      inputFieldsUrl: `${AUTH_JSON_SERVER_URL}/input-field`,
-      outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`
-    }
+    ]
   }
 };
 
@@ -762,11 +722,85 @@ const App = {
       source: "return z.legacyScripting.run(bundle, 'hydrate.file');"
     }
   },
-  legacyProperties: {
+  legacy: {
+    scriptingSource: legacyScriptingSource,
+
     subscribeUrl: 'http://zapier-httpbin.herokuapp.com/post',
-    unsubscribeUrl: 'https://zapier-httpbin.herokuapp.com/delete'
-  },
-  legacyScriptingSource
+    unsubscribeUrl: 'https://zapier-httpbin.herokuapp.com/delete',
+
+    authentication: {
+      oauth2Config: {
+        // Incomplete URLs on purpose to test pre_oauthv2_token
+        accessTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/access-`,
+        refreshTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/refresh-`
+      }
+    },
+
+    triggers: {
+      contact_full: {
+        operation: {
+          // The URL misses an 's' at the end of the resource names. That is,
+          // 'output-field' where it should be 'output-fields'. Done purposely for
+          // scripting to fix it.
+          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`
+        }
+      },
+      contact_post: {
+        operation: {
+          url: `${AUTH_JSON_SERVER_URL}/users`
+        }
+      },
+      contact_hook_scripting: {
+        operation: {
+          event: 'contact.created',
+          hookType: 'rest'
+        }
+      },
+      test: {
+        operation: {
+          url: `${AUTH_JSON_SERVER_URL}/me`
+        }
+      },
+      movie: {
+        operation: {
+          url: `${AUTH_JSON_SERVER_URL}/movies`
+        }
+      }
+    },
+
+    creates: {
+      movie: {
+        operation: {
+          // These URLs miss an 's' at the end of the resource names. That is,
+          // 'movie' where it should be 'movies' and 'input-field' where it should
+          // be 'input-fields'. Done purposely for scripting to fix it.
+          url: `${AUTH_JSON_SERVER_URL}/movie`,
+          inputFieldsUrl: `${AUTH_JSON_SERVER_URL}/input-field`,
+          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`,
+          fieldsExcludedFromBody: ['title']
+        }
+      },
+      file: {
+        operation: {
+          url: `${AUTH_JSON_SERVER_URL}/upload`
+        }
+      }
+    },
+
+    searches: {
+      movie: {
+        operation: {
+          // These URLs miss an 's' at the end of the resource names. That is,
+          // 'movie' where it should be 'movies' and 'input-field' where it should
+          // be 'input-fields'. Done purposely for scripting to fix it.
+          url: `${AUTH_JSON_SERVER_URL}/movie?q={{bundle.inputData.query}}`,
+          resourceUrl: `${AUTH_JSON_SERVER_URL}/movie/{{bundle.inputData.id}}`,
+          inputFieldsUrl: `${AUTH_JSON_SERVER_URL}/input-field`,
+          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`
+        }
+      }
+    }
+  }
 };
 
 module.exports = App;
