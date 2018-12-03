@@ -757,7 +757,7 @@ Internal pointer to a function from the original source or the source code itsel
 
 ## /FunctionSourceSchema
 
-Source code like {source: "return 1 + 2"} which the system will wrap in a function for you.
+Source code like `{source: "return 1 + 2"}` which the system will wrap in a function for you.
 
 #### Details
 
@@ -768,6 +768,7 @@ Source code like {source: "return 1 + 2"} which the system will wrap in a functi
 #### Examples
 
 * `{ source: 'return 1 + 2' }`
+* `{ args: [ 'x', 'y' ], source: 'return x + y;' }`
 
 #### Anti-Examples
 
@@ -777,7 +778,8 @@ Source code like {source: "return 1 + 2"} which the system will wrap in a functi
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`source` | **yes** | `string` | _No description given._
+`source` | **yes** | `string` | JavaScript code for the function body. This must end with a `return` statement.
+`args` | no | `array`[`string`] | Function signature. Defaults to `['z', 'bundle']` if not specified.
 
 -----
 

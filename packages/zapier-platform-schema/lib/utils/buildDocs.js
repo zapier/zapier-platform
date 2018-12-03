@@ -109,7 +109,9 @@ ${examples.map(formatExample).join('\n')}
 
 const processProperty = (key, property, propIsRequired) => {
   let isRequired = propIsRequired ? '**yes**' : 'no';
-  if (_.get(property, 'docAnnotation.required')) {
+  if (_.get(property, 'docAnnotation.hide')) {
+    return '';
+  } else if (_.get(property, 'docAnnotation.required')) {
     // can also support keys besides "required"
     const annotation = property.docAnnotation.required;
     if (annotation.type === 'replace') {

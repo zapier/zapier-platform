@@ -184,6 +184,20 @@ describe('app', () => {
       error.name.should.eql('pattern');
       error.instance.should.eql('https://{{input}.example.com');
     });
+
+    it('should validate legacy properties', () => {
+      const appCopy = copy(appDefinition);
+      appCopy.legacy = {
+        subscribeUrl: 'https://example.com',
+        triggers: {
+          contact: {
+            url: 'https://example.com'
+          }
+        }
+      };
+      const results = schema.validateAppDefinition(appCopy);
+      results.errors.should.eql([]);
+    });
   });
 
   describe('export', () => {
