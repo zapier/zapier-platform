@@ -142,7 +142,8 @@ describe('Integration Test', () => {
         'pre_oauthv2_token',
         'dont_care'
       );
-      appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl += 'token';
+      appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl +=
+        'token';
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -513,7 +514,8 @@ describe('Integration Test', () => {
       // Notication REST hook should fall back what REST Hook does when the
       // hook doesn't have resource_url
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacy.triggers.contact_hook_scripting.operation.hookType = 'notification';
+      appDef.legacy.triggers.contact_hook_scripting.operation.hookType =
+        'notification';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_object',
         'contact_hook_scripting_catch_hook'
@@ -547,7 +549,8 @@ describe('Integration Test', () => {
 
     it('KEY_pre_hook', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacy.triggers.contact_hook_scripting.operation.hookType = 'notification';
+      appDef.legacy.triggers.contact_hook_scripting.operation.hookType =
+        'notification';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_pre_hook_disabled',
         'contact_hook_scripting_pre_hook'
@@ -577,7 +580,8 @@ describe('Integration Test', () => {
 
     it('KEY_post_hook => object', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacy.triggers.contact_hook_scripting.operation.hookType = 'notification';
+      appDef.legacy.triggers.contact_hook_scripting.operation.hookType =
+        'notification';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_post_hook_returning_object',
         'contact_hook_scripting_post_hook'
@@ -608,7 +612,8 @@ describe('Integration Test', () => {
 
     it('KEY_post_hook => array', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacy.triggers.contact_hook_scripting.operation.hookType = 'notification';
+      appDef.legacy.triggers.contact_hook_scripting.operation.hookType =
+        'notification';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_post_hook_returning_array',
         'contact_hook_scripting_post_hook'
@@ -641,7 +646,8 @@ describe('Integration Test', () => {
 
     it('KEY_pre_hook & KEY_post_hook => object', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacy.triggers.contact_hook_scripting.operation.hookType = 'notification';
+      appDef.legacy.triggers.contact_hook_scripting.operation.hookType =
+        'notification';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_pre_hook_disabled',
         'contact_hook_scripting_pre_hook'
@@ -684,6 +690,9 @@ describe('Integration Test', () => {
         'triggers.contact_hook_scripting.operation.performSubscribe'
       );
       input.bundle.authData = { api_key: 'hey hey' };
+      input.bundle.inputData = { foo: 'bar' };
+      input.bundle.targetUrl = 'http://foo.bar';
+      input.bundle.meta = { zap: { id: 9511 } };
       return app(input).then(output => {
         should.equal(output.results.json.event, 'contact.created');
         should.equal(
@@ -692,6 +701,16 @@ describe('Integration Test', () => {
         );
         should.equal(output.results.headers['X-Api-Key'], 'hey hey');
         should.equal(output.results.hiddenMessage, 'post_subscribe was here!');
+
+        should.deepEqual(output.results.json.bundleAuthFields, {
+          api_key: 'hey hey'
+        });
+        should.deepEqual(output.results.json.bundleTriggerFields, {
+          foo: 'bar'
+        });
+        should.equal(output.results.json.bundleTargetUrl, 'http://foo.bar');
+        should.equal(output.results.json.bundleEvent, 'contact.created');
+        should.deepEqual(output.results.json.bundleZap, { id: 9511 });
       });
     });
 
@@ -705,6 +724,9 @@ describe('Integration Test', () => {
         'triggers.contact_hook_scripting.operation.performUnsubscribe'
       );
       input.bundle.authData = { api_key: 'yo yo' };
+      input.bundle.inputData = { foo: 'bar' };
+      input.bundle.targetUrl = 'http://foo.bar';
+      input.bundle.meta = { zap: { id: 9512 } };
       return app(input).then(output => {
         should.equal(output.results.request.method, 'DELETE');
 
@@ -712,6 +734,12 @@ describe('Integration Test', () => {
         should.equal(echoed.json.event, 'contact.created');
         should.equal(echoed.json.hidden_message, 'pre_unsubscribe was here!');
         should.equal(echoed.headers['X-Api-Key'], 'yo yo');
+
+        should.deepEqual(echoed.json.bundleAuthFields, { api_key: 'yo yo' });
+        should.deepEqual(echoed.json.bundleTriggerFields, { foo: 'bar' });
+        should.equal(echoed.json.bundleTargetUrl, 'http://foo.bar');
+        should.equal(echoed.json.bundleEvent, 'contact.created');
+        should.deepEqual(echoed.json.bundleZap, { id: 9512 });
       });
     });
   });
