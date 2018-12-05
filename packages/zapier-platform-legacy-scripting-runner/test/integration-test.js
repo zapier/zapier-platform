@@ -11,7 +11,7 @@ const createInput = require('zapier-platform-core/src/tools/create-input');
 const schemaTools = require('zapier-platform-core/src/tools/schema');
 
 const withAuth = (appDef, authConfig) => {
-  return _.extend(_.cloneDeep(appDef), _.cloneDeep(authConfig));
+  return _.merge(_.cloneDeep(appDef), _.cloneDeep(authConfig));
 };
 
 // XXX: Allow to add custom app befores. Kind of hacky, but we can remove this once

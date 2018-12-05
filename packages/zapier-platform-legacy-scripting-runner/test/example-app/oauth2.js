@@ -20,14 +20,17 @@ const refreshAccessTokenSource = `
   return z.legacyScripting.run(bundle, 'auth.oauth2.refresh');
 `;
 
-const maybeIncludeAuthSource = `
-  if (bundle.authData.access_token) {
-    request.headers.Authorization = \`Bearer \${bundle.authData.access_token}\`;
-  }
-  return request;
+const beforeRequestSource = `
+  return z.legacyScripting.beforeRequest(request, z, bundle);
 `;
 
 module.exports = {
+  legacy: {
+    authentication: {
+      placement: 'header',
+      mapping: {}
+    }
+  },
   authentication: {
     type: 'oauth2',
     test: { source: testAuthSource },
@@ -62,7 +65,7 @@ module.exports = {
     }
   },
   beforeRequest: [
-    { source: maybeIncludeAuthSource, args: ['request', 'z', 'bundle'] }
+    { source: beforeRequestSource, args: ['request', 'z', 'bundle'] }
   ]
 
   // We don't need afterResponse to refresh auth as core appends one

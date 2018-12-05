@@ -39,6 +39,7 @@ const {
   isFileField,
   LazyFile
 } = require('./file');
+const middlewareFactory = require('./middleware-factory');
 
 const FIELD_TYPE_CONVERT_MAP = {
   // field_type_in_wb: field_type_in_cli
@@ -870,7 +871,14 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     });
   };
 
+  // Dynamically generate http middlewares based on auth config. The generated
+  // middleware could be a no-op if the auth doesn't require a middleware.
+  const beforeRequest = middlewareFactory.createBeforeRequest(app);
+  const afterResponse = middlewareFactory.createAfterResponse(app);
+
   return {
+    afterResponse,
+    beforeRequest,
     run,
     runEvent,
     replaceVars
