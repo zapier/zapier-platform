@@ -12,21 +12,23 @@ const getConnectionLabelSource = `
   return z.legacyScripting.run(bundle, 'auth.connectionLabel');
 `;
 
-const maybeIncludeAuthSource = `
-  if (bundle.authData && Object.keys(bundle.authData).length > 0) {
-    request.headers['X-API-Key'] = \`\${bundle.authData.key1}\${bundle.authData.key2}\`;
-  }
-  return request;
+const beforeRequestSource = `
+  return z.legacyScripting.beforeRequest(request, z, bundle);
 `;
 
-const maybeRefreshAuthSource = `
-  if (response.status === 401) {
-    throw new z.errors.RefreshAuthError('Session key needs refreshing');
-  }
-  return response;
+const afterResponseSource = `
+  return z.legacyScripting.afterResponse(response, z, bundle);
 `;
 
 module.exports = {
+  legacy: {
+    authentication: {
+      mapping: {
+        'X-Api-Key': '{{key1}}{{key2}}'
+      },
+      placement: 'header'
+    }
+  },
   authentication: {
     type: 'session',
     test: { source: testAuthSource },
@@ -50,9 +52,9 @@ module.exports = {
     connectionLabel: { source: getConnectionLabelSource }
   },
   beforeRequest: [
-    { source: maybeIncludeAuthSource, args: ['request', 'z', 'bundle'] }
+    { source: beforeRequestSource, args: ['request', 'z', 'bundle'] }
   ],
   afterResponse: [
-    { source: maybeRefreshAuthSource, args: ['response', 'z', 'bundle'] }
+    { source: afterResponseSource, args: ['response', 'z', 'bundle'] }
   ]
 };
