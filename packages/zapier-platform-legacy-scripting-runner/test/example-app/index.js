@@ -158,6 +158,14 @@ const legacyScriptingSource = `
       pre_subscribe: function(bundle) {
         var data = z.JSON.parse(bundle.request.data);
         data.hidden_message = 'pre_subscribe was here!';
+
+        // Just to make sure these are in bundle
+        data.bundleAuthFields = bundle.auth_fields;
+        data.bundleTriggerFields = bundle.trigger_fields;
+        data.bundleTargetUrl = bundle.target_url;
+        data.bundleEvent = bundle.event;
+        data.bundleZap = bundle.zap;
+
         bundle.request.data = z.JSON.stringify(data);
         return bundle.request;
       },
@@ -172,6 +180,15 @@ const legacyScriptingSource = `
       pre_unsubscribe: function(bundle) {
         var data = z.JSON.parse(bundle.request.data);
         data.hidden_message = 'pre_unsubscribe was here!';
+
+        // Just to make sure these are in bundle
+        data.bundleAuthFields = bundle.auth_fields;
+        data.bundleTriggerFields = bundle.trigger_fields;
+        data.bundleTargetUrl = bundle.target_url;
+        data.bundleSubscribeData = bundle.subscribe_data;
+        data.bundleEvent = bundle.event;
+        data.bundleZap = bundle.zap;
+
         bundle.request.data = z.JSON.stringify(data);
         bundle.request.method = 'DELETE';
         return bundle.request;

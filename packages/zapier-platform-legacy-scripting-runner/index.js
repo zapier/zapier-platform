@@ -500,7 +500,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runOAuth1GetRequestToken = async bundle => {
-    const url = _.get(app, 'legacy.authentication.oauth1Config.requestTokenUrl');
+    const url = _.get(
+      app,
+      'legacy.authentication.oauth1Config.requestTokenUrl'
+    );
     return await fetchOAuth1Token(url, {
       oauth_consumer_key: process.env.CLIENT_ID,
       oauth_consumer_secret: process.env.CLIENT_SECRET,
@@ -523,11 +526,13 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   const runOAuth2GetAccessToken = bundle => {
     const url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
 
-    const request = bundle.request;
+    let request = bundle.request;
     request.method = 'POST';
     request.url = url;
-    request.headers['Content-Type'] = 'application/json';
+    request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
+    // Try two ways to get the token: POST with parameters in a form-encoded body. If
+    // that returns a 4xx, retry a POST with parameters in querystring.
     const body = request.body;
     body.code = bundle.inputData.code;
     body.client_id = process.env.CLIENT_ID;
@@ -540,16 +545,36 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       '',
       'auth.oauth2.token.pre',
       'auth.oauth2.token.post'
-    );
+    ).catch(() => {
+      request = bundle.request;
+      request.body = {};
+
+      const params = request.params;
+      params.code = bundle.inputData.code;
+      params.client_id = process.env.CLIENT_ID;
+      params.client_secret = process.env.CLIENT_SECRET;
+      params.redirect_uri = bundle.inputData.redirect_uri;
+      params.grant_type = 'authorization_code';
+
+      return runEventCombo(
+        bundle,
+        '',
+        'auth.oauth2.token.pre',
+        'auth.oauth2.token.post'
+      );
+    });
   };
 
   const runOAuth2RefreshAccessToken = bundle => {
-    const url = _.get(app, 'legacy.authentication.oauth2Config.refreshTokenUrl');
+    const url = _.get(
+      app,
+      'legacy.authentication.oauth2Config.refreshTokenUrl'
+    );
 
-    const request = bundle.request;
+    let request = bundle.request;
     request.method = 'POST';
     request.url = url;
-    request.headers['Content-Type'] = 'application/json';
+    request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
     const body = request.body;
     body.client_id = process.env.CLIENT_ID;
@@ -557,7 +582,18 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     body.refresh_token = bundle.authData.refresh_token;
     body.grant_type = 'refresh_token';
 
-    return runEventCombo(bundle, '', 'auth.oauth2.refresh.pre');
+    return runEventCombo(bundle, '', 'auth.oauth2.refresh.pre').catch(() => {
+      request = bundle.request;
+      request.body = {};
+
+      const params = request.params;
+      params.client_id = process.env.CLIENT_ID;
+      params.client_secret = process.env.CLIENT_SECRET;
+      params.refresh_token = bundle.authData.refresh_token;
+      params.grant_type = 'refresh_token';
+
+      return runEventCombo(bundle, '', 'auth.oauth2.refresh.pre');
+    });
   };
 
   const runTrigger = (bundle, key) => {
@@ -639,6 +675,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     body.target_url = bundle.targetUrl;
     body.event = event;
 
+    bundle._legacyEvent = event;
+
     return runEventCombo(
       bundle,
       key,
@@ -659,6 +697,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     body.subscription_url = bundle.targetUrl; // backward compatibility
     body.target_url = bundle.targetUrl;
     body.event = event;
+
+    bundle._legacyEvent = event;
 
     return runEventCombo(
       bundle,
