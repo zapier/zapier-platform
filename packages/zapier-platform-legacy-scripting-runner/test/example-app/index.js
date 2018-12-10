@@ -236,6 +236,20 @@ const legacyScriptingSource = `
         return data;
       },
 
+      // To be replaced with 'movie_pre_write' at runtime
+      movie_pre_write_unflatten: function(bundle) {
+        // Make sure bundle.action_fields is unflatten, bundle.action_fields_full
+        // isn't, and bundle.action_fields_raw still got curlies
+        bundle.request.url = 'https://zapier-httpbin.herokuapp.com/post';
+        bundle.request.data = z.JSON.stringify({
+          action_fields: bundle.action_fields,
+          action_fields_full: bundle.action_fields_full,
+          action_fields_raw: bundle.action_fields_raw,
+          orig_data: z.JSON.parse(bundle.request.data)
+        });
+        return bundle.request;
+      },
+
       // To be replaced with 'movie_write' at runtime
       movie_write_sync: function(bundle) {
         bundle.request.url += 's';
