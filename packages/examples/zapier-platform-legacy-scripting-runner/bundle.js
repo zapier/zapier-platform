@@ -82,7 +82,7 @@ const addInputData = (event, bundle, convertedBundle) => {
     convertedBundle.trigger_fields_raw =
       bundle.inputDataRaw || bundle.inputData;
   } else if (event.name.startsWith('create.')) {
-    convertedBundle.action_fields = bundle.inputData;
+    convertedBundle.action_fields = bundle._unflatInputData;
     convertedBundle.action_fields_full = bundle.inputData;
     convertedBundle.action_fields_raw = bundle.inputDataRaw || bundle.inputData;
   } else if (event.name.startsWith('search.')) {
@@ -123,7 +123,7 @@ const addHookData = (event, bundle, convertedBundle) => {
   }
 };
 
-const addRequest = async (event, z, bundle, convertedBundle) => {
+const addRequestData = async (event, z, bundle, convertedBundle) => {
   const headers = _.get(bundle, 'request.headers', {});
   _.extend(convertedBundle.request.headers, headers);
 
@@ -172,6 +172,8 @@ const addRequest = async (event, z, bundle, convertedBundle) => {
       convertedBundle.request.files = files;
       delete convertedBundle.request.headers['Content-Type'];
     }
+  } else if (event.name.startsWith('create')) {
+    convertedBundle.request.data = JSON.stringify(bundle._unflatInputData);
   }
 };
 
@@ -194,6 +196,9 @@ const bundleConverter = async (bundle, event, z) => {
     defaultMethod = 'POST';
   }
 
+  // Attach to bundle so we can reuse it
+  bundle._unflatInputData = unflattenObject(_.clone(bundle.inputData || {}));
+
   const convertedBundle = {
     request: {
       method: _.get(bundle, 'request.method') || defaultMethod,
@@ -204,9 +209,7 @@ const bundleConverter = async (bundle, event, z) => {
       params: event.name.startsWith('create')
         ? {}
         : _.get(bundle, 'inputData', {}),
-      data: event.name.startsWith('create')
-        ? JSON.stringify(unflattenObject(_.get(bundle, 'inputData', {})))
-        : ''
+      data: ''
     },
     auth_fields: _.get(bundle, 'authData', {}),
     meta: _.get(bundle, 'meta', {}),
@@ -219,10 +222,13 @@ const bundleConverter = async (bundle, event, z) => {
   addAuthData(event, bundle, convertedBundle);
   addInputData(event, bundle, convertedBundle);
   addHookData(event, bundle, convertedBundle);
-  await addRequest(event, z, bundle, convertedBundle);
+  await addRequestData(event, z, bundle, convertedBundle);
   addResponse(event, bundle, convertedBundle);
 
   return convertedBundle;
 };
 
-module.exports = bundleConverter;
+module.exports = {
+  bundleConverter,
+  unflattenObject
+};

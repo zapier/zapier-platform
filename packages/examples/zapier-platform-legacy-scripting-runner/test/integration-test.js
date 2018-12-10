@@ -825,6 +825,55 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_write, unflatten data', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_pre_write_unflatten',
+        'movie_pre_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        meta__title: 'The Shape of Water',
+        meta__genre: 'Fantasy',
+      };
+      input.bundle.inputDataRaw = {
+        meta__title: '{{123__title}}',
+        meta__genre: '{{234__genre}}'
+      };
+      return app(input).then(output => {
+        const echoed = output.results.json;
+        should.deepEqual(echoed.action_fields, {
+          meta: {
+            title: 'The Shape of Water',
+            genre: 'Fantasy'
+          }
+        });
+        should.deepEqual(echoed.action_fields_full, {
+          meta__title: 'The Shape of Water',
+          meta__genre: 'Fantasy',
+        });
+        should.deepEqual(echoed.action_fields_raw, {
+          meta__title: '{{123__title}}',
+          meta__genre: '{{234__genre}}'
+        });
+        should.deepEqual(echoed.orig_data, {
+          meta: {
+            title: 'The Shape of Water',
+            genre: 'Fantasy'
+          }
+        });
+      });
+
+    });
+
     it('KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';

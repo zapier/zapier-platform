@@ -2,7 +2,7 @@ require('should');
 
 const _ = require('lodash');
 
-const bundleConverter = require('../bundle');
+const { bundleConverter } = require('../bundle');
 
 describe('bundleConverter', () => {
   const defaultBundle = {

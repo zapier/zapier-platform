@@ -32,7 +32,7 @@ const createInternalRequestClient = input => {
   return createRequestClient(httpBefores, httpAfters, options);
 };
 
-const bundleConverter = require('./bundle');
+const { bundleConverter, unflattenObject } = require('./bundle');
 const {
   markFileFieldsInBundle,
   hasFileFields,
@@ -761,6 +761,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         body[k] = v;
       }
     });
+    unflattenObject(body);
 
     bundle.request.method = 'POST';
     bundle.request.url = url;
