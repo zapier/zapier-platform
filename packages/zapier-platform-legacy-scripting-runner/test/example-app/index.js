@@ -93,6 +93,8 @@ const legacyScriptingSource = `
       contact_post_post_poll: function(bundle) {
         var contacts = z.JSON.parse(bundle.response.content);
         contacts[0].name = 'Patched by KEY_post_poll!';
+        contacts[0].jqueryText = $('<div>jQuery works!</div>').text();
+        contacts[0].jqueryParam = $.param({width: 1680, height: 1050});
         return contacts;
       },
 

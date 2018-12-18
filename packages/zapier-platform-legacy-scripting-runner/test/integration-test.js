@@ -233,7 +233,7 @@ describe('Integration Test', () => {
       });
     });
 
-    it('KEY_post_poll', () => {
+    it('KEY_post_poll, with jQuery', () => {
       const input = createTestInput(
         compiledApp,
         'triggers.contact_post.operation.perform'
@@ -244,6 +244,8 @@ describe('Integration Test', () => {
 
         const firstContact = output.results[0];
         should.equal(firstContact.name, 'Patched by KEY_post_poll!');
+        should.equal(firstContact.jqueryText, 'jQuery works!');
+        should.equal(firstContact.jqueryParam, 'width=1680&height=1050');
       });
     });
 
