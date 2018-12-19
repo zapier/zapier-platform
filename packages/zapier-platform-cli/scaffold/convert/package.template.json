@@ -1,26 +1,26 @@
 {
-  "name": "<%= NAME %>",
+  "name": "<%= name %>",
   "version": "1.0.0",
-  "description": "<%= DESCRIPTION %>",
+  "description": "<%= description %>",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --recursive -t 10000"
+    "test": "mocha --recursive -t 10000"
   },
   "engines": {
-    "node": ">=6.10.0",
-    "npm": ">=3.0.0"
+    "node": "8.10.0",
+    "npm": ">=5.6.0"
   },
   "dependencies": {
-    "lodash": "4.17.4",
-    <%= DEPENDENCIES %>
+    "zapier-platform-core": "<%= coreVersion %>",
+    "zapier-platform-legacy-scripting-runner": "<%= runnerVersion %>"
   },
   "devDependencies": {
-    "mocha": "4.0.1",
-    "should": "13.1.2"
+    "mocha": "^5.2.0",
+    "should": "^13.2.0"
   },
   "private": true,
   "zapier": {
-    "convertedFromAppID": <%= APP_ID %>,
-    "convertedByCLIVersion": "<%= CLI_VERSION %>"
+    "convertedFromAppID": <%= appId %>,
+    "convertedByCLIVersion": "<%= cliVersion %>"
   }
 }

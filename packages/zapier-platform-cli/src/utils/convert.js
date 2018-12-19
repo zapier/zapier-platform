@@ -1,798 +1,166 @@
-const _ = require('lodash');
 const path = require('path');
+
+const _ = require('lodash');
 const prettier = require('prettier');
-const stripComments = require('strip-comments');
-const { camelCase, snakeCase } = require('./misc');
-const { copyFile, readFile, writeFile, ensureDir } = require('./files');
-const { startSpinner, endSpinner } = require('./display');
+
 const { PACKAGE_VERSION } = require('../constants');
+const { copyFile, ensureDir, readFile, writeFile } = require('./files');
+const { snakeCase } = require('./misc');
+const { getPackageLatestVersion } = require('./npm');
+let { startSpinner, endSpinner } = require('./display');
 
 const TEMPLATE_DIR = path.join(__dirname, '../../scaffold/convert');
-const ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION = '1.2.0';
 
-// map WB auth types to CLI
-const authTypeMap = {
-  'Basic Auth': 'basic',
-  // TODO: 'OAuth V1 (beta)': 'oauth1',
-  'OAuth V2': 'oauth2',
-  'OAuth V2 (w/refresh)': 'oauth2-refresh',
-  'API Key (Headers)': 'api-header',
-  'API Key (Query String)': 'api-query',
-  'Session Auth': 'session',
-  // TODO: 'Digest Auth': 'digest',
-  'Unknown Auth': 'custom'
-};
+// A placeholder that can be used to identify this is something we need to replace
+// before generating the final code. See replacePlaceholders function. Make it really
+// special and NO regex reserved chars.
+const REPLACE_DIRECTIVE = '__REPLACE_ME@';
 
-// map WB field types to CLI
-const typesMap = {
-  unicode: 'string',
-  textarea: 'text',
-  integer: 'integer',
-  float: 'number',
-  boolean: 'boolean',
-  datetime: 'datetime',
-  file: 'file',
-  password: 'password'
-};
+const makePlaceholder = replacement => `${REPLACE_DIRECTIVE}${replacement}`;
 
-// map WB step names to CLI
-const stepNamesMap = {
-  triggers: 'trigger',
-  searches: 'search',
-  actions: 'create'
-};
-
-// map CLI step names to WB
-const stepNamesMapInv = {
-  trigger: 'triggers',
-  search: 'searches',
-  create: 'actions'
-};
-
-const stepTypeMap = {
-  trigger: 'triggers',
-  search: 'searches',
-  create: 'creates'
-};
-
-// map CLI step names to verbs for display labels
-const stepVerbsMap = {
-  trigger: 'Get',
-  create: 'Create',
-  search: 'Find'
-};
-
-// map CLI step names to templates for descriptions
-const stepDescriptionTemplateMap = {
-  trigger: _.template('Triggers on a new <%= lowerNoun %>.'),
-  create: _.template('Creates a <%= lowerNoun %>.'),
-  search: _.template('Finds a <%= lowerNoun %>.')
-};
-
-const renderTemplate = (templateFile, templateContext, prettify = true) => {
-  return readFile(templateFile)
-    .then(templateBuf => templateBuf.toString())
-    .then(template =>
-      _.template(template, { interpolate: /<%=([\s\S]+?)%>/g })(templateContext)
-    )
-    .then(content => {
-      if (prettify) {
-        const ext = path.extname(templateFile).toLowerCase();
-        const prettifier = {
-          '.json': origString =>
-            JSON.stringify(JSON.parse(origString), null, 2),
-          '.js': origString =>
-            prettier.format(origString, {
-              singleQuote: true,
-              printWidth: 120
-            })
-        }[ext];
-        if (prettifier) {
-          return prettifier(content);
-        }
-      }
-      return content;
-    });
-};
-
-const createFile = (content, fileName, dir) => {
-  const destFile = path.join(dir, fileName);
-
-  return ensureDir(path.dirname(destFile))
-    .then(() => writeFile(destFile, content))
-    .then(() => {
-      startSpinner(`Writing ${fileName}`);
-      endSpinner();
-    });
-};
-
-const renderProp = (key, value) => `${key}: ${value}`;
+const replacePlaceholders = str =>
+  str.replace(new RegExp(`"${REPLACE_DIRECTIVE}([^"]+)"`, 'g'), '$1');
 
 const quote = s => `'${s}'`;
 
 const escapeSpecialChars = s => s.replace(/\n/g, '\\n').replace(/'/g, "\\'");
 
-const getAuthType = definition => {
-  return authTypeMap[definition.general.auth_type];
+const createFile = async (content, filename, dir) => {
+  const destFile = path.join(dir, filename);
+  await ensureDir(path.dirname(destFile));
+  await writeFile(destFile, content);
+  startSpinner(`Writing ${filename}`);
+  endSpinner();
 };
 
-const hasAuth = definition => {
-  return (
-    getAuthType(definition) !== 'custom' && !_.isEmpty(definition.auth_fields)
+const prettifyJs = code => prettier.format(code, { singleQuote: true });
+
+const renderTemplate = async (
+  templateFile,
+  templateContext,
+  prettify = true
+) => {
+  const templateBuf = await readFile(templateFile);
+  const template = templateBuf.toString();
+  let content = _.template(template, { interpolate: /<%=([\s\S]+?)%>/g })(
+    templateContext
   );
-};
 
-const renderField = (definition, key, indent = 0) => {
-  const type =
-    (definition.type && typesMap[definition.type.toLowerCase()]) || 'string';
-
-  let props = [];
-
-  props.push(renderProp('key', quote(key)));
-  if (definition.label) {
-    props.push(
-      renderProp('label', quote(escapeSpecialChars(definition.label)))
-    );
-  }
-
-  if (definition.help_text) {
-    props.push(
-      renderProp('helpText', quote(escapeSpecialChars(definition.help_text)))
-    );
-  }
-
-  props.push(renderProp('type', quote(type)));
-  props.push(renderProp('required', Boolean(definition.required)));
-
-  if (definition.placeholder) {
-    props.push(renderProp('placeholder', quote(definition.placeholder)));
-  }
-
-  if (definition.prefill) {
-    props.push(renderProp('dynamic', quote(definition.prefill)));
-  }
-
-  if (definition.searchfill) {
-    props.push(renderProp('search', quote(definition.searchfill)));
-  }
-
-  if (definition.default) {
-    props.push(
-      renderProp('default', quote(escapeSpecialChars(definition.default)))
-    );
-  }
-
-  if (definition.choices) {
-    const choices = {};
-    _.each(definition.choices.split(','), choice => {
-      const parts = choice.split('|');
-      const choiceKey = parts[0].trim();
-      const choiceLabel =
-        parts.length > 1 ? parts[1].trim() : _.startCase(choiceKey);
-      choices[choiceKey] = choiceLabel;
-    });
-
-    props.push(renderProp('choices', JSON.stringify(choices)));
-  }
-
-  props = props.map(s => ' '.repeat(indent + 2) + s);
-  const padding = ' '.repeat(indent);
-
-  return `${padding}{
-${props.join(',\n')}
-${padding}}`;
-};
-
-const renderFields = (fields, indent = 0) => {
-  const results = [];
-  _.each(fields, (field, key) => {
-    results.push(renderField(field, key, indent));
-  });
-  return results.join(',\n');
-};
-
-// TODO: Reuse code with renderField()
-const renderSampleField = (def, indent = 0) => {
-  const type = typesMap[def.type] || 'string';
-
-  let props = [];
-
-  props.push(renderProp('key', quote(def.key)));
-  props.push(renderProp('type', quote(type)));
-
-  if (def.label) {
-    props.push(renderProp('label', quote(escapeSpecialChars(def.label))));
-  }
-
-  props = props.map(s => ' '.repeat(indent + 2) + s);
-  const padding = ' '.repeat(indent);
-
-  return `${padding}{
-${props.join(',\n')}
-${padding}}`;
-};
-
-const renderSampleFields = (fields, indent = 0) => {
-  const results = [];
-  _.each(fields, field => {
-    results.push(renderSampleField(field, indent));
-  });
-  return results.join(',\n');
-};
-
-// Get some quick metadata on auth scripting methods
-const getAuthMetaData = definition => {
-  const js = definition.js ? stripComments(definition.js) : '';
-
-  const hasPreOAuthTokenScripting = js.indexOf('pre_oauthv2_token') > 0;
-  const hasPostOAuthTokenScripting = js.indexOf('post_oauthv2_token') > 0;
-  const hasPreOAuthRefreshScripting = js.indexOf('pre_oauthv2_refresh') > 0;
-  const hasGetConnectionLabelScripting = js.indexOf('get_connection_label') > 0;
-
-  return {
-    hasPreOAuthTokenScripting,
-    hasPostOAuthTokenScripting,
-    hasPreOAuthRefreshScripting,
-    hasGetConnectionLabelScripting
-  };
-};
-
-const getTestTriggerKey = definition => {
-  return _.get(definition, ['general', 'test_trigger_key']);
-};
-
-const renderAuthTemplate = (authType, definition) => {
-  const fields = renderFields(definition.auth_fields, 4);
-  const connectionLabel = _.get(definition, ['general', 'auth_label'], '');
-  const { hasGetConnectionLabelScripting } = getAuthMetaData(definition);
-
-  if (authType === 'basic' && !_.isEmpty(definition.general.auth_mapping)) {
-    authType = 'custom';
-  }
-
-  const templateContext = {
-    TYPE: authType,
-    FIELDS: fields,
-    CONNECTION_LABEL: connectionLabel,
-    hasGetConnectionLabelScripting
-  };
-
-  const testTriggerKey = getTestTriggerKey(definition);
-  if (testTriggerKey) {
-    templateContext.TEST_TRIGGER_MODULE = `./triggers/${snakeCase(
-      testTriggerKey
-    )}`;
-  } else {
-    templateContext.TEST_TRIGGER_MODULE = '';
-  }
-
-  const templateFile = path.join(TEMPLATE_DIR, '/simple-auth.template.js');
-  return renderTemplate(templateFile, templateContext);
-};
-
-const renderBasicAuth = _.bind(renderAuthTemplate, null, 'basic');
-const renderCustomAuth = _.bind(renderAuthTemplate, null, 'custom');
-
-const renderOAuth2 = (definition, withRefresh) => {
-  const authorizeUrl = _.get(
-    definition,
-    ['general', 'auth_urls', 'authorization_url'],
-    'TODO'
-  );
-  const accessTokenUrl = _.get(
-    definition,
-    ['general', 'auth_urls', 'access_token_url'],
-    'TODO'
-  );
-  const refreshTokenUrl = _.get(
-    definition,
-    ['general', 'auth_urls', 'refresh_token_url'],
-    'TODO'
-  );
-  const connectionLabel = _.get(definition, ['general', 'auth_label'], '');
-  const scope = _.get(definition, ['general', 'auth_data', 'scope'], '');
-  const testTriggerKey = getTestTriggerKey(definition);
-
-  const {
-    hasPreOAuthTokenScripting,
-    hasPostOAuthTokenScripting,
-    hasPreOAuthRefreshScripting,
-    hasGetConnectionLabelScripting
-  } = getAuthMetaData(definition);
-
-  const templateContext = {
-    TEST_TRIGGER_MODULE: `./triggers/${snakeCase(testTriggerKey)}`,
-    AUTHORIZE_URL: authorizeUrl,
-    ACCESS_TOKEN_URL: accessTokenUrl,
-    REFRESH_TOKEN_URL: refreshTokenUrl,
-    CONNECTION_LABEL: connectionLabel,
-    SCOPE: scope,
-
-    withRefresh,
-
-    hasPreOAuthTokenScripting,
-    hasPostOAuthTokenScripting,
-    hasPreOAuthRefreshScripting,
-    hasGetConnectionLabelScripting
-
-    // TODO: Extra fields?
-  };
-
-  const templateFile = path.join(TEMPLATE_DIR, '/oauth2.template.js');
-  return renderTemplate(templateFile, templateContext);
-};
-
-const renderSessionAuth = definition => {
-  const fields = renderFields(definition.auth_fields, 4);
-  const connectionLabel = _.get(definition, ['general', 'auth_label'], '');
-  const testTriggerKey = getTestTriggerKey(definition);
-
-  const { hasGetConnectionLabelScripting } = getAuthMetaData(definition);
-
-  const templateContext = {
-    TEST_TRIGGER_MODULE: `./triggers/${snakeCase(testTriggerKey)}`,
-    FIELDS: fields,
-    CONNECTION_LABEL: connectionLabel,
-
-    hasGetConnectionLabelScripting
-  };
-
-  const templateFile = path.join(TEMPLATE_DIR, '/session.template.js');
-  return renderTemplate(templateFile, templateContext);
-};
-
-const renderAuth = definition => {
-  const type = getAuthType(definition);
-
-  if (type === 'basic') {
-    return renderBasicAuth(definition);
-  } else if (type === 'oauth2') {
-    return renderOAuth2(definition);
-  } else if (type === 'oauth2-refresh') {
-    return renderOAuth2(definition, true);
-  } else if (
-    type === 'custom' ||
-    type === 'api-header' ||
-    type === 'api-query'
-  ) {
-    return renderCustomAuth(definition);
-  } else if (type === 'session') {
-    return renderSessionAuth(definition);
-  } else {
-    return Promise.resolve(`{
-    // TODO: complete auth settings
-  }`);
-  }
-};
-
-// write authentication.js
-const writeAuth = (definition, newAppDir) => {
-  const fileName = 'authentication.js';
-  return renderAuth(definition).then(content =>
-    createFile(content, fileName, newAppDir)
-  );
-};
-
-// Check if scripting has a given method for a step type, key, position (pre, post, full),
-// and method_type (step, resource, input_fields, output_fields)
-const hasScriptingMethod = (js, type, key, position, method_type = 'step') => {
-  if (!js) {
-    return false;
-  }
-
-  const suffixTable = {
-    trigger: {
-      pre: {
-        step: '_pre_poll',
-        output_fields: '_pre_custom_trigger_fields'
-      },
-      post: {
-        step: '_post_poll',
-        output_fields: '_post_custom_trigger_fields'
-      },
-      full: {
-        step: '_poll'
-      }
-    },
-    create: {
-      pre: {
-        step: '_pre_write',
-        input_fields: '_pre_custom_action_fields',
-        output_fields: '_pre_custom_action_result_fields'
-      },
-      post: {
-        step: '_post_write',
-        input_fields: '_post_custom_action_fields',
-        output_fields: '_post_custom_action_result_fields'
-      },
-      full: {
-        step: '_write',
-        input_fields: '_custom_action_fields',
-        output_fields: '_custom_action_result_fields'
-      }
-    },
-    search: {
-      pre: {
-        step: '_pre_search',
-        resource: '_pre_read_resource',
-        input_fields: '_pre_custom_search_fields',
-        output_fields: '_pre_custom_search_result_fields'
-      },
-      post: {
-        step: '_post_search',
-        resource: '_post_read_resource',
-        input_fields: '_post_custom_search_fields',
-        output_fields: '_post_custom_search_result_fields'
-      },
-      full: {
-        step: '_search',
-        resource: '_read_resource',
-        input_fields: '_custom_search_fields',
-        output_fields: '_custom_search_result_fields'
-      }
+  if (prettify) {
+    const ext = path.extname(templateFile).toLowerCase();
+    const prettifier = {
+      '.json': origString => JSON.stringify(JSON.parse(origString), null, 2),
+      '.js': prettifyJs
+    }[ext];
+    if (prettifier) {
+      content = prettifier(content);
     }
-  };
-
-  const methodSuffix = suffixTable[type][position][method_type];
-  if (!methodSuffix) {
-    return false;
   }
 
-  // Whole word search. '\b' regex matches a word boundary.
-  const methodName = `${key}${methodSuffix}`;
-  return new RegExp('\\b' + methodName + '\\b').test(js);
+  return content;
 };
 
-// Get some quick meta data for templates, regarding a scripting and a step
-const getStepMetaData = (definition, type, key) => {
-  const js = definition.js ? stripComments(definition.js) : '';
+const getAuthFieldKeys = appDefinition => {
+  const authFields = _.get(appDefinition, 'authentication.fields') || [];
+  const fieldKeys = authFields.map(f => f.key);
 
-  const hasPreScripting = hasScriptingMethod(js, type, key, 'pre');
-  const hasPostScripting = hasScriptingMethod(js, type, key, 'post');
-  const hasFullScripting = hasScriptingMethod(js, type, key, 'full');
-
-  const hasResourcePreScripting = hasScriptingMethod(
-    js,
-    type,
-    key,
-    'pre',
-    'resource'
-  );
-  const hasResourcePostScripting = hasScriptingMethod(
-    js,
-    type,
-    key,
-    'post',
-    'resource'
-  );
-  const hasResourceFullScripting = hasScriptingMethod(
-    js,
-    type,
-    key,
-    'full',
-    'resource'
-  );
-
-  const hasInputFieldPreScripting = hasScriptingMethod(
-    js,
-    type,
-    key,
-    'pre',
-    'input_fields'
-  );
-  const hasInputFieldPostScripting = hasScriptingMethod(
-    js,
-    type,
-    key,
-    'post',
-    'input_fields'
-  );
-  const hasInputFieldFullScripting = hasScriptingMethod(
-    js,
-    type,
-    key,
-    'full',
-    'input_fields'
-  );
-
-  const hasOutputFieldPreScripting = hasScriptingMethod(
-    js,
-    type,
-    key,
-    'pre',
-    'output_fields'
-  );
-  const hasOutputFieldPostScripting = hasScriptingMethod(
-    js,
-    type,
-    key,
-    'post',
-    'output_fields'
-  );
-  const hasOutputFieldFullScripting = hasScriptingMethod(
-    js,
-    type,
-    key,
-    'full',
-    'output_fields'
-  );
-
-  const hasScripting =
-    hasPreScripting ||
-    hasPostScripting ||
-    hasFullScripting ||
-    hasResourcePreScripting ||
-    hasResourcePostScripting ||
-    hasResourceFullScripting ||
-    hasInputFieldPreScripting ||
-    hasInputFieldPostScripting ||
-    hasInputFieldFullScripting ||
-    hasOutputFieldPreScripting ||
-    hasOutputFieldPostScripting ||
-    hasOutputFieldFullScripting;
-
-  const stepDef = definition[stepNamesMapInv[type]][key];
-
-  const hasCustomInputFields =
-    hasInputFieldPreScripting ||
-    hasInputFieldPostScripting ||
-    hasInputFieldFullScripting ||
-    (type !== 'trigger' && Boolean(stepDef.custom_fields_url));
-  // Triggers in WB don't have custom input fields
-  const hasCustomOutputFields =
-    hasOutputFieldPreScripting ||
-    hasOutputFieldPostScripting ||
-    hasOutputFieldFullScripting ||
-    (Boolean(stepDef.custom_fields_result_url) ||
-      (type === 'trigger' && Boolean(stepDef.custom_fields_url)));
-  // Triggers' custom output fields URL route is specified by 'custom_fields_url', unlike creates and searches
-
-  return {
-    hasScripting,
-    hasPreScripting,
-    hasPostScripting,
-    hasFullScripting,
-    hasResourcePreScripting,
-    hasResourcePostScripting,
-    hasResourceFullScripting,
-    hasInputFieldPreScripting,
-    hasInputFieldPostScripting,
-    hasInputFieldFullScripting,
-    hasOutputFieldPreScripting,
-    hasOutputFieldPostScripting,
-    hasOutputFieldFullScripting,
-    hasCustomInputFields,
-    hasCustomOutputFields
-  };
-};
-
-// Get some quick converted metadata for several templates to use
-const getMetaData = definition => {
-  const type = getAuthType(definition);
-
-  const authPlacement = _.get(definition.general, [
-    'auth_data',
-    'access_token_placement'
-  ]);
-
-  let hasAnyScriptingMethods = false;
-
-  // Check for all triggers/creates/searches for any necessary scripting methods
-  _.each(stepNamesMap, (cliType, wbType) => {
-    _.each(definition[wbType], (stepDefinition, key) => {
-      const { hasScripting } = getStepMetaData(definition, cliType, key);
-      if (hasScripting) {
-        hasAnyScriptingMethods = true;
-      }
-    });
-  });
-
-  const needsAuth = hasAuth(definition);
-  const isCustomBasic =
-    needsAuth &&
-    type === 'basic' &&
-    !_.isEmpty(definition.general.auth_mapping);
-  const hasBefore =
-    needsAuth &&
-    (type === 'api-header' ||
-      type === 'api-query' ||
-      type === 'session' ||
-      type === 'oauth2' ||
-      type === 'oauth2-refresh' ||
-      isCustomBasic);
-  const hasAfter = needsAuth && type === 'session';
-  const fieldsOnQuery = authPlacement === 'params' || type === 'api-query';
-  const isSession = needsAuth && type === 'session';
-  const isOAuth = needsAuth && (type === 'oauth2' || type === 'oauth2-refresh');
-
-  const needsLegacyScriptingRunner = isSession || hasAnyScriptingMethods;
-
-  return {
-    type,
-    hasBefore,
-    hasAfter,
-    fieldsOnQuery,
-    isSession,
-    isOAuth,
-    isCustomBasic,
-    needsLegacyScriptingRunner
-  };
-};
-
-// Generate methods for beforeRequest and afterResponse
-const getHeader = definition => {
-  const {
-    hasBefore,
-    hasAfter,
-    isSession,
-    isOAuth,
-    isCustomBasic,
-    fieldsOnQuery
-  } = getMetaData(definition);
-
-  if (hasBefore || hasAfter) {
-    const templateContext = {
-      before: hasBefore,
-      after: hasAfter,
-      session: isSession,
-      oauth: isOAuth,
-      customBasic: isCustomBasic,
-      fields: Object.keys(definition.auth_fields),
-      mapping: _.get(definition, ['general', 'auth_mapping'], {}),
-      query: fieldsOnQuery
-    };
-    const templateFile = path.join(TEMPLATE_DIR, '/header.template.js');
-    return renderTemplate(templateFile, templateContext);
-  } else {
-    return Promise.resolve('');
-  }
-};
-
-// Return methods to use for beforeRequest
-const getBeforeRequests = definition => {
-  const { hasBefore } = getMetaData(definition);
-
-  if (hasBefore) {
-    return 'maybeIncludeAuth';
-  }
-
-  return null;
-};
-
-// Return methods to use for afterResponse
-const getAfterResponses = definition => {
-  const { hasAfter } = getMetaData(definition);
-
-  if (hasAfter) {
-    return 'maybeRefresh';
-  }
-
-  return null;
-};
-
-// convert a trigger, create or search
-const renderStep = (type, definition, key, legacyApp) => {
-  const stepMeta = getStepMetaData(legacyApp, type, key);
-
-  const fields = renderFields(definition.fields, 6);
-  const sampleFields = renderSampleFields(definition.sample_result_fields, 6);
-  const sample = JSON.stringify(definition.sample_result) || 'null';
-
-  const url = definition.url
-    ? definition.url
-    : 'http://example.com/api/${key}.json';
-
-  const noun = definition.noun || _.capitalize(key);
-  const label = definition.label || `${stepVerbsMap[type]} ${noun}`;
-
-  const lowerNoun = noun.toLowerCase();
-  const description =
-    definition.help_text ||
-    stepDescriptionTemplateMap[type]({ lowerNoun: lowerNoun });
-
-  const hidden = Boolean(definition.hide);
-  const important = Boolean(definition.important);
-
-  const templateContext = {
-    KEY: snakeCase(key),
-    NOUN: noun,
-    DESCRIPTION: escapeSpecialChars(description),
-    LABEL: escapeSpecialChars(label),
-    HIDDEN: hidden,
-    IMPORTANT: important,
-    FIELDS: fields,
-    SAMPLE_FIELDS: sampleFields,
-    SAMPLE: sample,
-    URL: url,
-    CUSTOM_FIELDS_URL: null,
-    CUSTOM_FIELDS_RESULT_URL: null,
-    scripting: stepMeta.hasScripting,
-    preScripting: stepMeta.hasPreScripting,
-    postScripting: stepMeta.hasPostScripting,
-    fullScripting: stepMeta.hasFullScripting,
-    resourcePreScripting: stepMeta.hasResourcePreScripting,
-    resourcePostScripting: stepMeta.hasResourcePostScripting,
-    resourceFullScripting: stepMeta.hasResourceFullScripting,
-    inputFieldPreScripting: stepMeta.hasInputFieldPreScripting,
-    inputFieldPostScripting: stepMeta.hasInputFieldPostScripting,
-    inputFieldFullScripting: stepMeta.hasInputFieldFullScripting,
-    outputFieldPreScripting: stepMeta.hasOutputFieldPreScripting,
-    outputFieldPostScripting: stepMeta.hasOutputFieldPostScripting,
-    outputFieldFullScripting: stepMeta.hasOutputFieldFullScripting,
-    hasCustomInputFields: stepMeta.hasCustomInputFields,
-    hasCustomOutputFields: stepMeta.hasCustomOutputFields
-  };
-
-  if (type === 'search') {
-    templateContext.RESOURCE_URL = definition.resource_url;
-  }
-
-  if (definition.custom_fields_url) {
-    templateContext.CUSTOM_FIELDS_URL = definition.custom_fields_url;
-  }
-  if (definition.custom_fields_result_url) {
-    templateContext.CUSTOM_FIELDS_RESULT_URL =
-      definition.custom_fields_result_url;
-  }
-
-  if (
-    type === 'create' &&
-    !stepMeta.hasPreScripting &&
-    !stepMeta.hasFullScripting
-  ) {
-    // Exclude create fields that uncheck "Send to Action Endpoint URL in JSON body"
-    // https://zapier.com/developer/documentation/v2/action-fields/#send-to-action-endpoint-url-in-json-body
-    const fieldKeys = _.keys(definition.fields);
-    const excludeFieldKeys = _.filter(
-      fieldKeys,
-      k => !definition.fields[k].send_in_json
-    );
-    templateContext.excludeFieldKeys = excludeFieldKeys || null;
-  }
-
-  const templateFile = path.join(TEMPLATE_DIR, `/${type}.template.js`);
-  return renderTemplate(templateFile, templateContext);
-};
-
-// write a new trigger, create, or search
-const writeStep = (type, definition, key, legacyApp, newAppDir) => {
-  const fileName = `${stepTypeMap[type]}/${snakeCase(key)}.js`;
-
-  return renderStep(type, definition, key, legacyApp).then(content =>
-    createFile(content, fileName, newAppDir)
-  );
-};
-
-// Get auth field keys that will be put into test code
-const getAuthFieldKeys = definition => {
-  const authType = getAuthType(definition);
-  let fieldKeys;
+  const authType = _.get(appDefinition, 'authentication.type');
   switch (authType) {
-    case 'api-header': // fall through
-    case 'api-query': // fall through
     case 'basic': {
-      fieldKeys = _.keys(definition.auth_fields);
+      fieldKeys.push('username', 'password');
       break;
     }
+    case 'oauth1':
+      fieldKeys.push('oauth_access_token');
+      break;
     case 'oauth2':
-      fieldKeys = ['access_token'];
-      break;
-    case 'oauth2-refresh':
-      fieldKeys = ['access_token', 'refresh_token'];
-      break;
-    case 'session':
-      fieldKeys = ['sessionKey'];
+      fieldKeys.push('access_token', 'refresh_token');
       break;
     default:
-      fieldKeys = [];
+      fieldKeys.push(
+        'oauth_consumer_key',
+        'oauth_consumer_secret',
+        'oauth_token',
+        'oauth_token_secret'
+      );
       break;
   }
   return fieldKeys;
 };
 
+const renderPackageJson = async (legacyApp, appDefinition) => {
+  // Not using escapeSpecialChars because we don't want to escape single quotes (not
+  // allowed in JSON)
+  const description = legacyApp.general.description
+    .replace(/\n/g, '\\n')
+    .replace(/"/g, '\\"');
+
+  const runnerVersion = await getPackageLatestVersion(
+    'zapier-platform-legacy-scripting-runner'
+  );
+
+  const templateContext = {
+    name: _.kebabCase(legacyApp.general.title),
+    description,
+    appId: legacyApp.general.app_id || 'null',
+    cliVersion: PACKAGE_VERSION,
+    coreVersion: appDefinition.platformVersion,
+    runnerVersion
+  };
+
+  const templateFile = path.join(TEMPLATE_DIR, '/package.template.json');
+  return renderTemplate(templateFile, templateContext);
+};
+
+const renderStep = (type, definition) => {
+  let exportBlock = _.cloneDeep(definition),
+    functionBlock = [];
+
+  ['perform', 'performList', 'performSubscribe', 'performUnsubscribe'].forEach(
+    funcName => {
+      const func = definition.operation[funcName];
+      if (func && func.source) {
+        const args = func.args || ['z', 'bundle'];
+        functionBlock.push(
+          `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
+        );
+
+        exportBlock.operation[funcName] = makePlaceholder(funcName);
+      }
+    }
+  );
+
+  ['inputFields', 'outputFields'].forEach(key => {
+    const fields = definition.operation[key];
+    if (Array.isArray(fields) && fields.length > 0) {
+      // Backend converter always put custom field function at the end of the array
+      const func = fields[fields.length - 1];
+      if (func && func.source) {
+        const args = func.args || ['z', 'bundle'];
+        const funcName = `get${_.upperFirst(key)}`;
+        functionBlock.push(
+          `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
+        );
+
+        exportBlock.operation[key][fields.length - 1] = makePlaceholder(
+          funcName
+        );
+      }
+    }
+  });
+
+  exportBlock = `module.exports = ${replacePlaceholders(
+    JSON.stringify(exportBlock)
+  )};\n`;
+
+  functionBlock = functionBlock.join('\n\n');
+
+  return prettifyJs(functionBlock + '\n\n' + exportBlock);
+};
+
 // Render authData for test code
-const renderAuthData = definition => {
-  const fieldKeys = getAuthFieldKeys(definition);
+const renderAuthData = appDefinition => {
+  const fieldKeys = getAuthFieldKeys(appDefinition);
   const lines = _.map(fieldKeys, key => {
     const upperKey = _.snakeCase(key).toUpperCase();
     return `${key}: process.env.${upperKey}`;
@@ -807,14 +175,17 @@ const renderAuthData = definition => {
 
 const renderDefaultInputData = definition => {
   const lines = [];
-  _.each(definition.fields, (field, key) => {
-    if (field.default || field.required) {
-      const defaultValue = field.default
-        ? quote(escapeSpecialChars(field.default))
-        : null;
-      lines.push(`'${key}': ${defaultValue}`);
-    }
-  });
+
+  if (definition.inputFields) {
+    definition.inputFields.forEach(field => {
+      if (field.default || field.required) {
+        const defaultValue = field.default
+          ? quote(escapeSpecialChars(field.default))
+          : null;
+        lines.push(`'${field.key}': ${defaultValue}`);
+      }
+    });
+  }
 
   if (lines.length === 0) {
     return '{}';
@@ -825,278 +196,267 @@ const renderDefaultInputData = definition => {
   }`;
 };
 
-const renderStepTest = (type, definition, key, legacyApp) => {
-  const label = definition.label || _.capitalize(key);
-  const authData = renderAuthData(legacyApp);
-  const inputData = renderDefaultInputData(definition);
+const renderStepTest = async (stepType, definition, appDefinition) => {
+  const templateName = {
+    triggers: 'trigger-test.template.js',
+    creates: 'create-test.template.js',
+    searches: 'search-test.template.js'
+  }[stepType];
+
   const templateContext = {
-    KEY: key,
-    LABEL: escapeSpecialChars(label),
-    AUTH_DATA: authData,
-    INPUT_DATA: inputData
+    key: definition.key,
+    authData: renderAuthData(appDefinition),
+    inputData: renderDefaultInputData(definition)
   };
-  const templateFile = path.join(TEMPLATE_DIR, `/${type}-test.template.js`);
+
+  const templateFile = path.join(TEMPLATE_DIR, templateName);
   return renderTemplate(templateFile, templateContext);
 };
 
-// write basic test code for a new trigger, create, or search
-const writeStepTest = (type, definition, key, legacyApp, newAppDir) => {
-  // Skip auth test, as it should return an object instead of an array
-  if (
-    type === 'trigger' &&
-    _.get(legacyApp, ['general', 'test_trigger_key']) === key
-  ) {
-    return Promise.resolve();
-  }
-  const fileName = `test/${stepTypeMap[type]}/${snakeCase(key)}.js`;
-  return renderStepTest(type, definition, key, legacyApp).then(content =>
-    createFile(content, fileName, newAppDir)
-  );
-};
+const renderAuth = async appDefinition => {
+  let exportBlock = _.cloneDeep(appDefinition.authentication),
+    functionBlock = [];
 
-const renderUtils = () => {
-  const templateFile = path.join(TEMPLATE_DIR, '/utils.template.js');
-  return renderTemplate(templateFile);
-};
+  _.each(
+    {
+      connectionLabel: 'getConnectionLabel',
+      test: 'testAuth'
+    },
+    (funcName, key) => {
+      const func = appDefinition.authentication[key];
+      if (func && func.source) {
+        const args = func.args || ['z', 'bundle'];
+        functionBlock.push(
+          `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
+        );
 
-const writeUtils = newAppDir => {
-  const fileName = 'utils.js';
-  return renderUtils().then(content =>
-    createFile(content, fileName, newAppDir)
-  );
-};
-
-const findSearchOrCreates = legacyApp => {
-  let searchOrCreates = {};
-  _.each(legacyApp.searches, (searchDef, searchKey) => {
-    if (searchDef.action_pair_key) {
-      // The key for a searchOrCreate (comboKey) has to match the key of a
-      // search due to frontend constraints. From Platform's perspective
-      // though, a searchOrCreate just needs a unique key that could be
-      // anything.
-      const comboKey = searchKey;
-      searchOrCreates[comboKey] = {
-        key: comboKey,
-        display: {
-          label: searchDef.action_pair_label || '',
-          description: searchDef.action_pair_label || ''
-        },
-        search: searchKey,
-        create: searchDef.action_pair_key
-      };
+        exportBlock[key] = makePlaceholder(funcName);
+      }
     }
-  });
-  return searchOrCreates;
+  );
+
+  exportBlock = `module.exports = ${replacePlaceholders(
+    JSON.stringify(exportBlock)
+  )};\n`;
+
+  functionBlock = functionBlock.join('\n\n');
+
+  return prettifyJs(functionBlock + '\n\n' + exportBlock);
 };
 
-const renderIndex = legacyApp => {
-  const needsAuth = hasAuth(legacyApp);
-  const templateContext = {
-    HEADER: '',
-    TRIGGERS: '',
-    SEARCHES: '',
-    CREATES: '',
-    BEFORE_REQUESTS: getBeforeRequests(legacyApp),
-    AFTER_RESPONSES: getAfterResponses(legacyApp),
-    needsAuth
-  };
+const renderHydrators = async appDefinition => {
+  let exportBlock = _.cloneDeep(appDefinition.hydrators),
+    functionBlock = [];
 
-  return getHeader(legacyApp).then(header => {
-    templateContext.HEADER = header;
-
-    const importLines = [];
-
-    if (needsAuth) {
-      importLines.push("const authentication = require('./authentication');");
-    }
-
-    const dirMap = {
-      trigger: 'triggers',
-      search: 'searches',
-      create: 'creates'
-    };
-
-    _.each(stepNamesMap, (cliType, wbType) => {
-      const lines = [];
-
-      _.each(legacyApp[wbType], (definition, name) => {
-        const varName = `${camelCase(name)}${_.capitalize(camelCase(cliType))}`;
-        const requireFile = `${dirMap[cliType]}/${snakeCase(name)}`;
-        importLines.push(`const ${varName} = require('./${requireFile}');`);
-        lines.push(`[${varName}.key]: ${varName}`);
-      });
-
-      const section = dirMap[cliType].toUpperCase();
-      templateContext[section] = lines.join(',\n');
-    });
-
-    templateContext.REQUIRES = importLines.join('\n');
-
-    const searchOrCreates = findSearchOrCreates(legacyApp);
-    if (_.isEmpty(searchOrCreates)) {
-      templateContext.SEARCH_OR_CREATES = null;
-    } else {
-      templateContext.SEARCH_OR_CREATES = JSON.stringify(
-        searchOrCreates,
-        null,
-        2
+  _.each(appDefinition.hydrators, (func, funcName) => {
+    if (func && func.source) {
+      const args = func.args || ['z', 'bundle'];
+      functionBlock.push(
+        `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
       );
+      exportBlock[funcName] = makePlaceholder(funcName);
     }
-
-    const templateFile = path.join(TEMPLATE_DIR, '/index.template.js');
-    return renderTemplate(templateFile, templateContext);
   });
+
+  exportBlock = `module.exports = ${replacePlaceholders(
+    JSON.stringify(exportBlock)
+  )};\n`;
+
+  functionBlock = functionBlock.join('\n\n');
+
+  return prettifyJs(functionBlock + '\n\n' + exportBlock);
 };
 
-const writeIndex = (legacyApp, newAppDir) => {
-  return renderIndex(legacyApp).then(content =>
-    createFile(content, 'index.js', newAppDir)
+const renderIndex = async appDefinition => {
+  let exportBlock = _.cloneDeep(appDefinition),
+    functionBlock = [],
+    importBlock = [];
+
+  if (appDefinition.authentication) {
+    importBlock.push("const authentication = require('./authentication');");
+    exportBlock.authentication = makePlaceholder('authentication');
+  }
+
+  _.each(
+    {
+      triggers: 'Trigger',
+      creates: 'Create',
+      searches: 'Search'
+    },
+    (importNameSuffix, stepType) => {
+      _.each(appDefinition[stepType], (definition, key) => {
+        const importName = _.camelCase(key) + importNameSuffix;
+        const filepath = `./${stepType}/${_.snakeCase(key)}.js`;
+
+        importBlock.push(`const ${importName} = require('${filepath}');`);
+
+        delete exportBlock[stepType][key];
+        exportBlock[stepType][
+          makePlaceholder(`[${importName}.key]`)
+        ] = makePlaceholder(importName);
+      });
+    }
   );
-};
 
-const renderPackageJson = legacyApp => {
-  const { needsLegacyScriptingRunner } = getMetaData(legacyApp);
+  if (!_.isEmpty(appDefinition.hydrators)) {
+    importBlock.push("const hydrators = require('./hydrators');");
+    exportBlock.hydrators = makePlaceholder('hydrators');
+  }
 
-  // Not using escapeSpecialChars because we don't want to escape single quotes (not allowed in JSON)
-  const description = legacyApp.general.description
-    .replace(/\n/g, '\\n')
-    .replace(/"/g, '\\"');
+  ['beforeRequest', 'afterResponse'].forEach(middlewareType => {
+    const middlewares = appDefinition[middlewareType];
+    if (middlewares && middlewares.length > 0) {
+      // Backend converter always generates only one middleware
+      const func = middlewares[0];
+      if (func.source) {
+        const args = func.args || ['z', 'bundle'];
+        const funcName = middlewareType;
+        functionBlock.push(
+          `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
+        );
 
-  const templateContext = {
-    NAME: _.kebabCase(legacyApp.general.title),
-    DESCRIPTION: description,
-    APP_ID: legacyApp.general.app_id,
-    CLI_VERSION: PACKAGE_VERSION
-  };
+        exportBlock[middlewareType][0] = makePlaceholder(funcName);
+      }
+    }
+  });
 
-  const dependencies = [];
-
-  dependencies.push(`"zapier-platform-core": "${PACKAGE_VERSION}"`);
-
-  if (needsLegacyScriptingRunner) {
-    // TODO: Make conditional
-    dependencies.push('"async": "2.5.0"');
-    dependencies.push('"moment-timezone": "0.5.13"');
-    dependencies.push('"xmldom": "0.1.27"');
-    dependencies.push(
-      `"zapier-platform-legacy-scripting-runner": "${ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION}"`
+  if (appDefinition.legacy && appDefinition.legacy.scriptingSource) {
+    importBlock.push("\nconst fs = require('fs');");
+    importBlock.push(
+      "const scriptingSource = fs.readFileSync('./scripting.js', { encoding: 'utf8' });"
     );
+    exportBlock.legacy.scriptingSource = makePlaceholder('scriptingSource');
   }
 
-  templateContext.DEPENDENCIES = dependencies.join(',\n    ');
+  exportBlock = `module.exports = ${replacePlaceholders(
+    JSON.stringify(exportBlock)
+  )};`;
 
-  const templateFile = path.join(TEMPLATE_DIR, '/package.template.json');
-  return renderTemplate(templateFile, templateContext);
-};
+  importBlock = importBlock.join('\n');
+  functionBlock = functionBlock.join('\n\n');
 
-const writePackageJson = (legacyApp, newAppDir) => {
-  return renderPackageJson(legacyApp).then(content =>
-    createFile(content, 'package.json', newAppDir)
+  return prettifyJs(
+    importBlock + '\n\n' + functionBlock + '\n\n' + exportBlock
   );
 };
 
-const renderScripting = legacyApp => {
-  const templateContext = {
-    CODE: _.get(legacyApp, 'js'),
-    VERSION: ZAPIER_LEGACY_SCRIPTING_RUNNER_VERSION
-  };
-
-  // Don't render the file if there's nothing to render
-  if (!templateContext.CODE) {
-    return Promise.resolve();
-  }
-
-  // Normalize newlines to '\n'
-  templateContext.CODE = templateContext.CODE.replace(/\r\n/g, '\n').replace(
-    /\r/g,
-    '\n'
-  );
-
-  // Remove any 'use strict'; or "use strict"; since we add that automatically
-  templateContext.CODE = templateContext.CODE.replace(
-    "'use strict';\n",
-    ''
-  ).replace('"use strict";\n', '');
-
-  const templateFile = path.join(TEMPLATE_DIR, '/scripting.template.js');
-  return renderTemplate(templateFile, templateContext, false);
-};
-
-const writeScripting = (legacyApp, newAppDir) => {
-  return renderScripting(legacyApp).then(content => {
-    if (content) {
-      return createFile(content, 'scripting.js', newAppDir);
-    }
-
-    return null;
-  });
-};
-
-const renderEnvironment = definition => {
-  const authFields = getAuthFieldKeys(definition);
-  const lines = _.map(authFields, key => {
+const renderEnvironment = appDefinition => {
+  const authFieldKeys = getAuthFieldKeys(appDefinition);
+  const lines = _.map(authFieldKeys, key => {
     const upperKey = _.snakeCase(key).toUpperCase();
     return `${upperKey}=YOUR_${upperKey}`;
   });
   return lines.join('\n');
 };
 
-const writeEnvironment = (legacyApp, newAppDir) => {
-  const content = renderEnvironment(legacyApp);
-  if (!content) {
-    return Promise.resolve(null);
-  }
-  return createFile(content, '.env', newAppDir);
+const writeStep = async (stepType, definition, key, newAppDir) => {
+  const filename = `${stepType}/${snakeCase(key)}.js`;
+  const content = await renderStep(stepType, definition);
+  await createFile(content, filename, newAppDir);
 };
 
-const writeGitIgnore = newAppDir => {
+const writeStepTest = async (
+  stepType,
+  definition,
+  key,
+  appDefinition,
+  newAppDir
+) => {
+  const filename = `test/${stepType}/${snakeCase(key)}.js`;
+  const content = await renderStepTest(stepType, definition, appDefinition);
+  await createFile(content, filename, newAppDir);
+};
+
+const writeAuth = async (appDefinition, newAppDir) => {
+  const content = await renderAuth(appDefinition, appDefinition);
+  await createFile(content, 'authentication.js', newAppDir);
+};
+
+const writePackageJson = async (legacyApp, appDefinition, newAppDir) => {
+  const content = await renderPackageJson(legacyApp, appDefinition);
+  await createFile(content, 'package.json', newAppDir);
+};
+
+const writeHydrators = async (appDefinition, newAppDir) => {
+  const content = await renderHydrators(appDefinition);
+  await createFile(content, 'hydrators.js', newAppDir);
+};
+
+const writeScripting = async (appDefinition, newAppDir) => {
+  await createFile(
+    appDefinition.legacy.scriptingSource,
+    'scripting.js',
+    newAppDir
+  );
+};
+
+const writeIndex = async (appDefinition, newAppDir) => {
+  const content = await renderIndex(appDefinition);
+  await createFile(content, 'index.js', newAppDir);
+};
+
+const writeEnvironment = async (appDefinition, newAppDir) => {
+  const content = renderEnvironment(appDefinition);
+  await createFile(content, '.env', newAppDir);
+};
+
+const writeGitIgnore = async newAppDir => {
   const srcPath = path.join(TEMPLATE_DIR, '/gitignore');
   const destPath = path.join(newAppDir, '/.gitignore');
-  return copyFile(srcPath, destPath).then(() => {
-    startSpinner('Writing .gitignore');
-    endSpinner();
-  });
+  await copyFile(srcPath, destPath);
+  startSpinner('Writing .gitignore');
+  endSpinner();
 };
 
-const convertApp = (legacyApp, newAppDir) => {
+const writeZapierAppRc = async newAppDir => {
+  const content = JSON.stringify({
+    includeInBuild: ['scripting.js']
+  });
+  await createFile(content, '.zapierapprc', newAppDir);
+  startSpinner('Writing .zapierapprc');
+  endSpinner();
+};
+
+const convertApp = async (
+  legacyApp,
+  appDefinition,
+  newAppDir,
+  silent = false
+) => {
+  if (silent) {
+    startSpinner = endSpinner = () => null;
+  }
+
   const promises = [];
-  _.each(stepNamesMap, (cliType, wbType) => {
-    _.each(legacyApp[wbType], (definition, key) => {
-      promises.push(writeStep(cliType, definition, key, legacyApp, newAppDir));
+
+  ['triggers', 'creates', 'searches'].forEach(stepType => {
+    _.each(appDefinition[stepType], (definition, key) => {
+      promises.push(writeStep(stepType, definition, key, newAppDir));
       promises.push(
-        writeStepTest(cliType, definition, key, legacyApp, newAppDir)
+        writeStepTest(stepType, definition, key, appDefinition, newAppDir)
       );
     });
   });
 
-  promises.push(writeUtils(newAppDir));
-  promises.push(writeIndex(legacyApp, newAppDir));
-  promises.push(writePackageJson(legacyApp, newAppDir));
-  promises.push(writeScripting(legacyApp, newAppDir));
-  promises.push(writeEnvironment(legacyApp, newAppDir));
-  promises.push(writeGitIgnore(newAppDir));
-
-  if (hasAuth(legacyApp)) {
-    promises.push(writeAuth(legacyApp, newAppDir));
+  if (!_.isEmpty(appDefinition.authentication)) {
+    promises.push(writeAuth(appDefinition, newAppDir));
+  }
+  if (!_.isEmpty(appDefinition.hydrators)) {
+    promises.push(writeHydrators(appDefinition, newAppDir));
+  }
+  if (_.get(appDefinition, 'legacy.scriptingSource')) {
+    promises.push(writeScripting(appDefinition, newAppDir));
   }
 
-  return Promise.all(promises);
+  promises.push(writePackageJson(legacyApp, appDefinition, newAppDir));
+  promises.push(writeIndex(appDefinition, newAppDir));
+  promises.push(writeEnvironment(appDefinition, newAppDir));
+  promises.push(writeGitIgnore(newAppDir));
+  promises.push(writeZapierAppRc(newAppDir));
+
+  return await Promise.all(promises);
 };
 
 module.exports = {
-  convertApp,
-  renderAuth,
-  renderField,
-  renderIndex,
-  renderSampleFields,
-  renderScripting,
-  renderStep,
-  renderTemplate,
-
-  // Mostly exported for testing
-  getHeader,
-  getBeforeRequests,
-  getAfterResponses,
-  hasAuth,
-  renderPackageJson
+  convertApp
 };

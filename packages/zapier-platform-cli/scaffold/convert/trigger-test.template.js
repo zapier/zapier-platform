@@ -5,23 +5,18 @@ const zapier = require('zapier-platform-core');
 const App = require('../../index');
 const appTester = zapier.createAppTester(App);
 
-describe('Triggers - <%= LABEL %>', () => {
+describe('Trigger - <%= key %>', () => {
   zapier.tools.env.inject();
 
-  it('should get an array', (done) => {
+  it('should get an array', async () => {
     const bundle = {
-      authData: <%= AUTH_DATA %>,
-<% if (INPUT_DATA) { %>
-      inputData: <%= INPUT_DATA %>
+      authData: <%= authData %>,
+<% if (inputData) { %>
+      inputData: <%= inputData %>
 <% } %>
     };
 
-    appTester(App.triggers['<%= KEY %>'].operation.perform, bundle)
-      .then((results) => {
-        results.should.be.an.Array();
-        done();
-      })
-      .catch(done);
+    const results = await appTester(App.triggers['<%= key %>'].operation.perform, bundle);
+    results.should.be.an.Array();
   });
-
 });

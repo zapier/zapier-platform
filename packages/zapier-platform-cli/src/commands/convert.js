@@ -17,24 +17,27 @@ const convert = (context, appid, location) => {
     return Promise.reject(new Error(message));
   }
 
-  const createApp = tempAppDir => {
-    const url = `${
+  const createApp = async tempAppDir => {
+    const legacyDumpUrl = `${
       constants.BASE_ENDPOINT
     }/api/developer/v1/apps/${appid}/dump`;
+    const cliDumpUrl = `${
+      constants.BASE_ENDPOINT
+    }/api/developer/v1/apps/${appid}/cli-dump`;
 
     utils.startSpinner('Downloading app from Zapier');
-    return utils
-      .callAPI(null, { url })
-      .then(legacyApp => {
-        // The JSON dump of the app doesn't have app ID, let's add it here
-        legacyApp.general.app_id = appid;
-        return legacyApp;
-      })
-      .then(legacyApp => {
-        utils.endSpinner();
-        return legacyApp;
-      })
-      .then(legacyApp => utils.convertApp(legacyApp, tempAppDir));
+
+    const [legacyApp, appDefinition] = await Promise.all([
+      utils.callAPI(null, { url: legacyDumpUrl }),
+      utils.callAPI(null, { url: cliDumpUrl })
+    ]);
+
+    // The JSON dump of the app doesn't have app ID, let's add it here
+    legacyApp.general.app_id = appid;
+
+    utils.endSpinner();
+
+    return await utils.convertApp(legacyApp, appDefinition, tempAppDir);
   };
 
   return utils.initApp(context, location, createApp).then(() => {
@@ -43,8 +46,10 @@ const convert = (context, appid, location) => {
       `Finished! You may try \`npm install\` and then \`zapier test\` in "${location}" directory.`
     );
     context.line(
-      "Also, if your app has authentication, don't forget to edit the environment variables in the .env file."
+      "Also, if your app has authentication, don't forget to set environment variables:"
     );
+    context.line('* for local testing, edit the .env file');
+    context.line('* for produciton, use `zapier env` command');
   });
 };
 convert.argsSpec = [

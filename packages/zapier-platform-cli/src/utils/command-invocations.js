@@ -4,11 +4,9 @@
 const login = require('../commands/login');
 const register = require('../commands/register');
 
-const { readCredentials } = require('./api');
-const { fileExistsSync } = require('./files');
+const { readCredentials, getLinkedAppConfig } = require('./api');
 const { getInput } = require('./display');
 const _ = require('lodash');
-const constants = require('../constants');
 
 // check if the user needs to be logged in and do it if so
 // returns a promise
@@ -23,18 +21,24 @@ const maybeLogin = context => {
   });
 };
 
+const hasRegisteredApp = async () => {
+  try {
+    const app = await getLinkedAppConfig();
+    return Boolean(app.id);
+  } catch (err) {
+    return false;
+  }
+};
+
 // check if the user needs to be registered in and do it if so
 // returns a promise
-const maybeRegisterApp = context => {
-  if (!fileExistsSync(constants.CURRENT_APP_FILE)) {
+const maybeRegisterApp = async context => {
+  if (!await hasRegisteredApp()) {
     context.line(
       "Looks like this is your first push. Let's register your app on Zapier."
     );
-    return getInput('Enter app title (Ctrl-C to cancel):\n\n  ').then(title =>
-      register(context, title, { printWhenDone: false })
-    );
-  } else {
-    return Promise.resolve();
+    const title = await getInput('Enter app title (Ctrl-C to cancel):\n\n  ');
+    await register(context, title, { printWhenDone: false });
   }
 };
 

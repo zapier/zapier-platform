@@ -5,25 +5,20 @@ const zapier = require('zapier-platform-core');
 const App = require('../../index');
 const appTester = zapier.createAppTester(App);
 
-describe('Searches - <%= LABEL %>', () => {
+describe('Search - <%= key %>', () => {
   zapier.tools.env.inject();
 
-  it('should get an object', (done) => {
+  it('should get an array', async () => {
     const bundle = {
-      authData: <%= AUTH_DATA %>,
-<% if (INPUT_DATA) { %>
-      inputData: <%= INPUT_DATA %>
+      authData: <%= authData %>,
+<% if (inputData) { %>
+      inputData: <%= inputData %>
 <% } %>
     };
 
-    appTester(App.searches['<%= KEY %>'].operation.perform, bundle)
-      .then((results) => {
-        results.should.be.an.Array();
-        results.length.should.be.aboveOrEqual(1);
-        results[0].should.have.property('id');
-        done();
-      })
-      .catch(done);
+    const results = await appTester(App.searches['<%= key %>'].operation.perform, bundle);
+    results.should.be.an.Array();
+    results.length.should.be.aboveOrEqual(1);
+    results[0].should.have.property('id');
   });
-
 });
