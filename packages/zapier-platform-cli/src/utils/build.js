@@ -125,6 +125,7 @@ const respectGitIgnore = (dir, paths) => {
     const gitIgnorePath = path.join(dir, '.gitignore');
     const gitIgnoredPaths = gitIgnore(gitIgnorePath);
     const gitFilter = ignore().add(gitIgnoredPaths);
+
     resolve(gitFilter.filter(paths));
   });
 };
@@ -222,50 +223,52 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
   });
 };
 
-const makeZip = (dir, zipPath) => {
+const makeZip = async (dir, zipPath) => {
   const entryPoints = [
     path.resolve(dir, 'zapierwrapper.js'),
     path.resolve(dir, 'index.js')
   ];
 
-  return Promise.all([
-    requiredFiles(dir, entryPoints),
+  let paths;
+
+  const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
+    requiredFiles(dir, entryPoints),
     getLinkedAppConfig(dir)
-  ])
-    .then(([smartPaths, dumbPaths, appConfig]) => {
-      if (global.argOpts['disable-dependency-detection']) {
-        return dumbPaths;
-      }
-      let finalPaths = smartPaths.concat(
-        dumbPaths.filter(forceIncludeDumbPath.bind(null, appConfig))
-      );
-      finalPaths = _.uniq(finalPaths);
-      finalPaths.sort();
-      if (global.argOpts.debug) {
-        console.log('\nZip files:');
-        finalPaths.map(filePath => console.log(`  ${filePath}`));
-        console.log('');
-      }
-      return finalPaths;
-    })
-    .then(verifyNodeFeatures)
-    .then(writeZipFromPaths.bind(this, dir, zipPath));
+  ]);
+
+  if (global.argOpts['disable-dependency-detection']) {
+    paths = dumbPaths;
+  } else {
+    let finalPaths = smartPaths.concat(
+      dumbPaths.filter(forceIncludeDumbPath.bind(null, appConfig))
+    );
+    finalPaths = _.uniq(finalPaths);
+    finalPaths.sort();
+    if (global.argOpts.debug) {
+      console.log('\nZip files:');
+      finalPaths.forEach(filePath => console.log(`  ${filePath}`));
+      console.log('');
+    }
+    paths = finalPaths;
+  }
+
+  verifyNodeFeatures(paths);
+
+  await writeZipFromPaths(dir, zipPath, paths);
 };
 
-const makeSourceZip = (dir, zipPath) => {
-  return listFiles(dir)
-    .then(respectGitIgnore.bind(this, dir))
-    .then(finalPaths => {
-      finalPaths.sort();
-      if (global.argOpts.debug) {
-        console.log('\nSource Zip files:');
-        finalPaths.map(filePath => console.log(`  ${filePath}`));
-        console.log('');
-      }
-      return finalPaths;
-    })
-    .then(writeZipFromPaths.bind(this, dir, zipPath));
+const makeSourceZip = async (dir, zipPath) => {
+  const paths = await listFiles(dir);
+  const finalPaths = await respectGitIgnore(dir, paths);
+  finalPaths.sort();
+
+  if (global.argOpts.debug) {
+    console.log('\nSource Zip files:');
+    finalPaths.forEach(filePath => console.log(`  ${filePath}`));
+    console.log('');
+  }
+  await writeZipFromPaths(dir, zipPath, finalPaths);
 };
 
 // Similar to utils.appCommand, but given a ready to go app
@@ -286,16 +289,7 @@ const _appCommandZapierWrapper = (dir, event) => {
   });
 };
 
-const build = (zipPath, sourceZipPath, wdir) => {
-  wdir = wdir || process.cwd();
-  zipPath = zipPath || constants.BUILD_PATH;
-  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
-  const osTmpDir = fse.realpathSync(os.tmpdir());
-  const tmpDir = path.join(
-    osTmpDir,
-    'zapier-' + crypto.randomBytes(4).toString('hex')
-  );
-
+const maybeNotifyAboutOutdated = () => {
   // find a package.json for the app and notify on the core dep
   // `build` won't run if package.json isn't there, so if we get to here we're good
   const requiredVersion = _.get(
@@ -321,171 +315,158 @@ const build = (zipPath, sourceZipPath, wdir) => {
       });
     }
   }
-
-  return ensureDir(tmpDir)
-    .then(() => ensureDir(constants.BUILD_DIR))
-    .then(() => {
-      startSpinner('Copying project to temp directory');
-
-      let filter;
-      if (process.env.SKIP_NPM_INSTALL) {
-        filter = dir => {
-          const isntBuild = dir.indexOf('.zip') === -1;
-          return isntBuild;
-        };
-      }
-      return copyDir(wdir, tmpDir, { filter });
-    })
-    .then(() => {
-      if (process.env.SKIP_NPM_INSTALL) {
-        return {};
-      }
-      endSpinner();
-      startSpinner('Installing project dependencies');
-      return runCommand('npm', ['install', '--production'], { cwd: tmpDir });
-    })
-    .then(output => {
-      // `npm install` may fail silently without returning a non-zero exit code, need to check further here
-      const corePath = path.join(
-        tmpDir,
-        'node_modules',
-        constants.PLATFORM_PACKAGE
-      );
-      if (!fs.existsSync(corePath)) {
-        throw new Error(
-          'Could not install dependencies properly. Error log:\n' +
-            output.stderr
-        );
-      }
-    })
-    .then(() => {
-      endSpinner();
-      startSpinner('Applying entry point file');
-      // TODO: should this routine for include exist elsewhere?
-      return readFile(
-        path.join(
-          tmpDir,
-          'node_modules',
-          constants.PLATFORM_PACKAGE,
-          'include',
-          'zapierwrapper.js'
-        )
-      ).then(zapierWrapperBuf =>
-        writeFile(`${tmpDir}/zapierwrapper.js`, zapierWrapperBuf.toString())
-      );
-    })
-    .then(() => {
-      endSpinner();
-      startSpinner('Building app definition.json');
-      return _appCommandZapierWrapper(tmpDir, { command: 'definition' });
-    })
-    .then(rawDefinition => {
-      return Promise.all([
-        writeFile(
-          `${tmpDir}/definition.json`,
-          prettyJSONstringify(rawDefinition.results)
-        ),
-        Promise.resolve(rawDefinition.results)
-      ]);
-    })
-    .then(([fileWriteError, rawDefinition]) => {
-      if (fileWriteError) {
-        if (global.argOpts.debug) {
-          console.log('\nFile Write Error:');
-          console.log(fileWriteError);
-          console.log('');
-        }
-        throw new Error(
-          `Unable to write ${tmpDir}/definition.json, please check file permissions!`
-        );
-      }
-
-      endSpinner();
-      startSpinner('Validating project');
-
-      return Promise.all([
-        _appCommandZapierWrapper(tmpDir, { command: 'validate' }),
-        Promise.resolve(rawDefinition)
-      ]);
-    })
-    .then(([validateResponse, rawDefinition]) => {
-      const errors = validateResponse.results;
-      if (errors.length) {
-        return Promise.resolve({
-          errors: {
-            validation: errors
-          }
-        });
-      }
-
-      // No need to mention specifically we're validating style checks as that's
-      //   implied from `zapier validate`, though it happens as a separate process
-
-      return callAPI('/style-check', {
-        skipDeployKey: true,
-        method: 'POST',
-        body: rawDefinition
-      });
-    })
-    .then(styleChecksResponse => {
-      const errors = styleChecksResponse.errors;
-      if (!_.isEmpty(errors)) {
-        if (global.argOpts.debug) {
-          console.log('\nErrors:');
-          console.log(errors);
-          console.log('');
-        }
-
-        throw new Error(
-          'We hit some validation errors, try running `zapier validate` to see them!'
-        );
-      }
-
-      endSpinner();
-      startSpinner('Zipping project and dependencies');
-      return makeZip(tmpDir, wdir + path.sep + zipPath);
-    })
-    .then(() => {
-      return makeSourceZip(tmpDir, wdir + path.sep + sourceZipPath);
-    })
-    .then(() => {
-      // tries to do a reproducible build at least
-      // https://blog.pivotal.io/labs/labs/barriers-deterministic-reproducible-zip-files
-      // https://reproducible-builds.org/tools/ or strip-nondeterminism
-      endSpinner();
-      startSpinner('Testing build');
-
-      if (isWindows()) {
-        return {}; // TODO err, what should we do on windows?
-      }
-      return runCommand(
-        'find',
-        ['.', '-exec', 'touch', '-t', '201601010000', '{}', '+'],
-        { cwd: tmpDir }
-      );
-    })
-    .then(() => {
-      endSpinner();
-      startSpinner('Cleaning up temp directory');
-      return removeDir(tmpDir);
-    })
-    .then(() => {
-      endSpinner();
-      return zipPath;
-    });
 };
 
-const buildAndUploadDir = (zipPath, sourceZipPath, appDir) => {
+const build = async (zipPath, sourceZipPath, wdir) => {
+  wdir = wdir || process.cwd();
+  zipPath = zipPath || constants.BUILD_PATH;
+  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
+  const osTmpDir = await fse.realpath(os.tmpdir());
+  const tmpDir = path.join(
+    osTmpDir,
+    'zapier-' + crypto.randomBytes(4).toString('hex')
+  );
+
+  maybeNotifyAboutOutdated();
+
+  // make sure our directories are there
+  await ensureDir(tmpDir);
+  await ensureDir(constants.BUILD_DIR);
+
+  startSpinner('Copying project to temp directory');
+  await copyDir(wdir, tmpDir, {
+    filter: process.env.SKIP_NPM_INSTALL
+      ? dir => !dir.includes('.zip')
+      : undefined
+  });
+
+  let output = {};
+  if (!process.env.SKIP_NPM_INSTALL) {
+    endSpinner();
+    startSpinner('Installing project dependencies');
+    output = await runCommand('npm', ['install', '--production'], {
+      cwd: tmpDir
+    });
+  }
+
+  // `npm install` may fail silently without returning a non-zero exit code, need to check further here
+  const corePath = path.join(
+    tmpDir,
+    'node_modules',
+    constants.PLATFORM_PACKAGE
+  );
+  if (!fs.existsSync(corePath)) {
+    throw new Error(
+      'Could not install dependencies properly. Error log:\n' + output.stderr
+    );
+  }
+  endSpinner();
+
+  startSpinner('Applying entry point file');
+  // TODO: should this routine for include exist elsewhere?
+  const zapierWrapperBuf = await readFile(
+    path.join(
+      tmpDir,
+      'node_modules',
+      constants.PLATFORM_PACKAGE,
+      'include',
+      'zapierwrapper.js'
+    )
+  );
+  await writeFile(`${tmpDir}/zapierwrapper.js`, zapierWrapperBuf.toString());
+  endSpinner();
+
+  startSpinner('Building app definition.json');
+  const rawDefinition = (await _appCommandZapierWrapper(tmpDir, {
+    command: 'definition'
+  })).results;
+
+  const fileWriteError = await writeFile(
+    `${tmpDir}/definition.json`,
+    prettyJSONstringify(rawDefinition)
+  );
+
+  if (fileWriteError) {
+    if (global.argOpts.debug) {
+      console.log('\nFile Write Error:');
+      console.log(fileWriteError);
+      console.log('');
+    }
+    throw new Error(
+      `Unable to write ${tmpDir}/definition.json, please check file permissions!`
+    );
+  }
+  endSpinner();
+
+  startSpinner('Validating project');
+  const validateResponse = await _appCommandZapierWrapper(tmpDir, {
+    command: 'validate'
+  });
+
+  const validationErrors = validateResponse.results;
+  if (validationErrors.length) {
+    return {
+      validationErrors: {
+        validation: validationErrors
+      }
+    };
+  }
+  // No need to mention specifically we're validating style checks as that's
+  //   implied from `zapier validate`, though it happens as a separate process
+  const styleChecksResponse = await callAPI('/style-check', {
+    skipDeployKey: true,
+    method: 'POST',
+    body: rawDefinition
+  });
+
+  const styleErrors = styleChecksResponse.errors;
+  if (!_.isEmpty(styleErrors)) {
+    if (global.argOpts.debug) {
+      console.log('\nErrors:');
+      console.log(styleErrors);
+      console.log('');
+    }
+
+    throw new Error(
+      'We hit some validation errors, try running `zapier validate` to see them!'
+    );
+  }
+  endSpinner();
+
+  startSpinner('Zipping project and dependencies');
+  await makeZip(tmpDir, wdir + path.sep + zipPath);
+  await makeSourceZip(tmpDir, wdir + path.sep + sourceZipPath);
+  endSpinner();
+
+  startSpinner('Testing build');
+  if (!isWindows()) {
+    // TODO err, what should we do on windows?
+
+    // tries to do a reproducible build at least
+    // https://content.pivotal.io/blog/barriers-to-deterministic-reproducible-zip-files
+    // https://reproducible-builds.org/tools/ or strip-nondeterminism
+    await runCommand(
+      'find',
+      ['.', '-exec', 'touch', '-t', '201601010000', '{}', '+'],
+      { cwd: tmpDir }
+    );
+  }
+  endSpinner();
+
+  startSpinner('Cleaning up temp directory');
+  await removeDir(tmpDir);
+  endSpinner();
+
+  return zipPath;
+};
+
+const buildAndUploadDir = async (zipPath, sourceZipPath, appDir) => {
   zipPath = zipPath || constants.BUILD_PATH;
   appDir = appDir || '.';
   sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
-  return checkCredentials()
-    .then(() => {
-      return build(zipPath, sourceZipPath, appDir);
-    })
-    .then(() => {
-      return upload(zipPath, sourceZipPath, appDir);
-    });
+  await checkCredentials();
+  await build(zipPath, sourceZipPath, appDir);
+  await upload(zipPath, sourceZipPath, appDir);
 };
 
 module.exports = {
