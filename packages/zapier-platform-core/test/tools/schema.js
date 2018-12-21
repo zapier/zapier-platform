@@ -134,6 +134,54 @@ describe('schema', () => {
       });
     });
 
+    it('should not make a searchOrCreate if either is hidden', () => {
+      const dummySearch = {
+        display: {
+          label: 'Find a Foo',
+          description: 'Finds a Foo.'
+        },
+        operation: {
+          perform: () => {
+            return {};
+          }
+        }
+      };
+
+      const dummyCreate = {
+        display: {
+          label: 'Create a Foo',
+          description: 'Creates a Foo.',
+          hidden: true
+        },
+        operation: {
+          perform: () => {
+            return {};
+          }
+        }
+      };
+
+      const appRaw = {
+        resources: {
+          foo: {
+            key: 'foo',
+            noun: 'Foo',
+            search: dummySearch,
+            create: dummyCreate,
+            outputFields: [
+              { key: 'id', type: 'integer' },
+              { key: 'name', type: 'string' }
+            ],
+            sample: {
+              id: 123,
+              name: 'John Doe'
+            }
+          }
+        }
+      };
+      const compiledApp = schema.compileApp(appRaw);
+      compiledApp.searchOrCreates.should.deepEqual({});
+    });
+
     it("should populate hook's performList from list method if available", () => {
       const appRaw = {
         resources: {

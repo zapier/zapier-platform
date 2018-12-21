@@ -7,6 +7,8 @@ const dataTools = require('./data');
 const schemaTools = require('./schema-tools');
 const zapierSchema = require('zapier-platform-schema');
 
+const isVisible = action => !_.get(action, ['display', 'hidden']);
+
 // Take a resource with methods like list/hook and turn it into triggers, etc.
 const convertResourceDos = appRaw => {
   let triggers = {},
@@ -51,13 +53,13 @@ const convertResourceDos = appRaw => {
       creates[create.key] = create;
     }
 
-    if (search && create) {
-      let searchOrCreate = {
+    if (search && create && isVisible(search) && isVisible(create)) {
+      const searchOrCreate = {
         //key: `${resource.key}SearchOrCreate`,
         key: `${search.key}`, // For now this is a Zapier editor limitation (has to match search)
         display: {
           label: `Find or Create ${resource.noun}`,
-          description: (search.display && search.display.description) || ''
+          description: _.get(search, ['display', 'description'], '')
         },
         search: search.key,
         create: create.key
