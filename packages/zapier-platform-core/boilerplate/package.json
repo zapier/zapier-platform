@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "zapier-platform-core": "CORE_PLATFORM_VERSION",
-    "zapier-platform-legacy-scripting-runner": "2.1.0"
+    "zapier-platform-legacy-scripting-runner": "3.0.0"
   }
 }
