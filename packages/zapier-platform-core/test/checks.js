@@ -3,6 +3,7 @@
 require('should');
 
 const checks = require('../src/checks');
+const checkOutput = require('../src/app-middlewares/after/checks');
 
 const isTrigger = require('../src/checks/is-trigger');
 const isSearch = require('../src/checks/is-search');
@@ -83,5 +84,46 @@ describe('checks', () => {
     isCreate('creates.blah.operation.perform').should.be.true();
     isCreate('resources.blah.create.operation.perform').should.be.true();
     isCreate('blah').should.be.false();
+  });
+});
+
+describe('checkOutput', () => {
+  it('should ensure trigger has id', () => {
+    const output = {
+      input: {
+        _zapier: {
+          event: {
+            method: 'triggers.key.operation.perform',
+            command: 'execute',
+            bundle: {}
+          }
+        }
+      },
+      results: [{ text: 'An item without id' }]
+    };
+
+    (() => {
+      checkOutput(output);
+    }).should.throw(/missing the "id"/);
+  });
+
+  it('should allow to skip checks', () => {
+    const output = {
+      input: {
+        _zapier: {
+          event: {
+            method: 'triggers.key.operation.perform',
+            command: 'execute',
+            bundle: {
+              skipChecks: ['triggerHasId']
+            }
+          }
+        }
+      },
+      results: [{ text: 'An item without id' }]
+    };
+
+    const newOutput = checkOutput(output);
+    newOutput.should.deepEqual(output);
   });
 });

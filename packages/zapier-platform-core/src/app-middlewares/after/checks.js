@@ -19,10 +19,15 @@ const checkOutput = output => {
   const runChecks =
     event.method && event.command === 'execute' && !_zapier.skipChecks;
 
+  const bundleSkipChecks = event.bundle.skipChecks || [];
+
   if (runChecks) {
     const rawResults = checks
       .filter(check => {
-        return check.shouldRun(event.method, event.bundle);
+        return (
+          !bundleSkipChecks.includes(check.name) &&
+          check.shouldRun(event.method, event.bundle)
+        );
       })
       .map(check => {
         return check
