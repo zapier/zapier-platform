@@ -38,6 +38,6 @@
     "eslint-plugin-zapier": "3.1.0",
     "mocha": "5.2.0",
     "should": "13.0.1",
-    "zapier-platform-core": "^7.5.0"
+    "zapier-platform-core": "^7.6.0"
   }
 }
