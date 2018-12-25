@@ -220,6 +220,15 @@ const legacyScriptingSource = `
         });
       },
 
+      movie_post_poll_no_id: function(bundle) {
+        var movies = z.JSON.parse(bundle.response.content);
+        var url = '${AUTH_JSON_SERVER_URL}/movies';
+        return movies.map(movie => {
+          delete movie.id;
+          return movie;
+        });
+      },
+
       /*
        * Create/Action
        */
