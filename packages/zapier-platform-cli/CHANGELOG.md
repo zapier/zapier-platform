@@ -1,3 +1,14 @@
+## 7.6.0
+
+### cli
+
+* (improvement) `zapier convert` command has been reworked and greatly improved. Now it generates code that is more likely to work out of the box! ([#380](https://github.com/zapier/zapier-platform-cli/pull/380))
+* (improvement) Refactor to use async/await in build command ([#382](https://github.com/zapier/zapier-platform-cli/pull/382))
+
+### core
+
+* (fix) Don't add `searchOrCreates` if either is hidden ([#134](https://github.com/zapier/zapier-platform-core/pull/134))
+
 ## 7.5.0
 
 ### cli
