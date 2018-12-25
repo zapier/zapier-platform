@@ -605,6 +605,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       ? 'object-first'
       : 'array-first';
 
+    // Legacy WB doesn't check if trigger results have id
+    bundle.skipChecks = ['triggerHasId'];
+
     return runEventCombo(
       bundle,
       key,
