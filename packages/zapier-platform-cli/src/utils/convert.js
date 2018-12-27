@@ -458,5 +458,6 @@ const convertApp = async (
 };
 
 module.exports = {
+  renderTemplate,
   convertApp
 };
