@@ -364,6 +364,15 @@ describe('request client', () => {
     });
   });
 
+  it('should allow unencrypted requests when SSL checks are disabled', () => {
+    const newInput = _.cloneDeep(input);
+    newInput._zapier.event.verifySSL = false;
+    const request = createAppRequestClient(newInput);
+    return request('http://zapier-httpbin.herokuapp.com/get').then(response => {
+      response.status.should.eql(200);
+    });
+  });
+
   it('should not omit empty params by default', () => {
     const request = createAppRequestClient(input);
     return request({
