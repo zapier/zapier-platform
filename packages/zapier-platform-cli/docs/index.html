@@ -2218,9 +2218,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>On each trigger, search, or create in the operation directive - you can provide an array of objects as fields under the <code>outputFields</code>. Output Fields are what your users would see when they select a field provided by your trigger, search or create to map it to another.</p><p>Output Fields are optional, but can be used to:</p><ul>
 <li>Define friendly labels for the returned fields. By default, we will <em>humanize</em> for example <code>my_key</code> as <em>My Key</em>.</li>
-<li>Mark certain fields as <code>important</code> to sort them higher in the list of available fields to map.</li>
 <li>Make sure that custom fields that may not be found in every live sample and - since they&apos;re custom to the connected account - cannot be defined in the static sample, can still be mapped.</li>
-</ul><p>The <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema">schema</a> for <code>outputFields</code> is shared with <code>inputFields</code> but only the <code>key</code>, <code>required</code> and <code>important</code> properties are relevant.</p><p>Custom/Dynamic Output Fields are defined in the same way as <a href="#customdynamic-fields">Custom/Dynamic Input Fields</a>.</p>
+</ul><p>The <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema">schema</a> for <code>outputFields</code> is shared with <code>inputFields</code> but only the <code>key</code> and <code>required</code> properties are relevant.</p><p>Custom/Dynamic Output Fields are defined in the same way as <a href="#customdynamic-fields">Custom/Dynamic Input Fields</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2244,7 +2243,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeOutputFields = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> response = z.request(<span class="hljs-string">&apos;http://example.com/api/v2/fields.json&apos;</span>);
   <span class="hljs-comment">// json is like [{&quot;key&quot;:&quot;field_1&quot;,&quot;label&quot;:&quot;Label for Custom Field&quot;}]</span>
-  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json);
+  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> z.JSON.parse(res.content));
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -2256,12 +2255,25 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {},
         <span class="hljs-attr">sample</span>: {
           <span class="hljs-attr">id</span>: <span class="hljs-number">1</span>,
-          <span class="hljs-attr">nested_parent</span>: {
-            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;Nested Field&apos;</span>
+          <span class="hljs-attr">title</span>: <span class="hljs-string">&apos;Pancake&apos;</span>,
+          <span class="hljs-attr">author</span>: {
+            <span class="hljs-attr">id</span>: <span class="hljs-number">1</span>,
+            <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Amy&apos;</span>
           },
-          <span class="hljs-attr">children_parent</span>: [
+          <span class="hljs-attr">ingredients</span>: [
             {
-              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;Children Field&apos;</span>
+              <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Egg&apos;</span>,
+              <span class="hljs-attr">amount</span>: <span class="hljs-number">1</span>
+            },
+            {
+              <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Milk&apos;</span>,
+              <span class="hljs-attr">amount</span>: <span class="hljs-number">60</span>,
+              <span class="hljs-attr">unit</span>: <span class="hljs-string">&apos;g&apos;</span>
+            },
+            {
+              <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Flour&apos;</span>,
+              <span class="hljs-attr">amount</span>: <span class="hljs-number">30</span>,
+              <span class="hljs-attr">unit</span>: <span class="hljs-string">&apos;g&apos;</span>
             }
           ]
         },
@@ -2269,17 +2281,38 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         outputFields: [
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;id&apos;</span>,
-            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Label for Simple Field&apos;</span>
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Recipe ID&apos;</span>,
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;integer&apos;</span>
           },
           {
-            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;nested_parent__key&apos;</span>,
-            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Label for Nested Field&apos;</span>,
-            <span class="hljs-attr">important</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Recipe Title&apos;</span>,
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>
           },
           {
-            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;children_parent[]key&apos;</span>,
-            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Label for Children Field&apos;</span>,
-            <span class="hljs-attr">important</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;author__id&apos;</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Author User ID&apos;</span>,
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;integer&apos;</span>
+          },
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;author__name&apos;</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Author Name&apos;</span>,
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>
+          },
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;ingredients[]name&apos;</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Ingredient Name&apos;</span>,
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>
+          },
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;ingredients[]amount&apos;</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Ingredient Amount&apos;</span>,
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;number&apos;</span>
+          },
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;ingredients[]unit&apos;</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Ingredient Unit&apos;</span>,
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>
           },
           recipeOutputFields <span class="hljs-comment">// provide a function inline - we&apos;ll merge the results!</span>
         ]

@@ -574,10 +574,9 @@ On each trigger, search, or create in the operation directive - you can provide 
 Output Fields are optional, but can be used to:
 
 - Define friendly labels for the returned fields. By default, we will *humanize* for example `my_key` as *My Key*.
-- Mark certain fields as `important` to sort them higher in the list of available fields to map.
 - Make sure that custom fields that may not be found in every live sample and - since they're custom to the connected account - cannot be defined in the static sample, can still be mapped.
 
-The [schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema) for `outputFields` is shared with `inputFields` but only the `key`, `required` and `important` properties are relevant.
+The [schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema) for `outputFields` is shared with `inputFields` but only the `key` and `required` properties are relevant.
 
 Custom/Dynamic Output Fields are defined in the same way as [Custom/Dynamic Input Fields](#customdynamic-fields).
 

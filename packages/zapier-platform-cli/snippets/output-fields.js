@@ -1,7 +1,7 @@
 const recipeOutputFields = (z, bundle) => {
   const response = z.request('http://example.com/api/v2/fields.json');
   // json is like [{"key":"field_1","label":"Label for Custom Field"}]
-  return response.then(res => res.json);
+  return response.then(res => z.JSON.parse(res.content));
 };
 
 const App = {
@@ -13,12 +13,25 @@ const App = {
         perform: () => {},
         sample: {
           id: 1,
-          nested_parent: {
-            key: 'Nested Field'
+          title: 'Pancake',
+          author: {
+            id: 1,
+            name: 'Amy'
           },
-          children_parent: [
+          ingredients: [
             {
-              key: 'Children Field'
+              name: 'Egg',
+              amount: 1
+            },
+            {
+              name: 'Milk',
+              amount: 60,
+              unit: 'g'
+            },
+            {
+              name: 'Flour',
+              amount: 30,
+              unit: 'g'
             }
           ]
         },
@@ -26,17 +39,38 @@ const App = {
         outputFields: [
           {
             key: 'id',
-            label: 'Label for Simple Field'
+            label: 'Recipe ID',
+            type: 'integer'
           },
           {
-            key: 'nested_parent__key',
-            label: 'Label for Nested Field',
-            important: true
+            key: 'title',
+            label: 'Recipe Title',
+            type: 'string'
           },
           {
-            key: 'children_parent[]key',
-            label: 'Label for Children Field',
-            important: true
+            key: 'author__id',
+            label: 'Author User ID',
+            type: 'integer'
+          },
+          {
+            key: 'author__name',
+            label: 'Author Name',
+            type: 'string'
+          },
+          {
+            key: 'ingredients[]name',
+            label: 'Ingredient Name',
+            type: 'string'
+          },
+          {
+            key: 'ingredients[]amount',
+            label: 'Ingredient Amount',
+            type: 'number'
+          },
+          {
+            key: 'ingredients[]unit',
+            label: 'Ingredient Unit',
+            type: 'string'
           },
           recipeOutputFields // provide a function inline - we'll merge the results!
         ]
