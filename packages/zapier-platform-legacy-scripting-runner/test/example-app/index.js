@@ -48,8 +48,19 @@ const legacyScriptingSource = `
         return data;
       },
 
-      pre_oauthv2_refresh: function(bundle) {
+      pre_oauthv2_refresh_auth_json_server: function(bundle) {
         bundle.request.url += 'token';
+        return bundle.request;
+      },
+
+      pre_oauthv2_refresh_httpbin_form: function(bundle) {
+        bundle.request.url = 'https://zapier-httpbin.herokuapp.com/post';
+        return bundle.request;
+      },
+
+      pre_oauthv2_refresh_httpbin_json: function(bundle) {
+        bundle.request.url = 'https://zapier-httpbin.herokuapp.com/post';
+        bundle.request.headers['Content-Type'] = 'application/json';
         return bundle.request;
       },
 

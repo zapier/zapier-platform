@@ -1,3 +1,5 @@
+const querystring = require('querystring');
+
 const _ = require('lodash');
 
 const renderTemplate = (templateString, context) => {
@@ -51,8 +53,25 @@ const createBeforeRequest = app => {
     return req;
   };
 
+  const getGrantType = req => {
+    const grantType = _.get(req, 'params.grant_type');
+    if (grantType) {
+      return grantType;
+    }
+
+    const contentType = req.headers['Content-Type'] || '';
+    if (contentType.includes('application/json')) {
+      try {
+        return JSON.parse(req.body).grant_type;
+      } catch (err) {
+        return null;
+      }
+    }
+    return querystring.parse(req.body).grant_type;
+  };
+
   const oauth2InHeader = (req, z, bundle) => {
-    if (bundle.authData.access_token) {
+    if (bundle.authData.access_token && getGrantType(req) !== 'refresh_token') {
       req.headers.Authorization =
         req.headers.Authorization || `Bearer ${bundle.authData.access_token}`;
     }
@@ -60,7 +79,7 @@ const createBeforeRequest = app => {
   };
 
   const oauth2InQuerystring = (req, z, bundle) => {
-    if (bundle.authData.access_token) {
+    if (bundle.authData.access_token && getGrantType(req) !== 'refresh_token') {
       req.params.access_token =
         req.params.access_token || bundle.authData.access_token;
     }
@@ -68,7 +87,7 @@ const createBeforeRequest = app => {
   };
 
   const oauth2InBoth = (req, z, bundle) => {
-    if (bundle.authData.access_token) {
+    if (bundle.authData.access_token && getGrantType(req) !== 'refresh_token') {
       req.headers.Authorization =
         req.headers.Authorization || `Bearer ${bundle.authData.access_token}`;
       req.params.access_token =

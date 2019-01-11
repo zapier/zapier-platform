@@ -184,6 +184,10 @@ describe('Integration Test', () => {
 
     it('pre_oauthv2_refresh', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'pre_oauthv2_refresh_auth_json_server',
+        'pre_oauthv2_refresh'
+      );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -196,6 +200,54 @@ describe('Integration Test', () => {
       };
       return app(input).then(output => {
         should.equal(output.results.access_token, 'a_new_token');
+      });
+    });
+
+    it('pre_oauthv2_refresh, form, access token should not involve', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'pre_oauthv2_refresh_httpbin_form',
+        'pre_oauthv2_refresh'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.refreshAccessToken'
+      );
+      input.bundle.authData = {
+        refresh_token: 'my_refresh_token',
+        access_token: 'my_access_token'
+      };
+      return app(input).then(output => {
+        const response = output.results;
+        should.not.exist(response.headers.Authorization);
+        should.equal(response.form.refresh_token, 'my_refresh_token');
+      });
+    });
+
+    it('pre_oauthv2_refresh, json, access token should not involve', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'pre_oauthv2_refresh_httpbin_json',
+        'pre_oauthv2_refresh'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.refreshAccessToken'
+      );
+      input.bundle.authData = {
+        refresh_token: 'my_refresh_token',
+        access_token: 'my_access_token'
+      };
+      return app(input).then(output => {
+        const response = output.results;
+        should.not.exist(response.headers.Authorization);
+        should.equal(response.json.refresh_token, 'my_refresh_token');
       });
     });
   });
