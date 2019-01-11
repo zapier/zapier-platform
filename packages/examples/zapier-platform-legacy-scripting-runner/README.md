@@ -18,11 +18,7 @@ Note `scripting.js` should look very familiar to you.
 
 ## Known Limitations
 
-[`zapier convert` is still being worked on to take full advantage of this package](https://github.com/zapier/zapier-platform-cli/issues/180), but apart from that, a few things are being purposefully excluded (at least for now):
-
-- `z.dehydrate` and `z.dehydrateFile` are unavailable (not _very_ common, and complex to implement).
 - `z.cookie_jar` is unavailable (uncommon).
-- `$` is _mostly unavailable_, except for `$.param()` and `$.parseXML()` (other functionality is uncommon and too big to add).
 - `bundle.zap` won't be filled out in most cases (CLI doesn't receive this information except for `performSubscribe` and `performUnsubscribe` in Hooks).
 
 ## Development

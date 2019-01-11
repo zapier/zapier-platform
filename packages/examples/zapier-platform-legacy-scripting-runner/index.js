@@ -854,65 +854,73 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   // core exposes this function as z.legacyScripting.run() method that we can
   // run legacy scripting easily like z.legacyScripting.run(bundle, 'trigger', 'KEY')
   // in CLI to simulate how WB backend runs legacy scripting.
-  const run = (bundle, typeOf, key) => {
-    const initRequest = {
+  const run = async (bundle, typeOf, key) => {
+    let request = {
       url: '',
       headers: {},
       params: {},
       body: {}
     };
-    return applyBeforeMiddleware(
-      app.beforeRequest,
-      initRequest,
-      zcli,
-      bundle
-    ).then(preparedRequest => {
-      bundle.request = preparedRequest;
 
-      switch (typeOf) {
-        case 'auth.session':
-          return runEvent({ name: 'auth.session' }, zcli, bundle);
-        case 'auth.connectionLabel':
-          return runEvent({ name: 'auth.connectionLabel' }, zcli, bundle);
-        case 'auth.oauth1.requestToken':
-          return runOAuth1GetRequestToken(bundle);
-        case 'auth.oauth1.accessToken':
-          return runOAuth1GetAccessToken(bundle);
-        case 'auth.oauth2.token':
-          return runOAuth2GetAccessToken(bundle);
-        case 'auth.oauth2.refresh':
-          return runOAuth2RefreshAccessToken(bundle);
-        case 'trigger':
-          return runTrigger(bundle, key);
-        case 'trigger.hook':
-          return runHook(bundle, key);
-        case 'trigger.hook.subscribe':
-          return runHookSubscribe(bundle, key);
-        case 'trigger.hook.unsubscribe':
-          return runHookUnsubscribe(bundle, key);
-        case 'trigger.output':
-          return runTriggerOutputFields(bundle, key);
-        case 'create':
-          return runCreate(bundle, key);
-        case 'create.input':
-          return runCreateInputFields(bundle, key);
-        case 'create.output':
-          return runCreateOutputFields(bundle, key);
-        case 'search':
-          return runSearch(bundle, key);
-        case 'search.resource':
-          return runSearchResource(bundle, key);
-        case 'search.input':
-          return runSearchInputFields(bundle, key);
-        case 'search.output':
-          return runSearchOutputFields(bundle, key);
-        case 'hydrate.method':
-          return runHydrateMethod(bundle);
-        case 'hydrate.file':
-          return runHydrateFile(bundle);
-      }
-      throw new Error(`unrecognizable typeOf '${typeOf}'`);
-    });
+    if (key) {
+      // KEY_pre_ scripting methods expect the request to have auth info, so
+      // before calling scripting, we add auth info by applying
+      // app.beforeRequest here. We only need to do it for KEY_pre_ methods -
+      // that means only when `key` exists.
+      request = await applyBeforeMiddleware(
+        app.beforeRequest,
+        request,
+        zcli,
+        bundle
+      );
+    }
+
+    bundle.request = request;
+
+    switch (typeOf) {
+      case 'auth.session':
+        return await runEvent({ name: 'auth.session' }, zcli, bundle);
+      case 'auth.connectionLabel':
+        return await runEvent({ name: 'auth.connectionLabel' }, zcli, bundle);
+      case 'auth.oauth1.requestToken':
+        return await runOAuth1GetRequestToken(bundle);
+      case 'auth.oauth1.accessToken':
+        return await runOAuth1GetAccessToken(bundle);
+      case 'auth.oauth2.token':
+        return await runOAuth2GetAccessToken(bundle);
+      case 'auth.oauth2.refresh':
+        return await runOAuth2RefreshAccessToken(bundle);
+      case 'trigger':
+        return await runTrigger(bundle, key);
+      case 'trigger.hook':
+        return await runHook(bundle, key);
+      case 'trigger.hook.subscribe':
+        return await runHookSubscribe(bundle, key);
+      case 'trigger.hook.unsubscribe':
+        return await runHookUnsubscribe(bundle, key);
+      case 'trigger.output':
+        return await runTriggerOutputFields(bundle, key);
+      case 'create':
+        return await runCreate(bundle, key);
+      case 'create.input':
+        return await runCreateInputFields(bundle, key);
+      case 'create.output':
+        return await runCreateOutputFields(bundle, key);
+      case 'search':
+        return await runSearch(bundle, key);
+      case 'search.resource':
+        return await runSearchResource(bundle, key);
+      case 'search.input':
+        return await runSearchInputFields(bundle, key);
+      case 'search.output':
+        return await runSearchOutputFields(bundle, key);
+      case 'hydrate.method':
+        return await runHydrateMethod(bundle);
+      case 'hydrate.file':
+        return await runHydrateFile(bundle);
+    }
+
+    throw new Error(`unrecognizable typeOf '${typeOf}'`);
   };
 
   // Dynamically generate http middlewares based on auth config. The generated
