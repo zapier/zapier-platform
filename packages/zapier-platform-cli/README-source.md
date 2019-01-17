@@ -1378,11 +1378,11 @@ See [the wiki](https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps) 
 
 ### Why doesn't Zapier support newer versions of Node.js?
 
-We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html) of Node (the latest of which is `LAMBDA_VERSION`. As that updates, so too will we.
+We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node (the latest of which is `LAMBDA_VERSION`. As that updates, so too will we.
 
 ### How do I manually set the Node.js version to run my app with?
 
-Update your `zapier-platform-core` dependency in `package.json`.  Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html).
+Update your `zapier-platform-core` dependency in `package.json`.  Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html).
 
 ### When to use placeholders or curlies?
 
