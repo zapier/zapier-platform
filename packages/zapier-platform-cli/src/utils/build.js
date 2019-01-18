@@ -405,12 +405,17 @@ const build = async (zipPath, sourceZipPath, wdir) => {
 
   const validationErrors = validateResponse.results;
   if (validationErrors.length) {
-    return {
-      validationErrors: {
-        validation: validationErrors
-      }
-    };
+    if (global.argOpts.debug) {
+      console.log('\nErrors:');
+      console.log(validationErrors);
+      console.log('');
+    }
+
+    throw new Error(
+      'We hit some validation errors, try running `zapier validate` to see them!'
+    );
   }
+
   // No need to mention specifically we're validating style checks as that's
   //   implied from `zapier validate`, though it happens as a separate process
   const styleChecksResponse = await callAPI('/style-check', {
