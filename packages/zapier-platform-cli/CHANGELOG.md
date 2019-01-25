@@ -1,3 +1,16 @@
+## 7.6.1
+
+### cli
+
+* (fix) `zapier push` doesn't stop on validation errors ([#388](https://github.com/zapier/zapier-platform-cli/pull/388))
+* (doc) Fix a typo in OAuth1 doc ([#391](https://github.com/zapier/zapier-platform-cli/pull/391), [#392](https://github.com/zapier/zapier-platform-cli/pull/392))
+* (doc) Update the AWS Lambda supported Node.js links ([#390](https://github.com/zapier/zapier-platform-cli/pull/390))
+* (doc) Update `outputFields` doc to reflect current reality ([#386](https://github.com/zapier/zapier-platform-cli/pull/386))
+
+### core
+
+* (fix) Can't use unencrypted `http://` protocol when SSL checks are disabled ([#135](https://github.com/zapier/zapier-platform-core/pull/135))
+
 ## 7.6.0
 
 ### cli
