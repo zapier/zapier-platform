@@ -629,7 +629,7 @@ The flow works like this:
 You are required to define:
 
   * `getRequestToken`: The API call to fetch the request token
-  * `authorzeUrl`: The authorization URL
+  * `authorizeUrl`: The authorization URL
   * `getAccessToken`: The API call to fetch the access token
 
 You'll also likely need to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables. These are the consumer key and secret in OAuth1 terminology.
