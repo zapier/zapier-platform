@@ -77,6 +77,7 @@ const legacyScriptingSource = `
         var response = z.request(bundle.request);
         var contacts = z.JSON.parse(response.content);
         contacts[0].name = 'Patched by KEY_poll!';
+        contacts[0].zapTitle = bundle.zap.name;
         return contacts;
       },
 

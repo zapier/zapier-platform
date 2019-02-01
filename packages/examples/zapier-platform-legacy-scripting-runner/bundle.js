@@ -199,6 +199,10 @@ const bundleConverter = async (bundle, event, z) => {
   // Attach to bundle so we can reuse it
   bundle._unflatInputData = unflattenObject(_.clone(bundle.inputData || {}));
 
+  const meta = _.cloneDeep(_.get(bundle, 'meta')) || {};
+  const zap = _.get(meta, 'zap') || { id: 0 };
+  delete meta.zap;
+
   const convertedBundle = {
     request: {
       method: _.get(bundle, 'request.method') || defaultMethod,
@@ -212,10 +216,8 @@ const bundleConverter = async (bundle, event, z) => {
       data: ''
     },
     auth_fields: _.get(bundle, 'authData', {}),
-    meta: _.get(bundle, 'meta', {}),
-    zap: {
-      id: _.get(bundle, ['meta', 'zap', 'id'], 0)
-    },
+    meta,
+    zap,
     url_raw: _.get(bundle, '_legacyUrl', '')
   };
 
