@@ -263,11 +263,15 @@ describe('Integration Test', () => {
         'triggers.contact_full.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
+      input.bundle.meta = {
+        zap: { name: 'My Awesome Zap' }
+      };
       return app(input).then(output => {
         output.results.length.should.greaterThan(1);
 
         const firstContact = output.results[0];
         should.equal(firstContact.name, 'Patched by KEY_poll!');
+        should.equal(firstContact.zapTitle, 'My Awesome Zap');
       });
     });
 

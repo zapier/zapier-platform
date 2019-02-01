@@ -61,9 +61,7 @@ describe('bundleConverter', () => {
         frontend: false,
         prefill: false
       },
-      zap: {
-        id: 0
-      },
+      zap: { id: 0 },
       url_raw: 'https://zapier.com',
       trigger_fields: {
         user: 'Zapier'
