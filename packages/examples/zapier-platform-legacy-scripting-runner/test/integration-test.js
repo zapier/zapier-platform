@@ -258,6 +258,11 @@ describe('Integration Test', () => {
     const app = createApp(appDefWithAuth);
 
     it('KEY_poll', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_no_id',
+        'movie_post_poll'
+      );
       const input = createTestInput(
         compiledApp,
         'triggers.contact_full.operation.perform'
@@ -272,6 +277,29 @@ describe('Integration Test', () => {
         const firstContact = output.results[0];
         should.equal(firstContact.name, 'Patched by KEY_poll!');
         should.equal(firstContact.zapTitle, 'My Awesome Zap');
+      });
+    });
+
+    it('KEY_poll, with underscore', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_underscore',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then(output => {
+        const movies = output.results;
+        movies[0].titleHas2.should.be.false();
+        movies[1].titleHas2.should.be.true();
+        movies[2].titleHas2.should.be.false();
       });
     });
 

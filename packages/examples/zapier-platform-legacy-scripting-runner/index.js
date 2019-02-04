@@ -211,7 +211,7 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
     'InvalidSessionException',
     source + '\nreturn Zap;'
   )(
-    _,
+    require('underscore'),
     require('crypto'),
     require('async'),
     require('moment-timezone'),
