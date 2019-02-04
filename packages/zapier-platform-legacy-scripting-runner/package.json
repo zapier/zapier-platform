@@ -30,6 +30,7 @@
     "lodash": "4.17.10",
     "moment-timezone": "0.5.17",
     "request": "2.87.0",
+    "underscore": "1.4.4",
     "xmldom": "0.1.27"
   },
   "devDependencies": {

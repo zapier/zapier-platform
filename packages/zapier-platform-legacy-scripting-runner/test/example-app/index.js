@@ -241,6 +241,17 @@ const legacyScriptingSource = `
         });
       },
 
+      movie_post_poll_underscore: function(bundle) {
+        var movies = z.JSON.parse(bundle.response.content);
+
+        // _.collect is an alias of _.map in underscore, lodash doesn't have it
+        return _.collect(movies, function(movie, index) {
+          // lodash doesn't have _.contains, it only has _.includes
+          movie.titleHas2 = _.contains(movie.title, '2');
+          return movie;
+        });
+      },
+
       /*
        * Create/Action
        */
