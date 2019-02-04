@@ -1,15 +1,15 @@
-import { zObject, Bundle } from "zapier-platform-core";
+import { ZObject, Bundle } from "zapier-platform-core";
 
 const _sharedBaseUrl = "https://auth-json-server.zapier.ninja";
 
-const getRecipe = async (z: zObject, bundle: Bundle) => {
+const getRecipe = async (z: ZObject, bundle: Bundle) => {
   const response = await z.request({
     url: `${_sharedBaseUrl}/recipes/${bundle.inputData.id}`
   });
   return z.JSON.parse(response.content);
 };
 
-const listRecipes = async (z: zObject, bundle: Bundle) => {
+const listRecipes = async (z: ZObject, bundle: Bundle) => {
   const response = await z.request({
     url: _sharedBaseUrl + "/recipes",
     params: {
@@ -19,7 +19,7 @@ const listRecipes = async (z: zObject, bundle: Bundle) => {
   return z.JSON.parse(response.content);
 };
 
-const createRecipe = async (z: zObject, bundle: Bundle) => {
+const createRecipe = async (z: ZObject, bundle: Bundle) => {
   const response = await z.request({
     url: _sharedBaseUrl + "/recipes",
     method: "POST",
@@ -35,7 +35,7 @@ const createRecipe = async (z: zObject, bundle: Bundle) => {
   return z.JSON.parse(response.content);
 };
 
-const searchRecipe = async (z: zObject, bundle: Bundle) => {
+const searchRecipe = async (z: ZObject, bundle: Bundle) => {
   const response = await z.request({
     url: _sharedBaseUrl + "/recipes",
     params: {

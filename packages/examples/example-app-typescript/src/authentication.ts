@@ -1,6 +1,6 @@
-import { zObject } from "zapier-platform-core";
+import { ZObject } from "zapier-platform-core";
 
-const test = async (z: zObject /*, bundle*/) => {
+const test = async (z: ZObject /*, bundle*/) => {
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
