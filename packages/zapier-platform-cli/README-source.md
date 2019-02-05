@@ -1331,7 +1331,57 @@ During the `zapier build` or `zapier push` step - we'll copy all your code to `/
 
 ```
 
-> Warning: do not use compiled libraries unless you run your build on the AWS AMI `ami-6869aa05`.
+> Warning: do not use compiled libraries unless you run your build on the AWS AMI `ami-4fffc834`, or follow the Docker instructions below.
+
+
+## Building Native Packages with Docker
+
+Unfortunately if you are developing on a macOS or Windows box you won't be able to build native libraries locally. If you try and push locally build native modules, you'll get runtime errors during usage. However, you can use Docker and Docker Compose to do this in a pinch. Make sure you have all the necessary Docker programs installed and follow along.
+
+First, create your `Dockerfile`:
+
+```Dockerfile
+FROM amazonlinux:2017.03.1.20170812
+
+RUN yum install zip findutils wget gcc44 gcc-c++ libgcc44 cmake -y
+
+RUN wget https://nodejs.org/dist/v8.10.0/node-v8.10.0.tar.gz && \
+    tar -zxvf node-v8.10.0.tar.gz && \
+    cd node-v8.10.0 && \
+    ./configure && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -rf node-v8.10.0 node-v8.10.0.tar.gz
+
+RUN npm i -g zapier-platform-cli
+
+WORKDIR /app
+```
+
+And finally, create your `docker-compose.yml` file:
+
+```yml
+version: '3.4'
+
+services:
+  pusher:
+    build: .
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules:delegated
+      - ~/.zapierrc:/root/.zapierrc
+    command: 'bash -c "npm i && zapier push"'
+    environment:
+      ZAPIER_DEPLOY_KEY: ${ZAPIER_DEPLOY_KEY}
+
+volumes:
+  node_modules:
+```
+
+> Note: watch out for your `package-lock.json` file, if it exists for local install it might incorrectly pin a native version.
+
+Now you should be able to run `docker-compose run pusher` and see the build and push successfully complete!
 
 
 ## Using Transpilers
