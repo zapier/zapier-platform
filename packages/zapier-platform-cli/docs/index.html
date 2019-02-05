@@ -361,6 +361,7 @@ a code {
 </ul>
 </li>
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
+<li><a href="#building-native-packages-with-docker">Building Native Packages with Docker</a></li>
 <li><a href="#using-transpilers">Using Transpilers</a></li>
 <li><a href="#example-apps">Example Apps</a></li>
 <li><a href="#faqs">FAQs</a><ul>
@@ -556,6 +557,7 @@ a code {
 </ul>
 </li>
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
+<li><a href="#building-native-packages-with-docker">Building Native Packages with Docker</a></li>
 <li><a href="#using-transpilers">Using Transpilers</a></li>
 <li><a href="#example-apps">Example Apps</a></li>
 <li><a href="#faqs">FAQs</a><ul>
@@ -4141,8 +4143,77 @@ zapier <span class="hljs-built_in">test</span>
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Warning: do not use compiled libraries unless you run your build on the AWS AMI <code>ami-6869aa05</code>.</p>
+<p>Warning: do not use compiled libraries unless you run your build on the AWS AMI <code>ami-4fffc834</code>, or follow the Docker instructions below.</p>
 </blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="building-native-packages-with-docker">Building Native Packages with Docker</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Unfortunately if you are developing on a macOS or Windows box you won&apos;t be able to build native libraries locally. If you try and push locally build native modules, you&apos;ll get runtime errors during usage. However, you can use Docker and Docker Compose to do this in a pinch. Make sure you have all the necessary Docker programs installed and follow along.</p><p>First, create your <code>Dockerfile</code>:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-Dockerfile"><span class="hljs-keyword">FROM</span> amazonlinux:<span class="hljs-number">2017.03</span>.<span class="hljs-number">1.20170812</span>
+
+<span class="hljs-keyword">RUN</span><span class="bash"> yum install zip findutils wget gcc44 gcc-c++ libgcc44 cmake -y
+</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> wget https://nodejs.org/dist/v8.10.0/node-v8.10.0.tar.gz &amp;&amp; \
+    tar -zxvf node-v8.10.0.tar.gz &amp;&amp; \
+    <span class="hljs-built_in">cd</span> node-v8.10.0 &amp;&amp; \
+    ./configure &amp;&amp; \
+    make &amp;&amp; \
+    make install &amp;&amp; \
+    <span class="hljs-built_in">cd</span> .. &amp;&amp; \
+    rm -rf node-v8.10.0 node-v8.10.0.tar.gz
+</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm i -g zapier-platform-cli
+</span>
+<span class="hljs-keyword">WORKDIR</span><span class="bash"> /app</span>
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>And finally, create your <code>docker-compose.yml</code> file:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-yml"><span class="hljs-attr">version:</span> <span class="hljs-string">&apos;3.4&apos;</span>
+
+<span class="hljs-attr">services:</span>
+<span class="hljs-attr">  pusher:</span>
+<span class="hljs-attr">    build:</span> <span class="hljs-string">.</span>
+<span class="hljs-attr">    volumes:</span>
+<span class="hljs-bullet">      -</span> <span class="hljs-string">.:/app</span>
+<span class="hljs-attr">      - node_modules:</span><span class="hljs-string">/app/node_modules:delegated</span>
+<span class="hljs-bullet">      -</span> <span class="hljs-string">~/.zapierrc:/root/.zapierrc</span>
+<span class="hljs-attr">    command:</span> <span class="hljs-string">&apos;bash -c &quot;npm i &amp;&amp; zapier push&quot;&apos;</span>
+<span class="hljs-attr">    environment:</span>
+<span class="hljs-attr">      ZAPIER_DEPLOY_KEY:</span> <span class="hljs-string">${ZAPIER_DEPLOY_KEY}</span>
+
+<span class="hljs-attr">volumes:</span>
+<span class="hljs-attr">  node_modules:</span>
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Note: watch out for your <code>package-lock.json</code> file, if it exists for local install it might incorrectly pin a native version.</p>
+</blockquote><p>Now you should be able to run <code>docker-compose run pusher</code> and see the build and push successfully complete!</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
