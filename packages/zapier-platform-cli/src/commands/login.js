@@ -6,6 +6,7 @@ const utils = require('../utils');
 const QUESTION_USERNAME =
   'What is your Zapier login email address? (Ctrl-C to cancel)';
 const QUESTION_PASSWORD = 'What is your Zapier login password?';
+const QUESTION_TOTP = 'What is your current 6-digit 2FA code?';
 
 const login = async (context, firstTime = true) => {
   const checks = [
@@ -46,7 +47,19 @@ const login = async (context, firstTime = true) => {
   const username = await utils.getInput(QUESTION_USERNAME);
   const password = await utils.getInput(QUESTION_PASSWORD, { secret: true });
 
-  const deployKey = (await utils.createCredentials(username, password)).key;
+  let goodResponse;
+  try {
+    goodResponse = await utils.createCredentials(username, password);
+  } catch ({ errText, json: { errors } }) {
+    if (errors[0].startsWith('missing totp_code')) {
+      const code = await utils.getInput(QUESTION_TOTP);
+      goodResponse = await utils.createCredentials(username, password, code);
+    } else {
+      throw new Error(errText);
+    }
+  }
+
+  const deployKey = goodResponse.key;
 
   await utils.writeFile(
     constants.AUTH_LOCATION,

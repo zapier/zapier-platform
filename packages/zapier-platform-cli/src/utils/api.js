@@ -118,16 +118,21 @@ const callAPI = (route, options, rawError = false) => {
 };
 
 // Given a valid username and password - create a new deploy key.
-const createCredentials = (username, password) => {
-  // TODO: 2fa in the future?
-  return callAPI('/keys', {
-    skipDeployKey: true,
-    method: 'POST',
-    body: {
-      username,
-      password
-    }
-  });
+const createCredentials = (username, password, totpCode) => {
+  return callAPI(
+    '/keys',
+    {
+      skipDeployKey: true,
+      method: 'POST',
+      body: {
+        username,
+        password,
+        totp_code: totpCode
+      }
+    },
+    // if totp is empty, we want a raw request so we can supress an error. If it's here, we want it to be "non-raw"
+    !totpCode
+  );
 };
 
 // Reads the JSON file in the app directory.
