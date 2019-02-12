@@ -70,7 +70,7 @@ module.exports = makeSchema(
       },
       helpText: {
         description:
-          'A human readable description of this value (IE: "The first part of a full name.").',
+          'A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.',
         type: 'string',
         minLength: 10,
         maxLength: 1000

@@ -641,7 +641,7 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
-`helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name.").
+`helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
 `type` | no | `string` in (`'string'`, `'text'`, `'integer'`, `'number'`, `'boolean'`, `'datetime'`, `'file'`, `'password'`, `'copy'`) | The type of this value.
 `required` | no | `boolean` | If this value is required or not.
 `placeholder` | no | `string` | An example value that is not saved.
