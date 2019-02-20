@@ -27,99 +27,85 @@ const condenseIssues = styleResult => {
   return res;
 };
 
-const validate = context => {
+const validate = async context => {
   context.line('\nValidating project locally.');
-  return Promise.resolve()
-    .then(() => utils.localAppCommand({ command: 'validate' }))
-    .then(errors => {
-      const newErrors = errors.map(error => {
-        error = _.extend({}, error);
-        error.property = error.property.replace('instance.', 'App.');
-        error.docLinks = (error.docLinks || []).join('\n');
-        return error;
-      });
-      const ifEmpty = colors.grey(
-        'No structural errors found during validation routine.'
-      );
-      utils.printData(
-        newErrors,
-        [
-          ['Property', 'property'],
-          ['Message', 'message'],
-          ['Links', 'docLinks']
-        ],
-        ifEmpty,
-        true
-      );
+  const errors = await utils.localAppCommand({ command: 'validate' });
 
-      if (newErrors.length) {
-        context.line(
-          'Your app is structurally invalid. Address concerns and run this command again.'
-        );
-        process.exitCode = 1;
-      } else {
-        context.line('This project is structurally sound!');
-      }
-    })
-    .then(() => {
-      if (global.argOpts['without-style']) {
-        return Promise.resolve([]);
-      } else if (process.exitCode === 1) {
-        // There were schema errors with the app, meaning Zapier may not be able to parse it
-        context.line(
-          colors.grey(
-            '\nSkipping app style check because app did not validate.'
-          )
-        );
-        return Promise.resolve([]);
-      } else {
-        context.line('\nChecking app style.');
-        return utils
-          .localAppCommand({ command: 'definition' })
-          .then(rawDefinition => {
-            return utils.callAPI('/style-check', {
-              skipDeployKey: true,
-              method: 'POST',
-              body: rawDefinition
-            });
-          });
-      }
-    })
-    .then(styleResult => {
-      if (global.argOpts['without-style'] || process.exitCode === 1) {
-        return;
-      }
+  const newErrors = errors.map(error => {
+    error = _.extend({}, error);
+    error.property = error.property.replace('instance.', 'App.');
+    error.docLinks = (error.docLinks || []).join('\n');
+    return error;
+  });
+  let ifEmpty = colors.grey(
+    'No structural errors found during validation routine.'
+  );
+  utils.printData(
+    newErrors,
+    [['Property', 'property'], ['Message', 'message'], ['Links', 'docLinks']],
+    ifEmpty,
+    true
+  );
 
-      // process errors
-      let styleErrors = condenseIssues(styleResult);
-      const ifEmpty = colors.grey(
-        'No style errors found during validation routine.'
+  if (newErrors.length) {
+    context.line(
+      'Your app is structurally invalid. Address concerns and run this command again.'
+    );
+    process.exitCode = 1;
+  } else {
+    context.line('This project is structurally sound!');
+  }
+
+  let styleResult = [];
+  // if either of these are true, we don't want to check style
+  if (global.argOpts['without-style'] || process.exitCode === 1) {
+    if (process.exitCode === 1) {
+      // There were schema errors with the app, meaning Zapier may not be able to parse it
+      context.line(
+        colors.grey('\nSkipping app style check because app did not validate.')
       );
-
-      utils.printData(
-        styleErrors,
-        [
-          ['Category', 'category'],
-          ['Method', 'method'],
-          ['Description', 'description'],
-          ['Link', 'link']
-        ],
-        ifEmpty,
-        true
-      );
-
-      // exit code 1 only for errors and not warnings
-      if (styleErrors.filter(error => error.category === 'errors').length) {
-        process.exitCode = 1;
-        context.line(
-          'Errors will prevent promotions, warnings are things to improve on.\n'
-        );
-      } else {
-        context.line('Your app looks great!\n');
-      }
-      return;
+    }
+    return;
+  } else {
+    context.line('\nChecking app style.');
+    const rawDefinition = await utils.localAppCommand({
+      command: 'definition'
     });
+
+    styleResult = await utils.callAPI('/style-check', {
+      skipDeployKey: true,
+      method: 'POST',
+      body: rawDefinition
+    });
+  }
+
+  // process errors
+  let styleErrors = condenseIssues(styleResult);
+  ifEmpty = colors.grey('No style errors found during validation routine.');
+
+  utils.printData(
+    styleErrors,
+    [
+      ['Category', 'category'],
+      ['Method', 'method'],
+      ['Description', 'description'],
+      ['Link', 'link']
+    ],
+    ifEmpty,
+    true
+  );
+
+  // exit code 1 only for errors and not warnings
+  if (styleErrors.filter(error => error.category === 'errors').length) {
+    process.exitCode = 1;
+    context.line(
+      'Errors will prevent promotions, warnings are things to improve on.\n'
+    );
+  } else {
+    context.line('Your app looks great!\n');
+  }
 };
+
 validate.argsSpec = [];
 validate.argOptsSpec = {
   'without-style': {
