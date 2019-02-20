@@ -58,6 +58,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
     headers: { [x: string]: string };
     content: { [x: string]: string };
   }>;
+  subscribeData?: { id: string };
   targetUrl?: string;
 }
 
@@ -67,20 +68,24 @@ declare class RefreshAuthError extends Error {}
 
 // copied http stuff from external typings
 export interface HttpRequestOptions {
-  url?: string;
-  method?: HttpMethod;
+  agent?: Agent;
   body?: string | Buffer | ReadableStream | object;
+  compress?: boolean;
+  follow?: number;
+  form?: object;
   headers?: { [name: string]: string };
   json?: object | any[];
+  method?: HttpMethod;
   params?: object;
-  form?: object;
   raw?: boolean;
   redirect?: 'manual' | 'error' | 'follow';
-  follow?: number;
-  compress?: boolean;
-  agent?: Agent;
-  timeout?: number;
+  removeMissingValuesFrom: {
+    params: boolean,
+    body: boolean,
+  };
   size?: number;
+  timeout?: number;
+  url?: string;
 }
 
 interface BaseHttpResponse {

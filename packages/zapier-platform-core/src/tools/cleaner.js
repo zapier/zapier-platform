@@ -30,27 +30,25 @@ const recurseCleanFuncs = (obj, path) => {
 };
 
 // Recurse a nested object replace all instances of keys->vals in the bank.
-const recurseReplaceBank = (obj, bank) => {
-  bank = bank || {};
+const recurseReplaceBank = (obj, bank = {}) => {
   const replacer = out => {
     if (typeof out !== 'string') {
       return out;
     }
     Object.keys(bank).forEach(key => {
+      // Escape characters (ex. {{foo}} => \\{\\{foo\\}\\} )
       const s = String(key).replace(/[-[\]/{}()\\*+?.^$|]/g, '\\$&');
       const re = new RegExp(s, 'g');
       out = out.replace(re, bank[key]);
     });
+
     return out;
   };
   return recurseReplace(obj, replacer);
 };
 
 // Takes a raw app and bundle and composes a bank of {{key}}->val
-const createBundleBank = (appRaw, event) => {
-  appRaw = appRaw || {};
-  event = event || {};
-
+const createBundleBank = (appRaw, event = {}) => {
   const bundle = event.bundle || {};
   const bank = {
     bundle: _.merge(

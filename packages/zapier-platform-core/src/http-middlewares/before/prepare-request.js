@@ -101,8 +101,12 @@ const prepareRequest = function(req) {
 
   req = _.defaults(req, {
     merge: true,
+    // TODO: client will eventually send `removeMissingValuesFrom` rather than `omitEmptyParams`
+    removeMissingValuesFrom: {
+      params: !!req.omitEmptyParams,
+      body: false
+    },
     replace: true, // always replace curlies
-    prune: false, // TODO: do we prune empty {{missing}} vars?,
     _addContext: () => {}
   });
 

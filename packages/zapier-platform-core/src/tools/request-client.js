@@ -13,7 +13,7 @@ const request = options => {
     'body',
     'merge', // internal
     'replace', // internal
-    'prune', // ready for the future
+    'removeMissingValuesFrom', // internal
     'redirect',
     'follow',
     'compress',
