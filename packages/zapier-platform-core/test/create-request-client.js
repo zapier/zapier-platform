@@ -491,4 +491,47 @@ describe('request client', () => {
       });
     });
   });
+
+  describe('shorthand hook subscriptions', () => {
+    it('should resolve bundle tokens in performSubscribe', () => {
+      const targetUrl = 'https://zapier.com/hooks';
+      const event = {
+        bundle: { targetUrl }
+      };
+      const subscribeInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(subscribeInput);
+      return request({
+        url: 'http://zapier-httpbin.herokuapp.com/post',
+        method: 'POST',
+        body: {
+          hookUrl: '{{bundle.targetUrl}}'
+        }
+      }).then(response => {
+        const { hookUrl } = JSON.parse(response.json.data);
+
+        hookUrl.should.eql(targetUrl);
+      });
+    });
+
+    it('should resolve bundle tokens in performUnubscribe', () => {
+      const subscribeData = { id: 123 };
+      const event = {
+        bundle: { subscribeData }
+      };
+      const subscribeInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(subscribeInput);
+      return request({
+        url: 'http://zapier-httpbin.herokuapp.com/delete',
+        method: 'DELETE',
+        params: {
+          id: '{{bundle.subscribeData.id}}'
+        }
+      }).then(response => {
+        const { url } = JSON.parse(response.content);
+
+        response.json.args.id.should.eql('123');
+        url.should.eql('http://zapier-httpbin.herokuapp.com/delete?id=123');
+      });
+    });
+  });
 });

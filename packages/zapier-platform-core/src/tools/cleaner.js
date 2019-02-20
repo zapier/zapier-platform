@@ -1,10 +1,18 @@
 'use strict';
 
 const _ = require('lodash');
+const { defaults, pick, pipe } = require('lodash/fp');
 
 const isPlainObj = require('./data').isPlainObj;
 const recurseReplace = require('./data').recurseReplace;
 const flattenPaths = require('./data').flattenPaths;
+
+const DEFAULT_BUNDLE = {
+  authData: {},
+  inputData: {},
+  targetUrl: '',
+  subscribeData: {}
+};
 
 const recurseCleanFuncs = (obj, path) => {
   // mainly turn functions into $func${arity}${arguments}$
@@ -47,15 +55,15 @@ const recurseReplaceBank = (obj, bank = {}) => {
   return recurseReplace(obj, replacer);
 };
 
+const finalizeBundle = pipe(
+  pick(Object.keys(DEFAULT_BUNDLE)),
+  defaults(DEFAULT_BUNDLE)
+);
+
 // Takes a raw app and bundle and composes a bank of {{key}}->val
 const createBundleBank = (appRaw, event = {}) => {
-  const bundle = event.bundle || {};
   const bank = {
-    bundle: _.merge(
-      {},
-      { authData: bundle.authData || {} },
-      { inputData: bundle.inputData || {} }
-    ),
+    bundle: finalizeBundle(event.bundle),
     process: {
       env: _.extend({}, process.env || {})
     }
