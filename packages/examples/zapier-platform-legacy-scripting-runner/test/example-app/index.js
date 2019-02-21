@@ -284,6 +284,19 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_post_write_sloppy_mode: function(bundle) {
+        // Would throw a ReferenceError in strict mode
+        data = z.JSON.parse(bundle.response.content);
+
+        // Octal literals are not allowed in strct mode
+        data.year = 03742;  // Octal representation for 2018
+
+        // Strict mode forbids setting props on primitive values
+        (14).sailing = 'home';
+
+        return data;
+      },
+
       // To be replaced with 'movie_write' at runtime
       movie_write_sync: function(bundle) {
         bundle.request.url += 's';
