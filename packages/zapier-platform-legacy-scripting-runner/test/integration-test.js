@@ -1013,6 +1013,60 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_post_write, sloppy mode', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_post_write_sloppy_mode',
+        'movie_post_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'First Man',
+        genre: 'Drama'
+      };
+      return app(input).then(output => {
+        const movie = output.results;
+        should.exist(movie.id);
+        should.not.exist(movie.title);
+        should.equal(movie.genre, 'Drama');
+        should.equal(movie.year, 2018);
+      });
+    });
+
+    it('KEY_post_write, strict mode', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+      appDefWithAuth.legacy.scriptingSource =
+        'use strict;\n' + appDefWithAuth.legacy.scriptingSource;
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_post_write_sloppy_mode',
+        'movie_post_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'First Man',
+        genre: 'Drama'
+      };
+      return app(input).should.be.rejectedWith(/Unexpected identifier/);
+    });
+
     it('KEY_pre_write & KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
