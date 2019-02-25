@@ -3,9 +3,12 @@
 const _ = require('lodash');
 const { defaults, pick, pipe } = require('lodash/fp');
 
-const isPlainObj = require('./data').isPlainObj;
-const recurseReplace = require('./data').recurseReplace;
-const flattenPaths = require('./data').flattenPaths;
+const {
+  flattenPaths,
+  getObjectType,
+  isPlainObj,
+  recurseReplace
+} = require('./data');
 
 const DEFAULT_BUNDLE = {
   authData: {},
@@ -43,11 +46,35 @@ const recurseReplaceBank = (obj, bank = {}) => {
     if (typeof out !== 'string') {
       return out;
     }
+
     Object.keys(bank).forEach(key => {
       // Escape characters (ex. {{foo}} => \\{\\{foo\\}\\} )
-      const s = String(key).replace(/[-[\]/{}()\\*+?.^$|]/g, '\\$&');
-      const re = new RegExp(s, 'g');
-      out = out.replace(re, bank[key]);
+      const escapedKey = key.replace(/[-[\]/{}()\\*+?.^$|]/g, '\\$&');
+      const matchesKey = new RegExp(escapedKey, 'g');
+
+      if (!matchesKey.test(out)) {
+        return;
+      }
+
+      const matchesCurlies = /({{.*?}})/;
+      const valueParts = out.split(matchesCurlies).filter(Boolean);
+      const replacementValue = bank[key];
+      const isPartOfString = !matchesCurlies.test(out) || valueParts.length > 1;
+      const shouldThrowTypeError =
+        isPartOfString &&
+        (Array.isArray(replacementValue) || _.isPlainObject(replacementValue));
+
+      if (shouldThrowTypeError) {
+        throw new TypeError(
+          `Cannot reliably interpolate objects or arrays into a string. We received an ${getObjectType(
+            replacementValue
+          )}:\n"${replacementValue}"`
+        );
+      }
+
+      out = isPartOfString
+        ? valueParts.join('').replace(matchesKey, replacementValue)
+        : replacementValue;
     });
 
     return out;

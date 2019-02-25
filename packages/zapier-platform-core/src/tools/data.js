@@ -14,6 +14,18 @@ const isPlainObj = o => {
 
 const comparison = (obj, needle) => obj === needle;
 
+const getObjectType = obj => {
+  if (_.isPlainObject(obj)) {
+    return 'Object';
+  }
+
+  if (Array.isArray(obj)) {
+    return 'Array';
+  }
+
+  return _.capitalize(typeof obj);
+};
+
 // Returns a path for the deeply nested haystack where
 // you could find the needle. If the needle is a plain
 // object we try _.isEqual (which could be slow!).
@@ -130,8 +142,7 @@ const recurseExtract = (obj, matcher) => {
 const _IGNORE = {};
 
 // Flatten a nested object.
-const flattenPaths = (data, sep) => {
-  sep = sep || '.';
+const flattenPaths = (data, sep = '.') => {
   const out = {};
   const recurse = (obj, prop) => {
     prop = prop || '';
@@ -179,6 +190,7 @@ module.exports = {
   findMapDeep,
   flattenPaths,
   genId,
+  getObjectType,
   isPlainObj,
   jsonCopy,
   memoizedFindMapDeep,

@@ -534,4 +534,117 @@ describe('request client', () => {
       });
     });
   });
+
+  describe('resolves body and header curlies', () => {
+    it('should keep valid data types', () => {
+      const event = {
+        bundle: {
+          inputData: {
+            number: 123,
+            bool: true,
+            float: 123.456,
+            arr: [1, 2, 3]
+          }
+        }
+      };
+      const bodyInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(bodyInput);
+      return request({
+        url: 'http://zapier-httpbin.herokuapp.com/post',
+        method: 'POST',
+        body: {
+          number: '{{bundle.inputData.number}}',
+          bool: '{{bundle.inputData.bool}}',
+          float: '{{bundle.inputData.float}}',
+          arr: '{{bundle.inputData.arr}}'
+        }
+      }).then(response => {
+        const { json } = response.json;
+
+        json.number.should.eql(123);
+        json.bool.should.eql(true);
+        json.float.should.eql(123.456);
+        json.arr.should.eql([1, 2, 3]);
+      });
+    });
+
+    it('should interpolate strings', () => {
+      const event = {
+        bundle: {
+          inputData: {
+            resourceId: 123
+          },
+          authData: {
+            access_token: 'Let me in'
+          }
+        }
+      };
+      const bodyInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(bodyInput);
+      return request({
+        url: 'http://zapier-httpbin.herokuapp.com/post',
+        method: 'POST',
+        body: {
+          message: 'We just got #{{bundle.inputData.resourceId}}'
+        },
+        headers: {
+          Authorization: 'Bearer {{bundle.authData.access_token}}'
+        }
+      }).then(response => {
+        const { json, headers } = response.json;
+
+        json.message.should.eql('We just got #123');
+        headers.Authorization.should.eql('Bearer Let me in');
+      });
+    });
+
+    it('should throw when interpolating a string with an array', () => {
+      const event = {
+        bundle: {
+          inputData: {
+            badData: [1, 2, 3]
+          }
+        }
+      };
+      const bodyInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(bodyInput);
+      return request({
+        url: 'http://zapier-httpbin.herokuapp.com/post',
+        method: 'POST',
+        body: {
+          message: 'No arrays, thank you: {{bundle.inputData.badData}}'
+        }
+      }).should.be.rejectedWith(
+        'Cannot reliably interpolate objects or arrays into a string. We received an Array:\n"1,2,3"'
+      );
+    });
+
+    it('should send flatten objects', () => {
+      const event = {
+        bundle: {
+          inputData: {
+            address: {
+              street: '123 Zapier Way',
+              city: 'El Mundo'
+            }
+          }
+        }
+      };
+      const bodyInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(bodyInput);
+      return request({
+        url: 'http://zapier-httpbin.herokuapp.com/post',
+        method: 'POST',
+        body: {
+          streetAddress: '{{bundle.inputData.address.street}}',
+          city: '{{bundle.inputData.address.city}}'
+        }
+      }).then(response => {
+        const { json } = response.json;
+
+        json.streetAddress.should.eql('123 Zapier Way');
+        json.city.should.eql('El Mundo');
+      });
+    });
+  });
 });
