@@ -1400,7 +1400,7 @@ zapier convert 1234 my-app
 </blockquote><p>The flow works like this:</p><ol>
 <li>Zapier makes a call to your API requesting a &quot;request token&quot; (also known as &quot;temporary credentials&quot;)</li>
 <li>Zapier sends the user to the authorization URL, defined by your app, along with the request token</li>
-<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png" alt=""></li>
+<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png" alt></li>
 <li>Zapier makes a call on our backend to your API to exchange the request token for an &quot;access token&quot; (also known as &quot;long-lived credentials&quot;)</li>
 <li>Zapier remembers the access token and makes calls on behalf of the user</li>
 </ol><p>You are required to define:</p><ul>
@@ -1535,7 +1535,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 <p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-oauth2">https://github.com/zapier/zapier-platform-example-app-oauth2</a> for a working example app for OAuth2.</p>
 </blockquote><p>It looks like this:</p><ol>
 <li>Zapier sends the user to the authorization URL defined by your app</li>
-<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png" alt=""></li>
+<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png" alt></li>
 <li>Zapier makes a call on our backend to your API to exchange the <code>code</code> for an <code>access_token</code></li>
 <li>Zapier remembers the <code>access_token</code> and makes calls on behalf of the user</li>
 <li>(Optionally) Zapier can refresh the token if it expires</li>
@@ -4167,8 +4167,8 @@ zapier <span class="hljs-built_in">test</span>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-Dockerfile"><span class="hljs-keyword">FROM</span> amazonlinux:<span class="hljs-number">2017.03</span>.<span class="hljs-number">1.20170812</span>
 
-<span class="hljs-keyword">RUN</span><span class="bash"> yum install zip findutils wget gcc44 gcc-c++ libgcc44 cmake -y
-</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> yum install zip findutils wget gcc44 gcc-c++ libgcc44 cmake -y</span>
+
 <span class="hljs-keyword">RUN</span><span class="bash"> wget https://nodejs.org/dist/v8.10.0/node-v8.10.0.tar.gz &amp;&amp; \
     tar -zxvf node-v8.10.0.tar.gz &amp;&amp; \
     <span class="hljs-built_in">cd</span> node-v8.10.0 &amp;&amp; \
@@ -4176,10 +4176,10 @@ zapier <span class="hljs-built_in">test</span>
     make &amp;&amp; \
     make install &amp;&amp; \
     <span class="hljs-built_in">cd</span> .. &amp;&amp; \
-    rm -rf node-v8.10.0 node-v8.10.0.tar.gz
-</span>
-<span class="hljs-keyword">RUN</span><span class="bash"> npm i -g zapier-platform-cli
-</span>
+    rm -rf node-v8.10.0 node-v8.10.0.tar.gz</span>
+
+<span class="hljs-keyword">RUN</span><span class="bash"> npm i -g zapier-platform-cli</span>
+
 <span class="hljs-keyword">WORKDIR</span><span class="bash"> /app</span>
 </code></pre>
     </div>
@@ -4526,12 +4526,12 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To understand search-powered fields, we have to have a good understanding of dynamic dropdowns.</p><p>When users are selecting specific resources (for instance, a Google Sheet), it&apos;s important they&apos;re able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via <code>id</code> instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a <strong>dynamic dropdown</strong>. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app.  It provides a list of ids with labels that show the item&apos;s name:</p><p><img src="https://cdn.zapier.com/storage/photos/fb56bdc2aab91504be0e51800bec4d64.png" alt=""></p><p>The field&apos;s value reaches your app as an id. You define this connection with the <code>dynamic</code> property, which is a string: <code>trigger_key.id_key.label_key</code>. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.</p><p><strong>Search fields</strong> take this connection a step further. Rather than set the spreadsheet id at setup, the user could precede the action with a search field to make the id dynamic. For instance, let&apos;s say you have a different spreadsheet for every day of the week. You could build the following zap:</p><ol>
+      <p>To understand search-powered fields, we have to have a good understanding of dynamic dropdowns.</p><p>When users are selecting specific resources (for instance, a Google Sheet), it&apos;s important they&apos;re able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via <code>id</code> instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a <strong>dynamic dropdown</strong>. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app.  It provides a list of ids with labels that show the item&apos;s name:</p><p><img src="https://cdn.zapier.com/storage/photos/fb56bdc2aab91504be0e51800bec4d64.png" alt></p><p>The field&apos;s value reaches your app as an id. You define this connection with the <code>dynamic</code> property, which is a string: <code>trigger_key.id_key.label_key</code>. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.</p><p><strong>Search fields</strong> take this connection a step further. Rather than set the spreadsheet id at setup, the user could precede the action with a search field to make the id dynamic. For instance, let&apos;s say you have a different spreadsheet for every day of the week. You could build the following zap:</p><ol>
 <li>Some Trigger</li>
 <li>Calculate what day of the week it is today (Code)</li>
 <li>Find the spreadsheet that matches the day from Step 2</li>
 <li>Update the spreadsheet (with the id from step 3) with some data</li>
-</ol><p>If the connection between steps 3 and 4 is a common one, you can indicate that in your field by specifying <code>search</code> as a <code>search_key.id_key</code>. When paired <strong>with a dynamic dropdown</strong>, this will add a button to the editor that will add the search step to the user&apos;s Zap and map the id field correctly.</p><p><img src="https://cdn.zapier.com/storage/photos/d263fd3a56cf8108cb89195163e7c9aa.png" alt=""></p><p>This is paired most often with &quot;update&quot; actions, where a required parameter will be a resource id.</p><p><a id="paging"></a></p>
+</ol><p>If the connection between steps 3 and 4 is a common one, you can indicate that in your field by specifying <code>search</code> as a <code>search_key.id_key</code>. When paired <strong>with a dynamic dropdown</strong>, this will add a button to the editor that will add the search step to the user&apos;s Zap and map the id field correctly.</p><p><img src="https://cdn.zapier.com/storage/photos/d263fd3a56cf8108cb89195163e7c9aa.png" alt></p><p>This is paired most often with &quot;update&quot; actions, where a required parameter will be a resource id.</p><p><a id="paging"></a></p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

@@ -399,9 +399,9 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Manage the collaborators on your project. Can optionally --remove.</p>
+<p>Manage the admins on your project. Can optionally --remove.</p>
 </blockquote><p>  <strong>Usage:</strong> <code>zapier collaborate [user@example.com]</code></p><p>Give any user registered on Zapier the ability to collaborate on your app. Commonly, this is useful for teammates, contractors, or other developers who might want to make changes on your app. Only admin access is supported. If you&apos;d only like to provide read-only or testing access, try <code>zapier invite</code>.</p><p><strong>Arguments</strong></p><ul>
-<li><em>none</em> -- print all collaborators</li>
+<li><em>none</em> -- print all admins</li>
 <li><code>email [user@example.com]</code> -- <em>optional</em>, which user to add/remove</li>
 <li><code>--remove</code> -- <em>optional</em>, elect to remove this user</li>
 <li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
@@ -411,7 +411,7 @@ a code {
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">$ zapier collaborate
-<span class="hljs-comment"># The collaborators on your app &quot;Example&quot; listed below.</span>
+<span class="hljs-comment"># The admins on your app &quot;Example&quot; listed below.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
 <span class="hljs-comment"># &#x2502; Email            &#x2502; Role  &#x2502; Status   &#x2502;</span>
@@ -420,18 +420,18 @@ a code {
 <span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
 
 $ zapier collaborate user@example.com
-<span class="hljs-comment"># Preparing to add collaborator user@example.com to your app &quot;Example&quot;.</span>
+<span class="hljs-comment"># Preparing to add admin user@example.com to your app &quot;Example&quot;.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment">#   Adding user@example.com - done!</span>
 <span class="hljs-comment">#</span>
-<span class="hljs-comment"># Collaborators updated! Try viewing them with `zapier collaborate`.</span>
+<span class="hljs-comment"># Admins updated! Try viewing them with `zapier collaborate`.</span>
 
 $ zapier collaborate user@example.com --remove
-<span class="hljs-comment"># Preparing to remove collaborator user@example.com from your app &quot;Example&quot;.</span>
+<span class="hljs-comment"># Preparing to remove admin user@example.com from your app &quot;Example&quot;.</span>
 <span class="hljs-comment">#</span>
 <span class="hljs-comment">#   Removing user@example.com - done!</span>
 <span class="hljs-comment">#</span>
-<span class="hljs-comment"># Collaborators updated! Try viewing them with `zapier collaborate`.</span>
+<span class="hljs-comment"># Admins updated! Try viewing them with `zapier collaborate`.</span>
 </code></pre>
     </div>
   </div>
@@ -676,7 +676,7 @@ $ zapier <span class="hljs-built_in">help</span>
 <span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
 <span class="hljs-comment"># &#x2502; apps        &#x2502; zapier apps                           &#x2502; Lists all the apps you can access.                                         &#x2502;</span>
 <span class="hljs-comment"># &#x2502; build       &#x2502; zapier build                          &#x2502; Builds a uploadable zip from the current directory.                        &#x2502;</span>
-<span class="hljs-comment"># &#x2502; collaborate &#x2502; zapier collaborate [user@example.com] &#x2502; Manage the collaborators on your project. Can optionally --remove.         &#x2502;</span>
+<span class="hljs-comment"># &#x2502; collaborate &#x2502; zapier collaborate [user@example.com] &#x2502; Manage the admins on your project. Can optionally --remove.         &#x2502;</span>
 <span class="hljs-comment"># &#x2502; push        &#x2502; zapier push                           &#x2502; Build and upload the current app - does not promote.                       &#x2502;</span>
 <span class="hljs-comment"># &#x2502; deprecate   &#x2502; zapier deprecate 1.0.0 2017-01-20     &#x2502; Mark a non-production version of your app as deprecated by a certain date. &#x2502;</span>
 <span class="hljs-comment"># &#x2502; describe    &#x2502; zapier describe                       &#x2502; Describes the current app.                                                 &#x2502;</span>
@@ -715,7 +715,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Prints all edit history for your app.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier history</code></p><p>Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, collaborator and invitee changes as well as who made the change and when.</p><p><strong>Arguments</strong></p><ul>
+</blockquote><p>  <strong>Usage:</strong> <code>zapier history</code></p><p>Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins and invitee changes as well as who made the change and when.</p><p><strong>Arguments</strong></p><ul>
 <li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
 <li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
@@ -728,7 +728,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
 <span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
 <span class="hljs-comment"># &#x2502; What                     &#x2502; Message           &#x2502; Who              &#x2502; Timestamp           &#x2502;</span>
 <span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
-<span class="hljs-comment"># &#x2502; collaborator added       &#x2502; other@example.com &#x2502; user@example.com &#x2502; 2016-01-10T16:12:33 &#x2502;</span>
+<span class="hljs-comment"># &#x2502; admin added              &#x2502; other@example.com &#x2502; user@example.com &#x2502; 2016-01-10T16:12:33 &#x2502;</span>
 <span class="hljs-comment"># &#x2502; environment variable set &#x2502; CLIENT_SECRET     &#x2502; user@example.com &#x2502; 2016-01-01T22:51:01 &#x2502;</span>
 <span class="hljs-comment"># &#x2502; version added            &#x2502; 1.2.52            &#x2502; user@example.com &#x2502; 2016-01-01T22:19:36 &#x2502;</span>
 <span class="hljs-comment"># &#x2502; app created              &#x2502; initial creation  &#x2502; user@example.com &#x2502; 2016-01-01T22:19:28 &#x2502;</span>

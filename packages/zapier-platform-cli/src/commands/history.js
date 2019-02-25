@@ -16,7 +16,7 @@ history.argOptsSpec = {};
 history.help = 'Prints all edit history for your app.';
 history.example = 'zapier history';
 history.docs = `
-Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, collaborator and invitee changes as well as who made the change and when.
+Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins and invitee changes as well as who made the change and when.
 
 **Arguments**
 
@@ -31,7 +31,7 @@ $ zapier history
 # ┌──────────────────────────┬───────────────────┬──────────────────┬─────────────────────┐
 # │ What                     │ Message           │ Who              │ Timestamp           │
 # ├──────────────────────────┼───────────────────┼──────────────────┼─────────────────────┤
-# │ collaborator added       │ other@example.com │ user@example.com │ 2016-01-10T16:12:33 │
+# │ admin added              │ other@example.com │ user@example.com │ 2016-01-10T16:12:33 │
 # │ environment variable set │ CLIENT_SECRET     │ user@example.com │ 2016-01-01T22:51:01 │
 # │ version added            │ 1.2.52            │ user@example.com │ 2016-01-01T22:19:36 │
 # │ app created              │ initial creation  │ user@example.com │ 2016-01-01T22:19:28 │

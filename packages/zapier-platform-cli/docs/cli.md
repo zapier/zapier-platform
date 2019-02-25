@@ -86,7 +86,7 @@ $ zapier build
 
 ## collaborate
 
-  > Manage the collaborators on your project. Can optionally --remove.
+  > Manage the admins on your project. Can optionally --remove.
 
   **Usage:** `zapier collaborate [user@example.com]`
 
@@ -95,7 +95,7 @@ Give any user registered on Zapier the ability to collaborate on your app. Commo
 
 **Arguments**
 
-* _none_ -- print all collaborators
+* _none_ -- print all admins
 * `email [user@example.com]` -- _optional_, which user to add/remove
 * `--remove` -- _optional_, elect to remove this user
 * `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
@@ -104,7 +104,7 @@ Give any user registered on Zapier the ability to collaborate on your app. Commo
 
 ```bash
 $ zapier collaborate
-# The collaborators on your app "Example" listed below.
+# The admins on your app "Example" listed below.
 #
 # ┌──────────────────┬───────┬──────────┐
 # │ Email            │ Role  │ Status   │
@@ -113,18 +113,18 @@ $ zapier collaborate
 # └──────────────────┴───────┴──────────┘
 
 $ zapier collaborate user@example.com
-# Preparing to add collaborator user@example.com to your app "Example".
+# Preparing to add admin user@example.com to your app "Example".
 #
 #   Adding user@example.com - done!
 #
-# Collaborators updated! Try viewing them with `zapier collaborate`.
+# Admins updated! Try viewing them with `zapier collaborate`.
 
 $ zapier collaborate user@example.com --remove
-# Preparing to remove collaborator user@example.com from your app "Example".
+# Preparing to remove admin user@example.com from your app "Example".
 #
 #   Removing user@example.com - done!
 #
-# Collaborators updated! Try viewing them with `zapier collaborate`.
+# Admins updated! Try viewing them with `zapier collaborate`.
 ```
 
 
@@ -356,7 +356,7 @@ $ zapier help
 # ├─────────────┼───────────────────────────────────────┼────────────────────────────────────────────────────────────────────────────┤
 # │ apps        │ zapier apps                           │ Lists all the apps you can access.                                         │
 # │ build       │ zapier build                          │ Builds a uploadable zip from the current directory.                        │
-# │ collaborate │ zapier collaborate [user@example.com] │ Manage the collaborators on your project. Can optionally --remove.         │
+# │ collaborate │ zapier collaborate [user@example.com] │ Manage the admins on your project. Can optionally --remove.         │
 # │ push        │ zapier push                           │ Build and upload the current app - does not promote.                       │
 # │ deprecate   │ zapier deprecate 1.0.0 2017-01-20     │ Mark a non-production version of your app as deprecated by a certain date. │
 # │ describe    │ zapier describe                       │ Describes the current app.                                                 │
@@ -388,7 +388,7 @@ $ │ logout      │ zapier logout                         │ Deactivates all 
   **Usage:** `zapier history`
 
   
-Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, collaborator and invitee changes as well as who made the change and when.
+Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins and invitee changes as well as who made the change and when.
 
 **Arguments**
 
@@ -405,7 +405,7 @@ $ zapier history
 # ┌──────────────────────────┬───────────────────┬──────────────────┬─────────────────────┐
 # │ What                     │ Message           │ Who              │ Timestamp           │
 # ├──────────────────────────┼───────────────────┼──────────────────┼─────────────────────┤
-# │ collaborator added       │ other@example.com │ user@example.com │ 2016-01-10T16:12:33 │
+# │ admin added              │ other@example.com │ user@example.com │ 2016-01-10T16:12:33 │
 # │ environment variable set │ CLIENT_SECRET     │ user@example.com │ 2016-01-01T22:51:01 │
 # │ version added            │ 1.2.52            │ user@example.com │ 2016-01-01T22:19:36 │
 # │ app created              │ initial creation  │ user@example.com │ 2016-01-01T22:19:28 │
