@@ -135,7 +135,7 @@ const addRequestData = async (event, z, bundle, convertedBundle) => {
     let data = body,
       files;
 
-    if (typeof data !== 'string') {
+    if (typeof data !== 'string' && !event.name.startsWith('auth.oauth2')) {
       if (hasFileFields(bundle)) {
         // Exclude file fields from request.data
         data = Object.keys(body)

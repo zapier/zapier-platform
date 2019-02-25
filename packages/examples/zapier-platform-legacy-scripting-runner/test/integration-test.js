@@ -250,6 +250,36 @@ describe('Integration Test', () => {
         should.equal(response.json.refresh_token, 'my_refresh_token');
       });
     });
+
+    it('pre_oauthv2_refresh, request.data should be an object', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'pre_oauthv2_refresh_request_data',
+        'pre_oauthv2_refresh'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.refreshAccessToken'
+      );
+      input.bundle.authData = {
+        refresh_token: 'my_refresh_token',
+        access_token: 'my_access_token'
+      };
+      return app(input).then(output => {
+        const data = output.results.form;
+
+        should.deepEqual(data, {
+          client_id: process.env.CLIENT_ID,
+          client_secret: process.env.CLIENT_SECRET,
+          refresh_token: 'my_refresh_token',
+          grant_type: 'refresh_token',
+          foo: 'hello',
+          bar: 'world'
+        });
+      });
+    });
   });
 
   describe('polling trigger', () => {

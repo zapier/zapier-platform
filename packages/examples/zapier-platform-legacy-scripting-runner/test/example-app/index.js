@@ -64,6 +64,25 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      pre_oauthv2_refresh_request_data: function(bundle) {
+        'use strict';
+
+        // bundle.request.data should be an object, so this would error in
+        // strict mode if request.data is a string
+        bundle.request.data.foo = 'hello';
+        bundle.request.data.bar = 'world';
+        bundle.request.data = $.param(bundle.request.data);
+
+        bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+        return {
+          url: 'https://zapier-httpbin.herokuapp.com/post',
+          method: bundle.request.method,
+          headers: bundle.request.headers,
+          data: bundle.request.data
+        };
+      },
+
       get_connection_label: function(bundle) {
         return 'Hi ' + bundle.test_result.name;
       },
