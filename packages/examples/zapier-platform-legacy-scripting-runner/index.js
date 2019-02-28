@@ -596,12 +596,34 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     });
   };
 
+  const isTestingAuth = (bundle, key) => {
+    const testTrigger = _.get(app, 'legacy.authentication.testTrigger');
+    if (testTrigger) {
+      if (key === testTrigger) {
+        return true;
+      }
+      return false;
+    }
+
+    // For core < 8.0.0
+    if (
+      _.get(bundle, 'meta.test_poll') === true &&
+      _.get(bundle, 'meta.standard_poll') === false
+    ) {
+      return true;
+    }
+
+    // For core >= 8.0.0. This could be inaccurate but it's unlikely to fall
+    // down here.
+    return _.get(bundle, 'meta.isTestingAuth');
+  };
+
   const runTrigger = (bundle, key) => {
     const url = _.get(app, `legacy.triggers.${key}.operation.url`);
     bundle.request.url = url;
 
     // For auth test we want to make sure we return an object instead of an array
-    const ensureType = _.get(bundle, 'meta.test_poll')
+    const ensureType = isTestingAuth(bundle, key)
       ? 'object-first'
       : 'array-first';
 

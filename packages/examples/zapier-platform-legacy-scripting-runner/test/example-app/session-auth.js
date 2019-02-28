@@ -27,7 +27,8 @@ module.exports = {
         'X-Api-Key': '{{key1}}{{key2}}'
       },
       placement: 'header'
-    }
+    },
+    testTrigger: 'contact_full'
   },
   authentication: {
     type: 'session',

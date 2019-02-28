@@ -82,13 +82,46 @@ describe('Integration Test', () => {
       });
     });
 
-    it('authentication.test', () => {
+    it('authentication.test, test trigger info from definition', () => {
+      const _appDefWithAuth = withAuth(appDefinition, sessionAuthConfig);
+      _appDefWithAuth.legacy.authentication.testTrigger = 'contact_full';
+
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(_compiledApp, 'authentication.test');
+      input.bundle.authData = {
+        key1: 'sec',
+        key2: 'ret'
+      };
+      return _app(input).then(output => {
+        const user = output.results;
+        should.equal(user.id, 1);
+        should.equal(user.username, 'Bret');
+      });
+    });
+
+    it('authentication.test, core >= 8.0.0', () => {
       const input = createTestInput(compiledApp, 'authentication.test');
       input.bundle.authData = {
         key1: 'sec',
         key2: 'ret'
       };
-      input.bundle.meta = { test_poll: true };
+      input.bundle.meta = { isTestingAuth: true };
+      return app(input).then(output => {
+        const user = output.results;
+        should.equal(user.id, 1);
+        should.equal(user.username, 'Bret');
+      });
+    });
+
+    it('authentication.test, core < 8.0.0', () => {
+      const input = createTestInput(compiledApp, 'authentication.test');
+      input.bundle.authData = {
+        key1: 'sec',
+        key2: 'ret'
+      };
+      input.bundle.meta = { standard_poll: false, test_poll: true };
       return app(input).then(output => {
         const user = output.results;
         should.equal(user.id, 1);
@@ -472,6 +505,24 @@ describe('Integration Test', () => {
         should.equal(fields[3].key, 'color');
         should.equal(fields[4].key, 'age');
         should.equal(fields[5].key, 'spin');
+      });
+    });
+
+    it("bundle.meta.test_poll being true doesn't imply auth testing", () => {
+      // It's an auth test only if test_poll is true AND standard_poll is false
+      const input = createTestInput(
+        compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.meta = {
+        standard_poll: true,
+        test_poll: true
+      };
+      return app(input).then(output => {
+        const movies = output.results;
+        movies.length.should.greaterThan(1);
+        should.equal(movies[0].title, 'title 1');
       });
     });
 
