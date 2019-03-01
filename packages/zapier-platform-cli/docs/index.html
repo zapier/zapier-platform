@@ -245,8 +245,8 @@ a code {
       <ul>
 <li><a href="#getting-started">Getting Started</a><ul>
 <li><a href="#what-is-an-app">What is an App?</a></li>
-<li><a href="#how-does-the-cli-platform-work">How does the CLI Platform Work</a></li>
-<li><a href="#cli-vs-the-web-builder-platform">CLI vs the Web Builder Platform</a></li>
+<li><a href="#how-does-zapier-platform-cli-work">How does Zapier Platform CLI Work?</a></li>
+<li><a href="#zapier-platform-cli-vs-ui">Zapier Platform CLI vs UI</a></li>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#quick-setup-guide">Quick Setup Guide</a></li>
 <li><a href="#tutorial">Tutorial</a></li>
@@ -373,7 +373,7 @@ a code {
 <li><a href="#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</a></li>
 <li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&#39;s the deal with pagination? When is it used and how does it work?</a></li>
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
-<li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field-i-didnt-have-to-do-that-in-the-web-builder">Why are my triggers complaining if I don&#39;t provide an explicit <code>id</code> field? I didn&#39;t have to do that in the Web Builder!</a></li>
+<li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&#39;t provide an explicit <code>id</code> field?</a></li>
 </ul>
 </li>
 <li><a href="#command-line-tab-completion">Command Line Tab Completion</a><ul>
@@ -441,8 +441,8 @@ a code {
       <ul>
 <li><a href="#getting-started">Getting Started</a><ul>
 <li><a href="#what-is-an-app">What is an App?</a></li>
-<li><a href="#how-does-the-cli-platform-work">How does the CLI Platform Work</a></li>
-<li><a href="#cli-vs-the-web-builder-platform">CLI vs the Web Builder Platform</a></li>
+<li><a href="#how-does-zapier-platform-cli-work">How does Zapier Platform CLI Work?</a></li>
+<li><a href="#zapier-platform-cli-vs-ui">Zapier Platform CLI vs UI</a></li>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#quick-setup-guide">Quick Setup Guide</a></li>
 <li><a href="#tutorial">Tutorial</a></li>
@@ -569,7 +569,7 @@ a code {
 <li><a href="#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</a></li>
 <li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&apos;s the deal with pagination? When is it used and how does it work?</a></li>
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
-<li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field-i-didnt-have-to-do-that-in-the-web-builder">Why are my triggers complaining if I don&apos;t provide an explicit <code>id</code> field? I didn&apos;t have to do that in the Web Builder!</a></li>
+<li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&apos;t provide an explicit <code>id</code> field?</a></li>
 </ul>
 </li>
 <li><a href="#command-line-tab-completion">Command Line Tab Completion</a><ul>
@@ -645,7 +645,7 @@ for. This is used during the &quot;Connect Accounts&quot; section of the Zap Edi
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="how-does-the-cli-platform-work">How does the CLI Platform Work</h3>
+      <h3 id="how-does-zapier-platform-cli-work">How does Zapier Platform CLI Work?</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -666,7 +666,7 @@ and returns the relevant data, which gets fed back into Zapier.</p>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="cli-vs-the-web-builder-platform">CLI vs the Web Builder Platform</h3>
+      <h3 id="zapier-platform-cli-vs-ui">Zapier Platform CLI vs UI</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -675,7 +675,7 @@ and returns the relevant data, which gets fed back into Zapier.</p>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>From a user perspective, both the CLI and the existing web builder platform offer the same experience. The biggest difference is how they&apos;re developed. The CLI takes a much more code-first approach, allowing you to develop your Zapier app just like you would any other programming project. The web builder, on the other hand, is much better for folks who want to make an app with minimal coding involved. Both will continue to coexist, so pick whichever fits your needs best!</p>
+      <p>The Zapier Platform includes two ways to build integrations: a CLI to build integrations in your local development environment and deploy them from the command line, and a UI to create integrations with a visual builder from your browser. Both use the same Zapier platform, so pick the one that fits your team&apos;s needs best, as the difference is in how you develop the integration.</p><p>Zapier Platform CLI is designed to be used by development teams who collaborate with version control and CI, and can be used to build more advanced integrations with custom coding for every part of your API calls and response parsing.</p><p><a href="https://zapier.com/app/developer/">Zapier Platform UI</a> is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It&apos;s the quickest way to start using the Zapier platform&#x2014;and you can manage your CLI apps&apos; core details from its online UI as well. Coming soon, you will be able to convert Zapier Platform UI integrations to CLI to start development in your browser then finish out the core features in your local development environment.</p><p><em>&#x2192; Learn more in our <a href="https://zapier.com/developer/documentation/v2/ui-vs-cli/">Zapier Platform UI vs CLI</a> post.</em></p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1102,7 +1102,7 @@ zapier deprecate 1.0.0 2017-01-01
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>If you have an existing Web Builder app on <a href="https://zapier.com/developer/builder/">Zapier Developer Platform</a> you can use it as a template to kickstart your local application.</p>
+      <p>If you have an existing Zapier <a href="https://zapier.com/developer/builder/">legacy Web Builder app</a>, you can use it as a template to kickstart your local application.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># Convert an existing Web Builder app to a CLI app in the my-app directory</span>
@@ -1118,7 +1118,7 @@ zapier convert 1234 my-app
 <p>Since v3.3.0, <code>zapier convert</code> has been improved a lot. But this is still in an alpha state - you&apos;ll likely have to edit the code to make it work.</p>
 </blockquote><blockquote>
 <p>Note - there is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.</p>
-</blockquote>
+</blockquote><p>Coming soon, you will also be able to convert new integrations built in Zapier Platform UI to CLI.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1400,7 +1400,7 @@ zapier convert 1234 my-app
 </blockquote><p>The flow works like this:</p><ol>
 <li>Zapier makes a call to your API requesting a &quot;request token&quot; (also known as &quot;temporary credentials&quot;)</li>
 <li>Zapier sends the user to the authorization URL, defined by your app, along with the request token</li>
-<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png" alt></li>
+<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png" alt=""></li>
 <li>Zapier makes a call on our backend to your API to exchange the request token for an &quot;access token&quot; (also known as &quot;long-lived credentials&quot;)</li>
 <li>Zapier remembers the access token and makes calls on behalf of the user</li>
 </ol><p>You are required to define:</p><ul>
@@ -1535,7 +1535,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 <p>Example App: check out <a href="https://github.com/zapier/zapier-platform-example-app-oauth2">https://github.com/zapier/zapier-platform-example-app-oauth2</a> for a working example app for OAuth2.</p>
 </blockquote><p>It looks like this:</p><ol>
 <li>Zapier sends the user to the authorization URL defined by your app</li>
-<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png" alt></li>
+<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png" alt=""></li>
 <li>Zapier makes a call on our backend to your API to exchange the <code>code</code> for an <code>access_token</code></li>
 <li>Zapier remembers the <code>access_token</code> and makes calls on behalf of the user</li>
 <li>(Optionally) Zapier can refresh the token if it expires</li>
@@ -4167,8 +4167,8 @@ zapier <span class="hljs-built_in">test</span>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-Dockerfile"><span class="hljs-keyword">FROM</span> amazonlinux:<span class="hljs-number">2017.03</span>.<span class="hljs-number">1.20170812</span>
 
-<span class="hljs-keyword">RUN</span><span class="bash"> yum install zip findutils wget gcc44 gcc-c++ libgcc44 cmake -y</span>
-
+<span class="hljs-keyword">RUN</span><span class="bash"> yum install zip findutils wget gcc44 gcc-c++ libgcc44 cmake -y
+</span>
 <span class="hljs-keyword">RUN</span><span class="bash"> wget https://nodejs.org/dist/v8.10.0/node-v8.10.0.tar.gz &amp;&amp; \
     tar -zxvf node-v8.10.0.tar.gz &amp;&amp; \
     <span class="hljs-built_in">cd</span> node-v8.10.0 &amp;&amp; \
@@ -4176,10 +4176,10 @@ zapier <span class="hljs-built_in">test</span>
     make &amp;&amp; \
     make install &amp;&amp; \
     <span class="hljs-built_in">cd</span> .. &amp;&amp; \
-    rm -rf node-v8.10.0 node-v8.10.0.tar.gz</span>
-
-<span class="hljs-keyword">RUN</span><span class="bash"> npm i -g zapier-platform-cli</span>
-
+    rm -rf node-v8.10.0 node-v8.10.0.tar.gz
+</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> npm i -g zapier-platform-cli
+</span>
 <span class="hljs-keyword">WORKDIR</span><span class="bash"> /app</span>
 </code></pre>
     </div>
@@ -4526,12 +4526,12 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To understand search-powered fields, we have to have a good understanding of dynamic dropdowns.</p><p>When users are selecting specific resources (for instance, a Google Sheet), it&apos;s important they&apos;re able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via <code>id</code> instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a <strong>dynamic dropdown</strong>. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app.  It provides a list of ids with labels that show the item&apos;s name:</p><p><img src="https://cdn.zapier.com/storage/photos/fb56bdc2aab91504be0e51800bec4d64.png" alt></p><p>The field&apos;s value reaches your app as an id. You define this connection with the <code>dynamic</code> property, which is a string: <code>trigger_key.id_key.label_key</code>. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.</p><p><strong>Search fields</strong> take this connection a step further. Rather than set the spreadsheet id at setup, the user could precede the action with a search field to make the id dynamic. For instance, let&apos;s say you have a different spreadsheet for every day of the week. You could build the following zap:</p><ol>
+      <p>To understand search-powered fields, we have to have a good understanding of dynamic dropdowns.</p><p>When users are selecting specific resources (for instance, a Google Sheet), it&apos;s important they&apos;re able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via <code>id</code> instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a <strong>dynamic dropdown</strong>. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app.  It provides a list of ids with labels that show the item&apos;s name:</p><p><img src="https://cdn.zapier.com/storage/photos/fb56bdc2aab91504be0e51800bec4d64.png" alt=""></p><p>The field&apos;s value reaches your app as an id. You define this connection with the <code>dynamic</code> property, which is a string: <code>trigger_key.id_key.label_key</code>. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.</p><p><strong>Search fields</strong> take this connection a step further. Rather than set the spreadsheet id at setup, the user could precede the action with a search field to make the id dynamic. For instance, let&apos;s say you have a different spreadsheet for every day of the week. You could build the following zap:</p><ol>
 <li>Some Trigger</li>
 <li>Calculate what day of the week it is today (Code)</li>
 <li>Find the spreadsheet that matches the day from Step 2</li>
 <li>Update the spreadsheet (with the id from step 3) with some data</li>
-</ol><p>If the connection between steps 3 and 4 is a common one, you can indicate that in your field by specifying <code>search</code> as a <code>search_key.id_key</code>. When paired <strong>with a dynamic dropdown</strong>, this will add a button to the editor that will add the search step to the user&apos;s Zap and map the id field correctly.</p><p><img src="https://cdn.zapier.com/storage/photos/d263fd3a56cf8108cb89195163e7c9aa.png" alt></p><p>This is paired most often with &quot;update&quot; actions, where a required parameter will be a resource id.</p><p><a id="paging"></a></p>
+</ol><p>If the connection between steps 3 and 4 is a common one, you can indicate that in your field by specifying <code>search</code> as a <code>search_key.id_key</code>. When paired <strong>with a dynamic dropdown</strong>, this will add a button to the editor that will add the search step to the user&apos;s Zap and map the id field correctly.</p><p><img src="https://cdn.zapier.com/storage/photos/d263fd3a56cf8108cb89195163e7c9aa.png" alt=""></p><p>This is paired most often with &quot;update&quot; actions, where a required parameter will be a resource id.</p><p><a id="paging"></a></p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4657,7 +4657,7 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field-i-didnt-have-to-do-that-in-the-web-builder">Why are my triggers complaining if I don&apos;t provide an explicit <code>id</code> field? I didn&apos;t have to do that in the Web Builder!</h3>
+      <h3 id="why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&apos;t provide an explicit <code>id</code> field?</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4666,7 +4666,7 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For deduplication to work, we need to be able to identify and use a unique field. For WB apps, we guessed if <code>id</code> wasn&apos;t present. In order to ensure we don&apos;t guess wrong, we now require that the developers send us an <code>id</code> field. If your objects have a differently-named unique field, feel free to adapt this snippet and ensure this test passes:</p>
+      <p>For deduplication to work, we need to be able to identify and use a unique field. In older, legacy Zapier Web Builder apps, we guessed if <code>id</code> wasn&apos;t present. In order to ensure we don&apos;t guess wrong, we now require that the developers send us an <code>id</code> field. If your objects have a differently-named unique field, feel free to adapt this snippet and ensure this test passes:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-comment">// ...</span>

@@ -24,8 +24,8 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 
 - [Getting Started](#getting-started)
   * [What is an App?](#what-is-an-app)
-  * [How does the CLI Platform Work](#how-does-the-cli-platform-work)
-  * [CLI vs the Web Builder Platform](#cli-vs-the-web-builder-platform)
+  * [How does Zapier Platform CLI Work?](#how-does-zapier-platform-cli-work)
+  * [Zapier Platform CLI vs UI](#zapier-platform-cli-vs-ui)
   * [Requirements](#requirements)
   * [Quick Setup Guide](#quick-setup-guide)
   * [Tutorial](#tutorial)
@@ -118,7 +118,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [How do search-powered fields relate to dynamic dropdowns and why are they both required together?](#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together)
   * [What's the deal with pagination? When is it used and how does it work?](#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work)
   * [How does deduplication work?](#how-does-deduplication-work)
-  * [Why are my triggers complaining if I don't provide an explicit `id` field? I didn't have to do that in the Web Builder!](#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field-i-didnt-have-to-do-that-in-the-web-builder)
+  * [Why are my triggers complaining if I don't provide an explicit `id` field?](#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field)
 - [Command Line Tab Completion](#command-line-tab-completion)
   * [Zsh Completion Script](#zsh-completion-script)
   * [Bash Completion Script](#bash-completion-script)
@@ -152,16 +152,22 @@ map to the end user experience:
  * [Searches](#triggerssearchescreates), which find specific records *in* your system. These are also listed under "Actions" in the Zap Editor.
  * [Resources](#resources), which define an object type in your API (say a contact) and the operations available to perform on it. These are automatically extracted into Triggers, Searches, and Creates.
 
-### How does the CLI Platform Work
+### How does Zapier Platform CLI Work?
 
 Zapier takes the App you upload and sends it over to Amazon Web Service's Lambda.
 We then make calls to execute the operations your App defines as we execute Zaps.
 Your App takes the input data we provide (if any), makes the necessary HTTP calls,
 and returns the relevant data, which gets fed back into Zapier.
 
-### CLI vs the Web Builder Platform
+### Zapier Platform CLI vs UI
 
-From a user perspective, both the CLI and the existing web builder platform offer the same experience. The biggest difference is how they're developed. The CLI takes a much more code-first approach, allowing you to develop your Zapier app just like you would any other programming project. The web builder, on the other hand, is much better for folks who want to make an app with minimal coding involved. Both will continue to coexist, so pick whichever fits your needs best!
+The Zapier Platform includes two ways to build integrations: a CLI to build integrations in your local development environment and deploy them from the command line, and a UI to create integrations with a visual builder from your browser. Both use the same Zapier platform, so pick the one that fits your team's needs best, as the difference is in how you develop the integration.
+
+Zapier Platform CLI is designed to be used by development teams who collaborate with version control and CI, and can be used to build more advanced integrations with custom coding for every part of your API calls and response parsing.
+
+[Zapier Platform UI](https://zapier.com/app/developer/) is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It's the quickest way to start using the Zapier platform—and you can manage your CLI apps' core details from its online UI as well. Coming soon, you will be able to convert Zapier Platform UI integrations to CLI to start development in your browser then finish out the core features in your local development environment.
+
+_→ Learn more in our [Zapier Platform UI vs CLI](https://zapier.com/developer/documentation/v2/ui-vs-cli/) post._
 
 ### Requirements
 
@@ -403,7 +409,7 @@ zapier deprecate 1.0.0 2017-01-01
 
 ## Converting an Existing App
 
-If you have an existing Web Builder app on [Zapier Developer Platform](https://zapier.com/developer/builder/) you can use it as a template to kickstart your local application.
+If you have an existing Zapier [legacy Web Builder app](https://zapier.com/developer/builder/), you can use it as a template to kickstart your local application.
 
 ```bash
 # Convert an existing Web Builder app to a CLI app in the my-app directory
@@ -416,6 +422,8 @@ Your CLI app will be created and you can continue working on it.
 > Since v3.3.0, `zapier convert` has been improved a lot. But this is still in an alpha state - you'll likely have to edit the code to make it work.
 
 > Note - there is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.
+
+Coming soon, you will also be able to convert new integrations built in Zapier Platform UI to CLI.
 
 ## Authentication
 
@@ -2757,9 +2765,9 @@ For example, the initial poll returns objects 4, 5, and 6 (where a higher `id` i
 
 There's a more in-depth explanation [here](https://zapier.com/developer/documentation/v2/deduplication/).
 
-### Why are my triggers complaining if I don't provide an explicit `id` field? I didn't have to do that in the Web Builder!
+### Why are my triggers complaining if I don't provide an explicit `id` field?
 
-For deduplication to work, we need to be able to identify and use a unique field. For WB apps, we guessed if `id` wasn't present. In order to ensure we don't guess wrong, we now require that the developers send us an `id` field. If your objects have a differently-named unique field, feel free to adapt this snippet and ensure this test passes:
+For deduplication to work, we need to be able to identify and use a unique field. In older, legacy Zapier Web Builder apps, we guessed if `id` wasn't present. In order to ensure we don't guess wrong, we now require that the developers send us an `id` field. If your objects have a differently-named unique field, feel free to adapt this snippet and ensure this test passes:
 
 ```js
 // ...
