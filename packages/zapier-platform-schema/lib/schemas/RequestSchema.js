@@ -55,11 +55,25 @@ module.exports = makeSchema(
           { $ref: FlatObjectSchema.id }
         ]
       },
-      omitEmptyParams: {
+      removeMissingValuesFrom: {
         description:
-          'Should empty params not be sent? (empty strings, `null`, and `undefined` only — `[]`, `{}`, and `false` will still be sent)',
-        type: 'boolean',
-        default: false
+          'Should missing values be sent? (empty strings, `null`, and `undefined` only — `[]`, `{}`, and `false` will still be sent). Allowed fields are `params` and `body`. The default is `false`, ex: ```removeMissingValuesFrom: { params: false, body: false }```',
+        type: 'object',
+        properties: {
+          params: {
+            description:
+              'Refers to data sent via a requests query params (`req.params`)',
+            type: 'boolean',
+            default: false
+          },
+          body: {
+            description:
+              'Refers to tokens sent via a requsts body (`req.body`)',
+            type: 'boolean',
+            default: false
+          }
+        },
+        additionalProperties: false
       }
     },
     additionalProperties: false

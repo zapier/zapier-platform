@@ -893,7 +893,7 @@ Key | Required | Type | Description
 `params` | no | [/FlatObjectSchema](#flatobjectschema) | A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.
 `headers` | no | [/FlatObjectSchema](#flatobjectschema) | The HTTP headers for the request.
 `auth` | no | oneOf(`array`[`string`], [/FlatObjectSchema](#flatobjectschema)) | An object holding the auth parameters for OAuth1 request signing, like `{oauth_token: 'abcd', oauth_token_secret: '1234'}`. Or an array reserved (i.e. not implemented yet) to hold the username and password for Basic Auth. Like `['AzureDiamond', 'hunter2']`.
-`omitEmptyParams` | no | `boolean` | Should empty params not be sent? (empty strings, `null`, and `undefined` only — `[]`, `{}`, and `false` will still be sent)
+`removeMissingValuesFrom` | no | `object` | Should missing values be sent? (empty strings, `null`, and `undefined` only — `[]`, `{}`, and `false` will still be sent). Allowed fields are `params` and `body`. The default is `false`, ex: ```removeMissingValuesFrom: { params: false, body: false }```
 
 -----
 
