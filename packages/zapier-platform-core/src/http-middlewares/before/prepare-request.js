@@ -99,11 +99,11 @@ const finalRequest = req => {
 const prepareRequest = function(req) {
   const input = req.input || {};
 
+  // We will want to use _.defeaultsDeep if one of these nested values ever defaults to true.
   req = _.defaults(req, {
     merge: true,
-    // TODO: client will eventually send `removeMissingValuesFrom` rather than `omitEmptyParams`
     removeMissingValuesFrom: {
-      params: !!req.omitEmptyParams,
+      params: false,
       body: false
     },
     replace: true, // always replace curlies

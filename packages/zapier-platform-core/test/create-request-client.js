@@ -407,7 +407,9 @@ describe('request client', () => {
           really: '{{bundle.inputData.really}}',
           cool: 'true'
         },
-        omitEmptyParams: false
+        removeMissingValuesFrom: {
+          params: false
+        }
       }).then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -448,7 +450,9 @@ describe('request client', () => {
           yyy: '{}',
           qqq: ' '
         },
-        omitEmptyParams: true
+        removeMissingValuesFrom: {
+          params: true
+        }
       }).then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -478,7 +482,9 @@ describe('request client', () => {
           something: '',
           cool: ''
         },
-        omitEmptyParams: true
+        removeMissingValuesFrom: {
+          params: true
+        }
       }).then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
