@@ -688,20 +688,20 @@ This object holds the user's auth details and the data for the API requests.
 
 ### `bundle.meta`
 
-`bundle.meta` is extra information useful for doing advanced behaviors depending on what the user is doing. It has the following options:
+`bundle.meta` contains extra information useful for doing advanced behaviors depending on what the user is doing. It has the following options:
 
 | key | default | description |
 | --- | --- | --- |
-| frontend | `false` | if true, this run was initiated manually via the Zap Editor |
-| prefill | `false` | if true, this poll is being used to populate a dynamic dropdown |
-| hydrate | `true`  | if true, the results of this run will be hydrated (false if we're in the middle of hydrating already) |
-| test_poll | `false` | if true, the poll was triggered by a user testing their account (via [clicking "test"](https://cdn.zapier.com/storage/photos/5c94c304ce11b02c073a973466a7b846.png) on the auth |
-| standard_poll| `true`  | the opposite of `test_poll` |
-| first_poll | `false` | if true, the results of this poll will be used to initialize the deduplication list rather than trigger a zap. See: [deduplication](#dedup) |
-| limit | `-1` | the number of items to fetch. `-1` indicates there's no limit (which will almost always be the case) |
-| page | `0` | used in [paging](#paging) to uniquely identify which page of results should be returned |
+| `isLoadingSample` | `false` | If true, this run was initiated manually via the Zap Editor |
+| `isFillingDynamicDropdown` | `false` | If true, this poll is being used to populate a dynamic dropdown. You only need to return the fields you specified (such as `id` and `name`), though returning everything is fine too |
+| `isPopulatingDedupe` | `false` | If true, the results of this poll will be used to initialize the deduplication list rather than trigger a zap. You should grab as many items as possible. See also: [deduplication](#dedup) |
+| `limit` | `-1` | The number of items you should fetch. `-1` indicates there's no limit. Build this into your calls insofar as you are able |
+| `page` | `0` | Used in [paging](#paging) to uniquely identify which page of results should be returned |
+| `isTestingAuth` | `false` | (legacy property) If true, the poll was triggered by a user testing their account (via [clicking "test"](https://cdn.zapier.com/storage/photos/5c94c304ce11b02c073a973466a7b846.png) or during setup). We use this data to populate the auth label, but it's mostly used to verify we made a successful authenticated request |
 
-> `bundle.meta.zap.id` is only available in the `performSubscribe` and `performUnsubscribe` methods.
+> Before version `8.0.0`, the information in `bundle.meta` was different. See [the old docs](https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta) for the previous values and [the wiki](https://github.com/zapier/zapier-platform-cli/wiki/bundle.meta-changes) for a mapping of old values to new.
+
+There's also `bundle.meta.zap.id`, which is only available in the `performSubscribe` and `performUnsubscribe` methods.
 
 The user's Zap ID is available during the [subscribe and unsubscribe](https://zapier.github.io/zapier-platform-schema/build/schema.html#basichookoperationschema) methods.
 
