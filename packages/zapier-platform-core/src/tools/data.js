@@ -142,14 +142,17 @@ const recurseExtract = (obj, matcher) => {
 const _IGNORE = {};
 
 // Flatten a nested object.
-const flattenPaths = (data, sep = '.') => {
+const flattenPaths = (data, { preserve = {} } = {}) => {
   const out = {};
-  const recurse = (obj, prop) => {
-    prop = prop || '';
-    if (isPlainObj(obj)) {
-      Object.keys(obj).map(key => {
-        const value = obj[key];
-        const newProp = prop ? prop + sep + key : key;
+  const recurse = (obj, prop = '') => {
+    if (_.isPlainObject(obj)) {
+      Object.entries(obj).forEach(([key, value]) => {
+        const newProp = prop ? `${prop}.${key}` : key;
+
+        if (preserve[prop]) {
+          out[newProp] = value;
+        }
+
         const subValue = recurse(value, newProp);
         if (subValue !== _IGNORE) {
           out[newProp] = subValue;

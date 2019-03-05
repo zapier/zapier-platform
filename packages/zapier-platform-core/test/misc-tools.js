@@ -183,6 +183,40 @@ describe('Tools', () => {
         i: undefined
       });
     });
+
+    it('should flatten things but preserve values from provided keys', () => {
+      const output = dataTools.flattenPaths(
+        {
+          a: {
+            b: 1,
+            c: 2,
+            d: {
+              e: 3,
+              z: {
+                y: 'because'
+              }
+            },
+            f: null
+          },
+          g: [4],
+          h: 5,
+          i: undefined
+        },
+        { preserve: { 'a.d': true } }
+      );
+
+      output.should.eql({
+        'a.b': 1,
+        'a.c': 2,
+        'a.d.e': 3,
+        'a.d.z': { y: 'because' },
+        'a.d.z.y': 'because',
+        'a.f': null,
+        g: [4],
+        h: 5,
+        i: undefined
+      });
+    });
   });
 
   describe('recurseExtract', () => {

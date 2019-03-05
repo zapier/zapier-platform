@@ -96,7 +96,8 @@ const createBundleBank = (appRaw, event = {}) => {
     }
   };
 
-  const flattenedBank = flattenPaths(bank);
+  const options = { preserve: { 'bundle.inputData': true } };
+  const flattenedBank = flattenPaths(bank, options);
   return Object.keys(flattenedBank).reduce((coll, key) => {
     coll[`{{${key}}}`] = flattenedBank[key];
     return coll;
