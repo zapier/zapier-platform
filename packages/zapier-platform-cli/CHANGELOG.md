@@ -1,3 +1,59 @@
+## 8.0.0
+
+This is a larger-than-normal release that coincides with the release of our new [Visual Builder](https://zapier.github.io/visual-builder/). It also includes a few breaking changes that you'll need to resolve in your code manually as you upgrade. Luckily, they're mostly find-and-replace.
+
+#### `omitEmptyParams` has a new data type
+
+We've changed the type of (the option formally known as) `omitEmptyParams` to accommodate clearing data from the query params and/or the request body
+
+```js
+// before
+z.request({
+  url: 'https://site.com',
+  omitEmptyParams: true
+})
+
+// after:
+z.request({
+  url: 'https://site.com',
+  removeMissingValuesFrom: { params: true }
+})
+```
+
+#### Curlies Don't Clobber
+
+If you were using `{{curlies}}` to render non-primatives (that is, arrays or objects) at runtime, they were getting coerced into strings. Now they correctly stay as their original data type, which is only an issue if you were working around it before.
+
+#### `bundle.meta` has a new coat of paint
+
+We updated the key names in `bundle.meta` to make them more clear. In most cases, they were simply renamed, but some unhelpful ones were removed. There's a [conversion table](https://github.com/zapier/zapier-platform-cli/wiki/bundle.meta-changes) that should make this an easy thing to change.
+
+---
+
+Below are all of the changes:
+
+### cli
+* (improvement) respect 2fa settings ([#396](https://github.com/zapier/zapier-platform-cli/pull/396))
+* (doc) Add a Docker and Docker Compose section for native environments. ([#397](https://github.com/zapier/zapier-platform-cli/pull/397))
+* (doc) update collaborator to admin ([#403](https://github.com/zapier/zapier-platform-cli/pull/403))
+* (doc) update docs to use new meta ([#393](https://github.com/zapier/zapier-platform-cli/pull/393))
+* (chore) refactor `zapier login` to async ([#395](https://github.com/zapier/zapier-platform-cli/pull/395))
+* (chore) make validate command async ([#401](https://github.com/zapier/zapier-platform-cli/pull/401))
+
+### schema
+* :exclamation: (improvement, **breaking**) Change omitEmptyParams to removeMissingValuesFrom ([#63](https://github.com/zapier/zapier-platform-schema/pull/63))
+* :tada: (improvement) attempt to hoist better errors ([#62](https://github.com/zapier/zapier-platform-schema/pull/62))
+* (doc) Document that helpText supports markdown ([#61](https://github.com/zapier/zapier-platform-schema/pull/61))
+
+### core
+* :exclamation: (improvement, **breaking**) Rename `omitEmptyParams` to `removeMissingValuesFrom` ([#140](https://github.com/zapier/zapier-platform-core/pull/140))
+* :exclamation: (improvement, **breaking**) Resolve curlies to their original data type ([#139](https://github.com/zapier/zapier-platform-core/pull/139))
+* :exclamation: (improvement, **breaking**) Rename `bundle.meta` keys (server change, see [CLI #393](https://github.com/zapier/zapier-platform-cli/pull/393) for more info)
+* (improvement) preserve objects passed to inputData in the bundle bank ([#141](https://github.com/zapier/zapier-platform-core/pull/141))
+* (improvement) Resolve subscription related bundle fields ([#138](https://github.com/zapier/zapier-platform-core/pull/138))
+* (improvement) Prune unmatched tokens from request ([#137](https://github.com/zapier/zapier-platform-core/pull/137))
+* (chore) Resolving potential security vulnerability in lodash dependency ([#136](https://github.com/zapier/zapier-platform-core/pull/136))
+
 ## 7.6.1
 
 ### cli
@@ -229,7 +285,7 @@
 
 * (improvement) Bump Node version to 6.10.3 ([PR](https://github.com/zapier/zapier-platform-core/pull/69))
 * (improvement) Deprecate `.environment` in favor of `.env` ([PR](https://github.com/zapier/zapier-platform-core/pull/70))
-* (improvement) Support test framework other than Mocah ([PR](https://github.com/zapier/zapier-platform-core/pull/65))
+* (improvement) Support test framework other than Mocha ([PR](https://github.com/zapier/zapier-platform-core/pull/65))
 * (improvement) `z.console.log` also calls `console.log` ([PR](https://github.com/zapier/zapier-platform-core/pull/66))
 * (improvement) Check for object in create ([PR](https://github.com/zapier/zapier-platform-core/pull/67))
 
