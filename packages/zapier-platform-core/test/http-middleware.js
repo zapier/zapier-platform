@@ -27,7 +27,7 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+    wrappedRequest({ url: 'https://httpbin.org/get' })
       .then(response => {
         response.status.should.eql(200);
         JSON.parse(response.content).headers.Customheader.should.eql(
@@ -54,7 +54,7 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+    wrappedRequest({ url: 'https://httpbin.org/get' })
       .then(response => {
         response.status.should.eql(200);
         JSON.parse(response.content).headers.Customheader.should.eql(
@@ -80,12 +80,10 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'http://zapier-httpbin.herokuapp.com/get' }).catch(
-      err => {
-        err.message.should.containEql('Middleware should return an object.');
-        done();
-      }
-    );
+    wrappedRequest({ url: 'https://httpbin.org/get' }).catch(err => {
+      err.message.should.containEql('Middleware should return an object.');
+      done();
+    });
   });
 
   it('should support async after middleware', done => {
@@ -103,7 +101,7 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+    wrappedRequest({ url: 'https://httpbin.org/get' })
       .then(response => {
         response.status.should.eql(200);
         should.not.exist(response.results); // should not be 'enveloped'
@@ -128,7 +126,7 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+    wrappedRequest({ url: 'https://httpbin.org/get' })
       .then(response => {
         response.status.should.eql(200);
         JSON.parse(response.content).customKey.should.eql('custom value');

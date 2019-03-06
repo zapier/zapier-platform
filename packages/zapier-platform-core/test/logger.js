@@ -6,7 +6,7 @@ const querystring = require('querystring');
 
 describe('logger', () => {
   const options = {
-    endpoint: 'http://zapier-httpbin.herokuapp.com/post',
+    endpoint: 'https://httpbin.org/post',
     token: 'fake-token'
   };
 

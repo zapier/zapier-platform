@@ -15,7 +15,7 @@ describe('request client', () => {
 
   it('should include a user-agent header', done => {
     const request = createAppRequestClient(input);
-    request({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+    request({ url: 'https://httpbin.org/get' })
       .then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -23,7 +23,7 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        body.url.should.eql('https://httpbin.org/get');
         done();
       })
       .catch(done);
@@ -32,7 +32,7 @@ describe('request client', () => {
   it('should allow overriding the user-agent header', done => {
     const request = createAppRequestClient(input);
     request({
-      url: 'http://zapier-httpbin.herokuapp.com/get',
+      url: 'https://httpbin.org/get',
       headers: {
         'User-Agent': 'Zapier!'
       }
@@ -45,7 +45,7 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        body.url.should.eql('https://httpbin.org/get');
         done();
       })
       .catch(done);
@@ -53,7 +53,7 @@ describe('request client', () => {
 
   it('should have json serializable response', done => {
     const request = createAppRequestClient(input);
-    request({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+    request({ url: 'https://httpbin.org/get' })
       .then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -61,7 +61,7 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        body.url.should.eql('https://httpbin.org/get');
         done();
       })
       .catch(done);
@@ -69,11 +69,11 @@ describe('request client', () => {
 
   it('should wrap a request entirely', done => {
     const request = createAppRequestClient(input);
-    request({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+    request({ url: 'https://httpbin.org/get' })
       .then(response => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
-        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        body.url.should.eql('https://httpbin.org/get');
         done();
       })
       .catch(done);
@@ -84,7 +84,7 @@ describe('request client', () => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
-      url: 'http://zapier-httpbin.herokuapp.com/post',
+      url: 'https://httpbin.org/post',
       body: Promise.resolve(payload)
     })
       .then(response => {
@@ -151,11 +151,11 @@ describe('request client', () => {
 
   it('should support single url param', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/get')
+    request('https://httpbin.org/get')
       .then(response => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
-        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        body.url.should.eql('https://httpbin.org/get');
         done();
       })
       .catch(done);
@@ -163,11 +163,11 @@ describe('request client', () => {
 
   it('should support url param with options', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/get', { headers: { A: 'B' } })
+    request('https://httpbin.org/get', { headers: { A: 'B' } })
       .then(response => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
-        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        body.url.should.eql('https://httpbin.org/get');
         body.headers.A.should.eql('B');
         done();
       })
@@ -176,7 +176,7 @@ describe('request client', () => {
 
   it('should support bytes', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/bytes/1024')
+    request('https://httpbin.org/bytes/1024')
       .then(response => {
         response.status.should.eql(200);
         // it tries to decode the bytes /shrug
@@ -188,7 +188,7 @@ describe('request client', () => {
 
   it('should support bytes raw', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/bytes/1024', { raw: true })
+    request('https://httpbin.org/bytes/1024', { raw: true })
       .then(response => {
         response.status.should.eql(200);
         should(response.buffer).be.type('function');
@@ -201,7 +201,7 @@ describe('request client', () => {
 
   it('should support streaming bytes', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/stream-bytes/1024')
+    request('https://httpbin.org/stream-bytes/1024')
       .then(response => {
         response.status.should.eql(200);
         // it tries to decode the bytes /shrug
@@ -213,7 +213,7 @@ describe('request client', () => {
 
   it('should support streaming bytes raw', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/stream-bytes/1024', {
+    request('https://httpbin.org/stream-bytes/1024', {
       raw: true
     })
       .then(response => {
@@ -228,7 +228,7 @@ describe('request client', () => {
 
   it('should support streaming bytes raw as buffer', done => {
     const request = createAppRequestClient(input);
-    request('http://zapier-httpbin.herokuapp.com/stream-bytes/1024', {
+    request('https://httpbin.org/stream-bytes/1024', {
       raw: true
     })
       .then(response => {
@@ -256,7 +256,7 @@ describe('request client', () => {
       testLogger
     );
     const request = createAppRequestClient(inputWithBeforeMiddleware);
-    request({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+    request({ url: 'https://httpbin.org/get' })
       .then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -264,7 +264,7 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        body.url.should.eql('https://httpbin.org/get');
         done();
       })
       .catch(done);
@@ -284,7 +284,7 @@ describe('request client', () => {
       testLogger
     );
     const request = createAppRequestClient(inputWithAfterMiddleware);
-    request({ url: 'http://zapier-httpbin.herokuapp.com/get' })
+    request({ url: 'https://httpbin.org/get' })
       .then(responseBefore => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -292,7 +292,7 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        body.url.should.eql('https://httpbin.org/get');
         done();
       })
       .catch(done);
@@ -301,7 +301,7 @@ describe('request client', () => {
   it('should parse form type request body', done => {
     const request = createAppRequestClient(input);
     request({
-      url: 'http://zapier-httpbin.herokuapp.com/post',
+      url: 'https://httpbin.org/post',
       method: 'POST',
       headers: {
         'content-type': 'application/x-www-form-urlencoded'
@@ -327,7 +327,7 @@ describe('request client', () => {
   it('should not parse form type request body when string', done => {
     const request = createAppRequestClient(input);
     request({
-      url: 'http://zapier-httpbin.herokuapp.com/post',
+      url: 'https://httpbin.org/post',
       method: 'POST',
       headers: {
         'content-type': 'application/x-www-form-urlencoded'
@@ -368,7 +368,7 @@ describe('request client', () => {
     const newInput = _.cloneDeep(input);
     newInput._zapier.event.verifySSL = false;
     const request = createAppRequestClient(newInput);
-    return request('http://zapier-httpbin.herokuapp.com/get').then(response => {
+    return request('https://httpbin.org/get').then(response => {
       response.status.should.eql(200);
     });
   });
@@ -377,7 +377,7 @@ describe('request client', () => {
     it('should not omit empty params by default', () => {
       const request = createAppRequestClient(input);
       return request({
-        url: 'http://zapier-httpbin.herokuapp.com/get',
+        url: 'https://httpbin.org/get',
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
@@ -393,7 +393,7 @@ describe('request client', () => {
 
         const body = JSON.parse(response.content);
         body.url.should.eql(
-          'http://zapier-httpbin.herokuapp.com/get?something=&really={{bundle.inputData.really}}&cool=true'
+          'https://httpbin.org/get?something=&really={{bundle.inputData.really}}&cool=true'
         );
       });
     });
@@ -401,7 +401,7 @@ describe('request client', () => {
     it('should not omit empty params when set as false', () => {
       const request = createAppRequestClient(input);
       return request({
-        url: 'http://zapier-httpbin.herokuapp.com/get',
+        url: 'https://httpbin.org/get',
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
@@ -420,7 +420,7 @@ describe('request client', () => {
 
         const body = JSON.parse(response.content);
         body.url.should.eql(
-          'http://zapier-httpbin.herokuapp.com/get?something=&really={{bundle.inputData.really}}&cool=true'
+          'https://httpbin.org/get?something=&really={{bundle.inputData.really}}&cool=true'
         );
       });
     });
@@ -438,7 +438,7 @@ describe('request client', () => {
       );
 
       return request({
-        url: 'http://zapier-httpbin.herokuapp.com/get',
+        url: 'https://httpbin.org/get',
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
@@ -469,7 +469,7 @@ describe('request client', () => {
 
         const body = JSON.parse(response.content);
         body.url.should.eql(
-          'http://zapier-httpbin.herokuapp.com/get?cool=false&name=zapier&zzz=[]&yyy={}&qqq= '
+          'https://httpbin.org/get?cool=false&name=zapier&zzz=[]&yyy={}&qqq= '
         );
       });
     });
@@ -477,7 +477,7 @@ describe('request client', () => {
     it('should not include ? if there are no params after cleaning', () => {
       const request = createAppRequestClient(input);
       return request({
-        url: 'http://zapier-httpbin.herokuapp.com/get',
+        url: 'https://httpbin.org/get',
         params: {
           something: '',
           cool: ''
@@ -493,7 +493,7 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('http://zapier-httpbin.herokuapp.com/get');
+        body.url.should.eql('https://httpbin.org/get');
       });
     });
   });
@@ -507,7 +507,7 @@ describe('request client', () => {
       const subscribeInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(subscribeInput);
       return request({
-        url: 'http://zapier-httpbin.herokuapp.com/post',
+        url: 'https://httpbin.org/post',
         method: 'POST',
         body: {
           hookUrl: '{{bundle.targetUrl}}'
@@ -527,7 +527,7 @@ describe('request client', () => {
       const subscribeInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(subscribeInput);
       return request({
-        url: 'http://zapier-httpbin.herokuapp.com/delete',
+        url: 'https://httpbin.org/delete',
         method: 'DELETE',
         params: {
           id: '{{bundle.subscribeData.id}}'
@@ -536,7 +536,7 @@ describe('request client', () => {
         const { url } = JSON.parse(response.content);
 
         response.json.args.id.should.eql('123');
-        url.should.eql('http://zapier-httpbin.herokuapp.com/delete?id=123');
+        url.should.eql('https://httpbin.org/delete?id=123');
       });
     });
   });
@@ -556,7 +556,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'http://zapier-httpbin.herokuapp.com/post',
+        url: 'https://httpbin.org/post',
         method: 'POST',
         body: {
           number: '{{bundle.inputData.number}}',
@@ -588,7 +588,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'http://zapier-httpbin.herokuapp.com/post',
+        url: 'https://httpbin.org/post',
         method: 'POST',
         body: {
           message: 'We just got #{{bundle.inputData.resourceId}}'
@@ -615,7 +615,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'http://zapier-httpbin.herokuapp.com/post',
+        url: 'https://httpbin.org/post',
         method: 'POST',
         body: {
           message: 'No arrays, thank you: {{bundle.inputData.badData}}'
@@ -639,7 +639,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'http://zapier-httpbin.herokuapp.com/post',
+        url: 'https://httpbin.org/post',
         method: 'POST',
         body: {
           streetAddress: '{{bundle.inputData.address.street}}',

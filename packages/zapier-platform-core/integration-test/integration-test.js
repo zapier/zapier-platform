@@ -244,7 +244,7 @@ const doTest = runner => {
             noun: 'Foo',
             operation: {
               perform: {
-                url: 'https://zapier-httpbin.herokuapp.com/get',
+                url: 'https://httpbin.org/get',
                 params: {
                   id: 54321
                 }
@@ -307,7 +307,7 @@ const doTest = runner => {
             operation: {
               perform: {
                 method: 'POST',
-                url: 'https://zapier-httpbin.herokuapp.com/post',
+                url: 'https://httpbin.org/post',
                 params: {
                   id: 54321
                 }
@@ -497,7 +497,7 @@ const doTest = runner => {
             operation: {
               perform: {
                 method: 'POST',
-                url: 'https://zapier-httpbin.herokuapp.com/post'
+                url: 'https://httpbin.org/post'
               }
             }
           }

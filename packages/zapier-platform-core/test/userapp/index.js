@@ -1,6 +1,6 @@
 // an example app!
 
-process.env.BASE_URL = 'http://zapier-httpbin.herokuapp.com';
+process.env.BASE_URL = 'https://httpbin.org';
 
 const _ = require('lodash');
 const helpers = require('./helpers');
@@ -146,11 +146,9 @@ const RequestSugar = {
     },
     operation: {
       perform: (z /* , bundle */) => {
-        return z
-          .request('http://zapier-httpbin.herokuapp.com/get')
-          .then(resp => {
-            return JSON.parse(resp.content);
-          });
+        return z.request('https://httpbin.org/get').then(resp => {
+          return JSON.parse(resp.content);
+        });
       }
     }
   }
@@ -214,7 +212,7 @@ const FailerHttp = {
     },
     operation: {
       perform: {
-        url: 'http://zapier-httpbin.herokuapp.com/status/403'
+        url: 'https://httpbin.org/status/403'
       }
     }
   }
@@ -440,7 +438,7 @@ const ExecuteRequestAsShorthand = {
       inputFields: [
         {
           key: 'url',
-          default: 'http://zapier-httpbin.herokuapp.com/status/403'
+          default: 'https://httpbin.org/status/403'
         }
       ]
     }

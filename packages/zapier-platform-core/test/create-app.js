@@ -106,7 +106,7 @@ describe('create-app', () => {
 
     app(input)
       .then(output => {
-        // zapier-httpbin.herokuapp.com/get puts request headers in the response body (good for testing):
+        // httpbin.org/get puts request headers in the response body (good for testing):
         should.exist(output.results.headers);
 
         // verify that custom http before middleware was applied
@@ -131,10 +131,10 @@ describe('create-app', () => {
       })
       .catch(err => {
         should(err.message).startWith(
-          'Got 403 calling GET http://zapier-httpbin.herokuapp.com/status/403, expected 2xx.\nWhat happened:\n  Starting GET request to http://zapier-httpbin.herokuapp.com/status/403\n  Received 403 code from http://zapier-httpbin.herokuapp.com/status/403 after '
+          'Got 403 calling GET https://httpbin.org/status/403, expected 2xx.\nWhat happened:\n  Starting GET request to https://httpbin.org/status/403\n  Received 403 code from https://httpbin.org/status/403 after '
         );
         should(err.message).endWith(
-          'ms\n  Received content ""\n  Got 403 calling GET http://zapier-httpbin.herokuapp.com/status/403, expected 2xx.'
+          'ms\n  Received content ""\n  Got 403 calling GET https://httpbin.org/status/403, expected 2xx.'
         );
         done();
       })
@@ -150,10 +150,10 @@ describe('create-app', () => {
       })
       .catch(err => {
         should(err.message).startWith(
-          'Got 403 calling GET http://zapier-httpbin.herokuapp.com/status/403, expected 2xx.\nWhat happened:\n  Starting GET request to http://zapier-httpbin.herokuapp.com/status/403\n  Received 403 code from http://zapier-httpbin.herokuapp.com/status/403 after '
+          'Got 403 calling GET https://httpbin.org/status/403, expected 2xx.\nWhat happened:\n  Starting GET request to https://httpbin.org/status/403\n  Received 403 code from https://httpbin.org/status/403 after '
         );
         should(err.message).endWith(
-          'ms\n  Received content ""\n  Got 403 calling GET http://zapier-httpbin.herokuapp.com/status/403, expected 2xx.'
+          'ms\n  Received content ""\n  Got 403 calling GET https://httpbin.org/status/403, expected 2xx.'
         );
         done();
       })
@@ -267,9 +267,7 @@ describe('create-app', () => {
     const input = createTestInput('triggers.contactList.operation.perform');
     app(input)
       .then(output => {
-        output.results.url.should.eql(
-          'http://zapier-httpbin.herokuapp.com/get'
-        );
+        output.results.url.should.eql('https://httpbin.org/get');
         output.results.headers['X-Hashy'].should.eql(
           '1a3ba5251cb33ee7ade01af6a7b960b8'
         );
@@ -322,16 +320,14 @@ describe('create-app', () => {
       command: 'request',
       bundle: {
         request: {
-          url: 'http://zapier-httpbin.herokuapp.com/get'
+          url: 'https://httpbin.org/get'
         }
       }
     });
     app(input)
       .then(output => {
         const response = output.results;
-        JSON.parse(response.content).url.should.eql(
-          'http://zapier-httpbin.herokuapp.com/get'
-        );
+        JSON.parse(response.content).url.should.eql('https://httpbin.org/get');
         done();
       })
       .catch(done);
@@ -355,7 +351,7 @@ describe('create-app', () => {
         command: 'execute',
         bundle: {
           inputData: {
-            url: 'http://zapier-httpbin.herokuapp.com/status/401'
+            url: 'https://httpbin.org/status/401'
           }
         },
         method: 'resources.executeRequestAsShorthand.list.operation.perform'
@@ -388,7 +384,7 @@ describe('create-app', () => {
         bundle: {
           inputData: {
             options: {
-              url: 'http://zapier-httpbin.herokuapp.com/status/401'
+              url: 'https://httpbin.org/status/401'
             }
           }
         },
@@ -420,7 +416,7 @@ describe('create-app', () => {
         bundle: {
           inputData: {
             options: {
-              url: 'http://zapier-httpbin.herokuapp.com/status/401'
+              url: 'https://httpbin.org/status/401'
             }
           }
         },
