@@ -59,7 +59,7 @@ Below are all of the changes:
 * (doc) Document that helpText supports markdown ([#61](https://github.com/zapier/zapier-platform-schema/pull/61))
 
 ### core
-* :exclamation: (improvement, **breaking**) Rename `omitEmptyParams` to `removeMissingValuesFrom` ([#140](https://github.com/zapier/zapier-platform-core/pull/140))
+* :exclamation: (improvement, **breaking**) Rename `omitEmptyParams` to `removeMissingValuesFrom`. In **typescript**, this is erroneously marked as required. In the next release, it will be optional. ([#140](https://github.com/zapier/zapier-platform-core/pull/140))
 * :exclamation: (improvement, **breaking**) Resolve curlies to their original data type ([#139](https://github.com/zapier/zapier-platform-core/pull/139))
 * :exclamation: (improvement, **breaking**) Rename `bundle.meta` keys (server change, see [CLI #393](https://github.com/zapier/zapier-platform-cli/pull/393) for more info)
 * (improvement) preserve objects passed to inputData in the bundle bank ([#141](https://github.com/zapier/zapier-platform-core/pull/141))
