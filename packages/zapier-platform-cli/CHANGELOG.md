@@ -1,3 +1,16 @@
+## 8.0.1
+
+A quick bugfix to resolve a regression
+
+### cli
+None!
+
+### schema
+* (fix) actually return validator class ([#64](https://github.com/zapier/zapier-platform-schema/pull/64))
+
+### core
+None!
+
 ## 8.0.0
 
 This is a larger-than-normal release that coincides with the release of our new [Visual Builder](https://zapier.github.io/visual-builder/). It also includes a few breaking changes that you'll need to resolve in your code manually as you upgrade. Luckily, they're mostly find-and-replace.
