@@ -1,6 +1,6 @@
 'use strict';
 
-require('should');
+const should = require('should');
 const schema = require('../schema');
 
 const testUtils = require('./utils');
@@ -158,6 +158,8 @@ describe('app', () => {
         ]
       };
       const results = schema.validateAppDefinition(appCopy);
+      // this line ensures we're getting a ValidatorResult class, not just an object that looks like one
+      should(results.valid).eql(true);
       results.errors.should.eql([]);
     });
 
@@ -179,6 +181,7 @@ describe('app', () => {
       };
       const results = schema.validateAppDefinition(appCopy);
       results.errors.length.should.eql(1);
+      should(results.valid).eql(false);
 
       const error = results.errors[0];
       error.name.should.eql('pattern');

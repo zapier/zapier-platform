@@ -129,8 +129,8 @@ const makeValidator = (mainSchema, subSchemas) => {
   });
   return {
     validate: definition => {
-      const { errors, ...results } = v.validate(definition, mainSchema);
-      const allErrors = errors.concat(
+      const results = v.validate(definition, mainSchema);
+      const allErrors = results.errors.concat(
         functionalConstraints.run(definition, mainSchema)
       );
       const cleanedErrors = flattenDeep(
