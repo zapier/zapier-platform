@@ -20,7 +20,7 @@
     "npm": ">=5.6.0"
   },
   "dependencies": {
-    "zapier-platform-core": "7.6.1"
+    "zapier-platform-core": "8.0.1"
   },
   "devDependencies": {
     "@types/mocha": "5.2.0",
