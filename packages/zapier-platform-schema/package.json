@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-schema",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-schema",
   "homepage": "https://zapier.com/",
