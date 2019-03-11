@@ -79,7 +79,7 @@ export interface HttpRequestOptions {
   params?: object;
   raw?: boolean;
   redirect?: 'manual' | 'error' | 'follow';
-  removeMissingValuesFrom: {
+  removeMissingValuesFrom?: {
     params: boolean,
     body: boolean,
   };
