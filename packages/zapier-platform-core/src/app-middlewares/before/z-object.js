@@ -20,14 +20,15 @@ const injectZObject = input => {
   const bundle = _.get(input, '_zapier.event.bundle', {});
   const zRoot = {
     console: createLoggerConsole(input),
-    JSON: createJSONtool(),
-    hash: hashing.hashify,
+    cursor: createStoreKeyTool(input),
     dehydrate: createDehydrator(input, 'method'),
     dehydrateFile: createDehydrator(input, 'file'),
-    stashFile: createFileStasher(input),
-    cursor: createStoreKeyTool(input),
+    errors,
     generateCallbackUrl: createCallbackHigherOrderFunction(input),
-    errors
+    hash: hashing.hashify,
+    JSON: createJSONtool(),
+    require: moduleName => require(moduleName),
+    stashFile: createFileStasher(input)
   };
 
   let zSkinny = _.extend({}, zRoot);

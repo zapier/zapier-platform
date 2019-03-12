@@ -530,4 +530,84 @@ describe('create-app', () => {
     it('returns the methods values', () =>
       results.results.should.eql({ callbackUrl: 'calback_url' }));
   });
+
+  describe('using require', () => {
+    const createDefinition = source => ({
+      triggers: {
+        testRequire: {
+          display: {
+            label: 'Test Require',
+            description: 'Put zRequire through the ringer'
+          },
+          key: 'testRequire',
+          operation: {
+            perform: {
+              source
+            }
+          }
+        }
+      }
+    });
+
+    it('should throw a require error', async () => {
+      const definition = createDefinition(`
+        const crypto = require('crypto');
+        return crypto.createHash('md5').update('abc').digest('hex');
+      `);
+      const input = createTestInput('triggers.testRequire.operation.perform');
+
+      const appFail = createApp(definition);
+
+      try {
+        await appFail(input);
+      } catch (error) {
+        error.name.should.eql('RequireModuleError');
+        error.message.should.eql(
+          [
+            'For technical reasons, use z.require() instead of require().',
+            'What happened:',
+            '  Executing triggers.testRequire.operation.perform with bundle',
+            '  For technical reasons, use z.require() instead of require().'
+          ].join('\n')
+        );
+      }
+    });
+
+    it('should import and use the crypto module from node', async () => {
+      const definition = createDefinition(`
+        const crypto = z.require('crypto');
+        return crypto.createHash('md5').update('abc').digest('hex');
+      `);
+      const input = createTestInput('triggers.testRequire.operation.perform');
+
+      const appPass = createApp(definition);
+      const { results } = await appPass(input);
+      results.should.eql('900150983cd24fb0d6963f7d28e17f72');
+    });
+
+    it('should handle require errors', async () => {
+      const definition = createDefinition(`
+        const moment = z.require('moment');
+        return moment(new Date).format(YYYY-MM-DD);
+      `);
+
+      const input = createTestInput('triggers.testRequire.operation.perform');
+
+      const appFail = createApp(definition);
+
+      try {
+        await appFail(input);
+      } catch (error) {
+        error.name.should.eql('Error');
+        error.message.should.eql(
+          [
+            "Cannot find module 'moment'",
+            'What happened:',
+            '  Executing triggers.testRequire.operation.perform with bundle',
+            "  Cannot find module 'moment'"
+          ].join('\n')
+        );
+      }
+    });
+  });
 });

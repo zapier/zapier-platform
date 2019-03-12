@@ -12,6 +12,17 @@ describe('schema-tools', () => {
       func().should.deepEqual([{ id: 1234 }]);
     });
 
+    it('should throw when node require is used', () => {
+      const body = `
+        console.log('running override');
+        const crypto = require('crypto');
+        return crypto.createHash('md5').update('abc').digest('hex');
+      `;
+
+      const func = schemaTools.makeFunction(body);
+      func.should.throw(ReferenceError, { message: 'require is not defined' });
+    });
+
     it('should gracefully handle bad code', () => {
       const func = schemaTools.makeFunction('return [{ id: 12');
       func.should.throw(SyntaxError);

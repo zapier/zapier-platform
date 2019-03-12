@@ -1,13 +1,13 @@
 'use strict';
 
-const _ = require('lodash');
 const util = require('util');
+const _ = require('lodash');
 
 // Make some of the errors we'll use!
 const createError = name => {
-  const NewError = function(message) {
+  const NewError = function(message = '') {
     this.name = name;
-    this.message = message || '';
+    this.message = message;
     Error.call(this);
     Error.captureStackTrace(this, this.constructor);
   };
@@ -16,14 +16,15 @@ const createError = name => {
 };
 
 const names = [
-  'HaltedError',
-  'StopRequestError',
-  'ExpiredAuthError',
+  'CheckError',
   'DehydrateError',
-  'NotImplementedError',
+  'ExpiredAuthError',
+  'HaltedError',
   'MethodDoesNotExist',
+  'NotImplementedError',
   'RefreshAuthError',
-  'CheckError'
+  'RequireModuleError',
+  'StopRequestError'
 ];
 
 const exceptions = _.reduce(
@@ -35,4 +36,22 @@ const exceptions = _.reduce(
   {}
 );
 
-module.exports = exceptions;
+const isRequireError = ({ name, message }) =>
+  name === 'ReferenceError' && message === 'require is not defined';
+
+const handleError = (...args) => {
+  const [error] = args;
+  const { RequireModuleError } = exceptions;
+  if (isRequireError(error)) {
+    throw new RequireModuleError(
+      'For technical reasons, use z.require() instead of require().'
+    );
+  }
+
+  throw error;
+};
+
+module.exports = {
+  ...exceptions,
+  handleError
+};

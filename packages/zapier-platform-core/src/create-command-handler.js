@@ -4,6 +4,7 @@ const schemaTools = require('./tools/schema');
 
 const execute = require('./execute');
 const executeRequest = require('./execute-request');
+const { handleError } = require('./errors');
 
 const commandHandlers = {
   execute,
@@ -23,7 +24,12 @@ const createCommandHandler = compiledApp => {
     if (!handler) {
       throw new Error(`Unexpected command ${command}`);
     }
-    return handler(compiledApp, input);
+
+    try {
+      return handler(compiledApp, input);
+    } catch (err) {
+      return handleError(err);
+    }
   };
 };
 
