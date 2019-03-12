@@ -80,8 +80,8 @@ export interface HttpRequestOptions {
   raw?: boolean;
   redirect?: 'manual' | 'error' | 'follow';
   removeMissingValuesFrom?: {
-    params: boolean,
-    body: boolean,
+    params?: boolean;
+    body?: boolean;
   };
   size?: number;
   timeout?: number;
