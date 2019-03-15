@@ -270,6 +270,13 @@ const upload = (zipPath, sourceZipPath, appDir) => {
 
   const fullZipPath = path.resolve(appDir, zipPath);
   const fullSourceZipPath = path.resolve(appDir, sourceZipPath);
+  const isMissingZip = !fs.existsSync(fullZipPath);
+
+  if (isMissingZip) {
+    throw new Error(
+      'Missing a built app. Try running `zapier build` first.\nOr you could run `zapier push`, which will build and upload in one command.'
+    );
+  }
 
   return getLinkedApp(appDir)
     .then(app => {

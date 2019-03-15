@@ -123,7 +123,7 @@ module.exports = argv => {
     process.exit(1);
   }
 
-  commandFunc.apply(commands, [context].concat(args)).catch(err => {
+  commandFunc(context, ...args).catch(err => {
     utils.endSpinner(false);
 
     if (DEBUG || global.argOpts.debug) {

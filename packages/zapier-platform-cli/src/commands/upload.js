@@ -1,15 +1,20 @@
+const colors = require('colors/safe');
 const constants = require('../constants');
 const utils = require('../utils');
 
-const upload = context => {
-  context.line('Preparing to upload a new version.\n');
-  return utils.upload().then(() => {
+const upload = async context => {
+  try {
+    context.line('Preparing to upload a new version.\n');
+    await utils.upload();
+
     context.line(
       `\nUpload of ${constants.BUILD_PATH} and ${
         constants.SOURCE_PATH
       } complete! Try \`zapier versions\` now!`
     );
-  });
+  } catch (error) {
+    context.line(`${colors.red('Problem uploading:')} ${error.message}`);
+  }
 };
 upload.argsSpec = [];
 upload.argOptsSpec = {};
