@@ -1235,13 +1235,17 @@ If you don't define a trigger for the `dynamic` property, the search connector w
 
 ### Computed Fields
 
-In OAuth and Session Auth, you might want to store fields in `bundle.authData` (other than `access_token`, `refresh_token` — for OAuth —, or `sessionKey` — for Session Auth), that you don't want the user to fill in.
+In OAuth and Session Auth, you may want to use fields from your API call response other than `access_token` or `refresh_token` for OAuth and `sessionKey` for Session auth. For those, you need to use computed fields.
 
-For those situations, you need a computed field. It's just like another field, but with a `computed: true` property (don't forget to also make it `required: false`). You can see examples in the [OAuth2](#oauth2) or [Session Auth](#session) example sections.
+Zapier stores every value from an integration's test API call in `bundle.authData` as _Computed Fields_. You can reference these fields in any subsequent API call as needed.
+
+Computed fields work like any other field, though with `computed: true` property, and `required: false` as user can not enter computed fields themselves. Reference computed fields in API calls as `{{bundle.authData.field}}`, replacing `field` with that field's name from your test API call response.
+
+You can see examples of computed fields in the [OAuth2](#oauth2) or [Session Auth](#session) example sections.
 
 ## Output Fields
 
-On each trigger, search, or create in the operation directive - you can provide an array of objects as fields under the `outputFields`. Output Fields are what your users would see when they select a field provided by your trigger, search or create to map it to another.
+On each trigger, search, or create in the operation directive, you can provide an array of objects as fields under the `outputFields`. Output Fields are what your users would see when they select a field provided by your trigger, search or create to map it to another.
 
 Output Fields are optional, but can be used to:
 
