@@ -1245,7 +1245,7 @@ You can see examples of computed fields in the [OAuth2](#oauth2) or [Session Aut
 
 ## Output Fields
 
-On each trigger, search, or create in the operation directive, you can provide an array of objects as fields under the `outputFields`. Output Fields are what your users would see when they select a field provided by your trigger, search or create to map it to another.
+On each trigger, search, or create in the operation directive - you can provide an array of objects as fields under the `outputFields`. Output Fields are what your users would see when they select a field provided by your trigger, search or create to map it to another.
 
 Output Fields are optional, but can be used to:
 

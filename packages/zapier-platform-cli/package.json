@@ -48,6 +48,7 @@
     "colors": "1.1.2",
     "compress-commons": "1.2.0",
     "core-js": "2.4.1",
+    "docs": "0.0.0-37",
     "eslint": "4.17.0",
     "eslint-plugin-node": "6.0.0",
     "fs-extra": "3.0.1",
