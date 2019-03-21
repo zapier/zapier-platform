@@ -1648,4 +1648,4 @@ This section is only relevant if you're editing the `zapier-platform-cli` packag
 
 ## Get Help!
 
-You can get help by either emailing partners@zapier.com or by joining our Slack channel https://zapier-platform-slack.herokuapp.com.
+You can get help by either emailing partners@zapier.com or by [joining our Slack team here](https://join.slack.com/t/zapier-platform/shared_invite/enQtNTg1MjM5NjMzNTI3LWVhZjk3NjFlNWFiMTBmMDExMzI5NDZiZmFiOTJjYmI3NmY2MzEwZDUxNzQ3MTliMTM5N2M3NGM2MmQ2Y2VkODE).
