@@ -984,7 +984,7 @@ zapier apps
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>An App Version is related to a specific App but is an &quot;immutable&quot; implementation of your app. This makes it easy to run multiple versions for multiple users concurrently. By default, <strong>every App Version is private</strong> but you can <code>zapier promote</code> it to production for use by over 1 million Zapier users.</p>
+      <p>An App Version is related to a specific App but is an &quot;immutable&quot; implementation of your app. This makes it easy to run multiple versions for multiple users concurrently. The App Version is pulled from the version within the <code>package.json</code>. To create a new App Version, update the version number in that file. By default, <strong>every App Version is private</strong> but you can <code>zapier promote</code> it to production for use by over 1 million Zapier users.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># push your app version to Zapier</span>
