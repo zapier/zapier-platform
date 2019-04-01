@@ -12,7 +12,8 @@ export const tools: { env: { inject: (filename?: string) => void } };
 
 // see: https://github.com/zapier/zapier-platform-cli/issues/339#issue-336888249
 export const createAppTester: (
-  appRaw: object
+  appRaw: object,
+  customStoreKey?: string
 ) => <T extends any, B extends Bundle>(
   func: (z: ZObject, bundle: B) => Promise<T>,
   bundle?: Partial<B> // partial so we don't have to make a full bundle in tests

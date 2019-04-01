@@ -36,7 +36,7 @@ const promisifyHandler = handler => {
 };
 
 // A shorthand compatible wrapper for testing.
-const createAppTester = appRaw => {
+const createAppTester = (appRaw, customStoreKey) => {
   const handler = createLambdaHandler(appRaw);
   const createHandlerPromise = promisifyHandler(handler);
 
@@ -46,15 +46,17 @@ const createAppTester = appRaw => {
     bundle = bundle || {};
 
     const method = resolveMethodPath(appRaw, methodOrFunc);
+    customStoreKey = shouldPaginate(appRaw, method)
+    ? customStoreKey
+      ? `testKey-${customStoreKey}`
+      : `testKey-${method}-${randomSeed}`
+    : null;
 
     const event = {
       command: 'execute',
       method,
       bundle,
-      storeKey: shouldPaginate(appRaw, method)
-        ? // this key will be consistent across runs but unique to each test so we don't lose cursors
-          `testKey-${method}-${randomSeed}`
-        : null
+      customStoreKey,
     };
 
     if (process.env.LOG_TO_STDOUT) {
