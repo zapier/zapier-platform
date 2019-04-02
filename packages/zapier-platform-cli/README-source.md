@@ -543,19 +543,64 @@ Additionally, if there is a field that affects the generation of dynamic fields,
 
 ### Dynamic Dropdowns
 
-Sometimes, API endpoints require clients to specify a parent object in order to create or access the child resources. Imagine having to specify a company id in order to get a list of employees for that company. Since people don't speak in auto-incremented ID's, it is necessary that Zapier offer a simple way to select that parent using human readable handles.
+Sometimes, API endpoints require clients to specify a parent object in order to create or access the child resources. For instance, specifying a spreadsheet id in order to retrieve its worksheets. Since people don't speak in auto-incremented ID's, it is necessary that Zapier offer a simple way to select that parent using human readable handles.
 
 Our solution is to present users a dropdown that is populated by making a live API call to fetch a list of parent objects. We call these special dropdowns "dynamic dropdowns."
 
-To define one, you can provide the `dynamic` property on your field to specify the trigger that should be used to populate the options for the dropdown. The value for the property is a dot-separated concatenation of a trigger's key, the field to use for the value, and the field to use for the label.
+To define one you include the `dynamic` property on the `inputFields` object. The value for the property is a dot-separated _string_ concatenation.
 
 ```js
-[insert-file:./snippets/dynamic-dropdowns.js]
+[insert-file:./snippets/dynamic-dropdowns-one.js]
 ```
 
-In the UI, users will see something like this:
+The dot-separated string concatenation follows this pattern:
 
+- The key of the trigger you want to use to power the dropdown. _required_
+- The value to be made available in bundle.inputData. _required_
+- The human friendly value to be shown on the left of the dropdown in bold. _optional_
+
+In the above code example the dynamic property makes reference to a trigger with a key of project. Assuming the project trigger returns an array of objects and each object contains an id and name key, i.e.  
+
+```js
+[insert-file:./snippets/dynamic-dropdowns-two.js]
+```  
+
+The dynamic dropdown would look something like this.  
 ![screenshot of dynamic dropdown in Zap Editor](https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png)
+
+In the first code example the dynamic dropdown is powered by a trigger. You can also use a resource to power a dynamic dropdown. To do this combine the resource key and the resource method using camel case.  
+
+```js
+[insert-file:./snippets/dynamic-dropdowns-three.js]
+```  
+
+In some cases you will need to power a dynamic dropdown but do not want to make the Trigger available to the end user. Here it is best practice to create the trigger and set `hidden: true` on it's display object.  
+
+```js
+[insert-file:./snippets/dynamic-dropdowns-four.js]
+```  
+
+You can have multiple dynamic dropdowns in a single Trigger or Action. And a dynamic dropdown can depend on the value chosen in another dynamic dropdown when making it's API call. Such as a Spreadsheet and Worksheet dynamic dropdown in a trigger or action. This means you must make sure that the key of the first dynamic dropdown is the same as referenced in the trigger powering the second.
+
+Let's say you have a Worksheet trigger with a `perform` method similar to this.  
+
+```js
+[insert-file:./snippets/dynamic-dropdowns-five.js]
+```  
+
+And your New Records trigger has a Spreadsheet and a Worksheet dynamic dropdown. The Spreadsheet dynamic dropdown must have a key of `spreadsheet_id`. When the user selects a spreadsheet via the dynamic dropdown the value chosen is made available in `bundle.inputData`. It will then be passed to the Worksheet trigger when the user clicks on the Worksheet dynamic dropdown.  
+
+```js
+[insert-file:./snippets/dynamic-dropdowns-six.js]
+```  
+
+The [Google Sheets](https://zapier.com/apps/google-sheets/integrations#triggers-and-actions) integration is an example of this pattern.
+
+If you want your trigger to perform specific scripting for a dynamic dropdown you will need to make use of `bundle.meta.isFillingDynamicDropdown`. This can be useful if need to make use of [pagination](#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work) in the dynamic dropdown to load more options.  
+
+```js
+[insert-file:./snippets/dynamic-dropdowns-seven.js]
+```  
 
 ### Search-Powered Fields
 

@@ -2063,7 +2063,61 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Sometimes, API endpoints require clients to specify a parent object in order to create or access the child resources. Imagine having to specify a company id in order to get a list of employees for that company. Since people don&apos;t speak in auto-incremented ID&apos;s, it is necessary that Zapier offer a simple way to select that parent using human readable handles.</p><p>Our solution is to present users a dropdown that is populated by making a live API call to fetch a list of parent objects. We call these special dropdowns &quot;dynamic dropdowns.&quot;</p><p>To define one, you can provide the <code>dynamic</code> property on your field to specify the trigger that should be used to populate the options for the dropdown. The value for the property is a dot-separated concatenation of a trigger&apos;s key, the field to use for the value, and the field to use for the label.</p>
+      <p>Sometimes, API endpoints require clients to specify a parent object in order to create or access the child resources. For instance, specifying a spreadsheet id in order to retrieve its worksheets. Since people don&apos;t speak in auto-incremented ID&apos;s, it is necessary that Zapier offer a simple way to select that parent using human readable handles.</p><p>Our solution is to present users a dropdown that is populated by making a live API call to fetch a list of parent objects. We call these special dropdowns &quot;dynamic dropdowns.&quot;</p><p>To define one you include the <code>dynamic</code> property on the <code>inputFields</code> object. The value for the property is a dot-separated <em>string</em> concatenation.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-comment">//...</span>
+issue: {
+  <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
+  <span class="hljs-comment">//...</span>
+  create: {
+    <span class="hljs-comment">//...</span>
+    operation: {
+      <span class="hljs-attr">inputFields</span>: [
+        {
+          <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>,
+          <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+          <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;This is a dynamic dropdown&apos;</span>,
+          <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;project.id.name&apos;</span>
+        }, <span class="hljs-comment">// will call the trigger with a key of project</span>
+        {
+          <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
+          <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+          <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>,
+          <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>
+        }
+      ]
+    }
+  }
+}
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>The dot-separated string concatenation follows this pattern:</p><ul>
+<li>The key of the trigger you want to use to power the dropdown. <em>required</em></li>
+<li>The value to be made available in bundle.inputData. <em>required</em></li>
+<li>The human friendly value to be shown on the left of the dropdown in bold. <em>optional</em></li>
+</ul><p>In the above code example the dynamic property makes reference to a trigger with a key of project. Assuming the project trigger returns an array of objects and each object contains an id and name key, i.e.  </p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js">[
+  { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;1&apos;</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;First Option&apos;</span>, <span class="hljs-attr">dateCreated</span>: <span class="hljs-string">&apos;01/01/2000&apos;</span> },
+  { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;2&apos;</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Second Option&apos;</span>, <span class="hljs-attr">dateCreated</span>: <span class="hljs-string">&apos;01/01/2000&apos;</span> },
+  { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;3&apos;</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Third Option&apos;</span>, <span class="hljs-attr">dateCreated</span>: <span class="hljs-string">&apos;01/01/2000&apos;</span> },
+  { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;4&apos;</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Fourth Option&apos;</span>, <span class="hljs-attr">dateCreated</span>: <span class="hljs-string">&apos;01/01/2000&apos;</span> }
+];
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>The dynamic dropdown would look something like this.<br><img src="https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png" alt="screenshot of dynamic dropdown in Zap Editor"></p><p>In the first code example the dynamic dropdown is powered by a trigger. You can also use a resource to power a dynamic dropdown. To do this combine the resource key and the resource method using camel case.  </p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
@@ -2113,10 +2167,145 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>In the UI, users will see something like this:</p><p><img src="https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png" alt="screenshot of dynamic dropdown in Zap Editor"></p>
+      <p>In some cases you will need to power a dynamic dropdown but do not want to make the Trigger available to the end user. Here it is best practice to create the trigger and set <code>hidden: true</code> on it&apos;s display object.  </p>
     </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">//...</span>
+  triggers: {
+    <span class="hljs-attr">new_project</span>: {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project&apos;</span>,
+      <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Project&apos;</span>,
+      <span class="hljs-comment">// `display` controls the presentation in the Zapier Editor</span>
+      display: {
+        <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Project&apos;</span>,
+        <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new project is added.&apos;</span>,
+        <span class="hljs-attr">hidden</span>: <span class="hljs-literal">true</span>
+      },
+      <span class="hljs-attr">operation</span>: {
+        <span class="hljs-attr">perform</span>: projectListRequest
+      }
+    },
+    <span class="hljs-attr">another_trigger</span>: {
+      <span class="hljs-comment">// Another trigger definition...</span>
+    }
+  }
+};
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>You can have multiple dynamic dropdowns in a single Trigger or Action. And a dynamic dropdown can depend on the value chosen in another dynamic dropdown when making it&apos;s API call. Such as a Spreadsheet and Worksheet dynamic dropdown in a trigger or action. This means you must make sure that the key of the first dynamic dropdown is the same as referenced in the trigger powering the second.</p><p>Let&apos;s say you have a Worksheet trigger with a <code>perform</code> method similar to this.  </p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js">perform: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> z
+    .request(<span class="hljs-string">&apos;http://example.com/api/v2/projects.json&apos;</span>, {
+      <span class="hljs-attr">params</span>: {
+        <span class="hljs-attr">spreadsheet_id</span>: bundle.inputData.spreadsheet_id
+      }
+    })
+    .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> z.JSON.parse(response.content));
+};
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>And your New Records trigger has a Spreadsheet and a Worksheet dynamic dropdown. The Spreadsheet dynamic dropdown must have a key of <code>spreadsheet_id</code>. When the user selects a spreadsheet via the dynamic dropdown the value chosen is made available in <code>bundle.inputData</code>. It will then be passed to the Worksheet trigger when the user clicks on the Worksheet dynamic dropdown.  </p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">//...</span>
+  triggers: {
+    <span class="hljs-comment">//...</span>
+    issue: {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;new_records&apos;</span>,
+      <span class="hljs-comment">//...</span>
+      create: {
+        <span class="hljs-comment">//...</span>
+        operation: {
+          <span class="hljs-attr">inputFields</span>: [
+            {
+              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;spreadsheet_id&apos;</span>,
+              <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+              <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Spreadsheet&apos;</span>,
+              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;spreadsheet.id.name&apos;</span>
+            },
+            {
+              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;worksheet_id&apos;</span>,
+              <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+              <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Worksheet&apos;</span>,
+              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;worksheet.id.name&apos;</span>
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>The <a href="https://zapier.com/apps/google-sheets/integrations#triggers-and-actions">Google Sheets</a> integration is an example of this pattern.</p><p>If you want your trigger to perform specific scripting for a dynamic dropdown you will need to make use of <code>bundle.meta.isFillingDynamicDropdown</code>. This can be useful if need to make use of <a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">pagination</a> in the dynamic dropdown to load more options.  </p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">//...</span>
+  resources: {
+    <span class="hljs-attr">project</span>: {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project&apos;</span>,
+      <span class="hljs-comment">//...</span>
+      list: {
+        <span class="hljs-comment">//...</span>
+        operation: {
+          <span class="hljs-attr">canPaginate</span>: <span class="hljs-literal">true</span>,
+          <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+            <span class="hljs-keyword">if</span> (bundle.meta.isFillingDynamicDropdown) {
+              <span class="hljs-comment">// perform pagination request here</span>
+            } <span class="hljs-keyword">else</span> {
+              <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span> }];
+            }
+          }
+        }
+      }
+    },
+    <span class="hljs-attr">issue</span>: {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
+      <span class="hljs-comment">//...</span>
+      create: {
+        <span class="hljs-comment">//...</span>
+        operation: {
+          <span class="hljs-attr">inputFields</span>: [
+            {
+              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>,
+              <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+              <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>,
+              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>
+            }, <span class="hljs-comment">// calls project.list</span>
+            {
+              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
+              <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+              <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>,
+              <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>
+            }
+          ]
+        }
+      }
+    }
+  }
+};
+
+</code></pre>
     </div>
   </div>
 </div><div class="row">
