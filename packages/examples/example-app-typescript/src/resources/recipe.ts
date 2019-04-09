@@ -2,14 +2,16 @@ import { ZObject, Bundle } from "zapier-platform-core";
 
 const _sharedBaseUrl = "https://auth-json-server.zapier.ninja";
 
-const getRecipe = async (z: ZObject, bundle: Bundle) => {
+// you can optionally add add the shape of the inputData in bundle, which will pass that
+//   info down into the function and tests
+const getRecipe = async (z: ZObject, bundle: Bundle<{ id: string }>) => {
   const response = await z.request({
     url: `${_sharedBaseUrl}/recipes/${bundle.inputData.id}`
   });
   return z.JSON.parse(response.content);
 };
 
-const listRecipes = async (z: ZObject, bundle: Bundle) => {
+const listRecipes = async (z: ZObject, bundle: Bundle<{ style?: string }>) => {
   const response = await z.request({
     url: _sharedBaseUrl + "/recipes",
     params: {
@@ -19,7 +21,15 @@ const listRecipes = async (z: ZObject, bundle: Bundle) => {
   return z.JSON.parse(response.content);
 };
 
-const createRecipe = async (z: ZObject, bundle: Bundle) => {
+const createRecipe = async (
+  z: ZObject,
+  bundle: Bundle<{
+    name: string;
+    directions: string;
+    authorId: number;
+    style?: string;
+  }>
+) => {
   const response = await z.request({
     url: _sharedBaseUrl + "/recipes",
     method: "POST",
@@ -69,6 +79,8 @@ const Recipe = {
   // The get method is used by Zapier to fetch a complete representation of a record. This is helpful when the HTTP
   // response from a create call only return an ID, or a search that only returns a minimuml representation of the
   // record. Zapier will follow these up with the get() to retrieve the entire object.
+
+  // You can delete this property if all your calls return the full object
   get: {
     display: {
       label: "Get Recipe",
@@ -76,8 +88,7 @@ const Recipe = {
     },
     operation: {
       inputFields: [{ key: "id", required: true }],
-      perform: getRecipe,
-      sample
+      perform: getRecipe
     }
   },
   // The list method on this resource becomes a Trigger on the app. Zapier will use polling to watch for new records
@@ -94,8 +105,7 @@ const Recipe = {
           helpText: "Explain what style of cuisine this is."
         }
       ],
-      perform: listRecipes,
-      sample
+      perform: listRecipes
     }
   },
   // If your app supports webhooks, you can define a hook method instead of a list method.
@@ -132,8 +142,7 @@ const Recipe = {
           helpText: "Explain what style of cuisine this is."
         }
       ],
-      perform: createRecipe,
-      sample
+      perform: createRecipe
     }
   },
   // The search method on this resource becomes a Search on this app
@@ -144,8 +153,7 @@ const Recipe = {
     },
     operation: {
       inputFields: [{ key: "name", required: true, type: "string" }],
-      perform: searchRecipe,
-      sample
+      perform: searchRecipe
     }
   },
 
