@@ -37,12 +37,10 @@ export interface Bundle<InputData = { [x: string]: any }> {
   inputData: InputData;
   inputDataRaw: { [x: string]: string };
   meta: {
-    frontend: boolean;
-    prefill: boolean;
-    hydrate: boolean;
-    test_poll: boolean;
-    standard_poll: boolean;
-    first_poll: boolean;
+    isFillingDynamicDropdown: boolean;
+    isLoadingSample: boolean;
+    isPopulatingDedupe: boolean;
+    isTestingAuth: boolean;
     limit: number;
     page: number;
     zap?: { id: string };

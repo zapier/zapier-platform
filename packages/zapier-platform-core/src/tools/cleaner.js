@@ -13,8 +13,9 @@ const {
 const DEFAULT_BUNDLE = {
   authData: {},
   inputData: {},
-  targetUrl: '',
-  subscribeData: {}
+  meta: {},
+  subscribeData: {},
+  targetUrl: ''
 };
 
 const recurseCleanFuncs = (obj, path) => {

@@ -502,7 +502,12 @@ describe('request client', () => {
     it('should resolve bundle tokens in performSubscribe', () => {
       const targetUrl = 'https://zapier.com/hooks';
       const event = {
-        bundle: { targetUrl }
+        bundle: {
+          targetUrl,
+          meta: {
+            zap: { id: 987 }
+          }
+        }
       };
       const subscribeInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(subscribeInput);
@@ -510,12 +515,14 @@ describe('request client', () => {
         url: 'https://httpbin.org/post',
         method: 'POST',
         body: {
-          hookUrl: '{{bundle.targetUrl}}'
+          hookUrl: '{{bundle.targetUrl}}',
+          zapId: '{{bundle.meta.zap.id}}'
         }
       }).then(response => {
-        const { hookUrl } = JSON.parse(response.json.data);
+        const { hookUrl, zapId } = JSON.parse(response.json.data);
 
         hookUrl.should.eql(targetUrl);
+        zapId.should.eql(987);
       });
     });
 
@@ -541,7 +548,7 @@ describe('request client', () => {
     });
   });
 
-  describe('resolves body and header curlies', () => {
+  describe('resolves curlies', () => {
     it('should keep valid data types', () => {
       const event = {
         bundle: {
@@ -650,6 +657,40 @@ describe('request client', () => {
 
         json.streetAddress.should.eql('123 Zapier Way');
         json.city.should.eql('El Mundo');
+      });
+    });
+
+    it('should resolve all bundle fields', () => {
+      const event = {
+        bundle: {
+          inputData: {
+            resourceId: 123
+          },
+          authData: {
+            access_token: 'Let me in'
+          },
+          meta: {
+            limit: 20
+          }
+        }
+      };
+      const bodyInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(bodyInput);
+      return request({
+        url: 'https://httpbin.org/get',
+        method: 'GET',
+        params: {
+          limit: '{{bundle.meta.limit}}',
+          id: '{{bundle.inputData.resourceId}}'
+        },
+        headers: {
+          Authorization: 'Bearer {{bundle.authData.access_token}}'
+        }
+      }).then(response => {
+        const { headers } = response.json;
+        const { url } = JSON.parse(response.content);
+        url.should.eql('https://httpbin.org/get?limit=20&id=123');
+        headers.Authorization.should.eql('Bearer Let me in');
       });
     });
   });
