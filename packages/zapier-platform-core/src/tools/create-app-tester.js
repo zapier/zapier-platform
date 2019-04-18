@@ -46,17 +46,17 @@ const createAppTester = (appRaw, customStoreKey) => {
     bundle = bundle || {};
 
     const method = resolveMethodPath(appRaw, methodOrFunc);
-    customStoreKey = shouldPaginate(appRaw, method)
-    ? customStoreKey
-      ? `testKey-${customStoreKey}`
-      : `testKey-${method}-${randomSeed}`
-    : null;
+    const storeKey = shouldPaginate(appRaw, method)
+      ? customStoreKey
+        ? `testKey-${customStoreKey}`
+        : `testKey-${method}-${randomSeed}`
+      : null;
 
     const event = {
       command: 'execute',
       method,
       bundle,
-      customStoreKey,
+      storeKey
     };
 
     if (process.env.LOG_TO_STDOUT) {
