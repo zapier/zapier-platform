@@ -58,7 +58,7 @@ describe('Tools', () => {
   it('should truncate many things!', () => {
     const tests = [
       { value: null, length: 5, suffix: undefined, expected: '' },
-      { value: undefined, length: 5, suffix: '...', expected: '' },
+      { value: undefined, length: 5, suffix: '...', expected: undefined },
       { value: false, length: 5, suffix: '...', expected: '' },
       { value: '', length: 5, suffix: undefined, expected: '' },
       { value: [], length: 5, suffix: '...', expected: '' },
@@ -92,9 +92,9 @@ describe('Tools', () => {
     ];
 
     tests.forEach(test => {
-      dataTools
-        .simpleTruncate(test.value, test.length, test.suffix)
-        .should.eql(test.expected);
+      should(
+        dataTools.simpleTruncate(test.value, test.length, test.suffix)
+      ).eql(test.expected);
     });
   });
 

@@ -169,6 +169,9 @@ const flattenPaths = (data, { preserve = {} } = {}) => {
 
 // A simpler, and memory-friendlier version of _.truncate()
 const simpleTruncate = (string, length, suffix) => {
+  if (string === undefined) {
+    return string;
+  }
   if (!string || !string.toString) {
     return '';
   }

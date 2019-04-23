@@ -1,31 +1,10 @@
 'use strict';
 
-const prepHeaders = headers => {
-  headers = headers || {};
-
-  if (headers && typeof headers.forEach === 'function') {
-    const _headers = {};
-    headers.forEach((value, name) => {
-      _headers[name] = value;
-    });
-    headers = _headers;
-  }
-
-  return Object.keys(headers).map(k => {
-    const v = headers[k];
-    return `${k}: ${v}`;
-  });
-};
-
 // Prepare a request/reponse to be logged to the backend.
 // Generally respects the "Zapier" request and resp object format.
 const prepareRequestLog = (req, resp) => {
   req = req || {};
   resp = resp || {};
-
-  const requestHeaders = prepHeaders(req.headers);
-
-  const respHeaders = prepHeaders(resp.headers);
 
   let body;
   if (!req.raw) {
@@ -43,11 +22,11 @@ const prepareRequestLog = (req, resp) => {
     request_type: 'devplatform-outbound',
     request_url: req.url,
     request_method: req.method || 'GET',
-    request_headers: requestHeaders.join('\n'),
+    request_headers: req.headers,
     request_data: req.body,
     request_via_client: true,
     response_status_code: resp.status,
-    response_headers: respHeaders.join('\n'),
+    response_headers: resp.headers,
     response_content: body
   };
 

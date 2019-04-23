@@ -50,15 +50,6 @@ const createHttpPatch = event => {
 
       // Proxy the callback to get the response
       const newCallback = function(response) {
-        const requestHeaders = _.map(
-          Object.keys(options.headers || {}),
-          header => `${header}: ${options.headers[header]}`
-        );
-        const responseHeaders = _.map(
-          Object.keys(response.headers || {}),
-          header => `${header}: ${response.headers[header]}`
-        );
-
         const chunks = [];
 
         const sendToLogger = responseBody => {
@@ -68,11 +59,11 @@ const createHttpPatch = event => {
             request_type: 'devplatform-outbound',
             request_url: requestUrl,
             request_method: options.method || 'GET',
-            request_headers: requestHeaders.join('\n'),
+            request_headers: options.headers,
             request_data: options.body || '',
             request_via_client: false,
             response_status_code: response.statusCode,
-            response_headers: responseHeaders.join('\n'),
+            response_headers: response.headers,
             response_content: responseBody
           };
 

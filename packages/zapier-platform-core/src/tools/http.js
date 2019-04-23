@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const fetch = require('node-fetch');
 
 const FORM_TYPE = 'application/x-www-form-urlencoded';
 const JSON_TYPE = 'application/json';
@@ -93,10 +94,14 @@ const parseDictHeader = s => {
   return res;
 };
 
+const unheader = h =>
+  h instanceof fetch.Headers && _.isFunction(h.toJSON) ? h.toJSON() : h;
+
 module.exports = {
   FORM_TYPE,
   JSON_TYPE,
   JSON_TYPE_UTF8,
   getContentType,
-  parseDictHeader
+  parseDictHeader,
+  unheader
 };
