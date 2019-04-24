@@ -1,34 +1,29 @@
 const constants = require('../constants');
 const utils = require('../utils');
 
-const logout = context => {
+const logout = async context => {
   context.line(
     'Preparing to deactivate personal deploy keys and reset local configs.'
   );
   context.line();
-
-  return Promise.resolve()
-    .then(() => {
-      utils.startSpinner('Deactivating personal deploy keys');
-      return utils
-        .callAPI('/keys', {
-          method: 'DELETE'
-        })
-        .then(() => true)
-        .catch(() => true);
-    })
-    .then(() => {
-      utils.endSpinner();
-      utils.startSpinner(`Destroying \`${constants.AUTH_LOCATION_RAW}\``);
-      return utils.deleteFile(constants.AUTH_LOCATION);
-    })
-    .then(() => {
-      utils.endSpinner();
-      context.line();
-      context.line(
-        'All personal deploy keys deactivated - now try `zapier login` to login again.'
-      );
+  utils.startSpinner('Deactivating personal deploy keys');
+  try {
+    await utils.callAPI('/keys', {
+      method: 'DELETE'
     });
+  } catch (e) {
+    // no worries
+  }
+
+  utils.endSpinner();
+  utils.startSpinner(`Destroying \`${constants.AUTH_LOCATION_RAW}\``);
+  await utils.deleteFile(constants.AUTH_LOCATION);
+
+  utils.endSpinner();
+  context.line();
+  context.line(
+    'All personal deploy keys deactivated - now try `zapier login` to login again.'
+  );
 };
 logout.argsSpec = [];
 logout.argOptsSpec = {};
