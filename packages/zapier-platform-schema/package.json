@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "jsonschema": "1.1.1",
-    "lodash": "4.17.10"
+    "lodash": "4.17.11"
   },
   "devDependencies": {
     "eslint": "4.19.1",
