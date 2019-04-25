@@ -130,11 +130,13 @@ const loadApp = (event, rpc, appRawOrPath) => {
   });
 };
 
-const createLambdaHandler = appRawOrPath => {
+const createLambdaHandler = (appRawOrPath, { skipHttpPatch } = {}) => {
   const handler = (event, context, callback) => {
     // Adds logging for _all_ kinds of http(s) requests, no matter the library
-    const httpPatch = createHttpPatch(event);
-    httpPatch(require('http')); // 'https' uses 'http' under the hood
+    if (!skipHttpPatch) {
+      const httpPatch = createHttpPatch(event);
+      httpPatch(require('http')); // 'https' uses 'http' under the hood
+    }
 
     // Wait for all async events to complete before callback returns.
     // This is not strictly necessary since this is the default now when
