@@ -13,6 +13,7 @@ const RequestSchema = require('./RequestSchema');
 const VersionSchema = require('./VersionSchema');
 const MiddlewaresSchema = require('./MiddlewaresSchema');
 const HydratorsSchema = require('./HydratorsSchema');
+const AppFlagsSchema = require('./AppFlagsSchema');
 
 module.exports = makeSchema(
   {
@@ -89,6 +90,10 @@ module.exports = makeSchema(
           'All the search-or-create combos for your app. You can create your own here, or Zapier will automatically register any from resources that define a search, a create, and a get (or define a searchOrCreate directly). Register non-resource search-or-creates here as well.',
         $ref: SearchOrCreatesSchema.id
       },
+      flags: {
+        description: 'Top-level app options',
+        $ref: AppFlagsSchema.id
+      },
       legacy: {
         description:
           '**INTERNAL USE ONLY**. Zapier uses this to hold properties from a legacy Web Builder app.',
@@ -111,6 +116,7 @@ module.exports = makeSchema(
     RequestSchema,
     VersionSchema,
     MiddlewaresSchema,
-    HydratorsSchema
+    HydratorsSchema,
+    AppFlagsSchema
   ]
 );
