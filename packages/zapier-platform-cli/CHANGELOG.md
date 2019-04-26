@@ -1,3 +1,28 @@
+## 8.1.0
+
+### cli
+* (fix) Add a better error message when uploading with a zip ([#408](https://github.com/zapier/zapier-platform-cli/pull/408))
+* (chore) port logout command to async func ([#419](https://github.com/zapier/zapier-platform-cli/pull/419))
+* (docs) Add code examples and scenarios to the dynamic dropdowns section of the Readme ([#415](https://github.com/zapier/zapier-platform-cli/pull/415))
+* (docs) Add example for input fields with 'children' parameter ([#413](https://github.com/zapier/zapier-platform-cli/pull/413))
+* (docs) Update signup link ([#412](https://github.com/zapier/zapier-platform-cli/pull/412))
+* (docs) Update readme details for version number ([#411](https://github.com/zapier/zapier-platform-cli/pull/411))
+* (docs) Misc improvements ([#423](https://github.com/zapier/zapier-platform-cli/pull/423))
+
+### schema
+* (improvement) Add appflags property ([#68](https://github.com/zapier/zapier-platform-schema/pull/68))
+* (chore) Bump Lodash Version ([#67](https://github.com/zapier/zapier-platform-schema/pull/67))
+
+### core
+* (improvement) Allow Godzilla to require modules in code mode ([#145](https://github.com/zapier/zapier-platform-core/pull/145))
+* (improvement) Add the ability to skip http patching ([#150](https://github.com/zapier/zapier-platform-core/pull/150))
+* (fix) Censor auth headers in edge cases ([#151](https://github.com/zapier/zapier-platform-core/pull/151))
+* (fix) Add meta to the bundle bank for resolving curlies. ([#149](https://github.com/zapier/zapier-platform-core/pull/149))
+* (fix) Pass correct storekey ([#148](https://github.com/zapier/zapier-platform-core/pull/148))
+* (fix) Add optional parameter to createAppTester to customize storeKey ([#147](https://github.com/zapier/zapier-platform-core/pull/147))
+* (fix) Fix individual types for removeMissingValuesFrom object ([#146](https://github.com/zapier/zapier-platform-core/pull/146))
+* (fix) Make removeMissing correctly optional ([#143](https://github.com/zapier/zapier-platform-core/pull/143))
+
 ## 8.0.1
 
 A quick bugfix to resolve a regression

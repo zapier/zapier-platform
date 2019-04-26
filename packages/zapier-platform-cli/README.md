@@ -1434,33 +1434,32 @@ const App = {
     //...
     inputFields: [
       {
-      key: 'lineItems',
-      required: true,
-      children: [
+        key: 'lineItems',
+        required: true,
+        children: [
           {
-          key: 'lineItemId',
-          type: 'integer',
-          label: 'Line Item ID',
-          required: true
+            key: 'lineItemId',
+            type: 'integer',
+            label: 'Line Item ID',
+            required: true
           },
           {
-          key: 'name',
-          type: 'string',
-          label: 'Name',
-          required: true
+            key: 'name',
+            type: 'string',
+            label: 'Name',
+            required: true
           },
           {
-          key: 'description',
-          type: 'string',
-          label: 'Description'
+            key: 'description',
+            type: 'string',
+            label: 'Description'
           }
         ]
       }
-    ],
+    ]
     // ...
   }
-}
-;
+};
 
 ```
 
