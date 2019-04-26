@@ -7,8 +7,7 @@ const test = (z /*, bundle*/) => {
   // Raise an error to show
   return z
     .request({
-      url: 'https://zapier-httpbin.herokuapp.com/digest-auth/auth/myuser/mypass'
-      // url: 'https://httpbin.org/digest-auth/auth/myuser/mypass'
+      url: 'https://httpbin.org/digest-auth/auth/myuser/mypass'
     })
     .then(response => {
       if (response.status === 401) {
