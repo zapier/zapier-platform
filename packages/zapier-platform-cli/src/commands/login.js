@@ -45,6 +45,9 @@ const login = async (context, firstTime = true) => {
     );
   }
   const username = await utils.getInput(QUESTION_USERNAME);
+  context.line(
+    "\nNow you'll enter your Zapier password. If you log into Zapier via the Google button, you may not have a Zapier password. If that's the case, go to https://zapier.com/app/login/forgot and create one.\n"
+  );
   const password = await utils.getInput(QUESTION_PASSWORD, { secret: true });
 
   let goodResponse;
