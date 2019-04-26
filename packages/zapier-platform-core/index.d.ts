@@ -56,7 +56,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
     querystring: { [x: string]: string };
     headers: { [x: string]: string };
     content: { [x: string]: string };
-  }>;
+  }> | any;
   subscribeData?: { id: string };
   targetUrl?: string;
 }
