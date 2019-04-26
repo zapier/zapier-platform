@@ -54,8 +54,9 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [Dynamic Dropdowns](#dynamic-dropdowns)
   * [Search-Powered Fields](#search-powered-fields)
   * [Computed Fields](#computed-fields)
-- [Output Fields](#output-fields)
   * [Nested & Children (Line Item) Fields](#nested--children-line-item-fields)
+- [Output Fields](#output-fields)
+  * [Nested & Children (Line Item) Fields](#nested--children-line-item-fields-1)
 - [Z Object](#z-object)
   * [`z.request([url], options)`](#zrequesturl-options)
   * [`z.console`](#zconsole)
@@ -1421,6 +1422,47 @@ Zapier stores every value from an integration's test API call in `bundle.authDat
 Computed fields work like any other field, though with `computed: true` property, and `required: false` as user can not enter computed fields themselves. Reference computed fields in API calls as `{{bundle.authData.field}}`, replacing `field` with that field's name from your test API call response.
 
 You can see examples of computed fields in the [OAuth2](#oauth2) or [Session Auth](#session) example sections.
+
+### Nested & Children (Line Item) Fields
+
+When your action needs to accept an array of items, you can include an input field with the `children` attribute. The `children` attribute accepts a list of [fields](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema) that can be input for each item in this array.  
+
+```js
+const App = {
+  //...
+  operation: {
+    //...
+    inputFields: [
+      {
+      key: 'lineItems',
+      required: true,
+      children: [
+          {
+          key: 'lineItemId',
+          type: 'integer',
+          label: 'Line Item ID',
+          required: true
+          },
+          {
+          key: 'name',
+          type: 'string',
+          label: 'Name',
+          required: true
+          },
+          {
+          key: 'description',
+          type: 'string',
+          label: 'Description'
+          }
+        ]
+      }
+    ],
+    // ...
+  }
+}
+;
+
+```
 
 ## Output Fields
 

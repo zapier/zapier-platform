@@ -624,6 +624,14 @@ Computed fields work like any other field, though with `computed: true` property
 
 You can see examples of computed fields in the [OAuth2](#oauth2) or [Session Auth](#session) example sections.
 
+### Nested & Children (Line Item) Fields
+
+When your action needs to accept an array of items, you can include an input field with the `children` attribute. The `children` attribute accepts a list of [fields](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema) that can be input for each item in this array.  
+
+```js
+[insert-file:./snippets/input-fields-children.js]
+```
+
 ## Output Fields
 
 On each trigger, search, or create in the operation directive - you can provide an array of objects as fields under the `outputFields`. Output Fields are what your users would see when they select a field provided by your trigger, search or create to map it to another.

@@ -287,10 +287,11 @@ a code {
 <li><a href="#dynamic-dropdowns">Dynamic Dropdowns</a></li>
 <li><a href="#search-powered-fields">Search-Powered Fields</a></li>
 <li><a href="#computed-fields">Computed Fields</a></li>
+<li><a href="#nested--children-line-item-fields">Nested &amp; Children (Line Item) Fields</a></li>
 </ul>
 </li>
 <li><a href="#output-fields">Output Fields</a><ul>
-<li><a href="#nested--children-line-item-fields">Nested &amp; Children (Line Item) Fields</a></li>
+<li><a href="#nested--children-line-item-fields-1">Nested &amp; Children (Line Item) Fields</a></li>
 </ul>
 </li>
 <li><a href="#z-object">Z Object</a><ul>
@@ -483,10 +484,11 @@ a code {
 <li><a href="#dynamic-dropdowns">Dynamic Dropdowns</a></li>
 <li><a href="#search-powered-fields">Search-Powered Fields</a></li>
 <li><a href="#computed-fields">Computed Fields</a></li>
+<li><a href="#nested--children-line-item-fields">Nested &amp; Children (Line Item) Fields</a></li>
 </ul>
 </li>
 <li><a href="#output-fields">Output Fields</a><ul>
-<li><a href="#nested--children-line-item-fields">Nested &amp; Children (Line Item) Fields</a></li>
+<li><a href="#nested--children-line-item-fields-1">Nested &amp; Children (Line Item) Fields</a></li>
 </ul>
 </li>
 <li><a href="#z-object">Z Object</a><ul>
@@ -2393,6 +2395,58 @@ issue: {
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="nested--children-line-item-fields">Nested &amp; Children (Line Item) Fields</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>When your action needs to accept an array of items, you can include an input field with the <code>children</code> attribute. The <code>children</code> attribute accepts a list of <a href="https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema">fields</a> that can be input for each item in this array.  </p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">//...</span>
+  operation: {
+    <span class="hljs-comment">//...</span>
+    inputFields: [
+      {
+      <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;lineItems&apos;</span>,
+      <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">children</span>: [
+          {
+          <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;lineItemId&apos;</span>,
+          <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;integer&apos;</span>,
+          <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Line Item ID&apos;</span>,
+          <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>
+          },
+          {
+          <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;name&apos;</span>,
+          <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
+          <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Name&apos;</span>,
+          <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>
+          },
+          {
+          <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;description&apos;</span>,
+          <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
+          <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Description&apos;</span>
+          }
+        ]
+      }
+    ],
+    <span class="hljs-comment">// ...</span>
+  }
+}
+;
+
+</code></pre>
     </div>
   </div>
 </div><div class="row">
