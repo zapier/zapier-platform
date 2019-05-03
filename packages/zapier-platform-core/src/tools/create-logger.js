@@ -108,6 +108,7 @@ const makeSensitiveBank = (event, data) => {
       // keeps short values from spamming censor strings in logs, < 6 chars is not a proper secret
       // see https://github.com/zapier/zapier-platform-core/issues/4#issuecomment-277855071
       if (val && String(val).length > 5) {
+        val = String(val);
         const censored = hashing.snipify(val);
         bank[val] = censored;
         bank[encodeURIComponent(val)] = censored;

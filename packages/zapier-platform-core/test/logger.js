@@ -245,6 +245,41 @@ describe('logger', () => {
     });
   });
 
+  it('should replace sensitive data that is not a string', () => {
+    const bundle = {
+      authData: {
+        numerical_token: 314159265
+      }
+    };
+    const logger = createlogger({ bundle }, options);
+
+    const data = {
+      response_json: {
+        hello: 314159265
+      },
+      response_content: `{
+        "hello": 314159265
+      }`
+    };
+
+    return logger('test', data).then(response => {
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: options.token,
+        message: 'test',
+        data: {
+          response_json: {
+            hello: ':censored:9:9cb84e8ccc:'
+          },
+          response_content: `{
+        "hello": :censored:9:9cb84e8ccc:
+      }`,
+          log_type: 'console'
+        }
+      });
+    });
+  });
+
   it('should not replace safe log keys', () => {
     const bundle = {
       authData: {

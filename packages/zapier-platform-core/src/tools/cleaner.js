@@ -44,6 +44,9 @@ const recurseCleanFuncs = (obj, path) => {
 // Recurse a nested object replace all instances of keys->vals in the bank.
 const recurseReplaceBank = (obj, bank = {}) => {
   const replacer = out => {
+    if (typeof out === 'number') {
+      out = String(out);
+    }
     if (typeof out !== 'string') {
       return out;
     }
