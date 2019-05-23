@@ -2,8 +2,9 @@ const path = require('path');
 
 const _ = require('lodash');
 const prettier = require('prettier');
+const semver = require('semver');
 
-const { PACKAGE_VERSION } = require('../constants');
+const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');
 const { copyFile, ensureDir, readFile, writeFile } = require('./files');
 const { snakeCase } = require('./misc');
 const { getPackageLatestVersion } = require('./npm');
@@ -16,6 +17,7 @@ const TEMPLATE_DIR = path.join(__dirname, '../../scaffold/convert');
 // special and NO regex reserved chars.
 const REPLACE_DIRECTIVE = '__REPLACE_ME@';
 
+// used to turn strings of code into real code
 const makePlaceholder = replacement => `${REPLACE_DIRECTIVE}${replacement}`;
 
 const replacePlaceholders = str =>
@@ -34,6 +36,7 @@ const createFile = async (content, filename, dir) => {
 };
 
 const prettifyJs = code => prettier.format(code, { singleQuote: true });
+const prettifyJSON = origString => JSON.stringify(origString, null, 2);
 
 const renderTemplate = async (
   templateFile,
@@ -49,7 +52,7 @@ const renderTemplate = async (
   if (prettify) {
     const ext = path.extname(templateFile).toLowerCase();
     const prettifier = {
-      '.json': origString => JSON.stringify(JSON.parse(origString), null, 2),
+      '.json': origString => prettifyJSON(JSON.parse(origString)),
       '.js': prettifyJs
     }[ext];
     if (prettifier) {
@@ -88,7 +91,7 @@ const getAuthFieldKeys = appDefinition => {
   return fieldKeys;
 };
 
-const renderPackageJson = async (legacyApp, appDefinition) => {
+const renderLegacyPackageJson = async (legacyApp, appDefinition) => {
   // Not using escapeSpecialChars because we don't want to escape single quotes (not
   // allowed in JSON)
   const description = legacyApp.general.description
@@ -112,6 +115,32 @@ const renderPackageJson = async (legacyApp, appDefinition) => {
   return renderTemplate(templateFile, templateContext);
 };
 
+const renderVisualPackageJson = (appInfo, appDefinition) => {
+  const pkg = {
+    name: _.kebabCase(appInfo.title),
+    version: semver.inc(appDefinition.version, 'patch'),
+    description: appInfo.description,
+    main: 'index.js',
+    scripts: {
+      test: 'mocha --recursive -t 10000'
+    },
+    engines: {
+      node: '8.10.0',
+      npm: '>=5.6.0'
+    },
+    dependencies: {
+      [PLATFORM_PACKAGE]: appDefinition.platformVersion
+    },
+    devDependencies: {
+      mocha: '^5.2.0',
+      should: '^13.2.0'
+    },
+    private: true
+  };
+
+  return prettifyJSON(pkg);
+};
+
 const renderStep = (type, definition) => {
   let exportBlock = _.cloneDeep(definition),
     functionBlock = [];
@@ -133,19 +162,22 @@ const renderStep = (type, definition) => {
   ['inputFields', 'outputFields'].forEach(key => {
     const fields = definition.operation[key];
     if (Array.isArray(fields) && fields.length > 0) {
-      // Backend converter always put custom field function at the end of the array
-      const func = fields[fields.length - 1];
-      if (func && func.source) {
-        const args = func.args || ['z', 'bundle'];
-        const funcName = `get${_.upperFirst(key)}`;
-        functionBlock.push(
-          `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
-        );
+      // Godzilla currently doesn't allow mutliple dynamic fields (see PDE-948) but when it does, this will account for it
+      let funcNum = 0;
+      fields.forEach((maybeFunc, index) => {
+        if (maybeFunc.source) {
+          const args = maybeFunc.args || ['z', 'bundle'];
+          // always increment the number, but only return a value if it's > 0
+          const funcName = `get${_.upperFirst(key)}${
+            funcNum ? funcNum++ : ++funcNum && ''
+          }`;
+          functionBlock.push(
+            `const ${funcName} = (${args.join(', ')}) => {${maybeFunc.source}};`
+          );
 
-        exportBlock.operation[key][fields.length - 1] = makePlaceholder(
-          funcName
-        );
-      }
+          exportBlock.operation[key][index] = makePlaceholder(funcName);
+        }
+      });
     }
   });
 
@@ -272,6 +304,12 @@ const renderIndex = async appDefinition => {
     functionBlock = [],
     importBlock = [];
 
+  // replace version and platformVersion with dynamic reference
+  exportBlock.version = makePlaceholder("require('./package.json').version");
+  exportBlock.platformVersion = makePlaceholder(
+    "require('zapier-platform-core').version"
+  );
+
   if (appDefinition.authentication) {
     importBlock.push("const authentication = require('./authentication');");
     exportBlock.authentication = makePlaceholder('authentication');
@@ -372,8 +410,10 @@ const writeAuth = async (appDefinition, newAppDir) => {
   await createFile(content, 'authentication.js', newAppDir);
 };
 
-const writePackageJson = async (legacyApp, appDefinition, newAppDir) => {
-  const content = await renderPackageJson(legacyApp, appDefinition);
+const writePackageJson = async (appInfo, appDefinition, newAppDir, legacy) => {
+  const content = legacy
+    ? await renderLegacyPackageJson(appInfo, appDefinition)
+    : renderVisualPackageJson(appInfo, appDefinition);
   await createFile(content, 'package.json', newAppDir);
 };
 
@@ -408,8 +448,8 @@ const writeGitIgnore = async newAppDir => {
   endSpinner();
 };
 
-const writeZapierAppRc = async newAppDir => {
-  const content = JSON.stringify({
+const writeLegacyZapierAppRc = async newAppDir => {
+  const content = prettifyJSON({
     includeInBuild: ['scripting.js']
   });
   await createFile(content, '.zapierapprc', newAppDir);
@@ -417,13 +457,20 @@ const writeZapierAppRc = async newAppDir => {
   endSpinner();
 };
 
-const convertApp = async (
-  legacyApp,
-  appDefinition,
-  newAppDir,
-  silent = false
-) => {
-  if (silent) {
+const writeVisualZapierAppRc = async (newAppDir, id) => {
+  const content = prettifyJSON({
+    id
+  });
+  await createFile(content, '.zapierapprc', newAppDir);
+  startSpinner('Writing .zapierapprc');
+  endSpinner();
+};
+
+const convertApp = async (appInfo, appDefinition, newAppDir, opts = {}) => {
+  const defaultOpts = { legacy: true };
+  const { legacy } = { ...defaultOpts, ...opts };
+
+  if (process.env.NODE_ENV === 'test') {
     startSpinner = endSpinner = () => null;
   }
 
@@ -448,16 +495,24 @@ const convertApp = async (
     promises.push(writeScripting(appDefinition, newAppDir));
   }
 
-  promises.push(writePackageJson(legacyApp, appDefinition, newAppDir));
+  promises.push(writePackageJson(appInfo, appDefinition, newAppDir, legacy));
   promises.push(writeIndex(appDefinition, newAppDir));
   promises.push(writeEnvironment(appDefinition, newAppDir));
   promises.push(writeGitIgnore(newAppDir));
-  promises.push(writeZapierAppRc(newAppDir));
+  promises.push(
+    legacy
+      ? writeLegacyZapierAppRc(newAppDir)
+      : writeVisualZapierAppRc(newAppDir, appInfo.id)
+  );
 
   return await Promise.all(promises);
 };
 
+const convertVisualApp = _.partialRight(convertApp, { legacy: false });
+const convertLegacyApp = _.partialRight(convertApp, { legacy: true });
+
 module.exports = {
   renderTemplate,
-  convertApp
+  convertLegacyApp,
+  convertVisualApp
 };

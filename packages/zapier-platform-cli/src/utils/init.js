@@ -1,28 +1,13 @@
 const path = require('path');
 const tmp = require('tmp');
 
-const { startSpinner, endSpinner, getYesNoInput } = require('./display');
-const { isEmptyDir, copyDir, removeDir, ensureDir } = require('./files');
-
-const confirmNonEmptyDir = location => {
-  if (location === '.') {
-    return isEmptyDir(location).then(isEmpty => {
-      if (!isEmpty) {
-        return getYesNoInput(
-          'Current directory not empty, continue anyway?',
-          false
-        ).then(yes => {
-          if (!yes) {
-            /*eslint no-process-exit: 0 */
-            process.exit(0);
-          }
-        });
-      }
-      return Promise.resolve();
-    });
-  }
-  return Promise.resolve();
-};
+const { startSpinner, endSpinner } = require('./display');
+const {
+  confirmNonEmptyDir,
+  copyDir,
+  removeDir,
+  ensureDir
+} = require('./files');
 
 const initApp = (context, location, createApp) => {
   const appDir = path.resolve(location);

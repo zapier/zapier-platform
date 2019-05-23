@@ -1,6 +1,6 @@
 {
   "extends": "eslint:recommended",
-  "parserOptions": { "ecmaVersion": 2017 },
+  "parserOptions": { "ecmaVersion": 2018 },
   "plugins": ["mocha"],
   "env": {
     "node": true,

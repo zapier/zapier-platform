@@ -18,20 +18,22 @@
     "node": ">=8.10.0"
   },
   "scripts": {
-    "docs": "npm run build && ZAPIER_BASE_ENDPOINT='' node src/bin/docs.js",
-    "preversion": "git pull && npm test",
+    "docs": "ZAPIER_BASE_ENDPOINT='' node src/bin/docs.js",
+    "preversion": "git pull && npm run validate",
     "version": "npm run docs && npm run gen-completions && git add docs/* goodies/* README.md",
     "postversion": "git push && git push --tags",
-    "lint": "eslint zapier.js src",
     "lint-snippets": "eslint snippets --rule 'no-unused-vars: 0' --ignore-pattern snippets/next.js --ignore-pattern 'snippets/dynamic-dropdowns-*'",
-    "test": "NODE_ENV=test mocha -t 50000 --recursive src/tests && npm run lint && npm run lint-snippets",
+    "lint-code": "eslint zapier.js src",
+    "lint": "npm run lint-snippets && npm run lint-code",
+    "test": "NODE_ENV=test mocha -t 50000 --recursive src/tests",
     "smoke-test": "NODE_ENV=test mocha -t 30000 --recursive src/smoke-tests",
     "zapier": "zapier.js",
     "validate-templates": "./scripts/validate-app-templates.js",
     "set-template-versions": "./scripts/set-app-template-versions.js",
     "gen-completions": "./scripts/gen-zsh-completions.js > ./goodies/zsh/_zapier && ./scripts/gen-bash-completions.js > ./goodies/bash/_zapier",
     "test-convert": "./scripts/test-convert.js",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "validate": "npm run test && npm run lint"
   },
   "dependencies": {
     "adm-zip": "0.4.11",
@@ -43,7 +45,6 @@
     "colors": "1.1.2",
     "compress-commons": "1.2.0",
     "core-js": "2.4.1",
-    "docs": "0.0.0-37",
     "eslint": "4.17.0",
     "eslint-plugin-node": "6.0.0",
     "fs-extra": "3.0.1",
@@ -70,7 +71,6 @@
     "zip-stream": "1.1.0"
   },
   "devDependencies": {
-    "babel-eslint": "7.2.3",
     "decompress": "4.2.0",
     "eslint-plugin-mocha": "^5.3.0",
     "fetch-mock": "5.11.0",

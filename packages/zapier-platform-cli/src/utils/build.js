@@ -123,9 +123,11 @@ const listFiles = dir => {
 const respectGitIgnore = (dir, paths) => {
   const gitIgnorePath = path.join(dir, '.gitignore');
   if (!fs.existsSync(gitIgnorePath)) {
-    console.log(
-      '\n\n!!Warning!! There is no .gitignore, so we are including all files. This might make the source.zip file too large\n\n'
-    );
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(
+        '\n\n!!Warning!! There is no .gitignore, so we are including all files. This might make the source.zip file too large\n\n'
+      );
+    }
   }
   const gitIgnoredPaths = gitIgnore(gitIgnorePath);
   const gitFilter = ignore().add(gitIgnoredPaths);
