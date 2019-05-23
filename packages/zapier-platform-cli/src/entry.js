@@ -1,6 +1,4 @@
 /*eslint no-process-exit: 0 */
-require('babel-polyfill');
-
 const _ = require('lodash');
 const colors = require('colors/safe');
 const updateNotifier = require('update-notifier');

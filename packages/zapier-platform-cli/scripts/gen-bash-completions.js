@@ -3,8 +3,8 @@
 const _ = require('lodash');
 const path = require('path');
 
-const commandsIndex = require('../lib/commands/index');
-const convertUtils = require('../lib/utils/convert');
+const commandsIndex = require('../src/commands/index');
+const convertUtils = require('../src/utils/convert');
 const renderTemplate = convertUtils.renderTemplate;
 
 const allCommands = _.reduce(

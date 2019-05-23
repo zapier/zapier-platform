@@ -3,9 +3,9 @@
 const _ = require('lodash');
 const path = require('path');
 const tmp = require('tmp');
-const utils = require('../lib/utils');
-const appTemplates = require('../lib/app-templates');
-const versionStore = require('../lib/version-store');
+const utils = require('../src/utils');
+const appTemplates = require('../src/app-templates');
+const versionStore = require('../src/version-store');
 
 const fse = require('fs-extra');
 const semver = require('semver');

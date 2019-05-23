@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const path = require('path');
 const tmp = require('tmp');
-const utils = require('../lib/utils');
+const utils = require('../src/utils');
 
 const fse = require('fs-extra');
 const childProcess = utils.promisifyAll(require('child_process'));

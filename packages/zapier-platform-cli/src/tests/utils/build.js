@@ -21,8 +21,7 @@ describe('build', () => {
         .filter(filePath => filePath.indexOf('node_modules/lodash') === 0)
         .length.should.be.within(0, 2);
       smartPaths.should.containEql('node_modules/lodash/lodash.js');
-      smartPaths.should.containEql('lib/commands/init.js');
-      smartPaths.should.not.containEql('src/commands/init.js');
+      smartPaths.should.containEql('src/commands/init.js');
       smartPaths.should.not.containEql('README.md');
     });
   });
@@ -34,7 +33,6 @@ describe('build', () => {
         .filter(filePath => filePath.indexOf('node_modules/lodash') === 0)
         .length.should.be.within(800, 1200);
       dumbPaths.should.containEql('node_modules/lodash/lodash.js');
-      dumbPaths.should.containEql('lib/commands/init.js');
       dumbPaths.should.containEql('src/commands/init.js');
       dumbPaths.should.containEql('README.md');
     });

@@ -1,7 +1,5 @@
 require('should');
 
-require('../../entry'); // must import me to babel polyfill!
-
 const argUtils = require('../../utils/args');
 
 describe('args', () => {

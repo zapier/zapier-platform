@@ -3,12 +3,12 @@
 const _ = require('lodash');
 const path = require('path');
 const tmp = require('tmp');
-const utils = require('../lib/utils');
+const utils = require('../src/utils');
 
 const fse = require('fs-extra');
 const childProcess = utils.promisifyAll(require('child_process'));
 
-const appTemplates = require('../lib/app-templates');
+const appTemplates = require('../src/app-templates');
 
 const validateAppTemplate = (template, rootTmpDir) => {
   //const appDir = path.resolve(rootTmpDir, template);

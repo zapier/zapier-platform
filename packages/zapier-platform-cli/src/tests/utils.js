@@ -1,12 +1,10 @@
-require('should');
-
-require('../entry'); // must import me to babel polyfill!
+const should = require('should');
 
 const utils = require('../utils');
 
 describe('utils', () => {
-  it('should have babel polyfill set up', () => {
-    global._babelPolyfill.should.eql(true);
+  it('should not have babel polyfill set up', () => {
+    should(global._babelPolyfill).be.undefined();
   });
 
   it('should print a nice little table', () => {

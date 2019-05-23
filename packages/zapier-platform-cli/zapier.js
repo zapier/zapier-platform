@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-var entry = require('./lib/entry');
+var entry = require('./src/entry');
 entry(process.argv);
