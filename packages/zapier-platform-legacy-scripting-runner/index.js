@@ -596,15 +596,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     });
   };
 
-  const isTestingAuth = (bundle, key) => {
-    const testTrigger = _.get(app, 'legacy.authentication.testTrigger');
-    if (testTrigger) {
-      if (key === testTrigger) {
-        return true;
-      }
-      return false;
-    }
-
+  const isTestingAuth = (bundle) => {
     // For core < 8.0.0
     if (
       _.get(bundle, 'meta.test_poll') === true &&
@@ -613,8 +605,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       return true;
     }
 
-    // For core >= 8.0.0. This could be inaccurate but it's unlikely to fall
-    // down here.
+    // For core >= 8.0.0
     return _.get(bundle, 'meta.isTestingAuth');
   };
 
@@ -623,7 +614,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     bundle.request.url = url;
 
     // For auth test we want to make sure we return an object instead of an array
-    const ensureType = isTestingAuth(bundle, key)
+    const ensureType = isTestingAuth(bundle)
       ? 'object-first'
       : 'array-first';
 

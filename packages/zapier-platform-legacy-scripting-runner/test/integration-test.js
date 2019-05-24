@@ -68,6 +68,12 @@ describe('Integration Test', () => {
         should.equal(output.results.key2, 'ret');
       });
     });
+  });
+
+  describe('authentication', () => {
+    const appDefWithAuth = withAuth(appDefinition, sessionAuthConfig);
+    const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+    const app = createApp(appDefWithAuth);
 
     it('get_connection_label', () => {
       const input = createTestInput(
@@ -79,25 +85,6 @@ describe('Integration Test', () => {
       };
       return app(input).then(output => {
         should.equal(output.results, 'Hi Mark');
-      });
-    });
-
-    it('authentication.test, test trigger info from definition', () => {
-      const _appDefWithAuth = withAuth(appDefinition, sessionAuthConfig);
-      _appDefWithAuth.legacy.authentication.testTrigger = 'contact_full';
-
-      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
-      const _app = createApp(_appDefWithAuth);
-
-      const input = createTestInput(_compiledApp, 'authentication.test');
-      input.bundle.authData = {
-        key1: 'sec',
-        key2: 'ret'
-      };
-      return _app(input).then(output => {
-        const user = output.results;
-        should.equal(user.id, 1);
-        should.equal(user.username, 'Bret');
       });
     });
 
