@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const should = require('should');
+const nock = require('nock');
 
 const { AUTH_JSON_SERVER_URL } = require('./auth-json-server');
 const apiKeyAuth = require('./example-app/api-key-auth');
@@ -48,6 +49,10 @@ describe('Integration Test', () => {
     };
     return createInput(compiledApp, event, testLogger);
   };
+
+  beforeEach(() => {
+    if (nock.isActive()) {nock.restore();}
+  });
 
   describe('session auth', () => {
     const appDefWithAuth = withAuth(appDefinition, sessionAuthConfig);
@@ -291,12 +296,24 @@ describe('Integration Test', () => {
         const data = output.results.form;
 
         should.deepEqual(data, {
-          client_id: process.env.CLIENT_ID,
-          client_secret: process.env.CLIENT_SECRET,
-          refresh_token: 'my_refresh_token',
-          grant_type: 'refresh_token',
-          foo: 'hello',
-          bar: 'world'
+          'bar': [
+            'world'
+          ],
+          'client_id': [
+            process.env.CLIENT_ID
+          ],
+          'client_secret': [
+            process.env.CLIENT_SECRET
+          ],
+          'foo': [
+            'hello'
+          ],
+          'grant_type': [
+            'refresh_token'
+          ],
+          'refresh_token': [
+            'my_refresh_token'
+          ]
         });
       });
     });
@@ -577,6 +594,63 @@ describe('Integration Test', () => {
           should.equal(payload.bundle.meta.name, `movie ${movie.id}.json`);
           should.equal(payload.bundle.meta.length, 1234);
         });
+      });
+    });
+
+    it('needsFlattenedData trigger', () => {
+      if (!nock.isActive()) {nock.activate();}
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.needsFlattenedData = true;
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      nock(AUTH_JSON_SERVER_URL).get('/movies').reply(200, [{
+          id: '1',
+          title: 'title 1',
+          releaseDate: 1471295527,
+          genre: 'genre 1',
+          cast: [
+            'John Doe',
+            'Jane Doe'
+          ],
+          meta: {
+            running_time: 120,
+            format: 'widescreen'
+          }
+        }]);
+      return app(input).then( (output) => {
+        // The result from the scripting runner should be flattened
+        let expected_result = {
+          id: '1',
+          title: 'title 1',
+          releaseDate: 1471295527,
+          genre: 'genre 1',
+          cast: 'John Doe,Jane Doe',
+          meta__running_time: 120,
+          meta__format: 'widescreen'
+        };
+        should.deepEqual(output.results[0], expected_result);
+      });
+    });
+
+    it('needsEmptyTriggerData', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.needsTriggerData = true;
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then( () => {
+        should.equal(typeof input.bundle.triggerData, 'object');
+        should.equal(Object.keys(input.bundle.triggerData).length, 0);
+        should.equal(Array.isArray(input.bundle.triggerData), false);
       });
     });
   });
@@ -924,6 +998,46 @@ describe('Integration Test', () => {
   });
 
   describe('create', () => {
+    it('handleLegacyParams action', () => {
+      if (!nock.isActive()) {nock.activate();}
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+      appDefWithAuth.legacy.needsFlattenedData = true;
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        'title': 'title 1',
+        'releaseDate': 1471295527,
+        'genre': 'genre 1',
+        'cast': [
+          'John Doe',
+          'Jane Doe'
+        ],
+        'meta': {
+          'running_time': 120,
+          'format': 'widescreen'
+        }
+      };
+      input.bundle.authData = { api_key: 'secret' };
+      // title key is removed deliberately for other tests
+      nock(AUTH_JSON_SERVER_URL).post('/movies', {
+        'releaseDate': 1471295527,
+        'genre': 'genre 1',
+        'cast': 'John Doe,Jane Doe',
+        'meta': 'running_time|120\nformat|widescreen',
+      }).reply(200, {'id': 'abcd1234'});
+      return app(input).then( () => {
+        // we only care that the mocked api call had the right format payload
+      });
+    });
+
     it('scriptingless perform', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
@@ -1543,7 +1657,7 @@ describe('Integration Test', () => {
         // In reality, file will always be a "hydrate URL" that looks something
         // like https://zapier.com/engine/hydrate/1/abcd/, but in fact any
         // valid URL would work.
-        file: 'https://zapier-httpbin.herokuapp.com/image/png'
+        file: 'https://httpbin.zapier-tooling.com/image/png'
       };
       return app(input).then(output => {
         const file = output.results.file;
@@ -1568,7 +1682,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'this is a pig.png',
-        file: 'https://zapier-httpbin.herokuapp.com/redirect-to?url=/image/png'
+        file: 'https://httpbin.zapier-tooling.com/redirect-to?url=/image/png'
       };
       return app(input).then(output => {
         const file = output.results.file;
@@ -1597,7 +1711,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'this is a pig.png',
-        file: 'https://zapier-httpbin.herokuapp.com/image/png'
+        file: 'https://httpbin.zapier-tooling.com/image/png'
       };
       return app(input).then(output => {
         const file = output.results.file;
@@ -1626,13 +1740,13 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'this is a wolf.jpg',
-        file: 'https://zapier-httpbin.herokuapp.com/image/png'
+        file: 'https://httpbin.zapier-tooling.com/image/jpeg'
       };
       return app(input).then(output => {
         const file = output.results.file;
-        should.equal(file.sha1, '44da0f5c0e4c27f945e97fccf59b69e06b767828');
+        should.equal(file.sha1, 'eb1db8fa7b8277f2de5d7b40d6cdbc708aac4e52');
         should.equal(file.mimetype, 'image/jpeg');
-        should.equal(file.originalname, 'file_pre_write_was_here.png');
+        should.equal(file.originalname, 'file_pre_write_was_here.jpeg');
 
         const data = JSON.parse(output.results.data);
         should.equal(data.filename, 'this is a wolf.jpg');
@@ -1655,7 +1769,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://zapier-httpbin.herokuapp.com/image/png'
+        file: 'https://httpbin.zapier-tooling.com/image/png'
       };
       return app(input).then(output => {
         const file = output.results.file;
@@ -1684,7 +1798,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://zapier-httpbin.herokuapp.com/image/png'
+        file: 'https://httpbin.zapier-tooling.com/image/png'
       };
       return app(input).then(output => {
         const file = output.results.file;
@@ -1713,7 +1827,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://zapier-httpbin.herokuapp.com/image/png'
+        file: 'https://httpbin.zapier-tooling.com/image/png'
       };
       return app(input).then(output => {
         const file = output.results.file;
@@ -1742,11 +1856,11 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://zapier-httpbin.herokuapp.com/image/png'
+        file: 'https://httpbin.zapier-tooling.com/image/png'
       };
       return app(input).then(output => {
         const file = output.results.file;
-        should.equal(file.sha1, '2912ad01b4da27374578a856fe6012a33ddcb08e');
+        should.equal(file.sha1, '04bc9f090eafc29a4ab29b05f0f306365b017857');
         should.equal(file.mimetype, 'application/json');
         should.equal(file.originalname, 'an example.json');
 
@@ -1771,11 +1885,11 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://zapier-httpbin.herokuapp.com/image/png'
+        file: 'https://httpbin.zapier-tooling.com/image/png'
       };
       return app(input).then(output => {
         const file = output.results.file;
-        should.equal(file.sha1, '0db061d2625b61f970ad4ed0db1167f433552395');
+        should.equal(file.sha1, 'ebad26f071d502f26ea7afccea320195c1ad7e8e');
         should.equal(file.mimetype, 'application/json');
         should.equal(file.originalname, 'example.json');
 
@@ -1800,11 +1914,11 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://zapier-httpbin.herokuapp.com/image/png'
+        file: 'https://httpbin.zapier-tooling.com/image/png'
       };
       return app(input).then(output => {
         const file = output.results.file;
-        should.equal(file.sha1, 'a70183153aa29bfa87020ec30851cfde4dd08699');
+        should.equal(file.sha1, 'd7bd9d0e663a001291d1536715403744cbff054d');
         should.equal(file.mimetype, 'application/json');
         should.equal(file.originalname, '中文.json');
 
@@ -1905,7 +2019,7 @@ describe('Integration Test', () => {
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
           // This endpoint echoes what we send to it, so we know if auth info was sent
-          url: 'https://zapier-httpbin.herokuapp.com/get'
+          url: 'https://httpbin.zapier-tooling.com/get'
         };
         return app(input).then(output => {
           const {
@@ -1922,7 +2036,7 @@ describe('Integration Test', () => {
 
           // Make sure prepareResponse middleware was run
           response.getHeader.should.be.Function();
-          should.equal(response.getHeader('content-type'), 'application/json');
+          should.equal(response.getHeader('content-type'), 'application/json; encoding=utf-8');
         });
       });
 
@@ -1940,7 +2054,7 @@ describe('Integration Test', () => {
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
           // This endpoint echoes what we send to it, so we know if auth info was sent
-          url: 'https://zapier-httpbin.herokuapp.com/get',
+          url: 'https://httpbin.zapier-tooling.com/get',
           request: {
             params: { foo: 1, bar: 'hello' }
           }
@@ -1963,7 +2077,7 @@ describe('Integration Test', () => {
 
           // Make sure prepareResponse middleware was run
           response.getHeader.should.be.Function();
-          should.equal(response.getHeader('content-type'), 'application/json');
+          should.equal(response.getHeader('content-type'), 'application/json; encoding=utf-8');
         });
       });
 
@@ -1981,7 +2095,7 @@ describe('Integration Test', () => {
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
           // This endpoint echoes what we send to it, so we know if auth info was sent
-          url: 'https://zapier-httpbin.herokuapp.com/get',
+          url: 'https://httpbin.zapier-tooling.com/get',
           request: {
             params: { foo: 1, bar: 'hello' }
           },
@@ -2008,7 +2122,7 @@ describe('Integration Test', () => {
 
           // Make sure prepareResponse middleware was run
           response.getHeader.should.be.Function();
-          should.equal(response.getHeader('content-type'), 'application/json');
+          should.equal(response.getHeader('content-type'), 'application/json; encoding=utf-8');
         });
       });
     });

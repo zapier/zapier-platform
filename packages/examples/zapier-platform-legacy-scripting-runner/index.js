@@ -2,8 +2,8 @@ const querystring = require('querystring');
 
 const _ = require('lodash');
 const FormData = require('form-data');
-
 const cleaner = require('zapier-platform-core/src/tools/cleaner');
+const flatten = require('flat');
 
 const createInternalRequestClient = input => {
   const addQueryParams = require('zapier-platform-core/src/http-middlewares/before/add-query-params');
@@ -316,6 +316,123 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return _.template(templateString, options)(values);
   };
 
+  const ensureIsType = (result, type) => {
+    if (!type) {
+      return result;
+    }
+
+    if (type.startsWith('array-')) {
+      if (Array.isArray(result)) {
+        return result;
+      } else if (result && typeof result === 'object') {
+        if (type === 'array-wrap') {
+          return [result];
+        } else {
+          // Find the first array in the response
+          for (const k in result) {
+            const value = result[k];
+            if (Array.isArray(value)) {
+              return value;
+            }
+          }
+        }
+      }
+      throw new Error('JSON results array could not be located.');
+    } else if (type.startsWith('object-')) {
+      if (_.isPlainObject(result)) {
+        return result;
+      } else if (
+        Array.isArray(result) &&
+        result.length > 0 &&
+        _.isPlainObject(result[0])
+      ) {
+        // Used by auth test and auth label
+        return result[0];
+      }
+      throw new Error('JSON results object could not be located.');
+    }
+    return result;
+  };
+
+  /**
+    flattens trigger data for wb v1 apps
+  */
+  const flattenTriggerData = (data) => {
+    for (const i in data) {
+      for (const j in data[i]) {
+        if (Array.isArray(data[i][j])) {
+          data[i][j] = textifyList(data[i][j]);
+        } else if (_.isPlainObject(data[i][j])) {
+          let flattened = flattenDictionary(j, data[i][j]);
+          data[i] = Object.assign(data[i], flattened);
+          delete data[i][j];
+        }
+      }
+    }
+    return data;
+  };
+
+  /**
+    see handle_legacy_params in the python backend
+  */
+  const handleLegacyParams = (data) => {
+    if (!_.isPlainObject(data)) {
+      return data;
+    }
+    let params = _.cloneDeep(data);
+    for (const i in data) {
+      if (_.isPlainObject(data[i])) {
+        let param = [];
+        for (const j in data[i]) {
+          param.push(j + '|' + data[i][j]);
+        }
+        params[i] = param.join('\n');
+      } else if (Array.isArray(data[i])) {
+        params[i] = data[i].join();
+      }
+    }
+    return params;
+  };
+
+  /**
+    see textify_list in the python backend
+  */
+  const textifyList = (data) => {
+    if (!Array.isArray(data)){
+      return data;
+    }
+    let out = '';
+    const allObj = data.every(_.isPlainObject);
+    const sep = allObj ? '\n' : ',';
+
+    for (const el of data) {
+      if (_.isPlainObject(el)) {
+        for (const key in el) {
+          out += `${key}: ${el[key]}${sep}`;
+        }
+      } else if (Array.isArray(el)) {
+        out += textifyList(el) + sep;
+      } else if (el === null) {
+        continue;
+      } else {
+        out += el + sep;
+      }
+      if (allObj) {
+        out += sep;
+      }
+    }
+    return out.replace(/[\n,]*$/, '');
+  };
+
+  const flattenDictionary = (prefix, data) => {
+    let flattenedData = flatten(_.cloneDeep(data), {'delimiter': '__'});
+    let out = {};
+    for (const key in flattenedData) {
+      out[`${prefix}__${key}`] = flattenedData[key];
+    }
+    return out;
+  };
+
   const runEvent = (event, z, bundle) =>
     new Promise((resolve, reject) => {
       if (!Zap || _.isEmpty(Zap) || !event || !event.name || !z) {
@@ -392,13 +509,17 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         parseResponse: true,
         ensureType: false,
 
-        resetRequestForFullMethod: false
+        resetRequestForFullMethod: false,
       },
       options
     );
 
     if (bundle.request) {
       bundle.request = replaceCurliesInRequest(bundle.request, bundle);
+    }
+
+    if (_.get(app, 'legacy.needsTriggerData')) {
+      bundle.triggerData = {};
     }
 
     let result;
@@ -453,39 +574,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         : zcli.JSON.parse(response.content);
     }
 
-    if (options.ensureType) {
-      if (options.ensureType.startsWith('array-')) {
-        if (Array.isArray(result)) {
-          return result;
-        } else if (result && typeof result === 'object') {
-          if (options.ensureType === 'array-wrap') {
-            return [result];
-          } else {
-            // Find the first array in the response
-            for (const k in result) {
-              const value = result[k];
-              if (Array.isArray(value)) {
-                return value;
-              }
-            }
-          }
-        }
-        throw new Error('JSON results array could not be located.');
-      } else if (options.ensureType.startsWith('object-')) {
-        if (_.isPlainObject(result)) {
-          return result;
-        } else if (
-          Array.isArray(result) &&
-          result.length > 0 &&
-          _.isPlainObject(result[0])
-        ) {
-          // Used by auth test and auth label
-          return result[0];
-        }
-        throw new Error('JSON results object could not be located.');
-      }
-    }
-
+    result = ensureIsType(result, options.ensureType);
     return result;
   };
 
@@ -609,8 +698,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return _.get(bundle, 'meta.isTestingAuth');
   };
 
-  const runTrigger = (bundle, key) => {
+  const runTrigger = async (bundle, key) => {
     const url = _.get(app, `legacy.triggers.${key}.operation.url`);
+    const needsFlattenedData = _.get(app, 'legacy.needsFlattenedData');
     bundle.request.url = url;
 
     // For auth test we want to make sure we return an object instead of an array
@@ -621,7 +711,11 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     // Legacy WB doesn't check if trigger results have id
     bundle.skipChecks = ['triggerHasId'];
 
-    return runEventCombo(
+    if (needsFlattenedData) {
+      bundle.skipChecks.push('triggerIsArray');
+    }
+
+    let result = await runEventCombo(
       bundle,
       key,
       'trigger.pre',
@@ -629,6 +723,11 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'trigger.poll',
       { ensureType }
     );
+
+    if (needsFlattenedData) {
+      result = flattenTriggerData(result);
+    }
+    return result;
   };
 
   const runCatchHook = (bundle, key) => {
@@ -650,6 +749,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
   const runHook = (bundle, key) => {
     const hookType = _.get(app, `legacy.triggers.${key}.operation.hookType`);
+    const needsFlattenedData = _.get(app, 'legacy.needsFlattenedData');
 
     let cleanedArray;
     if (Array.isArray(bundle.cleanedRequest)) {
@@ -672,10 +772,20 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         bund.request.url = obj.resource_url;
         return runPrePostHook(bund, key);
       });
-      return Promise.all(promises).then(_.flatten);
+      return Promise.all(promises).then((obj) => {
+        obj = _.flatten(obj);
+        if (needsFlattenedData) {
+          obj = flattenTriggerData(obj);
+        }
+        return obj;
+      });
     }
 
-    return runCatchHook(bundle, key);
+    let result = runCatchHook(bundle, key);
+    if (needsFlattenedData) {
+      result = flattenTriggerData(result);
+    }
+    return result;
   };
 
   const runHookSubscribe = (bundle, key) => {
@@ -758,11 +868,18 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
   const runTriggerOutputFields = (bundle, key) => {
     const url = _.get(app, `legacy.triggers.${key}.operation.outputFieldsUrl`);
+    const needsFlattenedData = _.get(app, 'legacy.needsFlattenedData');
+
+    if (needsFlattenedData) {
+      bundle.inputData = handleLegacyParams(bundle.inputData);
+    }
+
     return runCustomFields(bundle, key, 'trigger.output', url, false);
   };
 
   const runCreate = (bundle, key) => {
     const legacyProps = _.get(app, `legacy.creates.${key}.operation`) || {};
+    const needsFlattenedData = _.get(app, 'legacy.needsFlattenedData');
     const url = legacyProps.url;
     const fieldsExcludedFromBody = legacyProps.fieldsExcludedFromBody || [];
 
@@ -770,6 +887,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       _.get(app, `creates.${key}.operation.inputFields`) || [];
 
     markFileFieldsInBundle(bundle, inputFields);
+
+    if (needsFlattenedData) {
+      bundle.inputData = handleLegacyParams(bundle.inputData);
+    }
 
     const body = {};
     _.each(bundle.inputData, (v, k) => {
@@ -788,12 +909,18 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       key,
       'create.pre',
       'create.post',
-      'create.write'
+      'create.write',
     );
   };
 
   const runCreateInputFields = (bundle, key) => {
     const url = _.get(app, `legacy.creates.${key}.operation.inputFieldsUrl`);
+    const needsFlattenedData = _.get(app, 'legacy.needsFlattenedData');
+
+    if (url && needsFlattenedData) {
+      bundle.inputData = handleLegacyParams(bundle.inputData);
+    }
+
     return runCustomFields(bundle, key, 'create.input', url);
   };
 

@@ -54,12 +54,12 @@ const legacyScriptingSource = `
       },
 
       pre_oauthv2_refresh_httpbin_form: function(bundle) {
-        bundle.request.url = 'https://zapier-httpbin.herokuapp.com/post';
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
         return bundle.request;
       },
 
       pre_oauthv2_refresh_httpbin_json: function(bundle) {
-        bundle.request.url = 'https://zapier-httpbin.herokuapp.com/post';
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
         bundle.request.headers['Content-Type'] = 'application/json';
         return bundle.request;
       },
@@ -76,7 +76,7 @@ const legacyScriptingSource = `
         bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
         return {
-          url: 'https://zapier-httpbin.herokuapp.com/post',
+          url: 'https://httpbin.zapier-tooling.com/post',
           method: bundle.request.method,
           headers: bundle.request.headers,
           data: bundle.request.data
@@ -293,7 +293,7 @@ const legacyScriptingSource = `
       movie_pre_write_unflatten: function(bundle) {
         // Make sure bundle.action_fields is unflatten, bundle.action_fields_full
         // isn't, and bundle.action_fields_raw still got curlies
-        bundle.request.url = 'https://zapier-httpbin.herokuapp.com/post';
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
         bundle.request.data = z.JSON.stringify({
           action_fields: bundle.action_fields,
           action_fields_full: bundle.action_fields_full,
@@ -434,7 +434,7 @@ const legacyScriptingSource = `
 
       // To be replaced with 'file_pre_write' at runtime
       file_pre_write_fully_replace_url: function(bundle) {
-        bundle.request.files.file = 'https://zapier-httpbin.herokuapp.com/image/jpeg';
+        bundle.request.files.file = 'https://httpbin.zapier-tooling.com/image/jpeg';
         return bundle.request;
       },
 
@@ -446,21 +446,21 @@ const legacyScriptingSource = `
 
       file_pre_write_content_dispoistion_with_quotes: function(bundle) {
         bundle.request.files.file =
-          'https://zapier-httpbin.herokuapp.com/response-headers?' +
+          'https://httpbin.zapier-tooling.com/response-headers?' +
           'Content-Disposition=filename=%22an%20example.json%22';
         return bundle.request;
       },
 
       file_pre_write_content_dispoistion_no_quotes: function(bundle) {
         bundle.request.files.file =
-          'https://zapier-httpbin.herokuapp.com/response-headers?' +
+          'https://httpbin.zapier-tooling.com/response-headers?' +
           'Content-Disposition=filename=example.json';
         return bundle.request;
       },
 
       file_pre_write_content_dispoistion_non_ascii: function(bundle) {
         bundle.request.files.file =
-          'https://zapier-httpbin.herokuapp.com/response-headers?' +
+          'https://httpbin.zapier-tooling.com/response-headers?' +
           'Content-Disposition=filename*=UTF-8%27%27%25E4%25B8%25AD%25E6%2596%2587.json';
         return bundle.request;
       },
@@ -822,8 +822,8 @@ const App = {
   legacy: {
     scriptingSource: legacyScriptingSource,
 
-    subscribeUrl: 'http://zapier-httpbin.herokuapp.com/post',
-    unsubscribeUrl: 'https://zapier-httpbin.herokuapp.com/delete',
+    subscribeUrl: 'https://httpbin.zapier-tooling.com/post',
+    unsubscribeUrl: 'https://httpbin.zapier-tooling.com/delete',
 
     authentication: {
       oauth2Config: {
