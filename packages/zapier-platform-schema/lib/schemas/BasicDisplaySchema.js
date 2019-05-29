@@ -37,7 +37,7 @@ module.exports = makeSchema({
       description:
         'A description of what this trigger, search, or create does.',
       type: 'string',
-      minLength: 12,
+      minLength: 1,
       maxLength: 1000
     },
     directions: {
