@@ -374,7 +374,7 @@ describe('request client', () => {
   });
 
   describe('adds query params', () => {
-    it('should not omit empty params by default', () => {
+    it('should replace remaining curly params with empty string by default', () => {
       const request = createAppRequestClient(input);
       return request({
         url: 'https://httpbin.org/get',
@@ -387,18 +387,18 @@ describe('request client', () => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         response.json.args.something.should.eql('');
-        response.json.args.really.should.eql('{{bundle.inputData.really}}');
+        response.json.args.really.should.eql('');
         response.json.args.cool.should.eql('true');
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
         body.url.should.eql(
-          'https://httpbin.org/get?something=&really={{bundle.inputData.really}}&cool=true'
+          'https://httpbin.org/get?something=&really=&cool=true'
         );
       });
     });
 
-    it('should not omit empty params when set as false', () => {
+    it('should replace remaining curly params with empty string when set as false', () => {
       const request = createAppRequestClient(input);
       return request({
         url: 'https://httpbin.org/get',
@@ -414,13 +414,13 @@ describe('request client', () => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         response.json.args.something.should.eql('');
-        response.json.args.really.should.eql('{{bundle.inputData.really}}');
+        response.json.args.really.should.eql('');
         response.json.args.cool.should.eql('true');
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
         body.url.should.eql(
-          'https://httpbin.org/get?something=&really={{bundle.inputData.really}}&cool=true'
+          'https://httpbin.org/get?something=&really=&cool=true'
         );
       });
     });
@@ -460,6 +460,7 @@ describe('request client', () => {
         should(response.json.args.foo).eql(undefined);
         should(response.json.args.bar).eql(undefined);
         should(response.json.args.empty).eql(undefined);
+        should(response.json.args.really).eql(undefined);
         response.json.args.cool.should.eql('false');
         response.json.args.zzz.should.eql('[]');
         response.json.args.yyy.should.eql('{}');
@@ -574,10 +575,54 @@ describe('request client', () => {
       }).then(response => {
         const { json } = response.json;
 
+        should(json.empty).eql(undefined);
         json.number.should.eql(123);
         json.bool.should.eql(true);
         json.float.should.eql(123.456);
         json.arr.should.eql([1, 2, 3]);
+      });
+    });
+
+    it('should remove keys from body for empty values if configured to', () => {
+      const event = {
+        bundle: {
+          inputData: {
+            name: 'Burgundy'
+          }
+        }
+      };
+      const bodyInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(bodyInput);
+      return request({
+        url: 'https://httpbin.org/post',
+        method: 'POST',
+        body: {
+          name: '{{bundle.inputData.name}}',
+          empty: '{{bundle.inputData.empty}}'
+        },
+        removeMissingValuesFrom: {
+          body: true
+        }
+      }).then(response => {
+        const { json } = response.json;
+
+        should(json.empty).eql(undefined);
+        json.name.should.eql('Burgundy');
+      });
+    });
+
+    it('should replace curlies with an empty string by default', () => {
+      const request = createAppRequestClient(input);
+      return request({
+        url: 'https://httpbin.org/post',
+        method: 'POST',
+        body: {
+          empty: '{{bundle.inputData.empty}}'
+        }
+      }).then(response => {
+        const { json } = response.json;
+
+        should(json.empty).eql('');
       });
     });
 

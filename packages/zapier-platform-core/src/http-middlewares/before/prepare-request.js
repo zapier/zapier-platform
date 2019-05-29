@@ -4,7 +4,11 @@ const _ = require('lodash');
 const stream = require('stream');
 const querystring = require('querystring');
 
-const cleaner = require('../../tools/cleaner');
+const {
+  createBundleBank,
+  normalizeEmptyBodyFields,
+  recurseReplaceBank
+} = require('../../tools/cleaner');
 const requestMerge = require('../../tools/request-merge');
 const {
   getContentType,
@@ -56,6 +60,8 @@ const coerceBody = req => {
   } else if (Buffer.isBuffer(req.body)) {
     // leave a buffer alone!
   } else if (req.body && !_.isString(req.body)) {
+    normalizeEmptyBodyFields(req);
+
     // this is a general - popular fallback
     req.body = JSON.stringify(req.body);
 
@@ -120,11 +126,8 @@ const prepareRequest = function(req) {
 
   // replace {{curlies}} in the request
   if (req.replace) {
-    const bank = cleaner.createBundleBank(
-      input._zapier.app,
-      input._zapier.event
-    );
-    req = cleaner.recurseReplaceBank(req, bank);
+    const bank = createBundleBank(input._zapier.app, input._zapier.event);
+    req = recurseReplaceBank(req, bank);
   }
 
   req = coerceBody(req);

@@ -1,21 +1,7 @@
 'use strict';
 
 const querystring = require('querystring');
-
-const isCurlies = /{{.*?}}/g;
-const shouldPruneQueryParam = value =>
-  value === '' ||
-  value === null ||
-  value === undefined ||
-  isCurlies.test(value);
-
-// Mutates the object (it'll be deleted later anyway)
-const pruneMissingQueryParams = params =>
-  Object.keys(params).forEach(param => {
-    if (shouldPruneQueryParam(params[param])) {
-      delete params[param];
-    }
-  });
+const { normalizeEmptyParamFields } = require('../../tools/cleaner');
 
 const hasQueryParams = ({ params = {} }) => Object.keys(params).length;
 
@@ -26,9 +12,7 @@ const addQueryParams = req => {
   if (hasQueryParams(req)) {
     const splitter = req.url.includes('?') ? '&' : '?';
 
-    if (req.removeMissingValuesFrom.params) {
-      pruneMissingQueryParams(req.params);
-    }
+    normalizeEmptyParamFields(req);
 
     const stringifiedParams = querystring.stringify(req.params);
 
