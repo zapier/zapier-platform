@@ -130,14 +130,8 @@ const loadApp = (event, rpc, appRawOrPath) => {
   });
 };
 
-const createLambdaHandler = (appRawOrPath, { skipHttpPatch } = {}) => {
+const createLambdaHandler = appRawOrPath => {
   const handler = (event, context, callback) => {
-    // Adds logging for _all_ kinds of http(s) requests, no matter the library
-    if (!skipHttpPatch) {
-      const httpPatch = createHttpPatch(event);
-      httpPatch(require('http')); // 'https' uses 'http' under the hood
-    }
-
     // Wait for all async events to complete before callback returns.
     // This is not strictly necessary since this is the default now when
     // using the callback; just putting it here to be explicit.
@@ -199,6 +193,13 @@ const createLambdaHandler = (appRawOrPath, { skipHttpPatch } = {}) => {
       return loadApp(event, rpc, appRawOrPath)
         .then(appRaw => {
           const app = createApp(appRaw);
+
+          const { skipHttpPatch } = appRaw.flags || {};
+          // Adds logging for _all_ kinds of http(s) requests, no matter the library
+          if (!skipHttpPatch) {
+            const httpPatch = createHttpPatch(event);
+            httpPatch(require('http')); // 'https' uses 'http' under the hood
+          }
 
           // TODO: Avoid calling prepareApp(appRaw) repeatedly here as createApp()
           // already calls prepareApp() but just doesn't return it.
