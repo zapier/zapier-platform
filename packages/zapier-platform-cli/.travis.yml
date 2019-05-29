@@ -1,7 +1,7 @@
 language: node_js
 node_js:
-  - "8.10.0"
-  - "10.4"  # change it back to "10" once #342 is really fixed
+  - '8.10.0'
+  - '10.15'
 script:
   - npm test
   - npm run smoke-test
@@ -13,5 +13,5 @@ deploy:
   api_key: $NPM_TOKEN
   on:
     tags: true
-    node: "8.10.0"
+    node: '8.10.0'
   skip_cleanup: true

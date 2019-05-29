@@ -80,7 +80,7 @@
     "litdoc": "1.5.6",
     "markdown-toc": "1.1.0",
     "mocha": "5.1.1",
-    "mock-fs": "4.4.2",
+    "mock-fs": "4.10.0",
     "ngrok": "2.2.10",
     "node-watch": "0.5.4",
     "should": "11.2.1",
