@@ -13,13 +13,14 @@ const hashify = (algo, s, encoding, input_encoding) => {
 
 // Clean up sensitive values in a hashed manner so they don't get logged.
 const snipify = s => {
-  if (typeof s !== 'string') {
+  if (!['string', 'number'].includes(typeof s)) {
     return null;
   }
-  const length = s.length;
-  s += process.env.SECRET_SALT || 'doesntmatterreally';
-  const result = hashify('sha256', s);
-  return `:censored:${length}:${result.substr(0, 10)}:`;
+  const str = String(s);
+  const length = str.length;
+  const salted = str + (process.env.SECRET_SALT || 'doesntmatterreally');
+  const hashed = hashify('sha256', salted);
+  return `:censored:${length}:${hashed.substr(0, 10)}:`;
 };
 
 const md5 = s =>

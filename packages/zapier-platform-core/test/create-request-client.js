@@ -583,6 +583,43 @@ describe('request client', () => {
       });
     });
 
+    it('should keep valid data types that are hard-coded', () => {
+      // This may seem like an usual case to be in, and for most apps it is.
+      // However, converted apps that rely on legacy-scripting-runner can have
+      // request bodies that are pure data, no {{}}, so we need to be sure to preserve those to
+      const event = {
+        bundle: {
+          inputData: {
+            number: 123,
+            bool: true,
+            float: 123.456,
+            arr: [1, 2, 3],
+            nested: { very: 'cool' }
+          }
+        }
+      };
+      const bodyInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(bodyInput);
+      return request({
+        url: 'https://httpbin.org/post',
+        method: 'POST',
+        body: {
+          number: 123,
+          bool: true,
+          float: 123.456,
+          arr: [1, 2, 3]
+        }
+      }).then(response => {
+        const { json } = response.json;
+
+        should(json.empty).eql(undefined);
+        json.number.should.eql(123);
+        json.bool.should.eql(true);
+        json.float.should.eql(123.456);
+        json.arr.should.eql([1, 2, 3]);
+      });
+    });
+
     it('should remove keys from body for empty values if configured to', () => {
       const event = {
         bundle: {

@@ -44,26 +44,32 @@ const recurseCleanFuncs = (obj, path) => {
 // Recurse a nested object replace all instances of keys->vals in the bank.
 const recurseReplaceBank = (obj, bank = {}) => {
   const replacer = out => {
-    if (typeof out === 'number') {
-      out = String(out);
-    }
-    if (typeof out !== 'string') {
+    if (!['string', 'number'].includes(typeof out)) {
       return out;
     }
+
+    // whatever leaves this function replaces values in the calling object
+    // so, we don't want to return a different data type unless it's a censored string
+    const originalValue = out;
+    const originalValueStr = String(out);
+    let maybeChangedString = originalValueStr;
 
     Object.keys(bank).forEach(key => {
       // Escape characters (ex. {{foo}} => \\{\\{foo\\}\\} )
       const escapedKey = key.replace(/[-[\]/{}()\\*+?.^$|]/g, '\\$&');
       const matchesKey = new RegExp(escapedKey, 'g');
 
-      if (!matchesKey.test(out)) {
+      if (!matchesKey.test(maybeChangedString)) {
         return;
       }
 
       const matchesCurlies = /({{.*?}})/;
-      const valueParts = out.split(matchesCurlies).filter(Boolean);
+      const valueParts = maybeChangedString
+        .split(matchesCurlies)
+        .filter(Boolean);
       const replacementValue = bank[key];
-      const isPartOfString = !matchesCurlies.test(out) || valueParts.length > 1;
+      const isPartOfString =
+        !matchesCurlies.test(maybeChangedString) || valueParts.length > 1;
       const shouldThrowTypeError =
         isPartOfString &&
         (Array.isArray(replacementValue) || _.isPlainObject(replacementValue));
@@ -76,12 +82,16 @@ const recurseReplaceBank = (obj, bank = {}) => {
         );
       }
 
-      out = isPartOfString
+      maybeChangedString = isPartOfString
         ? valueParts.join('').replace(matchesKey, replacementValue)
         : replacementValue;
     });
 
-    return out;
+    if (originalValueStr === maybeChangedString) {
+      // we didn't censor or replace the value, so return the original
+      return originalValue;
+    }
+    return maybeChangedString;
   };
   return recurseReplace(obj, replacer);
 };

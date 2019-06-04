@@ -98,7 +98,7 @@ const makeSensitiveBank = (event, data) => {
     return false;
   };
 
-  dataTools.recurseExtract(data, matcher).map(value => {
+  dataTools.recurseExtract(data, matcher).forEach(value => {
     sensitiveValues.push(value);
   });
 
@@ -108,11 +108,17 @@ const makeSensitiveBank = (event, data) => {
       // keeps short values from spamming censor strings in logs, < 6 chars is not a proper secret
       // see https://github.com/zapier/zapier-platform-core/issues/4#issuecomment-277855071
       if (val && String(val).length > 5) {
-        val = String(val);
         const censored = hashing.snipify(val);
         bank[val] = censored;
         bank[encodeURIComponent(val)] = censored;
-        bank[Buffer.from(val).toString('base64')] = censored;
+        try {
+          bank[Buffer.from(String(val)).toString('base64')] = censored;
+        } catch (e) {
+          if (e.name !== 'TypeError') {
+            throw e;
+          }
+          // ignore; Buffer is semi-selective about what types it takes
+        }
       }
       return bank;
     },

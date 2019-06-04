@@ -280,6 +280,45 @@ describe('logger', () => {
     });
   });
 
+  // this test fails because the function that creates the sensitive bank doesn't
+  // recurse to find all sensitive values
+  it.skip('should replace sensitive data that nested', () => {
+    const bundle = {
+      authData: {
+        nested: { secret: 8675309 }
+      }
+    };
+    const logger = createlogger({ bundle }, options);
+
+    const data = {
+      response_json: {
+        nested: { secret: 8675309 }
+      },
+      response_content: `{
+        nested: { secret: 8675309 }
+      }`
+    };
+
+    return logger('test', data).then(response => {
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: options.token,
+        message: 'test',
+        data: {
+          response_json: {
+            nested: {
+              secret: ':censored:9:9cb84e8ccc:'
+            }
+          },
+          response_content: `{
+        nested: { secret: :censored:9:9cb84e8ccc: }
+      }`,
+          log_type: 'console'
+        }
+      });
+    });
+  });
+
   it('should not replace safe log keys', () => {
     const bundle = {
       authData: {
