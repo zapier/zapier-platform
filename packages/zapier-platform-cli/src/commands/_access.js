@@ -75,9 +75,21 @@ const makeAccess = (command, recordType) => {
         if (data && data.invite_url) {
           context.line();
           context.line(
-            'You can invite users to this app more broadly by sharing this URL:\n\n  ' +
+            'You can invite users to all versions of this app (current and future) using this URL:\n\n  ' +
               colors.bold(data.invite_url)
           );
+        }
+
+        if (
+          data &&
+          data.versions_invite_urls &&
+          Object.keys(data.versions_invite_urls).length
+        ) {
+          context.line();
+          context.line('Or you can invite users to a specific version:\n');
+          _.each(data.versions_invite_urls, (invite_url, _version) => {
+            context.line(`  ${_version}: ${colors.bold(invite_url)}`);
+          });
         }
       });
     }

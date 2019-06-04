@@ -24,7 +24,9 @@ const init = (context, location) => {
 
   return utils.initApp(context, location, createApp).then(() => {
     context.line(
-      '\nFinished! You might need to `npm install` then try `zapier test`!'
+      '\nFinished! You might need `cd ' +
+        location +
+        '` and `npm install` then try `zapier test`!'
     );
   });
 };
