@@ -130,22 +130,26 @@ $ zapier collaborate user@example.com --remove
 
 ## convert
 
-  > Converts a Zapier Platform app to a CLI app, stubs only.
+  > Converts a Legacy Web Builder or Visual Builder app to a CLI app.
 
   **Usage:** `zapier convert appid path`
 
   
-Creates a new Zapier app from an existing app. **The new app contains code stubs only.** It is supposed to get you started - it isn't going to create a complete app!
+Creates a new CLI app from an existing app.
+
+If you're converting a **Legacy Web Builder** app: the new app contains code stubs only. It is supposed to get you started - it isn't going to create a complete app!
 
 After running this, you'll have a new app in your directory, with stubs for your trigger and actions.  If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
-> Note: this doesn't register or push the app with Zapier - try `zapier register "Example"` and `zapier push` for that!
+Once you've run the command, make sure to run `zapier push` to see it in the editor.
+
+If you're converting a **Visual Builder** app, then it will be identical and ready to push and use immediately! You'll need to do a `zapier push` before the new version is visible in the editor, but otherwise you're good to go.
 
 **Arguments**
 
-* `appid [value]` -- **required**, Get the appid from https://zapier.com/developer/builder/ (check the URL)
+* `appid [value]` -- **required**, Get the appid from "https://zapier.com/app/developer", clicking on an integration, and taking the number after "/app" in the url.
 * `location [value]` -- **required**, Relative to your current path - IE: `.` for current directory
-
+* `--version=1.0.0` -- _optional_, Convert a specific version. Required when converting a Visual Builder app
 
 ```bash
 $ zapier convert 1234 .

@@ -1,3 +1,21 @@
+## 8.2.0
+
+### cli
+* :tada: (feature) Convert visual apps to CLI.  ([#427](https://github.com/zapier/zapier-platform-cli/pull/427))
+* (feature) Add per app version helpers ([#406](https://github.com/zapier/zapier-platform-cli/pull/406))
+* (chore) bump travis node version ([#435](https://github.com/zapier/zapier-platform-cli/pull/435))
+* (chore) remove babel ([#430](https://github.com/zapier/zapier-platform-cli/pull/430))
+* (chore) Add eslint-plugin-mocha ([#429](https://github.com/zapier/zapier-platform-cli/pull/429))
+
+### schema
+* (fix) Reduce minLength for BasicDisplaySchema to 1 ([#69](https://github.com/zapier/zapier-platform-schema/pull/69))
+
+### core
+* (fix) Be more defensive when creating a buffer ([#155](https://github.com/zapier/zapier-platform-core/pull/155))
+* (fix) fix regression where env is ignored ([#154](https://github.com/zapier/zapier-platform-core/pull/154))
+* (fix) Prevent raw curies from being sent in a request. Allow removing empty… ([#153](https://github.com/zapier/zapier-platform-core/pull/153))
+* (fix) Censor sensitive numbers ([#152](https://github.com/zapier/zapier-platform-core/pull/152))
+
 ## 8.1.0
 
 ### cli
