@@ -12,6 +12,9 @@ _zapier() {
             collaborate)
                 COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
                ;;
+            convert)
+                COMPREPLY=( $( compgen -W "--version" -- $cur ) )
+               ;;
             env)
                 COMPREPLY=( $( compgen -W "--remove" -- $cur ) )
                ;;
