@@ -1,3 +1,14 @@
+## 8.2.1
+
+### cli
+None!
+
+### schema
+* (fix) Drop help text length requirement ([#70](https://github.com/zapier/zapier-platform-schema/pull/70))
+
+### core
+None!
+
 ## 8.2.0
 
 ### cli
