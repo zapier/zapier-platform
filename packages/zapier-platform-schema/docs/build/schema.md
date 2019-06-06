@@ -650,7 +650,7 @@ Defines a field an app either needs as input, or gives as output. In addition to
 * `{ key: 'abc', choices: [ 'first', 'second', 'third' ] }`
 * `{ key: 'abc', choices: [ { label: 'Red', sample: '#f00', value: '#f00' } ] }`
 * `{ key: 'abc', children: [ { key: 'abc' } ] }`
-* `{ key: 'abc', type: 'integer' }`
+* `{ key: 'abc', type: 'integer', helpText: 'neat' }`
 
 #### Anti-Examples
 
@@ -661,7 +661,7 @@ Defines a field an app either needs as input, or gives as output. In addition to
 * `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }`
 * `{ key: 'abc', choices: 'mobile' }`
 * `{ key: 'abc', type: 'loltype' }`
-* `{ key: 'abc', children: [] }`
+* `{ key: 'abc', children: [], helpText: '' }`
 * `{ key: 'abc', children: [ { key: 'def', children: [] } ] }`
 * `{ key: 'abc', children: [ { key: 'def', children: [ { key: 'dhi' } ] } ] }`
 * `{ key: 'abc', children: [ '$func$2$f$' ] }`

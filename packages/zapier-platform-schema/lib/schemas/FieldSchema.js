@@ -32,7 +32,7 @@ module.exports = makeSchema(
         choices: [{ label: 'Red', sample: '#f00', value: '#f00' }]
       },
       { key: 'abc', children: [{ key: 'abc' }] },
-      { key: 'abc', type: 'integer' }
+      { key: 'abc', type: 'integer', helpText: 'neat' }
     ],
     antiExamples: [
       {},
@@ -42,7 +42,7 @@ module.exports = makeSchema(
       { key: 'abc', choices: [{ label: 'Red', value: '#f00' }] },
       { key: 'abc', choices: 'mobile' },
       { key: 'abc', type: 'loltype' },
-      { key: 'abc', children: [] },
+      { key: 'abc', children: [], helpText: '' },
       {
         key: 'abc',
         children: [{ key: 'def', children: [] }]
@@ -72,7 +72,7 @@ module.exports = makeSchema(
         description:
           'A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.',
         type: 'string',
-        minLength: 10,
+        minLength: 1,
         maxLength: 1000
       },
       type: {
