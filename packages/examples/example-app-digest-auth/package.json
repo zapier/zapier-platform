@@ -1,5 +1,5 @@
 {
-  "name": "zapier-platform-example-app-basic-auth",
+  "name": "zapier-platform-example-app-digest-auth",
   "version": "1.0.0",
   "description": "An example app for the Zapier platform.",
   "repository": "zapier/zapier-platform-example-app-basic-auth",
