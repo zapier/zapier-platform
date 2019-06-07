@@ -10,7 +10,7 @@
   "main": "schema.js",
   "files": ["/exported-schema.json", "/lib/**/*.js", "/schema.js"],
   "scripts": {
-    "preversion": "git pull && npm test",
+    "preversion": "git pull && yarn test",
     "version": "yarn build && yarn git-add",
     "postversion": "git push && git push --tags",
     "test": "mocha -t 5000 --recursive test",

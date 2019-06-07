@@ -10,9 +10,9 @@
   "typings": "index.d.ts",
   "files": ["/include/", "/index.d.ts", "/index.js", "/src/"],
   "scripts": {
-    "preversion": "git pull && npm test",
+    "preversion": "git pull && yarn test",
     "version":
-      "node bin/bump-dependencies.js && npm install && git add package.json package-lock.json",
+      "node bin/bump-dependencies.js && yarn && git add package.json yarn.lock",
     "postversion": "git push && git push --tags",
     "test": "mocha -t 10000 --recursive test",
     "debug": "mocha -t 10000 --inspect-brk --recursive test",
