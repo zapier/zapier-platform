@@ -1,20 +1,17 @@
 {
   "name": "zapier-platform-schema",
   "version": "8.2.1",
-  "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
+  "description":
+    "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-schema",
   "homepage": "https://zapier.com/",
   "author": "Bryan Helmig <bryan@zapier.com>",
   "license": "UNLICENSED",
   "main": "schema.js",
-  "files": [
-    "/exported-schema.json",
-    "/lib/**/*.js",
-    "/schema.js"
-  ],
+  "files": ["/exported-schema.json", "/lib/**/*.js", "/schema.js"],
   "scripts": {
-    "preversion": "git pull && npm test",
-    "version": "npm run build && npm run add",
+    "preversion": "git pull && yarn test",
+    "version": "yarn build && yarn git-add",
     "postversion": "git push && git push --tags",
     "test": "mocha -t 5000 --recursive test",
     "test:debug": "mocha -t 5000 --recursive --inspect-brk test",
@@ -23,9 +20,9 @@
     "coverage": "istanbul cover _mocha -- --recursive",
     "export": "node bin/export.js && prettier --write exported-schema.json",
     "docs": "node bin/docs.js",
-    "build": "npm run docs && npm run export",
-    "add": "git add exported-schema.json README.md docs",
-    "precommit": "npm run build && npm run add && lint-staged"
+    "build": "yarn docs && yarn export",
+    "git-add": "git add exported-schema.json README.md docs",
+    "precommit": "yarn build && yarn git-add && lint-staged"
   },
   "dependencies": {
     "jsonschema": "1.1.1",
@@ -47,9 +44,6 @@
     "singleQuote": true
   },
   "lint-staged": {
-    "*.{js,json}": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.{js,json}": ["prettier --write", "git add"]
   }
 }
