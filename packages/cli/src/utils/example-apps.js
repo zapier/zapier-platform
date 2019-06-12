@@ -2,29 +2,10 @@ const fetch = require('node-fetch');
 const path = require('path');
 const tmp = require('tmp');
 const fse = require('fs-extra');
-const AdmZip = require('adm-zip');
 
-const { writeFile, copyDir } = require('./files');
+const { copyDir } = require('./files');
 
-const MONOREPO_EXAMPLES = new Set([
-  'babel',
-  'basic-auth',
-  'create',
-  'custom-auth',
-  'digest-auth',
-  'dynamic-dropdown',
-  'files',
-  'middleware',
-  'minimal',
-  'oauth2',
-  'resource',
-  'rest-hooks',
-  'search',
-  'search-or-create',
-  'session-auth',
-  'trigger',
-  'typescript'
-]);
+const monorepo = 'zapier/zapier-platform'; // would be cool to have this shared by all the packages?
 
 const atob = str => {
   return new Buffer(str, 'base64').toString('binary');
@@ -33,6 +14,7 @@ const atob = str => {
 const githubRequest = async url => {
   const rawRes = await fetch(url, {
     headers: {
+      // users shouldn't need this, but if they're scaffolding a lot in a short time, they may get rate-limited
       Authorization: process.env.GITHUB_API_TOKEN
         ? `token ${process.env.GITHUB_API_TOKEN}`
         : undefined
@@ -45,9 +27,9 @@ const downloadSampleAppFromGithub = async (key, destDir) => {
   const tempDir = tmp.tmpNameSync();
 
   const exampleApps = await githubRequest(
-    'https://api.github.com/repos/zapier/zapier-platform/contents/packages/examples'
+    `https://api.github.com/repos/${monorepo}/contents/example-apps`
   );
-  const exampleApp = exampleApps.find(app => app.name === `example-app-${key}`);
+  const exampleApp = exampleApps.find(app => app.name === key);
   const exampleFiles = await githubRequest(`${exampleApp.git_url}?recursive=1`);
 
   await Promise.all(
@@ -58,47 +40,25 @@ const downloadSampleAppFromGithub = async (key, destDir) => {
         console.log(
           `!! Failed to download file ${
             file.path
-          }, please file an issue at https://github.com/zapier/zapier-platform`
+          }, please file an issue at https://github.com/${monorepo}`
         );
-        return;
       }
       const fileContent = atob(fileInfo.content);
-      // TODO: windows compatibility - github paths all have / in the path. need to replace with path.sep
 
-      // this ensures the nested structure is created
-      return fse.outputFile(path.resolve(tempDir, file.path), fileContent);
+      // windows compatibility - github paths use "/", which should instead be platform agnostic
+      // outputFile below might be smart enough to handle that, but I'm not sure
+      const filePath = file.path.split('/').join(path.sep);
+
+      // outputFile ensures the nested structure is created
+      await fse.outputFile(path.resolve(tempDir, filePath), fileContent);
     })
   );
   await copyDir(tempDir, destDir);
   return fse.remove(tempDir);
 };
 
-const downloadAndUnzipTo = async (key, destDir) => {
-  const fragment = `zapier-platform-example-app-${key}`;
-  const folderInZip = `${fragment}-master`;
-  const url = `https://codeload.github.com/zapier/${fragment}/zip/master`;
-
-  const tempDir = tmp.tmpNameSync();
-  const tempFilePath = path.resolve(tempDir, 'zapier-template.zip');
-
-  await fse.ensureDir(tempDir);
-  const res = await fetch(url);
-  const buffer = await res.buffer();
-  await writeFile(tempFilePath, buffer);
-
-  const zip = new AdmZip(tempFilePath);
-  zip.extractAllTo(tempDir, true);
-  const currPath = await path.join(tempDir, folderInZip);
-
-  await copyDir(currPath, destDir);
-  return fse.remove(tempDir);
-};
-
 const downloadSampleAppTo = (key, destDir) => {
-  const downloadMethod = MONOREPO_EXAMPLES.has(key)
-    ? downloadSampleAppFromGithub
-    : downloadAndUnzipTo;
-  return downloadMethod(key, destDir);
+  return downloadSampleAppFromGithub(key, destDir);
 };
 
 const removeReadme = dir => {

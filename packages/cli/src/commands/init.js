@@ -1,6 +1,5 @@
 const utils = require('../utils');
 const exampleApps = require('../utils/example-apps');
-const constants = require('../constants');
 const appTemplates = require('../app-templates');
 
 const init = (context, location) => {
