@@ -4,11 +4,11 @@
   "devDependencies": {
     "lerna": "^3.15.0"
   },
-  "workspaces": [
-    "packages/*",
-    "example-apps/*"
-  ],
+  "workspaces": ["packages/*", "example-apps/*"],
   "scripts": {
-    "test": "lerna run --stream --scope zapier-platform-cli --scope zapier-platform-core --scope zapier-platform-schema --scope zapier-platform-legacy-scripting-runner test"
+    "test":
+      "lerna run --stream --scope zapier-platform-cli --scope zapier-platform-core --scope zapier-platform-schema --scope zapier-platform-legacy-scripting-runner test",
+    "smoke-test":
+      "lerna run --stream --scope zapier-platform-cli --scope zapier-platform-core --scope zapier-platform-schema --scope zapier-platform-legacy-scripting-runner smoke-test"
   }
 }
