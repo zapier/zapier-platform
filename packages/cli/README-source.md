@@ -559,48 +559,48 @@ The dot-separated string concatenation follows this pattern:
 - The value to be made available in bundle.inputData. _required_
 - The human friendly value to be shown on the left of the dropdown in bold. _optional_
 
-In the above code example the dynamic property makes reference to a trigger with a key of project. Assuming the project trigger returns an array of objects and each object contains an id and name key, i.e.  
+In the above code example the dynamic property makes reference to a trigger with a key of project. Assuming the project trigger returns an array of objects and each object contains an id and name key, i.e.
 
 ```js
 [insert-file:./snippets/dynamic-dropdowns-two.js]
-```  
+```
 
-The dynamic dropdown would look something like this.  
+The dynamic dropdown would look something like this.
 ![screenshot of dynamic dropdown in Zap Editor](https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png)
 
-In the first code example the dynamic dropdown is powered by a trigger. You can also use a resource to power a dynamic dropdown. To do this combine the resource key and the resource method using camel case.  
+In the first code example the dynamic dropdown is powered by a trigger. You can also use a resource to power a dynamic dropdown. To do this combine the resource key and the resource method using camel case.
 
 ```js
 [insert-file:./snippets/dynamic-dropdowns-three.js]
-```  
+```
 
-In some cases you will need to power a dynamic dropdown but do not want to make the Trigger available to the end user. Here it is best practice to create the trigger and set `hidden: true` on it's display object.  
+In some cases you will need to power a dynamic dropdown but do not want to make the Trigger available to the end user. Here it is best practice to create the trigger and set `hidden: true` on it's display object.
 
 ```js
 [insert-file:./snippets/dynamic-dropdowns-four.js]
-```  
+```
 
 You can have multiple dynamic dropdowns in a single Trigger or Action. And a dynamic dropdown can depend on the value chosen in another dynamic dropdown when making it's API call. Such as a Spreadsheet and Worksheet dynamic dropdown in a trigger or action. This means you must make sure that the key of the first dynamic dropdown is the same as referenced in the trigger powering the second.
 
-Let's say you have a Worksheet trigger with a `perform` method similar to this.  
+Let's say you have a Worksheet trigger with a `perform` method similar to this.
 
 ```js
 [insert-file:./snippets/dynamic-dropdowns-five.js]
-```  
+```
 
-And your New Records trigger has a Spreadsheet and a Worksheet dynamic dropdown. The Spreadsheet dynamic dropdown must have a key of `spreadsheet_id`. When the user selects a spreadsheet via the dynamic dropdown the value chosen is made available in `bundle.inputData`. It will then be passed to the Worksheet trigger when the user clicks on the Worksheet dynamic dropdown.  
+And your New Records trigger has a Spreadsheet and a Worksheet dynamic dropdown. The Spreadsheet dynamic dropdown must have a key of `spreadsheet_id`. When the user selects a spreadsheet via the dynamic dropdown the value chosen is made available in `bundle.inputData`. It will then be passed to the Worksheet trigger when the user clicks on the Worksheet dynamic dropdown.
 
 ```js
 [insert-file:./snippets/dynamic-dropdowns-six.js]
-```  
+```
 
 The [Google Sheets](https://zapier.com/apps/google-sheets/integrations#triggers-and-actions) integration is an example of this pattern.
 
-If you want your trigger to perform specific scripting for a dynamic dropdown you will need to make use of `bundle.meta.isFillingDynamicDropdown`. This can be useful if need to make use of [pagination](#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work) in the dynamic dropdown to load more options.  
+If you want your trigger to perform specific scripting for a dynamic dropdown you will need to make use of `bundle.meta.isFillingDynamicDropdown`. This can be useful if need to make use of [pagination](#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work) in the dynamic dropdown to load more options.
 
 ```js
 [insert-file:./snippets/dynamic-dropdowns-seven.js]
-```  
+```
 
 ### Search-Powered Fields
 
@@ -626,7 +626,7 @@ You can see examples of computed fields in the [OAuth2](#oauth2) or [Session Aut
 
 ### Nested & Children (Line Item) Fields
 
-When your action needs to accept an array of items, you can include an input field with the `children` attribute. The `children` attribute accepts a list of [fields](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema) that can be input for each item in this array.  
+When your action needs to accept an array of items, you can include an input field with the `children` attribute. The `children` attribute accepts a list of [fields](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema) that can be input for each item in this array.
 
 ```js
 [insert-file:./snippets/input-fields-children.js]
@@ -1610,6 +1610,25 @@ items.forEach(item => {
 
 return items;
 ```
+
+### Node 6 No Longer Supported
+
+If you're seeing errors like the following:
+
+```
+InvalidParameterValueException An error occurred (InvalidParameterValueException) when calling the CreateFunction operation: The runtime parameter of nodejs6.10 is no longer supported for creating or updating AWS Lambda functions. We recommend you use the new runtime (nodejs8.10) while creating or updating functions.
+```
+
+then you need to update your `zapier-platform-core` dependency to a non-deprecated version that uses a newer version of Node.js. Complete the following instructions as soon as possible:
+
+1. Edit `package.json` to depend on a version of `zapier-platform-core` >= `7.0.0`. (8.x is the latest) There's a list of all breaking changes (marked with an :exclamation:) in the [changelog](https://github.com/zapier/zapier-platform/blob/master/packages/zapier-platform-cli/CHANGELOG.md).
+2. Increment the `version` property in `package.json`
+3. Ensure you're using version `8.10.0` (or greater) of node locally (`node -v`). Use [nvm](https://github.com/nvm-sh/nvm) to use a different one if need be.
+4. Run `rm -rf node_modules && npm i` to get a fresh copy of everything
+5. Run `zapier test` to ensure your tests still pass
+6. Run `zapier push`
+7. Run `zapier promote YOUR_NEW_VERSION` (from step 2)
+8. Migrate your users from the previous version (`zapier migrate OLD_VERSION NEW_VERSION`)
 
 ## Command Line Tab Completion
 
