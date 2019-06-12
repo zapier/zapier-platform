@@ -1,5 +1,10 @@
 {
   "npmClient": "yarn",
   "version": "independant",
-  "useWorkspaces": true
+  "useWorkspaces": true,
+  "command": {
+    "run": {
+      "npmClient": "yarn"
+    }
+  }
 }
