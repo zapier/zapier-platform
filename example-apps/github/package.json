@@ -1,5 +1,5 @@
 {
-  "name": "github-example-app",
+  "name": "zapier-platform-example-app-github",
   "version": "1.0.0",
   "description": "An example app for the Zapier platform.",
   "repository": "zapier/zapier-platform-app-github-example",
@@ -8,7 +8,7 @@
   "license": "BSD-3-Clause",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --recursive"
+    "test": "mocha --recursive"
   },
   "engines": {
     "node": "8.10.0",
