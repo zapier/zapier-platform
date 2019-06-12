@@ -1,5 +1,7 @@
 # Zapier Platform
 
+[![Build Status](https://travis-ci.com/zapier/zapier-platform.svg?branch=master)](https://travis-ci.com/zapier/zapier-platform)
+
 This is the main monorepo for all public code that powers the Zapier Platform Experience.
 
 ## Contents
