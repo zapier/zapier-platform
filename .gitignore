@@ -90,5 +90,5 @@ typings/
 
 # End of https://www.gitignore.io/api/node
 
-packages/examples/*/yarn.lock
-packages/examples/*/package-lock.json
+example-apps/*/yarn.lock
+example-apps/*/package-lock.json
