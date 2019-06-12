@@ -11,3 +11,24 @@ It consists of a few main packages:
 - `zapier-platform-schema`: The source of truth for what's allowed in the structure a Zapier app; not typically installed directly
 - `zapier-platform-legacy-scripting-runner`: If your app started as a Legacy Web Builder app, this provides a shim that keeps your app running seamlessly
 - `example-apps/*`: A varied set of example apps to get you started
+
+## Getting Started
+
+```bash
+# Install Yarn if you haven't
+brew install yarn
+
+# Clone this repo
+git clone git@github.com:zapier/zapier-platform.git
+cd zapier-platform
+
+# Install dependencies
+yarn
+
+# Run tests for all packages
+yarn test
+
+# Run tests for an individual package
+cd packages/cli
+yarn test
+```
