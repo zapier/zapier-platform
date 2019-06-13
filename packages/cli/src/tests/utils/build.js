@@ -18,9 +18,15 @@ describe('build', () => {
     return build.requiredFiles(entryDir, [entryPoint]).then(smartPaths => {
       // check that only the required lodash files are grabbed
       smartPaths
-        .filter(filePath => filePath.indexOf('node_modules/lodash') === 0)
+        .filter(
+          filePath => filePath.indexOf('node_modules/lodash/') >= 0
+        )
         .length.should.be.within(0, 2);
-      smartPaths.should.containEql('node_modules/lodash/lodash.js');
+      smartPaths
+        .filter(
+          filePath => filePath.indexOf('node_modules/lodash/lodash.js') >= 0
+        )
+        .length.should.equal(1);
       smartPaths.should.containEql('src/commands/init.js');
       smartPaths.should.not.containEql('README.md');
     });
@@ -28,11 +34,10 @@ describe('build', () => {
 
   it('should list all the files', () => {
     return build.listFiles(entryDir).then(dumbPaths => {
-      // check that way more than the required lodash files are grabbed
+      // check that way more than the required package files are grabbed
       dumbPaths
-        .filter(filePath => filePath.indexOf('node_modules/lodash') === 0)
-        .length.should.be.within(800, 1200);
-      dumbPaths.should.containEql('node_modules/lodash/lodash.js');
+        .filter(filePath => filePath.indexOf('node_modules/') === 0)
+        .length.should.be.greaterThan(1000);
       dumbPaths.should.containEql('src/commands/init.js');
       dumbPaths.should.containEql('README.md');
     });
