@@ -587,27 +587,17 @@ describe('create-app', () => {
 
     it('should handle require errors', async () => {
       const definition = createDefinition(`
-        const moment = z.require('moment');
-        return moment(new Date).format(YYYY-MM-DD);
+        const moment = z.require('non-existing-package');
+        return moment(new Date).format('YYYY-MM-DD');
       `);
 
       const input = createTestInput('triggers.testRequire.operation.perform');
 
       const appFail = createApp(definition);
 
-      try {
-        await appFail(input);
-      } catch (error) {
-        error.name.should.eql('Error');
-        error.message.should.eql(
-          [
-            "Cannot find module 'moment'",
-            'What happened:',
-            '  Executing triggers.testRequire.operation.perform with bundle',
-            "  Cannot find module 'moment'"
-          ].join('\n')
-        );
-      }
+      await appFail(input).should.be.rejectedWith(
+        /Cannot find module 'non-existing-package'/
+      );
     });
   });
 });

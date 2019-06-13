@@ -350,8 +350,7 @@ describe('request client', () => {
   it('should block self-signed SSL certificate', () => {
     const request = createAppRequestClient(input);
     return request('https://self-signed.badssl.com').should.be.rejectedWith({
-      name: 'FetchError',
-      code: 'DEPTH_ZERO_SELF_SIGNED_CERT'
+      name: 'FetchError'
     });
   });
 
