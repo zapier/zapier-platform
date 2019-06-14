@@ -48,7 +48,7 @@
     "zapier-platform-schema": "8.2.1"
   },
   "devDependencies": {
-    "adm-zip": "0.4.9",
+    "adm-zip": "0.4.13",
     "aws-sdk": "2.238.1",
     "babel": "6.23.0",
     "babel-eslint": "8.2.3",
