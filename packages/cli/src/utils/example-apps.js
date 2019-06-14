@@ -1,64 +1,74 @@
 const fetch = require('node-fetch');
 const path = require('path');
-const tmp = require('tmp');
 const fse = require('fs-extra');
+const AdmZip = require('adm-zip');
 
+const xdg = require('./xdg');
 const { copyDir } = require('./files');
 
-const monorepo = 'zapier/zapier-platform'; // would be cool to have this shared by all the packages?
+const REPO_ZIP_URL =
+  'https://codeload.github.com/zapier/zapier-platform/zip/master';
 
-const atob = str => {
-  return new Buffer(str, 'base64').toString('binary');
+const checkCacheUpToDate = async repoDir => {
+  const etagPath = path.join(repoDir, 'etag');
+  let currentEtag;
+  try {
+    currentEtag = await fse.readFile(etagPath, { encoding: 'utf8' });
+  } catch (err) {
+    currentEtag = '';
+  }
+  const res = await fetch(REPO_ZIP_URL, { method: 'HEAD' });
+  const latestEtag = res.headers.get('etag');
+
+  return currentEtag === latestEtag;
 };
 
-const githubRequest = async url => {
-  const rawRes = await fetch(url, {
-    headers: {
-      // users shouldn't need this, but if they're scaffolding a lot in a short time, they may get rate-limited
-      Authorization: process.env.GITHUB_API_TOKEN
-        ? `token ${process.env.GITHUB_API_TOKEN}`
-        : undefined
-    }
+const downloadRepo = async destDir => {
+  const destZipPath = path.join(destDir, 'zapier-platform-master.zip');
+
+  const res = await fetch(REPO_ZIP_URL);
+  const dest = fse.createWriteStream(destZipPath);
+  res.body.pipe(dest);
+
+  await new Promise((resolve, reject) => {
+    dest.on('finish', () => {
+      resolve();
+    });
+    dest.on('error', reject);
   });
-  return rawRes.json();
+
+  const zip = new AdmZip(destZipPath);
+  zip.extractAllTo(destDir, true);
+
+  // Save etag for cache validation
+  const etagPath = path.join(destDir, 'zapier-platform-master', 'etag');
+  fse.writeFileSync(etagPath, res.headers.get('etag'));
+
+  fse.removeSync(destZipPath);
+
+  return destZipPath;
 };
 
-const downloadSampleAppFromGithub = async (key, destDir) => {
-  const tempDir = tmp.tmpNameSync();
+const ensureRepoCached = async () => {
+  const cacheDir = xdg.ensureCacheDir();
+  const repoDir = path.join(cacheDir, 'zapier-platform-master');
 
-  const exampleApps = await githubRequest(
-    `https://api.github.com/repos/${monorepo}/contents/example-apps`
-  );
-  const exampleApp = exampleApps.find(app => app.name === key);
-  const exampleFiles = await githubRequest(`${exampleApp.git_url}?recursive=1`);
+  if (fse.existsSync(repoDir)) {
+    if (!await checkCacheUpToDate(repoDir)) {
+      await fse.remove(repoDir);
+      await downloadRepo(cacheDir);
+    }
+  } else {
+    await downloadRepo(cacheDir);
+  }
 
-  await Promise.all(
-    exampleFiles.tree.filter(file => file.type === 'blob').map(async file => {
-      const fileInfo = await githubRequest(file.url);
-      if (fileInfo.encoding !== 'base64') {
-        // not sure if/when this happens, but it doesn't hurt to be careful
-        console.log(
-          `!! Failed to download file ${
-            file.path
-          }, please file an issue at https://github.com/${monorepo}`
-        );
-      }
-      const fileContent = atob(fileInfo.content);
-
-      // windows compatibility - github paths use "/", which should instead be platform agnostic
-      // outputFile below might be smart enough to handle that, but I'm not sure
-      const filePath = file.path.split('/').join(path.sep);
-
-      // outputFile ensures the nested structure is created
-      await fse.outputFile(path.resolve(tempDir, filePath), fileContent);
-    })
-  );
-  await copyDir(tempDir, destDir);
-  return fse.remove(tempDir);
+  return repoDir;
 };
 
-const downloadSampleAppTo = (key, destDir) => {
-  return downloadSampleAppFromGithub(key, destDir);
+const downloadExampleAppTo = async (exampleName, destDir) => {
+  const repoDir = await ensureRepoCached();
+  const cachedExampleDir = path.join(repoDir, 'example-apps', exampleName);
+  await copyDir(cachedExampleDir, destDir);
 };
 
 const removeReadme = dir => {
@@ -66,6 +76,6 @@ const removeReadme = dir => {
 };
 
 module.exports = {
-  downloadSampleAppTo,
+  downloadExampleAppTo,
   removeReadme
 };

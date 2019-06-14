@@ -30,5 +30,6 @@ module.exports = [
   'typescript',
 
   // full examples
-  'github'
+  'github',
+  'onedrive'
 ];

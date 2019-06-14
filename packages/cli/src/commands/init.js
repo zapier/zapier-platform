@@ -9,10 +9,11 @@ const init = (context, location) => {
   const template = global.argOpts.template || 'minimal';
   const createApp = tempAppDir => {
     utils.startSpinner(
-      `Downloading zapier/zapier-platform-example-app-${template} starter app`
+      `Downloading zapier/zapier-platform/example-apps/${template} starter app`
     );
+
     return exampleApps
-      .downloadSampleAppTo(template, tempAppDir)
+      .downloadExampleAppTo(template, tempAppDir)
       .then(() => exampleApps.removeReadme(tempAppDir))
       .then(() => utils.endSpinner());
   };
