@@ -1,31 +1,74 @@
 const fetch = require('node-fetch');
 const path = require('path');
-const tmp = require('tmp');
 const fse = require('fs-extra');
 const AdmZip = require('adm-zip');
 
-const { writeFile, copyDir } = require('./files');
+const xdg = require('./xdg');
+const { copyDir } = require('./files');
 
-const downloadAndUnzipTo = (key, destDir) => {
-  const fragment = `zapier-platform-example-app-${key}`;
-  const folderInZip = `${fragment}-master`;
-  const url = `https://codeload.github.com/zapier/${fragment}/zip/master`;
+const REPO_ZIP_URL =
+  'https://codeload.github.com/zapier/zapier-platform/zip/master';
 
-  const tempDir = tmp.tmpNameSync();
-  const tempFilePath = path.resolve(tempDir, 'zapier-template.zip');
+const checkCacheUpToDate = async repoDir => {
+  const etagPath = path.join(repoDir, 'etag');
+  let currentEtag;
+  try {
+    currentEtag = await fse.readFile(etagPath, { encoding: 'utf8' });
+  } catch (err) {
+    currentEtag = '';
+  }
+  const res = await fetch(REPO_ZIP_URL, { method: 'HEAD' });
+  const latestEtag = res.headers.get('etag');
 
-  return fse
-    .ensureDir(tempDir)
-    .then(() => fetch(url))
-    .then(res => res.buffer())
-    .then(buffer => writeFile(tempFilePath, buffer))
-    .then(() => {
-      const zip = new AdmZip(tempFilePath);
-      zip.extractAllTo(tempDir, true);
-      return path.join(tempDir, folderInZip);
-    })
-    .then(currPath => copyDir(currPath, destDir))
-    .then(() => fse.remove(tempDir));
+  return currentEtag === latestEtag;
+};
+
+const downloadRepo = async destDir => {
+  const destZipPath = path.join(destDir, 'zapier-platform-master.zip');
+
+  const res = await fetch(REPO_ZIP_URL);
+  const dest = fse.createWriteStream(destZipPath);
+  res.body.pipe(dest);
+
+  await new Promise((resolve, reject) => {
+    dest.on('finish', () => {
+      resolve();
+    });
+    dest.on('error', reject);
+  });
+
+  const zip = new AdmZip(destZipPath);
+  zip.extractAllTo(destDir, true);
+
+  // Save etag for cache validation
+  const etagPath = path.join(destDir, 'zapier-platform-master', 'etag');
+  fse.writeFileSync(etagPath, res.headers.get('etag'));
+
+  fse.removeSync(destZipPath);
+
+  return destZipPath;
+};
+
+const ensureRepoCached = async () => {
+  const cacheDir = xdg.ensureCacheDir();
+  const repoDir = path.join(cacheDir, 'zapier-platform-master');
+
+  if (fse.existsSync(repoDir)) {
+    if (!await checkCacheUpToDate(repoDir)) {
+      await fse.remove(repoDir);
+      await downloadRepo(cacheDir);
+    }
+  } else {
+    await downloadRepo(cacheDir);
+  }
+
+  return repoDir;
+};
+
+const downloadExampleAppTo = async (exampleName, destDir) => {
+  const repoDir = await ensureRepoCached();
+  const cachedExampleDir = path.join(repoDir, 'example-apps', exampleName);
+  await copyDir(cachedExampleDir, destDir);
 };
 
 const removeReadme = dir => {
@@ -33,6 +76,6 @@ const removeReadme = dir => {
 };
 
 module.exports = {
-  downloadAndUnzipTo,
+  downloadExampleAppTo,
   removeReadme
 };

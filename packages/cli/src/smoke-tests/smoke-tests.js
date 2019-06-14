@@ -125,6 +125,25 @@ describe('smoke tests - setup will take some time', () => {
     fs.existsSync(appPackageJson).should.be.true();
   });
 
+  it('zapier init --template=babel', () => {
+    spawnSync(context.cliBin, ['init', 'babel-app', '--template=babel'], {
+      cwd: context.workdir
+    });
+
+    const newAppDir = path.join(context.workdir, 'babel-app');
+    fs.existsSync(newAppDir).should.be.true();
+
+    const appIndexJs = path.join(newAppDir, 'index.js');
+    const appPackageJson = path.join(newAppDir, 'package.json');
+    fs.existsSync(appIndexJs).should.be.true();
+    fs.existsSync(appPackageJson).should.be.true();
+
+    const package = JSON.parse(
+      fs.readFileSync(appPackageJson, { encoding: 'utf8' })
+    );
+    package.name.should.containEql('babel');
+  });
+
   it('zapier apps', function() {
     if (!context.hasRC) {
       this.skip();

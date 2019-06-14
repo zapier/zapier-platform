@@ -34,29 +34,8 @@ const AUTH_KEY = 'deployKey';
 const PACKAGE_VERSION = require('../package.json').version;
 const UPDATE_NOTIFICATION_INTERVAL = 1000 * 60 * 60 * 24 * 7; // one week
 
-const ART = `\
-                zzzzzzzz
-      zzz       zzzzzzzz       zzz
-    zzzzzzz     zzzzzzzz     zzzzzzz
-   zzzzzzzzzz   zzzzzzzz   zzzzzzzzzz
-      zzzzzzzzz zzzzzzzz zzzzzzzzz
-        zzzzzzzzzzzzzzzzzzzzzzzz
-          zzzzzzzzzzzzzzzzzzzz
-zzzzzzzzzzzzzzz          zzzzzzzzzzzzzzz
-zzzzzzzzzzzzzzz          zzzzzzzzzzzzzzz
-zzzzzzzzzzzzzzz          zzzzzzzzzzzzzzz
-zzzzzzzzzzzzzzz          zzzzzzzzzzzzzzz
-          zzzzzzzzzzzzzzzzzzzz
-        zzzzzzzzzzzzzzzzzzzzzzzz
-      zzzzzzzzz zzzzzzzz zzzzzzzzz
-   zzzzzzzzzz   zzzzzzzz   zzzzzzzzzz
-    zzzzzzz     zzzzzzzz     zzzzzzz
-      zzz       zzzzzzzz       zzz
-                zzzzzzzz`;
-
 module.exports = {
   API_PATH,
-  ART,
   AUTH_KEY,
   AUTH_LOCATION,
   AUTH_LOCATION_RAW,

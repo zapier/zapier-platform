@@ -1,23 +1,19 @@
 const utils = require('../utils');
 const exampleApps = require('../utils/example-apps');
-const constants = require('../constants');
 const appTemplates = require('../app-templates');
 
 const init = (context, location) => {
-  context.line('Welcome to the Zapier Platform! :-D');
-  context.line();
-  context.line(constants.ART);
-  context.line();
-  context.line("Let's initialize your app!");
+  context.line('Initializing New App.');
   context.line();
 
   const template = global.argOpts.template || 'minimal';
   const createApp = tempAppDir => {
     utils.startSpinner(
-      `Downloading zapier/zapier-platform-example-app-${template} starter app`
+      `Downloading zapier/zapier-platform/example-apps/${template} starter app`
     );
+
     return exampleApps
-      .downloadAndUnzipTo(template, tempAppDir)
+      .downloadExampleAppTo(template, tempAppDir)
       .then(() => exampleApps.removeReadme(tempAppDir))
       .then(() => utils.endSpinner());
   };
