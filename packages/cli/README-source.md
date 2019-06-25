@@ -616,9 +616,11 @@ If you don't define a trigger for the `dynamic` property, the search connector w
 
 ### Computed Fields
 
-In OAuth and Session Auth, you may want to use fields from your API call response other than `access_token` or `refresh_token` for OAuth and `sessionKey` for Session auth. If you want to use data from those fields and need Zapier to confirm that they exist, you need to use Computed Fields.
+In OAuth and Session Auth, Zapier automatically stores every value from an integration’s auth API response i.e. that’s `getAccessToken` and `refreshAccessToken` for OAuth and `getSessionKey` for session auth.
 
-Zapier stores every value from an integration's test API call in `bundle.authData` as _Computed Fields_. You can reference these fields in any subsequent API call as needed. If you define a computed field in your integration, Zapier will check to make sure those fields exist when it runs the authentication test API call.
+You can return additional fields in these responses, on top of the expected `access_token` or `refresh_token` for OAuth and `sessionKey` for Session auth. They will be saved in `bundle.authData`. You can reference these fields in any subsequent API call as needed.
+
+If you want Zapier to validate that these additional fields exist, you need to use Computed Fields. If you define computed fields in your integration, Zapier will check to make sure those fields exist when it runs the authentication test API call.
 
 Computed fields work like any other field, though with `computed: true` property, and `required: false` as user can not enter computed fields themselves. Reference computed fields in API calls as `{{bundle.authData.field}}`, replacing `field` with that field's name from your test API call response.
 
