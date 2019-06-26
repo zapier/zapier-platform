@@ -5,7 +5,8 @@ const createIssue = (z, bundle) => {
     method: 'POST',
     url: `https://api.github.com/repos/${bundle.inputData.repo}/issues`,
     body: JSON.stringify({
-      title: bundle.inputData.title
+      title: bundle.inputData.title,
+      body: bundle.inputData.body
     })
   });
   return responsePromise
