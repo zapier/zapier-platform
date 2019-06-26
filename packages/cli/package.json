@@ -18,7 +18,7 @@
     "node": ">=8.10.0"
   },
   "scripts": {
-    "docs": "ZAPIER_BASE_ENDPOINT='' node src/bin/docs.js",
+    "docs": "ZAPIER_BASE_ENDPOINT='' node src/bin/docs.js && cp -r docs ../..",
     "preversion": "git pull && yarn validate",
     "version": "yarn docs && yarn gen-completions && git add docs/* goodies/* README.md",
     "postversion": "git push && git push --tags",
