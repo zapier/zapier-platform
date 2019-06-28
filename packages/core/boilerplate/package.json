@@ -11,7 +11,7 @@
     "npm": ">=5.6.0"
   },
   "dependencies": {
-    "zapier-platform-core": "CORE_PLATFORM_VERSION",
-    "zapier-platform-legacy-scripting-runner": "3.0.0"
+    "zapier-platform-core": "PLACEHOLDER",
+    "zapier-platform-legacy-scripting-runner": "PLACEHOLDER"
   }
 }

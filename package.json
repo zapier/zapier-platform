@@ -9,6 +9,12 @@
     "test":
       "lerna run --stream --scope zapier-platform-cli --scope zapier-platform-core --scope zapier-platform-schema --scope zapier-platform-legacy-scripting-runner test",
     "smoke-test":
-      "lerna run --stream --scope zapier-platform-cli --scope zapier-platform-core --scope zapier-platform-schema --scope zapier-platform-legacy-scripting-runner smoke-test"
+      "lerna run --stream --scope zapier-platform-cli --scope zapier-platform-core --scope zapier-platform-schema --scope zapier-platform-legacy-scripting-runner smoke-test",
+    "bump":
+      "lerna version --exact --force-publish=zapier-platform-cli,zapier-platform-core,zapier-platform-schema",
+    "build-boilerplate":
+      "yarn workspace zapier-platform-core build-boilerplate",
+    "upload-boilerplate":
+      "yarn workspace zapier-platform-core upload-boilerplate"
   }
 }
