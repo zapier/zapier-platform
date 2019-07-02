@@ -1,4 +1,6 @@
 const _ = require('lodash');
+const crypto = require('crypto');
+const os = require('os');
 const path = require('path');
 
 const fse = require('fs-extra');
@@ -151,6 +153,16 @@ const confirmNonEmptyDir = async location => {
   }
 };
 
+const makeTempDir = () => {
+  let workdir;
+  const tmpBaseDir = os.tmpdir();
+  while (!workdir || fse.existsSync(workdir)) {
+    workdir = path.join(tmpBaseDir, crypto.randomBytes(20).toString('hex'));
+  }
+  fse.mkdirSync(workdir);
+  return workdir;
+};
+
 module.exports = {
   copyDir,
   deleteFile,
@@ -162,5 +174,6 @@ module.exports = {
   removeDir,
   validateFileExists,
   writeFile,
-  copyFile
+  copyFile,
+  makeTempDir
 };

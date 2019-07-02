@@ -2,13 +2,10 @@
 
 # Usage like so:
 # ./build-boilerplate.sh
-# ./build-boilerplate.sh --debug  # For pushing local changes into the zip file
+# ./build-boilerplate.sh revert
 
 CONTENTS_DIR='boilerplate'
 BUILD_DIR='build-boilerplate'
-
-# This allows us to avoid duplicating files in git
-FILES_TO_COPY='zapierwrapper.js'
 
 if [ -d $BUILD_DIR ]; then
    rm -fr $BUILD_DIR
@@ -17,40 +14,50 @@ fi
 mkdir -p $BUILD_DIR
 
 # Copy files
-cp "include/$FILES_TO_COPY" "$CONTENTS_DIR/"
+cp "include/zapierwrapper.js" "$CONTENTS_DIR/"
 
-# Get new version
-NEW_VERSION="$(node -p "require('./package.json').version")"
+# Get current core version
+CORE_VERSION="$(node -p "require('./package.json').version")"
 
-FILE="$BUILD_DIR/$NEW_VERSION.zip"
+FILE="$BUILD_DIR/$CORE_VERSION.zip"
 
-# Allow pushing "local changes" into the zip file
-if [ "$1" == "--debug" ]; then
-  npm pack
+TIMESTAMP=`date +"%s"`
 
-  LOCAL_LEGACY_DIR="node_modules/zapier-platform-legacy-scripting-runner"
-  if [ -e "$LOCAL_LEGACY_DIR" ]; then
-    cd "$LOCAL_LEGACY_DIR" && npm pack && cd ../..
-  fi
+# Build core and legacy-scripting-runner locally. Needs to generate a unique filename
+# with a timestamp to avoid yarn using cached packages.
+# See https://github.com/yarnpkg/yarn/issues/2165.
+yarn pack --filename "./boilerplate/core-$TIMESTAMP.tgz"
+cd ../legacy-scripting-runner
+yarn pack --filename "../core/boilerplate/legacy-scripting-runner-$TIMESTAMP.tgz"
 
-  bin/update-boilerplate-dependencies.js debug
-  cd $CONTENTS_DIR && npm install
+cd ../core
+./bin/update-boilerplate-dependencies.js $TIMESTAMP
 
-  zip -R ../$FILE '*.js' '*.json' '*/darwin-x64-node-8/*.node' '*/linux-x64-node-8/*.node'
-else
-  bin/update-boilerplate-dependencies.js
-  cd $CONTENTS_DIR && npm install
+# Install boilerplate deps, need to make sure local packages
+cd $CONTENTS_DIR
+echo "{\"version\": \"1.0.0\", \"platformVersion\": \"$CORE_VERSION\"}" > definition.json
+yarn --no-lockfile
 
-  zip -R ../$FILE '*.js' '*.json' '*/linux-x64-node-8/*.node'
-fi
+# Monkey patch boilerplate package.json so zapier-platform-core and
+# zapier-platform-legacy-scripting-runner have exact versions specified instead of local
+# file path
+cd ..
+./bin/update-boilerplate-dependencies.js
 
-# Revert copied files
-rm -f $FILES_TO_COPY
+# Build the zip!
+cd $CONTENTS_DIR
+zip -R ../$FILE '*.js' '*.json' '*/linux-x64-node-8/*.node'
 
-# Remove generated package-lock.json and node_modules
-rm -f package-lock.json
-rm -fr node_modules
+# Remove generated files
+rm -f zapierwrapper.js definition.json core-*.tgz legacy-scripting-runner-*.tgz
+rm -rf node_modules
 cd ..
 
-# Revert version
-bin/update-boilerplate-dependencies.js revert
+# Don't let yarn pile up useless caches of local packages.
+# See https://github.com/yarnpkg/yarn/issues/6037.
+yarn cache clean zapier-platform-core zapier-platform-schema zapier-platform-legacy-scripting-runner
+
+# Undo the monkey patch on boilerplate package.json
+./bin/update-boilerplate-dependencies.js revert
+
+ls -hl $FILE

@@ -29,7 +29,9 @@
     "deploy-integration-test":
       "yarn build-integration-test && yarn upload-integration-test",
     "build-boilerplate": "bin/build-boilerplate.sh",
-    "precommit": "lint-staged"
+    "upload-boilerplate": "bin/upload-boilerplate.sh",
+    "precommit": "lint-staged",
+    "postpublish": "bin/build-boilerplate.sh && bin/upload-boilerplate.sh"
   },
   "engines": {
     "node": ">=8.10.0",

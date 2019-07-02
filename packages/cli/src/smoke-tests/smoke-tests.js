@@ -1,5 +1,4 @@
 const { spawnSync } = require('child_process');
-const crypto = require('crypto');
 const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
@@ -7,6 +6,7 @@ const path = require('path');
 require('should');
 
 const { getPackageLatestVersion, getPackageSize } = require('../utils/npm');
+const { makeTempDir } = require('../utils/files');
 
 const REGEX_VERSION = /\d+\.\d+\.\d+/;
 
@@ -39,16 +39,6 @@ const npmPack = () => {
   return filename;
 };
 
-const setupTempWorkingDir = () => {
-  let workdir;
-  const tmpBaseDir = os.tmpdir();
-  while (!workdir || fs.existsSync(workdir)) {
-    workdir = path.join(tmpBaseDir, crypto.randomBytes(20).toString('hex'));
-  }
-  fs.mkdirSync(workdir);
-  return workdir;
-};
-
 const npmInstall = (packagePath, workdir) => {
   spawnSync('npm', ['install', '--production', packagePath], {
     encoding: 'utf8',
@@ -76,7 +66,7 @@ describe('smoke tests - setup will take some time', () => {
     context.package.version = context.package.filename.match(REGEX_VERSION)[0];
     context.package.path = path.join(process.cwd(), context.package.filename);
 
-    context.workdir = setupTempWorkingDir();
+    context.workdir = makeTempDir();
 
     npmInstall(context.package.path, context.workdir);
 

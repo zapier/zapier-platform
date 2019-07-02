@@ -1,61 +1,36 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const corePackageJson = require('../package.json');
 
-let lsrPackageJson;
-try {
-  // Optional dependency
-  lsrPackageJson = require('../node_modules/zapier-platform-legacy-scripting-runner/package.json');
-} catch (err) {
-  // Do nothing
-}
+const corePackageJson = require('zapier-platform-core/package.json');
+const lsrPackageJson = require('zapier-platform-legacy-scripting-runner/package.json');
 
 // Read from ../, write to ./
 const boilerplatePackageJsonPath = './boilerplate/package.json';
-const boilerplateDefinitionJsonPath = './boilerplate/definition.json';
 
 const boilerplatePackageJson = require(`.${boilerplatePackageJsonPath}`);
-const boilerplateDefinitionJson = require(`.${boilerplateDefinitionJsonPath}`);
 
 let coreVersionToSet = corePackageJson.version;
-let lsrVersionToSet;
+let lsrVersionToSet = lsrPackageJson.version;
 
 if (process.argv.length === 3) {
-  if (process.argv[2] === 'debug') {
-    coreVersionToSet = `file:../zapier-platform-core-${
-      corePackageJson.version
-    }.tgz`;
-
-    if (lsrPackageJson) {
-      lsrVersionToSet = `file:../node_modules/zapier-platform-legacy-scripting-runner/zapier-platform-legacy-scripting-runner-${
-        lsrPackageJson.version
-      }.tgz`;
-    }
-  } else if (process.argv[2] === 'revert') {
-    coreVersionToSet = 'CORE_PLATFORM_VERSION';
-
-    if (lsrPackageJson) {
-      lsrVersionToSet = lsrPackageJson.version;
-    }
+  if (process.argv[2] === 'revert') {
+    coreVersionToSet = 'PLACEHOLDER';
+    lsrVersionToSet = 'PLACEHOLDER';
+  } else {
+    const timestamp = process.argv[2];
+    coreVersionToSet = `file:./core-${timestamp}.tgz`;
+    lsrVersionToSet = `file:./legacy-scripting-runner-${timestamp}.tgz`;
   }
 }
 
-// Update version
+// Update dep versions
 boilerplatePackageJson.dependencies['zapier-platform-core'] = coreVersionToSet;
-boilerplateDefinitionJson.platformVersion = coreVersionToSet;
-
-if (lsrVersionToSet) {
-  boilerplatePackageJson.dependencies[
-    'zapier-platform-legacy-scripting-runner'
-  ] = lsrVersionToSet;
-}
+boilerplatePackageJson.dependencies[
+  'zapier-platform-legacy-scripting-runner'
+] = lsrVersionToSet;
 
 fs.writeFileSync(
   boilerplatePackageJsonPath,
   JSON.stringify(boilerplatePackageJson, null, '  ') + '\n'
-);
-fs.writeFileSync(
-  boilerplateDefinitionJsonPath,
-  JSON.stringify(boilerplateDefinitionJson, null, '  ') + '\n'
 );
