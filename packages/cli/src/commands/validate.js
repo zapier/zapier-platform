@@ -6,8 +6,7 @@ const utils = require('../utils');
 // shadow of engine/style_checker/_condense_issues
 const condenseIssues = styleResult => {
   let res = [];
-  const docURL =
-    'https://zapier.com/developer/documentation/v2/style-checks-reference';
+  const docURL = 'https://platform.zapier.com/docs/app-checks-reference';
   for (const severity in styleResult) {
     for (const type in styleResult[severity]) {
       for (const method in styleResult[severity][type]) {
