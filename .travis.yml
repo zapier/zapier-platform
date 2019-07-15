@@ -1,10 +1,13 @@
 language: node_js
 node_js:
-  - "8.10"
-  - "10"
+  - '8.10'
+  - '10'
 before_install:
   - npm install -g yarn
   - pip install --user awscli
+install:
+  # need to ignore engines until we can ditch node 8 after calendar 2019
+  - yarn install --ignore-engines
 script:
   - yarn test
   - yarn smoke-test
@@ -15,10 +18,10 @@ deploy:
   script: ./scripts/publish.sh
   on:
     tags: true
-    node: "8.10"
+    node: '8.10'
   skip_cleanup: true
 env:
   global:
-  - PATH: PATH=$HOME/.local/bin:$PATH
-  - secure: xNr5WtDD37r2iYQBxnnMULuVlKfSNfC9PvuW4dwDtiJcVeeOL/bw8B2g54gxQEEMQWg6gvxqUAVegoRKAA2p9eQtagdtbMu5rasKJ3jKjhOCWCxyskPE4kheJJ6vWkbpm+O4XPAzHjuSWqt7rrF4RTNAIpilggD87A2Dj/GGyHi6+LP2BGo1dbTRU3mBn03AnyGbB6PSleTsPdi+JYSc8bAhcA6KcyQ/2RiaDFPOdsIWU0ZniY+Pur2v4szIVNrHr2ENPUryHlsQjfDMH/B7sO7BPxvQWstza2qpawCHt0K8irgaPLp3jDY0LUWRlUgSeZe1pXvjSWzqp+GhgxVTI6XyVWn355LnFS8pII7eQCipMe1TXaZuNwKvR6n5pPiCDgKrkA7jTZYWeqaYfhoOmTr1qmLdcnKXgEGk4A3ZWBW2bdCi8/L7gL9qM4Md0ph0qzX/id7fWK+1SD1V8BVhKZEsB6yKAWJXvEFUezlYIy1vst/kHt6hSnCfS4njS8iNX+M61RrbzmMxHcIMIksNW4birWi1Z8uRmT6mlCfldhiY+PRUYcKbfd+FmxpnJAnO4grUP177zzNuvLAmdvFFiM8AZ8rtgqmIyvD2PPJNjtFWlPYc4ZvsOHo2DN3qf00lliFPo01DCGOWMB+6+PfjsrEDdPGBL+n7Bx6iDEEiDUM=
-  - secure: KDI+w/Kcb53fMiInNZ2ceGaklwdCr5wvO70oLXYdVov5I+nasbItBpIjRovhdJzsq7OaXQAXNBkVyLfEUxz4UgadXnaXpdYzPBC/8VOBASb8UmdUVdrq2XcSYkrKsX/zzwfMhTjVB0ObyE2tkiZBdcbmnvWdci6RA2B12iFCqG9uRAdUigwfGMmidM5LQ93DSINwxPMRJHxru94Mn6QwMjchq9vHnuiKPFbms7eYdG+Fix2fnSaaR8Yn91yiM30z9Dl6FLyvOFpq86o91pTzt+qKiyKkz6LCJ5ONjIIJIt+Ksl0ZZFrhL5WnYBajABeF7yk8w6bQzus+8w4/k8lQCYEi9aW3k4jg/ZUMfOymcxE7Tzd29tJWdRFqzIPAe7AFQ2G56g1jEQkMv+nxt0UJNdm2OHHN4efsXsOYmpzRG0brpY0WxW1zOpbBjgbYsiLEdzeNPgtEdz45xH070CNCqcQFJouIan9FNF32pUFmC3ujOiRoTLeXrG+1lgt7JvlEGPWslVywKlx0j/pE7w2BBR8GXgHmjk06OfqPsSW0+bh/vMH2zYxMfODtX6penab4O6BwEc9tLEZhaXhdZhn4b4fjlhnEyK5Dam3bWWICEJPMgslLtq/w902vQkNGNr0Nq82lhY8x1D6QYwD0zqMHGvdHtQZlVI6MJgkwLx294ac=
+    - PATH: PATH=$HOME/.local/bin:$PATH
+    - secure: xNr5WtDD37r2iYQBxnnMULuVlKfSNfC9PvuW4dwDtiJcVeeOL/bw8B2g54gxQEEMQWg6gvxqUAVegoRKAA2p9eQtagdtbMu5rasKJ3jKjhOCWCxyskPE4kheJJ6vWkbpm+O4XPAzHjuSWqt7rrF4RTNAIpilggD87A2Dj/GGyHi6+LP2BGo1dbTRU3mBn03AnyGbB6PSleTsPdi+JYSc8bAhcA6KcyQ/2RiaDFPOdsIWU0ZniY+Pur2v4szIVNrHr2ENPUryHlsQjfDMH/B7sO7BPxvQWstza2qpawCHt0K8irgaPLp3jDY0LUWRlUgSeZe1pXvjSWzqp+GhgxVTI6XyVWn355LnFS8pII7eQCipMe1TXaZuNwKvR6n5pPiCDgKrkA7jTZYWeqaYfhoOmTr1qmLdcnKXgEGk4A3ZWBW2bdCi8/L7gL9qM4Md0ph0qzX/id7fWK+1SD1V8BVhKZEsB6yKAWJXvEFUezlYIy1vst/kHt6hSnCfS4njS8iNX+M61RrbzmMxHcIMIksNW4birWi1Z8uRmT6mlCfldhiY+PRUYcKbfd+FmxpnJAnO4grUP177zzNuvLAmdvFFiM8AZ8rtgqmIyvD2PPJNjtFWlPYc4ZvsOHo2DN3qf00lliFPo01DCGOWMB+6+PfjsrEDdPGBL+n7Bx6iDEEiDUM=
+    - secure: KDI+w/Kcb53fMiInNZ2ceGaklwdCr5wvO70oLXYdVov5I+nasbItBpIjRovhdJzsq7OaXQAXNBkVyLfEUxz4UgadXnaXpdYzPBC/8VOBASb8UmdUVdrq2XcSYkrKsX/zzwfMhTjVB0ObyE2tkiZBdcbmnvWdci6RA2B12iFCqG9uRAdUigwfGMmidM5LQ93DSINwxPMRJHxru94Mn6QwMjchq9vHnuiKPFbms7eYdG+Fix2fnSaaR8Yn91yiM30z9Dl6FLyvOFpq86o91pTzt+qKiyKkz6LCJ5ONjIIJIt+Ksl0ZZFrhL5WnYBajABeF7yk8w6bQzus+8w4/k8lQCYEi9aW3k4jg/ZUMfOymcxE7Tzd29tJWdRFqzIPAe7AFQ2G56g1jEQkMv+nxt0UJNdm2OHHN4efsXsOYmpzRG0brpY0WxW1zOpbBjgbYsiLEdzeNPgtEdz45xH070CNCqcQFJouIan9FNF32pUFmC3ujOiRoTLeXrG+1lgt7JvlEGPWslVywKlx0j/pE7w2BBR8GXgHmjk06OfqPsSW0+bh/vMH2zYxMfODtX6penab4O6BwEc9tLEZhaXhdZhn4b4fjlhnEyK5Dam3bWWICEJPMgslLtq/w902vQkNGNr0Nq82lhY8x1D6QYwD0zqMHGvdHtQZlVI6MJgkwLx294ac=

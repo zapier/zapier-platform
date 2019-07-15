@@ -2,19 +2,32 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "lerna": "^3.15.0"
+    "husky": "^3.0.0",
+    "lerna": "^3.15.0",
+    "lint-staged": "^9.2.0",
+    "prettier": "1.18.2"
   },
   "workspaces": ["packages/*", "example-apps/*"],
   "scripts": {
-    "test":
-      "lerna run --stream --scope zapier-platform-cli --scope zapier-platform-core --scope zapier-platform-schema --scope zapier-platform-legacy-scripting-runner test",
-    "smoke-test":
-      "lerna run --stream --scope zapier-platform-cli --scope zapier-platform-core --scope zapier-platform-schema --scope zapier-platform-legacy-scripting-runner smoke-test",
-    "bump":
-      "lerna version --exact --force-publish=zapier-platform-cli,zapier-platform-core,zapier-platform-schema",
-    "build-boilerplate":
-      "yarn workspace zapier-platform-core build-boilerplate",
-    "upload-boilerplate":
-      "yarn workspace zapier-platform-core upload-boilerplate"
+    "test": "lerna run --stream --scope zapier-platform-cli --scope zapier-platform-core --scope zapier-platform-schema --scope zapier-platform-legacy-scripting-runner test",
+    "smoke-test": "lerna run --stream --scope zapier-platform-cli --scope zapier-platform-core --scope zapier-platform-schema --scope zapier-platform-legacy-scripting-runner smoke-test",
+    "bump": "lerna version --exact --force-publish=zapier-platform-cli,zapier-platform-core,zapier-platform-schema",
+    "build-boilerplate": "yarn workspace zapier-platform-core build-boilerplate",
+    "upload-boilerplate": "yarn workspace zapier-platform-core upload-boilerplate"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json}": [
+      "yarn workspace zapier-platform-schema precommit",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true
   }
 }

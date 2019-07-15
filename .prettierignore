@@ -1,0 +1,4 @@
+packages/cli/scaffold/
+package.json
+package-lock.json
+packages/cli/snippets/next.js

@@ -30,7 +30,6 @@
       "yarn build-integration-test && yarn upload-integration-test",
     "build-boilerplate": "bin/build-boilerplate.sh",
     "upload-boilerplate": "bin/upload-boilerplate.sh",
-    "precommit": "lint-staged",
     "postpublish": "bin/build-boilerplate.sh && bin/upload-boilerplate.sh"
   },
   "engines": {
@@ -56,21 +55,12 @@
     "babel-eslint": "8.2.3",
     "eslint": "4.19.1",
     "fs-extra": "7.0.0",
-    "husky": "0.14.3",
-    "lint-staged": "7.1.0",
     "mocha": "5.2.0",
     "mock-fs": "4.4.1",
     "nock": "9.0.13",
-    "prettier": "1.11.1",
     "should": "11.2.1"
   },
   "optionalDependencies": {
     "@types/node": "8.10.20"
-  },
-  "prettier": {
-    "singleQuote": true
-  },
-  "lint-staged": {
-    "*.{js,json}": ["prettier --write", "git add"]
   }
 }
