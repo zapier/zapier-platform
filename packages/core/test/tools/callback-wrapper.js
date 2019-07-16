@@ -6,7 +6,7 @@ const CALLBACK_URL = 'http://example.com/callback';
 let input = {
   _zapier: {
     event: {
-      callbackUrl: CALLBACK_URL
+      callback_url: CALLBACK_URL
     }
   }
 };

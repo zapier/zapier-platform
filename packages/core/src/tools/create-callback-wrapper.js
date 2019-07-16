@@ -10,7 +10,7 @@ const _ = require('lodash');
 //effectively pause the Zap
 
 const createCallbackHigherOrderFunction = input => {
-  let callbackUrl = _.get(input, '_zapier.event.callbackUrl');
+  let callbackUrl = _.get(input, '_zapier.event.callback_url');
   return () => {
     _.set(input, '_zapier.event.callbackUsed', true);
     return callbackUrl;
