@@ -18,7 +18,7 @@ describe('create-app', () => {
     const event = {
       bundle: {},
       method,
-      callbackUrl: 'calback_url'
+      callback_url: 'calback_url'
     };
 
     return createInput(appDefinition, event, testLogger);
