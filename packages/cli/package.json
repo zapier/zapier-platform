@@ -45,6 +45,7 @@
     "browserify": "16.2.0",
     "buffer": "5.0.6",
     "cli-table3": "0.5.0",
+    "cli-ux": "5.3.1",
     "colors": "1.1.2",
     "compress-commons": "1.2.0",
     "core-js": "2.4.1",

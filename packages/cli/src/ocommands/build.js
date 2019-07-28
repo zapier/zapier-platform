@@ -13,12 +13,6 @@ class BuildCommand extends BaseCommand {
 
     console.log('building!', this.flags);
   }
-
-  log(message) {
-    if (!['json', 'raw'].includes(this.flags.format)) {
-      console.log(message || '');
-    }
-  }
 }
 
 BuildCommand.flags = BaseCommand.buildFlags({

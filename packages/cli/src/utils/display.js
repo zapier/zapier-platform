@@ -11,7 +11,7 @@ const notUndef = s => String(s === undefined ? '' : s).trim();
 
 const unBacktick = s => s.replace(/\n?`+(bash)?/g, '');
 
-const prettyJSONstringify = obj => JSON.stringify(obj, null, '  ');
+const prettyJSONstringify = obj => JSON.stringify(obj, null, 2);
 
 const markdownLog = str => {
   // turn markdown into something with styles and stuff
