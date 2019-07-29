@@ -322,10 +322,16 @@ const maybeNotifyAboutOutdated = () => {
   }
 };
 
-const build = async (zipPath, sourceZipPath, wdir) => {
-  wdir = wdir || process.cwd();
-  zipPath = zipPath || constants.BUILD_PATH;
-  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
+// TODO: use listr?
+// TODO: fix actually passing the opts around
+const build = async (
+  opts,
+  {
+    zipPath = constants.BUILD_PATH,
+    sourceZipPath = constants.SOURCE_PATH,
+    wdir = process.cwd()
+  } = {}
+) => {
   const osTmpDir = await fse.realpath(os.tmpdir());
   const tmpDir = path.join(
     osTmpDir,

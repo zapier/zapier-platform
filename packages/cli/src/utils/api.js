@@ -1,30 +1,29 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
-
-const constants = require('../constants');
-
 const qs = require('querystring');
-
-const fs = require('fs');
-const AdmZip = require('adm-zip');
 const fetch = require('node-fetch');
-const path = require('path');
-
-const { writeFile, readFile } = require('./files');
-
-const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
-
+const {
+  AUTH_KEY,
+  AUTH_LOCATION,
+  ENDPOINT,
+  DEBUG,
+  CURRENT_APP_FILE
+} = require('../constants');
+const { readLinkedAppConfig } = require('./config');
+const { readFile } = require('./files');
 const { localAppCommand } = require('./local');
 
-// Reads the JSON file at ~/.zapierrc (AUTH_LOCATION).
+/**
+ * Reads the JSON file at `~/.zapierrc` (AUTH_LOCATION).
+ */
 const readCredentials = (explodeIfMissing = true) => {
   if (process.env.ZAPIER_DEPLOY_KEY) {
     return Promise.resolve({
-      [constants.AUTH_KEY]: process.env.ZAPIER_DEPLOY_KEY
+      [AUTH_KEY]: process.env.ZAPIER_DEPLOY_KEY
     });
   } else {
     return Promise.resolve(
-      readFile(constants.AUTH_LOCATION, 'Please run `zapier login`.')
+      readFile(AUTH_LOCATION, 'Please run `zapier login`.')
         .then(buf => {
           return JSON.parse(buf.toString());
         })
@@ -42,7 +41,7 @@ const readCredentials = (explodeIfMissing = true) => {
 // Calls the underlying platform REST API with proper authentication.
 const callAPI = (route, options, rawError = false) => {
   options = options || {};
-  const url = options.url || constants.ENDPOINT + route;
+  const url = options.url || ENDPOINT + route;
 
   let requestOptions = {
     method: options.method || 'GET',
@@ -61,8 +60,7 @@ const callAPI = (route, options, rawError = false) => {
         return _requestOptions;
       } else {
         return readCredentials().then(credentials => {
-          _requestOptions.headers['X-Deploy-Key'] =
-            credentials[constants.AUTH_KEY];
+          _requestOptions.headers['X-Deploy-Key'] = credentials[AUTH_KEY];
           return _requestOptions;
         });
       }
@@ -84,7 +82,9 @@ const callAPI = (route, options, rawError = false) => {
         }
       }
 
-      if (constants.DEBUG || global.argOpts.debug) {
+      // TODO: pull this into the command? to easily access debug opt
+      // or we do better at using regular node debug lib
+      if (DEBUG || global.argOpts.debug) {
         console.log(`>> ${requestOptions.method} ${requestOptions.url}`);
         if (requestOptions.body) {
           const replacementStr = 'raw zip removed in logs';
@@ -99,9 +99,7 @@ const callAPI = (route, options, rawError = false) => {
       }
 
       if (hitError) {
-        const niceMessage = `"${requestOptions.url}" returned "${
-          res.status
-        }" saying "${errors}"`;
+        const niceMessage = `"${requestOptions.url}" returned "${res.status}" saying "${errors}"`;
 
         if (rawError) {
           res.text = text;
@@ -135,42 +133,9 @@ const createCredentials = (username, password, totpCode) => {
   );
 };
 
-// Reads the JSON file in the app directory.
-const getLinkedAppConfig = appDir => {
-  appDir = appDir || '.';
-
-  const file = path.resolve(appDir, constants.CURRENT_APP_FILE);
-  return readFile(file).then(buf => {
-    return JSON.parse(buf.toString());
-  });
-};
-
-const writeLinkedAppConfig = (app, appDir) => {
-  const file = appDir
-    ? path.resolve(appDir, constants.CURRENT_APP_FILE)
-    : constants.CURRENT_APP_FILE;
-
-  // read contents of existing config before writing
-  return (
-    readFile(file)
-      .then(configBuff => {
-        return Promise.resolve(JSON.parse(configBuff.toString()));
-      })
-      // we want to eat errors about bad json and missing files
-      // and ensure the below code is passes a js object
-      .catch(() => Promise.resolve({}))
-      .then(config => {
-        return Object.assign({}, config, { id: app.id, key: app.key });
-      })
-      .then(updatedConfig =>
-        writeFile(file, prettyJSONstringify(updatedConfig))
-      )
-  );
-};
-
 // Loads the linked app from the API.
 const getLinkedApp = appDir => {
-  return getLinkedAppConfig(appDir)
+  return readLinkedAppConfig(appDir)
     .then(app => {
       if (!app) {
         return {};
@@ -179,9 +144,7 @@ const getLinkedApp = appDir => {
     })
     .catch(() => {
       throw new Error(
-        `Warning! ${
-          constants.CURRENT_APP_FILE
-        } seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
+        `Warning! ${CURRENT_APP_FILE} seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
       );
     });
 };
@@ -263,56 +226,11 @@ const listEnv = version => {
   return listEndpoint(endpoint, 'environment');
 };
 
-const upload = (zipPath, sourceZipPath, appDir) => {
-  zipPath = zipPath || constants.BUILD_PATH;
-  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
-  appDir = appDir || '.';
-
-  const fullZipPath = path.resolve(appDir, zipPath);
-  const fullSourceZipPath = path.resolve(appDir, sourceZipPath);
-  const isMissingZip = !fs.existsSync(fullZipPath);
-
-  if (isMissingZip) {
-    throw new Error(
-      'Missing a built app. Try running `zapier build` first.\nOr you could run `zapier push`, which will build and upload in one command.'
-    );
-  }
-
-  return getLinkedApp(appDir)
-    .then(app => {
-      const zip = new AdmZip(fullZipPath);
-      const definitionJson = zip.readAsText('definition.json');
-      if (!definitionJson) {
-        throw new Error('definition.json in the zip was missing!');
-      }
-      const definition = JSON.parse(definitionJson);
-
-      const binaryZip = fs.readFileSync(fullZipPath);
-      const buffer = Buffer.from(binaryZip).toString('base64');
-
-      const binarySourceZip = fs.readFileSync(fullSourceZipPath);
-      const sourceBuffer = Buffer.from(binarySourceZip).toString('base64');
-
-      startSpinner(`Uploading version ${definition.version}`);
-      return callAPI(`/apps/${app.id}/versions/${definition.version}`, {
-        method: 'PUT',
-        body: {
-          zip_file: buffer,
-          source_zip_file: sourceBuffer
-        }
-      });
-    })
-    .then(() => {
-      endSpinner();
-    });
-};
-
 module.exports = {
   callAPI,
   checkCredentials,
   createCredentials,
   getLinkedApp,
-  getLinkedAppConfig,
   getVersionInfo,
   listApps,
   listEndpoint,
@@ -321,7 +239,5 @@ module.exports = {
   listInvitees,
   listLogs,
   listVersions,
-  readCredentials,
-  upload,
-  writeLinkedAppConfig
+  readCredentials
 };

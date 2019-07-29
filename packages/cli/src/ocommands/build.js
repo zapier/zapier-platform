@@ -1,6 +1,9 @@
 const { flags: Flags } = require('@oclif/command');
 
 const BaseCommand = require('../baseCommand');
+const buildFlags = require('../buildFlags');
+const { build } = require('../utils/build');
+const { BUILD_PATH, SOURCE_PATH } = require('../constants');
 
 const dumbPathsFlag = 'disable-dependency-detection';
 const mapFlag = 'include-js-map';
@@ -8,14 +11,22 @@ const mapFlag = 'include-js-map';
 class BuildCommand extends BaseCommand {
   async run() {
     this.flags = this.parse(BuildCommand).flags;
+    // flags['disable-dependecy-injection'] is ugly, so let's make the opts better for programming
+    // alternatively, rename the flag to something without dashes. camelCase works fine
+    const opts = {
+      dumbPaths: Boolean(this.flags[dumbPathsFlag]),
+      includeMaps: Boolean(this.flags[mapFlag])
+    };
 
-    this.log('very cool');
+    await build(opts);
 
-    console.log('building!', this.flags);
+    this.log(
+      `\nBuild complete! Moved ${BUILD_PATH} and ${SOURCE_PATH} ! Try the \`zapier upload\` command now.`
+    );
   }
 }
 
-BuildCommand.flags = BaseCommand.buildFlags({
+BuildCommand.rawFlags = {
   [dumbPathsFlag]: Flags.boolean({
     char: 'd',
     description:
@@ -25,6 +36,8 @@ BuildCommand.flags = BaseCommand.buildFlags({
     char: 'm',
     description: 'include .js.map files (usually source maps) in the build'
   })
-});
+};
+
+BuildCommand.flags = buildFlags(BuildCommand.rawFlags);
 
 module.exports = BuildCommand;

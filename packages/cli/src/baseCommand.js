@@ -1,4 +1,4 @@
-const { Command, flags: Flags } = require('@oclif/command');
+const { Command } = require('@oclif/command');
 const { isEmpty } = require('lodash');
 const { cli: ux } = require('cli-ux');
 
@@ -54,16 +54,5 @@ class ZapierBaseCommand extends Command {
   //   await this.probablyLoggedIn();
   // }
 }
-
-ZapierBaseCommand.flags = {
-  format: Flags.string({
-    char: 'f',
-    options: ['a', 'b', 'c', 'raw'],
-    default: 'b'
-  })
-};
-
-ZapierBaseCommand.buildFlags = childFlags =>
-  Object.assign({}, childFlags, ZapierBaseCommand.flags);
 
 module.exports = ZapierBaseCommand;
