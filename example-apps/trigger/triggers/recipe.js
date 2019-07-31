@@ -10,13 +10,14 @@ const listRecipes = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const requestOptions = {
-    url: 'https://auth-json-server.zapier.ninja/recipes',
+    url: 'https://auth-json-server.zapier-staging.com/recipes',
     params: params
   };
 
   // You may return a promise or a normal data structure from any perform method.
-  return z.request(requestOptions)
-    .then((response) => z.JSON.parse(response.content));
+  return z
+    .request(requestOptions)
+    .then(response => z.JSON.parse(response.content));
 };
 
 // We recommend writing your triggers separate like this and rolling them
@@ -34,11 +35,14 @@ module.exports = {
 
   // `operation` is where the business logic goes.
   operation: {
-
     // `inputFields` can define the fields a user could provide,
     // we'll pass them in as `bundle.inputData` later.
     inputFields: [
-      {key: 'style', type: 'string',  helpText: 'Which styles of cuisine this should trigger on.'}
+      {
+        key: 'style',
+        type: 'string',
+        helpText: 'Which styles of cuisine this should trigger on.'
+      }
     ],
 
     perform: listRecipes,
@@ -64,13 +68,12 @@ module.exports = {
     // https://github.com/zapier/zapier-platform-cli#customdynamic-fields.
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'id', label: 'ID'},
-      {key: 'createdAt', label: 'Created At'},
-      {key: 'name', label: 'Name'},
-      {key: 'directions', label: 'Directions'},
-      {key: 'authorId', label: 'Author ID'},
-      {key: 'style', label: 'Style'}
+      { key: 'id', label: 'ID' },
+      { key: 'createdAt', label: 'Created At' },
+      { key: 'name', label: 'Name' },
+      { key: 'directions', label: 'Directions' },
+      { key: 'authorId', label: 'Author ID' },
+      { key: 'style', label: 'Style' }
     ]
-  },
-
+  }
 };

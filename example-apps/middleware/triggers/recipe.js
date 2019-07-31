@@ -12,7 +12,7 @@ module.exports = {
   // `operation` is where we make the call to your API
   operation: {
     perform: {
-      url: 'https://auth-json-server.zapier.ninja/recipes',
+      url: 'https://auth-json-server.zapier-staging.com/recipes',
       params: {
         // Just a demo, this is NOT how you normally do authentication.
         // Refer to https://zapier.github.io/zapier-platform-cli/#authentication
@@ -37,12 +37,12 @@ module.exports = {
     // outputFields: () => { return []; }
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'id', label: 'ID'},
-      {key: 'createdAt', label: 'Created At'},
-      {key: 'name', label: 'Name'},
-      {key: 'directions', label: 'Directions'},
-      {key: 'authorId', label: 'Author ID'},
-      {key: 'style', label: 'Style'}
+      { key: 'id', label: 'ID' },
+      { key: 'createdAt', label: 'Created At' },
+      { key: 'name', label: 'Name' },
+      { key: 'directions', label: 'Directions' },
+      { key: 'authorId', label: 'Author ID' },
+      { key: 'style', label: 'Style' }
     ]
   }
 };

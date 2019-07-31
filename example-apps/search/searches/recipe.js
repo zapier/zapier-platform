@@ -18,12 +18,13 @@ module.exports = {
         key: 'style',
         type: 'string',
         label: 'Style',
-        helpText: 'Cuisine style to limit to the search to (i.e. mediterranean or italian).'
+        helpText:
+          'Cuisine style to limit to the search to (i.e. mediterranean or italian).'
       }
     ],
 
     perform: (z, bundle) => {
-      const url = 'https://auth-json-server.zapier.ninja/recipes';
+      const url = 'https://auth-json-server.zapier-staging.com/recipes';
 
       // Put the search value in a query param. The details of how to build
       // a search URL will depend on how your API works.
@@ -33,7 +34,8 @@ module.exports = {
         }
       };
 
-      return z.request(url, options)
+      return z
+        .request(url, options)
         .then(response => JSON.parse(response.content));
     },
 
@@ -54,12 +56,12 @@ module.exports = {
     // outputFields: () => { return []; }
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'id', label: 'ID'},
-      {key: 'createdAt', label: 'Created At'},
-      {key: 'name', label: 'Name'},
-      {key: 'directions', label: 'Directions'},
-      {key: 'authorId', label: 'Author ID'},
-      {key: 'style', label: 'Style'}
+      { key: 'id', label: 'ID' },
+      { key: 'createdAt', label: 'Created At' },
+      { key: 'name', label: 'Name' },
+      { key: 'directions', label: 'Directions' },
+      { key: 'authorId', label: 'Author ID' },
+      { key: 'style', label: 'Style' }
     ]
   }
 };
