@@ -10,15 +10,15 @@ require('should');
 const AdmZip = require('adm-zip');
 const fetch = require('node-fetch');
 
-const TEST_REPOS = [
-  'zapier-platform-example-app-basic-auth',
-  'zapier-platform-example-app-create',
-  // 'zapier-platform-example-app-custom-auth',
-  // 'zapier-platform-example-app-oauth2',
-  // 'zapier-platform-example-app-resource',
-  // 'zapier-platform-example-app-search',
-  // 'zapier-platform-example-app-session-auth',
-  'zapier-platform-example-app-trigger'
+const TEST_APPS = [
+  'basic-auth',
+  'create',
+  // 'custom-auth',
+  // 'oauth2',
+  // 'resource',
+  // 'search',
+  // 'session-auth',
+  'trigger'
 ];
 
 const REGEX_VERSION = /\d+\.\d+\.\d+/;
@@ -74,14 +74,17 @@ const setupTempWorkingDir = () => {
   let workdir;
   const tmpBaseDir = os.tmpdir();
   while (!workdir || fs.existsSync(workdir)) {
-    workdir = path.join(tmpBaseDir, crypto.randomBytes(20).toString('hex'));
+    workdir = path.join(
+      tmpBaseDir,
+      'zapier-' + crypto.randomBytes(20).toString('hex')
+    );
   }
   fs.mkdirSync(workdir);
   return workdir;
 };
 
-const downloadRepoZip = async (repoName, workdir) => {
-  const zipUrl = `https://github.com/zapier/${repoName}/archive/master.zip`;
+const downloadRepoZip = async workdir => {
+  const zipUrl = 'https://github.com/zapier/zapier-platform/archive/master.zip';
   const res = await fetch(zipUrl);
 
   const zipPath = path.join(workdir, 'repo.zip');
@@ -101,19 +104,20 @@ const downloadRepoZip = async (repoName, workdir) => {
   });
 };
 
-const extractRepoZip = (zipPath, workdir) => {
+const extractExampleApps = (zipPath, workdir) => {
   const zip = new AdmZip(zipPath);
 
-  // Want to skip the top directory in the repo zip
   zip.getEntries().forEach(entry => {
-    // We don't care if this would ever work on Windows
-    const entryPath = entry.entryName
-      .split('/')
-      .slice(1)
-      .join('/');
-    if (entryPath) {
-      const destDir = path.join(workdir, path.dirname(entryPath));
-      zip.extractEntryTo(entry, destDir, false);
+    if (!entry.isDirectory) {
+      // Skip top-level directory, we don't care if this would ever work on Windows
+      const entryPath = entry.entryName
+        .split('/')
+        .slice(1)
+        .join('/');
+      if (entryPath && entryPath.startsWith('example-apps')) {
+        const destDir = path.join(workdir, path.dirname(entryPath));
+        zip.extractEntryTo(entry, destDir, false);
+      }
     }
   });
 
@@ -143,22 +147,28 @@ describe('smoke tests - setup will take some time', () => {
       version: null,
       path: null
     },
-    workdir: null,
+    workRepoDir: null,
+    workAppDir: null,
     cliBin: null,
     hasRC: false,
     hasAppRC: false
   };
 
-  before(() => {
+  before(async () => {
     context.hasRC = setupZapierRC();
 
     context.package.filename = npmPack();
     context.package.version = context.package.filename.match(REGEX_VERSION)[0];
     context.package.path = path.join(process.cwd(), context.package.filename);
+
+    context.workRepoDir = setupTempWorkingDir();
+    const repoZipPath = await downloadRepoZip(context.workRepoDir);
+    extractExampleApps(repoZipPath, context.workRepoDir);
   });
 
   after(() => {
     fs.unlinkSync(context.package.path);
+    fs.unlinkSync(context.workRepoDir);
   });
 
   it('package size should not change much', async () => {
@@ -178,36 +188,30 @@ describe('smoke tests - setup will take some time', () => {
     newSize.should.be.within(baselineSize * 0.7, baselineSize * 1.3);
   });
 
-  TEST_REPOS.forEach(repoName => {
-    describe(repoName, () => {
+  TEST_APPS.forEach(appName => {
+    describe(appName, () => {
       before(async () => {
-        context.workdir = setupTempWorkingDir();
+        context.workAppDir = path.join(
+          context.workRepoDir,
+          'example-apps',
+          appName
+        );
+        npmInstalls(context.package.path, context.workAppDir);
 
-        const repoZipPath = await downloadRepoZip(repoName, context.workdir);
-        extractRepoZip(repoZipPath, context.workdir);
-
-        npmInstalls(context.package.path, context.workdir);
-
-        context.hasAppRC = setupZapierAppRC(context.workdir);
+        context.hasAppRC = setupZapierAppRC(context.workAppDir);
 
         context.cliBin = path.join(
-          context.workdir,
+          context.workAppDir,
           'node_modules',
           '.bin',
           'zapier'
         );
-
-        setupZapierAppRC(context.workdir);
-      });
-
-      after(() => {
-        fs.removeSync(context.workdir);
       });
 
       it('zapier test', () => {
         const proc = spawnSync(context.cliBin, ['test'], {
           encoding: 'utf8',
-          cwd: context.workdir
+          cwd: context.workAppDir
         });
         if (proc.status !== 0) {
           console.log(proc.stdout);
@@ -224,7 +228,7 @@ describe('smoke tests - setup will take some time', () => {
 
         const proc = spawnSync(context.cliBin, ['build'], {
           encoding: 'utf8',
-          cwd: context.workdir,
+          cwd: context.workAppDir,
           env: {
             SKIP_NPM_INSTALL: '1',
             PATH: process.env.PATH
