@@ -1,6 +1,6 @@
 import { ZObject, Bundle } from "zapier-platform-core";
 
-const _sharedBaseUrl = "https://auth-json-server.zapier.ninja";
+const _sharedBaseUrl = "https://auth-json-server.zapier-staging.com";
 
 // you can optionally add add the shape of the inputData in bundle, which will pass that
 //   info down into the function and tests

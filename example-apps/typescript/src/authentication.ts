@@ -5,7 +5,7 @@ const test = async (z: ZObject /*, bundle*/) => {
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
   const response = await z.request({
-    url: "https://auth-json-server.zapier.ninja/me"
+    url: "https://auth-json-server.zapier-staging.com/me"
   });
 
   // This method can return any truthy value to indicate the credentials are valid.
