@@ -10,7 +10,9 @@ describe('oauth2 app', () => {
     // It's a good idea to store your Client ID and Secret in the environment rather than in code.
     // This works locally via the `export` shell command and in production by using `zapier env`
     if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
-      throw new Error('For the tests to run, you need to do `export CLIENT_ID=1234 CLIENT_SECRET=asdf`');
+      throw new Error(
+        'For the tests to run, you need to do `export CLIENT_ID=1234 CLIENT_SECRET=asdf`'
+      );
     }
   });
 
@@ -29,10 +31,13 @@ describe('oauth2 app', () => {
       }
     };
 
-    return appTester(App.authentication.oauth2Config.authorizeUrl, bundle)
-      .then((authorizeUrl) => {
-        authorizeUrl.should.eql('https://auth-json-server.zapier.ninja/oauth/authorize?client_id=1234&state=4444&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code');
-      });
+    return appTester(App.authentication.oauth2Config.authorizeUrl, bundle).then(
+      authorizeUrl => {
+        authorizeUrl.should.eql(
+          'https://auth-json-server.zapier-staging.com/oauth/authorize?client_id=1234&state=4444&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code'
+        );
+      }
+    );
   });
 
   it('can fetch an access token', () => {
@@ -40,7 +45,7 @@ describe('oauth2 app', () => {
       inputData: {
         // In production, Zapier passes along whatever code your API set in the query params when it redirects
         // the user's browser to the `redirect_uri`
-        code: 'one_time_code',
+        code: 'one_time_code'
       },
       environment: {
         CLIENT_ID: process.env.CLIENT_ID,
@@ -53,15 +58,17 @@ describe('oauth2 app', () => {
         }
       },
       rawRequest: {
-        querystring: "?accountDomain=test-account&code=one_time_code"
+        querystring: '?accountDomain=test-account&code=one_time_code'
       }
     };
 
-    return appTester(App.authentication.oauth2Config.getAccessToken, bundle)
-      .then((result) => {
-        result.access_token.should.eql('a_token');
-        result.refresh_token.should.eql('a_refresh_token');
-      });
+    return appTester(
+      App.authentication.oauth2Config.getAccessToken,
+      bundle
+    ).then(result => {
+      result.access_token.should.eql('a_token');
+      result.refresh_token.should.eql('a_refresh_token');
+    });
   });
 
   it('can refresh the access token', () => {
@@ -78,10 +85,12 @@ describe('oauth2 app', () => {
       }
     };
 
-    return appTester(App.authentication.oauth2Config.refreshAccessToken, bundle)
-      .then((result) => {
-        result.access_token.should.eql('a_new_token');
-      });
+    return appTester(
+      App.authentication.oauth2Config.refreshAccessToken,
+      bundle
+    ).then(result => {
+      result.access_token.should.eql('a_new_token');
+    });
   });
 
   it('includes the access token in future requests', () => {
@@ -89,13 +98,12 @@ describe('oauth2 app', () => {
       authData: {
         access_token: 'a_token',
         refresh_token: 'a_refresh_token'
-      },
+      }
     };
 
-    return appTester(App.authentication.test, bundle)
-      .then((result) => {
-        result.should.have.property('username');
-        result.username.should.eql('Bret');
-      });
+    return appTester(App.authentication.test, bundle).then(result => {
+      result.should.have.property('username');
+      result.username.should.eql('Bret');
+    });
   });
 });

@@ -14,20 +14,30 @@ module.exports = {
   // `operation` is where the business logic goes.
   operation: {
     inputFields: [
-      {key: 'name', required: true, type: 'string'},
-      {key: 'directions', required: true, type: 'text', helpText: 'Explain how should one make the recipe, step by step.'},
-      {key: 'authorId', required: true, type: 'integer', label: 'Author ID'},
-      {key: 'style', required: false, type: 'string', helpText: 'Explain what style of cuisine this is.'},
+      { key: 'name', required: true, type: 'string' },
+      {
+        key: 'directions',
+        required: true,
+        type: 'text',
+        helpText: 'Explain how should one make the recipe, step by step.'
+      },
+      { key: 'authorId', required: true, type: 'integer', label: 'Author ID' },
+      {
+        key: 'style',
+        required: false,
+        type: 'string',
+        helpText: 'Explain what style of cuisine this is.'
+      }
     ],
     perform: (z, bundle) => {
       const promise = z.request({
-        url: 'https://auth-json-server.zapier.ninja/recipes',
+        url: 'https://auth-json-server.zapier-staging.com/recipes',
         method: 'POST',
         body: JSON.stringify({
           name: bundle.inputData.name,
           directions: bundle.inputData.directions,
           authorId: bundle.inputData.authorId,
-          style: bundle.inputData.style,
+          style: bundle.inputData.style
         }),
         headers: {
           'content-type': 'application/json',
@@ -39,7 +49,7 @@ module.exports = {
         }
       });
 
-      return promise.then((response) => JSON.parse(response.content));
+      return promise.then(response => JSON.parse(response.content));
     },
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
@@ -59,12 +69,12 @@ module.exports = {
     // outputFields: () => { return []; }
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'id', label: 'ID'},
-      {key: 'createdAt', label: 'Created At'},
-      {key: 'name', label: 'Name'},
-      {key: 'directions', label: 'Directions'},
-      {key: 'authorId', label: 'Author ID'},
-      {key: 'style', label: 'Style'}
+      { key: 'id', label: 'ID' },
+      { key: 'createdAt', label: 'Created At' },
+      { key: 'name', label: 'Name' },
+      { key: 'directions', label: 'Directions' },
+      { key: 'authorId', label: 'Author ID' },
+      { key: 'style', label: 'Style' }
     ]
   }
 };

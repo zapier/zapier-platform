@@ -9,7 +9,7 @@ module.exports = {
 
   operation: {
     perform: {
-      url: 'https://auth-json-server.zapier.ninja/movies',
+      url: 'https://auth-json-server.zapier-staging.com/movies',
       params: {
         // Just a demo, this is NOT how you normally do authentication.
         // Refer to https://zapier.github.io/zapier-platform-cli/#authentication
@@ -32,10 +32,10 @@ module.exports = {
     // outputFields: () => { return []; }
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'id', label: 'ID'},
-      {key: 'releaseDate', label: 'Release Date'},
-      {key: 'title', label: 'Title'},
-      {key: 'genre', label: 'Genre'}
+      { key: 'id', label: 'ID' },
+      { key: 'releaseDate', label: 'Release Date' },
+      { key: 'title', label: 'Title' },
+      { key: 'genre', label: 'Genre' }
     ]
   }
 };

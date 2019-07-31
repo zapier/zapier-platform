@@ -5,11 +5,15 @@ const test = (z /*, bundle*/) => {
 
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
-  return z.request({
-      url: 'https://auth-json-server.zapier.ninja/me',
-    }).then((response) => {
+  return z
+    .request({
+      url: 'https://auth-json-server.zapier-staging.com/me'
+    })
+    .then(response => {
       if (response.status === 401) {
-        throw new Error('The username and/or password you supplied is incorrect');
+        throw new Error(
+          'The username and/or password you supplied is incorrect'
+        );
       }
       return response;
     });
