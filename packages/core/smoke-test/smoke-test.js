@@ -168,7 +168,7 @@ describe('smoke tests - setup will take some time', () => {
 
   after(() => {
     fs.unlinkSync(context.package.path);
-    fs.unlinkSync(context.workRepoDir);
+    fs.removeSync(context.workRepoDir);
   });
 
   it('package size should not change much', async () => {
