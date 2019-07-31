@@ -51,7 +51,9 @@ describe('Integration Test', () => {
   };
 
   beforeEach(() => {
-    if (nock.isActive()) {nock.restore();}
+    if (nock.isActive()) {
+      nock.restore();
+    }
   });
 
   describe('session auth', () => {
@@ -296,24 +298,12 @@ describe('Integration Test', () => {
         const data = output.results.form;
 
         should.deepEqual(data, {
-          'bar': [
-            'world'
-          ],
-          'client_id': [
-            process.env.CLIENT_ID
-          ],
-          'client_secret': [
-            process.env.CLIENT_SECRET
-          ],
-          'foo': [
-            'hello'
-          ],
-          'grant_type': [
-            'refresh_token'
-          ],
-          'refresh_token': [
-            'my_refresh_token'
-          ]
+          bar: ['world'],
+          client_id: [process.env.CLIENT_ID],
+          client_secret: [process.env.CLIENT_SECRET],
+          foo: ['hello'],
+          grant_type: ['refresh_token'],
+          refresh_token: ['my_refresh_token']
         });
       });
     });
@@ -588,7 +578,7 @@ describe('Integration Test', () => {
           should.equal(payload.method, 'hydrators.legacyFileHydrator');
           should.equal(
             payload.bundle.url,
-            'https://auth-json-server.zapier.ninja/movies'
+            'https://auth-json-server.zapier-staging.com/movies'
           );
           should.equal(payload.bundle.request.params.id, movie.id);
           should.equal(payload.bundle.meta.name, `movie ${movie.id}.json`);
@@ -598,7 +588,9 @@ describe('Integration Test', () => {
     });
 
     it('needsFlattenedData trigger', () => {
-      if (!nock.isActive()) {nock.activate();}
+      if (!nock.isActive()) {
+        nock.activate();
+      }
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.needsFlattenedData = true;
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
@@ -608,21 +600,22 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      nock(AUTH_JSON_SERVER_URL).get('/movies').reply(200, [{
-          id: '1',
-          title: 'title 1',
-          releaseDate: 1471295527,
-          genre: 'genre 1',
-          cast: [
-            'John Doe',
-            'Jane Doe'
-          ],
-          meta: {
-            running_time: 120,
-            format: 'widescreen'
+      nock(AUTH_JSON_SERVER_URL)
+        .get('/movies')
+        .reply(200, [
+          {
+            id: '1',
+            title: 'title 1',
+            releaseDate: 1471295527,
+            genre: 'genre 1',
+            cast: ['John Doe', 'Jane Doe'],
+            meta: {
+              running_time: 120,
+              format: 'widescreen'
+            }
           }
-        }]);
-      return app(input).then( (output) => {
+        ]);
+      return app(input).then(output => {
         // The result from the scripting runner should be flattened
         let expected_result = {
           id: '1',
@@ -647,7 +640,7 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then( () => {
+      return app(input).then(() => {
         should.equal(typeof input.bundle.triggerData, 'object');
         should.equal(Object.keys(input.bundle.triggerData).length, 0);
         should.equal(Array.isArray(input.bundle.triggerData), false);
@@ -999,7 +992,9 @@ describe('Integration Test', () => {
 
   describe('create', () => {
     it('handleLegacyParams action', () => {
-      if (!nock.isActive()) {nock.activate();}
+      if (!nock.isActive()) {
+        nock.activate();
+      }
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
       appDefWithAuth.legacy.needsFlattenedData = true;
@@ -1013,27 +1008,26 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
-        'title': 'title 1',
-        'releaseDate': 1471295527,
-        'genre': 'genre 1',
-        'cast': [
-          'John Doe',
-          'Jane Doe'
-        ],
-        'meta': {
-          'running_time': 120,
-          'format': 'widescreen'
+        title: 'title 1',
+        releaseDate: 1471295527,
+        genre: 'genre 1',
+        cast: ['John Doe', 'Jane Doe'],
+        meta: {
+          running_time: 120,
+          format: 'widescreen'
         }
       };
       input.bundle.authData = { api_key: 'secret' };
       // title key is removed deliberately for other tests
-      nock(AUTH_JSON_SERVER_URL).post('/movies', {
-        'releaseDate': 1471295527,
-        'genre': 'genre 1',
-        'cast': 'John Doe,Jane Doe',
-        'meta': 'running_time|120\nformat|widescreen',
-      }).reply(200, {'id': 'abcd1234'});
-      return app(input).then( () => {
+      nock(AUTH_JSON_SERVER_URL)
+        .post('/movies', {
+          releaseDate: 1471295527,
+          genre: 'genre 1',
+          cast: 'John Doe,Jane Doe',
+          meta: 'running_time|120\nformat|widescreen'
+        })
+        .reply(200, { id: 'abcd1234' });
+      return app(input).then(() => {
         // we only care that the mocked api call had the right format payload
       });
     });
@@ -2036,7 +2030,10 @@ describe('Integration Test', () => {
 
           // Make sure prepareResponse middleware was run
           response.getHeader.should.be.Function();
-          should.equal(response.getHeader('content-type'), 'application/json; encoding=utf-8');
+          should.equal(
+            response.getHeader('content-type'),
+            'application/json; encoding=utf-8'
+          );
         });
       });
 
@@ -2077,7 +2074,10 @@ describe('Integration Test', () => {
 
           // Make sure prepareResponse middleware was run
           response.getHeader.should.be.Function();
-          should.equal(response.getHeader('content-type'), 'application/json; encoding=utf-8');
+          should.equal(
+            response.getHeader('content-type'),
+            'application/json; encoding=utf-8'
+          );
         });
       });
 
@@ -2122,7 +2122,10 @@ describe('Integration Test', () => {
 
           // Make sure prepareResponse middleware was run
           response.getHeader.should.be.Function();
-          should.equal(response.getHeader('content-type'), 'application/json; encoding=utf-8');
+          should.equal(
+            response.getHeader('content-type'),
+            'application/json; encoding=utf-8'
+          );
         });
       });
     });

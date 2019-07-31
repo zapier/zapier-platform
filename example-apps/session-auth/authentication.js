@@ -3,12 +3,12 @@ const testAuth = (z /*, bundle*/) => {
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
   const promise = z.request({
-    url: 'https://auth-json-server.zapier.ninja/me',
+    url: 'https://auth-json-server.zapier-staging.com/me'
   });
 
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
-  return promise.then((response) => {
+  return promise.then(response => {
     if (response.status === 401) {
       throw new Error('The Session Key you supplied is invalid');
     }
@@ -22,11 +22,11 @@ const getSessionKey = (z, bundle) => {
     url: 'http://zapier-httpbin.herokuapp.com/post',
     body: {
       username: bundle.authData.username,
-      password: bundle.authData.password,
+      password: bundle.authData.password
     }
   });
 
-  return promise.then((response) => {
+  return promise.then(response => {
     if (response.status === 401) {
       throw new Error('The username/password you supplied is invalid');
     }
@@ -42,8 +42,8 @@ module.exports = {
   // Define any auth fields your app requires here. The user will be prompted to enter this info when
   // they connect their account.
   fields: [
-    {key: 'username', label: 'Username', required: true, type: 'string'},
-    {key: 'password', label: 'Password', required: true, type: 'password'}
+    { key: 'username', label: 'Username', required: true, type: 'string' },
+    { key: 'password', label: 'Password', required: true, type: 'password' }
   ],
   // The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this
   // method whenver a user connects their account for the first time.
