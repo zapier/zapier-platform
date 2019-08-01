@@ -30,10 +30,6 @@ class ZapierBaseCommand extends Command {
     }
   }
 
-  // get prompt() {
-  //   return ux.prompt;
-  // }
-
   async confirm(message, defaultAns = false) {
     const { ans } = await inquirer.prompt({
       type: 'confirm',

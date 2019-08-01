@@ -55,7 +55,6 @@ const oInitApp = async (path, createFunc) => {
   await ensureDir(tempAppDir);
   await createFunc(tempAppDir);
   await ensureDir(appDir);
-  // COPY FUNC
   await copyDir(tempAppDir, appDir, copyOpts);
   await removeDir(tempAppDir);
 };
