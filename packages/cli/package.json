@@ -35,6 +35,9 @@
     "validate": "yarn test && yarn lint"
   },
   "dependencies": {
+    "@oclif/command": "1.5.18",
+    "@oclif/config": "1.13.2",
+    "@oclif/plugin-help": "2.2.0",
     "adm-zip": "0.4.13",
     "archiver": "1.3.0",
     "async": "2.1.5",
@@ -85,5 +88,9 @@
   },
   "bin": {
     "zapier": "zapier.js"
+  },
+  "oclif": {
+    "commands": "src/oclif/commands",
+    "plugins": []
   }
 }
