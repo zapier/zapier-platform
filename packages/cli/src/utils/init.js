@@ -51,7 +51,6 @@ const oInitApp = async (path, createFunc) => {
   };
 
   await removeDir(tempAppDir);
-  await removeDir(tempAppDir);
   await ensureDir(tempAppDir);
   await createFunc(tempAppDir);
   await ensureDir(appDir);

@@ -10,6 +10,7 @@
   "files": [
     "/src/*.js",
     "/src/commands/",
+    "/src/oclif/",
     "/src/utils/",
     "/scaffold/",
     "/zapier.js"
