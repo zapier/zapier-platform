@@ -11,9 +11,12 @@
     "/src/*.js",
     "/src/commands/",
     "/src/oclif/",
+    "/src/bin/run",
+    "/src/bin/run.cmd",
     "/src/utils/",
     "/scaffold/",
-    "/zapier.js"
+    "/zapier.js",
+    "/oclif.manifest.json"
   ],
   "engines": {
     "node": ">=8.10.0"
@@ -21,6 +24,8 @@
   "scripts": {
     "docs": "ZAPIER_BASE_ENDPOINT='' node src/bin/docs.js && cp -r docs ../..",
     "preversion": "git pull && yarn validate",
+    "prepack": "oclif-dev manifest",
+    "postpack": "rm -f oclif.manifest.json",
     "version": "yarn docs && yarn gen-completions && git add docs/* goodies/* README.md",
     "postversion": "git push && git push --tags",
     "lint-snippets": "eslint snippets --rule 'no-unused-vars: 0' --ignore-pattern snippets/next.js --ignore-pattern 'snippets/dynamic-dropdowns-*'",
@@ -75,6 +80,7 @@
     "zip-stream": "1.1.0"
   },
   "devDependencies": {
+    "@oclif/dev-cli": "1.22.2",
     "decompress": "4.2.0",
     "eslint-plugin-mocha": "^5.3.0",
     "fetch-mock": "5.11.0",

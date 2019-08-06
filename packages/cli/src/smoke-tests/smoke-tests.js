@@ -10,6 +10,17 @@ const { makeTempDir } = require('../utils/files');
 
 const REGEX_VERSION = /\d+\.\d+\.\d+/;
 
+const runCommand = (cmd, args, opts = {}) => {
+  const { stdout, stderr, status } = spawnSync(cmd, args, {
+    encoding: 'utf8',
+    ...opts
+  });
+  if (status) {
+    throw new Error(stderr);
+  }
+  return stdout;
+};
+
 const setupZapierRC = () => {
   let hasRC = false;
   if (process.env.DEPLOY_KEY) {
@@ -27,8 +38,7 @@ const setupZapierRC = () => {
 
 const npmPack = () => {
   let filename;
-  const proc = spawnSync('npm', ['pack'], { encoding: 'utf8' });
-  const lines = proc.stdout.split('\n');
+  const lines = runCommand('npm', ['pack']).split('\n');
   for (let i = lines.length - 1; i >= 0; i--) {
     const line = lines[i].trim();
     if (line) {
@@ -40,8 +50,7 @@ const npmPack = () => {
 };
 
 const npmInstall = (packagePath, workdir) => {
-  spawnSync('npm', ['install', '--production', packagePath], {
-    encoding: 'utf8',
+  runCommand('npm', ['install', '--production', packagePath], {
     cwd: workdir
   });
 };
@@ -96,13 +105,14 @@ describe('smoke tests - setup will take some time', () => {
   });
 
   it('zapier --version', () => {
-    const proc = spawnSync(context.cliBin, ['--version'], { encoding: 'utf8' });
-    const firstLine = proc.stdout.split('\n')[0].trim();
+    const firstLine = runCommand(context.cliBin, ['--version'])
+      .split('\n')[0]
+      .trim();
     firstLine.should.be.eql(`zapier-platform-cli/${context.package.version}`);
   });
 
   it('zapier init', () => {
-    spawnSync(context.cliBin, ['init', 'awesome-app'], {
+    runCommand(context.cliBin, ['init', 'awesome-app'], {
       cwd: context.workdir
     });
 
@@ -116,7 +126,7 @@ describe('smoke tests - setup will take some time', () => {
   });
 
   it('zapier init --template=babel', () => {
-    spawnSync(context.cliBin, ['init', 'babel-app', '--template=babel'], {
+    runCommand(context.cliBin, ['init', 'babel-app', '--template=babel'], {
       cwd: context.workdir
     });
 
@@ -138,10 +148,8 @@ describe('smoke tests - setup will take some time', () => {
     if (!context.hasRC) {
       this.skip();
     }
-    const proc = spawnSync(context.cliBin, ['apps', '--format=json'], {
-      encoding: 'utf8'
-    });
-    const result = JSON.parse(proc.stdout);
+    const stdout = runCommand(context.cliBin, ['apps', '--format=json']);
+    const result = JSON.parse(stdout);
     result.should.be.Array();
   });
 });
