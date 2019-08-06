@@ -2367,9 +2367,7 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 7 };
-      console.log('input is', input);
       return app(input).then(output => {
-        console.log('in the promise', output);
         const movie = output.results;
         should.equal(movie.id, 7);
         should.equal(

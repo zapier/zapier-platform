@@ -32,7 +32,7 @@
     "lint-code": "eslint zapier.js src",
     "lint": "yarn lint-snippets && yarn lint-code",
     "test": "NODE_ENV=test mocha -t 50000 --recursive src/tests",
-    "smoke-test": "NODE_ENV=test mocha -t 30000 --recursive src/smoke-tests",
+    "smoke-test": "NODE_ENV=test mocha -t 60000 --recursive src/smoke-tests",
     "zapier": "zapier.js",
     "validate-templates": "./scripts/validate-app-templates.js",
     "set-template-versions": "./scripts/set-app-template-versions.js",
