@@ -22,7 +22,9 @@ describe('build', () => {
         .length.should.be.within(0, 2);
       smartPaths
         .filter(
-          filePath => filePath.indexOf('node_modules/lodash/lodash.js') >= 0
+          filePath =>
+            filePath.includes('node_modules/lodash/lodash.js') &&
+            !filePath.includes('inquirer') // inquirer pulls its own version of lodash, so this is 2 without this line
         )
         .length.should.equal(1);
       smartPaths.should.containEql('src/commands/index.js');
