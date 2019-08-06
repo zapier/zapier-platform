@@ -99,6 +99,7 @@
   },
   "oclif": {
     "commands": "src/oclif/commands",
+    "bin": "zapier",
     "plugins": []
   }
 }

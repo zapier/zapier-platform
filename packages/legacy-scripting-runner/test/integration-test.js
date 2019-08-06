@@ -2347,7 +2347,7 @@ describe('Integration Test', () => {
       });
     });
 
-    it('KEY_pre_read_resource & KEY_post_read_resource', () => {
+    it('KEY_pre_read_resource & KEY_post_read_resource', done => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_read_resource_disabled',
@@ -2367,15 +2367,17 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 7 };
-      return app(input).then(output => {
-        const movie = output.results;
-        should.equal(movie.id, 7);
-        should.equal(
-          movie.title,
-          'title 7 (movie_post_read_resource was here)'
-        );
-        should.equal(movie.anotherId, 7);
-      });
+      return app(input)
+        .then(output => {
+          const movie = output.results;
+          should.equal(movie.id, 7);
+          should.equal(
+            movie.title,
+            'title 7 (movie_post_read_resource was here)'
+          );
+          should.equal(movie.anotherId, 7);
+        })
+        .catch(done);
     });
 
     it('KEY_read_resource', () => {
