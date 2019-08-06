@@ -997,7 +997,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   const run = async (bundle, typeOf, key) => {
     let request = {
       url: '',
-      headers: {},
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8'
+      },
       params: {},
       body: {}
     };
@@ -1041,6 +1044,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       case 'trigger.output':
         return await runTriggerOutputFields(bundle, key);
       case 'create':
+        if (key === 'file') {
+          delete bundle.request.headers['Content-Type'];
+        }
         return await runCreate(bundle, key);
       case 'create.input':
         return await runCreateInputFields(bundle, key);
@@ -1055,8 +1061,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       case 'search.output':
         return await runSearchOutputFields(bundle, key);
       case 'hydrate.method':
+        delete bundle.request.headers['Content-Type'];
         return await runHydrateMethod(bundle);
       case 'hydrate.file':
+        delete bundle.request.headers['Content-Type'];
         return await runHydrateFile(bundle);
     }
 

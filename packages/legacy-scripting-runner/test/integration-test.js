@@ -1032,6 +1032,29 @@ describe('Integration Test', () => {
       });
     });
 
+    it('set headers', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'It',
+        genre: 'Horror'
+      };
+      return app(input).then(output => {
+        const headers = output.input.bundle.request.headers;
+        should.equal(headers.Accept, 'application/json');
+        should.equal(headers['Content-Type'], 'application/json; charset=utf-8');
+      });
+    });
+
     it('scriptingless perform', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
@@ -2068,6 +2091,8 @@ describe('Integration Test', () => {
           should.equal(content.args.foo, '1');
           should.equal(content.args.bar, 'hello');
           should.not.exist(content.headers['X-Api-Key']);
+          should.equal(output.input.bundle.request.headers.Accept, 'application/json');
+          should.not.exist(output.input.bundle.request.headers['Content-Type']);
           should.not.exist(knownLength);
           should.not.exist(filename);
           should.not.exist(contentType);
@@ -2116,6 +2141,8 @@ describe('Integration Test', () => {
           should.equal(content.args.foo, '1');
           should.equal(content.args.bar, 'hello');
           should.not.exist(content.headers['X-Api-Key']);
+          should.equal(output.input.bundle.request.headers.Accept, 'application/json');
+          should.not.exist(output.input.bundle.request.headers['Content-Type']);
           should.equal(knownLength, 1234);
           should.equal(filename, 'hello.json');
           should.not.exist(contentType);
