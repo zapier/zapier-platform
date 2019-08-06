@@ -2347,7 +2347,7 @@ describe('Integration Test', () => {
       });
     });
 
-    it('KEY_pre_read_resource & KEY_post_read_resource', done => {
+    it('KEY_pre_read_resource & KEY_post_read_resource', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_read_resource_disabled',
@@ -2377,7 +2377,6 @@ describe('Integration Test', () => {
           'title 7 (movie_post_read_resource was here)'
         );
         should.equal(movie.anotherId, 7);
-        done();
       });
     });
 
