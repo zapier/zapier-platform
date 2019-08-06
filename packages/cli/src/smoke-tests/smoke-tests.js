@@ -145,11 +145,13 @@ describe('smoke tests - setup will take some time', () => {
   });
 
   it('zapier apps', function() {
+    console.log(context);
     if (!context.hasRC) {
       this.skip();
     }
     const stdout = runCommand(context.cliBin, ['apps', '--format=json']);
     const result = JSON.parse(stdout);
+    console.log('apps result', result);
     result.should.be.Array();
   });
 });
