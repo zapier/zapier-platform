@@ -2367,17 +2367,18 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 7 };
-      return app(input)
-        .then(output => {
-          const movie = output.results;
-          should.equal(movie.id, 7);
-          should.equal(
-            movie.title,
-            'title 7 (movie_post_read_resource was here)'
-          );
-          should.equal(movie.anotherId, 7);
-        })
-        .catch(done);
+      console.log('input is', input);
+      return app(input).then(output => {
+        console.log('in the promise', output);
+        const movie = output.results;
+        should.equal(movie.id, 7);
+        should.equal(
+          movie.title,
+          'title 7 (movie_post_read_resource was here)'
+        );
+        should.equal(movie.anotherId, 7);
+        done();
+      });
     });
 
     it('KEY_read_resource', () => {
