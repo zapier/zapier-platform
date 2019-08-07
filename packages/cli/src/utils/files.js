@@ -139,9 +139,11 @@ const removeDir = dir => fse.remove(dir);
 // Returns true if directory is empty, else false.
 // Rejects if directory does not exist.
 const isEmptyDir = dir => fse.readdir(dir).then(items => _.isEmpty(items));
+const isExistingEmptyDir = async dir =>
+  fse.existsSync(dir) && !(await isEmptyDir(dir));
 
 const confirmNonEmptyDir = async location => {
-  if (fse.existsSync(location) && !await isEmptyDir(location)) {
+  if (fse.existsSync(location) && !(await isEmptyDir(location))) {
     const yes = await getYesNoInput(
       'Current directory not empty, continue anyway?',
       false
@@ -169,6 +171,7 @@ module.exports = {
   ensureDir,
   fileExistsSync,
   isEmptyDir,
+  isExistingEmptyDir,
   confirmNonEmptyDir,
   readFile,
   removeDir,
