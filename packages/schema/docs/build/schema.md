@@ -1053,12 +1053,12 @@ How will we get a list of new objects? Will be turned into a trigger automatical
 
 * ```
   { display: { label: 'New User', description: 'Trigger when a new User is created in your account.' },
-    operation:
+    operation: 
      { perform: { url: 'http://fake-crm.getsandbox.com/users' },
        sample: { id: 49, name: 'Veronica Kuhn', email: 'veronica.kuhn@company.com' } } }
   ```
 * ```
-  { display:
+  { display: 
      { label: 'New User',
        description: 'Trigger when a new User is created in your account.',
        hidden: true },
@@ -1135,9 +1135,9 @@ Represents a resource, which will in turn power triggers, searches, or creates.
 * ```
   { key: 'tag',
     noun: 'Tag',
-    get:
+    get: 
      { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-       operation:
+       operation: 
         { perform: { url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
           sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
@@ -1145,19 +1145,19 @@ Represents a resource, which will in turn power triggers, searches, or creates.
   { key: 'tag',
     noun: 'Tag',
     sample: { id: 385, name: 'proactive enable ROI' },
-    get:
+    get: 
      { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
        operation: { perform: { url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } }
   ```
 * ```
   { key: 'tag',
     noun: 'Tag',
-    get:
+    get: 
      { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
        operation: { perform: { url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } },
-    list:
+    list: 
      { display: { label: 'New Tag', description: 'Trigger when a new Tag is created in your account.' },
-       operation:
+       operation: 
         { perform: { url: 'http://fake-crm.getsandbox.com/tags' },
           sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
@@ -1167,19 +1167,19 @@ Represents a resource, which will in turn power triggers, searches, or creates.
 * ```
   { key: 'tag',
     noun: 'Tag',
-    get:
+    get: 
      { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
        operation: { perform: { url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } },
-    list:
+    list: 
      { display: { label: 'New Tag', description: 'Trigger when a new Tag is created in your account.' },
-       operation:
+       operation: 
         { perform: { url: 'http://fake-crm.getsandbox.com/tags' },
           sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
 * ```
   { key: 'tag',
     noun: 'Tag',
-    get:
+    get: 
      { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
        operation: { perform: { url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } }
   ```
