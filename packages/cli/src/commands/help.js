@@ -5,8 +5,12 @@ const utils = require('../utils');
 
 const help = (context, cmd) => {
   const commands = require('./index');
+  const oCommands = require('../oclif/oCommands');
+
+  const allCommands = { ...commands, ...oCommands };
 
   if (commands[cmd] && commands[cmd].docs) {
+    // this only shows help for old commands, since `help newcommand` goes to oclif
     context.line(commands[cmd].help);
     context.line();
     context.line(`Usage: \`${commands[cmd].example}\``);
@@ -19,16 +23,17 @@ const help = (context, cmd) => {
   );
   return Promise.resolve().then(() => {
     context.line();
-    const allCommands = _.orderBy(Object.keys(commands))
-      .filter(name => !commands[name].hide)
+    const commandList = _.orderBy(Object.keys(allCommands))
+      .filter(name => !allCommands[name].hide)
       .map(name => {
+        const c = allCommands[name];
         return {
           name,
-          help: commands[name].help,
-          example: commands[name].example
+          help: c.help || c.description.split('\n')[0],
+          example: c.example || (c.examples && c.examples[0])
         };
       });
-    utils.printData(allCommands, [
+    utils.printData(commandList, [
       ['Command', 'name'],
       ['Example', 'example'],
       ['Help', 'help']

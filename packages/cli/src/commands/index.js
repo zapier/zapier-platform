@@ -9,7 +9,6 @@ module.exports = {
   env: require('./env'),
   help: require('./help'),
   history: require('./history'),
-  init: require('./init'),
   invite: require('./invite'),
   link: require('./link'),
   login: require('./login'),

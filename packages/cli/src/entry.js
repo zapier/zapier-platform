@@ -9,8 +9,11 @@ const {
   UPDATE_NOTIFICATION_INTERVAL
 } = require('./constants');
 const commands = require('./commands');
+const oCommands = require('./oclif/oCommands');
 const utils = require('./utils');
 const leven = require('leven');
+
+const oclifCommands = new Set(Object.keys(oCommands));
 
 const commandSuggestion = command => {
   const availableCommands = Object.keys(commands);
@@ -34,9 +37,7 @@ module.exports = argv => {
   if (!utils.isValidNodeVersion()) {
     console.error(
       colors.red(
-        `Requires node version >= ${LAMBDA_VERSION}, found ${
-          process.versions.node
-        }. Please upgrade node.`
+        `Requires node version >= ${LAMBDA_VERSION}, found ${process.versions.node}. Please upgrade node.`
       )
     );
     process.exit(1);
@@ -69,6 +70,14 @@ module.exports = argv => {
 
   const command = args[0];
   args = args.slice(1);
+
+  if (
+    oclifCommands.has(command) || // zapier blah
+    (command === 'help' && oclifCommands.has(args[0])) // zapier help blah
+  ) {
+    require('./bin/run'); // requiring shouldn't have side effects, but this one is temporary and special
+    return;
+  }
 
   // create the context, logs thread through this
   const context = utils.createContext({ command, args, argOpts });
