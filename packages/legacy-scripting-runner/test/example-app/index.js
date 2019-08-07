@@ -141,6 +141,30 @@ const legacyScriptingSource = `
         return contacts;
       },
 
+      movie_pre_poll_default_headers: function(bundle) {
+        // Copy Accept and Content-Type to params so we know they're already
+        // available in pre_poll
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.params.accept = bundle.request.headers.Accept;
+        bundle.request.params.contentType = bundle.request.headers['Content-Type'];
+        return bundle.request;
+      },
+
+      movie_post_poll_default_headers: function(bundle) {
+        return [z.JSON.parse(bundle.response.content)];
+      },
+
+      movie_poll_default_headers: function(bundle) {
+        // Copy Accept and Content-Type to params so we know they're already
+        // available in pre_poll
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.params.accept = bundle.request.headers.Accept;
+        bundle.request.params.contentType = bundle.request.headers['Content-Type'];
+
+        var response = z.request(bundle.request);
+        return [z.JSON.parse(response.content)];
+      },
+
       /*
        * Hook Trigger
        */
@@ -314,6 +338,28 @@ const legacyScriptingSource = `
         (14).sailing = 'home';
 
         return data;
+      },
+
+      movie_pre_write_default_headers: function(bundle) {
+        // Copy Accept and Content-Type to request body so we know they're
+        // already available in pre_write
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.data = z.JSON.stringify({
+          accept: bundle.request.headers.Accept,
+          contentType: bundle.request.headers['Content-Type']
+        });
+        return bundle.request;
+      },
+
+      movie_write_default_headers: function(bundle) {
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.data = z.JSON.stringify({
+          accept: bundle.request.headers.Accept,
+          contentType: bundle.request.headers['Content-Type']
+        });
+
+        var response = z.request(bundle.request);
+        return z.JSON.parse(response.content);
       },
 
       // To be replaced with 'movie_write' at runtime
