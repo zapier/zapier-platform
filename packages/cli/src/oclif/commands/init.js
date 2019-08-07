@@ -64,10 +64,10 @@ InitCommand.args = [
   }
 ];
 InitCommand.examples = [
-  'zapier init some/path',
+  'zapier init ./some/path',
   'zaper init . --template typescript'
 ];
-InitCommand.description = `Initializes a new Zapier app. If you specify a template, will download and install the app from that template.
+InitCommand.description = `Initializes a new Zapier app. Optionally uses a template.
 
 After running this, you'll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 

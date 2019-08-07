@@ -9,10 +9,11 @@ const {
   UPDATE_NOTIFICATION_INTERVAL
 } = require('./constants');
 const commands = require('./commands');
+const oCommands = require('./oclif/oCommands');
 const utils = require('./utils');
 const leven = require('leven');
 
-const oclifCommands = new Set(['init']);
+const oclifCommands = new Set(Object.keys(oCommands));
 
 const commandSuggestion = command => {
   const availableCommands = Object.keys(commands);

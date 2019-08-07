@@ -6,13 +6,11 @@ const inquirer = require('inquirer');
 
 class ZapierBaseCommand extends Command {
   run() {
-    this.parseFlags();
+    this._parseFlags();
     return this.perform();
   }
 
-  parseFlags() {
-    // normally this is called via `this.parse(SomeCommand)`, but that's error-prone and I got tired of typing it
-    // .constructor is the static class
+  _parseFlags() {
     const { flags, args } = this.parse(Object.getPrototypeOf(this).constructor);
 
     this.flags = flags;
