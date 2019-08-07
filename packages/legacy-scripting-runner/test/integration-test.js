@@ -434,7 +434,7 @@ describe('Integration Test', () => {
       });
     });
 
-    it.only('KEY_pre_poll, dynamic dropdown', () => {
+    it('KEY_pre_poll, dynamic dropdown', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_dynamic_dropdown',
