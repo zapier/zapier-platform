@@ -154,6 +154,17 @@ const legacyScriptingSource = `
         return [z.JSON.parse(bundle.response.content)];
       },
 
+      movie_pre_poll_dynamic_dropdown: function(bundle) {
+        bundle.request.method = 'POST';
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.data = z.JSON.stringify(bundle.trigger_fields);
+        return bundle.request;
+      },
+
+      movie_post_poll_dynamic_dropdown: function(bundle) {
+        return [z.JSON.parse(bundle.response.content)];
+      },
+
       movie_poll_default_headers: function(bundle) {
         // Copy Accept and Content-Type to params so we know they're already
         // available in pre_poll

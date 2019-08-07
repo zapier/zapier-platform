@@ -78,9 +78,19 @@ const addInputData = (event, bundle, convertedBundle) => {
   if (event.name === 'auth.connectionLabel') {
     convertedBundle.test_result = bundle.inputData;
   } else if (event.name.startsWith('trigger.')) {
-    convertedBundle.trigger_fields = bundle.inputData;
-    convertedBundle.trigger_fields_raw =
-      bundle.inputDataRaw || bundle.inputData;
+    const isDynamicDropdown =
+      _.get(bundle, 'meta.isFillingDynamicDropdown') ||
+      _.get(bundle, 'meta.prefill');
+
+    if (isDynamicDropdown) {
+      // Confused? See test "KEY_pre_poll, dynamic dropdown"
+      convertedBundle.trigger_fields = {};
+      convertedBundle.trigger_fields_raw = {};
+    } else {
+      convertedBundle.trigger_fields = bundle.inputData;
+      convertedBundle.trigger_fields_raw =
+        bundle.inputDataRaw || bundle.inputData;
+    }
   } else if (event.name.startsWith('create.')) {
     convertedBundle.action_fields = bundle._unflatInputData;
     convertedBundle.action_fields_full = bundle.inputData;
@@ -210,9 +220,12 @@ const bundleConverter = async (bundle, event, z) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      params: event.name.startsWith('create')
-        ? {}
-        : _.get(bundle, 'inputData', {}),
+      params:
+        event.name.startsWith('create') ||
+        meta.isFillingDynamicDropdown ||
+        meta.prefill // Confused? See test "KEY_pre_poll, dynamic dropdown"
+          ? {}
+          : _.get(bundle, 'inputData', {}),
       data: ''
     },
     auth_fields: _.get(bundle, 'authData', {}),

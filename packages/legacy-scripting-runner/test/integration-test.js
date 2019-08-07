@@ -434,6 +434,42 @@ describe('Integration Test', () => {
       });
     });
 
+    it.only('KEY_pre_poll, dynamic dropdown', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_dynamic_dropdown',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_dynamic_dropdown',
+        'movie_post_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.meta = {
+        isFillingDynamicDropdown: true
+      };
+      input.bundle.inputData = {
+        dontSendMe: 'test'
+      };
+      return _app(input).then(output => {
+        const echoed = output.results[0];
+
+        // When pulling for a dynamic dropdown, bundle.inputData and
+        // bundle.inputDataRaw are not really from the trigger that powers the
+        // dynamic dropdown. Instead, they come from the input fields of the
+        // action/search/trigger that pulls the dynamic dropdown. So we
+        // shouldn't include bundle.inputData anywhere in the request.
+        should.not.exist(echoed.args.dontSendMe);
+        should.not.exist(echoed.json.dontSendMe);
+      });
+    });
+
     it('KEY_post_poll, with jQuery', () => {
       const input = createTestInput(
         compiledApp,
