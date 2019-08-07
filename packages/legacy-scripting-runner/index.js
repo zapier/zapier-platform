@@ -129,6 +129,8 @@ const addFilesToRequestBodyFromBody = async (request, bundle) => {
   });
 
   request.body = await makeMultipartBody(data, lazyFiles);
+  request.headers.Accept = '*/*';
+  delete request.headers['Content-Type'];
   return request;
 };
 
@@ -357,7 +359,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   /**
     flattens trigger data for wb v1 apps
   */
-  const flattenTriggerData = (data) => {
+  const flattenTriggerData = data => {
     for (const i in data) {
       for (const j in data[i]) {
         if (Array.isArray(data[i][j])) {
@@ -375,7 +377,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   /**
     see handle_legacy_params in the python backend
   */
-  const handleLegacyParams = (data) => {
+  const handleLegacyParams = data => {
     if (!_.isPlainObject(data)) {
       return data;
     }
@@ -397,8 +399,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   /**
     see textify_list in the python backend
   */
-  const textifyList = (data) => {
-    if (!Array.isArray(data)){
+  const textifyList = data => {
+    if (!Array.isArray(data)) {
       return data;
     }
     let out = '';
@@ -425,7 +427,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const flattenDictionary = (prefix, data) => {
-    let flattenedData = flatten(_.cloneDeep(data), {'delimiter': '__'});
+    let flattenedData = flatten(_.cloneDeep(data), { delimiter: '__' });
     let out = {};
     for (const key in flattenedData) {
       out[`${prefix}__${key}`] = flattenedData[key];
@@ -509,7 +511,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         parseResponse: true,
         ensureType: false,
 
-        resetRequestForFullMethod: false,
+        resetRequestForFullMethod: false
       },
       options
     );
@@ -685,7 +687,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     });
   };
 
-  const isTestingAuth = (bundle) => {
+  const isTestingAuth = bundle => {
     // For core < 8.0.0
     if (
       _.get(bundle, 'meta.test_poll') === true &&
@@ -704,9 +706,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     bundle.request.url = url;
 
     // For auth test we want to make sure we return an object instead of an array
-    const ensureType = isTestingAuth(bundle)
-      ? 'object-first'
-      : 'array-first';
+    const ensureType = isTestingAuth(bundle) ? 'object-first' : 'array-first';
 
     // Legacy WB doesn't check if trigger results have id
     bundle.skipChecks = ['triggerHasId'];
@@ -772,7 +772,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         bund.request.url = obj.resource_url;
         return runPrePostHook(bund, key);
       });
-      return Promise.all(promises).then((obj) => {
+      return Promise.all(promises).then(obj => {
         obj = _.flatten(obj);
         if (needsFlattenedData) {
           obj = flattenTriggerData(obj);
@@ -909,7 +909,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       key,
       'create.pre',
       'create.post',
-      'create.write',
+      'create.write'
     );
   };
 
@@ -997,7 +997,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   const run = async (bundle, typeOf, key) => {
     let request = {
       url: '',
-      headers: {},
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8'
+      },
       params: {},
       body: {}
     };

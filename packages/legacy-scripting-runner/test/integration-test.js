@@ -360,6 +360,34 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_poll, default headers', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_poll_default_headers',
+        'movie_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then(output => {
+        const echoed = output.results[0];
+        should.equal(echoed.headers.Accept[0], 'application/json');
+        should.equal(
+          echoed.headers['Content-Type'][0],
+          'application/json; charset=utf-8'
+        );
+        should.equal(echoed.args.accept[0], 'application/json');
+        should.equal(
+          echoed.args.contentType[0],
+          'application/json; charset=utf-8'
+        );
+      });
+    });
+
     it('KEY_pre_poll', () => {
       const input = createTestInput(
         compiledApp,
@@ -371,6 +399,38 @@ describe('Integration Test', () => {
 
         const contact = output.results[0];
         should.equal(contact.id, 3);
+      });
+    });
+
+    it('KEY_pre_poll, default headers', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_default_headers',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_default_headers',
+        'movie_post_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then(output => {
+        const echoed = output.results[0];
+        should.equal(echoed.headers.Accept[0], 'application/json');
+        should.equal(
+          echoed.headers['Content-Type'][0],
+          'application/json; charset=utf-8'
+        );
+        should.equal(echoed.args.accept[0], 'application/json');
+        should.equal(
+          echoed.args.contentType[0],
+          'application/json; charset=utf-8'
+        );
       });
     });
 
@@ -1160,6 +1220,34 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_write, default headers', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_write_default_headers',
+        'movie_pre_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).then(output => {
+        const echoed = output.results;
+        should.equal(echoed.headers.Accept[0], 'application/json');
+        should.equal(
+          echoed.headers['Content-Type'][0],
+          'application/json; charset=utf-8'
+        );
+        should.equal(echoed.json.accept, 'application/json');
+        should.equal(
+          echoed.json.contentType,
+          'application/json; charset=utf-8'
+        );
+      });
+    });
+
     it('KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
@@ -1362,6 +1450,34 @@ describe('Integration Test', () => {
         should.equal(movie.title, 'La La Land');
         should.equal(movie.genre, 'Musical');
         should.equal(movie.year, 2016);
+      });
+    });
+
+    it('KEY_write, default headers', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_write_default_headers',
+        'movie_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).then(output => {
+        const echoed = output.results;
+        should.equal(echoed.headers.Accept[0], 'application/json');
+        should.equal(
+          echoed.headers['Content-Type'][0],
+          'application/json; charset=utf-8'
+        );
+        should.equal(echoed.json.accept, 'application/json');
+        should.equal(
+          echoed.json.contentType,
+          'application/json; charset=utf-8'
+        );
       });
     });
 
