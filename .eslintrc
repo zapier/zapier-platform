@@ -1,0 +1,37 @@
+{
+  "extends": ["standard", "prettier"],
+  "plugins": ["mocha"],
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "overrides": [
+    {
+      "files": ["packages/*/test/**/*.js"],
+      "rules": {
+        "mocha/no-exclusive-tests": "error"
+      },
+      "env": {
+        "mocha": true
+      }
+    },
+    {
+      "files": ["packages/cli/src/tests/**/*.js"],
+      "rules": {
+        "mocha/no-exclusive-tests": "error"
+      },
+      "env": {
+        "mocha": true
+      }
+    },
+    {
+      "files": ["packages/cli/snippets/**/*.js"],
+      "rules": {
+        "no-unused-vars": 0
+      },
+      "env": {
+        "mocha": true // there's a mocha example in there
+      }
+    }
+  ]
+}

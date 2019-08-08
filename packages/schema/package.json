@@ -1,40 +1,39 @@
 {
   "name": "zapier-platform-schema",
   "version": "8.2.1",
-  "description":
-    "Schema definition for CLI apps in the Zapier Developer Platform.",
+  "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-schema",
   "homepage": "https://zapier.com/",
   "author": "Bryan Helmig <bryan@zapier.com>",
   "license": "UNLICENSED",
   "main": "schema.js",
-  "files": ["/exported-schema.json", "/lib/**/*.js", "/schema.js"],
+  "files": [
+    "/exported-schema.json",
+    "/lib/**/*.js",
+    "/schema.js"
+  ],
   "scripts": {
-    "preversion": "git pull && yarn test",
-    "version": "yarn build && yarn git-add",
-    "postversion": "git push && git push --tags",
+    "preversion": "git pull && yarn test && yarn build",
     "test": "mocha -t 10000 --recursive test",
-    "test:debug": "mocha -t 5000 --recursive --inspect-brk test",
-    "posttest": "eslint lib",
     "smoke-test": "mocha -t 10000 --recursive smoke-test",
+    "test:debug": "mocha -t 5-10000 --recursive --inspect-brk test",
+    "lint": "eslint lib",
     "coverage": "istanbul cover _mocha -- --recursive",
     "export": "node bin/export.js && prettier --write exported-schema.json",
     "docs": "node bin/docs.js",
     "build": "yarn docs && yarn export",
     "git-add": "git add exported-schema.json README.md docs",
-    "precommit": "yarn build && yarn git-add"
+    "precommit": "yarn build && yarn git-add",
+    "validate": "yarn test && yarn lint && yarn smoke-test"
   },
   "dependencies": {
     "jsonschema": "1.1.1",
     "lodash": "4.17.11"
   },
   "devDependencies": {
-    "eslint": "4.19.1",
     "fs-extra": "7.0.0",
     "istanbul": "0.4.5",
     "markdown-toc": "1.2.0",
-    "mocha": "5.1.1",
-    "node-fetch": "2.2.0",
-    "should": "11.1.0"
+    "node-fetch": "2.2.0"
   }
 }

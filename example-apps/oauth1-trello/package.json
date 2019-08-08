@@ -1,5 +1,5 @@
 {
-  "name": "oauth1-trello",
+  "name": "zapier-platform-example-app-oauth1-trello",
   "version": "1.0.0",
   "description": "Trello OAuth V1 Example",
   "repository": "zapier/zapier-platform-example-app-oauth1-trello",
