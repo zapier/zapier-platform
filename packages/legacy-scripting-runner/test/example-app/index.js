@@ -157,6 +157,10 @@ const legacyScriptingSource = `
       movie_pre_poll_dynamic_dropdown: function(bundle) {
         bundle.request.method = 'POST';
         bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+
+        // bundle.trigger_fields should be the values of the input fields of the
+        // action/search/trigger that pulls the dynamic dropdown. Send it to
+        // httpbin via request.data so we can check the response later.
         bundle.request.data = z.JSON.stringify(bundle.trigger_fields);
         return bundle.request;
       },

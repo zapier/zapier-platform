@@ -455,18 +455,26 @@ describe('Integration Test', () => {
         isFillingDynamicDropdown: true
       };
       input.bundle.inputData = {
-        dontSendMe: 'test'
+        name: 'test',
+        greeting: 'hello'
       };
       return _app(input).then(output => {
         const echoed = output.results[0];
 
-        // When pulling for a dynamic dropdown, bundle.inputData and
+        // When pulling for a dynamic dropdown (DD), bundle.inputData and
         // bundle.inputDataRaw are not really from the trigger that powers the
         // dynamic dropdown. Instead, they come from the input fields of the
-        // action/search/trigger that pulls the dynamic dropdown. So we
-        // shouldn't include bundle.inputData anywhere in the request.
-        should.not.exist(echoed.args.dontSendMe);
-        should.not.exist(echoed.json.dontSendMe);
+        // action/search/trigger that pulls the DD. So we shouldn't include
+        // bundle.inputData in request.params.
+        should.not.exist(echoed.args.name);
+        should.not.exist(echoed.args.greeting);
+
+        // However, bundle.trigger_fields should still contain values of the
+        // input fields of the action/search/trigger that pulls the DD.
+        // bundle.trigger_fields was sent via request.data from scripting, so it
+        // should be available as response.json here.
+        should.equal(echoed.json.name, 'test');
+        should.equal(echoed.json.greeting, 'hello');
       });
     });
 
