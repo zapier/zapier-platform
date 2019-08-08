@@ -210,9 +210,12 @@ const bundleConverter = async (bundle, event, z) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      params: event.name.startsWith('create')
-        ? {}
-        : _.get(bundle, 'inputData', {}),
+      params:
+        event.name.startsWith('create') ||
+        meta.isFillingDynamicDropdown ||
+        meta.prefill // Confused? See test "KEY_pre_poll, dynamic dropdown"
+          ? {}
+          : _.get(bundle, 'inputData', {}),
       data: ''
     },
     auth_fields: _.get(bundle, 'authData', {}),
