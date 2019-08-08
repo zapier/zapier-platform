@@ -409,7 +409,7 @@ describe('Integration Test', () => {
         'movie_pre_poll'
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
-        'movie_post_poll_default_headers',
+        'movie_post_poll_make_array',
         'movie_post_poll'
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
@@ -441,7 +441,7 @@ describe('Integration Test', () => {
         'movie_pre_poll'
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
-        'movie_post_poll_dynamic_dropdown',
+        'movie_post_poll_make_array',
         'movie_post_poll'
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
@@ -475,6 +475,29 @@ describe('Integration Test', () => {
         // should be available as response.json here.
         should.equal(echoed.json.name, 'test');
         should.equal(echoed.json.greeting, 'hello');
+      });
+    });
+
+    it('KEY_pre_poll, null request.data', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_null_request_data',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then(output => {
+        const echoed = output.results[0];
+        should.equal(echoed.args.requestDataIsNull[0], 'yes');
       });
     });
 
