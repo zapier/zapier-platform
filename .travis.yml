@@ -9,8 +9,7 @@ install:
   # need to ignore engines until we can ditch node 8 after calendar 2019
   - yarn install --ignore-engines
 script:
-  - yarn test
-  - yarn smoke-test
+  - yarn validate
 notifications:
   email: false
 deploy:

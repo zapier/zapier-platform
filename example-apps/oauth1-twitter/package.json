@@ -1,5 +1,5 @@
 {
-  "name": "oauth1-twitter",
+  "name": "zapier-platform-example-app-oauth1-twitter",
   "version": "1.0.0",
   "description": "An OAuth1 example using Twitter.",
   "repository": "zapier/zapier-platform-example-app-oauth1-twitter",

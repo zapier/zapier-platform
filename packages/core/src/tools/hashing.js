@@ -3,11 +3,11 @@
 const crypto = require('crypto');
 
 // Helpful handler for doing z.hash('sha256', 'my password')
-const hashify = (algo, s, encoding, input_encoding) => {
+const hashify = (algo, s, encoding, inputEncoding) => {
   encoding = encoding || 'hex';
-  input_encoding = input_encoding || 'binary';
+  inputEncoding = inputEncoding || 'binary';
   const hasher = crypto.createHash(algo);
-  hasher.update(s, input_encoding);
+  hasher.update(s, inputEncoding);
   return hasher.digest(encoding);
 };
 

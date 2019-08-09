@@ -74,16 +74,6 @@ describe('build', () => {
     });
   });
 
-  it('should error over futurejs files', () => {
-    should(() => {
-      build.verifyNodeFeatures([path.join(entryDir, 'snippets', 'next.js')]);
-    }).throw(Error);
-  });
-
-  it('should not error over regular files', () => {
-    build.verifyNodeFeatures([entryPoint]).should.deepEqual([entryPoint]);
-  });
-
   it('should make a build.zip', () => {
     const osTmpDir = fse.realpathSync(os.tmpdir());
     const tmpProjectDir = path.join(

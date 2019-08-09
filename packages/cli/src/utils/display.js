@@ -186,7 +186,7 @@ const makeRawJSON = rows => prettyJSONstringify(rows);
 
 const makeSmall = rows => {
   const longestRow = _.max(rows.map(r => r.name.length));
-  let res = [];
+  const res = [];
 
   rows.forEach(row => {
     res.push(

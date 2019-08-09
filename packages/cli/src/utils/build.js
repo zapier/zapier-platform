@@ -15,8 +15,6 @@ const ignore = require('ignore');
 const gitIgnore = require('parse-gitignore');
 const semver = require('semver');
 
-const eslint = require('eslint');
-
 const constants = require('../constants');
 
 const {
@@ -135,39 +133,6 @@ const respectGitIgnore = (dir, paths) => {
   return gitFilter.filter(paths);
 };
 
-// returns paths as to be chainable
-const verifyNodeFeatures = paths => {
-  const opts = {
-    plugins: ['node'],
-    // set version as high as possible, let's parse it all
-    // see: https://eslint.org/docs/user-guide/configuring#specifying-parser-options
-    parserOptions: { ecmaVersion: 9 },
-    useEslintrc: false, // literally only check this rule
-    rules: {
-      'node/no-unsupported-features': [
-        'error',
-        { version: require('../constants').LAMBDA_VERSION }
-      ]
-    }
-  };
-
-  // only lint js files; node_modules ignored by default
-  const jsPaths = paths.filter(p => p.endsWith('.js'));
-  const cli = new eslint.CLIEngine(opts);
-  const errors = eslint.CLIEngine.getErrorResults(
-    cli.executeOnFiles(jsPaths).results
-  );
-
-  if (errors.length) {
-    if (process.env.NODE_ENV !== 'test') {
-      console.log('\n', cli.getFormatter()(errors));
-    }
-    throw new Error('Using unsupported features, see above');
-  } else {
-    return paths;
-  }
-};
-
 const forceIncludeDumbPath = (appConfig, filePath) => {
   let matchesConfigInclude = false;
   const configIncludePaths = _.get(appConfig, 'includeInBuild', []);
@@ -257,8 +222,6 @@ const makeZip = async (dir, zipPath) => {
     }
     paths = finalPaths;
   }
-
-  verifyNodeFeatures(paths);
 
   await writeZipFromPaths(dir, zipPath, paths);
 };
@@ -485,6 +448,5 @@ module.exports = {
   makeZip,
   makeSourceZip,
   listFiles,
-  requiredFiles,
-  verifyNodeFeatures
+  requiredFiles
 };

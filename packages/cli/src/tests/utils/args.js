@@ -15,8 +15,8 @@ describe('args', () => {
   });
 
   it('should enforce some args', () => {
-    let spec, args, argOpts, errors;
-    spec = {
+    let args, argOpts, errors;
+    const spec = {
       argsSpec: [
         { name: 'firstGreeting', required: true },
         { name: 'secondGreeting' },
@@ -55,8 +55,8 @@ describe('args', () => {
   });
 
   it('should enforce requiredWith args', () => {
-    let spec, args, argOpts, errors;
-    spec = {
+    let args, argOpts, errors;
+    const spec = {
       argsSpec: [
         { name: 'version', required: true },
         { name: 'key' },
@@ -82,8 +82,8 @@ describe('args', () => {
   });
 
   it('should enforce no args', () => {
-    let spec, args, argOpts, errors;
-    spec = {};
+    let args, argOpts, errors;
+    const spec = {};
 
     [args, argOpts] = argUtils.argParse(['something']);
     errors = argUtils.enforceArgSpec(spec, args, argOpts);
@@ -106,8 +106,8 @@ describe('args', () => {
   });
 
   it('should enforce args choices', () => {
-    let spec, args, argOpts, errors;
-    spec = {
+    let args, argOpts, errors;
+    const spec = {
       argsSpec: [{ name: 'color', choices: ['blue', 'red'] }],
       argOptsSpec: {
         color: { choices: ['blue', 'red'] }

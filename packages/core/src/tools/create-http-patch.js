@@ -35,11 +35,11 @@ const createHttpPatch = event => {
           `${options.protocol || 'https:'}//${options.host}${options.path}`;
       }
 
-      const logger_url =
+      const loggerUrl =
         process.env.LOGGING_ENDPOINT || constants.DEFAULT_LOGGING_HTTP_ENDPOINT;
 
       // Ignore logger requests
-      if (requestUrl.indexOf(logger_url) !== -1) {
+      if (requestUrl.indexOf(loggerUrl) !== -1) {
         return originalRequest(options, callback);
       }
 
@@ -68,9 +68,7 @@ const createHttpPatch = event => {
           };
 
           logger(
-            `${logData.response_status_code} ${logData.request_method} ${
-              logData.request_url
-            }`,
+            `${logData.response_status_code} ${logData.request_method} ${logData.request_url}`,
             logData
           );
         };

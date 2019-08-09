@@ -11,12 +11,12 @@
     "/*.js"
   ],
   "scripts": {
-    "lint": "node_modules/.bin/eslint .",
+    "lint": "eslint . --fix",
     "test": "CLIENT_ID=1234 CLIENT_SECRET=asdf AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake mocha --recursive -t 20000",
-    "posttest": "yarn lint",
     "preversion": "git pull",
     "postversion": "git push && git push --tags",
-    "ci-test": "yarn test && ./ci-test.js"
+    "ci-test": "yarn test && ./ci-test.js",
+    "validate": "yarn test && yarn lint"
   },
   "engines": {
     "node": ">=8.10.0",
@@ -36,11 +36,7 @@
   },
   "devDependencies": {
     "aws-sdk": "2.140.0",
-    "eslint": "4.9.0",
-    "eslint-plugin-zapier": "3.1.0",
-    "mocha": "5.2.0",
     "nock": "10.0.6",
-    "should": "13.0.1",
     "zapier-platform-core": "^7.6.0"
   }
 }

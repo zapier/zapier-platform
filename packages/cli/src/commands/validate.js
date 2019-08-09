@@ -5,7 +5,7 @@ const utils = require('../utils');
 
 // shadow of engine/style_checker/_condense_issues
 const condenseIssues = styleResult => {
-  let res = [];
+  const res = [];
   const docURL = 'https://platform.zapier.com/docs/app-checks-reference';
   for (const severity in styleResult) {
     for (const type in styleResult[severity]) {
@@ -79,7 +79,7 @@ const validate = async context => {
   }
 
   // process errors
-  let styleErrors = condenseIssues(styleResult);
+  const styleErrors = condenseIssues(styleResult);
   ifEmpty = colors.grey('No style errors found during validation routine.');
 
   utils.printData(

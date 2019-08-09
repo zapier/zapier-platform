@@ -44,7 +44,7 @@ const callAPI = (route, options, rawError = false) => {
   options = options || {};
   const url = options.url || constants.ENDPOINT + route;
 
-  let requestOptions = {
+  const requestOptions = {
     method: options.method || 'GET',
     url,
     body: options.body ? JSON.stringify(options.body) : null,
@@ -88,7 +88,7 @@ const callAPI = (route, options, rawError = false) => {
         console.log(`>> ${requestOptions.method} ${requestOptions.url}`);
         if (requestOptions.body) {
           const replacementStr = 'raw zip removed in logs';
-          let cleanedBody = _.assign({}, JSON.parse(requestOptions.body), {
+          const cleanedBody = _.assign({}, JSON.parse(requestOptions.body), {
             zip_file: replacementStr,
             source_zip_file: replacementStr
           });

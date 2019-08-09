@@ -3,7 +3,7 @@ const recipeListRequest = {
 };
 
 const App = {
-  //...
+  // ...
   triggers: {
     new_recipe: {
       key: 'new_recipe', // uniquely identifies the trigger

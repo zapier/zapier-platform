@@ -137,7 +137,7 @@ const addFilesToRequestBodyFromBody = async (request, bundle) => {
 const parseFinalResult = async (result, event) => {
   if (event.name.endsWith('.pre')) {
     if (!_.isEmpty(result.files)) {
-      return await addFilesToRequestBodyFromPreResult(result, event);
+      return addFilesToRequestBodyFromPreResult(result, event);
     }
 
     // Old request was .data (string), new is .body (object), which matters for _pre
@@ -365,7 +365,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         if (Array.isArray(data[i][j])) {
           data[i][j] = textifyList(data[i][j]);
         } else if (_.isPlainObject(data[i][j])) {
-          let flattened = flattenDictionary(j, data[i][j]);
+          const flattened = flattenDictionary(j, data[i][j]);
           data[i] = Object.assign(data[i], flattened);
           delete data[i][j];
         }
@@ -381,10 +381,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     if (!_.isPlainObject(data)) {
       return data;
     }
-    let params = _.cloneDeep(data);
+    const params = _.cloneDeep(data);
     for (const i in data) {
       if (_.isPlainObject(data[i])) {
-        let param = [];
+        const param = [];
         for (const j in data[i]) {
           param.push(j + '|' + data[i][j]);
         }
@@ -427,8 +427,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const flattenDictionary = (prefix, data) => {
-    let flattenedData = flatten(_.cloneDeep(data), { delimiter: '__' });
-    let out = {};
+    const flattenedData = flatten(_.cloneDeep(data), { delimiter: '__' });
+    const out = {};
     for (const key in flattenedData) {
       out[`${prefix}__${key}`] = flattenedData[key];
     }
@@ -590,12 +590,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return querystring.parse(response.content);
   };
 
-  const runOAuth1GetRequestToken = async bundle => {
+  const runOAuth1GetRequestToken = bundle => {
     const url = _.get(
       app,
       'legacy.authentication.oauth1Config.requestTokenUrl'
     );
-    return await fetchOAuth1Token(url, {
+    return fetchOAuth1Token(url, {
       oauth_consumer_key: process.env.CLIENT_ID,
       oauth_consumer_secret: process.env.CLIENT_SECRET,
       oauth_signature_method: 'HMAC-SHA1',
@@ -603,9 +603,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     });
   };
 
-  const runOAuth1GetAccessToken = async bundle => {
+  const runOAuth1GetAccessToken = bundle => {
     const url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
-    return await fetchOAuth1Token(url, {
+    return fetchOAuth1Token(url, {
       oauth_consumer_key: process.env.CLIENT_ID,
       oauth_consumer_secret: process.env.CLIENT_SECRET,
       oauth_token: bundle.inputData.oauth_token,
@@ -1022,45 +1022,45 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
     switch (typeOf) {
       case 'auth.session':
-        return await runEvent({ name: 'auth.session' }, zcli, bundle);
+        return runEvent({ name: 'auth.session' }, zcli, bundle);
       case 'auth.connectionLabel':
-        return await runEvent({ name: 'auth.connectionLabel' }, zcli, bundle);
+        return runEvent({ name: 'auth.connectionLabel' }, zcli, bundle);
       case 'auth.oauth1.requestToken':
-        return await runOAuth1GetRequestToken(bundle);
+        return runOAuth1GetRequestToken(bundle);
       case 'auth.oauth1.accessToken':
-        return await runOAuth1GetAccessToken(bundle);
+        return runOAuth1GetAccessToken(bundle);
       case 'auth.oauth2.token':
-        return await runOAuth2GetAccessToken(bundle);
+        return runOAuth2GetAccessToken(bundle);
       case 'auth.oauth2.refresh':
-        return await runOAuth2RefreshAccessToken(bundle);
+        return runOAuth2RefreshAccessToken(bundle);
       case 'trigger':
-        return await runTrigger(bundle, key);
+        return runTrigger(bundle, key);
       case 'trigger.hook':
-        return await runHook(bundle, key);
+        return runHook(bundle, key);
       case 'trigger.hook.subscribe':
-        return await runHookSubscribe(bundle, key);
+        return runHookSubscribe(bundle, key);
       case 'trigger.hook.unsubscribe':
-        return await runHookUnsubscribe(bundle, key);
+        return runHookUnsubscribe(bundle, key);
       case 'trigger.output':
-        return await runTriggerOutputFields(bundle, key);
+        return runTriggerOutputFields(bundle, key);
       case 'create':
-        return await runCreate(bundle, key);
+        return runCreate(bundle, key);
       case 'create.input':
-        return await runCreateInputFields(bundle, key);
+        return runCreateInputFields(bundle, key);
       case 'create.output':
-        return await runCreateOutputFields(bundle, key);
+        return runCreateOutputFields(bundle, key);
       case 'search':
-        return await runSearch(bundle, key);
+        return runSearch(bundle, key);
       case 'search.resource':
-        return await runSearchResource(bundle, key);
+        return runSearchResource(bundle, key);
       case 'search.input':
-        return await runSearchInputFields(bundle, key);
+        return runSearchInputFields(bundle, key);
       case 'search.output':
-        return await runSearchOutputFields(bundle, key);
+        return runSearchOutputFields(bundle, key);
       case 'hydrate.method':
-        return await runHydrateMethod(bundle);
+        return runHydrateMethod(bundle);
       case 'hydrate.file':
-        return await runHydrateFile(bundle);
+        return runHydrateFile(bundle);
     }
 
     throw new Error(`unrecognizable typeOf '${typeOf}'`);

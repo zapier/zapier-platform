@@ -15,7 +15,7 @@ const buildDigestHeader = (username, password, url, method, creds) => {
     );
   }
 
-  const path = urllib.parse(url).path;
+  const path = urllib.URL(url).path;
 
   const HA1 = md5(`${username}:${creds.realm}:${password}`);
   const HA2 = md5(`${method}:${path}`);

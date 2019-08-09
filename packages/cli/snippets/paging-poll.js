@@ -15,7 +15,7 @@ const performPaging = (z, bundle) => {
   let start = 0;
 
   // array of promises
-  let promises = [];
+  const promises = [];
 
   let i = 0;
   while (i < 5) {

@@ -41,7 +41,7 @@ const env = (context, version, key, value) => {
         const now = Date.now() / 1000;
         fs.utimesSync(utils.entryPoint(), now, now);
 
-        return;
+        
       });
   }
   if (key) {

@@ -7,9 +7,9 @@ describe('contextual promise', () => {
   const contextifyErrorFn = err => {
     try {
       err.message = `${err.message} contextified!`;
-      return;
+      
     } catch (_err) {
-      return;
+      
     }
   };
 

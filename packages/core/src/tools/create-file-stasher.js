@@ -99,7 +99,7 @@ const createFileStasher = input => {
       );
     }
 
-    const fileContentType = contentType ? contentType : DEFAULT_CONTENT_TYPE;
+    const fileContentType = contentType || DEFAULT_CONTENT_TYPE;
 
     return rpc('get_presigned_upload_post_data', fileContentType).then(
       result => {

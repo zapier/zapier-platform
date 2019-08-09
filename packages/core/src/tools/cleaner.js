@@ -21,7 +21,7 @@ const DEFAULT_BUNDLE = {
 const recurseCleanFuncs = (obj, path) => {
   // mainly turn functions into $func${arity}${arguments}$
   path = path || [];
-  if (typeof obj == 'function') {
+  if (typeof obj === 'function') {
     const usesArguments =
       obj.toString().indexOf('arguments') !== -1 ? 't' : 'f';
     // TODO: could optimize $func$0$f$ as "pure" and just render them

@@ -243,7 +243,7 @@ const FailerFuncAsync = {
       description: 'Just fails on async function.'
     },
     operation: {
-      /*eslint no-unused-vars: 0*/
+      /* eslint no-unused-vars: 0 */
       perform: (z, bundle, cb) => {
         setTimeout(() => {
           throw new Error('Failer on async function!');
@@ -475,8 +475,8 @@ const ExecuteCallbackRequest = {
     },
     operation: {
       perform: z => {
-        //we need to access the callback url
-        let callbackUrl = z.generateCallbackUrl();
+        // we need to access the callback url
+        const callbackUrl = z.generateCallbackUrl();
         return { callbackUrl };
       },
       inputFields: [

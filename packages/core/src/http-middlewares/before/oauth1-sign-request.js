@@ -10,7 +10,7 @@ const oauth = require('oauth-sign');
 const { getContentType, FORM_TYPE } = require('../../tools/http');
 
 const stripQueryFromUrl = url => {
-  const u = urllib.parse(url);
+  const u = new urllib.URL(url);
   return `${u.protocol}//${u.host}${u.pathname}`;
 };
 
@@ -53,7 +53,7 @@ const collectParamsForBaseString = (req, authParams) => {
   _.extendWith(params, req.params, makeArrayOnDupeKey);
   _.extendWith(
     params,
-    querystring.parse(urllib.parse(req.url).query),
+    querystring.parse(new urllib.URL(req.url).search.substr(1)),
     makeArrayOnDupeKey
   );
 

@@ -84,7 +84,7 @@ const scaffold = (context, type, name) => {
     .then(entryBuf => entryBuf.toString())
     .then(entryJs => {
       utils.startSpinner(`Rewriting your ${entry}`);
-      let lines = entryJs.split('\n');
+      const lines = entryJs.split('\n');
 
       // this is very dumb and will definitely break, it inserts lines of code
       // we should look at jscodeshift or friends to do this instead

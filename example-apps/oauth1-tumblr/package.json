@@ -1,5 +1,5 @@
 {
-  "name": "oauth1-tumblr",
+  "name": "zapier-platform-example-app-oauth1-tumblr",
   "version": "1.0.0",
   "description": "Tumblr OAuth V1 Example",
   "repository": "zapier/zapier-platform-example-app-oauth1-tumblr",

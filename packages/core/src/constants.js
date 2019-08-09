@@ -1,9 +1,9 @@
 'use strict';
 
-const _process_args = process.argv.join(' ');
+const _processArgs = process.argv.join(' ');
 const IS_TESTING =
-  _process_args.indexOf('mocha') > 0 ||
-  _process_args.indexOf('jest') > 0 ||
+  _processArgs.indexOf('mocha') > 0 ||
+  _processArgs.indexOf('jest') > 0 ||
   (process.env.NODE_ENV || '').startsWith('test');
 
 const KILL_MIN_LIMIT = 250;

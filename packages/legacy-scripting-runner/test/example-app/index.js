@@ -648,7 +648,7 @@ const legacyScriptingSource = `
     };
 `;
 
-const ContactTrigger_full = {
+const contactTriggerFull = {
   key: 'contact_full',
   noun: 'Contact',
   display: {
@@ -677,7 +677,7 @@ const ContactTrigger_full = {
   }
 };
 
-const ContactTrigger_pre = {
+const contactTriggerPre = {
   key: 'contact_pre',
   noun: 'Contact',
   display: {
@@ -690,7 +690,7 @@ const ContactTrigger_pre = {
   }
 };
 
-const ContactTrigger_post = {
+const contactTriggerPost = {
   key: 'contact_post',
   noun: 'Contact',
   display: {
@@ -703,7 +703,7 @@ const ContactTrigger_post = {
   }
 };
 
-const ContactTrigger_pre_post = {
+const contactTriggerPrePost = {
   key: 'contact_pre_post',
   noun: 'Contact',
   display: {
@@ -717,7 +717,7 @@ const ContactTrigger_pre_post = {
   }
 };
 
-const ContactHook_scriptingless = {
+const contactHookScriptingless = {
   key: 'contact_hook_scriptingless',
   noun: 'Contact',
   display: {
@@ -731,7 +731,7 @@ const ContactHook_scriptingless = {
   }
 };
 
-const ContactHook_scripting = {
+const contactHookScripting = {
   key: 'contact_hook_scripting',
   noun: 'Contact',
   display: {
@@ -859,12 +859,12 @@ const MovieSearch = {
 const App = {
   title: 'Example App',
   triggers: {
-    [ContactTrigger_full.key]: ContactTrigger_full,
-    [ContactTrigger_pre.key]: ContactTrigger_pre,
-    [ContactTrigger_post.key]: ContactTrigger_post,
-    [ContactTrigger_pre_post.key]: ContactTrigger_pre_post,
-    [ContactHook_scriptingless.key]: ContactHook_scriptingless,
-    [ContactHook_scripting.key]: ContactHook_scripting,
+    [contactTriggerFull.key]: contactTriggerFull,
+    [contactTriggerPre.key]: contactTriggerPre,
+    [contactTriggerPost.key]: contactTriggerPost,
+    [contactTriggerPrePost.key]: contactTriggerPrePost,
+    [contactHookScriptingless.key]: contactHookScriptingless,
+    [contactHookScripting.key]: contactHookScripting,
     [TestTrigger.key]: TestTrigger,
     [MovieTrigger.key]: MovieTrigger
   },

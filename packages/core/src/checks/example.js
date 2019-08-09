@@ -8,7 +8,7 @@
 */
 const exampleChecker = {
   name: 'exampleChecker',
-  shouldRun: (method /*, bundle*/) => {
+  shouldRun: (method /*, bundle */) => {
     return method && true;
   },
   run: (method, results) => {

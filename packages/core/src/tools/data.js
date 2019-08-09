@@ -7,7 +7,7 @@ const plainModule = require('./plain');
 const isPlainObj = o => {
   return (
     o &&
-    typeof o == 'object' &&
+    typeof o === 'object' &&
     (o.constructor === Object || o.constructor === plainModule.constructor)
   );
 };
@@ -89,7 +89,7 @@ const deepFreeze = obj => {
 
   Object.getOwnPropertyNames(obj).forEach(function(prop) {
     if (
-      obj.hasOwnProperty(prop) &&
+      Object.prototype.hasOwnProperty.call(obj, prop) && // https://eslint.org/docs/rules/no-prototype-builtins
       (typeof obj[prop] === 'object' || typeof obj[prop] === 'function') &&
       obj[prop] !== null &&
       !Object.isFrozen(obj[prop])
@@ -182,7 +182,7 @@ const simpleTruncate = (string, length, suffix) => {
     return '';
   } else if (finalString.length > length) {
     const cutoff = suffix ? length - suffix.length : length;
-    return finalString.substr(0, cutoff) + (suffix ? suffix : '');
+    return finalString.substr(0, cutoff) + (suffix || '');
   }
 
   return string;

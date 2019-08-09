@@ -1,9 +1,9 @@
 const createCallbackWrapper = require('../../src/tools/create-callback-wrapper');
 const callbackStatusCatcher = require('../../src/app-middlewares/after/callback-status-catcher');
-let should = require('should');
+const should = require('should');
 
 const CALLBACK_URL = 'http://example.com/callback';
-let input = {
+const input = {
   _zapier: {
     event: {
       callback_url: CALLBACK_URL
@@ -20,7 +20,7 @@ describe('callbackwrapper', () => {
 
   describe('reading the callback', () => {
     before(() => {
-      //was probably set from the previous test
+      // was probably set from the previous test
       delete input._zapier.event.callbackUsed;
       should.not.exist(input._zapier.event.callbackUsed);
     });
@@ -31,7 +31,7 @@ describe('callbackwrapper', () => {
   });
 });
 describe('callbackStatusCatcher', () => {
-  let output = {
+  const output = {
     input
   };
   describe('when functions finish with an accessed callback', () => {

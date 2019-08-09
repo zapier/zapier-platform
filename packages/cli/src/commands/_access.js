@@ -87,8 +87,8 @@ const makeAccess = (command, recordType) => {
         ) {
           context.line();
           context.line('Or you can invite users to a specific version:\n');
-          _.each(data.versions_invite_urls, (invite_url, _version) => {
-            context.line(`  ${_version}: ${colors.bold(invite_url)}`);
+          _.each(data.versions_invite_urls, (inviteUrl, _version) => {
+            context.line(`  ${_version}: ${colors.bold(inviteUrl)}`);
           });
         }
       });

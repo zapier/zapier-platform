@@ -11,10 +11,10 @@ const isVisible = action => !_.get(action, ['display', 'hidden']);
 
 // Take a resource with methods like list/hook and turn it into triggers, etc.
 const convertResourceDos = appRaw => {
-  let triggers = {},
-    searches = {},
-    creates = {},
-    searchOrCreates = {};
+  const triggers = {};
+    const searches = {};
+    const creates = {};
+    const searchOrCreates = {};
 
   _.each(appRaw.resources, resource => {
     let search, create, trigger;
@@ -55,7 +55,7 @@ const convertResourceDos = appRaw => {
 
     if (search && create && isVisible(search) && isVisible(create)) {
       const searchOrCreate = {
-        //key: `${resource.key}SearchOrCreate`,
+        // key: `${resource.key}SearchOrCreate`,
         key: `${search.key}`, // For now this is a Zapier editor limitation (has to match search)
         display: {
           label: `Find or Create ${resource.noun}`,
