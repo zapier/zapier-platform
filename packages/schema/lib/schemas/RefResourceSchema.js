@@ -7,7 +7,7 @@ module.exports = makeSchema({
   description:
     'Reference a resource by key and the data it returns. In the format of: `{resource_key}.{foreign_key}(.{human_label_key})`.',
   type: 'string',
-  examples: ['contact.id', 'contact.id.firstName,lastName'],
+  examples: ['contact.id', 'contact.id.firstName,lastName', 'contact.id.name'],
   antiExamples: [
     'contact',
     'Contact.list.id.full_name',

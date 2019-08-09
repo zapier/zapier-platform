@@ -894,6 +894,7 @@ Reference a resource by key and the data it returns. In the format of: `{resourc
 
 * `'contact.id'`
 * `'contact.id.firstName,lastName'`
+* `'contact.id.name'`
 
 #### Anti-Examples
 
