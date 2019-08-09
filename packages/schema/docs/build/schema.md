@@ -286,7 +286,7 @@ Represents the fundamental mechanics of a search/create.
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`resource` | no | [/RefResourceSchema](#refresourceschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
+`resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.
 `performResume` | no | [/FunctionSchema](#functionschema) | A function that parses data from a perform + callback to resume this action. For use with callback semantics
 `performGet` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.
@@ -312,7 +312,7 @@ Represents the fundamental mechanics of a create.
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`resource` | no | [/RefResourceSchema](#refresourceschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
+`resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.
 `performResume` | no | [/FunctionSchema](#functionschema) | A function that parses data from a perform + callback to resume this action. For use with callback semantics
 `performGet` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.
@@ -378,7 +378,7 @@ Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. D
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `type` | **yes** (with exceptions, see description) | `string` in (`'hook'`) | Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it's optional.
-`resource` | no | [/RefResourceSchema](#refresourceschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
+`resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | [/FunctionSchema](#functionschema) | A function that processes the inbound webhook request.
 `performList` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
 `performSubscribe` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Takes a URL and any necessary data from the user and subscribes. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
@@ -405,7 +405,7 @@ Represents the fundamental mechanics of triggers, searches, or creates.
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`resource` | no | [/RefResourceSchema](#refresourceschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
+`resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
@@ -430,7 +430,7 @@ Represents the fundamental mechanics of a trigger.
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `type` | no | `string` in (`'polling'`) | Clarify how this operation works (polling == pull or hook == push).
-`resource` | no | [/RefResourceSchema](#refresourceschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
+`resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.
 `canPaginate` | no | `boolean` | Does this endpoint support a page offset?
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
@@ -887,18 +887,24 @@ Reference a resource by key and the data it returns. In the format of: `{resourc
 #### Details
 
 * **Type** - `string`
-* **Pattern** - `^[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)?(\.[a-zA-Z0-9_]+)?$`
+* **Pattern** - `^[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+,?[a-zA-Z0-9_]+)?$`
 * **Source Code** - [lib/schemas/RefResourceSchema.js](https://github.com/zapier/zapier-platform-schema/blob/v8.2.1/lib/schemas/RefResourceSchema.js)
 
 #### Examples
 
-* `'contact'`
 * `'contact.id'`
-* `'contact.id.full_name'`
+* `'contact.id.firstName,lastName'`
 
 #### Anti-Examples
 
+* `'contact'`
 * `'Contact.list.id.full_name'`
+* `'contact.id,name'`
+* `'cont,act.id,name'`
+* `'contact'`
+* `'contact.id.,,'`
+* `'contact.id.a,,'`
+* `'contact.id.a,b,c'`
 
 -----
 

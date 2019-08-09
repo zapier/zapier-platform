@@ -104,7 +104,7 @@
       "id": "/RefResourceSchema",
       "description": "Reference a resource by key and the data it returns. In the format of: `{resource_key}.{foreign_key}(.{human_label_key})`.",
       "type": "string",
-      "pattern": "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)?(\\.[a-zA-Z0-9_]+)?$"
+      "pattern": "^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+,?[a-zA-Z0-9_]+)?$"
     },
     "FieldChoicesSchema": {
       "id": "/FieldChoicesSchema",
@@ -561,6 +561,13 @@
       "description": "Like [/FieldsSchema](#fieldsschema) but you can provide functions to create dynamic or custom fields.",
       "$ref": "/FieldOrFunctionSchema"
     },
+    "KeySchema": {
+      "id": "/KeySchema",
+      "description": "A unique identifier for this item.",
+      "type": "string",
+      "minLength": 2,
+      "pattern": "^[a-zA-Z]+[a-zA-Z0-9_]*$"
+    },
     "ResultsSchema": {
       "id": "/ResultsSchema",
       "description": "An array of objects suitable for returning in perform calls.",
@@ -613,7 +620,7 @@
       "properties": {
         "resource": {
           "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
-          "$ref": "/RefResourceSchema"
+          "$ref": "/KeySchema"
         },
         "perform": {
           "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
@@ -667,7 +674,7 @@
         },
         "resource": {
           "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
-          "$ref": "/RefResourceSchema"
+          "$ref": "/KeySchema"
         },
         "perform": {
           "description": "A function that processes the inbound webhook request.",
@@ -760,7 +767,7 @@
         },
         "resource": {
           "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
-          "$ref": "/RefResourceSchema"
+          "$ref": "/KeySchema"
         },
         "perform": {
           "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
@@ -807,7 +814,7 @@
       "properties": {
         "resource": {
           "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
-          "$ref": "/RefResourceSchema"
+          "$ref": "/KeySchema"
         },
         "perform": {
           "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
@@ -942,13 +949,6 @@
       },
       "additionalProperties": false
     },
-    "KeySchema": {
-      "id": "/KeySchema",
-      "description": "A unique identifier for this item.",
-      "type": "string",
-      "minLength": 2,
-      "pattern": "^[a-zA-Z]+[a-zA-Z0-9_]*$"
-    },
     "ResourceSchema": {
       "id": "/ResourceSchema",
       "description": "Represents a resource, which will in turn power triggers, searches, or creates.",
@@ -1066,7 +1066,7 @@
       "properties": {
         "resource": {
           "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
-          "$ref": "/RefResourceSchema"
+          "$ref": "/KeySchema"
         },
         "perform": {
           "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",

@@ -183,8 +183,7 @@
       "list": {
         "display": {
           "label": "New Contact",
-          "description":
-            "Trigger when a new Contact is created in your account."
+          "description": "Trigger when a new Contact is created in your account."
         },
         "operation": {
           "perform": {
@@ -250,7 +249,7 @@
               "key": "owner_id",
               "label": "Owner",
               "type": "integer",
-              "dynamic": "user"
+              "dynamic": "user.id"
             },
             {
               "key": "tag_id",
@@ -275,15 +274,14 @@
       "operation": {
         "resource": "contact",
         "perform": {
-          "url":
-            "http://fake-crm.getsandbox.com/contacts?tag_id={{inputData.tagId}}"
+          "url": "http://fake-crm.getsandbox.com/contacts?tag_id={{inputData.tagId}}"
         },
         "inputFields": [
           {
             "key": "tagId",
             "label": "Tag",
             "type": "integer",
-            "dynamic": "tag"
+            "dynamic": "tag.id"
           }
         ],
         "sample": {
@@ -373,10 +371,6 @@
         "perform": {
           "url": "http://fake-crm.getsandbox.com/tags?name={{inputData.name}}"
         },
-        "sample": {
-          "id": 385,
-          "name": "proactive enable ROI"
-        },
         "resource": "tag",
         "inputFields": [
           {
@@ -449,13 +443,13 @@
             "key": "owner_id",
             "label": "Owner",
             "type": "integer",
-            "dynamic": "user"
+            "dynamic": "user.id"
           },
           {
             "key": "tag_id",
             "label": "Tag",
             "type": "integer",
-            "dynamic": "tag"
+            "dynamic": "tag.id"
           }
         ],
         "resource": "contact",
