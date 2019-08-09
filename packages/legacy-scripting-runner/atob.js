@@ -1,5 +1,5 @@
 'use strict';
-const atob = (string) => {
-  return new Buffer(string, 'base64').toString('binary');
+const atob = string => {
+  return Buffer.from(string, 'base64').toString('binary');
 };
 module.exports = atob;

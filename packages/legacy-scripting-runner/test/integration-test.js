@@ -744,7 +744,7 @@ describe('Integration Test', () => {
         ]);
       return app(input).then(output => {
         // The result from the scripting runner should be flattened
-        let expected_result = {
+        const expectedResult = {
           id: '1',
           title: 'title 1',
           releaseDate: 1471295527,
@@ -753,7 +753,7 @@ describe('Integration Test', () => {
           meta__running_time: 120,
           meta__format: 'widescreen'
         };
-        should.deepEqual(output.results[0], expected_result);
+        should.deepEqual(output.results[0], expectedResult);
       });
     });
 

@@ -1,5 +1,5 @@
 'use strict';
-const btoa = (string) => {
-  return new Buffer(string, 'binary').toString('base64');
+const btoa = string => {
+  return Buffer.from(string, 'binary').toString('base64');
 };
 module.exports = btoa;

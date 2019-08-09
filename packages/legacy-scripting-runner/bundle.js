@@ -129,8 +129,8 @@ const addRequestData = async (event, z, bundle, convertedBundle) => {
 
   const body = _.get(bundle, 'request.body');
   if (!_.isEmpty(body)) {
-    let data = body,
-      files;
+    let data = body;
+      let files;
 
     if (typeof data !== 'string' && !event.name.startsWith('auth.oauth2')) {
       if (hasFileFields(bundle)) {

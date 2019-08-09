@@ -29,11 +29,15 @@ const isFileField = (fieldKey, bundle) => {
 };
 
 const isUrl = str => {
-  const parsed = urllib.parse(str);
-  return (
-    (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
-    parsed.hostname
-  );
+  try {
+    const parsed = new urllib.URL(str);
+    return (
+      (parsed.protocol === 'http:' || parsed.protocol === 'https:') &&
+      parsed.hostname
+    );
+  } catch (e) {
+    return false;
+  }
 };
 
 const extractFilenameFromContent = content =>
@@ -70,7 +74,7 @@ const extractFilenameFromContentDisposition = value => {
 };
 
 const extractFilenameFromUrl = url => {
-  const pathname = urllib.parse(url).pathname;
+  const pathname = new urllib.URL(url).pathname;
   if (pathname) {
     const parts = pathname.split('/');
     return parts[parts.length - 1] || '';
