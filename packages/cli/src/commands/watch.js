@@ -1,4 +1,4 @@
-/*eslint no-unused-vars: 0 */
+/* eslint no-unused-vars: 0 */
 const path = require('path');
 const colors = require('colors');
 

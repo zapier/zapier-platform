@@ -16,8 +16,8 @@ const choicesStr = choices => `{${choices.map(String).join(',')}}`;
 
 // Turn process.argv into args/opts.
 const argParse = argv => {
-  const args = [],
-    opts = {};
+  const args = [];
+    const opts = {};
   argv.forEach(arg => {
     if (arg.startsWith('--')) {
       const key = arg.split('=', 1)[0].replace('--', '');
@@ -53,12 +53,12 @@ const enforceArgSpec = (fullSpec, args, argOpts) => {
 
   // Make sure the spec has the provided args.
   _.forEach(argsSpec, (spec, i) => {
-    let arg = args[i];
+    const arg = args[i];
 
     _argLookback[spec.name] = arg;
 
-    let missingCurrent = spec.required && !arg;
-    let missingLookback =
+    const missingCurrent = spec.required && !arg;
+    const missingLookback =
       !arg && // is absent (but that could be fine)!
       (spec.requiredWith || []).length && // has required friends!
       _.every(spec.requiredWith, name => _argLookback[name]); // friends are missing!
@@ -71,7 +71,7 @@ const enforceArgSpec = (fullSpec, args, argOpts) => {
       spec.choices.length &&
       spec.choices.indexOf(arg) === -1
     ) {
-      let choices = choicesStr(spec.choices);
+      const choices = choicesStr(spec.choices);
       errors.push(
         `Unexpected positional argument ${i + 1}/${spec.name} of ${quoteStr(
           arg
@@ -96,7 +96,7 @@ const enforceArgSpec = (fullSpec, args, argOpts) => {
 
   // Make sure the spec has the provided args opts/keywords.
   _.forEach(argOptsSpec, (spec, name) => {
-    let arg = argOpts[name];
+    const arg = argOpts[name];
 
     if (spec.flag && arg && arg !== true) {
       errors.push(`Unexpected keyword argument with value --${name}`);
@@ -117,7 +117,7 @@ const enforceArgSpec = (fullSpec, args, argOpts) => {
       spec.choices.length &&
       spec.choices.indexOf(arg) === -1
     ) {
-      let choices = choicesStr(spec.choices);
+      const choices = choicesStr(spec.choices);
       errors.push(
         `Unexpected keyword argument --${name}=${quoteStr(
           arg
@@ -145,7 +145,7 @@ const argsFragment = argsSpec => {
   return _.map(argsSpec, spec => {
     let val = spec.example || 'value';
     val = spec.choices && spec.choices.length ? choicesStr(spec.choices) : val;
-    let def = spec.default ? `. Default is \`${spec.default}\`` : '';
+    const def = spec.default ? `. Default is \`${spec.default}\`` : '';
     return `* \`${spec.name} [${quoteStr(val)}]\` -- ${
       spec.required ? '**required**' : '_optional_'
     }, ${spec.help || ''}${def}`;
@@ -160,7 +160,7 @@ const argOptsFragment = argOptsSpec => {
     let val = spec.example || spec.default || 'value';
     val = spec.choices && spec.choices.length ? choicesStr(spec.choices) : val;
     val = spec.flag ? '' : `=${quoteStr(val)}`;
-    let def = spec.default ? `. Default is \`${spec.default}\`` : '';
+    const def = spec.default ? `. Default is \`${spec.default}\`` : '';
     return `* \`--${name}${val}\` -- ${
       spec.required ? '**required**' : '_optional_'
     }, ${spec.help || ''}${def}`;

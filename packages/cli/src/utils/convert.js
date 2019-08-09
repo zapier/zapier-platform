@@ -142,8 +142,8 @@ const renderVisualPackageJson = (appInfo, appDefinition) => {
 };
 
 const renderStep = (type, definition) => {
-  let exportBlock = _.cloneDeep(definition),
-    functionBlock = [];
+  let exportBlock = _.cloneDeep(definition);
+  let functionBlock = [];
 
   ['perform', 'performList', 'performSubscribe', 'performUnsubscribe'].forEach(
     funcName => {
@@ -246,8 +246,8 @@ const renderStepTest = async (stepType, definition, appDefinition) => {
 };
 
 const renderAuth = async appDefinition => {
-  let exportBlock = _.cloneDeep(appDefinition.authentication),
-    functionBlock = [];
+  let exportBlock = _.cloneDeep(appDefinition.authentication);
+  let functionBlock = [];
 
   _.each(
     {
@@ -277,8 +277,8 @@ const renderAuth = async appDefinition => {
 };
 
 const renderHydrators = async appDefinition => {
-  let exportBlock = _.cloneDeep(appDefinition.hydrators),
-    functionBlock = [];
+  let exportBlock = _.cloneDeep(appDefinition.hydrators);
+  let functionBlock = [];
 
   _.each(appDefinition.hydrators, (func, funcName) => {
     if (func && func.source) {
@@ -300,9 +300,9 @@ const renderHydrators = async appDefinition => {
 };
 
 const renderIndex = async appDefinition => {
-  let exportBlock = _.cloneDeep(appDefinition),
-    functionBlock = [],
-    importBlock = [];
+  let exportBlock = _.cloneDeep(appDefinition);
+  let functionBlock = [];
+  let importBlock = [];
 
   // replace version and platformVersion with dynamic reference
   exportBlock.version = makePlaceholder("require('./package.json').version");
@@ -505,7 +505,7 @@ const convertApp = async (appInfo, appDefinition, newAppDir, opts = {}) => {
       : writeVisualZapierAppRc(newAppDir, appInfo.id)
   );
 
-  return await Promise.all(promises);
+  return Promise.all(promises);
 };
 
 const convertVisualApp = _.partialRight(convertApp, { legacy: false });

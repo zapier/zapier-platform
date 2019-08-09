@@ -7,16 +7,12 @@
   },
   "overrides": [
     {
-      "files": ["packages/*/test/**/*.js"],
-      "rules": {
-        "mocha/no-exclusive-tests": "error"
-      },
-      "env": {
-        "mocha": true
-      }
-    },
-    {
-      "files": ["packages/cli/src/tests/**/*.js"],
+      "files": [
+        "packages/*/test/**/*.js",
+        "packages/*/smoke-test/**/*.js",
+        "packages/cli/src/tests/**/*.js",
+        "packages/cli/src/smoke-tests/**/*.js"
+      ],
       "rules": {
         "mocha/no-exclusive-tests": "error"
       },

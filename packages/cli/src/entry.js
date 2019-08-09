@@ -1,4 +1,4 @@
-/*eslint no-process-exit: 0 */
+/* eslint no-process-exit: 0 */
 const _ = require('lodash');
 const colors = require('colors/safe');
 const updateNotifier = require('update-notifier');
@@ -87,9 +87,9 @@ module.exports = argv => {
     return;
   }
 
-  let commandFunc = commands[command];
+  const commandFunc = commands[command];
   if (!commandFunc) {
-    let message = [`\`zapier ${command}\` is not a command!`];
+    const message = [`\`zapier ${command}\` is not a command!`];
     const suggestion = commandSuggestion(command);
     if (suggestion) {
       message.push(`Did you mean \`zapier ${suggestion}\`?`);

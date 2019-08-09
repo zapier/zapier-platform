@@ -112,7 +112,7 @@ const describe = context => {
       context.line();
 
       context.line(colors.bold('Hydrators') + '\n');
-      let hydratorRows = _.map(definition.hydrators, (val, key) => {
+      const hydratorRows = _.map(definition.hydrators, (val, key) => {
         return {
           key,
           paths: hydrateTemplate({ key })

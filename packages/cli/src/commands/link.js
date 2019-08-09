@@ -37,7 +37,7 @@ const pickApp = (context, apps, appMap) => {
 };
 
 const link = context => {
-  let appMap = {};
+  const appMap = {};
 
   return utils
     .listApps()

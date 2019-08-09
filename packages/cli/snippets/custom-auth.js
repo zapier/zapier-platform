@@ -23,7 +23,9 @@ const authentication = {
 
 const addApiKeyToHeader = (request, z, bundle) => {
   request.headers['X-Subdomain'] = bundle.authData.subdomain;
-  const basicHash = Buffer(`${bundle.authData.api_key}:x`).toString('base64');
+  const basicHash = Buffer.from(`${bundle.authData.api_key}:x`).toString(
+    'base64'
+  );
   request.headers.Authorization = `Basic ${basicHash}`;
   return request;
 };

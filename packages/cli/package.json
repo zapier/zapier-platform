@@ -28,7 +28,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "version": "yarn docs && yarn gen-completions && git add docs/* goodies/* README.md",
     "postversion": "git push && git push --tags",
-    "lint": "eslint zapier.js src snippets",
+    "lint": "eslint zapier.js src snippets --fix",
     "test": "NODE_ENV=test mocha -t 50000 --recursive src/tests",
     "smoke-test": "NODE_ENV=test mocha -t 120000 --recursive src/smoke-tests",
     "zapier": "zapier.js",

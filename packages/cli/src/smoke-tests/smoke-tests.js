@@ -138,10 +138,10 @@ describe('smoke tests - setup will take some time', () => {
     fs.existsSync(appIndexJs).should.be.true();
     fs.existsSync(appPackageJson).should.be.true();
 
-    const package = JSON.parse(
+    const pkg = JSON.parse(
       fs.readFileSync(appPackageJson, { encoding: 'utf8' })
     );
-    package.name.should.containEql('babel');
+    pkg.name.should.containEql('babel');
   });
 
   it('zapier apps', function() {
