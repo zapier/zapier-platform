@@ -193,10 +193,9 @@ const bundleConverter = async (bundle, event, z) => {
       requestMethod = 'POST';
     } else if (event.name === 'trigger.hook.unsubscribe.pre') {
       requestMethod = 'DELETE';
+    } else {
+      requestMethod = 'GET';
     }
-  }
-  if (!requestMethod) {
-    requestMethod = 'GET';
   }
 
   // Attach to bundle so we can reuse it
