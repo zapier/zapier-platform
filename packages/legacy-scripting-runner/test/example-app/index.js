@@ -150,10 +150,6 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
-      movie_post_poll_default_headers: function(bundle) {
-        return [z.JSON.parse(bundle.response.content)];
-      },
-
       movie_pre_poll_dynamic_dropdown: function(bundle) {
         bundle.request.method = 'POST';
         bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
@@ -165,7 +161,14 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
-      movie_post_poll_dynamic_dropdown: function(bundle) {
+      movie_pre_poll_null_request_data: function(bundle) {
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.params.requestDataIsNull =
+          bundle.request.data === null ? 'yes' : 'no';
+        return bundle.request;
+      },
+
+      movie_post_poll_make_array: function(bundle) {
         return [z.JSON.parse(bundle.response.content)];
       },
 
