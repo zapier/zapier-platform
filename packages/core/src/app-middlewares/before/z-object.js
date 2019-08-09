@@ -31,7 +31,7 @@ const injectZObject = input => {
     stashFile: createFileStasher(input)
   };
 
-  let zSkinny = _.extend({}, zRoot);
+  const zSkinny = _.extend({}, zRoot);
 
   const z = _.extend({}, zSkinny, {
     request: createAppRequestClient(input, { extraArgs: [zSkinny, bundle] })

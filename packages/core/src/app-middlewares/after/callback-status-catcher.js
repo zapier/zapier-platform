@@ -1,12 +1,12 @@
 'use strict';
-let STATUSES = require('../../constants').STATUSES;
+const STATUSES = require('../../constants').STATUSES;
 const _ = require('lodash');
 /*
 this method creates the correct envelope responses if the app has used a callback url in their code
 by signalling to Zapier that this app/method is returning a callback status the task will be placed
 in a waiting state until the callback is called.
 */
-let callbackStatusCatcher = output => {
+const callbackStatusCatcher = output => {
   const input = output.input || {};
 
   const callbackUsed = _.get(input, '_zapier.event.callbackUsed');

@@ -15,9 +15,7 @@ const enrichErrorMessage = (err, frameStack) => {
   }
   const details = frameStack.map(f => `  ${f}`).join('\n');
   try {
-    err.message = `${err.message}\nWhat happened:\n${details}\n  ${
-      err.message
-    }`;
+    err.message = `${err.message}\nWhat happened:\n${details}\n  ${err.message}`;
   } catch (e) {
     // Do nothing
   }
@@ -49,6 +47,7 @@ const contextifyOnce = (err, attachErrorTrace, frameStack) => {
   return err;
 };
 
+// eslint-disable-next-line camelcase
 const find_boundTo = promise => {
   if (promise._boundTo) {
     return promise._boundTo;

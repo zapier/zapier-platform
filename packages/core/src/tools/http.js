@@ -27,8 +27,8 @@ const parseHttpList = s => {
   const res = [];
   let part = '';
 
-  let escape = false,
-    quote = false;
+  let escape = false;
+    let quote = false;
 
   for (let i = 0; i < s.length; i++) {
     const cur = s.charAt(i);

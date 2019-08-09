@@ -1,6 +1,6 @@
 'use strict';
 
-const domain = require('domain');
+const domain = require('domain'); // eslint-disable-line node/no-deprecated-api
 const fs = require('fs');
 const os = require('os');
 const path = require('path');

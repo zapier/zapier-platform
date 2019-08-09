@@ -141,7 +141,7 @@ describe('Tools', () => {
         funcArity: (a, b, c) => {
           return c;
         },
-        funcArityArgs: (a, b) => {
+        funcArityArgs: function(a, b) {
           a = arguments;
           return b;
         },
@@ -254,7 +254,7 @@ describe('Tools', () => {
         funcArity: (a, b, c) => {
           return c;
         },
-        funcArityArgs: (a, b) => {
+        funcArityArgs: function(a, b) {
           a = arguments;
           return b;
         },
