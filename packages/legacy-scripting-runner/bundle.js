@@ -108,15 +108,12 @@ const addHookData = (event, bundle, convertedBundle) => {
       );
     }
     if (!convertedBundle.request.content) {
-      convertedBundle.request.content = convertedBundle.request.data;
+      convertedBundle.request.content = convertedBundle.request.data || '';
     }
   } else if (event.name.startsWith('trigger.hook.subscribe')) {
     convertedBundle.target_url = bundle.targetUrl;
     convertedBundle.event = bundle._legacyEvent;
   } else if (event.name.startsWith('trigger.hook.unsubscribe')) {
-    if (event.name.endsWith('.pre')) {
-      convertedBundle.request.method = 'DELETE';
-    }
     convertedBundle.target_url = bundle.targetUrl;
     convertedBundle.subscribe_data = bundle.subscribeData;
     convertedBundle.event = bundle._legacyEvent;
@@ -131,7 +128,7 @@ const addRequestData = async (event, z, bundle, convertedBundle) => {
   _.extend(convertedBundle.request.params, params);
 
   const body = _.get(bundle, 'request.body');
-  if (body) {
+  if (!_.isEmpty(body)) {
     let data = body,
       files;
 
@@ -186,14 +183,19 @@ const addResponse = (event, bundle, convertedBundle) => {
 
 // Convert bundle from CLI to WB based on which event to run
 const bundleConverter = async (bundle, event, z) => {
-  let defaultMethod = 'GET';
-
-  if (
-    event.name.startsWith('create') ||
-    event.name.startsWith('auth.oauth2') ||
-    event.name.startsWith('trigger.hook.subscribe')
-  ) {
-    defaultMethod = 'POST';
+  let requestMethod = _.get(bundle, 'request.method');
+  if (!requestMethod) {
+    if (
+      event.name.startsWith('create') ||
+      event.name.startsWith('auth.oauth2') ||
+      event.name.startsWith('trigger.hook.subscribe')
+    ) {
+      requestMethod = 'POST';
+    } else if (event.name === 'trigger.hook.unsubscribe.pre') {
+      requestMethod = 'DELETE';
+    } else {
+      requestMethod = 'GET';
+    }
   }
 
   // Attach to bundle so we can reuse it
@@ -205,15 +207,18 @@ const bundleConverter = async (bundle, event, z) => {
 
   const convertedBundle = {
     request: {
-      method: _.get(bundle, 'request.method') || defaultMethod,
+      method: requestMethod,
       url: _.get(bundle, '_legacyUrl', '') || _.get(bundle, 'request.url', ''),
       headers: {
         'Content-Type': 'application/json'
       },
-      params: event.name.startsWith('create')
-        ? {}
-        : _.get(bundle, 'inputData', {}),
-      data: ''
+      params:
+        event.name.startsWith('create') ||
+        meta.isFillingDynamicDropdown ||
+        meta.prefill // Confused? See test "KEY_pre_poll, dynamic dropdown"
+          ? {}
+          : _.get(bundle, 'inputData', {}),
+      data: !requestMethod || requestMethod === 'GET' ? null : ''
     },
     auth_fields: _.get(bundle, 'authData', {}),
     meta,

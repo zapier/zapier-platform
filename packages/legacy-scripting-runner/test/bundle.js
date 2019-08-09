@@ -52,7 +52,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: ''
+        data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
@@ -109,7 +109,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: ''
+        data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
@@ -181,7 +181,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: '',
+        data: null,
         content: ''
       },
       cleaned_request: {
@@ -384,7 +384,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: ''
+        data: null
       },
       meta: {
         frontend: false,
@@ -431,7 +431,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: ''
+        data: null
       },
       meta: {
         frontend: false,
@@ -613,7 +613,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: ''
+        data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
@@ -669,7 +669,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: ''
+        data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
@@ -730,7 +730,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: ''
+        data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
@@ -799,7 +799,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: ''
+        data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
@@ -995,7 +995,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: ''
+        data: null
       },
       auth_fields: {
         user: 'qwerty',
@@ -1046,7 +1046,7 @@ describe('bundleConverter', () => {
         params: {
           user: 'Zapier'
         },
-        data: ''
+        data: null
       },
       auth_fields: {
         email: 'contact@zapier.com'
