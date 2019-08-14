@@ -501,6 +501,47 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, bundle.meta', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_bundle_meta',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.meta = {
+        'isLoadingSample': true,
+        'isFillingDynamicDropdown': true,
+        'isTestingAuth': false,
+        'isPopulatingDedupe': true,
+        'limit': 20,
+        'page': 1
+      };
+      return _app(input).then(output => {
+        const echoed = output.results[0];
+        should.deepEqual(echoed.json, {
+          auth_test: false,
+          first_poll: true,
+          frontend: true,
+          prefill: true,
+          standard_poll: true,
+          test_poll: false,
+          hydrate: true,
+          limit: 20,
+          page: 1
+        });
+      });
+    });
+
     it('KEY_post_poll, with jQuery', () => {
       const input = createTestInput(
         compiledApp,

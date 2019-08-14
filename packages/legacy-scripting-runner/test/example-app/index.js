@@ -168,6 +168,13 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_bundle_meta: function(bundle) {
+        bundle.request.method = 'POST';
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.data = z.JSON.stringify(bundle.meta);
+        return bundle.request;
+      },
+
       movie_post_poll_make_array: function(bundle) {
         return [z.JSON.parse(bundle.response.content)];
       },
