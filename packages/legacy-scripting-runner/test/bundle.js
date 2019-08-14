@@ -14,8 +14,15 @@ describe('bundleConverter', () => {
       apiKey: 'Zapier-API-Key'
     },
     meta: {
+      auth_test: false,
+      first_poll: false,
       frontend: false,
-      prefill: false
+      prefill: false,
+      test_poll: false,
+      hydrate: true,
+      standard_poll: true,
+      page: 1,
+      limit: 100
     }
   };
 
@@ -30,8 +37,15 @@ describe('bundleConverter', () => {
       apiKey: 'Zapier-API-Key'
     },
     meta: {
+      auth_test: false,
+      first_poll: false,
       frontend: false,
-      prefill: false
+      prefill: false,
+      test_poll: false,
+      hydrate: true,
+      standard_poll: true,
+      page: 1,
+      limit: 100
     }
   };
 
@@ -49,17 +63,22 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       zap: { id: 0 },
       url_raw: 'https://zapier.com',
@@ -106,17 +125,22 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       zap: {
         id: 0
@@ -178,9 +202,7 @@ describe('bundleConverter', () => {
           'Content-Type': 'application/json'
         },
         querystring: 'user=Zapier',
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null,
         content: ''
       },
@@ -188,7 +210,8 @@ describe('bundleConverter', () => {
         id: 1,
         name: 'Zapier'
       },
-      meta: {},
+      meta: {
+      },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
       },
@@ -223,14 +246,19 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: ''
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
@@ -272,14 +300,19 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: ''
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
@@ -335,9 +368,7 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: ''
       },
       meta: {},
@@ -381,14 +412,19 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
@@ -428,14 +464,19 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
@@ -491,8 +532,15 @@ describe('bundleConverter', () => {
         apiKey: 'Zapier-API-Key'
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       zap: {
         id: 0
@@ -551,8 +599,15 @@ describe('bundleConverter', () => {
         apiKey: 'Zapier-API-Key'
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       zap: {
         id: 0
@@ -610,17 +665,22 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       zap: {
         id: 0
@@ -666,17 +726,22 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       zap: {
         id: 0
@@ -727,17 +792,22 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       zap: {
         id: 0
@@ -796,17 +866,22 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key'
       },
       meta: {
+        auth_test: false,
+        first_poll: false,
         frontend: false,
-        prefill: false
+        prefill: false,
+        test_poll: false,
+        hydrate: true,
+        standard_poll: true,
+        page: 1,
+        limit: 100
       },
       zap: {
         id: 0
@@ -867,9 +942,7 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: ''
       },
       auth_fields: {},
@@ -929,9 +1002,7 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: ''
       },
       auth_fields: {
@@ -992,9 +1063,7 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null
       },
       auth_fields: {
@@ -1043,9 +1112,7 @@ describe('bundleConverter', () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        params: {
-          user: 'Zapier'
-        },
+        params: {},
         data: null
       },
       auth_fields: {

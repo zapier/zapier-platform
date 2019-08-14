@@ -104,7 +104,7 @@ const addHookData = (event, bundle, convertedBundle) => {
 
     if (!convertedBundle.request.querystring) {
       convertedBundle.request.querystring = convertToQueryString(
-        convertedBundle.request.params
+        bundle.inputData
       );
     }
     if (!convertedBundle.request.content) {
@@ -130,7 +130,7 @@ const addRequestData = async (event, z, bundle, convertedBundle) => {
   const body = _.get(bundle, 'request.body');
   if (!_.isEmpty(body)) {
     let data = body;
-      let files;
+    let files;
 
     if (typeof data !== 'string' && !event.name.startsWith('auth.oauth2')) {
       if (hasFileFields(bundle)) {
@@ -181,6 +181,30 @@ const addResponse = (event, bundle, convertedBundle) => {
   }
 };
 
+const convertBundleMeta = meta => {
+  if (_.isEmpty(meta)) {
+    return {};
+  }
+
+  const newMeta = {
+    auth_test:
+      meta.auth_test === undefined ? meta.isTestingAuth : meta.auth_test,
+    frontend:
+      meta.frontend === undefined ? meta.isLoadingSample : meta.frontend,
+    prefill:
+      meta.prefill === undefined ? meta.isFillingDynamicDropdown : meta.prefill,
+    hydrate: true,
+    test_poll:
+      meta.test_poll === undefined ? meta.isTestingAuth : meta.test_poll,
+    first_poll:
+      meta.first_poll === undefined ? meta.isPopulatingDedupe : meta.first_poll,
+    limit: meta.limit,
+    page: meta.page
+  };
+  newMeta.standard_poll = !newMeta.test_poll;
+  return newMeta;
+};
+
 // Convert bundle from CLI to WB based on which event to run
 const bundleConverter = async (bundle, event, z) => {
   let requestMethod = _.get(bundle, 'request.method');
@@ -201,9 +225,8 @@ const bundleConverter = async (bundle, event, z) => {
   // Attach to bundle so we can reuse it
   bundle._unflatInputData = unflattenObject(_.clone(bundle.inputData || {}));
 
-  const meta = _.cloneDeep(_.get(bundle, 'meta')) || {};
-  const zap = _.get(meta, 'zap') || { id: 0 };
-  delete meta.zap;
+  const meta = convertBundleMeta(bundle.meta);
+  const zap = _.get(bundle, 'meta.zap') || { id: 0 };
 
   const convertedBundle = {
     request: {
@@ -212,12 +235,7 @@ const bundleConverter = async (bundle, event, z) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      params:
-        event.name.startsWith('create') ||
-        meta.isFillingDynamicDropdown ||
-        meta.prefill // Confused? See test "KEY_pre_poll, dynamic dropdown"
-          ? {}
-          : _.get(bundle, 'inputData', {}),
+      params: {},
       data: !requestMethod || requestMethod === 'GET' ? null : ''
     },
     auth_fields: _.get(bundle, 'authData', {}),
