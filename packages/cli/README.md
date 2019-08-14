@@ -521,7 +521,9 @@ const authentication = {
 
 const addApiKeyToHeader = (request, z, bundle) => {
   request.headers['X-Subdomain'] = bundle.authData.subdomain;
-  const basicHash = Buffer(`${bundle.authData.api_key}:x`).toString('base64');
+  const basicHash = Buffer.from(`${bundle.authData.api_key}:x`).toString(
+    'base64'
+  );
   request.headers.Authorization = `Basic ${basicHash}`;
   return request;
 };
@@ -854,10 +856,10 @@ const Recipe = {
   noun: 'Recipe',
   // `list` and `create` are just a couple of the methods you can define
   list: {
-    //...
+    // ...
   },
   create: {
-    //...
+    // ...
   }
 };
 
@@ -895,7 +897,7 @@ const listRecipesRequest = {
 
 const Recipe = {
   key: 'recipe',
-  //...
+  // ...
   list: {
     display: {
       label: 'New Recipe',
@@ -925,9 +927,9 @@ const createRecipeRequest = {
 
 const Recipe = {
   key: 'recipe',
-  //...
+  // ...
   list: {
-    //...
+    // ...
   },
   create: {
     display: {
@@ -962,7 +964,7 @@ const recipeListRequest = {
 };
 
 const App = {
-  //...
+  // ...
   triggers: {
     new_recipe: {
       key: 'new_recipe', // uniquely identifies the trigger
@@ -1018,10 +1020,10 @@ Those fields have various options you can provide, here is a succinct example:
 
 ```js
 const App = {
-  //...
+  // ...
   creates: {
     create_recipe: {
-      //...
+      // ...
       operation: {
         // an array of objects is the simplest way
         inputFields: [
@@ -1063,10 +1065,10 @@ const recipeFields = (z, bundle) => {
 };
 
 const App = {
-  //...
+  // ...
   creates: {
     create_recipe: {
-      //...
+      // ...
       operation: {
         // an array of objects is the simplest way
         inputFields: [
@@ -1367,13 +1369,13 @@ For fields that take id of another object to create a relationship between the t
 
 ```js
 const App = {
-  //...
+  // ...
   resources: {
     project: {
       key: 'project',
-      //...
+      // ...
       search: {
-        //...
+        // ...
         operation: {
           perform: () => {
             return [{ id: 123, name: 'Project 1' }];
@@ -1383,9 +1385,9 @@ const App = {
     },
     issue: {
       key: 'issue',
-      //...
+      // ...
       create: {
-        //...
+        // ...
         operation: {
           inputFields: [
             {
@@ -1432,9 +1434,9 @@ When your action needs to accept an array of items, you can include an input fie
 
 ```js
 const App = {
-  //...
+  // ...
   operation: {
-    //...
+    // ...
     inputFields: [
       {
         key: 'lineItems',
@@ -1491,10 +1493,10 @@ const recipeOutputFields = (z, bundle) => {
 };
 
 const App = {
-  //...
+  // ...
   triggers: {
     new_recipe: {
-      //...
+      // ...
       operation: {
         perform: () => {},
         sample: {
@@ -2800,7 +2802,7 @@ const performPaging = (z, bundle) => {
   let start = 0;
 
   // array of promises
-  let promises = [];
+  const promises = [];
 
   let i = 0;
   while (i < 5) {
@@ -3085,7 +3087,7 @@ The Zapier platform and its tools are under active development. While you don't 
 Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is `8.2.1`. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is `8.3.0`. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 

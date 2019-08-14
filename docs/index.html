@@ -1266,7 +1266,9 @@ zapier convert 1234 my-app
 
 <span class="hljs-keyword">const</span> addApiKeyToHeader = <span class="hljs-function">(<span class="hljs-params">request, z, bundle</span>) =&gt;</span> {
   request.headers[<span class="hljs-string">&apos;X-Subdomain&apos;</span>] = bundle.authData.subdomain;
-  <span class="hljs-keyword">const</span> basicHash = Buffer(<span class="hljs-string">`<span class="hljs-subst">${bundle.authData.api_key}</span>:x`</span>).toString(<span class="hljs-string">&apos;base64&apos;</span>);
+  <span class="hljs-keyword">const</span> basicHash = Buffer.from(<span class="hljs-string">`<span class="hljs-subst">${bundle.authData.api_key}</span>:x`</span>).toString(
+    <span class="hljs-string">&apos;base64&apos;</span>
+  );
   request.headers.Authorization = <span class="hljs-string">`Basic <span class="hljs-subst">${basicHash}</span>`</span>;
   <span class="hljs-keyword">return</span> request;
 };
@@ -1665,10 +1667,10 @@ read, and search operations on that resource.</p>
   noun: <span class="hljs-string">&apos;Recipe&apos;</span>,
   <span class="hljs-comment">// `list` and `create` are just a couple of the methods you can define</span>
   list: {
-    <span class="hljs-comment">//...</span>
+    <span class="hljs-comment">// ...</span>
   },
   <span class="hljs-attr">create</span>: {
-    <span class="hljs-comment">//...</span>
+    <span class="hljs-comment">// ...</span>
   }
 };
 
@@ -1723,7 +1725,7 @@ For now, let&apos;s focus on two:</p><ul>
 
 <span class="hljs-keyword">const</span> Recipe = {
   <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;recipe&apos;</span>,
-  <span class="hljs-comment">//...</span>
+  <span class="hljs-comment">// ...</span>
   list: {
     <span class="hljs-attr">display</span>: {
       <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Recipe&apos;</span>,
@@ -1755,9 +1757,9 @@ For now, let&apos;s focus on two:</p><ul>
 
 <span class="hljs-keyword">const</span> Recipe = {
   <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;recipe&apos;</span>,
-  <span class="hljs-comment">//...</span>
+  <span class="hljs-comment">// ...</span>
   list: {
-    <span class="hljs-comment">//...</span>
+    <span class="hljs-comment">// ...</span>
   },
   <span class="hljs-attr">create</span>: {
     <span class="hljs-attr">display</span>: {
@@ -1805,7 +1807,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 };
 
 <span class="hljs-keyword">const</span> App = {
-  <span class="hljs-comment">//...</span>
+  <span class="hljs-comment">// ...</span>
   triggers: {
     <span class="hljs-attr">new_recipe</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;new_recipe&apos;</span>, <span class="hljs-comment">// uniquely identifies the trigger</span>
@@ -1915,10 +1917,10 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
-  <span class="hljs-comment">//...</span>
+  <span class="hljs-comment">// ...</span>
   creates: {
     <span class="hljs-attr">create_recipe</span>: {
-      <span class="hljs-comment">//...</span>
+      <span class="hljs-comment">// ...</span>
       operation: {
         <span class="hljs-comment">// an array of objects is the simplest way</span>
         inputFields: [
@@ -1978,10 +1980,10 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 };
 
 <span class="hljs-keyword">const</span> App = {
-  <span class="hljs-comment">//...</span>
+  <span class="hljs-comment">// ...</span>
   creates: {
     <span class="hljs-attr">create_recipe</span>: {
-      <span class="hljs-comment">//...</span>
+      <span class="hljs-comment">// ...</span>
       operation: {
         <span class="hljs-comment">// an array of objects is the simplest way</span>
         inputFields: [
@@ -2329,13 +2331,13 @@ issue: {
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
-  <span class="hljs-comment">//...</span>
+  <span class="hljs-comment">// ...</span>
   resources: {
     <span class="hljs-attr">project</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project&apos;</span>,
-      <span class="hljs-comment">//...</span>
+      <span class="hljs-comment">// ...</span>
       search: {
-        <span class="hljs-comment">//...</span>
+        <span class="hljs-comment">// ...</span>
         operation: {
           <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
             <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span> }];
@@ -2345,9 +2347,9 @@ issue: {
     },
     <span class="hljs-attr">issue</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
-      <span class="hljs-comment">//...</span>
+      <span class="hljs-comment">// ...</span>
       create: {
-        <span class="hljs-comment">//...</span>
+        <span class="hljs-comment">// ...</span>
         operation: {
           <span class="hljs-attr">inputFields</span>: [
             {
@@ -2416,9 +2418,9 @@ issue: {
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
-  <span class="hljs-comment">//...</span>
+  <span class="hljs-comment">// ...</span>
   operation: {
-    <span class="hljs-comment">//...</span>
+    <span class="hljs-comment">// ...</span>
     inputFields: [
       {
         <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;lineItems&apos;</span>,
@@ -2494,10 +2496,10 @@ issue: {
 };
 
 <span class="hljs-keyword">const</span> App = {
-  <span class="hljs-comment">//...</span>
+  <span class="hljs-comment">// ...</span>
   triggers: {
     <span class="hljs-attr">new_recipe</span>: {
-      <span class="hljs-comment">//...</span>
+      <span class="hljs-comment">// ...</span>
       operation: {
         <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {},
         <span class="hljs-attr">sample</span>: {
@@ -4666,7 +4668,7 @@ npm run zapier-push
   <span class="hljs-keyword">let</span> start = <span class="hljs-number">0</span>;
 
   <span class="hljs-comment">// array of promises</span>
-  <span class="hljs-keyword">let</span> promises = [];
+  <span class="hljs-keyword">const</span> promises = [];
 
   <span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>;
   <span class="hljs-keyword">while</span> (i &lt; <span class="hljs-number">5</span>) {
@@ -5089,7 +5091,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <code>8.2.1</code>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://github.com/zapier/zapier-platform-core/releases">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
+      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <code>8.3.0</code>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://github.com/zapier/zapier-platform-core/releases">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
