@@ -4,9 +4,9 @@ const makeSchema = require('../utils/makeSchema');
 
 const DynamicFieldsSchema = require('./DynamicFieldsSchema');
 const FunctionSchema = require('./FunctionSchema');
-const RefResourceSchema = require('./RefResourceSchema');
 const RequestSchema = require('./RequestSchema');
 const ResultsSchema = require('./ResultsSchema');
+const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema(
   {
@@ -19,7 +19,7 @@ module.exports = makeSchema(
       resource: {
         description:
           'Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.',
-        $ref: RefResourceSchema.id
+        $ref: KeySchema.id
       },
       perform: {
         description:
@@ -52,11 +52,5 @@ module.exports = makeSchema(
     },
     additionalProperties: false
   },
-  [
-    DynamicFieldsSchema,
-    FunctionSchema,
-    RefResourceSchema,
-    RequestSchema,
-    ResultsSchema
-  ]
+  [DynamicFieldsSchema, FunctionSchema, KeySchema, RequestSchema, ResultsSchema]
 );
