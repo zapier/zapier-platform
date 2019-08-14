@@ -29,5 +29,6 @@
     "istanbul": "0.4.5",
     "mocha": "3.2.0",
     "should": "11.2.1"
-  }
+  },
+  "private": true
 }

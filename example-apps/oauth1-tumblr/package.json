@@ -21,5 +21,6 @@
   "devDependencies": {
     "mocha": "^5.2.0",
     "should": "^13.2.0"
-  }
+  },
+  "private": true
 }
