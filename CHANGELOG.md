@@ -1,3 +1,30 @@
+## 8.3.0
+
+The big change of this release is we started to maintain all the packages in a [monorepo](https://github.com/zapier/zapier-platform). It's more like an internal refactoring, so it shouldn't affect developer experience. Major work includes:
+
+* (chore) Switch to use yarn ([#1](https://github.com/zapier/zapier-platform/pull/1))
+* (chore) Restructure and rename directories ([#2](https://github.com/zapier/zapier-platform/pull/2))
+* (chore) Adjust `zapier init` to pull from monorepo ([#4](https://github.com/zapier/zapier-platform/pull/4))
+* (chore) Set up tests on Travis CI ([#5](https://github.com/zapier/zapier-platform/pull/5))
+* (chore) Publish from Travis CI ([#33](https://github.com/zapier/zapier-platform/pull/33))
+* (chore) Centralize husky code ([#34](https://github.com/zapier/zapier-platform/pull/34))
+* (chore) Move tooling to root ([#46](https://github.com/zapier/zapier-platform/pull/46))
+
+### cli
+
+* (chore) Adopt [oclif](https://oclif.io/) CLI framework, started with `zapier init` command ([#43](https://github.com/zapier/zapier-platform/pull/43))
+* (chore) Bump adm-zip ([#6](https://github.com/zapier/zapier-platform/pull/6))
+* (docs) Update computed fields docs ([#7](https://github.com/zapier/zapier-platform/pull/7))
+
+### schema
+
+* :tada: (feature) Dynamic dropdowns (`FieldSchema.dynamic`) now support multiple labels ([#48](https://github.com/zapier/zapier-platform/pull/48), [#49](https://github.com/zapier/zapier-platform/pull/49))
+
+### core
+
+* (fix) Fix a callback issue ([#36](https://github.com/zapier/zapier-platform/pull/36))
+* (chore) Bump adm-zip ([#6](https://github.com/zapier/zapier-platform/pull/6))
+
 ## 8.2.1
 
 ### cli
