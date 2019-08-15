@@ -175,6 +175,20 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_request_options: function(bundle) {
+        bundle.request.method = 'POST';
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.headers.foo = '1234';
+        bundle.request.params.bar = '5678';
+        bundle.request.data = '{"aa":"bb"}';
+        return bundle.request;
+      },
+
+      movie_post_poll_request_options: function(bundle) {
+        // To make sure bundle.request is still available in post_poll
+        return [bundle.request];
+      },
+
       movie_post_poll_make_array: function(bundle) {
         return [z.JSON.parse(bundle.response.content)];
       },
