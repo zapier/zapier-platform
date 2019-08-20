@@ -7,6 +7,12 @@ const inquirer = require('inquirer');
 class ZapierBaseCommand extends Command {
   run() {
     this._parseFlags();
+    if (this.flags.debug) {
+      this.debug.enabled = true;
+    }
+
+    this.debug('args are', this.args);
+    this.debug('flags are', this.flags);
     return this.perform();
   }
 

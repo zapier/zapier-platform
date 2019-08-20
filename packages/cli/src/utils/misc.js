@@ -87,7 +87,7 @@ const isValidAppInstall = command => {
   let packageJson;
   try {
     packageJson = require(path.join(process.cwd(), 'package.json'));
-    const coreVersion = packageJson.dependencies[PLATFORM_PACKAGE];
+    const coreVersion = _.get(packageJson, ['dependencies', PLATFORM_PACKAGE]);
     // could check for a lot more, but this is probably enough: https://docs.npmjs.com/files/package.json#dependencies
     if (!coreVersion) {
       return {

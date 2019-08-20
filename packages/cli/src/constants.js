@@ -3,8 +3,6 @@ const path = require('path');
 const semver = require('semver');
 const versionStore = require('./version-store');
 
-const DEBUG = (process.env.ZAPIER_DEBUG || 'false') === 'true';
-
 const BASE_ENDPOINT = process.env.ZAPIER_BASE_ENDPOINT || 'https://zapier.com';
 const API_PATH = '/api/platform/cli';
 const ENDPOINT = process.env.ZAPIER_ENDPOINT || BASE_ENDPOINT + API_PATH;
@@ -45,7 +43,6 @@ module.exports = {
   SOURCE_PATH,
   BLACKLISTED_PATHS,
   CURRENT_APP_FILE,
-  DEBUG,
   DEFINITION_PATH,
   ENDPOINT,
   LAMBDA_VERSION,
