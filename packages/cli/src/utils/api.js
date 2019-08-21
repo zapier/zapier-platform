@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
+const debug = require('debug')('zapier:api');
 
 const constants = require('../constants');
 
@@ -41,6 +42,11 @@ const readCredentials = (explodeIfMissing = true) => {
 
 // Calls the underlying platform REST API with proper authentication.
 const callAPI = (route, options, rawError = false) => {
+  // temp manual enable while we're not all the way moved over
+  if (_.get(global, ['argOpts', 'debug'])) {
+    debug.enabled = true;
+  }
+
   options = options || {};
   const url = options.url || constants.ENDPOINT + route;
 
@@ -84,24 +90,21 @@ const callAPI = (route, options, rawError = false) => {
         }
       }
 
-      if (constants.DEBUG || global.argOpts.debug) {
-        console.log(`>> ${requestOptions.method} ${requestOptions.url}`);
-        if (requestOptions.body) {
-          const replacementStr = 'raw zip removed in logs';
-          const cleanedBody = _.assign({}, JSON.parse(requestOptions.body), {
-            zip_file: replacementStr,
-            source_zip_file: replacementStr
-          });
-          console.log(`>> ${JSON.stringify(cleanedBody)}`);
-        }
-        console.log(`<< ${res.status}`);
-        console.log(`<< ${(text || '').substring(0, 2500)}\n`);
+      debug(`>> ${requestOptions.method} ${requestOptions.url}`);
+      if (requestOptions.body) {
+        const replacementStr = 'raw zip removed in logs';
+        const cleanedBody = _.assign({}, JSON.parse(requestOptions.body), {
+          zip_file: replacementStr,
+          source_zip_file: replacementStr
+        });
+        debug(`>> ${JSON.stringify(cleanedBody)}`);
       }
+      debug(`<< ${res.status}`);
+      debug(`<< ${(text || '').substring(0, 2500)}`);
+      debug('------------'); // to help differentiate request from each other
 
       if (hitError) {
-        const niceMessage = `"${requestOptions.url}" returned "${
-          res.status
-        }" saying "${errors}"`;
+        const niceMessage = `"${requestOptions.url}" returned "${res.status}" saying "${errors}"`;
 
         if (rawError) {
           res.text = text;
@@ -179,9 +182,7 @@ const getLinkedApp = appDir => {
     })
     .catch(() => {
       throw new Error(
-        `Warning! ${
-          constants.CURRENT_APP_FILE
-        } seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
+        `Warning! ${constants.CURRENT_APP_FILE} seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
       );
     });
 };

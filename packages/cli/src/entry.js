@@ -65,6 +65,7 @@ module.exports = argv => {
     oclifCommands.has(command) || // zapier blah
     (command === 'help' && oclifCommands.has(args[0])) // zapier help blah
   ) {
+    global.argOpts = undefined; // prevent mixing the new and the old
     require('./bin/run'); // requiring shouldn't have side effects, but this one is temporary and special
     return;
   }
