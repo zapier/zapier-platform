@@ -13,3 +13,37 @@ Some notes to help an ongoing project
 2. add a require line in `src/oclif/oCommands.js`
 3. remove the old command from `src/commands`
 4. remove the import from `src/commands/index.js`. smoke test will fail if you don't do this
+
+## relative command difficulty
+
+### easy
+
+* [ ] apps
+* [ ] delete
+* [ ] describe
+* [ ] deprecate
+* [ ] help
+* [ ] history
+* [ ] invitees
+* [ ] link
+* [ ] login
+* [ ] logout
+* [ ] logs
+* [ ] migrate
+* [ ] migrate
+* [ ] register
+* [ ] test
+
+## hard
+
+* [ ] build
+* [ ] collaborate
+* [ ] convert
+* [ ] env
+* [ ] invite
+* [ ] promote
+* [ ] push
+* [ ] scaffold
+* [ ] upload
+* [ ] watch - remove?
+* [ ] validate

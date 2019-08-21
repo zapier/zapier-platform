@@ -34,13 +34,12 @@ class ZapierBaseCommand extends Command {
   // UTILS
   log(...message) {
     if (this._shouldPrintData()) {
-      this._forceLog(...message);
+      super.log(...message);
     }
   }
 
-  // needed for printing in json mode
-  _forceLog(...message) {
-    super.log(...message);
+  logJSON(o) {
+    console.log(JSON.stringify(o, null, 2));
   }
 
   /**
@@ -71,7 +70,7 @@ class ZapierBaseCommand extends Command {
         this.log(formatter(rows, headers));
       }
     } else {
-      this._forceLog(rows);
+      this.logJSON(rows);
     }
   }
 
