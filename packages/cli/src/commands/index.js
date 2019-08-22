@@ -22,6 +22,5 @@ module.exports = {
   test: require('./test'),
   upload: require('./upload'),
   validate: require('./validate'),
-  versions: require('./versions'),
   watch: require('./watch')
 };
