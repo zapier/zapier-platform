@@ -32,14 +32,23 @@ class ZapierBaseCommand extends Command {
   }
 
   // UTILS
+  /**
+   * Helps us not have helpful UI messages when the whole output should only be JSON.
+   * @param  {...any} message the joined string to print out
+   */
   log(...message) {
     if (this._shouldPrintData()) {
       super.log(...message);
     }
   }
 
+  // we may not end up needing this
   logJSON(o) {
-    console.log(JSON.stringify(o, null, 2));
+    if (typeof o === 'string') {
+      console.log(o);
+    } else {
+      console.log(JSON.stringify(o, null, 2));
+    }
   }
 
   /**
@@ -63,14 +72,11 @@ class ZapierBaseCommand extends Command {
       // throwing this error ensures that all commands that call this function take a format flag, since that provides the default
       this.error(`invalid table format: ${this.flags.format}`);
     }
-    if (this._shouldPrintData()) {
-      if (!rows.length) {
-        this.log(emptyMessage);
-      } else {
-        this.log(formatter(rows, headers));
-      }
+    if (!rows.length && this._shouldPrintData()) {
+      this.log(emptyMessage);
     } else {
-      this.logJSON(rows);
+      // data comes out of the formatter ready to be printed (and it's always in the type to match the format) so we don't need to do anything special with it
+      console.log(formatter(rows, headers));
     }
   }
 
