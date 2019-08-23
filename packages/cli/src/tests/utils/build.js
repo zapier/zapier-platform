@@ -10,36 +10,35 @@ const decompress = require('decompress');
 const fs = require('fs');
 const fse = require('fs-extra');
 
-const entryDir = fs.realpathSync(path.resolve(__dirname, '../../..'));
-const entryPoint = path.resolve(__dirname, '../../../zapier.js');
+// TODO: fix to a temp?
+const entryDir = fs.realpathSync(
+  path.resolve(__dirname, '/Users/david/Desktop/tstest')
+);
+const entryPoint = path.resolve(entryDir, 'index.js');
 
 describe('build', () => {
-  it('should list only required files', () => {
+  it.skip('should list only required files', () => {
     return build.requiredFiles(entryDir, [entryPoint]).then(smartPaths => {
       // check that only the required lodash files are grabbed
-      smartPaths
-        .filter(filePath => filePath.indexOf('node_modules/lodash/') >= 0)
-        .length.should.be.within(0, 2);
-      smartPaths
-        .filter(
-          filePath =>
-            filePath.includes('node_modules/lodash/lodash.js') &&
-            !filePath.includes('inquirer') // inquirer pulls its own version of lodash, so this is 2 without this line
-        )
-        .length.should.equal(1);
-      smartPaths.should.containEql('src/commands/index.js');
-      smartPaths.should.not.containEql('README.md');
+      smartPaths.should.containEql('index.js');
+      smartPaths.should.containEql('lib/index.js');
+      smartPaths.should.containEql('lib/resources/recipe.js');
+      smartPaths.should.not.containEql('src/index.ts');
+      smartPaths.should.not.containEql('tsconfig.json');
+      smartPaths.length.should.be.within(200, 300);
     });
   });
 
-  it('should list all the files', () => {
+  it.skip('should list all the files', () => {
     return build.listFiles(entryDir).then(dumbPaths => {
       // check that way more than the required package files are grabbed
-      dumbPaths
-        .filter(filePath => filePath.indexOf('node_modules/') === 0)
-        .length.should.be.greaterThan(1000);
-      dumbPaths.should.containEql('src/commands/index.js');
-      dumbPaths.should.containEql('README.md');
+      dumbPaths.should.containEql('index.js');
+      dumbPaths.should.containEql('lib/index.js');
+      dumbPaths.should.containEql('lib/resources/recipe.js');
+      dumbPaths.should.containEql('src/index.ts');
+      dumbPaths.should.containEql('src/resources/recipe.ts');
+      dumbPaths.should.containEql('tsconfig.json');
+      dumbPaths.length.should.be.within(1500, 2000);
     });
   });
 
