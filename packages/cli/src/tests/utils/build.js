@@ -5,20 +5,33 @@ const os = require('os');
 const path = require('path');
 
 const build = require('../../utils/build');
+const { copyDir } = require('../../utils/files');
+const { runCommand } = require('../_helpers');
 
 const decompress = require('decompress');
 const fs = require('fs');
 const fse = require('fs-extra');
 
-// TODO: fix to a temp?
-const entryDir = fs.realpathSync(
-  path.resolve(__dirname, '/Users/david/Desktop/tstest')
-);
-const entryPoint = path.resolve(entryDir, 'index.js');
-
 describe('build', () => {
-  it.skip('should list only required files', () => {
-    return build.requiredFiles(entryDir, [entryPoint]).then(smartPaths => {
+  let tmpDir, entryPoint;
+  before(async () => {
+    // copies what init does
+    const osTmpDir = fse.realpathSync(os.tmpdir());
+    tmpDir = path.join(
+      osTmpDir,
+      'zapier-' + crypto.randomBytes(4).toString('hex')
+    );
+    await copyDir(
+      path.resolve(__dirname, '../../../../../example-apps/typescript'),
+      tmpDir
+    );
+    await runCommand('npm', ['i'], { cwd: tmpDir });
+    await runCommand('npm', ['run', 'zapier-build'], { cwd: tmpDir });
+    entryPoint = path.resolve(tmpDir, 'index.js');
+  });
+
+  it('should list only required files', () => {
+    return build.requiredFiles(tmpDir, [entryPoint]).then(smartPaths => {
       // check that only the required lodash files are grabbed
       smartPaths.should.containEql('index.js');
       smartPaths.should.containEql('lib/index.js');
@@ -29,8 +42,8 @@ describe('build', () => {
     });
   });
 
-  it.skip('should list all the files', () => {
-    return build.listFiles(entryDir).then(dumbPaths => {
+  it('should list all the files', () => {
+    return build.listFiles(tmpDir).then(dumbPaths => {
       // check that way more than the required package files are grabbed
       dumbPaths.should.containEql('index.js');
       dumbPaths.should.containEql('lib/index.js');
@@ -40,6 +53,10 @@ describe('build', () => {
       dumbPaths.should.containEql('tsconfig.json');
       dumbPaths.length.should.be.within(1500, 2000);
     });
+  });
+
+  after(() => {
+    fse.removeSync(tmpDir);
   });
 
   it('list should not include blacklisted files', () => {

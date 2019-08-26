@@ -102,7 +102,7 @@ const listFiles = dir => {
   return new Promise((resolve, reject) => {
     const paths = [];
     const cwd = dir + path.sep;
-    klaw(dir)
+    klaw(dir, { preserveSymlinks: true })
       .on('data', item => {
         const strippedPath = stripPath(cwd, item.path);
         if (!item.stats.isDirectory() && !isBlacklisted(strippedPath)) {
@@ -126,9 +126,11 @@ const respectGitIgnore = (dir, paths) => {
         '\n\n!!Warning!! There is no .gitignore, so we are including all files. This might make the source.zip file too large\n\n'
       );
     }
+    return paths;
   }
   const gitIgnoredPaths = gitIgnore(gitIgnorePath);
-  const gitFilter = ignore().add(gitIgnoredPaths);
+  const validGitIgnorePaths = gitIgnoredPaths.filter(ignore.isPathValid);
+  const gitFilter = ignore().add(validGitIgnorePaths);
 
   return gitFilter.filter(paths);
 };
