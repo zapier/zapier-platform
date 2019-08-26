@@ -15,7 +15,7 @@ const fse = require('fs-extra');
 describe('build', () => {
   let tmpDir, entryPoint;
   before(async () => {
-    // copies what init does
+    // basically does what `zapier init` does
     const osTmpDir = fse.realpathSync(os.tmpdir());
     tmpDir = path.join(
       osTmpDir,
@@ -25,8 +25,9 @@ describe('build', () => {
       path.resolve(__dirname, '../../../../../example-apps/typescript'),
       tmpDir
     );
+    // tests depend on live npm install, which isn't great. Does make for a nice isolated test though!
+    // the typescript app builds on install
     await runCommand('npm', ['i'], { cwd: tmpDir });
-    await runCommand('npm', ['run', 'zapier-build'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
@@ -36,8 +37,10 @@ describe('build', () => {
       smartPaths.should.containEql('index.js');
       smartPaths.should.containEql('lib/index.js');
       smartPaths.should.containEql('lib/resources/recipe.js');
-      smartPaths.should.not.containEql('src/index.ts');
+
+      smartPaths.filter(p => p.endsWith('.ts')).length.should.equal(0);
       smartPaths.should.not.containEql('tsconfig.json');
+
       smartPaths.length.should.be.within(200, 300);
     });
   });
@@ -48,9 +51,11 @@ describe('build', () => {
       dumbPaths.should.containEql('index.js');
       dumbPaths.should.containEql('lib/index.js');
       dumbPaths.should.containEql('lib/resources/recipe.js');
+
       dumbPaths.should.containEql('src/index.ts');
       dumbPaths.should.containEql('src/resources/recipe.ts');
       dumbPaths.should.containEql('tsconfig.json');
+
       dumbPaths.length.should.be.within(1500, 2000);
     });
   });
