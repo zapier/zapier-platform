@@ -19,7 +19,7 @@ let packagesVersions;
 const newCoreVersion = process.argv[2];
 if (!newCoreVersion) {
   console.error('Usage: npm run set-template-version [NEW_CORE_VERSION]');
-  /*eslint no-process-exit: 0 */
+  /* eslint no-process-exit: 0 */
   process.exit(1);
 }
 
@@ -53,9 +53,7 @@ const setVersion = (template, rootTmpDir) => {
   const repoDir = path.resolve(rootTmpDir, repoName);
   const cloneUrl = `${CLONE_URL_PREFIX}-${template}`;
   var cmd = `git clone ${cloneUrl}`;
-  packagesVersions = `${newVersions.nodeVersion}, ${
-    newVersions.npmVersion
-  }, and ${newVersions.coreVersion}`;
+  packagesVersions = `${newVersions.nodeVersion}, ${newVersions.npmVersion}, and ${newVersions.coreVersion}`;
 
   console.log(
     `Setting versions of ${PACKAGES_NAMES} to ${packagesVersions} respectively in ${template} app template.`
@@ -143,15 +141,13 @@ Promise.all(tasks).then(results => {
 
   if (failures.length) {
     console.error(
-      'failed to set ${PACKAGES_NAMES} versions on these templates:',
+      `failed to set ${PACKAGES_NAMES} versions on these templates:`,
       failures.join(', ')
     );
   }
   if (skipped.length) {
     console.log(
-      `skipped ${
-        skipped.length
-      } templates because versions for ${PACKAGES_NAMES} were already set to ${packagesVersions} respectively`
+      `skipped ${skipped.length} templates because versions for ${PACKAGES_NAMES} were already set to ${packagesVersions} respectively`
     );
   }
   if (successCount) {
