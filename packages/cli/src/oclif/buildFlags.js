@@ -30,4 +30,4 @@ const buildFlags = ({ commandFlags = {}, opts = {} } = {}) => {
     pickBy(baseFlags, (v, k) => selectedBaseFlags[k])
   );
 };
-module.exports = buildFlags;
+module.exports = { buildFlags };

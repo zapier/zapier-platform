@@ -184,31 +184,16 @@ const makeJSON = (rows, columnDefs) =>
   prettyJSONstringify(rewriteLabels(rows, columnDefs));
 const makeRawJSON = rows => prettyJSONstringify(rows);
 
-const makeSmall = rows => {
-  const longestRow = _.max(rows.map(r => r.name.length));
-  const res = [];
-
-  rows.forEach(row => {
-    res.push(
-      `  ${row.name}${' '.repeat(longestRow - row.name.length + 1)} # ${
-        row.help
-      }`
-    );
-  });
-
-  return res.join('\n');
-};
-
 const DEFAULT_STYLE = 'table';
 const formatStyles = {
   plain: makePlain,
   json: makeJSON,
   raw: makeRawJSON,
   row: makeRowBasedTable,
-  table: makeTable,
-  small: makeSmall
+  table: makeTable
 };
 
+// DEPRECATED, use this.logTable instead
 const printData = (
   rows,
   columnDefs,

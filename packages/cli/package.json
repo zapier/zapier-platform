@@ -75,6 +75,7 @@
     "mock-fs": "4.10.0",
     "ngrok": "2.2.10",
     "node-watch": "0.5.4",
+    "stdout-stderr": "0.1.9",
     "yamljs": "0.3.0"
   },
   "bin": {
