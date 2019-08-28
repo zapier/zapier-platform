@@ -5,7 +5,7 @@ const should = require('should');
 const { stdout } = require('stdout-stderr');
 
 const MESSAGE = 'very cool message';
-const ROWS = [{ id: 123, title: 'helddddddlo' }, { id: 456, title: 'world' }];
+const ROWS = [{ id: 123, title: 'hello' }, { id: 456, title: 'world' }];
 const ROW_HEADERS = [['Contact ID', 'id'], ['Neat Title', 'title']];
 
 class TestSampleCommand extends BaseCommand {
@@ -90,7 +90,10 @@ describe('BaseCommand', () => {
       should(stdout.output).containEql('123');
       should(stdout.output).not.containEql('Here');
 
-      JSON.parse(stdout.output); // shouldn't throw
+      const rows = JSON.parse(stdout.output); // shouldn't throw
+      rows.length.should.eql(2);
+      rows[0]['Contact ID'].should.eql('123');
+      rows[0]['Neat Title'].should.eql('hello');
     });
 
     it('should print valid raw json', async () => {
@@ -101,7 +104,10 @@ describe('BaseCommand', () => {
       should(stdout.output).containEql('123');
       should(stdout.output).not.containEql('Here');
 
-      JSON.parse(stdout.output); // shouldn't throw
+      const rows = JSON.parse(stdout.output); // shouldn't throw
+      rows.length.should.eql(2);
+      rows[0].id.should.eql(123);
+      rows[0].title.should.eql('hello');
     });
 
     afterEach(() => {
