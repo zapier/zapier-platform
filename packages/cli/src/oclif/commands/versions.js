@@ -1,5 +1,5 @@
 const BaseCommand = require('../ZapierBaseCommand');
-const buildFlags = require('../buildFlags');
+const { buildFlags } = require('../buildFlags');
 
 const { listVersions } = require('../../utils/api');
 

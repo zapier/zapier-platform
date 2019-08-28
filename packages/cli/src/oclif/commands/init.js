@@ -1,7 +1,7 @@
 const { flags } = require('@oclif/command');
 
 const BaseCommand = require('../ZapierBaseCommand');
-const buildFlags = require('../buildFlags');
+const { buildFlags } = require('../buildFlags');
 const appTemplates = require('../../app-templates');
 
 const { isExistingEmptyDir } = require('../../utils/files');
