@@ -17,6 +17,8 @@ const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
 
 const { localAppCommand } = require('./local');
 
+// TODO split these out into better files
+
 // Reads the JSON file at ~/.zapierrc (AUTH_LOCATION).
 const readCredentials = (explodeIfMissing = true) => {
   if (process.env.ZAPIER_DEPLOY_KEY) {
@@ -180,7 +182,10 @@ const getLinkedApp = appDir => {
       }
       return callAPI('/apps/' + app.id);
     })
-    .catch(() => {
+    .catch(e => {
+      if (process.env.NODE_ENV === 'test') {
+        console.error(e);
+      }
       throw new Error(
         `Warning! ${constants.CURRENT_APP_FILE} seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
       );
