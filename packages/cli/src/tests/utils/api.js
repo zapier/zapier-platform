@@ -61,11 +61,11 @@ describe('api', () => {
 
   describe('listEndpoint', () => {
     beforeEach(() => {
+      nock.disableNetConnect();
       process.env.ZAPIER_DEPLOY_KEY = answer;
       mock({
         [CURRENT_APP_FILE]: '{ "id": 2864, "key": "App2864", "extra": 5 }'
       });
-      nock.disableNetConnect();
     });
 
     it('should read from and endpoint', async () => {
@@ -104,9 +104,9 @@ describe('api', () => {
     });
 
     afterEach(() => {
-      nock.enableNetConnect();
       mock.restore();
       delete process.env.ZAPIER_DEPLOY_KEY;
+      nock.enableNetConnect();
     });
   });
 });

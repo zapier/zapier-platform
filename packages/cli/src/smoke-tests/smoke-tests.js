@@ -74,6 +74,7 @@ describe('smoke tests - setup will take some time', () => {
       '.bin',
       'zapier'
     );
+    console.log('setup done', context);
   });
 
   after(() => {
@@ -134,9 +135,12 @@ describe('smoke tests - setup will take some time', () => {
   });
 
   it('zapier apps', function() {
+    console.log('about to check skip');
     if (!context.hasRC) {
+      console.log('skipping');
       this.skip();
     }
+    console.log('staying', context);
     const stdout = runCommand(context.cliBin, ['apps', '--format=json']);
     console.log('stdout is', stdout);
     const result = JSON.parse(stdout);
