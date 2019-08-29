@@ -138,6 +138,7 @@ describe('smoke tests - setup will take some time', () => {
       this.skip();
     }
     const stdout = runCommand(context.cliBin, ['apps', '--format=json']);
+    console.log('stdout is', stdout);
     const result = JSON.parse(stdout);
     result.should.be.Array();
   });
