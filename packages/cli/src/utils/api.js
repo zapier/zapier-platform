@@ -184,7 +184,7 @@ const getLinkedApp = appDir => {
     })
     .catch(e => {
       if (process.env.NODE_ENV === 'test') {
-        console.log(e);
+        console.error(e);
       }
       throw new Error(
         `Warning! ${constants.CURRENT_APP_FILE} seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
