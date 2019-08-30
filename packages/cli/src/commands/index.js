@@ -11,7 +11,6 @@ module.exports = {
   history: require('./history'),
   invite: require('./invite'),
   link: require('./link'),
-  login: require('./login'),
   logs: require('./logs'),
   migrate: require('./migrate'),
   promote: require('./promote'),
