@@ -16,6 +16,13 @@ const {
 const { writeFile } = require('../../utils/files');
 const { prettyJSONstringify } = require('../../utils/display');
 
+const isValidTotpCode = i => {
+  const num = parseInt(i, 10);
+  return Number.isInteger(num) && i.length === 6
+    ? true
+    : 'Must be a 6 digit number';
+};
+
 class LoginCommand extends BaseCommand {
   async perform() {
     const checks = [
@@ -64,7 +71,7 @@ class LoginCommand extends BaseCommand {
       if (errors[0].startsWith('missing totp_code')) {
         const code = await this.prompt(
           'What is your current 6-digit 2FA code?',
-          { type: 'number' }
+          { validate: isValidTotpCode }
         );
         goodResponse = await createCredentials(username, password, code);
       } else {

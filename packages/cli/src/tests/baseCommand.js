@@ -9,8 +9,11 @@ const MESSAGE = 'Here is a very cool message';
 const ROWS = [{ id: 123, title: 'hello' }, { id: 456, title: 'world' }];
 const ROW_HEADERS = [['Contact ID', 'id'], ['Neat Title', 'title']];
 
+class TestBaseCommand extends BaseCommand {
+  throwForInvalidAppInstall() {}
+}
 // logs both text and a table, which behave differently baed on the format flag
-class TestSampleCommand extends BaseCommand {
+class TestSampleCommand extends TestBaseCommand {
   async perform() {
     this.log(MESSAGE);
     if (!this.flags.skipTable) {
@@ -29,7 +32,7 @@ TestSampleCommand.flags = buildFlags({
 });
 
 // logs and doesn't populate the `format` flag
-class NoFormatCommand extends BaseCommand {
+class NoFormatCommand extends TestBaseCommand {
   async perform() {
     this.log(MESSAGE);
   }

@@ -2,6 +2,7 @@ const { Command } = require('@oclif/command');
 const colors = require('colors/safe');
 
 const { startSpinner, endSpinner, formatStyles } = require('../utils/display');
+const { isValidAppInstall } = require('../utils/misc');
 
 const inquirer = require('inquirer');
 
@@ -19,7 +20,10 @@ class ZapierBaseCommand extends Command {
     this.debug('flags are', this.flags);
     this.debug('------------');
 
+    this.throwForInvalidAppInstall();
+
     return this.perform().catch(e => {
+      this.stopSpinner({ success: false });
       const errTextLines = [e.message];
 
       this.debug(e.stack);
@@ -43,6 +47,14 @@ class ZapierBaseCommand extends Command {
 
   perform() {
     this.error(`subclass the "perform" method in the "${this.id}" command`);
+  }
+
+  // ; put ina method so we can disable it easily in tests
+  throwForInvalidAppInstall() {
+    const { valid, reason } = isValidAppInstall(this.id);
+    if (!valid) {
+      this.error(reason);
+    }
   }
 
   // UTILS

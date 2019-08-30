@@ -1,7 +1,6 @@
 // this is explicitly left out of utils/index because it creates a circular dependency
-// this file can't be used in any of the required commands
-
-const login = require('../commands/login');
+// this file can't be used in any of the required command
+const login = require('../oclif/commands/login');
 const register = require('../commands/register');
 
 const { readCredentials, getLinkedAppConfig } = require('./api');
@@ -14,7 +13,7 @@ const maybeLogin = context => {
   return readCredentials(false).then(creds => {
     if (_.isEmpty(creds)) {
       context.line('Before you can do that, you need to be logged in.\n');
-      return login(context, false);
+      return login.run([]);
     } else {
       return Promise.resolve();
     }
@@ -33,7 +32,7 @@ const hasRegisteredApp = async () => {
 // check if the user needs to be registered in and do it if so
 // returns a promise
 const maybeRegisterApp = async context => {
-  if (!await hasRegisteredApp()) {
+  if (!(await hasRegisteredApp())) {
     context.line(
       "Looks like this is your first push. Let's register your app on Zapier."
     );

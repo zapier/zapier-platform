@@ -92,7 +92,9 @@ const isValidAppInstall = command => {
     if (!coreVersion) {
       return {
         valid: false,
-        reason: `Your app doesn't depend on ${PLATFORM_PACKAGE}. Run \`npm install -E ${PLATFORM_PACKAGE}\` to resolve`
+        reason: `Your app doesn't depend on ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
+          `npm install -E ${PLATFORM_PACKAGE}`
+        )}\` to resolve`
       };
     } else if (!semver.valid(coreVersion)) {
       // semver.valid only matches single versions
@@ -110,7 +112,9 @@ const isValidAppInstall = command => {
   } catch (err) {
     return {
       valid: false,
-      reason: `Looks like you're missing a local installation of ${PLATFORM_PACKAGE}. Run \`npm install\` to resolve`
+      reason: `Looks like you're missing a local installation of ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
+        'npm install'
+      )}\` to resolve`
     };
   }
 
