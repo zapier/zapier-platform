@@ -80,7 +80,9 @@ const isValidNodeVersion = () => {
 };
 
 const isValidAppInstall = command => {
-  if (['help', 'init', 'login', 'apps', 'convert'].includes(command)) {
+  if (
+    ['help', 'init', 'login', 'apps', 'convert', 'logout'].includes(command)
+  ) {
     return { valid: true };
   }
 
