@@ -12,7 +12,6 @@ module.exports = {
   invite: require('./invite'),
   link: require('./link'),
   login: require('./login'),
-  logout: require('./logout'),
   logs: require('./logs'),
   migrate: require('./migrate'),
   promote: require('./promote'),

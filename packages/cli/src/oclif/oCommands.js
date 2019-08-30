@@ -2,5 +2,6 @@
 
 module.exports = {
   init: require('./commands/init'),
+  logout: require('./commands/logout'),
   versions: require('./commands/versions')
 };

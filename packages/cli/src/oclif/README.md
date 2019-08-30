@@ -4,8 +4,8 @@ Some notes to help an ongoing project
 
 ## helpful links
 
-* the docs are fairly useful: https://oclif.io/docs/commands
-* base command source is great for seeing what's available: https://github.com/oclif/command/blob/master/src/command.ts
+- the docs are fairly useful: https://oclif.io/docs/commands
+- base command source is great for seeing what's available: https://github.com/oclif/command/blob/master/src/command.ts
 
 ## migrating a command
 
@@ -18,32 +18,32 @@ Some notes to help an ongoing project
 
 ### easy
 
-* [ ] apps
-* [ ] delete
-* [ ] describe
-* [ ] deprecate
-* [ ] help
-* [ ] history
-* [ ] invitees
-* [ ] link
-* [ ] login
-* [ ] logout
-* [ ] logs
-* [ ] migrate
-* [ ] migrate
-* [ ] register
-* [ ] test
+- [ ] apps
+- [ ] delete
+- [ ] describe
+- [ ] deprecate
+- [ ] help
+- [ ] history
+- [ ] invitees
+- [ ] link
+- [ ] login
+- [x] logout
+- [ ] logs
+- [ ] migrate
+- [ ] migrate
+- [ ] register
+- [ ] test
 
 ## hard
 
-* [ ] build
-* [ ] collaborate
-* [ ] convert
-* [ ] env
-* [ ] invite
-* [ ] promote
-* [ ] push
-* [ ] scaffold
-* [ ] upload
-* [ ] watch - remove?
-* [ ] validate
+- [ ] build
+- [ ] collaborate
+- [ ] convert
+- [ ] env
+- [ ] invite
+- [ ] promote
+- [ ] push
+- [ ] scaffold
+- [ ] upload
+- [ ] watch - remove?
+- [ ] validate
