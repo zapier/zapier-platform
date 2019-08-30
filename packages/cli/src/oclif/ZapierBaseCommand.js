@@ -1,6 +1,8 @@
 const { Command } = require('@oclif/command');
+const colors = require('colors/safe');
 
 const { startSpinner, endSpinner, formatStyles } = require('../utils/display');
+const { isValidAppInstall } = require('../utils/misc');
 
 const inquirer = require('inquirer');
 
@@ -17,7 +19,23 @@ class ZapierBaseCommand extends Command {
     this.debug('args are', this.args);
     this.debug('flags are', this.flags);
     this.debug('------------');
-    return this.perform();
+
+    this.throwForInvalidAppInstall();
+
+    return this.perform().catch(e => {
+      this.stopSpinner({ success: false });
+      const errTextLines = [e.message];
+
+      this.debug(e.stack);
+
+      if (!this.flags.debug) {
+        errTextLines.push(
+          colors.gray('re-run this command with `--debug` for more info')
+        );
+      }
+
+      this.error(errTextLines.join('\n\n'));
+    });
   }
 
   _parseFlags() {
@@ -29,6 +47,14 @@ class ZapierBaseCommand extends Command {
 
   perform() {
     this.error(`subclass the "perform" method in the "${this.id}" command`);
+  }
+
+  // ; put ina method so we can disable it easily in tests
+  throwForInvalidAppInstall() {
+    const { valid, reason } = isValidAppInstall(this.id);
+    if (!valid) {
+      this.error(reason);
+    }
   }
 
   // UTILS
@@ -80,21 +106,37 @@ class ZapierBaseCommand extends Command {
     }
   }
 
-  async confirm(message, defaultAns = false) {
+  /**
+   * get user input
+   * @param {string} question the question to ask the user
+   * @param {object} opts `inquierer.js` opts ([read more](https://github.com/SBoudrias/Inquirer.js/#question))
+   */
+  async prompt(question, opts = {}) {
     const { ans } = await inquirer.prompt({
-      type: 'confirm',
-      message,
-      default: defaultAns,
-      name: 'ans'
+      type: 'string',
+      ...opts,
+      name: 'ans',
+      message: question
     });
     return ans;
+  }
+
+  promptHidden(question) {
+    return this.prompt(question, {
+      type: 'password',
+      mask: true
+    });
+  }
+
+  confirm(message, defaultAns = false) {
+    return this.prompt(message, { default: defaultAns, type: 'confirm' });
   }
 
   /**
    * should only print to stdout when in a non-data mode
    */
   _shouldPrintData() {
-    return this.flags.format && !DATA_FORMATS.includes(this.flags.format);
+    return !this.flags.format || !DATA_FORMATS.includes(this.flags.format);
   }
 
   startSpinner(message) {
