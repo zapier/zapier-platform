@@ -95,10 +95,15 @@ const callAPI = (route, options, rawError = false) => {
       debug(`>> ${requestOptions.method} ${requestOptions.url}`);
       if (requestOptions.body) {
         const replacementStr = 'raw zip removed in logs';
-        const cleanedBody = _.assign({}, JSON.parse(requestOptions.body), {
-          zip_file: replacementStr,
-          source_zip_file: replacementStr
-        });
+        const requestBody = JSON.parse(requestOptions.body);
+        const cleanedBody = {};
+        for (const k in requestBody) {
+          if (k.includes('zip_file')) {
+            cleanedBody[k] = replacementStr;
+          } else {
+            cleanedBody[k] = requestBody[k];
+          }
+        }
         debug(`>> ${JSON.stringify(cleanedBody)}`);
       }
       debug(`<< ${res.status}`);

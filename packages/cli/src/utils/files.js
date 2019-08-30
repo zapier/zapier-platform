@@ -45,16 +45,14 @@ const writeFile = (fileName, data) => {
   return fse.writeFile(fixHome(fileName), data);
 };
 
-// Returns a promise that deletes the file.
-const deleteFile = fileName => {
-  return new Promise(resolve => {
-    try {
-      fse.unlinkSync(fileName);
-    } catch (err) {
-      resolve();
-    }
-    resolve();
-  });
+// deletes a file, eats the error
+const deleteFile = path => {
+  try {
+    fse.unlinkSync(path);
+    return true;
+  } catch (err) {
+    return false;
+  }
 };
 
 // Returns a promise that ensures a directory exists.

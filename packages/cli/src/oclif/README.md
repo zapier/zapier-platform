@@ -26,8 +26,8 @@ Some notes to help an ongoing project
 - [ ] history
 - [ ] invitees
 - [ ] link
+- [x] logout
 - [x] login
-- [ ] logout
 - [ ] logs
 - [ ] migrate
 - [ ] migrate
