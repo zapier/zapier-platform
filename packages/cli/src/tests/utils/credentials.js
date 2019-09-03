@@ -2,7 +2,7 @@ const { isSamlEmail } = require('../../utils/credentials');
 
 describe('SAML checking', () => {
   it('should throw for bad emails', async () => {
-    await isSamlEmail('asdf').should.be.rejected();
+    await isSamlEmail('asdf').should.be.rejectedWith('Invalid email');
   });
 
   it('should be false for non-saml emails', async () => {
