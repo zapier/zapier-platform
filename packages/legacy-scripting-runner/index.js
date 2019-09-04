@@ -341,7 +341,13 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       }
       throw new Error('JSON results array could not be located.');
     } else if (type.startsWith('object-')) {
-      if (_.isPlainObject(result)) {
+      if (['number', 'string', 'boolean'].includes(typeof result)) {
+        // primitive types that aren't null or undefined
+        return { message: result };
+      } else if (_.isEmpty(result)) {
+        // null, undefined, empty object or array
+        return {};
+      } else if (_.isPlainObject(result)) {
         return result;
       } else if (
         Array.isArray(result) &&
@@ -911,7 +917,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       key,
       'create.pre',
       'create.post',
-      'create.write'
+      'create.write',
+      { ensureType: 'object-first' }
     );
   };
 
