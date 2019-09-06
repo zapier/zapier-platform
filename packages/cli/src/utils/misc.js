@@ -1,4 +1,5 @@
 const cp = require('child_process');
+const debug = require('debug')('zapier:misc');
 
 const _ = require('lodash');
 const colors = require('colors/safe');
@@ -29,9 +30,9 @@ const runCommand = (command, args, options) => {
   }
 
   options = options || {};
-  if (global.argOpts.debug) {
-    console.log('\n');
-    console.log(
+  if (_.get(global, ['argOpts', 'debug']) || debug.enabled) {
+    debug('\n');
+    debug(
       `Running ${colors.bold(
         command + ' ' + args.join(' ')
       )} command in ${colors.bold(options.cwd || process.cwd())}:\n`
