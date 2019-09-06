@@ -12,7 +12,7 @@ const anchor = val => '#' + filename(val.toLowerCase());
 const makeCodeLink = id =>
   `${constants.ROOT_GITHUB}/blob/zapier-platform-schema@${
     packageJson.version
-  }/packages/schema/${filename(id)}.js`;
+  }/packages/schema/lib/schemas/${filename(id)}.js`;
 const makeDocLink = id =>
   _.template(constants.DOC_URL_TEMPLATE)({
     version: packageJson.version,
