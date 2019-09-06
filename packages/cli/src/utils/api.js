@@ -274,6 +274,33 @@ const listEnv = version => {
   return listEndpoint(endpoint, 'environment');
 };
 
+const validateApp = async definition => {
+  let checkResult;
+  try {
+    await getLinkedAppConfig();
+  } catch (error) {
+    checkResult = await callAPI('/check', {
+      skipDeployKey: true,
+      method: 'POST',
+      body: { app_definition: definition }
+    });
+  }
+
+  if (!checkResult) {
+    const linkedApp = await getLinkedApp();
+    checkResult = await callAPI('/check', {
+      method: 'POST',
+      body: {
+        app_id: linkedApp.id,
+        version: definition.version,
+        app_definition: definition
+      }
+    });
+  }
+
+  return checkResult;
+};
+
 const upload = (zipPath, sourceZipPath, appDir) => {
   zipPath = zipPath || constants.BUILD_PATH;
   sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
@@ -334,5 +361,6 @@ module.exports = {
   listVersions,
   readCredentials,
   upload,
-  writeLinkedAppConfig
+  writeLinkedAppConfig,
+  validateApp
 };

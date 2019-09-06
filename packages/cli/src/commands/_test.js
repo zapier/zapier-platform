@@ -23,9 +23,7 @@ const test = context => {
     .then(() => utils.readCredentials(false))
     .then(credentials => {
       context.line(
-        `Adding ${
-          constants.AUTH_LOCATION
-        } to environment as ZAPIER_DEPLOY_KEY...`
+        `Adding ${constants.AUTH_LOCATION} to environment as ZAPIER_DEPLOY_KEY...`
       );
       extraEnv.ZAPIER_DEPLOY_KEY = credentials.deployKey;
     })

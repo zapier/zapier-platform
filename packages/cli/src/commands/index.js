@@ -17,8 +17,6 @@ module.exports = {
   push: require('./push'),
   register: require('./register'),
   scaffold: require('./scaffold'),
-  test: require('./test'),
   upload: require('./upload'),
-  validate: require('./validate'),
   watch: require('./watch')
 };

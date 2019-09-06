@@ -32,7 +32,7 @@ Some notes to help an ongoing project
 - [ ] migrate
 - [ ] migrate
 - [ ] register
-- [ ] test
+- [x] test
 
 ## hard
 
@@ -46,4 +46,4 @@ Some notes to help an ongoing project
 - [ ] scaffold
 - [ ] upload
 - [ ] watch - remove?
-- [ ] validate
+- [x] validate
