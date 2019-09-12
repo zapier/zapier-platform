@@ -46,7 +46,8 @@ class TestCommand extends BaseCommand {
 
     this.log('Running test suite.');
 
-    const output = await utils.runCommand('npm', argv, {
+    const packageManager = this.flags.yarn ? 'yarn' : 'npm';
+    const output = await utils.runCommand(packageManager, argv, {
       stdio: 'inherit',
       env
     });
@@ -68,6 +69,9 @@ TestCommand.flags = buildFlags({
     }),
     'skip-validate': flags.boolean({
       description: 'Forgo running `zapier validate` before `npm test`'
+    }),
+    yarn: flags.boolean({
+      description: 'Use yarn instead of npm'
     })
   }
 });
