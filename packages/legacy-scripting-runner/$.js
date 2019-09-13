@@ -33,4 +33,6 @@ $.parseXML = data => {
   return xml;
 };
 
+$.parseJSON = json => JSON.parse(json);
+
 module.exports = $;
