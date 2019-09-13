@@ -126,6 +126,7 @@ const legacyScriptingSource = `
         contacts[0].name = 'Patched by KEY_post_poll!';
         contacts[0].jqueryText = $('<div>jQuery works!</div>').text();
         contacts[0].jqueryParam = $.param({width: 1680, height: 1050});
+        contacts[0].randomJson = $.parseJSON('{"hey":1}');
         return contacts;
       },
 
