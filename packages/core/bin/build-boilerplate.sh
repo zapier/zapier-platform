@@ -23,14 +23,14 @@ FILE="$BUILD_DIR/$CORE_VERSION.zip"
 
 TIMESTAMP=`date +"%s"`
 
-# Build core and legacy-scripting-runner locally. Needs to generate a unique filename
-# with a timestamp to avoid yarn using cached packages.
-# See https://github.com/yarnpkg/yarn/issues/2165.
 if [ "$1" == "production" ]; then
     echo "Building from published packages"
     cd ../legacy-scripting-runner
     TIMESTAMP=""
 else
+    # Build core and legacy-scripting-runner locally. Needs to generate a unique filename
+    # with a timestamp to avoid yarn using cached packages.
+    # See https://github.com/yarnpkg/yarn/issues/2165.
     echo "Building from local"
     yarn pack --filename "./boilerplate/core-$TIMESTAMP.tgz"
     cd ../legacy-scripting-runner
