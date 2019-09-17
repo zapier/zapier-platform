@@ -59,6 +59,7 @@ const callAPI = (route, options, rawError = false) => {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json; charset=utf-8',
+      'User-Agent': `${constants.PACKAGE_NAME}/${constants.PACKAGE_VERSION}`,
       'X-Requested-With': 'XMLHttpRequest'
     }
   };

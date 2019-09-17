@@ -128,7 +128,10 @@ class ZapierBaseCommand extends Command {
     });
   }
 
-  confirm(message, defaultAns = false) {
+  confirm(message, defaultAns = false, showCtrlC = false) {
+    if (showCtrlC) {
+      message += ' (Ctrl-C to cancel)';
+    }
     return this.prompt(message, { default: defaultAns, type: 'confirm' });
   }
 

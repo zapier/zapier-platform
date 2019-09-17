@@ -29,8 +29,7 @@ Some notes to help an ongoing project
 - [x] logout
 - [x] login
 - [ ] logs
-- [ ] migrate
-- [ ] migrate
+- [x] migrate
 - [ ] register
 - [x] test
 
@@ -41,7 +40,7 @@ Some notes to help an ongoing project
 - [ ] convert
 - [ ] env
 - [ ] invite
-- [ ] promote
+- [x] promote
 - [ ] push
 - [ ] scaffold
 - [ ] upload

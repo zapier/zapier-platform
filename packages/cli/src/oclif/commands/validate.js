@@ -4,35 +4,7 @@ const { flags } = require('@oclif/command');
 const BaseCommand = require('../ZapierBaseCommand');
 const utils = require('../../utils');
 const { buildFlags } = require('../buildFlags');
-const { formatStyles } = require('../../utils/display');
-
-const condenseIssues = checkResult => {
-  const res = [];
-  const docURL =
-    'https://platform.zapier.com/docs/integration-checks-reference';
-  for (const severity in checkResult) {
-    for (const issueGroup of checkResult[severity]) {
-      const opType =
-        {
-          write: 'creates',
-          read: 'triggers',
-          auth: 'authentication'
-        }[issueGroup.type] || issueGroup.type;
-
-      for (const violation of issueGroup.violations) {
-        for (const result of violation.results) {
-          res.push({
-            category: severity,
-            method: `${opType}.${violation.type}`,
-            description: `${result.message} (${result.tag})`,
-            link: `${docURL}#${result.tag}`
-          });
-        }
-      }
-    }
-  }
-  return res;
-};
+const { flattenCheckResult, formatStyles } = require('../../utils/display');
 
 class ValidateCommand extends BaseCommand {
   async perform() {
@@ -85,7 +57,7 @@ class ValidateCommand extends BaseCommand {
       checkResult = await utils.validateApp(rawDefinition);
     }
 
-    const checkIssues = condenseIssues(checkResult);
+    const checkIssues = flattenCheckResult(checkResult);
 
     this.logTable({
       rows: checkIssues,
