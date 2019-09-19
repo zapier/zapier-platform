@@ -710,6 +710,14 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
   const runTrigger = async (bundle, key) => {
     const url = _.get(app, `legacy.triggers.${key}.operation.url`);
+    if (!url) {
+      const triggerType = _.get(app, `triggers.${key}.operation.type`);
+      if (triggerType === 'hook') {
+        // The hook has no polling URL, which is acceptable in WB
+        return [];
+      }
+    }
+
     const needsFlattenedData = _.get(app, 'legacy.needsFlattenedData');
     bundle.request.url = url;
 
