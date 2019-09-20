@@ -80,10 +80,9 @@ class PromoteCommand extends BaseCommand {
         true
       );
     } catch (response) {
-      this.stopSpinner();
-
       const activationUrl = _.get(response, ['json', 'activationInfo', 'url']);
       if (activationUrl) {
+        this.stopSpinner();
         this.log('\nGood news! Your app passes validation.');
         this.log(
           `The next step is to visit ${colors.cyan(
@@ -91,6 +90,8 @@ class PromoteCommand extends BaseCommand {
           )} to request public activation of your app.`
         );
       } else {
+        this.stopSpinner({ success: false });
+
         const errors = _.get(response, 'json.errors');
         if (!_.isEmpty(errors)) {
           throw new Error(serializeErrors(errors));
