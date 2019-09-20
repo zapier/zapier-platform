@@ -28,22 +28,21 @@ class MigrateCommand extends BaseCommand {
     if (
       percent === 100 &&
       !user &&
-      app.public &&
+      app.public_ish &&
       toVersion !== app.latest_version
     ) {
       this.log(
         `You're trying to migrate all the users to ${toVersion}, which is not the current production version.`
       );
-      promoteFirst = this.confirm(
+      promoteFirst = await this.confirm(
         `Do you want to promote ${toVersion} to production first?`,
-        false,
+        true,
         true
       );
     }
 
     if (promoteFirst) {
-      PromoteCommand.printMigrateHint = false;
-      await PromoteCommand.run([toVersion]);
+      await PromoteCommand.run([toVersion, '--dontPrintMigrateHint']);
     }
 
     const body = {

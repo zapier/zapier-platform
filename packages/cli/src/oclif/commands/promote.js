@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
+const { flags } = require('@oclif/command');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
@@ -106,7 +107,7 @@ class PromoteCommand extends BaseCommand {
 
     this.stopSpinner();
     this.log('  Promotion successful!');
-    if (this.constructor.printMigrateHint) {
+    if (!this.flags.dontPrintMigrateHint) {
       this.log(
         'Optionally, run the `zapier migrate` command to move users to this version.'
       );
@@ -114,10 +115,14 @@ class PromoteCommand extends BaseCommand {
   }
 }
 
-// Can be turn off when it's called by another command such as migrate
-PromoteCommand.printMigrateHint = true;
-
-PromoteCommand.flags = buildFlags();
+PromoteCommand.flags = buildFlags({
+  commandFlags: {
+    // Used when it's called by another command such as migrate
+    dontPrintMigrateHint: flags.boolean({
+      hidden: true
+    })
+  }
+});
 
 PromoteCommand.args = [
   {
