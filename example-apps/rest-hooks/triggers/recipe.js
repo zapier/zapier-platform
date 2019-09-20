@@ -13,12 +13,11 @@ const subscribeHook = (z, bundle) => {
   const options = {
     url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
     method: 'POST',
-    body: JSON.stringify(data)
+    body: data
   };
 
   // You may return a promise or a normal data structure from any perform method.
-  return z.request(options)
-    .then((response) => JSON.parse(response.content));
+  return z.request(options).then(response => JSON.parse(response.content));
 };
 
 const unsubscribeHook = (z, bundle) => {
@@ -30,12 +29,11 @@ const unsubscribeHook = (z, bundle) => {
   // you need to complete. You can also register middleware to control this.
   const options = {
     url: `http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks/${hookId}`,
-    method: 'DELETE',
+    method: 'DELETE'
   };
 
   // You may return a promise or a normal data structure from any perform method.
-  return z.request(options)
-    .then((response) => JSON.parse(response.content));
+  return z.request(options).then(response => JSON.parse(response.content));
 };
 
 const getRecipe = (z, bundle) => {
@@ -62,8 +60,7 @@ const getFallbackRealRecipe = (z, bundle) => {
     }
   };
 
-  return z.request(options)
-    .then((response) => JSON.parse(response.content));
+  return z.request(options).then(response => JSON.parse(response.content));
 };
 
 // We recommend writing your triggers separate like this and rolling them
@@ -81,11 +78,14 @@ module.exports = {
 
   // `operation` is where the business logic goes.
   operation: {
-
     // `inputFields` can define the fields a user could provide,
     // we'll pass them in as `bundle.inputData` later.
     inputFields: [
-      {key: 'style', type: 'string', helpText: 'Which styles of cuisine this should trigger on.'}
+      {
+        key: 'style',
+        type: 'string',
+        helpText: 'Which styles of cuisine this should trigger on.'
+      }
     ],
 
     type: 'hook',
@@ -105,7 +105,7 @@ module.exports = {
       name: 'Best Spagetti Ever',
       authorId: 1,
       directions: '1. Boil Noodles\n2.Serve with sauce',
-      style: 'italian',
+      style: 'italian'
     },
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -113,12 +113,12 @@ module.exports = {
     // outputFields: () => { return []; }
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'id', label: 'ID'},
-      {key: 'createdAt', label: 'Created At'},
-      {key: 'name', label: 'Name'},
-      {key: 'directions', label: 'Directions'},
-      {key: 'authorId', label: 'Author ID'},
-      {key: 'style', label: 'Style'},
+      { key: 'id', label: 'ID' },
+      { key: 'createdAt', label: 'Created At' },
+      { key: 'name', label: 'Name' },
+      { key: 'directions', label: 'Directions' },
+      { key: 'authorId', label: 'Author ID' },
+      { key: 'style', label: 'Style' }
     ]
   }
 };

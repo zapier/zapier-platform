@@ -7,12 +7,11 @@ const hydrators = {
     });
 
     // and swap it for a stashed URL
-    return z.stashFile(filePromise)
-      .then((url) => {
-        z.console.log(`Stashed URL = ${url}`);
-        return url;
-      });
-  },
+    return z.stashFile(filePromise).then(url => {
+      z.console.log(`Stashed URL = ${url}`);
+      return url;
+    });
+  }
 };
 
 module.exports = hydrators;

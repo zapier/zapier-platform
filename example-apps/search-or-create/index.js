@@ -12,7 +12,7 @@ const App = {
   platformVersion: require('zapier-platform-core').version,
 
   // beforeRequest & afterResponse are optional hooks into the provided HTTP client
-  beforeRequest: [ addAuthHeader ],
+  beforeRequest: [addAuthHeader],
   afterResponse: [],
 
   // If you want your trigger to show up, you better include it here!
@@ -25,7 +25,8 @@ const App = {
   creates: { [RecipeCreate.key]: RecipeCreate },
 
   searchOrCreates: {
-    [RecipeSearch.key]: { // the key must match the search
+    [RecipeSearch.key]: {
+      // the key must match the search
       key: RecipeSearch.key, // same as above
       display: {
         // the label goes up in sidebar

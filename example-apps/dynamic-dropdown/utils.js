@@ -1,7 +1,7 @@
 // Some handy stuff that's used in various places
 
 const generateID = function(urlString) {
-  const pieces = urlString.split("/").reverse();
+  const pieces = urlString.split('/').reverse();
   // go through the pieces, and only keep the number/integers
   const numbers = pieces.filter(piece => {
     if (Number.isInteger(piece)) {
