@@ -3,8 +3,9 @@ const { flags } = require('@oclif/command');
 const BaseCommand = require('../ZapierBaseCommand');
 const ValidateCommand = require('./validate');
 const constants = require('../../constants');
-const utils = require('../../utils');
 const { buildFlags } = require('../buildFlags');
+const { readCredentials } = require('../../utils/api');
+const { runCommand } = require('../../utils/misc');
 
 class TestCommand extends BaseCommand {
   async perform() {
@@ -24,7 +25,7 @@ class TestCommand extends BaseCommand {
       extraEnv.DETAILED_LOG_TO_STDOUT = 'true';
     }
 
-    const credentials = await utils.readCredentials(false);
+    const credentials = await readCredentials(false);
     if (credentials.deployKey) {
       this.log(
         `Adding ${constants.AUTH_LOCATION} to environment as ZAPIER_DEPLOY_KEY...`
@@ -47,7 +48,7 @@ class TestCommand extends BaseCommand {
     this.log('Running test suite.');
 
     const packageManager = this.flags.yarn ? 'yarn' : 'npm';
-    const output = await utils.runCommand(packageManager, argv, {
+    const output = await runCommand(packageManager, argv, {
       stdio: 'inherit',
       env
     });

@@ -2,15 +2,16 @@ const colors = require('colors/safe');
 const { flags } = require('@oclif/command');
 
 const BaseCommand = require('../ZapierBaseCommand');
-const utils = require('../../utils');
 const { buildFlags } = require('../buildFlags');
 const { flattenCheckResult, formatStyles } = require('../../utils/display');
+const { localAppCommand } = require('../../utils/local');
+const { validateApp } = require('../../utils/api');
 
 class ValidateCommand extends BaseCommand {
   async perform() {
     this.log('Validating project locally.');
 
-    const errors = await utils.localAppCommand({ command: 'validate' });
+    const errors = await localAppCommand({ command: 'validate' });
 
     const newErrors = errors.map(error => {
       error = Object.assign({}, error);
@@ -50,11 +51,11 @@ class ValidateCommand extends BaseCommand {
     } else {
       this.log('\nRunning app checks.');
 
-      const rawDefinition = await utils.localAppCommand({
+      const rawDefinition = await localAppCommand({
         command: 'definition'
       });
 
-      checkResult = await utils.validateApp(rawDefinition);
+      checkResult = await validateApp(rawDefinition);
     }
 
     const checkIssues = flattenCheckResult(checkResult);

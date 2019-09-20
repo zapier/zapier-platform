@@ -2,8 +2,10 @@ const _ = require('lodash');
 const colors = require('colors/safe');
 
 const BaseCommand = require('../ZapierBaseCommand');
-const utils = require('../../utils');
 const { buildFlags } = require('../buildFlags');
+const { callAPI, checkCredentials, getLinkedApp } = require('../../utils/api');
+const { flattenCheckResult } = require('../../utils/display');
+const { getVersionChangelog } = require('../../utils/changelog');
 
 const serializeErrors = errors => {
   const opener = 'Promotion failed for the following reasons:\n\n';
@@ -12,7 +14,7 @@ const serializeErrors = errors => {
     return opener + errors.map(e => `* ${e}`).join('\n');
   }
 
-  const issues = utils.flattenCheckResult({ errors: errors });
+  const issues = flattenCheckResult({ errors: errors });
   return (
     opener +
     issues
@@ -23,12 +25,12 @@ const serializeErrors = errors => {
 
 class PromoteCommand extends BaseCommand {
   async perform() {
-    await utils.checkCredentials();
+    await checkCredentials();
 
     const version = this.args.version;
 
     let shouldContinue;
-    const changelog = await utils.getVersionChangelog(version);
+    const changelog = await getVersionChangelog(version);
     if (changelog) {
       this.log(colors.green(`Changelog found for ${version}`));
       this.log(`\n---\n${changelog}\n---\n`);
@@ -54,7 +56,7 @@ class PromoteCommand extends BaseCommand {
       throw new Error('Cancelled promote.');
     }
 
-    const app = await utils.getLinkedApp();
+    const app = await getLinkedApp();
     this.log(
       `Preparing to promote version ${version} of your app "${app.title}".`
     );
@@ -68,7 +70,7 @@ class PromoteCommand extends BaseCommand {
 
     const url = `/apps/${app.id}/versions/${version}/promote/production`;
     try {
-      await utils.callAPI(
+      await callAPI(
         url,
         {
           method: 'PUT',

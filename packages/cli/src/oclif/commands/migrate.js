@@ -2,7 +2,7 @@ const { flags } = require('@oclif/command');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const PromoteCommand = require('./promote');
-const utils = require('../../utils');
+const { callAPI, getLinkedApp } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
 
 class MigrateCommand extends BaseCommand {
@@ -18,7 +18,7 @@ class MigrateCommand extends BaseCommand {
       );
     }
 
-    const app = await utils.getLinkedApp();
+    const app = await getLinkedApp();
 
     let promoteFirst = false;
     if (
@@ -58,7 +58,7 @@ class MigrateCommand extends BaseCommand {
 
     const url = `/apps/${app.id}/versions/${fromVersion}/migrate-to/${toVersion}`;
     try {
-      await utils.callAPI(url, { method: 'POST', body });
+      await callAPI(url, { method: 'POST', body });
     } finally {
       this.stopSpinner();
     }
