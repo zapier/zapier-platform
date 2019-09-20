@@ -7,7 +7,11 @@ const { buildFlags } = require('../buildFlags');
 
 class MigrateCommand extends BaseCommand {
   async perform() {
-    const percent = parseInt(this.args.percent, 10);
+    const percent = this.args.percent;
+    if (isNaN(percent) || percent < 1 || percent > 100) {
+      throw new Error('`PERCENT` must be a number between 1 and 100.');
+    }
+
     const user = this.flags.user;
     const fromVersion = this.args.fromVersion;
     const toVersion = this.args.toVersion;
@@ -90,14 +94,15 @@ MigrateCommand.args = [
   },
   {
     name: 'percent',
-    default: '100%',
-    description: 'Percent of users to migrate.'
+    default: 100,
+    description: 'Percentage (between 1 and 100) of users to migrate.',
+    parse: input => parseInt(input, 10)
   }
 ];
 
 MigrateCommand.examples = [
   'zapier migrate 1.0.0 1.0.1',
-  'zapier migrate 1.0.1 2.0.0 10%',
+  'zapier migrate 1.0.1 2.0.0 10',
   'zapier migrate 2.0.0 2.0.1 --user=user@example.com'
 ];
 MigrateCommand.description = `Migrates users from one version of your app to another.
