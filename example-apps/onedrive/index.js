@@ -1,10 +1,10 @@
-const authentication = require('./authentication');
-const {includeBearerToken} = require('./before-handlers');
-const hydrators = require('./hydrators');
+const authentication = require('./authentication')
+const { includeBearerToken } = require('./before-handlers')
+const hydrators = require('./hydrators')
 
-const folder = require('./resources/folder');
-const file = require('./resources/file');
-const createTextFile = require('./creates/text-file');
+const folder = require('./resources/folder')
+const file = require('./resources/file')
+const createTextFile = require('./creates/text-file')
 
 // We can roll up all our behaviors in an App.
 const App = {
@@ -19,12 +19,9 @@ const App = {
 
   // Ordered list of functions to pass the request object through before
   // sending it. Here we register one function that will set the auth header.
-  beforeRequest: [
-    includeBearerToken
-  ],
+  beforeRequest: [includeBearerToken],
 
-  afterResponse: [
-  ],
+  afterResponse: [],
 
   /* Register the two resources for this app. Each resource defines the `list`,
    * `search`, and `create` properties, allowing Zapier to automatically generate
@@ -32,21 +29,19 @@ const App = {
    */
   resources: {
     [folder.key]: folder,
-    [file.key]: file,
+    [file.key]: file
   },
 
-  triggers: {
-  },
+  triggers: {},
 
-  searches: {
-  },
+  searches: {},
 
   /* In addition to the default create from the file resource, we also want to
    * allow users to create plain text files, so we register that create here.
    */
   creates: {
-    [createTextFile.key]: createTextFile,
-  },
-};
+    [createTextFile.key]: createTextFile
+  }
+}
 
-module.exports = App;
+module.exports = App

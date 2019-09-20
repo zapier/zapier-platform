@@ -1,9 +1,9 @@
-const generateID = require("../utils").generateID;
+const generateID = require('../utils').generateID;
 
 // fetches a list of records from the endpoint
 const fetchList = (z, bundle) => {
   const request = {
-    url: "http://swapi.co/api/species/",
+    url: 'http://swapi.co/api/species/',
     params: {}
   };
 
@@ -23,12 +23,12 @@ const fetchList = (z, bundle) => {
 };
 
 module.exports = {
-  key: "species",
-  noun: "Species",
+  key: 'species',
+  noun: 'Species',
   display: {
-    label: "List of Species",
+    label: 'List of Species',
     description:
-      "This is a hidden trigger, and is used in a Dynamic Dropdown within this app",
+      'This is a hidden trigger, and is used in a Dynamic Dropdown within this app',
     hidden: true
   },
 

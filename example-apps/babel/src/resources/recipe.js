@@ -21,11 +21,11 @@ const createRecipe = async (z, bundle) => {
   const response = await z.request({
     url: _sharedBaseUrl + '/recipes',
     method: 'POST',
-    body: JSON.stringify({
+    body: {
       name: bundle.inputData.name,
       directions: bundle.inputData.directions,
       authorId: bundle.inputData.authorId
-    }),
+    },
     headers: {
       'content-type': 'application/json'
     }
@@ -102,7 +102,6 @@ const Recipe = {
   //
   // },
 
-  // The create method on this resource becomes a Write on this app
   create: {
     display: {
       label: 'Create Recipe',
@@ -134,7 +133,7 @@ const Recipe = {
       sample
     }
   },
-  // The search method on this resource becomes a Search on this app
+
   search: {
     display: {
       label: 'Find Recipe',

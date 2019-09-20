@@ -10,31 +10,27 @@ const App = {
   platformVersion: require('zapier-platform-core').version,
 
   // beforeRequest & afterResponse are optional hooks into the provided HTTP client
-  beforeRequest: [
-  ],
+  beforeRequest: [],
 
-  afterResponse: [
-  ],
+  afterResponse: [],
 
   // Any hydrators go here
   hydrators: hydrators,
 
   // If you want to define optional resources to simplify creation of triggers, searches, creates - do that here!
-  resources: {
-  },
+  resources: {},
 
   // If you want your triggers to show up, you better include it here!
   triggers: {
-    [newFile.key]: newFile,
+    [newFile.key]: newFile
   },
 
   // If you want your searches to show up, you better include it here!
-  searches: {
-  },
+  searches: {},
 
   // If you want your creates to show up, you better include it here!
   creates: {
-    [uploadFile.key]: uploadFile,
+    [uploadFile.key]: uploadFile
   }
 };
 

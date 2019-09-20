@@ -1,13 +1,15 @@
-require("should");
+/* globals describe, it */
 
-const zapier = require("zapier-platform-core");
+require('should');
 
-const App = require("../index");
+const zapier = require('zapier-platform-core');
+
+const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
-describe("triggers", () => {
-  describe("species hidden trigger", () => {
-    it("should load species", done => {
+describe('triggers', () => {
+  describe('species hidden trigger', () => {
+    it('should load species', done => {
       const bundle = {
         inputData: {},
         meta: {}
@@ -18,8 +20,8 @@ describe("triggers", () => {
           results.length.should.above(1);
 
           const firstSpecies = results[0];
-          firstSpecies.name.should.eql("Hutt");
-          firstSpecies.id.should.eql("5");
+          firstSpecies.name.should.eql('Hutt');
+          firstSpecies.id.should.eql('5');
 
           done();
         })
@@ -27,8 +29,8 @@ describe("triggers", () => {
     });
   });
 
-  describe("new person trigger", () => {
-    it("should load people", done => {
+  describe('new person trigger', () => {
+    it('should load people', done => {
       const bundle = {
         inputData: {
           species: 1
@@ -40,8 +42,8 @@ describe("triggers", () => {
           results.length.should.above(1);
 
           const firstPerson = results[0];
-          firstPerson.name.should.eql("Luke Skywalker");
-          firstPerson.id.should.eql("1");
+          firstPerson.name.should.eql('Luke Skywalker');
+          firstPerson.id.should.eql('1');
 
           done();
         })

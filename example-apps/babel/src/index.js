@@ -9,24 +9,19 @@ const App = {
 
   authentication: Authentication,
 
-  beforeRequest: [
-  ],
+  beforeRequest: [],
 
-  afterResponse: [
-  ],
+  afterResponse: [],
 
   resources: {
-    [Recipe.key]: Recipe,
+    [Recipe.key]: Recipe
   },
 
-  triggers: {
-  },
+  triggers: {},
 
-  searches: {
-  },
+  searches: {},
 
-  creates: {
-  }
+  creates: {}
 };
 
 export default App;

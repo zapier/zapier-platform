@@ -23,11 +23,11 @@ const createRecipe = (z, bundle) => {
   const requestOptions = {
     url: _sharedBaseUrl + '/recipes',
     method: 'POST',
-    body: JSON.stringify({
+    body: {
       name: bundle.inputData.name,
       directions: bundle.inputData.directions,
       authorId: bundle.inputData.authorId
-    }),
+    },
     headers: {
       'content-type': 'application/json'
     }

@@ -3,12 +3,11 @@ const createRecipe = (z, bundle) => {
   const responsePromise = z.request({
     method: 'POST',
     url: 'https://jsonplaceholder.typicode.com/posts',
-    body: JSON.stringify({
+    body: {
       name: bundle.inputData.name
-    })
+    }
   });
-  return responsePromise
-    .then(response => z.JSON.parse(response.content));
+  return responsePromise.then(response => z.JSON.parse(response.content));
 };
 
 module.exports = {
@@ -22,8 +21,8 @@ module.exports = {
 
   operation: {
     inputFields: [
-      {key: 'name', required: true},
-      {key: 'favorite', required: true}
+      { key: 'name', required: true },
+      { key: 'favorite', required: true }
     ],
     perform: createRecipe,
 
@@ -32,9 +31,6 @@ module.exports = {
       name: 'Test'
     },
 
-    outputFields: [
-      {key: 'id', label: 'ID'},
-      {key: 'name', label: 'Name'}
-    ]
+    outputFields: [{ key: 'id', label: 'ID' }, { key: 'name', label: 'Name' }]
   }
 };
