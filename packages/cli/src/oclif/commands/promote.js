@@ -82,7 +82,7 @@ class PromoteCommand extends BaseCommand {
     } catch (response) {
       this.stopSpinner();
 
-      const activationUrl = _.get(response, 'json.activationInfo.url');
+      const activationUrl = _.get(response, ['json', 'activationInfo', 'url']);
       if (activationUrl) {
         this.log('\nGood news! Your app passes validation.');
         this.log(
