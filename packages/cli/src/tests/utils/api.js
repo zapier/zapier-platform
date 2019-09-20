@@ -60,8 +60,13 @@ describe('api', () => {
   });
 
   describe('listEndpoint', () => {
+    before(() => {
+      if (!nock.isActive()) {
+        nock.activate();
+      }
+    });
+
     beforeEach(() => {
-      nock.disableNetConnect();
       process.env.ZAPIER_DEPLOY_KEY = answer;
       mock({
         [CURRENT_APP_FILE]: '{ "id": 2864, "key": "App2864", "extra": 5 }'
@@ -106,7 +111,10 @@ describe('api', () => {
     afterEach(() => {
       mock.restore();
       delete process.env.ZAPIER_DEPLOY_KEY;
-      nock.enableNetConnect();
+    });
+
+    after(() => {
+      nock.restore();
     });
   });
 });
