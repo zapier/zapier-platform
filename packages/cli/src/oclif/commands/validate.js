@@ -41,7 +41,7 @@ class ValidateCommand extends BaseCommand {
     }
 
     let checkResult = [];
-    if (0 && (this.flags['no-server'] || process.exitCode === 1)) {
+    if (this.flags['no-server'] || process.exitCode === 1) {
       if (process.exitCode === 1) {
         this.log(
           colors.grey('\nSkipping app checks because app did not validate.')
