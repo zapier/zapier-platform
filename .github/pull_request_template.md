@@ -1,6 +1,30 @@
----
-name: Pull Request
-title: fix|feat|BREAKING CHANGE(cli|schema|core)
----
+<!--
 
-<!-- instead of the above, you can also use any of [build ci chore docs perf refactor revert style test] -->
+title should be in the format of:
+
+  workType(area): release notes summary
+
+where:
+
+  `workType` is one of (which correspond to semver release levels):
+    * fix
+    * feat
+    * BREAKING CHANGE
+  less common (but valid) options:
+    * build
+    * ci
+    * chore
+    * docs
+    * perf
+    * refactor
+    * revert
+    * style
+    * test
+
+  `area` is (probably) one of:
+    * cli
+    * schema
+    * core
+    * legacy-scripting-runner
+
+-->

@@ -519,12 +519,12 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
       input.bundle.meta = {
-        'isLoadingSample': true,
-        'isFillingDynamicDropdown': true,
-        'isTestingAuth': false,
-        'isPopulatingDedupe': true,
-        'limit': 20,
-        'page': 1
+        isLoadingSample: true,
+        isFillingDynamicDropdown: true,
+        isTestingAuth: false,
+        isPopulatingDedupe: true,
+        limit: 20,
+        page: 1
       };
       return _app(input).then(output => {
         const echoed = output.results[0];
@@ -555,6 +555,7 @@ describe('Integration Test', () => {
         should.equal(firstContact.name, 'Patched by KEY_post_poll!');
         should.equal(firstContact.jqueryText, 'jQuery works!');
         should.equal(firstContact.jqueryParam, 'width=1680&height=1050');
+        should.deepEqual(firstContact.randomJson, { hey: 1 });
       });
     });
 
@@ -1550,6 +1551,50 @@ describe('Integration Test', () => {
         should.equal(movie.title, 'Arrival');
         should.equal(movie.genre, 'Sci-fi');
         should.equal(movie.year, 2016);
+      });
+    });
+
+    it('sync KEY_write empty list', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_write_sync',
+        'movie_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = [];
+
+      return app(input).then(output => {
+        should.deepEqual(output.results, {});
+      });
+    });
+
+    it('sync KEY_write primitive', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_write_sync',
+        'movie_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = [1234];
+
+      return app(input).then(output => {
+        should.deepEqual(output.results, { message: 1234 });
       });
     });
 
