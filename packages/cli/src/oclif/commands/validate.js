@@ -41,7 +41,7 @@ class ValidateCommand extends BaseCommand {
     }
 
     let checkResult = [];
-    if (this.flags['no-server'] || process.exitCode === 1) {
+    if (this.flags['without-style'] || process.exitCode === 1) {
       if (process.exitCode === 1) {
         this.log(
           colors.grey('\nSkipping app checks because app did not validate.')
@@ -88,7 +88,7 @@ class ValidateCommand extends BaseCommand {
 
 ValidateCommand.flags = buildFlags({
   commandFlags: {
-    'no-server': flags.boolean({
+    'without-style': flags.boolean({
       description: 'Forgo pinging the Zapier server to run further checks'
     })
   },
@@ -99,7 +99,11 @@ ValidateCommand.flags = buildFlags({
 
 ValidateCommand.args = [];
 
-ValidateCommand.examples = ['zapier validate', 'zapier validate --no-server'];
+ValidateCommand.examples = [
+  'zapier validate',
+  'zapier validate --without-style',
+  'zapier validate --format json'
+];
 ValidateCommand.description = `Validates your Zapier app.
 
 Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during \`zapier build\`, \`zapier upload\`, \`zapier push\` or even as a test in \`zapier test\`.`;
