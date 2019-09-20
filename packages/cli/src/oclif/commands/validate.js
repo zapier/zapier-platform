@@ -13,12 +13,11 @@ class ValidateCommand extends BaseCommand {
 
     const errors = await localAppCommand({ command: 'validate' });
 
-    const newErrors = errors.map(error => {
-      error = Object.assign({}, error);
-      error.property = error.property.replace(/^instance/, 'App');
-      error.docLinks = (error.docLinks || []).join('\n');
-      return error;
-    });
+    const newErrors = errors.map(error => ({
+      error,
+      property: error.property.replace(/^instance/, 'App'),
+      docLinks: (error.docLinks || []).join('\n')
+    }));
     this.logTable({
       rows: newErrors,
       headers: [
