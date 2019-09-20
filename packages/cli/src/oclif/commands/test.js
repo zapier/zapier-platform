@@ -11,9 +11,6 @@ class TestCommand extends BaseCommand {
   async perform() {
     if (!this.flags['skip-validate']) {
       await ValidateCommand.run([]);
-      if (process.exitCode) {
-        return;
-      }
     }
 
     const extraEnv = {
