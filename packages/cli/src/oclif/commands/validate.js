@@ -3,7 +3,7 @@ const { flags } = require('@oclif/command');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const { flattenCheckResult, formatStyles } = require('../../utils/display');
+const { flattenCheckResult } = require('../../utils/display');
 const { localAppCommand } = require('../../utils/local');
 const { validateApp } = require('../../utils/api');
 
@@ -88,14 +88,12 @@ class ValidateCommand extends BaseCommand {
 
 ValidateCommand.flags = buildFlags({
   commandFlags: {
-    format: flags.string({
-      char: 'f',
-      options: Object.keys(formatStyles),
-      default: 'row'
-    }),
     'no-server': flags.boolean({
       description: 'Forgo pinging the Zapier server to run further checks'
     })
+  },
+  opts: {
+    format: true
   }
 });
 
