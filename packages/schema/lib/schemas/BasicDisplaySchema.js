@@ -17,28 +17,38 @@ module.exports = makeSchema({
     }
   ],
   antiExamples: [
-    { label: 'New Thing' },
     {
       label: 'New Thing',
       description: 'Gets a new thing for you.',
       important: 1
     }
   ],
-  required: ['label', 'description'],
   properties: {
     label: {
       description:
-        'A short label like "New Record" or "Create Record in Project".',
+        'A short label like "New Record" or "Create Record in Project". Optional if `hidden` is true.',
       type: 'string',
       minLength: 2,
-      maxLength: 64
+      maxLength: 64,
+      docAnnotation: {
+        required: {
+          type: 'replace',
+          value: '**yes** (with exceptions, see description)'
+        }
+      }
     },
     description: {
       description:
-        'A description of what this trigger, search, or create does.',
+        'A description of what this trigger, search, or create does. Optional if `hidden` is true.',
       type: 'string',
       minLength: 1,
-      maxLength: 1000
+      maxLength: 1000,
+      docAnnotation: {
+        required: {
+          type: 'replace',
+          value: '**yes** (with exceptions, see description)'
+        }
+      }
     },
     directions: {
       description:

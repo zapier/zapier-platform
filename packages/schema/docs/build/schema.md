@@ -346,15 +346,14 @@ Represents user information for a trigger, search, or create.
 
 #### Anti-Examples
 
-* `{ label: 'New Thing' }`
 * `{ label: 'New Thing', description: 'Gets a new thing for you.', important: 1 }`
 
 #### Properties
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`label` | **yes** | `string` | A short label like "New Record" or "Create Record in Project".
-`description` | **yes** | `string` | A description of what this trigger, search, or create does.
+`label` | **yes** (with exceptions, see description) | `string` | A short label like "New Record" or "Create Record in Project". Optional if `hidden` is true.
+`description` | **yes** (with exceptions, see description) | `string` | A description of what this trigger, search, or create does. Optional if `hidden` is true.
 `directions` | no | `string` | A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application. Only evaluated for static webhooks.
 `important` | no | `boolean` | Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.
 `hidden` | no | `boolean` | Should this operation be unselectable by users?

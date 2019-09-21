@@ -9,13 +9,14 @@
  *     name, // optional, the validation type that failed. Can make something up like 'invalidUrl'
  *     argument // optional
  *   );
-*/
+ */
 const checks = [
   require('./searchOrCreateKeys'),
   require('./deepNestedFields'),
   require('./mutuallyExclusiveFields'),
   require('./requiredSamples'),
-  require('./matchingKeys')
+  require('./matchingKeys'),
+  require('./labelWhenVisible')
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {
