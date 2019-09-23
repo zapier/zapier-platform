@@ -28,7 +28,7 @@ class ZapierBaseCommand extends Command {
 
       this.debug(e.stack);
 
-      if (!this.flags.debug) {
+      if (!this.flags.debug && !this.flags.invokedFromAnotherCommand) {
         errTextLines.push(
           colors.gray('re-run this command with `--debug` for more info')
         );

@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
-const { flags } = require('@oclif/command');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
@@ -54,7 +53,7 @@ class PromoteCommand extends BaseCommand {
     }
 
     if (!shouldContinue) {
-      throw new Error('Cancelled promote.');
+      this.error('Cancelled promote.');
     }
 
     const app = await getLinkedApp();
@@ -94,12 +93,12 @@ class PromoteCommand extends BaseCommand {
 
         const errors = _.get(response, 'json.errors');
         if (!_.isEmpty(errors)) {
-          throw new Error(serializeErrors(errors));
+          this.error(serializeErrors(errors));
         } else if (response.errText) {
-          throw new Error(response.errText);
+          this.error(response.errText);
         } else {
           // is an actual error
-          throw response;
+          this.error(response);
         }
       }
 
@@ -108,7 +107,7 @@ class PromoteCommand extends BaseCommand {
 
     this.stopSpinner();
     this.log('  Promotion successful!');
-    if (!this.flags.dontPrintMigrateHint) {
+    if (!this.flags.invokedFromAnotherCommand) {
       this.log(
         'Optionally, run the `zapier migrate` command to move users to this version.'
       );
@@ -116,14 +115,7 @@ class PromoteCommand extends BaseCommand {
   }
 }
 
-PromoteCommand.flags = buildFlags({
-  commandFlags: {
-    // Used when it's called by another command such as migrate
-    dontPrintMigrateHint: flags.boolean({
-      hidden: true
-    })
-  }
-});
+PromoteCommand.flags = buildFlags();
 
 PromoteCommand.args = [
   {
@@ -133,10 +125,7 @@ PromoteCommand.args = [
   }
 ];
 
-PromoteCommand.examples = [
-  'zapier promote 1.0.0',
-  'zapier promote 2.0.0 --no-changelog'
-];
+PromoteCommand.examples = ['zapier promote 1.0.0'];
 PromoteCommand.description = `Promotes a specific version to public access.
 
 Promotes an app version into production (non-private) rotation, which means new users can use this app version.

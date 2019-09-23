@@ -9,7 +9,7 @@ class MigrateCommand extends BaseCommand {
   async perform() {
     const percent = this.args.percent;
     if (isNaN(percent) || percent < 1 || percent > 100) {
-      throw new Error('`PERCENT` must be a number between 1 and 100.');
+      this.error('`PERCENT` must be a number between 1 and 100.');
     }
 
     const user = this.flags.user;
@@ -17,7 +17,7 @@ class MigrateCommand extends BaseCommand {
     const toVersion = this.args.toVersion;
 
     if (user && percent !== 100) {
-      throw new Error(
+      this.error(
         'Cannot specify both `PERCENT` and `--user`. Use only one or the other.'
       );
     }
@@ -28,7 +28,7 @@ class MigrateCommand extends BaseCommand {
     if (
       percent === 100 &&
       !user &&
-      app.public_ish &&
+      (app.public || app.public_ish) &&
       toVersion !== app.latest_version
     ) {
       this.log(
@@ -42,7 +42,7 @@ class MigrateCommand extends BaseCommand {
     }
 
     if (promoteFirst) {
-      await PromoteCommand.run([toVersion, '--dontPrintMigrateHint']);
+      await PromoteCommand.run([toVersion, '--invokedFromAnotherCommand']);
     }
 
     const body = {

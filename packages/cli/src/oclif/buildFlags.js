@@ -13,11 +13,21 @@ const baseFlags = {
     char: 'd',
     description: 'Show extra debugging output'
     // pull from env?
+  }),
+
+  // Indicates we're calling a command from another command so we know when not
+  // to print duplicate messages.
+  invokedFromAnotherCommand: flags.boolean({
+    hidden: true
   })
 };
 
 // didn't destruture these opts because I want them all on one object to be picked from
-const defaultOpts = { debug: true, format: false };
+const defaultOpts = {
+  debug: true,
+  format: false,
+  invokedFromAnotherCommand: true
+};
 
 /**
  * pass in flag objects, plus whether or not to include debug and format
