@@ -10,7 +10,7 @@ const { runCommand } = require('../../utils/misc');
 class TestCommand extends BaseCommand {
   async perform() {
     if (!this.flags['skip-validate']) {
-      await ValidateCommand.run([]);
+      await ValidateCommand.run(['--invokedFromAnotherCommand']);
     }
 
     const extraEnv = {
