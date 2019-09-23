@@ -33,12 +33,12 @@ module.exports = {
       const promise = z.request({
         url: 'https://auth-json-server.zapier-staging.com/recipes',
         method: 'POST',
-        body: JSON.stringify({
+        body: {
           name: bundle.inputData.name,
           directions: bundle.inputData.directions,
           authorId: bundle.inputData.authorId,
           style: bundle.inputData.style
-        }),
+        },
         headers: {
           'content-type': 'application/json',
 

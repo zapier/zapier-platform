@@ -1,3 +1,5 @@
+/* globals describe, it */
+
 require('should');
 
 const zapier = require('zapier-platform-core');
@@ -6,9 +8,8 @@ const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
 describe('creates', () => {
-
   describe('create recipe create', () => {
-    it('should create a new recipe', (done) => {
+    it('should create a new recipe', done => {
       const bundle = {
         inputData: {
           name: 'Smith Family Recipe',
@@ -18,7 +19,7 @@ describe('creates', () => {
       };
 
       appTester(App.creates.recipe.operation.perform, bundle)
-        .then((result) => {
+        .then(result => {
           result.should.have.property('name');
           done();
         })

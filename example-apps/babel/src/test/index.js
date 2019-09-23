@@ -1,3 +1,4 @@
+/* globals describe, it */
 import should from 'should';
 
 import zapier from 'zapier-platform-core';
@@ -6,7 +7,6 @@ import App from '../index';
 const appTester = zapier.createAppTester(App);
 
 describe('My Test', () => {
-
   it('should test the auth succeeds', async () => {
     const bundle = {
       authData: {
@@ -29,10 +29,11 @@ describe('My Test', () => {
     };
 
     try {
-      const response = await appTester(App.authentication.test, bundle);
-    } catch(e) {
-      e.message.should.containEql('The username and/or password you supplied is incorrect');
+      await appTester(App.authentication.test, bundle);
+    } catch (e) {
+      e.message.should.containEql(
+        'The username and/or password you supplied is incorrect'
+      );
     }
   });
-
 });

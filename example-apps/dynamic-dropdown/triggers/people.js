@@ -1,9 +1,9 @@
-const { generateID } = require("../utils");
+const { generateID } = require('../utils');
 
 // fetches a list of records from the endpoint
 const fetchList = (z, bundle) => {
   const request = {
-    url: "http://swapi.co/api/people/"
+    url: 'http://swapi.co/api/people/'
   };
 
   // ideally, we should poll through all the pages of results, but in this example
@@ -32,20 +32,20 @@ const fetchList = (z, bundle) => {
 };
 
 module.exports = {
-  key: "people",
-  noun: "person",
+  key: 'people',
+  noun: 'person',
   display: {
-    label: "New Person",
-    description: "Triggers when a new person is added."
+    label: 'New Person',
+    description: 'Triggers when a new person is added.'
   },
 
   operation: {
     inputFields: [
       {
-        key: "species",
-        type: "string",
-        helpText: "Species of person",
-        dynamic: "species.id.name",
+        key: 'species',
+        type: 'string',
+        helpText: 'Species of person',
+        dynamic: 'species.id.name',
         altersDynamicFields: true
       },
       (z, bundle) => {
@@ -54,33 +54,33 @@ module.exports = {
         }
         return [
           {
-            key: "foo1",
-            label: "Favorite Number",
+            key: 'foo1',
+            label: 'Favorite Number',
             required: false,
-            type: "number"
+            type: 'number'
           },
           {
-            key: "foo2",
-            label: "Favorite Color",
+            key: 'foo2',
+            label: 'Favorite Color',
             required: false,
-            type: "string"
+            type: 'string'
           }
         ];
       }
     ],
     perform: fetchList,
     sample: {
-      id: "1",
-      name: "Luke Skywalker",
-      birth_year: "19 BBY",
-      eye_color: "Blue",
-      gender: "Male",
-      hair_color: "Blond",
-      height: "172",
-      mass: "77",
-      skin_color: "Fair",
-      created: "2014-12-09T13:50:51.644000Z",
-      edited: "2014-12-10T13:52:43.172000Z"
+      id: '1',
+      name: 'Luke Skywalker',
+      birth_year: '19 BBY',
+      eye_color: 'Blue',
+      gender: 'Male',
+      hair_color: 'Blond',
+      height: '172',
+      mass: '77',
+      skin_color: 'Fair',
+      created: '2014-12-09T13:50:51.644000Z',
+      edited: '2014-12-10T13:52:43.172000Z'
     }
   }
 };

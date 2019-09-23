@@ -1,12 +1,13 @@
+/* globals describe, it */
+
 require('should');
 const zapier = require('zapier-platform-core');
 const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
-
   describe('newFile', () => {
-    it('should load files', (done) => {
+    it('should load files', done => {
       const bundle = {};
 
       appTester(App.triggers.newFile.operation.perform, bundle)
@@ -24,5 +25,4 @@ describe('triggers', () => {
         .catch(done);
     });
   });
-
 });
