@@ -1,4 +1,4 @@
-require('should');
+const should = require('should');
 const schema = require('../../schema');
 
 describe('labelWhenVisible', () => {
@@ -44,6 +44,9 @@ describe('labelWhenVisible', () => {
 
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
+    const err = results.errors[0];
+    should(err.codeLinks[0].includes('BasicDisplaySchema')).be.true();
+    err.property.should.eql('instance.creates.foo.display');
   });
 
   it('should error when label is alone when create is visible ', () => {

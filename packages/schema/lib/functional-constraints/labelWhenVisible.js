@@ -15,8 +15,8 @@ const labelWhenVisible = definition => {
           new jsonschema.ValidationError(
             `visible actions must have a label and description`,
             action,
-            `/${_.capitalize(actionType)}Schema`,
-            `instance.${key}.key`,
+            `/BasicDisplaySchema`,
+            `instance.${actionType}.${key}.display`,
             'invalid',
             'key'
           )
