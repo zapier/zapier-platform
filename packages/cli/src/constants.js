@@ -29,8 +29,15 @@ const nodeVersion = semver.Comparator(
 ).semver.version;
 const LAMBDA_VERSION = `v${nodeVersion}`;
 const AUTH_KEY = 'deployKey';
-const PACKAGE_VERSION = require('../package.json').version;
+
+const packageJson = require('../package.json');
+const PACKAGE_NAME = packageJson.name;
+const PACKAGE_VERSION = packageJson.version;
+
 const UPDATE_NOTIFICATION_INTERVAL = 1000 * 60 * 60 * 24 * 7; // one week
+
+const CHECK_REF_DOC_LINK =
+  'https://platform.zapier.com/docs/integration-checks-reference';
 
 module.exports = {
   API_PATH,
@@ -40,12 +47,14 @@ module.exports = {
   BASE_ENDPOINT,
   BUILD_DIR,
   BUILD_PATH,
+  CHECK_REF_DOC_LINK,
   SOURCE_PATH,
   BLACKLISTED_PATHS,
   CURRENT_APP_FILE,
   DEFINITION_PATH,
   ENDPOINT,
   LAMBDA_VERSION,
+  PACKAGE_NAME,
   PACKAGE_VERSION,
   PLATFORM_PACKAGE,
   STARTER_REPO,

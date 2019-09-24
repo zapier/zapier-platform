@@ -10,13 +10,14 @@ const filename = val => _.trim(String(val), '/<>');
 const anchor = val => '#' + filename(val.toLowerCase());
 
 const makeCodeLink = id =>
-  `${constants.ROOT_GITHUB}/blob/v${packageJson.version}/lib/schemas/${filename(
-    id
-  )}.js`;
+  `${constants.ROOT_GITHUB}/blob/zapier-platform-schema@${
+    packageJson.version
+  }/packages/schema/lib/schemas/${filename(id)}.js`;
 const makeDocLink = id =>
-  `${constants.ROOT_GITHUB}/blob/v${packageJson.version}/${
-    constants.DOCS_PATH
-  }${anchor(id)}`;
+  _.template(constants.DOC_URL_TEMPLATE)({
+    version: packageJson.version,
+    anchor: anchor(id)
+  });
 
 module.exports = {
   filename: filename,

@@ -29,10 +29,9 @@ Some notes to help an ongoing project
 - [x] logout
 - [x] login
 - [ ] logs
-- [ ] migrate
-- [ ] migrate
+- [x] migrate
 - [ ] register
-- [ ] test
+- [x] test
 
 ## hard
 
@@ -41,9 +40,9 @@ Some notes to help an ongoing project
 - [ ] convert
 - [ ] env
 - [ ] invite
-- [ ] promote
+- [x] promote
 - [ ] push
 - [ ] scaffold
 - [ ] upload
 - [ ] watch - remove?
-- [ ] validate
+- [x] validate

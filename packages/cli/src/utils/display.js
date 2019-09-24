@@ -7,6 +7,8 @@ const _ = require('lodash');
 const read = require('read');
 const ora = require('ora');
 
+const { CHECK_REF_DOC_LINK } = require('../constants');
+
 const notUndef = s => String(s === undefined ? '' : s).trim();
 
 const unBacktick = s => s.replace(/\n?`+(bash)?/g, '');
@@ -274,7 +276,35 @@ const getYesNoInput = (question, showCtrlC = true) => {
   });
 };
 
+const flattenCheckResult = checkResult => {
+  const res = [];
+  for (const severity in checkResult) {
+    for (const issueGroup of checkResult[severity]) {
+      const opType =
+        {
+          write: 'creates',
+          read: 'triggers',
+          auth: 'authentication'
+        }[issueGroup.type] || issueGroup.type;
+
+      for (const violation of issueGroup.violations) {
+        for (const result of violation.results) {
+          res.push({
+            category: severity,
+            method: `${opType}.${violation.type}`,
+            description: `${result.message} (${result.tag})`,
+            link: `${CHECK_REF_DOC_LINK}#${result.tag}`
+          });
+        }
+      }
+    }
+  }
+  return res;
+};
+
 module.exports = {
+  endSpinner,
+  flattenCheckResult,
   formatStyles,
   getInput,
   getYesNoInput,
@@ -283,6 +313,5 @@ module.exports = {
   markdownLog,
   prettyJSONstringify,
   printData,
-  endSpinner,
   startSpinner
 };
