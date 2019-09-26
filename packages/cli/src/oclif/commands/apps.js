@@ -5,7 +5,7 @@ const { listApps } = require('../../utils/api');
 
 class AppsCommand extends BaseCommand {
   async perform() {
-    const apps = await listApps();
+    const { apps } = await listApps();
 
     this.log('Here are all the apps you have write access to:\n');
 

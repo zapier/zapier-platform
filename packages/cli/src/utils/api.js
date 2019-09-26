@@ -222,10 +222,14 @@ const listApps = async () => {
 
   const apps = await callAPI('/apps');
 
-  return apps.objects.map(app => {
-    app.linked = linkedApp && app.id === linkedApp.id ? colors.green('✔') : '';
-    return app;
-  });
+  return {
+    app: linkedApp,
+    apps: apps.objects.map(app => {
+      app.linked =
+        linkedApp && app.id === linkedApp.id ? colors.green('✔') : '';
+      return app;
+    })
+  };
 };
 
 const listEndpoint = (endpoint, keyOverride) => {
