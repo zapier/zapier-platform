@@ -25,9 +25,7 @@ class ValidateCommand extends BaseCommand {
         ['Message', 'message'],
         ['Links', 'docLinks']
       ],
-      emptyMessage: colors.grey(
-        'No structural errors found during validation routine.'
-      )
+      emptyMessage: 'No structural errors found during validation routine.'
     });
 
     if (newErrors.length) {
@@ -67,7 +65,7 @@ class ValidateCommand extends BaseCommand {
         ['Description', 'description'],
         ['Link', 'link']
       ],
-      emptyMessage: colors.grey('App checks passed, no issues found.')
+      emptyMessage: 'App checks passed, no issues found.'
     });
 
     if (checkResult.errors && checkResult.errors.length) {

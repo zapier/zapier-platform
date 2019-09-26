@@ -82,7 +82,7 @@ class ZapierBaseCommand extends Command {
    * @param {Object} opts
    * @param {any[]} opts.rows The data to display
    * @param {string[][]} opts.headers Array of pairs of the column header and the key in the row that that header applies to
-   * @param {string} opts.emptyMessage a message to print if there's no data
+   * @param {string} opts.emptyMessage a message to print if there's no data. Printed in grey
    * @param {boolean} opts.usedRowBasedTable override format and use `row` instead
    */
   logTable({
@@ -99,7 +99,7 @@ class ZapierBaseCommand extends Command {
       this.error(`invalid table format: ${this.flags.format}`);
     }
     if (!rows.length && this._shouldPrintData()) {
-      this.log(emptyMessage);
+      this.log(colors.gray(emptyMessage));
     } else {
       // data comes out of the formatter ready to be printed (and it's always in the type to match the format) so we don't need to do anything special with it
       console.log(formatter(rows, headers));

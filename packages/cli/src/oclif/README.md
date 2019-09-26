@@ -18,7 +18,7 @@ Some notes to help an ongoing project
 
 ### easy
 
-- [ ] apps
+- [x] apps
 - [ ] delete
 - [ ] describe
 - [ ] deprecate

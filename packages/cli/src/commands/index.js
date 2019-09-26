@@ -1,5 +1,4 @@
 module.exports = {
-  apps: require('./apps'),
   build: require('./build'),
   collaborate: require('./collaborate'),
   convert: require('./convert'),
