@@ -2,6 +2,7 @@
 
 module.exports = {
   apps: require('./commands/apps'),
+  deprecate: require('./commands/deprecate'),
   init: require('./commands/init'),
   history: require('./commands/history'),
   logout: require('./commands/logout'),

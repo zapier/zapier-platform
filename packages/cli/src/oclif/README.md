@@ -21,7 +21,7 @@ Some notes to help an ongoing project
 - [x] apps
 - [ ] delete
 - [ ] describe
-- [ ] deprecate
+- [x] deprecate
 - [ ] help
 - [x] history
 - [ ] invitees
