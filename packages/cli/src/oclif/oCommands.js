@@ -3,6 +3,7 @@
 module.exports = {
   apps: require('./commands/apps'),
   init: require('./commands/init'),
+  history: require('./commands/history'),
   logout: require('./commands/logout'),
   login: require('./commands/login'),
   migrate: require('./commands/migrate'),

@@ -7,7 +7,6 @@ module.exports = {
   describe: require('./describe'),
   env: require('./env'),
   help: require('./help'),
-  history: require('./history'),
   invite: require('./invite'),
   link: require('./link'),
   logs: require('./logs'),

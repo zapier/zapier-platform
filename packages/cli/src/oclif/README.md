@@ -23,7 +23,7 @@ Some notes to help an ongoing project
 - [ ] describe
 - [ ] deprecate
 - [ ] help
-- [ ] history
+- [x] history
 - [ ] invitees
 - [ ] link
 - [x] logout
