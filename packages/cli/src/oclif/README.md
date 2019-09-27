@@ -18,12 +18,12 @@ Some notes to help an ongoing project
 
 ### easy
 
-- [ ] apps
+- [x] apps
 - [ ] delete
 - [ ] describe
-- [ ] deprecate
+- [x] deprecate
 - [ ] help
-- [ ] history
+- [x] history
 - [ ] invitees
 - [ ] link
 - [x] logout

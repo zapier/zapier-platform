@@ -212,27 +212,24 @@ const checkCredentials = () => {
   return callAPI('/check');
 };
 
-const listApps = () => {
-  return checkCredentials()
-    .then(() => {
-      return Promise.all([
-        getLinkedApp().catch(() => {
-          return undefined;
-        }),
-        callAPI('/apps')
-      ]);
+const listApps = async () => {
+  let linkedApp;
+  try {
+    linkedApp = await getLinkedApp();
+  } catch (e) {
+    // no worries
+  }
+
+  const apps = await callAPI('/apps');
+
+  return {
+    app: linkedApp,
+    apps: apps.objects.map(app => {
+      app.linked =
+        linkedApp && app.id === linkedApp.id ? colors.green('✔') : '';
+      return app;
     })
-    .then(values => {
-      const [linkedApp, data] = values;
-      return {
-        app: linkedApp,
-        apps: data.objects.map(app => {
-          app.linked =
-            linkedApp && app.id === linkedApp.id ? colors.green('✔') : '';
-          return app;
-        })
-      };
-    });
+  };
 };
 
 const listEndpoint = (endpoint, keyOverride) => {

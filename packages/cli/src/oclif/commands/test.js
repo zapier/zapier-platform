@@ -74,8 +74,6 @@ TestCommand.flags = buildFlags({
   }
 });
 
-TestCommand.args = [];
-
 TestCommand.examples = [
   'zapier test',
   'zapier test -t 30000 --grep api --skip-validate'
