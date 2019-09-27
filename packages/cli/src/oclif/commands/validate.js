@@ -94,8 +94,6 @@ ValidateCommand.flags = buildFlags({
   }
 });
 
-ValidateCommand.args = [];
-
 ValidateCommand.examples = [
   'zapier validate',
   'zapier validate --without-style',

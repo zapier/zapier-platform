@@ -22,6 +22,8 @@ class HistoryCommand extends BaseCommand {
 
 HistoryCommand.flags = buildFlags({ opts: { format: true } });
 HistoryCommand.examples = ['zapier history'];
-HistoryCommand.description = `Get the history of your app.\n\nHistory includes all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins and invitee changes as well as who made the change and when.`;
+HistoryCommand.description = `Gets the history of your app.
+
+History includes all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.`;
 
 module.exports = HistoryCommand;

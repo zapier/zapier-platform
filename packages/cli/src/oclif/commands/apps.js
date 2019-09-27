@@ -15,7 +15,7 @@ class AppsCommand extends BaseCommand {
         ['Title', 'title'],
         ['Unique Slug', 'key'],
         ['Date Created', 'date'],
-        ['Linked?', 'linked']
+        ['Linked', 'linked']
       ],
       emptyMessage: 'No apps found, try the `zapier register` command.'
     });
@@ -24,6 +24,8 @@ class AppsCommand extends BaseCommand {
 
 AppsCommand.flags = buildFlags({ opts: { format: true } });
 AppsCommand.examples = ['zapier apps'];
-AppsCommand.description = `Lists any apps that you have admin access to.\n\nThis command also checks the current directory for a linked app.`;
+AppsCommand.description = `Lists any apps that you have admin access to.
+
+This command also checks the current directory for a linked app.`;
 
 module.exports = AppsCommand;
