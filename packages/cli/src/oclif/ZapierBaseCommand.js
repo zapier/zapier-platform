@@ -143,15 +143,11 @@ class ZapierBaseCommand extends Command {
   }
 
   startSpinner(message) {
-    if (this._shouldPrintData()) {
-      startSpinner(message);
-    }
+    startSpinner(message);
   }
 
   stopSpinner({ success = true, message = undefined } = {}) {
-    if (this._shouldPrintData()) {
-      endSpinner(success, message);
-    }
+    endSpinner(success, message);
   }
 }
 
