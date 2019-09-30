@@ -65,7 +65,7 @@ class ValidateCommand extends BaseCommand {
 
     const checkIssues = flattenCheckResult(checkResult);
 
-    this.log("\nHere're the issues we found:");
+    this.log('\nHere are the issues we found:');
     this.logTable({
       rows: checkIssues,
       headers: [
