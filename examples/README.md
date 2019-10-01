@@ -11,15 +11,15 @@ keep 1 file
 - [x] basic-auth
 - [x] custom-auth
 - [x] digest-auth
-- [ ] middleware
 - [x] oauth1-trello
 - [x] oauth2
-- [ ] rest-hooks
-- [ ] session-auth
+- [x] rest-hooks
+- [x] session-auth
 
 delete
 
 - [ ] create
+- [ ] middleware
 - [ ] oauth1-tumblr
 - [ ] oauth1-twitter
 - [ ] resource
