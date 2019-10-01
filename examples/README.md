@@ -10,10 +10,10 @@ keep 1 file
 
 - [x] basic-auth
 - [x] custom-auth
-- [ ] digest-auth
+- [x] digest-auth
 - [ ] middleware
 - [x] oauth1-trello
-- [ ] oauth2
+- [x] oauth2
 - [ ] rest-hooks
 - [ ] session-auth
 

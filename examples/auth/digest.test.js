@@ -6,8 +6,9 @@ const zapier = require('zapier-platform-core');
 const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
-describe('basic auth', () => {
-  it('automatically has Authorize Header add', async () => {
+describe('digest auth', () => {
+  it('correctly authenticates', async () => {
+    // Try changing the values of username or password to see how the test method behaves
     const bundle = {
       authData: {
         username: 'user',
@@ -18,10 +19,12 @@ describe('basic auth', () => {
     const response = await appTester(App.authentication.test, bundle);
 
     response.status.should.eql(200);
-    response.request.headers.Authorization.should.eql('Basic dXNlcjpzZWNyZXQ=');
+    response.json.authenticated.should.be.true();
+    response.json.user.should.eql('myuser');
   });
 
   it('fails on bad auth', async () => {
+    // Try changing the values of username or password to see how the test method behaves
     const bundle = {
       authData: {
         username: 'user',

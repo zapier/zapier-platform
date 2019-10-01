@@ -11,7 +11,7 @@ const test = async (z /*, bundle */) => {
   }
 
   // anything truthy indicates the credentials are valid. Data returned from this test is available to the connection label
-  return response.json;
+  return response;
 };
 
 module.exports = {
