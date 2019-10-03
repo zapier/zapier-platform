@@ -231,7 +231,7 @@ const bundleConverter = async (bundle, event, z) => {
   const convertedBundle = {
     request: {
       method: requestMethod,
-      url: _.get(bundle, '_legacyUrl', '') || _.get(bundle, 'request.url', ''),
+      url: _.get(bundle, 'request.url', ''),
       headers: {
         'Content-Type': 'application/json'
       },
@@ -240,9 +240,12 @@ const bundleConverter = async (bundle, event, z) => {
     },
     auth_fields: _.get(bundle, 'authData', {}),
     meta,
-    zap,
-    url_raw: _.get(bundle, '_legacyUrl', '')
+    zap
   };
+
+  if (bundle._legacyUrl) {
+    convertedBundle.raw_url = convertedBundle.url_raw = bundle._legacyUrl;
+  }
 
   addAuthData(event, bundle, convertedBundle);
   addInputData(event, bundle, convertedBundle);
