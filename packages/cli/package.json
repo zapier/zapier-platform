@@ -26,6 +26,7 @@
     "preversion": "git pull && yarn validate",
     "prepack": "oclif-dev manifest",
     "postpack": "rm -f oclif.manifest.json",
+    "precommit": "yarn docs && git add docs README.md ../../docs",
     "version": "yarn docs && yarn gen-completions && git add docs/* goodies/* README.md",
     "postversion": "git push && git push --tags",
     "lint": "eslint zapier.js src snippets --fix",

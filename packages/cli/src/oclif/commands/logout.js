@@ -33,7 +33,6 @@ class LogoutCommand extends BaseCommand {
 }
 
 LogoutCommand.flags = buildFlags();
-LogoutCommand.examples = ['zapier logout'];
 LogoutCommand.description = `Deactivates your acive deploy key and resets \`${AUTH_LOCATION_RAW}\`.`;
 
 module.exports = LogoutCommand;
