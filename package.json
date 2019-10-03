@@ -30,7 +30,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn workspace zapier-platform-schema precommit && lint-staged"
+      "pre-commit": "lerna run --stream precommit && lint-staged"
     }
   },
   "lint-staged": {

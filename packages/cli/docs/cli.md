@@ -197,7 +197,7 @@ After the deprecation date has passed it will be safe to delete that app version
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
-* zapier deprecate 1.2.3 2011-10-01
+* `zapier deprecate 1.2.3 2011-10-01`
 
 
 ## describe
@@ -389,8 +389,8 @@ After running this, you'll have a new example app in your directory. If you re-r
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
-* zapier init ./some/path
-* zaper init . --template typescript
+* `zapier init ./some/path`
+* `zaper init . --template typescript`
 
 
 ## invite
@@ -587,9 +587,9 @@ Note: since a migration is only for non-breaking changes, users are not emailed 
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
-* zapier migrate 1.0.0 1.0.1
-* zapier migrate 1.0.1 2.0.0 10
-* zapier migrate 2.0.0 2.0.1 --user=user@example.com
+* `zapier migrate 1.0.0 1.0.1`
+* `zapier migrate 1.0.1 2.0.0 10`
+* `zapier migrate 2.0.0 2.0.1 --user=user@example.com`
 
 
 ## promote
@@ -619,7 +619,7 @@ Promotes are an inherently safe operation for all existing users of your app.
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
-* zapier promote 1.0.0
+* `zapier promote 1.0.0`
 
 
 ## push
@@ -741,8 +741,8 @@ This command is effectively the same as `npm test`, except we also validate your
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
-* zapier test
-* zapier test -t 30000 --grep api --skip-validate
+* `zapier test`
+* `zapier test -t 30000 --grep api --skip-validate`
 
 
 ## upload
@@ -780,9 +780,9 @@ Runs the standard validation routine powered by json-schema that checks your app
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
-* zapier validate
-* zapier validate --without-style
-* zapier validate --format json
+* `zapier validate`
+* `zapier validate --without-style`
+* `zapier validate --format json`
 
 
 ## versions
