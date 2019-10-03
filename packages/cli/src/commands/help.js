@@ -32,7 +32,7 @@ const help = (context, cmd) => {
           name,
           help: c.help || c.description.split('\n')[0],
           example: oclifCommands.has(name)
-            ? c.usage(name) // new
+            ? c.zUsage(name) // new
             : c.example // old
         };
       });

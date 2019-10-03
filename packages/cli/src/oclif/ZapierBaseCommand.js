@@ -151,7 +151,8 @@ class ZapierBaseCommand extends Command {
   }
 
   // pulled from https://github.com/oclif/plugin-help/blob/73bfd5a861e65844a1d6c3a0a9638ee49d16fee8/src/command.ts
-  static usage(name) {
+  // renamed to avoid naming collision
+  static zUsage(name) {
     const formatArg = arg => {
       const argName = arg.name.toUpperCase();
       return arg.required ? argName : `[${argName}]`;
@@ -201,7 +202,7 @@ class ZapierBaseCommand extends Command {
       '',
       `> ${blurb}`,
       '',
-      `**Usage**: \`${this.usage(name)}\``,
+      `**Usage**: \`${this.zUsage(name)}\``,
       ...(lengthyDescription ? ['', lengthyDescription] : []),
       ...(this.args ? ['', '**Arguments**', ...formattedArgs()] : []),
       ...(this.flags ? ['', '**Flags**', ...formattedFlags()] : []),
