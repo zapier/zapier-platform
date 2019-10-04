@@ -750,7 +750,7 @@ module.exports = App;
 
 ### OAuth2
 
-Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](http://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
+Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](https://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
 
 > Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2 for a working example app for OAuth2.
 
@@ -897,7 +897,7 @@ Here is a complete example of what the list method might look like
 
 ```js
 const listRecipesRequest = {
-  url: 'http://example.com/recipes'
+  url: 'https://example.com/recipes'
 };
 
 const Recipe = {
@@ -922,7 +922,7 @@ Adding a create method looks very similar.
 
 ```js
 const createRecipeRequest = {
-  url: 'http://example.com/recipes',
+  url: 'https://example.com/recipes',
   method: 'POST',
   body: {
     name: 'Baked Falafel',
@@ -965,7 +965,7 @@ The definition for each of these follows the same structure. Here is an example 
 
 ```js
 const recipeListRequest = {
-  url: 'http://example.com/recipes'
+  url: 'https://example.com/recipes'
 };
 
 const App = {
@@ -1064,7 +1064,7 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 
 ```js
 const recipeFields = (z, bundle) => {
-  const response = z.request('http://example.com/api/v2/fields.json');
+  const response = z.request('https://example.com/api/v2/fields.json');
   // json is is [{"key":"field_1"},{"key":"field_2"}]
   return response.then(res => res.json);
 };
@@ -1194,13 +1194,13 @@ In the first code example the dynamic dropdown is powered by a trigger. You can 
 
 ```js
 const App = {
-  //...
+  // ...
   resources: {
     project: {
       key: 'project',
-      //...
+      // ...
       list: {
-        //...
+        // ...
         operation: {
           perform: () => {
             return [{ id: 123, name: 'Project 1' }];
@@ -1210,9 +1210,9 @@ const App = {
     },
     issue: {
       key: 'issue',
-      //...
+      // ...
       create: {
-        //...
+        // ...
         operation: {
           inputFields: [
             {
@@ -1240,7 +1240,7 @@ In some cases you will need to power a dynamic dropdown but do not want to make 
 
 ```js
 const App = {
-  //...
+  // ...
   triggers: {
     new_project: {
       key: 'project',
@@ -1270,7 +1270,7 @@ Let's say you have a Worksheet trigger with a `perform` method similar to this.
 ```js
 perform: () => {
   return z
-    .request('http://example.com/api/v2/projects.json', {
+    .request('https://example.com/api/v2/projects.json', {
       params: {
         spreadsheet_id: bundle.inputData.spreadsheet_id
       }
@@ -1284,14 +1284,14 @@ And your New Records trigger has a Spreadsheet and a Worksheet dynamic dropdown.
 
 ```js
 const App = {
-  //...
+  // ...
   triggers: {
-    //...
+    // ...
     issue: {
       key: 'new_records',
-      //...
+      // ...
       create: {
-        //...
+        // ...
         operation: {
           inputFields: [
             {
@@ -1321,13 +1321,13 @@ If you want your trigger to perform specific scripting for a dynamic dropdown yo
 
 ```js
 const App = {
-  //...
+  // ...
   resources: {
     project: {
       key: 'project',
-      //...
+      // ...
       list: {
-        //...
+        // ...
         operation: {
           canPaginate: true,
           perform: () => {
@@ -1342,9 +1342,9 @@ const App = {
     },
     issue: {
       key: 'issue',
-      //...
+      // ...
       create: {
-        //...
+        // ...
         operation: {
           inputFields: [
             {
@@ -1492,7 +1492,7 @@ To define an Output Field for a nested field use `{{parent}}__{{key}}`. For chil
 
 ```js
 const recipeOutputFields = (z, bundle) => {
-  const response = z.request('http://example.com/api/v2/fields.json');
+  const response = z.request('https://example.com/api/v2/fields.json');
   // json is like [{"key":"field_1","label":"Label for Custom Field"}]
   return response.then(res => z.JSON.parse(res.content));
 };
@@ -1689,7 +1689,7 @@ For example - you could do:
 const subscribeHook = (z, bundle) => {
 
   const options = {
-    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
+    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
     method: 'POST',
     body: {
       url: bundle.targetUrl, // bundle.targetUrl has the Hook URL this app should call
@@ -1834,7 +1834,7 @@ const listExample = (z, bundle) => {
     }
   };
   const response = z.request(
-    'http://example.com/api/v2/recipes.json',
+    'https://example.com/api/v2/recipes.json',
     httpOptions
   );
   return response.then(res => res.json);
@@ -1886,7 +1886,7 @@ This features:
 ```js
 const triggerShorthandRequest = {
   method: 'GET',
-  url: 'http://{{bundle.authData.subdomain}}.example.com/v2/api/recipes.json',
+  url: 'https://{{bundle.authData.subdomain}}.example.com/v2/api/recipes.json',
   params: {
     sort_by: 'id',
     sort_order: 'DESC'
@@ -1927,7 +1927,7 @@ const listExample = (z, bundle) => {
   };
 
   return z
-    .request('http://example.com/api/v2/recipes.json', customHttpOptions)
+    .request('https://example.com/api/v2/recipes.json', customHttpOptions)
     .then(response => {
       if (response.status >= 300) {
         throw new Error(`Unexpected status code ${response.status}`);
@@ -1980,7 +1980,7 @@ const App = {
           };
 
           return z
-            .request('http://example.com/api/v2/recipes.json', options)
+            .request('https://example.com/api/v2/recipes.json', options)
             .then(response => {
               if (response.status !== 201) {
                 throw new Error(`Unexpected status code ${response.status}`);
@@ -2058,7 +2058,7 @@ Shorthand requests and manual `z.request([url], options)` calls support the foll
 
 ```js
 z.request({
-  url: 'http://example.com',
+  url: 'https://example.com',
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -2133,13 +2133,13 @@ Here is an example that pulls in extra data for a movie:
 
 ```js
 const getExtraDataFunction = (z, bundle) => {
-  const url = `http://example.com/movies/${bundle.inputData.id}.json`;
+  const url = `https://example.com/movies/${bundle.inputData.id}.json`;
   return z.request(url).then(res => z.JSON.parse(res.content));
 };
 
 const movieList = (z, bundle) => {
   return z
-    .request('http://example.com/movies.json')
+    .request('https://example.com/movies.json')
     .then(res => z.JSON.parse(res.content))
     .then(results => {
       return results.map(result => {
@@ -2214,7 +2214,7 @@ z.stashFile(content, content.length, 'hello.txt', 'text/plain')
 Most likely you'd want to stream from another URL - note the usage of `z.request({raw: true})`:
 
 ```js
-const fileRequest = z.request({url: 'http://example.com/file.pdf', raw: true});
+const fileRequest = z.request({url: 'https://example.com/file.pdf', raw: true});
 z.stashFile(fileRequest) // knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream
   .then(url => z.console.log(url));
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7
@@ -2237,7 +2237,7 @@ const stashPDFfunction = (z, bundle) => {
 
 const pdfList = (z, bundle) => {
   return z
-    .request('http://example.com/pdfs.json')
+    .request('https://example.com/pdfs.json')
     .then(res => z.JSON.parse(res.content))
     .then(results => {
       return results.map(result => {
@@ -2324,7 +2324,7 @@ zapier logs --type=bundle
 If you are using the `z.request()` shortcut that we provide - HTTP logging is handled automatically for you. For example:
 
 ```js
-z.request('http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
+z.request('https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
   .then((res) => {
     // do whatever you like, this request is already getting logged! :-D
     return res;
@@ -2483,7 +2483,7 @@ describe('triggers', () => {
       };
 
       // mocks the next request that matches this url and querystring
-      nock('http://57b20fb546b57d1100a3c405.mockapi.io/api')
+      nock('https://57b20fb546b57d1100a3c405.mockapi.io/api')
         .get('/recipes')
         .query(bundle.inputData)
         .reply(200, [
@@ -2508,7 +2508,7 @@ describe('triggers', () => {
       const bundle = {};
 
       // each test needs its own mock
-      nock('http://57b20fb546b57d1100a3c405.mockapi.io/api')
+      nock('https://57b20fb546b57d1100a3c405.mockapi.io/api')
         .get('/recipes')
         .reply(200, [
           { name: 'name 1', directions: 'directions 1', id: 1 },
@@ -2922,7 +2922,7 @@ Paging is a lot like a regular trigger except the range of items returned is dyn
 ```js
 (z, bundle) => {
   const promise = z.request({
-    url: 'http://example.com/api/list.json',
+    url: 'https://example.com/api/list.json',
     params: {
       limit: 100,
       offset: 100 * bundle.meta.page
@@ -3110,7 +3110,7 @@ This section is only relevant if you're editing the `zapier-platform-cli` packag
 
 ### Commands
 
-- `export ZAPIER_BASE_ENDPOINT='http://localhost:8001'` if you're building against a local dev environment
+- `export ZAPIER_BASE_ENDPOINT='https://localhost:8001'` if you're building against a local dev environment
 - `npm install` for getting started
 - `npm run build` for updating `./lib` from `./src`
 - `npm run watch` for automatically building as you work

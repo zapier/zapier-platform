@@ -28,7 +28,7 @@ describe('z', () => {
   it('z.request - sync', done => {
     const bundleRequest = {
       method: 'GET',
-      url: 'http://httpbin.org/get',
+      url: 'https://httpbin.org/get',
       params: {
         hello: 'world'
       },
@@ -55,7 +55,7 @@ describe('z', () => {
   it('z.request - async', done => {
     const bundleRequest = {
       method: 'POST',
-      url: 'http://httpbin.org/post',
+      url: 'https://httpbin.org/post',
       params: {
         hello: 'world'
       },

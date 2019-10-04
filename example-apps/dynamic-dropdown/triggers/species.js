@@ -3,7 +3,7 @@ const generateID = require('../utils').generateID;
 // fetches a list of records from the endpoint
 const fetchList = (z, bundle) => {
   const request = {
-    url: 'http://swapi.co/api/species/',
+    url: 'https://swapi.co/api/species/',
     params: {}
   };
 

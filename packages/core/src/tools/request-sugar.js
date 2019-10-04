@@ -12,16 +12,16 @@ const createRequestOptions = (url, options) => {
 /*
   Allow request invocations like this:
 
-  request('http://foo.com);
+  request('https://foo.com);
 
   Or this:
 
   const options = { headers: {A: 'B} };
-  request('http://foo.com', options);
+  request('https://foo.com', options);
 
   Or this:
 
-  const options = { url: 'http://foo.com', headers: {A: 'B} };
+  const options = { url: 'https://foo.com', headers: {A: 'B} };
   request(options);
 */
 const addUrlOrOptions = requestFn => {

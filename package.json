@@ -23,6 +23,7 @@
   ],
   "scripts": {
     "lint": "lerna run --stream --ignore zapier-platform-example-app-* lint",
+    "lint-examples": "eslint examples",
     "validate": "lerna run --ignore zapier-platform-example-app-* validate",
     "bump": "lerna version --exact --force-publish=zapier-platform-cli,zapier-platform-core,zapier-platform-schema",
     "build-boilerplate": "yarn workspace zapier-platform-core build-boilerplate",
@@ -35,7 +36,7 @@
   },
   "lint-staged": {
     "*.{js}": [
-      "eslint --fix",
+      "eslint --fix --quiet",
       "git add"
     ],
     "*.{js,json}": [

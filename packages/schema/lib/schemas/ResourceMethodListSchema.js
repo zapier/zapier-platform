@@ -20,7 +20,7 @@ module.exports = makeSchema(
         },
         operation: {
           perform: {
-            url: 'http://fake-crm.getsandbox.com/users'
+            url: 'https://fake-crm.getsandbox.com/users'
           },
           sample: {
             id: 49,
@@ -37,7 +37,7 @@ module.exports = makeSchema(
         },
         operation: {
           perform: {
-            url: 'http://fake-crm.getsandbox.com/users'
+            url: 'https://fake-crm.getsandbox.com/users'
           }
         }
       }
@@ -50,7 +50,7 @@ module.exports = makeSchema(
         },
         operation: {
           perform: {
-            url: 'http://fake-crm.getsandbox.com/users'
+            url: 'https://fake-crm.getsandbox.com/users'
           }
           // missing sample
         }

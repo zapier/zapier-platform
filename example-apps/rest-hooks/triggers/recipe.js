@@ -11,7 +11,7 @@ const subscribeHook = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const options = {
-    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
+    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
     method: 'POST',
     body: data
   };
@@ -28,7 +28,7 @@ const unsubscribeHook = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const options = {
-    url: `http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks/${hookId}`,
+    url: `https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks/${hookId}`,
     method: 'DELETE'
   };
 
@@ -54,7 +54,7 @@ const getRecipe = (z, bundle) => {
 const getFallbackRealRecipe = (z, bundle) => {
   // For the test poll, you should get some real data, to aid the setup process.
   const options = {
-    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes/',
+    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes/',
     params: {
       style: bundle.inputData.style
     }

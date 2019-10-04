@@ -159,7 +159,7 @@ Below are all of the changes:
 
 ### core
 
-* (fix) Can't use unencrypted `http://` protocol when SSL checks are disabled ([#135](https://github.com/zapier/zapier-platform-core/pull/135))
+* (fix) Can't use unencrypted `https://` protocol when SSL checks are disabled ([#135](https://github.com/zapier/zapier-platform-core/pull/135))
 
 ## 7.6.0
 

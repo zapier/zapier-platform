@@ -28,7 +28,7 @@ module.exports = makeSchema(
           },
           operation: {
             perform: {
-              url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}'
             },
             sample: {
               id: 385,
@@ -51,7 +51,7 @@ module.exports = makeSchema(
           },
           operation: {
             perform: {
-              url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}'
             }
             // resource sample is used
           }
@@ -68,7 +68,7 @@ module.exports = makeSchema(
           },
           operation: {
             perform: {
-              url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}'
             }
           }
         },
@@ -79,7 +79,7 @@ module.exports = makeSchema(
           },
           operation: {
             perform: {
-              url: 'http://fake-crm.getsandbox.com/tags'
+              url: 'https://fake-crm.getsandbox.com/tags'
             },
             sample: {
               id: 385,
@@ -100,7 +100,7 @@ module.exports = makeSchema(
           },
           operation: {
             perform: {
-              url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}'
             }
             // missing sample (and no sample on resource)
           }
@@ -112,7 +112,7 @@ module.exports = makeSchema(
           },
           operation: {
             perform: {
-              url: 'http://fake-crm.getsandbox.com/tags'
+              url: 'https://fake-crm.getsandbox.com/tags'
             },
             sample: {
               id: 385,
@@ -131,7 +131,7 @@ module.exports = makeSchema(
           },
           operation: {
             perform: {
-              url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}'
             }
             // missing sample (and no sample on resource)
           }

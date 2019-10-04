@@ -10,7 +10,7 @@ const stashPDFfunction = (z, bundle) => {
 
 const pdfList = (z, bundle) => {
   return z
-    .request('http://example.com/pdfs.json')
+    .request('https://example.com/pdfs.json')
     .then(res => z.JSON.parse(res.content))
     .then(results => {
       return results.map(result => {

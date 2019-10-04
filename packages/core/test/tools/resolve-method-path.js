@@ -17,7 +17,7 @@ describe('resolve-method-path', () => {
   oauthAppDef.authentication = {
     test: () => {},
     oauth2Config: {
-      authorizeUrl: { method: 'GET', url: 'http://example.com' },
+      authorizeUrl: { method: 'GET', url: 'https://example.com' },
       getAccessToken: () => {}
     }
   };

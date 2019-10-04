@@ -158,7 +158,7 @@ module.exports = {
     name: 'Example',
     _path: '/Something/Example',
     _parent: '/Something',
-    webUrl: 'http://example.com',
+    webUrl: 'https://example.com',
     createdDateTime: '2016-09-16T03:37:04.72Z',
     lastModifiedDateTime: '2016-09-16T03:37:04.72Z'
   },

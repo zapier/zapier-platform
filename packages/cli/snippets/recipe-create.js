@@ -1,5 +1,5 @@
 const createRecipeRequest = {
-  url: 'http://example.com/recipes',
+  url: 'https://example.com/recipes',
   method: 'POST',
   body: {
     name: 'Baked Falafel',

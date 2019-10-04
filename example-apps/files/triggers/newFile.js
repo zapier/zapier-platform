@@ -10,7 +10,7 @@ const listFiles = (z, bundle) => {
   // You may return a promise or a normal data structure from any perform method.
   return z
     .request({
-      url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/files'
+      url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/files'
     })
     .then(response => {
       const files = JSON.parse(response.content);

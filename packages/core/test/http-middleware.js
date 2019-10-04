@@ -139,7 +139,7 @@ describe('http requests', () => {
 describe('http prepareRequest', () => {
   it('should delete req.body on GET requests', () => {
     const req = prepareRequest({
-      url: 'http://example.com',
+      url: 'https://example.com',
       params: {
         foo: '{{inputData.foo}}'
       },
@@ -159,7 +159,7 @@ describe('http prepareRequest', () => {
       }
     });
 
-    req.url.should.eql('http://example.com');
+    req.url.should.eql('https://example.com');
     req.headers.should.eql({
       'user-agent': 'Zapier'
     });
@@ -168,7 +168,7 @@ describe('http prepareRequest', () => {
 
   it('should force "bundle" prefix when doing replacement', () => {
     const origReq = {
-      url: 'http://example.com/{{inputData.foo}}',
+      url: 'https://example.com/{{inputData.foo}}',
       replace: true,
       input: {
         _zapier: {
@@ -184,11 +184,11 @@ describe('http prepareRequest', () => {
       }
     };
     const brokenReq = prepareRequest(origReq);
-    brokenReq.url.should.eql('http://example.com/{{inputData.foo}}');
+    brokenReq.url.should.eql('https://example.com/{{inputData.foo}}');
 
-    origReq.url = 'http://example.com/{{bundle.inputData.foo}}';
+    origReq.url = 'https://example.com/{{bundle.inputData.foo}}';
     const goodReq = prepareRequest(origReq);
-    goodReq.url.should.eql('http://example.com/bar');
+    goodReq.url.should.eql('https://example.com/bar');
   });
 
   const input = {
@@ -201,7 +201,7 @@ describe('http prepareRequest', () => {
   it('should coerce "json" into the body', () => {
     const origReq = {
       method: 'POST',
-      url: 'http://example.com',
+      url: 'https://example.com',
       json: { hello: 'world' },
       input
     };
@@ -218,7 +218,7 @@ describe('http prepareRequest', () => {
   it('should coerce "form" into the body', () => {
     const origReq = {
       method: 'POST',
-      url: 'http://example.com',
+      url: 'https://example.com',
       form: { hello: 'world' },
       input
     };
@@ -235,7 +235,7 @@ describe('http prepareRequest', () => {
   it('should default to "json"', () => {
     const origReq = {
       method: 'POST',
-      url: 'http://example.com',
+      url: 'https://example.com',
       body: { hello: 'world' },
       input
     };
@@ -252,7 +252,7 @@ describe('http prepareRequest', () => {
   it('should not set default headers if they are set', () => {
     const origReq = {
       method: 'POST',
-      url: 'http://example.com',
+      url: 'https://example.com',
       body: { hello: 'world' },
       headers: {
         'content-type': 'application/x-www-form-urlencoded'
@@ -272,7 +272,7 @@ describe('http prepareRequest', () => {
   it('should not set default headers if they are set — even with different case', () => {
     const origReq = {
       method: 'POST',
-      url: 'http://example.com',
+      url: 'https://example.com',
       body: { hello: 'world' },
       headers: {
         'Content-Type': 'application/json'
@@ -371,7 +371,7 @@ describe('http addBasicAuthHeader before middelware', () => {
 
     const params = parseDictHeader(req.headers.Authorization.substr(6));
 
-    // Can use http://bettiolo.github.io/oauth-reference-page/ to verify the result
+    // Can use https://bettiolo.github.io/oauth-reference-page/ to verify the result
     params.should.eql({
       oauth_callback: 'https%3A%2F%2Fexample.com%2Fcallback',
       oauth_consumer_key: 'a_consumer_key',

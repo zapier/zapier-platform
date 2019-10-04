@@ -456,7 +456,7 @@ $ zapier logs --type=http
 # ┌────────────────────────────────────────────────────────┐
 # │ = 1 =                                                  │
 # │     Status      │ 200                                  │
-# │     URL         │ http://httpbin.org/get               │
+# │     URL         │ https://httpbin.org/get               │
 # │     Querystring │ hello=world                          │
 # │     Version     │ 1.0.0                                │
 # │     Step        │ 99c16565-1547-4b16-bcb5-45189d9d8afa │

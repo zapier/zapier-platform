@@ -5,7 +5,7 @@ const listExample = (z, bundle) => {
     }
   };
   const response = z.request(
-    'http://example.com/api/v2/recipes.json',
+    'https://example.com/api/v2/recipes.json',
     httpOptions
   );
   return response.then(res => res.json);

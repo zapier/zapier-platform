@@ -195,7 +195,7 @@ describe('schema', () => {
             list: {
               display: {},
               operation: {
-                perform: { url: 'http://local.dev/items' }
+                perform: { url: 'https://local.dev/items' }
               }
             }
           }
@@ -203,7 +203,7 @@ describe('schema', () => {
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fooHook.operation.should.containEql({
-        performList: { url: 'http://local.dev/items' }
+        performList: { url: 'https://local.dev/items' }
       });
     });
 
@@ -216,13 +216,13 @@ describe('schema', () => {
             hook: {
               display: {},
               operation: {
-                performList: { url: 'http://local.dev/items-for-hook' }
+                performList: { url: 'https://local.dev/items-for-hook' }
               }
             },
             list: {
               display: {},
               operation: {
-                perform: { url: 'http://local.dev/items' }
+                perform: { url: 'https://local.dev/items' }
               }
             }
           }
@@ -230,7 +230,7 @@ describe('schema', () => {
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fooHook.operation.should.containEql({
-        performList: { url: 'http://local.dev/items-for-hook' }
+        performList: { url: 'https://local.dev/items-for-hook' }
       });
     });
 
@@ -244,7 +244,7 @@ describe('schema', () => {
               display: {},
               operation: {
                 perform: {
-                  url: 'http://local.dev/items/{{bundle.inputData.id}}'
+                  url: 'https://local.dev/items/{{bundle.inputData.id}}'
                 }
               }
             },
@@ -257,7 +257,7 @@ describe('schema', () => {
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searches.fooSearch.operation.should.containEql({
-        performGet: { url: 'http://local.dev/items/{{bundle.inputData.id}}' }
+        performGet: { url: 'https://local.dev/items/{{bundle.inputData.id}}' }
       });
     });
 
@@ -271,7 +271,7 @@ describe('schema', () => {
               display: {},
               operation: {
                 perform: {
-                  url: 'http://local.dev/items/{{bundle.inputData.id}}'
+                  url: 'https://local.dev/items/{{bundle.inputData.id}}'
                 }
               }
             },
@@ -280,7 +280,7 @@ describe('schema', () => {
               operation: {
                 performGet: {
                   url:
-                    'http://local.dev/items-for-search/{{bundle.inputData.id}}'
+                    'https://local.dev/items-for-search/{{bundle.inputData.id}}'
                 }
               }
             }
@@ -290,7 +290,7 @@ describe('schema', () => {
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searches.fooSearch.operation.should.containEql({
         performGet: {
-          url: 'http://local.dev/items-for-search/{{bundle.inputData.id}}'
+          url: 'https://local.dev/items-for-search/{{bundle.inputData.id}}'
         }
       });
     });
@@ -304,7 +304,7 @@ describe('schema', () => {
             list: {
               display: {},
               operation: {
-                perform: { url: 'http://local.dev/items' }
+                perform: { url: 'https://local.dev/items' }
               }
             }
           }
@@ -323,7 +323,7 @@ describe('schema', () => {
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fastFoo.operation.should.containEql({
-        performList: { url: 'http://local.dev/items' }
+        performList: { url: 'https://local.dev/items' }
       });
     });
 
@@ -337,7 +337,7 @@ describe('schema', () => {
               display: {},
               operation: {
                 perform: {
-                  url: 'http://local.dev/items/{{bundle.inputData.id}}'
+                  url: 'https://local.dev/items/{{bundle.inputData.id}}'
                 }
               }
             },
@@ -359,7 +359,7 @@ describe('schema', () => {
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searches.findFoo.operation.should.containEql({
-        performGet: { url: 'http://local.dev/items/{{bundle.inputData.id}}' }
+        performGet: { url: 'https://local.dev/items/{{bundle.inputData.id}}' }
       });
       compiledApp.searches.findFoo.operation.outputFields.should.have.length(2);
       compiledApp.searches.findFoo.operation.sample.should.have.keys(
@@ -378,7 +378,7 @@ describe('schema', () => {
               display: {},
               operation: {
                 perform: {
-                  url: 'http://local.dev/items/{{bundle.inputData.id}}'
+                  url: 'https://local.dev/items/{{bundle.inputData.id}}'
                 }
               }
             },
@@ -400,7 +400,7 @@ describe('schema', () => {
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.creates.makeFoo.operation.should.containEql({
-        performGet: { url: 'http://local.dev/items/{{bundle.inputData.id}}' }
+        performGet: { url: 'https://local.dev/items/{{bundle.inputData.id}}' }
       });
       compiledApp.creates.makeFoo.operation.outputFields.should.have.length(2);
       compiledApp.creates.makeFoo.operation.sample.should.have.keys(

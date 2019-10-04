@@ -17,7 +17,7 @@ describe('triggers', () => {
       };
 
       // mocks the next request that matches this url and querystring
-      nock('http://57b20fb546b57d1100a3c405.mockapi.io/api')
+      nock('https://57b20fb546b57d1100a3c405.mockapi.io/api')
         .get('/recipes')
         .query(bundle.inputData)
         .reply(200, [
@@ -42,7 +42,7 @@ describe('triggers', () => {
       const bundle = {};
 
       // each test needs its own mock
-      nock('http://57b20fb546b57d1100a3c405.mockapi.io/api')
+      nock('https://57b20fb546b57d1100a3c405.mockapi.io/api')
         .get('/recipes')
         .reply(200, [
           { name: 'name 1', directions: 'directions 1', id: 1 },
