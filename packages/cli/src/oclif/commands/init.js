@@ -65,7 +65,7 @@ InitCommand.args = [
 ];
 InitCommand.examples = [
   'zapier init ./some/path',
-  'zaper init . --template typescript'
+  'zapier init . --template typescript'
 ];
 InitCommand.description = `Initializes a new Zapier app. Optionally uses a template.
 

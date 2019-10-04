@@ -390,7 +390,7 @@ After running this, you'll have a new example app in your directory. If you re-r
 
 **Examples**
 * `zapier init ./some/path`
-* `zaper init . --template typescript`
+* `zapier init . --template typescript`
 
 
 ## invite
