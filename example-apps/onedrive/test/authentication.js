@@ -54,7 +54,7 @@ describe('Authentication', () => {
       // create a bundle with dummy values to ensure our function works.
       inputData: {
         state: '4444',
-        redirect_uri: 'http://zapier.com/',
+        redirect_uri: 'https://zapier.com/',
         accountType: 'personal'
       },
       environment: {

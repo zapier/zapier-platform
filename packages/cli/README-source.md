@@ -392,7 +392,7 @@ Your auth definition would look something like this:
 
 ### OAuth2
 
-Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](http://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
+Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](https://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
 
 > Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2 for a working example app for OAuth2.
 
@@ -775,7 +775,7 @@ For example - you could do:
 const subscribeHook = (z, bundle) => {
 
   const options = {
-    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
+    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
     method: 'POST',
     body: {
       url: bundle.targetUrl, // bundle.targetUrl has the Hook URL this app should call
@@ -1011,7 +1011,7 @@ Shorthand requests and manual `z.request([url], options)` calls support the foll
 
 ```js
 z.request({
-  url: 'http://example.com',
+  url: 'https://example.com',
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -1121,7 +1121,7 @@ z.stashFile(content, content.length, 'hello.txt', 'text/plain')
 Most likely you'd want to stream from another URL - note the usage of `z.request({raw: true})`:
 
 ```js
-const fileRequest = z.request({url: 'http://example.com/file.pdf', raw: true});
+const fileRequest = z.request({url: 'https://example.com/file.pdf', raw: true});
 z.stashFile(fileRequest) // knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream
   .then(url => z.console.log(url));
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7
@@ -1181,7 +1181,7 @@ zapier logs --type=bundle
 If you are using the `z.request()` shortcut that we provide - HTTP logging is handled automatically for you. For example:
 
 ```js
-z.request('http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
+z.request('https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
   .then((res) => {
     // do whatever you like, this request is already getting logged! :-D
     return res;
@@ -1579,7 +1579,7 @@ Paging is a lot like a regular trigger except the range of items returned is dyn
 ```js
 (z, bundle) => {
   const promise = z.request({
-    url: 'http://example.com/api/list.json',
+    url: 'https://example.com/api/list.json',
     params: {
       limit: 100,
       offset: 100 * bundle.meta.page
@@ -1715,7 +1715,7 @@ This section is only relevant if you're editing the `zapier-platform-cli` packag
 
 ### Commands
 
-- `export ZAPIER_BASE_ENDPOINT='http://localhost:8001'` if you're building against a local dev environment
+- `export ZAPIER_BASE_ENDPOINT='https://localhost:8001'` if you're building against a local dev environment
 - `npm install` for getting started
 - `npm run build` for updating `./lib` from `./src`
 - `npm run watch` for automatically building as you work

@@ -1,5 +1,5 @@
 const App = {
-  //...
+  // ...
   triggers: {
     new_project: {
       key: 'project',

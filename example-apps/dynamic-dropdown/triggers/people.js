@@ -3,7 +3,7 @@ const { generateID } = require('../utils');
 // fetches a list of records from the endpoint
 const fetchList = (z, bundle) => {
   const request = {
-    url: 'http://swapi.co/api/people/'
+    url: 'https://swapi.co/api/people/'
   };
 
   // ideally, we should poll through all the pages of results, but in this example

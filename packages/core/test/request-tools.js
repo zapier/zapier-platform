@@ -7,11 +7,11 @@ describe('request tools', () => {
   it('should merge requests', () => {
     const request = requestMerge(
       { params: { 'api-key': 'dcba' }, headers: { 'ApI-kEy': 'abcd' } },
-      { url: 'http://example.com?cat=mouse', params: { hello: 'world' } }
+      { url: 'https://example.com?cat=mouse', params: { hello: 'world' } }
     );
     const expected = {
       method: 'GET',
-      url: 'http://example.com',
+      url: 'https://example.com',
       params: {
         'api-key': 'dcba',
         hello: 'world',
@@ -27,12 +27,12 @@ describe('request tools', () => {
 
   it('should drop headers', () => {
     const request = requestMerge(
-      { url: 'http://example.com', headers: { 'api-key': 'abcd' } },
+      { url: 'https://example.com', headers: { 'api-key': 'abcd' } },
       { headers: { 'api-key': '' } }
     );
     const expected = {
       method: 'GET',
-      url: 'http://example.com',
+      url: 'https://example.com',
       params: {},
       headers: {
         'user-agent': 'Zapier'
@@ -43,12 +43,12 @@ describe('request tools', () => {
 
   it('should overwrite headers, case insensitively, and by order', () => {
     let request = requestMerge(
-      { url: 'http://example.com', headers: { 'api-key': 'abcd' } },
+      { url: 'https://example.com', headers: { 'api-key': 'abcd' } },
       { headers: { 'api-Key': 'efgh' } }
     );
     let expected = {
       method: 'GET',
-      url: 'http://example.com',
+      url: 'https://example.com',
       params: {},
       headers: {
         'user-agent': 'Zapier',
@@ -59,14 +59,14 @@ describe('request tools', () => {
 
     request = requestMerge(
       {
-        url: 'http://example.com',
+        url: 'https://example.com',
         headers: { 'api-key': 'abcd', Token: '123', 'User-Agent': 'Zapier' }
       },
       { headers: { 'api-key': 'efgh', tOken: '754' } }
     );
     expected = {
       method: 'GET',
-      url: 'http://example.com',
+      url: 'https://example.com',
       params: {},
       headers: {
         'User-Agent': 'Zapier',

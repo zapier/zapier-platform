@@ -175,7 +175,7 @@ const doTest = runner => {
         command: 'execute',
         method: 'triggers.fooList.operation.perform',
         appRawOverride: definitionHash,
-        rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
+        rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
         token: 'fake'
       };
 
@@ -224,7 +224,7 @@ const doTest = runner => {
         command: 'execute',
         method: 'creates.foo.operation.inputFields',
         appRawOverride: [definitionHash, definitionExtension],
-        rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
+        rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
         token: 'fake'
       };
 
@@ -276,7 +276,7 @@ const doTest = runner => {
         command: 'execute',
         method: 'triggers.foo.operation.perform',
         appRawOverride: [definitionHash, definitionExtension],
-        rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
+        rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
         token: 'fake'
       };
 
@@ -326,7 +326,7 @@ const doTest = runner => {
         command: 'execute',
         method: 'creates.foo.operation.perform',
         appRawOverride: [definitionHash, definitionExtension],
-        rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
+        rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
         token: 'fake'
       };
 
@@ -374,7 +374,7 @@ const doTest = runner => {
         command: 'execute',
         method: 'searches.foo.operation.perform',
         appRawOverride: [definitionHash, definitionExtension],
-        rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
+        rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
         token: 'fake'
       };
 
@@ -422,7 +422,7 @@ const doTest = runner => {
         command: 'execute',
         method: 'triggers.test.operation.perform',
         appRawOverride: [definitionHash, definitionExtension],
-        rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
+        rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
         token: 'fake'
       };
 
@@ -471,7 +471,7 @@ const doTest = runner => {
         command: 'execute',
         method: 'triggers.perform.operation.perform',
         appRawOverride: [definitionHash, definitionExtension],
-        rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
+        rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
         token: 'fake'
       };
 

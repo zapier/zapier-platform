@@ -51,7 +51,7 @@ var SubPingResource = {
       perform: () => {},
       performSubscribe: {
         method: 'POST',
-        url: 'http://example.com/api/subscribe',
+        url: 'https://example.com/api/subscribe',
         body: {
           url: '{{subscriptionUrl}}'
         }

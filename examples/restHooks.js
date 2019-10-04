@@ -7,7 +7,7 @@ const subscribeHook = async (z, bundle) => {
   };
 
   const options = {
-    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
+    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
     method: 'POST',
     body: data
   };
@@ -22,7 +22,7 @@ const unsubscribeHook = async (z, bundle) => {
   const hookId = bundle.subscribeData.id;
 
   const options = {
-    url: `http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks/${hookId}`,
+    url: `https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks/${hookId}`,
     method: 'DELETE'
   };
 
@@ -52,7 +52,7 @@ const getRecipe = (z, bundle) => {
 // it's important that this be the same shape as the hooks you'll eventually send
 const getFallbackRealRecipe = async (z, bundle) => {
   const options = {
-    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes/',
+    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes/',
     params: {
       style: bundle.inputData.style
     }

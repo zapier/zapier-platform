@@ -105,7 +105,7 @@ describe('request client', () => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
-      url: 'http://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
+      url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
       body: request({ url: fileUrl, raw: true })
     })
       .then(response => {
@@ -121,7 +121,7 @@ describe('request client', () => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
-      url: 'http://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
+      url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
       body: Buffer.from('hello world this is a cat (=^..^=)')
     })
       .then(response => {
@@ -137,7 +137,7 @@ describe('request client', () => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
-      url: 'http://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
+      url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
       body: fs.createReadStream(path.join(__dirname, 'test.txt'))
     })
       .then(response => {

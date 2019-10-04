@@ -16,7 +16,7 @@ $ npm install -g zapier-platform-cli
 
   **Usage:** `zapier apps`
 
-  
+
 Lists any apps that you have admin access to. Also checks the current directory for a linked app, which you can control with `zapier link`.
 
 **Arguments**
@@ -47,7 +47,7 @@ $ zapier apps
 
   **Usage:** `zapier build`
 
-  
+
 Builds a ready-to-upload zip file, but does not upload / push the zip file. Generally you'd use `zapier push` which does this and `zapier upload` together.
 
 It does the following steps:
@@ -90,7 +90,7 @@ $ zapier build
 
   **Usage:** `zapier collaborate [user@example.com]`
 
-  
+
 Give any user registered on Zapier the ability to collaborate on your app. Commonly, this is useful for teammates, contractors, or other developers who might want to make changes on your app. Only admin access is supported. If you'd only like to provide read-only or testing access, try `zapier invite`.
 
 **Arguments**
@@ -134,7 +134,7 @@ $ zapier collaborate user@example.com --remove
 
   **Usage:** `zapier convert appid path`
 
-  
+
 Creates a new CLI app from an existing app.
 
 If you're converting a **Legacy Web Builder** app: the new app contains code stubs only. It is supposed to get you started - it isn't going to create a complete app!
@@ -173,7 +173,7 @@ $ zapier convert 1234 .
 
   **Usage:** `zapier delete version 1.0.0`
 
-  
+
 A utility to allow deleting app versions that aren't used.
 
 > The app version needs to have no users/Zaps in order to be deleted.
@@ -199,7 +199,7 @@ $ zapier delete version 1.0.0
 
   **Usage:** `zapier deprecate 1.0.0 2017-01-20`
 
-  
+
 A utility to alert users of breaking changes that require the deprecation of an app version.
 
 Use this when an app version will not be supported or start breaking at a known date.
@@ -233,7 +233,7 @@ $ zapier deprecate 1.0.0 2017-01-20
 
   **Usage:** `zapier describe`
 
-  
+
 Prints a human readable enumeration of your app's triggers, searches, and actions as seen by Zapier. Useful to understand how your resources convert and relate to different actions.
 
 > These are the same actions we'd display in our editor!
@@ -284,7 +284,7 @@ $ zapier describe
 
   **Usage:** `zapier env 1.0.0 CLIENT_SECRET 12345`
 
-  
+
 Manage the environment of your app so that `process.env` has the necessary variables, making it easy to match a local environment with a production environment via `CLIENT_SECRET=12345 zapier test`.
 
 **Arguments**
@@ -331,7 +331,7 @@ $ zapier env 1.0.0 CLIENT_SECRET --remove
 
   **Usage:** `zapier help [command]`
 
-  
+
 Prints documentation to the terminal screen.
 
 Generally - the `zapier` command works off of two files:
@@ -391,7 +391,7 @@ $ │ logout      │ zapier logout                         │ Deactivates all 
 
   **Usage:** `zapier history`
 
-  
+
 Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins and invitee changes as well as who made the change and when.
 
 **Arguments**
@@ -423,7 +423,7 @@ $ zapier history
 
   **Usage:** `zapier init path`
 
-  
+
 Initializes a new Zapier app. If you specify a template, will download and install the app from that template.
 
 After running this, you'll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
@@ -455,7 +455,7 @@ $ zapier init example-app --template=minimal
 
   **Usage:** `zapier invite [user@example.com] [1.0.0]`
 
-  
+
 Invite any user registered on Zapier to test your app. Commonly, this is useful for teammates, contractors, or other team members who might want to test, QA, or view your app versions. If you'd like to provide full admin access, try `zapier collaborate`.
 
 > Send an email directly, which contains a one-time use link for them only - or share the public URL to "bulk" invite folks!
@@ -506,7 +506,7 @@ $ zapier invite user@example.com --remove
 
   **Usage:** `zapier link`
 
-  
+
 Link the current directory to an app you have access to. It is fairly uncommon to run this command - more often you'd just `git clone git@github.com:example-inc/example.git` which would have a `.zapierapprc` file already included. If not, you'd need to be an admin on the app and use this command to regenerate the `.zapierapprc` file.
 
 Or, if you are making an app from scratch - you should prefer `zapier init`.
@@ -549,7 +549,7 @@ $ zapier link
 
   **Usage:** `zapier login`
 
-  
+
 This is an interactive prompt which will create, retrieve and store a deploy key.
 
 > This will change the  `~/.zapierrc` (home directory identifies the deploy key & user).
@@ -569,7 +569,7 @@ $ zapier login
 
   **Usage:** `zapier logout`
 
-  
+
 Deactivates all your personal deploy keys and resets your local config. Does not delete any apps or versions.
 
 > This will delete the  `~/.zapierrc` (home directory identifies the deploy key & user).
@@ -591,7 +591,7 @@ All personal keys deactivated - now try `zapier login` to login again.
 
   **Usage:** `zapier logs`
 
-  
+
 Get the logs that are automatically collected during the running of your app. Either explicitly during `z.console.log()`, automatically via `z.request()`, or any sort of traceback or error.
 
 > Does not collect or list the errors found locally during `zapier test`.
@@ -627,7 +627,7 @@ $ zapier logs --type=http
 # ┌────────────────────────────────────────────────────────┐
 # │ = 1 =                                                  │
 # │     Status      │ 200                                  │
-# │     URL         │ http://httpbin.org/get               │
+# │     URL         │ https://httpbin.org/get               │
 # │     Querystring │ hello=world                          │
 # │     Version     │ 1.0.0                                │
 # │     Step        │ 99c16565-1547-4b16-bcb5-45189d9d8afa │
@@ -642,7 +642,7 @@ $ zapier logs --type=http
 
   **Usage:** `zapier migrate 1.0.0 1.0.1 [10%]`
 
-  
+
 Starts a migration to move users between different versions of your app. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (IE: `zapier migrate 1.0.1 1.0.0`).
 
 Only migrate users between non-breaking versions, use `zapier deprecate` if you have breaking changes!
@@ -678,7 +678,7 @@ $ zapier migrate 1.0.0 1.0.1 15%
 
   **Usage:** `zapier promote 1.0.0`
 
-  
+
 Promotes an app version into production (non-private) rotation, which means new users can use this app version.
 
 * This **does** mark the version as the official public version - all other versions & users are grandfathered.
@@ -716,7 +716,7 @@ $ zapier promote 1.0.0
 
   **Usage:** `zapier push`
 
-  
+
 A shortcut for `zapier build && zapier upload` - this is our recommended way to push an app. This is a common workflow:
 
 1. Make changes in `index.js` or other files.
@@ -754,7 +754,7 @@ $ zapier push
 
   **Usage:** `zapier register "Example"`
 
-  
+
 This command registers your app with Zapier. After running this, you can run `zapier push` to push a version of your app that you can use in the Zapier editor.
 
 > This will change the  `./.zapierapprc` (which identifies the app associated with the current directory).
@@ -782,7 +782,7 @@ $ zapier register "Example"
 
   **Usage:** `zapier scaffold {resource|trigger|search|create} "Name"`
 
-  
+
 The scaffold command does two general things:
 
 * Creates a new destination file like `resources/contact.js`
@@ -819,7 +819,7 @@ $ zapier scaffold resource "Tag" --entry=index.js --dest=resources/tag
 
   **Usage:** `zapier test`
 
-  
+
 This command is effectively the same as `npm test`, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.
 
 **Arguments**
@@ -849,7 +849,7 @@ $ zapier test
 
   **Usage:** `zapier upload`
 
-  
+
 Upload the zip files already built by `zapier build` in build/build.zip and build/source.zip. The version and other app details are read by Zapier from the zip files.
 
 > Note: we generally recommend using `zapier push` which does both `zapier build && zapier upload` in one step.
@@ -870,7 +870,7 @@ $ zapier upload
 
   **Usage:** `zapier validate`
 
-  
+
 Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during `zapier build`, `zapier upload`, `zapier push` or even as a test in `zapier test`.
 
 **Arguments**
@@ -909,7 +909,7 @@ $ zapier validate
 
   **Usage:** `zapier versions`
 
-  
+
 Lists the versions of your app available for use in the Zapier editor.
 
 **Arguments**

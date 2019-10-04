@@ -282,18 +282,18 @@ describe('create-app', () => {
     oauth2AppDefinition.authentication = {
       type: 'oauth2',
       test: {
-        url: 'http://example.com',
+        url: 'https://example.com',
         method: 'GET'
       },
       oauth2Config: {
         authorizeUrl: {
-          url: 'http://{{bundle.authData.domain}}.example.com',
+          url: 'https://{{bundle.authData.domain}}.example.com',
           params: {
             scope: '{{bundle.inputData.scope}}'
           }
         },
         getAccessToken: {
-          url: 'http://example.com/oauth2/token',
+          url: 'https://example.com/oauth2/token',
           body: {},
           method: 'POST'
         },
@@ -308,7 +308,7 @@ describe('create-app', () => {
     oauth2App(input)
       .then(output => {
         output.results.should.eql(
-          'http://my-sub.example.com?scope=read%2Cwrite'
+          'https://my-sub.example.com?scope=read%2Cwrite'
         );
         done();
       })

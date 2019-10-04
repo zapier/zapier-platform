@@ -2,7 +2,7 @@ const createCallbackWrapper = require('../../src/tools/create-callback-wrapper')
 const callbackStatusCatcher = require('../../src/app-middlewares/after/callback-status-catcher');
 const should = require('should');
 
-const CALLBACK_URL = 'http://example.com/callback';
+const CALLBACK_URL = 'https://example.com/callback';
 const input = {
   _zapier: {
     event: {

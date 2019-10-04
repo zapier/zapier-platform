@@ -18,7 +18,7 @@ const test = async (z /*, bundle */) => {
 const getSessionKey = async (z, bundle) => {
   const response = await z.request({
     method: 'POST',
-    url: 'http://zapier-httpbin.herokuapp.com/post',
+    url: 'https://zapier-httpbin.herokuapp.com/post',
     body: {
       username: bundle.authData.username,
       password: bundle.authData.password

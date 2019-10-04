@@ -1132,7 +1132,7 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'hey hey' };
       input.bundle.inputData = { foo: 'bar' };
-      input.bundle.targetUrl = 'http://foo.bar';
+      input.bundle.targetUrl = 'https://foo.bar';
       input.bundle.meta = { zap: { id: 9511 } };
       return app(input).then(output => {
         should.equal(output.results.json.event, 'contact.created');
@@ -1149,7 +1149,7 @@ describe('Integration Test', () => {
         should.deepEqual(output.results.json.bundleTriggerFields, {
           foo: 'bar'
         });
-        should.equal(output.results.json.bundleTargetUrl, 'http://foo.bar');
+        should.equal(output.results.json.bundleTargetUrl, 'https://foo.bar');
         should.equal(output.results.json.bundleEvent, 'contact.created');
         should.deepEqual(output.results.json.bundleZap, { id: 9511 });
       });
@@ -1166,7 +1166,7 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'yo yo' };
       input.bundle.inputData = { foo: 'bar' };
-      input.bundle.targetUrl = 'http://foo.bar';
+      input.bundle.targetUrl = 'https://foo.bar';
       input.bundle.meta = { zap: { id: 9512 } };
       return app(input).then(output => {
         should.equal(output.results.request.method, 'DELETE');
@@ -1178,7 +1178,7 @@ describe('Integration Test', () => {
 
         should.deepEqual(echoed.json.bundleAuthFields, { api_key: 'yo yo' });
         should.deepEqual(echoed.json.bundleTriggerFields, { foo: 'bar' });
-        should.equal(echoed.json.bundleTargetUrl, 'http://foo.bar');
+        should.equal(echoed.json.bundleTargetUrl, 'https://foo.bar');
         should.equal(echoed.json.bundleEvent, 'contact.created');
         should.deepEqual(echoed.json.bundleZap, { id: 9512 });
       });

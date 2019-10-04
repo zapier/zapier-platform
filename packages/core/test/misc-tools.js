@@ -100,7 +100,7 @@ describe('Tools', () => {
 
   // it('should prepareRequestLog', () => {
   //   const request = {
-  //     url: 'http://www.google.com',
+  //     url: 'https://www.google.com',
   //     headers: {
   //       a: 'b'
   //     },
@@ -116,11 +116,11 @@ describe('Tools', () => {
   //   };
 
   //   const expected = {
-  //     message: '200 GET http://www.google.com',
+  //     message: '200 GET https://www.google.com',
   //     data: {
   //       log_type: 'http',
   //       request_type: 'devplatform-outbound',
-  //       request_url: 'http://www.google.com',
+  //       request_url: 'https://www.google.com',
   //       request_method: 'GET',
   //       request_headers: 'a: b',
   //       response_status_code: 200,
@@ -316,27 +316,27 @@ describe('Tools', () => {
 
   describe('createRequestOptions', () => {
     it('should allow single url param', () => {
-      const options = requestSugar.createRequestOptions('http://foo.com');
-      options.should.eql({ url: 'http://foo.com' });
+      const options = requestSugar.createRequestOptions('https://foo.com');
+      options.should.eql({ url: 'https://foo.com' });
     });
 
     it('should allow single options param', () => {
       const options = requestSugar.createRequestOptions({
-        url: 'http://foo.com',
+        url: 'https://foo.com',
         headers: { a: 'b' }
       });
       options.should.eql({
-        url: 'http://foo.com',
+        url: 'https://foo.com',
         headers: { a: 'b' }
       });
     });
 
     it('should should allow url param and options param', () => {
-      const options = requestSugar.createRequestOptions('http://foo.com', {
+      const options = requestSugar.createRequestOptions('https://foo.com', {
         headers: { a: 'b' }
       });
       options.should.eql({
-        url: 'http://foo.com',
+        url: 'https://foo.com',
         headers: { a: 'b' }
       });
     });

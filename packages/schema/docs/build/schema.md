@@ -1060,7 +1060,7 @@ How will we get a list of new objects? Will be turned into a trigger automatical
 * ```
   { display: { label: 'New User', description: 'Trigger when a new User is created in your account.' },
     operation:
-     { perform: { url: 'http://fake-crm.getsandbox.com/users' },
+     { perform: { url: 'https://fake-crm.getsandbox.com/users' },
        sample: { id: 49, name: 'Veronica Kuhn', email: 'veronica.kuhn@company.com' } } }
   ```
 * ```
@@ -1068,14 +1068,14 @@ How will we get a list of new objects? Will be turned into a trigger automatical
      { label: 'New User',
        description: 'Trigger when a new User is created in your account.',
        hidden: true },
-    operation: { perform: { url: 'http://fake-crm.getsandbox.com/users' } } }
+    operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } } }
   ```
 
 #### Anti-Examples
 
 * ```
   { display: { label: 'New User', description: 'Trigger when a new User is created in your account.' },
-    operation: { perform: { url: 'http://fake-crm.getsandbox.com/users' } } }
+    operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } } }
   ```
 
 #### Properties
@@ -1144,7 +1144,7 @@ Represents a resource, which will in turn power triggers, searches, or creates.
     get:
      { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
        operation:
-        { perform: { url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
+        { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
           sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
 * ```
@@ -1153,18 +1153,18 @@ Represents a resource, which will in turn power triggers, searches, or creates.
     sample: { id: 385, name: 'proactive enable ROI' },
     get:
      { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-       operation: { perform: { url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } }
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } }
   ```
 * ```
   { key: 'tag',
     noun: 'Tag',
     get:
      { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
-       operation: { perform: { url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } },
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } },
     list:
      { display: { label: 'New Tag', description: 'Trigger when a new Tag is created in your account.' },
        operation:
-        { perform: { url: 'http://fake-crm.getsandbox.com/tags' },
+        { perform: { url: 'https://fake-crm.getsandbox.com/tags' },
           sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
 
@@ -1175,11 +1175,11 @@ Represents a resource, which will in turn power triggers, searches, or creates.
     noun: 'Tag',
     get:
      { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-       operation: { perform: { url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } },
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } },
     list:
      { display: { label: 'New Tag', description: 'Trigger when a new Tag is created in your account.' },
        operation:
-        { perform: { url: 'http://fake-crm.getsandbox.com/tags' },
+        { perform: { url: 'https://fake-crm.getsandbox.com/tags' },
           sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
 * ```
@@ -1187,7 +1187,7 @@ Represents a resource, which will in turn power triggers, searches, or creates.
     noun: 'Tag',
     get:
      { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-       operation: { perform: { url: 'http://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } }
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } }
   ```
 
 #### Properties

@@ -1,2 +1,2 @@
-# this is apparently needs to be here, not in the root ¯\_(ツ)_/¯
+# this needs to be in `cli` so `yarn lint` works in cli
 snippets/dynamic-dropdowns-*.js
