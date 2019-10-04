@@ -140,13 +140,15 @@ const parseFinalResult = async (result, event) => {
       return addFilesToRequestBodyFromPreResult(result, event);
     }
 
-    // Old request was .data (string), new is .body (object), which matters for _pre
-    try {
-      result.body = JSON.parse(result.data || '{}');
-    } catch (e) {
-      result.body = result.data;
+    if (result.data !== undefined) {
+      // Old request was .data (string), new is .body (object), which matters for _pre
+      try {
+        result.body = JSON.parse(result.data || '{}');
+      } catch (e) {
+        result.body = result.data;
+      }
     }
-    return Promise.resolve(result);
+    return result;
   }
 
   // Old writes accepted a list, but CLI doesn't anymore, which matters for _write and _post_write
@@ -159,7 +161,7 @@ const parseFinalResult = async (result, event) => {
     } else {
       resultObj = {};
     }
-    return Promise.resolve(resultObj);
+    return resultObj;
   }
 
   if (
@@ -175,13 +177,17 @@ const parseFinalResult = async (result, event) => {
     }
   }
 
-  return Promise.resolve(result);
+  return result;
 };
 
 const replaceCurliesInRequest = (request, bundle) => {
   const bank = cleaner.createBundleBank(undefined, { bundle: bundle });
   return cleaner.recurseReplaceBank(request, bank);
 };
+
+// Replace '{{bundle.inputData.abc}}' with '{{abc}}'
+const undoSmartCurlyReplacement = str =>
+  str.replace(/{{\s*bundle\.[^.]+\.([^}\s]+)\s*}}/g, '{{$1}}');
 
 const compileLegacyScriptingSource = (source, zcli, app) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
@@ -193,6 +199,11 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
     RefreshTokenException,
     InvalidSessionException
   } = require('./exceptions');
+
+  const underscore = require('underscore');
+  underscore.templateSettings = {
+    interpolate: /\{\{(.+?)\}\}/g
+  };
 
   return new Function( // eslint-disable-line no-new-func
     '_',
@@ -213,7 +224,7 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
     'InvalidSessionException',
     source + '\nreturn Zap;'
   )(
-    require('underscore'),
+    underscore,
     require('crypto'),
     require('async'),
     require('moment-timezone'),
@@ -556,9 +567,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       result = await runEvent({ key, name: fullEventName }, zcli, bundle);
     } else {
       const preMethod = preMethodName ? Zap[preMethodName] : null;
-      const request = preMethod
+      let request = preMethod
         ? await runEvent({ key, name: preEventName }, zcli, bundle)
-        : bundle.request;
+        : {};
+      request = Object.assign({}, bundle.request, request);
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
       if (hasFileFields(bundle) && !isBodyStream) {
@@ -723,6 +735,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       bundle.skipChecks.push('triggerIsArray');
     }
 
+    if (url) {
+      bundle._legacyUrl = undoSmartCurlyReplacement(url);
+    }
+
     let result = await runEventCombo(
       bundle,
       key,
@@ -856,6 +872,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       preEventName = typeOf + '.pre';
       postEventName = typeOf + '.post';
       bundle.request.url = url;
+
+      // Provide bundle.raw_url and bundle.url_raw
+      bundle._legacyUrl = undoSmartCurlyReplacement(url);
     }
 
     if (supportFullMethod) {
@@ -912,6 +931,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     bundle.request.url = url;
     bundle.request.body = body;
 
+    if (url) {
+      bundle._legacyUrl = undoSmartCurlyReplacement(url);
+    }
+
     return runEventCombo(
       bundle,
       key,
@@ -942,6 +965,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const url = _.get(app, `legacy.searches.${key}.operation.url`);
 
     bundle.request.url = url;
+
+    if (url) {
+      bundle._legacyUrl = undoSmartCurlyReplacement(url);
+    }
 
     return runEventCombo(
       bundle,

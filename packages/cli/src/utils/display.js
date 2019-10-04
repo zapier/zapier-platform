@@ -280,6 +280,10 @@ const flattenCheckResult = checkResult => {
   const res = [];
   for (const severity in checkResult) {
     for (const issueGroup of checkResult[severity]) {
+      if (!issueGroup.violations) {
+        break;
+      }
+
       const opType =
         {
           write: 'creates',

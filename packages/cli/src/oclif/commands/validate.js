@@ -37,7 +37,7 @@ class ValidateCommand extends BaseCommand {
       this.log('This project is structurally sound!');
     }
 
-    let checkResult = [];
+    let checkResult = {};
     if (this.flags['without-style'] || process.exitCode === 1) {
       if (process.exitCode === 1) {
         this.log(
@@ -46,7 +46,8 @@ class ValidateCommand extends BaseCommand {
       }
       return;
     } else {
-      this.log('\nRunning app checks.');
+      this.log();
+      this.startSpinner('Running app checks');
 
       const rawDefinition = await localAppCommand({
         command: 'definition'
@@ -55,8 +56,14 @@ class ValidateCommand extends BaseCommand {
       checkResult = await validateApp(rawDefinition);
     }
 
+    const doneMessage = checkResult.passes
+      ? `Running app checks ... ${checkResult.passes.length} checks passed`
+      : undefined;
+    this.stopSpinner({ message: doneMessage });
+
     const checkIssues = flattenCheckResult(checkResult);
 
+    this.log('\nHere are the issues we found:');
     this.logTable({
       rows: checkIssues,
       headers: [
@@ -71,7 +78,7 @@ class ValidateCommand extends BaseCommand {
     if (checkResult.errors && checkResult.errors.length) {
       process.exitCode = 1;
       this.log(
-        'Errors will block you from pushing; warnings only block you from going public or promoting a version.\n'
+        'Errors will block you from pushing; warnings will only block you from going public or promoting a version.\n'
       );
     } else if (checkResult.warnings.length) {
       this.log(

@@ -391,6 +391,25 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      recipe_pre_write_underscore_template: function(bundle) {
+        var url = _.template(bundle.url_raw, {
+          urlPath: bundle.action_fields_full.urlPath
+        });
+        return {
+          method: 'POST',
+          url: url,
+          headers: bundle.request.headers,
+          data: bundle.request.data
+        };
+      },
+
+      movie_pre_write_request_fallback: function(bundle) {
+        // The remaining request options should fall back to bundle.request
+        return {
+          url: bundle.request.url + 's'
+        };
+      },
+
       movie_write_default_headers: function(bundle) {
         bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
         bundle.request.data = z.JSON.stringify({
@@ -456,6 +475,15 @@ const legacyScriptingSource = `
           type: 'int'
         });
         return fields;
+      },
+
+      // Make sure we respect WB's preset _.template settings
+      recipe_pre_custom_action_fields_underscore_template: function(bundle) {
+        return {
+          method: 'GET',
+          url: _.template(bundle.raw_url, { urlPath: bundle.action_fields.urlPath }),
+          headers: bundle.request.headers,
+        };
       },
 
       // To be replaced with 'movie_pre_custom_action_result_fields' at runtime
@@ -846,6 +874,32 @@ const FileUpload = {
   }
 };
 
+const RecipeCreate = {
+  key: 'recipe',
+  noun: 'Recipe',
+  display: {
+    label: 'Create a Recipe'
+  },
+  operation: {
+    perform: {
+      source: "return z.legacyScripting.run(bundle, 'create', 'recipe');"
+    },
+    inputFields: [
+      { key: 'name', label: 'Name', type: 'string' },
+      { key: 'directions', label: 'Directions', type: 'string' },
+      {
+        source:
+          "return z.legacyScripting.run(bundle, 'create.input', 'recipe');"
+      }
+    ],
+    outputFields: [
+      { key: 'id', label: 'ID', type: 'integer' },
+      { key: 'name', label: 'Name', type: 'string' },
+      { key: 'directions', label: 'directions', type: 'string' }
+    ]
+  }
+};
+
 const MovieSearch = {
   key: 'movie',
   noun: 'Movie',
@@ -892,7 +946,8 @@ const App = {
   },
   creates: {
     [MovieCreate.key]: MovieCreate,
-    [FileUpload.key]: FileUpload
+    [FileUpload.key]: FileUpload,
+    [RecipeCreate.key]: RecipeCreate
   },
   searches: {
     [MovieSearch.key]: MovieSearch
@@ -966,6 +1021,12 @@ const App = {
       file: {
         operation: {
           url: `${AUTH_JSON_SERVER_URL}/upload`
+        }
+      },
+      recipe: {
+        operation: {
+          url: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
+          inputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`
         }
       }
     },

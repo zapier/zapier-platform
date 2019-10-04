@@ -1383,6 +1383,61 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_write, _.template(bundle.url_raw)', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'recipe_pre_write_underscore_template',
+        'recipe_pre_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.recipe.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        urlPath: '/recipes',
+        name: 'Egg & Cheese'
+      };
+      return app(input).then(output => {
+        const recipe = output.results;
+        should.exist(recipe.id);
+        should.equal(recipe.name, 'Egg & Cheese');
+      });
+    });
+
+    it('KEY_pre_write, request fallback', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_pre_write_request_fallback',
+        'movie_pre_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'IT 2',
+        genre: 'Horror',
+        year: 2019
+      };
+      return app(input).then(output => {
+        const movie = output.results;
+        should.exist(movie.id);
+        should.not.exist(movie.title); // title is in fieldsExcludedFromBody
+        should.equal(movie.genre, 'Horror');
+        should.equal(movie.year, 2019);
+      });
+    });
+
     it('KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
@@ -1701,6 +1756,33 @@ describe('Integration Test', () => {
         should.equal(fields.length, 3);
         should.equal(fields[0].key, 'title');
         should.equal(fields[1].key, 'genre');
+        should.equal(fields[2].key, 'luckyNumber');
+      });
+    });
+
+    it('KEY_pre_custom_action_fields, _.template(bundle.raw_url)', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'recipe_pre_custom_action_fields_underscore_template',
+        'recipe_pre_custom_action_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.recipe.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        urlPath: '/input-fields'
+      };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 3);
+        should.equal(fields[0].key, 'name');
+        should.equal(fields[1].key, 'directions');
         should.equal(fields[2].key, 'luckyNumber');
       });
     });
