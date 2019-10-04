@@ -149,6 +149,70 @@ class ZapierBaseCommand extends Command {
   stopSpinner({ success = true, message = undefined } = {}) {
     endSpinner(success, message);
   }
+
+  // pulled from https://github.com/oclif/plugin-help/blob/73bfd5a861e65844a1d6c3a0a9638ee49d16fee8/src/command.ts
+  // renamed to avoid naming collision
+  static zUsage(name) {
+    const formatArg = arg => {
+      const argName = arg.name.toUpperCase();
+      return arg.required ? argName : `[${argName}]`;
+    };
+
+    return [
+      'zapier',
+      name,
+      ...(this.args || []).filter(a => !a.hidden).map(a => formatArg(a))
+    ].join(' ');
+  }
+
+  // this is fine for now but we'll want to hack into https://github.com/oclif/plugin-help/blob/master/src/command.ts at some point
+  // the presentation is wrapped into the formatting, so it's a little tough to pull out
+  static markdownHelp(name) {
+    const formattedArgs = () =>
+      this.args.map(arg =>
+        arg.hidden
+          ? null
+          : `* ${arg.required ? '(required) ' : ''}\`${arg.name}\` | ${
+              arg.description
+            }`
+      );
+    const formattedFlags = () =>
+      Object.entries(this.flags)
+        .map(([longName, flag]) =>
+          flag.hidden
+            ? null
+            : `* ${flag.required ? '(required) ' : ''}\`${
+                flag.char ? `-${flag.char}, ` : ''
+              }--${longName}\` | ${flag.description} ${
+                flag.options ? `One of \`[${flag.options.join(' | ')}]\`.` : ''
+              }${flag.default ? ` Defaults to \`${flag.default}\`.` : ''}
+      `.trim()
+        )
+        .filter(Boolean);
+
+    const descriptionParts = this.description.split('\n').filter(Boolean);
+    const blurb = descriptionParts[0];
+    const lengthyDescription =
+      descriptionParts.length > 1 ? descriptionParts.slice(1).join('\n\n') : '';
+
+    // Object.getPrototypeOf(this).constructor.flags
+
+    return [
+      `## ${name}`,
+      '',
+      `> ${blurb}`,
+      '',
+      `**Usage**: \`${this.zUsage(name)}\``,
+      ...(lengthyDescription ? ['', lengthyDescription] : []),
+      ...(this.args ? ['', '**Arguments**', ...formattedArgs()] : []),
+      ...(this.flags ? ['', '**Flags**', ...formattedFlags()] : []),
+      ...(this.examples
+        ? ['', '**Examples**', this.examples.map(e => `* \`${e}\``).join('\n')]
+        : [])
+    ]
+      .join('\n')
+      .trim();
+  }
 }
 
 module.exports = ZapierBaseCommand;

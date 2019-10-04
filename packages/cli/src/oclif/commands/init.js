@@ -49,7 +49,7 @@ InitCommand.flags = buildFlags({
   commandFlags: {
     template: flags.string({
       char: 't',
-      description: 'start your app with a template',
+      description: 'The template to start your app with.',
       options: appTemplates,
       default: 'minimal'
     })
@@ -60,17 +60,17 @@ InitCommand.args = [
     name: 'path',
     required: true,
     description:
-      "Where to create the new app. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation."
+      "Where to create the new app. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation"
   }
 ];
 InitCommand.examples = [
   'zapier init ./some/path',
-  'zaper init . --template typescript'
+  'zapier init . --template typescript'
 ];
 InitCommand.description = `Initializes a new Zapier app. Optionally uses a template.
 
 After running this, you'll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
-> Note: this doesn't register or deploy the app with Zapier - try \`zapier register "Example"\` and \`zapier push\` for that!`;
+> Note: this doesn't register or deploy the app with Zapier - try the \`zapier register\` and \`zapier push\` commands for that!`;
 
 module.exports = InitCommand;

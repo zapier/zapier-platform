@@ -143,7 +143,6 @@ LoginCommand.flags = buildFlags({
     })
   }
 });
-LoginCommand.examples = ['zapier login'];
 LoginCommand.description = `Configures your \`${AUTH_LOCATION_RAW}\` with a deploy key.`;
 
 module.exports = LoginCommand;

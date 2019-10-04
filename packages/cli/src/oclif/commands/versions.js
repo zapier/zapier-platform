@@ -23,7 +23,6 @@ class VersionCommand extends BaseCommand {
 }
 
 VersionCommand.flags = buildFlags({ opts: { format: true } });
-VersionCommand.examples = ['zapier versions'];
 VersionCommand.description = `Lists the versions of your app available for use in the Zapier editor.`;
 
 module.exports = VersionCommand;
