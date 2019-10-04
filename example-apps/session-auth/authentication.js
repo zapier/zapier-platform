@@ -19,7 +19,7 @@ const testAuth = (z /*, bundle */) => {
 const getSessionKey = (z, bundle) => {
   const promise = z.request({
     method: 'POST',
-    url: 'https://zapier-httpbin.herokuapp.com/post',
+    url: 'https://httpbin.zapier-tooling.com/post',
     body: {
       username: bundle.authData.username,
       password: bundle.authData.password
