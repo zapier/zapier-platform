@@ -40,7 +40,12 @@ const readCredentials = (explodeIfMissing = true) => {
 };
 
 // Calls the underlying platform REST API with proper authentication.
-const callAPI = (route, options, rawError = false) => {
+const callAPI = (
+  route,
+  options,
+  rawError = false,
+  credentialsRequired = true
+) => {
   options = options || {};
   const url = options.url || constants.ENDPOINT + route;
 
@@ -60,7 +65,7 @@ const callAPI = (route, options, rawError = false) => {
       if (options.skipDeployKey) {
         return _requestOptions;
       } else {
-        return readCredentials().then(credentials => {
+        return readCredentials(credentialsRequired).then(credentials => {
           _requestOptions.headers['X-Deploy-Key'] =
             credentials[constants.AUTH_KEY];
           return _requestOptions;
@@ -99,9 +104,7 @@ const callAPI = (route, options, rawError = false) => {
       }
 
       if (hitError) {
-        const niceMessage = `"${requestOptions.url}" returned "${
-          res.status
-        }" saying "${errors}"`;
+        const niceMessage = `"${requestOptions.url}" returned "${res.status}" saying "${errors}"`;
 
         if (rawError) {
           res.text = text;
@@ -179,9 +182,7 @@ const getLinkedApp = appDir => {
     })
     .catch(() => {
       throw new Error(
-        `Warning! ${
-          constants.CURRENT_APP_FILE
-        } seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
+        `Warning! ${constants.CURRENT_APP_FILE} seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
       );
     });
 };
