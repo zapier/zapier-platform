@@ -2298,6 +2298,62 @@ describe('Integration Test', () => {
       });
     });
 
+    it('file upload, KEY_pre_write, wrong content type', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'file_pre_write_wrong_content_type',
+        'file_pre_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.file.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        filename: 'dont.care',
+        file: 'https://httpbin.zapier-tooling.com/image/png'
+      };
+      return app(input).then(output => {
+        const file = output.results.file;
+        should.equal(file.sha1, '379f5137831350c900e757b39e525b9db1426d53');
+
+        const filename = output.results.filename;
+        should.equal(filename, 'dont.care');
+      });
+    });
+
+    it('file upload, KEY_pre_write, rename file field', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'file2_pre_write_rename_file_field',
+        'file2_pre_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.file2.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        id: 'whatever',
+        name: 'a pig',
+        file_1: 'https://httpbin.zapier-tooling.com/image/png'
+      };
+      return app(input).then(output => {
+        const file = output.results.file;
+        should.equal(file.sha1, '379f5137831350c900e757b39e525b9db1426d53');
+
+        const data = JSON.parse(output.results.data);
+        should.equal(data.id, 'whatever');
+        should.equal(data.name, 'a pig');
+      });
+    });
+
     describe('legacyMethodHydrator', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);

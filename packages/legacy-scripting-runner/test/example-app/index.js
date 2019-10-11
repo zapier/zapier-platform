@@ -579,6 +579,21 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      file_pre_write_wrong_content_type: function(bundle) {
+        // Files should always be sent as multipart/form-data, no matter what
+        // the developer sets here
+        bundle.request.headers['Content-Type'] = 'applicaiton/x-www-form-urlencoded';
+        bundle.request.data = z.JSON.parse(bundle.request.data);
+        return bundle.request;
+      },
+
+      file2_pre_write_rename_file_field: function(bundle) {
+        bundle.request.files = {
+          file: bundle.request.files.file_1
+        };
+        return bundle.request;
+      },
+
       /*
        * Search
        */
@@ -874,6 +889,25 @@ const FileUpload = {
   }
 };
 
+const FileUpload2 = {
+  key: 'file2',
+  noun: 'File',
+  display: {
+    label: 'Upload a File 2'
+  },
+  operation: {
+    perform: {
+      source: "return z.legacyScripting.run(bundle, 'create', 'file2');"
+    },
+    inputFields: [
+      { key: 'id', label: 'ID', type: 'string' },
+      { key: 'name', label: 'Name', type: 'string' },
+      { key: 'file_1', label: 'File', type: 'file' }
+    ],
+    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }]
+  }
+};
+
 const RecipeCreate = {
   key: 'recipe',
   noun: 'Recipe',
@@ -946,8 +980,9 @@ const App = {
   },
   creates: {
     [MovieCreate.key]: MovieCreate,
+    [RecipeCreate.key]: RecipeCreate,
     [FileUpload.key]: FileUpload,
-    [RecipeCreate.key]: RecipeCreate
+    [FileUpload2.key]: FileUpload2
   },
   searches: {
     [MovieSearch.key]: MovieSearch
@@ -1018,15 +1053,20 @@ const App = {
           fieldsExcludedFromBody: ['title']
         }
       },
+      recipe: {
+        operation: {
+          url: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
+          inputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`
+        }
+      },
       file: {
         operation: {
           url: `${AUTH_JSON_SERVER_URL}/upload`
         }
       },
-      recipe: {
+      file2: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
-          inputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`
+          url: `${AUTH_JSON_SERVER_URL}/upload`
         }
       }
     },

@@ -60,10 +60,16 @@ const FIELD_TYPE_CONVERT_MAP = {
 const makeMultipartBody = async (data, lazyFilesObject) => {
   const form = new FormData();
   if (data) {
-    if (typeof data !== 'string') {
-      data = JSON.stringify(data);
+    if (_.isPlainObject(data)) {
+      _.each(data, (v, k) => {
+        form.append(k, v);
+      });
+    } else {
+      if (typeof data !== 'string') {
+        data = JSON.stringify(data);
+      }
+      form.append('data', data);
     }
-    form.append('data', data);
   }
 
   const fileFieldKeys = Object.keys(lazyFilesObject);
@@ -84,6 +90,7 @@ const makeMultipartBody = async (data, lazyFilesObject) => {
 // Prepares request body from results.files and assign it to result.body. This
 // accepts the request object returned by a KEY_pre_ method.
 const addFilesToRequestBodyFromPreResult = async (request, event) => {
+  const originalHydrateUrls = _.map(event.originalFiles, (file, k) => file[1]);
   const lazyFiles = _.reduce(
     request.files,
     (result, file, k) => {
@@ -92,7 +99,7 @@ const addFilesToRequestBodyFromPreResult = async (request, event) => {
         const [filename, newFileValue, contentType] = file;
         // If pre_write changes the hydrate URL, file[1], we take it as a
         // string content even if it looks like a URL
-        const loadUrl = newFileValue === event.originalFiles[k][1];
+        const loadUrl = originalHydrateUrls.includes(newFileValue);
         lazyFile = LazyFile(
           newFileValue,
           { filename, contentType },
@@ -111,6 +118,7 @@ const addFilesToRequestBodyFromPreResult = async (request, event) => {
   );
 
   request.body = await makeMultipartBody(request.data || '{}', lazyFiles);
+  delete request.headers['Content-Type'];
   return request;
 };
 
@@ -128,7 +136,7 @@ const addFilesToRequestBodyFromBody = async (request, bundle) => {
     }
   });
 
-  request.body = await makeMultipartBody(data, lazyFiles);
+  request.body = await makeMultipartBody(JSON.stringify(data), lazyFiles);
   request.headers.Accept = '*/*';
   delete request.headers['Content-Type'];
   return request;
