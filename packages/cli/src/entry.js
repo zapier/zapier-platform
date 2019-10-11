@@ -2,7 +2,8 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
 const updateNotifier = require('update-notifier');
-const debug = require('debug')('zapier:analytics');
+
+const pkg = require('../package.json');
 
 const {
   DEBUG,
@@ -12,6 +13,7 @@ const {
 const commands = require('./commands');
 const oCommands = require('./oclif/oCommands');
 const utils = require('./utils');
+const { recordAnalytics } = require('./utils/analytics');
 const leven = require('leven');
 
 const oclifCommands = new Set(Object.keys(oCommands));
@@ -44,9 +46,8 @@ module.exports = argv => {
     process.exit(1);
   }
 
-  const pkg = require('../package.json');
   const notifier = updateNotifier({
-    pkg: pkg,
+    pkg,
     updateCheckInterval: UPDATE_NOTIFICATION_INTERVAL
   });
   if (notifier.update && notifier.update.latest !== pkg.version) {
@@ -72,26 +73,6 @@ module.exports = argv => {
   const command = args[0];
   args = args.slice(1);
 
-  const analyticsBody = {
-    command,
-    validCommand: oclifCommands.has(command) || Boolean(commands[command]),
-    numArgs: args.length,
-    flags: argOpts
-  };
-  debug('sending', analyticsBody);
-  const analyticsPromise = utils
-    .callAPI(
-      '/analytics',
-      {
-        method: 'POST',
-        body: analyticsBody
-      },
-      true,
-      false
-    )
-    .then(({ success }) => debug('success:', success))
-    .catch(({ errText }) => debug('err:', errText));
-
   if (
     oclifCommands.has(command) || // zapier blah
     (command === 'help' && oclifCommands.has(args[0])) // zapier help blah
@@ -99,6 +80,13 @@ module.exports = argv => {
     require('./bin/run'); // requiring shouldn't have side effects, but this one is temporary and special
     return;
   }
+
+  const analyticsPromise = recordAnalytics(
+    command,
+    Boolean(oclifCommands.has(command) || commands[command]),
+    args,
+    argOpts
+  );
 
   // create the context, logs thread through this
   const context = utils.createContext({ command, args, argOpts });

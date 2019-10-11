@@ -1,13 +1,18 @@
 const { Command } = require('@oclif/command');
 
 const { startSpinner, endSpinner } = require('../utils/display');
+const { recordAnalytics } = require('../utils/analytics');
 
 const inquirer = require('inquirer');
 
 class ZapierBaseCommand extends Command {
   run() {
     this._parseFlags();
-    return this.perform();
+    return Promise.all([
+      // probably need to tweak this so that if the command fails, the analytics aren't rejected?
+      recordAnalytics(this.id, true, Object.keys(this.args), this.flags),
+      this.perform()
+    ]);
   }
 
   _parseFlags() {
