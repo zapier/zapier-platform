@@ -10,6 +10,7 @@ class ZapierBaseCommand extends Command {
     this._parseFlags();
     return Promise.all([
       // probably need to tweak this so that if the command fails, the analytics aren't rejected?
+      // also, would be nice to plug into something a little more base-level
       recordAnalytics(this.id, true, Object.keys(this.args), this.flags),
       this.perform()
     ]);

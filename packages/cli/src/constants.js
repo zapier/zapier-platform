@@ -31,10 +31,18 @@ const nodeVersion = semver.Comparator(
 ).semver.version;
 const LAMBDA_VERSION = `v${nodeVersion}`;
 const AUTH_KEY = 'deployKey';
+const ANALYTICS_KEY = 'analyticsMode';
+const ANALYTICS_MODES = {
+  enabled: 'enabled',
+  anonymous: 'anonymous',
+  disabled: 'disabled'
+};
 const PACKAGE_VERSION = require('../package.json').version;
 const UPDATE_NOTIFICATION_INTERVAL = 1000 * 60 * 60 * 24 * 7; // one week
 
 module.exports = {
+  ANALYTICS_KEY,
+  ANALYTICS_MODES,
   API_PATH,
   AUTH_KEY,
   AUTH_LOCATION,
