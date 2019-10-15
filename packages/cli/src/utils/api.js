@@ -108,7 +108,11 @@ const callAPI = (
 
         if (rawError) {
           res.text = text;
-          res.json = JSON.parse(text);
+          try {
+            res.json = JSON.parse(text);
+          } catch (e) {
+            res.json = {};
+          }
           res.errText = niceMessage;
           return Promise.reject(res);
         } else {
