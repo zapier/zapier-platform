@@ -9,8 +9,9 @@ class ZapierBaseCommand extends Command {
   run() {
     this._parseFlags();
     return Promise.all([
-      // probably need to tweak this so that if the command fails, the analytics aren't rejected?
-      // also, would be nice to plug into something a little more base-level
+      // If the `perform` errors out, then we never see the analytics response. We also run the risk of not having the chance to fire them off at all
+      // would need to catch errors in the perform so that they're not thrown until the whole chain finishes
+      // also, would be nice to plug into something a little more base-level so we catch invalid flags. Not super important
       recordAnalytics(this.id, true, Object.keys(this.args), this.flags),
       this.perform()
     ]);

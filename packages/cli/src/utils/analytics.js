@@ -41,7 +41,6 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
   };
 
   debug('sending', analyticsBody);
-  // include options.skipDeployKey to be anonymous
   return shouldRecordAnalytics
     ? callAPI(
         '/analytics',
