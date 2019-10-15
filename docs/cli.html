@@ -255,7 +255,6 @@ a code {
 <li><a href="#env">env</a></li>
 <li><a href="#help">help</a></li>
 <li><a href="#history">history</a></li>
-<li><a href="#init">init</a></li>
 <li><a href="#invite">invite</a></li>
 <li><a href="#link">link</a></li>
 <li><a href="#login">login</a></li>
@@ -732,41 +731,6 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
 <span class="hljs-comment"># &#x2502; version added            &#x2502; 1.2.52            &#x2502; user@example.com &#x2502; 2016-01-01T22:19:36 &#x2502;</span>
 <span class="hljs-comment"># &#x2502; app created              &#x2502; initial creation  &#x2502; user@example.com &#x2502; 2016-01-01T22:19:28 &#x2502;</span>
 <span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="init">init</h2>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <blockquote>
-<p>Initializes a new Zapier app in a directory.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier init path</code></p><p>Initializes a new Zapier app. If you specify a template, will download and install the app from that template.</p><p>After running this, you&apos;ll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.</p><blockquote>
-<p>Note: this doesn&apos;t register or deploy the app with Zapier - try <code>zapier register &quot;Example&quot;</code> and <code>zapier push</code> for that!</p>
-</blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>path [value]</code> -- <strong>required</strong>,</li>
-<li><code>--template={minimal,trigger,search,create,basic-auth,custom-auth,digest-auth,oauth2,oauth1-trello,oauth1-tumblr,oauth1-twitter,session-auth,dynamic-dropdown,files,middleware,resource,rest-hooks,search-or-create,babel,typescript,github,onedrive}</code> -- <em>optional</em>, select a starting app template. Default is <code>minimal</code></li>
-</ul>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier init example-app --template=minimal
-<span class="hljs-comment"># Let&apos;s initialize your app!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Downloading zapier/zapier-platform-example-app-minimal starter app - done!</span>
-<span class="hljs-comment">#   Copy /users/username/code/example-app/.gitignore - done!</span>
-<span class="hljs-comment">#   Copy /users/username/code/example-app/index.js - done!</span>
-<span class="hljs-comment">#   Copy /users/username/code/example-app/package.json - done!</span>
-<span class="hljs-comment">#   Copy /users/username/code/example-app/test/index.js - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Finished! You might need to `npm install` then try `zapier test`!</span>
 </code></pre>
     </div>
   </div>

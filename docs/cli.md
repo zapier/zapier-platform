@@ -417,38 +417,6 @@ $ zapier history
 ```
 
 
-## init
-
-  > Initializes a new Zapier app in a directory.
-
-  **Usage:** `zapier init path`
-
-  
-Initializes a new Zapier app. If you specify a template, will download and install the app from that template.
-
-After running this, you'll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
-
-> Note: this doesn't register or deploy the app with Zapier - try `zapier register "Example"` and `zapier push` for that!
-
-**Arguments**
-
-* `path [value]` -- **required**,
-* `--template={minimal,trigger,search,create,basic-auth,custom-auth,digest-auth,oauth2,oauth1-trello,oauth1-tumblr,oauth1-twitter,session-auth,dynamic-dropdown,files,middleware,resource,rest-hooks,search-or-create,babel,typescript,github,onedrive}` -- _optional_, select a starting app template. Default is `minimal`
-
-```bash
-$ zapier init example-app --template=minimal
-# Let's initialize your app!
-#
-#   Downloading zapier/zapier-platform-example-app-minimal starter app - done!
-#   Copy /users/username/code/example-app/.gitignore - done!
-#   Copy /users/username/code/example-app/index.js - done!
-#   Copy /users/username/code/example-app/package.json - done!
-#   Copy /users/username/code/example-app/test/index.js - done!
-#
-# Finished! You might need to `npm install` then try `zapier test`!
-```
-
-
 ## invite
 
   > Manage the invitees/testers on your project. Can optionally specify a version or --remove.
