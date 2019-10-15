@@ -1,5 +1,6 @@
-const { readFile } = require('./files');
+const { readFile, writeFile } = require('./files');
 const { AUTH_LOCATION } = require('../constants');
+const { prettyJSONstringify } = require('./display');
 
 const readUserConfig = async () => {
   try {
@@ -10,8 +11,15 @@ const readUserConfig = async () => {
   }
 };
 
-const writeUserConfig = newSettings => {
-  // make sure not to blow out deployKey
+const writeUserConfig = async newSettings => {
+  const currentSettings = await readUserConfig();
+  const finalSettings = {
+    ...currentSettings,
+    ...newSettings
+  };
+  // TODO: this blows out symlinks, but it always has
+  // use fs.readPath to get to the actual location
+  return writeFile(AUTH_LOCATION, prettyJSONstringify(finalSettings));
 };
 
 module.exports = {

@@ -3,13 +3,24 @@ const { callAPI } = require('./api');
 const debug = require('debug')('zapier:analytics');
 const pkg = require('../../package.json');
 const { ANALYTICS_KEY, ANALYTICS_MODES } = require('../constants');
-const { readUserConfig } = require('./userConfig');
+const { readUserConfig, writeUserConfig } = require('./userConfig');
+
+const currentAnalyticsMode = async () => {
+  const { [ANALYTICS_KEY]: mode } = await readUserConfig();
+  return mode || ANALYTICS_MODES.enabled;
+};
+
+const setAnalyticsMode = newMode => {
+  // the CLI validates that newMode is a valid option
+  return writeUserConfig({ [ANALYTICS_KEY]: newMode });
+};
 
 const recordAnalytics = async (command, isValidCommand, args, flags) => {
-  const { [ANALYTICS_KEY]: analyticsMode } = await readUserConfig();
+  const analyticsMode = await currentAnalyticsMode();
 
   const shouldRecordAnalytics =
-    process.NODE_ENV !== 'test' && analyticsMode !== ANALYTICS_MODES.disabled;
+    process.env.DISABLE_ZAPIER_ANALYTICS ||
+    (process.NODE_ENV !== 'test' && analyticsMode !== ANALYTICS_MODES.disabled);
 
   if (!shouldRecordAnalytics) {
     return;
@@ -47,4 +58,9 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     : Promise.resolve();
 };
 
-module.exports = { recordAnalytics };
+module.exports = {
+  currentAnalyticsMode,
+  recordAnalytics,
+  modes: ANALYTICS_MODES,
+  setAnalyticsMode
+};
