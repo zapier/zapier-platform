@@ -6953,15 +6953,15 @@ lodash@4.17.11, lodash@^4.0.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.15.0, l
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
 
+lodash@4.17.15, lodash@^4.17.12, lodash@^4.17.14:
+  version "4.17.15"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
+  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
+
 lodash@4.17.4:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
   integrity sha1-eCA6TRwyiuHYbcpkYONptX9AVa4=
-
-lodash@^4.17.12, lodash@^4.17.14:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
 
 log-symbols@2.2.0, log-symbols@^2.2.0:
   version "2.2.0"
@@ -10987,23 +10987,6 @@ zapier-platform-core@7.6.1, zapier-platform-core@^7.6.0:
   optionalDependencies:
     "@types/node" "8.10.20"
 
-zapier-platform-core@8.0.1:
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/zapier-platform-core/-/zapier-platform-core-8.0.1.tgz#00a2dbeac303d85be9888ef02f12d9bfd67780dc"
-  integrity sha512-vuAe7JkFQ88AeQ//NwwNEh8ZjiZr30GRWtwYo7Wo/nx1cqZwq+CRc9zJU2WRrhJfJOtOOTUF6w+pArBTtMOC5A==
-  dependencies:
-    bluebird "3.5.0"
-    content-disposition "0.5.2"
-    dotenv "5.0.1"
-    form-data "2.3.2"
-    lodash "4.17.11"
-    node-fetch "1.7.1"
-    oauth-sign "0.9.0"
-    semver "5.6.0"
-    zapier-platform-schema "8.0.1"
-  optionalDependencies:
-    "@types/node" "8.10.20"
-
 zapier-platform-core@8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/zapier-platform-core/-/zapier-platform-core-8.2.0.tgz#f6d8a1320c1ed76387189a2e8fe15870744eb3f8"
@@ -11018,6 +11001,23 @@ zapier-platform-core@8.2.0:
     oauth-sign "0.9.0"
     semver "5.6.0"
     zapier-platform-schema "8.2.0"
+  optionalDependencies:
+    "@types/node" "8.10.20"
+
+zapier-platform-core@8.2.1:
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/zapier-platform-core/-/zapier-platform-core-8.2.1.tgz#15b3ad86c798e6b60f26d18e1e8176b5e2671d53"
+  integrity sha512-BWmjdMyPB2uUAa+pvxgv6YXs4Z72jmSk0z82ycvZAEWO7GZ4lpIJA9lssNyqUqdh8LOr1u0BFOPjs17EBhr1fA==
+  dependencies:
+    bluebird "3.5.0"
+    content-disposition "0.5.2"
+    dotenv "5.0.1"
+    form-data "2.3.2"
+    lodash "4.17.11"
+    node-fetch "1.7.1"
+    oauth-sign "0.9.0"
+    semver "5.6.0"
+    zapier-platform-schema "8.2.1"
   optionalDependencies:
     "@types/node" "8.10.20"
 
@@ -11045,18 +11045,18 @@ zapier-platform-schema@7.6.1:
     jsonschema "1.1.1"
     lodash "4.17.10"
 
-zapier-platform-schema@8.0.1:
-  version "8.0.1"
-  resolved "https://registry.yarnpkg.com/zapier-platform-schema/-/zapier-platform-schema-8.0.1.tgz#117b2e5ad98914dc8e877db76e1ce01302578bec"
-  integrity sha512-97KJ0xVLtpU4BiXVaMTPQpiA0T6CQIEzWfzAWwJAWbu5336+6DMFUzDWN4bANBeD3CIsRHHPcZkP8n/17U05ag==
-  dependencies:
-    jsonschema "1.1.1"
-    lodash "4.17.10"
-
 zapier-platform-schema@8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/zapier-platform-schema/-/zapier-platform-schema-8.2.0.tgz#b9b24a46313badf2d5b8c42eaa9908b42018be7d"
   integrity sha512-gf2UgpboZycvBNQIs73CCV63yJO5XtRYLAIly6OKvP/0JZrEUuoSkphhaom+lVolFa6wIVQOwfuvSw84e6Ht/A==
+  dependencies:
+    jsonschema "1.1.1"
+    lodash "4.17.11"
+
+zapier-platform-schema@8.2.1:
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/zapier-platform-schema/-/zapier-platform-schema-8.2.1.tgz#1dcd38552ecced57022c39ca8d48d4b0004306de"
+  integrity sha512-8UFheE2KV4BzwDr1RKvsmSxtrc0jumLxxN+7yMm6lxfFKDITPTyfMlcg4SWuAEzbdC9jrZD7IFn8oX45i95J2w==
   dependencies:
     jsonschema "1.1.1"
     lodash "4.17.11"
