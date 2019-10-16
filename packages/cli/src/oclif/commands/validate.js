@@ -75,12 +75,12 @@ class ValidateCommand extends BaseCommand {
       emptyMessage: 'App checks passed, no issues found.'
     });
 
-    if (checkResult.errors && checkResult.errors.length) {
+    if (checkResult.errors && checkResult.errors.results.length) {
       process.exitCode = 1;
       this.log(
         'Errors will block you from pushing; warnings will only block you from going public or promoting a version.\n'
       );
-    } else if (checkResult.warnings.length) {
+    } else if (checkResult.warnings && checkResult.warnings.results.length) {
       this.log(
         'Your app looks great! Warnings only block you from going public or promoting a version.\n'
       );

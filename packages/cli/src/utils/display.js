@@ -279,7 +279,12 @@ const getYesNoInput = (question, showCtrlC = true) => {
 const flattenCheckResult = checkResult => {
   const res = [];
   for (const severity in checkResult) {
-    for (const issueGroup of checkResult[severity]) {
+    const results = checkResult[severity].results;
+    if (!results) {
+      continue;
+    }
+
+    for (const issueGroup of results) {
       if (!issueGroup.violations) {
         break;
       }
