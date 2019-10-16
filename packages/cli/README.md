@@ -122,6 +122,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [How does deduplication work?](#how-does-deduplication-work)
   * [Why are my triggers complaining if I don't provide an explicit `id` field?](#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field)
   * [Node 6 No Longer Supported](#node-6-no-longer-supported)
+  * [What Analytics are Collected?](#what-analytics-are-collected)
 - [Command Line Tab Completion](#command-line-tab-completion)
   * [Zsh Completion Script](#zsh-completion-script)
   * [Bash Completion Script](#bash-completion-script)
@@ -3036,6 +3037,36 @@ then you need to update your `zapier-platform-core` dependency to a non-deprecat
 7. Run `zapier promote YOUR_NEW_VERSION` (from step 2)
 8. Migrate your users from the previous version (`zapier migrate OLD_VERSION NEW_VERSION`)
 
+<a id="analytics"></a>
+### What Analytics are Collected?
+
+Starting with version `8.4.0`, Zapier collects information about each invocation of the CLI tool.
+
+This data is collected purely to improve the CLI experience and will **never** be used for advertising or any non-product purpose. There are 3 collection modes that are set on a per-computer basis.
+
+**Anonymous**
+
+When you run a command with analytics in `anonymous` mode, the following data is sent to Zapier:
+
+* which command you ran
+* if that command is a known command
+* how many arguments you supplied (but not the contents of the arguments)
+* which flags you used (but not their contents)
+* the version of CLI that you're using
+
+**Enabled** (the default)
+
+When analytics are fully `enabled`, the above is sent, plus:
+
+* your operating system (the result of calling [`process.platform`](https://nodejs.org/api/process.html#process_process_platform))
+* your Zapier user id
+
+**Disabled**
+
+Lastly, analytics can be `disabled` entirely, either by running `zapier analytics --mode disabled` or settings the `DISABLE_ZAPIER_ANALYTICS` environment variable to `1`.
+
+We take great care not to collect any information about your filesystem or anything otherwise secret. You can see exactly what's being collecting at runtime by prefixing any command with `DEBUG=zapier:analytics`.
+
 ## Command Line Tab Completion
 
 We have provided two tab completion scripts to make it easier to use the Zapier Platform CLI, for zsh and bash.
@@ -3096,7 +3127,7 @@ The Zapier platform and its tools are under active development. While you don't 
 Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is `8.3.0`. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is `8.4.0`. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 

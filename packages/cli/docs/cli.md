@@ -10,6 +10,20 @@ $ npm install -g zapier-platform-cli
 
 # Commands
 
+## analytics
+
+> Shows the status of the analytics that are collected. Also used to change what is collected.
+
+**Usage**: `zapier analytics`
+
+**Flags**
+* `-m, --mode` | Choose how much information to share. Anonymous mode drops the OS type and Zapier user id, but keeps command info. Identifying information is used only for debugging purposes. One of `[enabled | anonymous | disabled]`.
+* `-d, --debug` | Show extra debugging output
+
+**Examples**
+* `zapier analytics --mode enabled`
+
+
 ## apps
 
 > Lists any apps that you have admin access to.

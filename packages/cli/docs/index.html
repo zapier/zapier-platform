@@ -376,6 +376,7 @@ a code {
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
 <li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&#39;t provide an explicit <code>id</code> field?</a></li>
 <li><a href="#node-6-no-longer-supported">Node 6 No Longer Supported</a></li>
+<li><a href="#what-analytics-are-collected">What Analytics are Collected?</a></li>
 </ul>
 </li>
 <li><a href="#command-line-tab-completion">Command Line Tab Completion</a><ul>
@@ -575,6 +576,7 @@ a code {
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
 <li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&apos;t provide an explicit <code>id</code> field?</a></li>
 <li><a href="#node-6-no-longer-supported">Node 6 No Longer Supported</a></li>
+<li><a href="#what-analytics-are-collected">What Analytics are Collected?</a></li>
 </ul>
 </li>
 <li><a href="#command-line-tab-completion">Command Line Tab Completion</a><ul>
@@ -4949,7 +4951,34 @@ items.forEach(<span class="hljs-function"><span class="hljs-params">item</span> 
 <li>Run <code>zapier push</code></li>
 <li>Run <code>zapier promote YOUR_NEW_VERSION</code> (from step 2)</li>
 <li>Migrate your users from the previous version (<code>zapier migrate OLD_VERSION NEW_VERSION</code>)</li>
-</ol>
+</ol><p><a id="analytics"></a></p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="what-analytics-are-collected">What Analytics are Collected?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Starting with version <code>8.4.0</code>, Zapier collects information about each invocation of the CLI tool.</p><p>This data is collected purely to improve the CLI experience and will <strong>never</strong> be used for advertising or any non-product purpose. There are 3 collection modes that are set on a per-computer basis.</p><p><strong>Anonymous</strong></p><p>When you run a command with analytics in <code>anonymous</code> mode, the following data is sent to Zapier:</p><ul>
+<li>which command you ran</li>
+<li>if that command is a known command</li>
+<li>how many arguments you supplied (but not the contents of the arguments)</li>
+<li>which flags you used (but not their contents)</li>
+<li>the version of CLI that you&apos;re using</li>
+</ul><p><strong>Enabled</strong> (the default)</p><p>When analytics are fully <code>enabled</code>, the above is sent, plus:</p><ul>
+<li>your operating system (the result of calling <a href="https://nodejs.org/api/process.html#process_process_platform"><code>process.platform</code></a>)</li>
+<li>your Zapier user id</li>
+</ul><p><strong>Disabled</strong></p><p>Lastly, analytics can be <code>disabled</code> entirely, either by running <code>zapier analytics --mode disabled</code> or settings the <code>DISABLE_ZAPIER_ANALYTICS</code> environment variable to <code>1</code>.</p><p>We take great care not to collect any information about your filesystem or anything otherwise secret. You can see exactly what&apos;s being collecting at runtime by prefixing any command with <code>DEBUG=zapier:analytics</code>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -5093,7 +5122,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform/master/packages/cl
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <code>8.3.0</code>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://www.npmjs.com/package/zapier-platform-core?activeTab=versions">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
+      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <code>8.4.0</code>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://www.npmjs.com/package/zapier-platform-core?activeTab=versions">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

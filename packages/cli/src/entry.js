@@ -3,10 +3,13 @@ const _ = require('lodash');
 const colors = require('colors/safe');
 const updateNotifier = require('update-notifier');
 
+const pkg = require('../package.json');
+
 const { LAMBDA_VERSION, UPDATE_NOTIFICATION_INTERVAL } = require('./constants');
 const commands = require('./commands');
 const oCommands = require('./oclif/oCommands');
 const utils = require('./utils');
+const { recordAnalytics } = require('./utils/analytics');
 const leven = require('leven');
 
 const oclifCommands = new Set(Object.keys(oCommands));
@@ -36,12 +39,12 @@ module.exports = argv => {
         `Requires node version >= ${LAMBDA_VERSION}, found ${process.versions.node}. Please upgrade node.`
       )
     );
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
-  const pkg = require('../package.json');
   const notifier = updateNotifier({
-    pkg: pkg,
+    pkg,
     updateCheckInterval: UPDATE_NOTIFICATION_INTERVAL
   });
   if (notifier.update && notifier.update.latest !== pkg.version) {
@@ -70,6 +73,13 @@ module.exports = argv => {
     return;
   }
 
+  const analyticsPromise = recordAnalytics(
+    command,
+    Boolean(oclifCommands.has(command) || commands[command]),
+    args,
+    argOpts
+  );
+
   // create the context, logs thread through this
   const context = utils.createContext({ command, args, argOpts });
 
@@ -91,14 +101,18 @@ module.exports = argv => {
     }
 
     context.line(message.join(' '));
-
+    process.exitCode = 1;
     return;
   }
 
   const { valid, reason } = utils.isValidAppInstall(command);
   if (!valid) {
-    console.error(colors.red(reason));
-    process.exit(1);
+    // wait here, because it looks weird to print the "missing install" message and then wait another second
+    analyticsPromise.then(() => {
+      console.error(colors.red(reason));
+      process.exitCode = 1;
+    });
+    return;
   }
 
   const spec = {
@@ -107,38 +121,44 @@ module.exports = argv => {
   };
   const errors = utils.enforceArgSpec(spec, args, argOpts);
   if (errors.length) {
-    context.line();
-    context.line(
-      colors.red(
-        'Errors running command `' + ['zapier'].concat(argv).join(' ') + '`:'
-      )
-    );
-    context.line();
-    errors.forEach(error => context.line(colors.red(`!!!   ${error}`)));
-    context.line();
-    context.line(`For more information, run \`zapier help ${command}\`.`);
-    context.line();
-    process.exit(1);
+    // wait here, because it looks weird to print the "wrong flag" message and then wait another second
+    analyticsPromise.then(() => {
+      context.line();
+      context.line(
+        colors.red(
+          'Errors running command `' + ['zapier'].concat(argv).join(' ') + '`:'
+        )
+      );
+      context.line();
+      errors.forEach(error => context.line(colors.red(`!!!   ${error}`)));
+      context.line();
+      context.line(`For more information, run \`zapier help ${command}\`.`);
+      context.line();
+      process.exitCode = 1;
+    });
+    return;
   }
 
   commandFunc(context, ...args).catch(err => {
-    utils.endSpinner(false);
+    analyticsPromise.then(() => {
+      utils.endSpinner(false);
 
-    if (global.argOpts.debug) {
-      context.line();
-      context.line(err.stack);
-      context.line();
-      context.line(colors.red('Error!'));
-    } else {
-      context.line();
-      context.line();
-      context.line(colors.red('Error!') + ' ' + colors.red(err.message));
-      context.line(
-        colors.grey(
-          '(Use --debug flag and run this command again to get more details.)'
-        )
-      );
-    }
-    process.exit(1);
+      if (global.argOpts.debug) {
+        context.line();
+        context.line(err.stack);
+        context.line();
+        context.line(colors.red('Error!'));
+      } else {
+        context.line();
+        context.line();
+        context.line(colors.red('Error!') + ' ' + colors.red(err.message));
+        context.line(
+          colors.grey(
+            '(Use --debug flag and run this command again to get more details.)'
+          )
+        );
+      }
+      process.exitCode = 1;
+    });
   });
 };

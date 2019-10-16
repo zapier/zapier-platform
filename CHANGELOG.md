@@ -1,3 +1,17 @@
+## 8.4.0
+
+### cli
+
+* :tada: Added analytics to the CLI. These are vital for helping us improve our product. Read more about what we collect [here](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md).
+
+### schema
+
+* No changes
+
+### core
+
+* No changes
+
 ## 8.3.0
 
 The big change of this release is we started to maintain all the packages in a [monorepo](https://github.com/zapier/zapier-platform). It's more like an internal refactoring, so it shouldn't affect developer experience. Major work includes:

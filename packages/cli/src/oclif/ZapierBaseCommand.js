@@ -3,6 +3,7 @@ const colors = require('colors/safe');
 
 const { startSpinner, endSpinner, formatStyles } = require('../utils/display');
 const { isValidAppInstall } = require('../utils/misc');
+const { recordAnalytics } = require('../utils/analytics');
 
 const inquirer = require('inquirer');
 
@@ -11,6 +12,7 @@ const DATA_FORMATS = ['json', 'raw'];
 class ZapierBaseCommand extends Command {
   run() {
     this._parseFlags();
+
     if (this.flags.debug) {
       this.debug.enabled = true; // enables this.debug on the command
       require('debug').enable('zapier:*'); // enables all further spawned functions, like API
@@ -22,20 +24,30 @@ class ZapierBaseCommand extends Command {
 
     this.throwForInvalidAppInstall();
 
-    return this.perform().catch(e => {
-      this.stopSpinner({ success: false });
-      const errTextLines = [e.message];
+    // the following comments are pre-merge, might be out of date:
 
-      this.debug(e.stack);
+    // If the `perform` errors out, then we never see the analytics response. We also run the risk of not having the chance to fire them off at all
+    // would need to catch errors in the perform so that they're not thrown until the whole chain finishes
+    // also, would be nice to plug into something a little more base-level so we catch invalid flags. Not super important
 
-      if (!this.flags.debug && !this.flags.invokedFromAnotherCommand) {
-        errTextLines.push(
-          colors.gray('re-run this command with `--debug` for more info')
-        );
-      }
+    return Promise.all([
+      recordAnalytics(this.id, true, Object.keys(this.args), this.flags),
 
-      this.error(errTextLines.join('\n\n'));
-    });
+      this.perform().catch(e => {
+        this.stopSpinner({ success: false });
+        const errTextLines = [e.message];
+
+        this.debug(e.stack);
+
+        if (!this.flags.debug && !this.flags.invokedFromAnotherCommand) {
+          errTextLines.push(
+            colors.gray('re-run this command with `--debug` for more info')
+          );
+        }
+
+        this.error(errTextLines.join('\n\n'));
+      })
+    ]);
   }
 
   _parseFlags() {

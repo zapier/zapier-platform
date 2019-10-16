@@ -11158,10 +11158,10 @@ zapier-platform-schema@7.6.1:
     jsonschema "1.1.1"
     lodash "4.17.10"
 
-zapier-platform-schema@8.2.0:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/zapier-platform-schema/-/zapier-platform-schema-8.2.0.tgz#b9b24a46313badf2d5b8c42eaa9908b42018be7d"
-  integrity sha512-gf2UgpboZycvBNQIs73CCV63yJO5XtRYLAIly6OKvP/0JZrEUuoSkphhaom+lVolFa6wIVQOwfuvSw84e6Ht/A==
+zapier-platform-schema@8.2.1:
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/zapier-platform-schema/-/zapier-platform-schema-8.2.1.tgz#1dcd38552ecced57022c39ca8d48d4b0004306de"
+  integrity sha512-8UFheE2KV4BzwDr1RKvsmSxtrc0jumLxxN+7yMm6lxfFKDITPTyfMlcg4SWuAEzbdC9jrZD7IFn8oX45i95J2w==
   dependencies:
     jsonschema "1.1.1"
     lodash "4.17.11"

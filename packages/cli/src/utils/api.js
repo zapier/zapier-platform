@@ -43,7 +43,12 @@ const readCredentials = (explodeIfMissing = true) => {
 };
 
 // Calls the underlying platform REST API with proper authentication.
-const callAPI = (route, options, rawError = false) => {
+const callAPI = (
+  route,
+  options,
+  rawError = false,
+  credentialsRequired = true
+) => {
   // temp manual enable while we're not all the way moved over
   if (_.get(global, ['argOpts', 'debug'])) {
     debug.enabled = true;
@@ -69,7 +74,7 @@ const callAPI = (route, options, rawError = false) => {
       if (options.skipDeployKey) {
         return _requestOptions;
       } else {
-        return readCredentials().then(credentials => {
+        return readCredentials(credentialsRequired).then(credentials => {
           _requestOptions.headers['X-Deploy-Key'] =
             credentials[constants.AUTH_KEY];
           return _requestOptions;
@@ -116,7 +121,11 @@ const callAPI = (route, options, rawError = false) => {
 
         if (rawError) {
           res.text = text;
-          res.json = JSON.parse(text);
+          try {
+            res.json = JSON.parse(text);
+          } catch (e) {
+            res.json = {};
+          }
           res.errText = niceMessage;
           return Promise.reject(res);
         } else {

@@ -29,6 +29,12 @@ const nodeVersion = semver.Comparator(
 ).semver.version;
 const LAMBDA_VERSION = `v${nodeVersion}`;
 const AUTH_KEY = 'deployKey';
+const ANALYTICS_KEY = 'analyticsMode';
+const ANALYTICS_MODES = {
+  enabled: 'enabled',
+  anonymous: 'anonymous',
+  disabled: 'disabled'
+};
 
 const packageJson = require('../package.json');
 const PACKAGE_NAME = packageJson.name;
@@ -40,6 +46,8 @@ const CHECK_REF_DOC_LINK =
   'https://platform.zapier.com/docs/integration-checks-reference';
 
 module.exports = {
+  ANALYTICS_KEY,
+  ANALYTICS_MODES,
   API_PATH,
   AUTH_KEY,
   AUTH_LOCATION,

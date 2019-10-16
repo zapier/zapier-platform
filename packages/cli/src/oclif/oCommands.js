@@ -1,12 +1,13 @@
 // this is needed for the old help command so it can import new command info
 
 module.exports = {
+  analytics: require('./commands/analytics'),
   apps: require('./commands/apps'),
   deprecate: require('./commands/deprecate'),
-  init: require('./commands/init'),
   history: require('./commands/history'),
-  logout: require('./commands/logout'),
+  init: require('./commands/init'),
   login: require('./commands/login'),
+  logout: require('./commands/logout'),
   migrate: require('./commands/migrate'),
   promote: require('./commands/promote'),
   test: require('./commands/test'),
