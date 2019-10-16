@@ -1445,7 +1445,6 @@ const App = {
     inputFields: [
       {
         key: 'lineItems',
-        required: true,
         children: [
           {
             key: 'lineItemId',
