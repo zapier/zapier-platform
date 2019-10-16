@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://zapier.com"><img src="https://cdn.rawgit.com/zapier/zapier-platform-cli/master/goodies/zapier-logomark.png" alt="Zapier" width="200"></a>
+  <a href="https://zapier.com"><img src="https://raw.githubusercontent.com/zapier/zapier-platform/master/packages/cli/goodies/zapier-logomark.png" alt="Zapier" width="200"></a>
   <br>
   Zapier Platform CLI
   <br>
@@ -7,14 +7,15 @@
 </h1>
 
 <p align="center">
-  <a href="https://travis-ci.org/zapier/zapier-platform-cli"><img src="https://img.shields.io/travis/zapier/zapier-platform-cli/master.svg" alt="Travis"></a>
+  <!-- this isn't live yet? or won't be until I push -->
+  <!-- <a href="https://travis-ci.org/zapier/zapier-platform-cli"><img src="https://img.shields.io/travis/zapier/zapier-platform-cli/master.svg" alt="Travis"></a> -->
   <a href="https://www.npmjs.com/package/zapier-platform-cli"><img src="https://img.shields.io/npm/v/zapier-platform-cli.svg" alt="npm version"></a>
   <!--possible downloads badge too, once that's good-->
 </p>
 
 Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.
 
-[These docs are available here](http://zapier.github.io/zapier-platform-cli/), the [CLI docs are available here](http://zapier.github.io/zapier-platform-cli/cli.html), and you can [view all the schema definitions here](https://zapier.github.io/zapier-platform-schema/build/schema.html).
+[These docs are available here](https://zapier.github.io/zapier-platform/), the [CLI docs are available here](https://zapier.github.io/zapier-platform/cli), and you can [view all the schema definitions here](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md).
 
 ## Table of Contents
 
@@ -29,7 +30,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 ### What is an App?
 
 A CLI App is an implementation of your app's API. You build a Node.js application
-that exports a single object ([JSON Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#appschema)) and upload it to Zapier.
+that exports a single object ([JSON Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#appschema)) and upload it to Zapier.
 Zapier introspects that definition to find out what your app is capable of and
 what options to present end users in the Zap Editor.
 
@@ -58,7 +59,7 @@ Zapier Platform CLI is designed to be used by development teams who collaborate 
 
 [Zapier Platform UI](https://zapier.com/app/developer/) is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It's the quickest way to start using the Zapier platform—and you can manage your CLI apps' core details from its online UI as well. Coming soon, you will be able to convert Zapier Platform UI integrations to CLI to start development in your browser then finish out the core features in your local development environment.
 
-_→ Learn more in our [Zapier Platform UI vs CLI](https://zapier.com/developer/documentation/v2/ui-vs-cli/) post._
+_→ Learn more in our [Zapier Platform UI vs CLI](https://platform.zapier.com/docs/vs) post._
 
 ### Requirements
 
@@ -68,9 +69,9 @@ You can develop using any version of Node you'd like, but your eventual code mus
 
 To ensure stability for our users, we strongly encourage you run tests on `LAMBDA_VERSION` sometime before your code reaches users. This can be done multiple ways.
 
-Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform-example-app-minimal/blob/master/.travis.yml) file in our template apps to get you started.
+Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform/blob/master/example-apps/minimal/.travis.yml) file in our template apps to get you started.
 
-Alternatively, you can change your local node version with tools such as [nvm](https://github.com/creationix/nvm#installation) or [n](https://github.com/tj/n#installation).
+Alternatively, you can change your local node version with tools such as [nvm](https://github.com/nvm-sh/nvm#installation-and-update) or [n](https://github.com/tj/n#installation).
 Then you can either swap to that version with `nvm use LAMBDA_VERSION`, or do `nvm exec LAMBDA_VERSION zapier test` so you can run tests without having to switch versions while developing.
 
 
@@ -116,7 +117,7 @@ Next, you'll probably want to upload app to Zapier itself so you can start testi
 zapier push
 ```
 
-> Go check out our [full CLI reference documentation](http://zapier.github.io/zapier-platform-cli/cli.html) to see all the other commands!
+> Go check out our [full CLI reference documentation](https://zapier.github.io/zapier-platform/cli) to see all the other commands!
 
 
 ### Tutorial
@@ -143,7 +144,7 @@ npm install
 
 If you'd like to manage your **local App**, use these commands:
 
-* `zapier init . --template=resource` - initialize/start a local app project ([see templates here](https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps))
+* `zapier init . --template=resource` - initialize/start a local app project ([see templates here](https://github.com/zapier/zapier-platform/wiki/Example-Apps))
 * `zapier convert 1234 .` - initialize/start from an existing app (alpha)
 * `zapier scaffold resource Contact` - auto-injects a new resource, trigger, etc.
 * `zapier test` - run the same tests as `npm test`
@@ -284,11 +285,15 @@ zapier convert 1234 my-app
 
 Your CLI app will be created and you can continue working on it.
 
-> Since v3.3.0, `zapier convert` has been improved a lot. But this is still in an alpha state - you'll likely have to edit the code to make it work.
-
 > Note - there is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.
 
-Coming soon, you will also be able to convert new integrations built in Zapier Platform UI to CLI.
+Introduced in `v8.2.0`, you are able to convert new integrations built in Zapier Platform UI to CLI.
+
+```sh
+# the --version flag is what denotes this command is interacting with a Visual Builder app
+# zapier convert <APP_ID> <PATH> --version=<APP_VERSION>
+zapier convert 1234 my-app 1.0.1
+```
 
 ## Authentication
 
@@ -300,7 +305,7 @@ Most applications require some sort of authentication - and Zapier provides a ha
 
 Useful if your app requires two pieces of information to authentication: `username` and `password` which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-basic-auth for a working example app for basic auth.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth for a working example app for basic auth.
 
 > Note: if you do the common API Key pattern like `Authorization: Basic APIKEYHERE:x` you should look at the "Custom" authentication method instead.
 
@@ -314,7 +319,7 @@ Useful if your app requires two pieces of information to authentication: `userna
 
 The setup and user experience of Digest Auth is identical to Basic Auth. Users will provide Zapier their username and password and Zapier will handle all the nonce and quality of protection details automatically.
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-digest-auth for a working example app for digest auth.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth for a working example app for digest auth.
 
 > Limitation: Currently, MD5-sess and SHA are not implemented. Only the MD5 algorithm is supported. In addition, server nonces are not reused. That means for every `z.request` call, Zapier will sends an additional request beforehand to get the server nonce.
 
@@ -326,7 +331,7 @@ The setup and user experience of Digest Auth is identical to Basic Auth. Users w
 
 This is what most "API Key" driven apps should default to using. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` to complete the authentication by adding/computing needed headers.
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-custom-auth for a working example app for custom auth.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth for a working example app for custom auth.
 
 ```js
 [insert-file:./snippets/custom-auth.js]
@@ -336,7 +341,7 @@ This is what most "API Key" driven apps should default to using. You'll likely p
 
 Probably the most "powerful" mechanism for authentication - it gives you the ability to exchange some user provided data for some authentication data (IE: username & password for a session key).
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-session-auth for a working example app for session auth.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth for a working example app for session auth.
 
 ```js
 [insert-file:./snippets/session-auth.js]
@@ -346,11 +351,11 @@ Probably the most "powerful" mechanism for authentication - it gives you the abi
 
 ### OAuth1
 
-*New in v7.5.0.*
+*New in `v7.5.0`.*
 
 Zapier's OAuth1 implementation matches [Twitter's](https://developer.twitter.com/en/docs/basics/authentication/overview) and [Trello's](https://developers.trello.com/page/authorization) implementation of the 3-legged OAuth flow.
 
-> Example Apps: check out [oauth1-trello](https://github.com/zapier/zapier-platform-example-app-oauth1-trello), [oauth1-tumblr](https://github.com/zapier/zapier-platform-example-app-oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform-example-app-oauth1-twitter) for working example apps with OAuth1.
+> Example Apps: check out [oauth1-trello](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-trello), [oauth1-tumblr](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-twitter) for working example apps with OAuth1.
 
 The flow works like this:
 
@@ -387,9 +392,9 @@ Your auth definition would look something like this:
 
 ### OAuth2
 
-Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](http://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
+Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](https://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-oauth2 for a working example app for OAuth2.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2 for a working example app for OAuth2.
 
 It looks like this:
 
@@ -443,10 +448,10 @@ This will generate the resource file and add the necessary statements to the `in
 A resource has a few basic properties. The first is the `key`, which allows Zapier to identify the resource on our backend.
 The second is the `noun`, the user-friendly name of the resource that is presented to users throughout the Zapier UI.
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-resource for a working example app using resources.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/resource for a working example app using resources.
 
 After those, there is a set of optional properties that tell Zapier what methods can be performed on the resource.
-The complete list of available methods can be found in the [Resource Schema Docs](https://zapier.github.io/zapier-platform-schema/build/schema.html#resourceschema).
+The complete list of available methods can be found in the [Resource Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#resourceschema).
 For now, let's focus on two:
 
  * `list` - Tells Zapier how to fetch a set of this resource. This becomes a Trigger in the Zapier Editor.
@@ -458,7 +463,7 @@ Here is a complete example of what the list method might look like
 [insert-file:./snippets/recipe-list.js]
 ```
 
-The method is made up of two properties, a `display` and an `operation`. The `display` property ([schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#basicdisplayschema)) holds the info needed to present the method as an available Trigger in the Zapier Editor. The `operation` ([schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#resourceschema)) provides the implementation to make the API call.
+The method is made up of two properties, a `display` and an `operation`. The `display` property ([schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#basicdisplayschema)) holds the info needed to present the method as an available Trigger in the Zapier Editor. The `operation` ([schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#resourceschema)) provides the implementation to make the API call.
 
 Adding a create method looks very similar.
 
@@ -484,16 +489,16 @@ The definition for each of these follows the same structure. Here is an example 
 [insert-file:./snippets/trigger.js]
 ```
 
-You can find more details on the definition for each by looking at the [Trigger Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#triggerschema),
-[Search Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#searchschema), and [Create Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#createschema).
+You can find more details on the definition for each by looking at the [Trigger Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#triggerschema),
+[Search Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#searchschema), and [Create Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#createschema).
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-trigger for a working example app using triggers.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/trigger for a working example app using triggers.
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-rest-hooks for a working example app using REST hook triggers.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/rest-hooks for a working example app using REST hook triggers.
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-search for a working example app using searches.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/search for a working example app using searches.
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-create for a working example app using creates.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/create for a working example app using creates.
 
 ### Return Types
 
@@ -519,7 +524,7 @@ Those fields have various options you can provide, here is a succinct example:
 [insert-file:./snippets/fields.js]
 ```
 
-You can find more details on the different field schema options at [our Field Schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema).
+You can find more details on the different field schema options at [our Field Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#fieldschema).
 
 ### Custom/Dynamic Fields
 
@@ -628,7 +633,7 @@ You can see examples of computed fields in the [OAuth2](#oauth2) or [Session Aut
 
 ### Nested & Children (Line Item) Fields
 
-When your action needs to accept an array of items, you can include an input field with the `children` attribute. The `children` attribute accepts a list of [fields](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema) that can be input for each item in this array.
+When your action needs to accept an array of items, you can include an input field with the `children` attribute. The `children` attribute accepts a list of [fields](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#fieldschema) that can be input for each item in this array.
 
 ```js
 [insert-file:./snippets/input-fields-children.js]
@@ -643,7 +648,7 @@ Output Fields are optional, but can be used to:
 - Define friendly labels for the returned fields. By default, we will *humanize* for example `my_key` as *My Key*.
 - Make sure that custom fields that may not be found in every live sample and - since they're custom to the connected account - cannot be defined in the static sample, can still be mapped.
 
-The [schema](https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema) for `outputFields` is shared with `inputFields` but only the `key` and `required` properties are relevant.
+The [schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#fieldschema) for `outputFields` is shared with `inputFields` but only the `key` and `required` properties are relevant.
 
 Custom/Dynamic Output Fields are defined in the same way as [Custom/Dynamic Input Fields](#customdynamic-fields).
 
@@ -758,11 +763,11 @@ This object holds the user's auth details and the data for the API requests.
 | `page` | `0` | Used in [paging](#paging) to uniquely identify which page of results should be returned |
 | `isTestingAuth` | `false` | (legacy property) If true, the poll was triggered by a user testing their account (via [clicking "test"](https://cdn.zapier.com/storage/photos/5c94c304ce11b02c073a973466a7b846.png) or during setup). We use this data to populate the auth label, but it's mostly used to verify we made a successful authenticated request |
 
-> Before version `8.0.0`, the information in `bundle.meta` was different. See [the old docs](https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta) for the previous values and [the wiki](https://github.com/zapier/zapier-platform-cli/wiki/bundle.meta-changes) for a mapping of old values to new.
+> Before version `8.0.0`, the information in `bundle.meta` was different. See [the old docs](https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta) for the previous values and [the wiki](https://github.com/zapier/zapier-platform/wiki/bundle.meta-changes) for a mapping of old values to new.
 
 There's also `bundle.meta.zap.id`, which is only available in the `performSubscribe` and `performUnsubscribe` methods.
 
-The user's Zap ID is available during the [subscribe and unsubscribe](https://zapier.github.io/zapier-platform-schema/build/schema.html#basichookoperationschema) methods.
+The user's Zap ID is available during the [subscribe and unsubscribe](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#basichookoperationschema) methods.
 
 For example - you could do:
 
@@ -770,7 +775,7 @@ For example - you could do:
 const subscribeHook = (z, bundle) => {
 
   const options = {
-    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
+    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
     method: 'POST',
     body: {
       url: bundle.targetUrl, // bundle.targetUrl has the Hook URL this app should call
@@ -782,7 +787,7 @@ const subscribeHook = (z, bundle) => {
 };
 
 module.exports = {
-  // ... see our rest hook example for additional details: https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js
+  // ... see our rest hook example for additional details: https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js
   performSubscribe: subscribeHook,
   // ...
 };
@@ -833,7 +838,7 @@ module.exports = {
 
 This the URL to which you should send hook data. It'll look something like `https://hooks.zapier.com/1234/abcd`. We provide it so you can make a POST request to your server.Your server should store this URL and use is as a destination when there's new data to report.
 
-Read more in the [REST hook example](https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js).
+Read more in the [REST hook example](https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js).
 
 ### `bundle.subscribeData`
 
@@ -841,7 +846,7 @@ Read more in the [REST hook example](https://github.com/zapier/zapier-platform-e
 
 This is an object that contains the data you returned from the `performSubscribe` function. It should contain whatever information you need send a `DELETE` request to your server to stop sending webhooks to Zapier.
 
-Read more in the [REST hook example](https://github.com/zapier/zapier-platform-example-app-rest-hooks/blob/master/triggers/recipe.js).
+Read more in the [REST hook example](https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js).
 
 ## Environment
 
@@ -971,7 +976,7 @@ To POST or PUT data to your API you can do this:
 
 If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions.
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-middleware for a working example app using HTTP middleware.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware for a working example app using HTTP middleware.
 
 Try putting them in your app definition:
 
@@ -1006,7 +1011,7 @@ Shorthand requests and manual `z.request([url], options)` calls support the foll
 
 ```js
 z.request({
-  url: 'http://example.com',
+  url: 'https://example.com',
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -1116,7 +1121,7 @@ z.stashFile(content, content.length, 'hello.txt', 'text/plain')
 Most likely you'd want to stream from another URL - note the usage of `z.request({raw: true})`:
 
 ```js
-const fileRequest = z.request({url: 'http://example.com/file.pdf', raw: true});
+const fileRequest = z.request({url: 'https://example.com/file.pdf', raw: true});
 z.stashFile(fileRequest) // knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream
   .then(url => z.console.log(url));
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7
@@ -1130,7 +1135,7 @@ See a full example with dehydration/hydration wired in correctly:
 [insert-file:./snippets/stash-file.js]
 ```
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-files for a working example app using files.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/files for a working example app using files.
 
 
 ## Logging
@@ -1176,7 +1181,7 @@ zapier logs --type=bundle
 If you are using the `z.request()` shortcut that we provide - HTTP logging is handled automatically for you. For example:
 
 ```js
-z.request('http://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
+z.request('https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
   .then((res) => {
     // do whatever you like, this request is already getting logged! :-D
     return res;
@@ -1485,11 +1490,11 @@ npm run zapier-push
 
 There are a lot of details left out - check out the full example app for a working setup.
 
-> Example App: check out https://github.com/zapier/zapier-platform-example-app-babel for a working example app using Babel.
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/babel for a working example app using Babel.
 
 ## Example Apps
 
-See [the wiki](https://github.com/zapier/zapier-platform-cli/wiki/Example-Apps) for a full list of working examples (and installation instructions).
+See [the wiki](https://github.com/zapier/zapier-platform/wiki/Example-Apps) for a full list of working examples (and installation instructions).
 
 ## FAQs
 
@@ -1499,7 +1504,11 @@ We run your code on AWS Lambda, which only supports a few [versions](https://doc
 
 ### How do I manually set the Node.js version to run my app with?
 
-Update your `zapier-platform-core` dependency in `package.json`.  Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform-cli/blob/master/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html).
+Update your `zapier-platform-core` dependency in `package.json`.  Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform/blob/master/packages/cli/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html).
+
+**IMPORTANT CAVEAT**: AWS periodically deprecates Node versions as they reach EOL. They announce this[on their blog](https://aws.amazon.com/blogs/developer/node-js-6-is-approaching-end-of-life-upgrade-your-aws-lambda-functions-to-the-node-js-10-lts/). Similar info and dates are available on [github](https://github.com/nodejs/Release). Well before this date, we'll have a version of `core` that targets the newer Node version.
+
+If you don't upgrade before the cutoff date, there's a chance that AWS will throw an errror when attempting to run your app's code. If that's the case, we'll instead run it under the oldest Node version still supported. All that is to say, **we may run your code on a newer version of Node.js than you intend** if you don't update your app's dependencies periodically.
 
 ### When to use placeholders or curlies?
 
@@ -1570,7 +1579,7 @@ Paging is a lot like a regular trigger except the range of items returned is dyn
 ```js
 (z, bundle) => {
   const promise = z.request({
-    url: 'http://example.com/api/list.json',
+    url: 'https://example.com/api/list.json',
     params: {
       limit: 100,
       offset: 100 * bundle.meta.page
@@ -1588,7 +1597,7 @@ If your API uses cursor-based paging instead of an offset, you can use `z.cursor
 
 Cursors are stored per-zap and last about an hour. Per the above, make sure to only include the cursor if `bundle.meta.page !== 0`, so you don't accidentally reuse a cursor from a previous poll.
 
-Lastly, you need to set `canPaginate` to `true` in your polling definition (per the [schema](https://github.com/zapier/zapier-platform-schema/blob/master/docs/build/schema.md#basicpollingoperationschema)) for the `z.cursor` methods to work as expected.
+Lastly, you need to set `canPaginate` to `true` in your polling definition (per the [schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#basicpollingoperationschema)) for the `z.cursor` methods to work as expected.
 
 <a id="dedup"></a>
 ### How does deduplication work?
@@ -1623,9 +1632,9 @@ InvalidParameterValueException An error occurred (InvalidParameterValueException
 
 then you need to update your `zapier-platform-core` dependency to a non-deprecated version that uses a newer version of Node.js. Complete the following instructions as soon as possible:
 
-1. Edit `package.json` to depend on a version of `zapier-platform-core` >= `7.0.0`. (8.x is the latest) There's a list of all breaking changes (marked with an :exclamation:) in the [changelog](https://github.com/zapier/zapier-platform/blob/master/packages/zapier-platform-cli/CHANGELOG.md).
+1. Edit `package.json` to depend on a version of `zapier-platform-core` >= `7.0.0`. (8.x is the latest) There's a list of all breaking changes (marked with an :exclamation:) in the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md).
 2. Increment the `version` property in `package.json`
-3. Ensure you're using version `8.10.0` (or greater) of node locally (`node -v`). Use [nvm](https://github.com/nvm-sh/nvm) to use a different one if need be.
+3. Ensure you're using version `LAMBDA_VERSION` (or greater) of node locally (`node -v`). Use [nvm](https://github.com/nvm-sh/nvm) to use a different one if need be.
 4. Run `rm -rf node_modules && npm i` to get a fresh copy of everything
 5. Run `zapier test` to ensure your tests still pass
 6. Run `zapier push`
@@ -1683,7 +1692,7 @@ Next download our completion script to your completions directory:
 
 ```zsh
 cd ~/.zsh/completion
-curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies/zsh/_zapier -O
+curl https://raw.githubusercontent.com/zapier/zapier-platform/master/packages/cli/goodies/zsh/_zapier -O
 ```
 
 Finally, restart your shell and start hitting TAB with the `zapier` command!
@@ -1694,7 +1703,7 @@ To use the bash completion script, first download the completion script. The exa
 
 ```bash
 cd ~/.bash_completion.d
-curl https://raw.githubusercontent.com/zapier/zapier-platform-cli/master/goodies/bash/_zapier -O
+curl https://raw.githubusercontent.com/zapier/zapier-platform/master/packages/cli/goodies/bash/_zapier -O
 ```
 
 Next source the script from your `~/.bash_profile`:
@@ -1709,24 +1718,24 @@ Finally, restart your shell and start hitting TAB with the `zapier` command!
 
 The Zapier Platform consists of 3 npm packages that are released simultaneously as a trio.
 
-- [`zapier-platform-cli`](https://github.com/zapier/zapier-platform-cli) is the code that powers the `zapier` command. You use it most commonly with the `test`, `scaffold`, and `push` commands. It's installed with `npm install -g zapier-platform-cli` and does not correspond to a particular app.
+- [`zapier-platform-cli`](https://github.com/zapier/zapier-platform/tree/master/packages/cli) is the code that powers the `zapier` command. You use it most commonly with the `test`, `scaffold`, and `push` commands. It's installed with `npm install -g zapier-platform-cli` and does not correspond to a particular app.
 
-- [`zapier-platform-core`](https://github.com/zapier/zapier-platform-core) is what allows your app to interact with Zapier. It holds the `z` object and app tester code. Your app depends on a specific version of `zapier-platform-core` in the `package.json` file. It's installed via `npm install` along with the rest of your app's dependencies.
+- [`zapier-platform-core`](https://github.com/zapier/zapier-platform/tree/master/packages/core) is what allows your app to interact with Zapier. It holds the `z` object and app tester code. Your app depends on a specific version of `zapier-platform-core` in the `package.json` file. It's installed via `npm install` along with the rest of your app's dependencies.
 
-- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform-schema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
+- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/master/packages/clischema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
 
 ### Updating
 
 The Zapier platform and its tools are under active development. While you don't need to install every release, we release new versions because they are better than the last. We do our best to adhere to [Semantic Versioning](https://semver.org/) wherein we won't break your code unless there's a `major` release. Otherwise, we're just fixing bugs (`patch`) and adding features (`minor`).
 
-Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
+Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
 The most recently released version of `cli` and `core` is `PACKAGE_VERSION`. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 
-To update the version of `core` your app depends on, set the `zapier-platform-core` dependency in your `package.json` to a version listed [here](https://github.com/zapier/zapier-platform-core/releases) and run `npm install`.
+To update the version of `core` your app depends on, set the `zapier-platform-core` dependency in your `package.json` to a version listed [here](https://www.npmjs.com/package/zapier-platform-core?activeTab=versions) and run `npm install`.
 
 For maximum compatibility, keep the versions of `cli` and `core` in sync.
 
@@ -1736,7 +1745,7 @@ This section is only relevant if you're editing the `zapier-platform-cli` packag
 
 ### Commands
 
-- `export ZAPIER_BASE_ENDPOINT='http://localhost:8001'` if you're building against a local dev environment
+- `export ZAPIER_BASE_ENDPOINT='https://localhost:8001'` if you're building against a local dev environment
 - `npm install` for getting started
 - `npm run build` for updating `./lib` from `./src`
 - `npm run watch` for automatically building as you work
@@ -1754,4 +1763,4 @@ This section is only relevant if you're editing the `zapier-platform-cli` packag
 
 ## Get Help!
 
-You can get help by either emailing partners@zapier.com or by [joining our Slack team here](https://join.slack.com/t/zapier-platform/shared_invite/enQtNTg1MjM5NjMzNTI3LWVhZjk3NjFlNWFiMTBmMDExMzI5NDZiZmFiOTJjYmI3NmY2MzEwZDUxNzQ3MTliMTM5N2M3NGM2MmQ2Y2VkODE).
+You can get help by either emailing partners@zapier.com or by [joining our Slack team here](https://join.slack.com/t/zapier-platform/shared_invite/enQtNTg1MjM5NjMzNTI3LTUyYWJjM2E1NTQ3NjViMGY0MzQ1NWJiMDJmNjcyNTJjMWRlOTg4MTNjOWEwNDFlNGExODU5OTgzNWM3MzZlMjk).

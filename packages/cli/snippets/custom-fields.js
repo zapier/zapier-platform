@@ -1,5 +1,5 @@
 const recipeFields = (z, bundle) => {
-  const response = z.request('http://example.com/api/v2/fields.json');
+  const response = z.request('https://example.com/api/v2/fields.json');
   // json is is [{"key":"field_1"},{"key":"field_2"}]
   return response.then(res => res.json);
 };

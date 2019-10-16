@@ -1,6 +1,6 @@
 const BaseCommand = require('../ZapierBaseCommand');
 const { flags } = require('@oclif/command');
-const buildFlags = require('../buildFlags');
+const { buildFlags } = require('../buildFlags');
 const {
   currentAnalyticsMode,
   modes,

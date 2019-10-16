@@ -2,17 +2,17 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "eslint": "6.1.0",
-    "eslint-config-prettier": "6.0.0",
-    "eslint-config-standard": "13.0.1",
+    "eslint": "6.2.2",
+    "eslint-config-prettier": "6.1.0",
+    "eslint-config-standard": "14.0.1",
     "eslint-plugin-import": "2.18.2",
-    "eslint-plugin-mocha": "6.0.0",
+    "eslint-plugin-mocha": "6.1.0",
     "eslint-plugin-node": "9.1.0",
     "eslint-plugin-promise": "4.2.1",
-    "eslint-plugin-standard": "4.0.0",
-    "husky": "^3.0.0",
-    "lerna": "^3.15.0",
-    "lint-staged": "^9.2.0",
+    "eslint-plugin-standard": "4.0.1",
+    "husky": "3.0.4",
+    "lerna": "3.16.4",
+    "lint-staged": "9.2.4",
     "mocha": "6.2.0",
     "prettier": "1.18.2",
     "should": "13.2.3"
@@ -23,6 +23,7 @@
   ],
   "scripts": {
     "lint": "lerna run --stream --ignore zapier-platform-example-app-* lint",
+    "lint-examples": "eslint examples",
     "validate": "lerna run --ignore zapier-platform-example-app-* validate",
     "bump": "lerna version --exact --force-publish=zapier-platform-cli,zapier-platform-core,zapier-platform-schema",
     "build-boilerplate": "yarn workspace zapier-platform-core build-boilerplate",
@@ -30,12 +31,12 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn workspace zapier-platform-schema precommit && lint-staged"
+      "pre-commit": "lerna run --stream precommit && lint-staged"
     }
   },
   "lint-staged": {
     "*.{js}": [
-      "eslint --fix",
+      "eslint --fix --quiet",
       "git add"
     ],
     "*.{js,json}": [

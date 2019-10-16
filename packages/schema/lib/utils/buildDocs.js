@@ -55,7 +55,7 @@ const formatExample = example => {
     util.inspect(ex, { depth: null, breakLength: BREAK_LENGTH }),
     true,
     '  '
-  )}`;
+  )}`.replace(/\s+\n/gm, '\n');
 };
 
 // Generate a display of the type (or link to a $ref).
@@ -141,11 +141,11 @@ const makePropertiesSection = Schema => {
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 ${Object.keys(properties)
-    .map(key => {
-      const property = properties[key];
-      return processProperty(key, property, required.includes(key));
-    })
-    .join('\n')}
+  .map(key => {
+    const property = properties[key];
+    return processProperty(key, property, required.includes(key));
+  })
+  .join('\n')}
 `;
 };
 

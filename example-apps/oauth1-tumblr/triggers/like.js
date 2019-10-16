@@ -19,7 +19,7 @@ module.exports = {
     sample: {
       blog_name: 'citriccomics',
       id: 3507845453,
-      post_url: 'http://citriccomics.tumblr.com/post/3507845453',
+      post_url: 'https://citriccomics.tumblr.com/post/3507845453',
       type: 'text',
       date: '2011-02-25 20:27:00 GMT',
       timestamp: 1298665620,

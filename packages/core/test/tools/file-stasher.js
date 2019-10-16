@@ -34,9 +34,7 @@ describe('file upload', () => {
     stashFile(file)
       .then(url => {
         should(url).eql(
-          `${mocky.fakeSignedPostData.url}${
-            mocky.fakeSignedPostData.fields.key
-          }`
+          `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
         done();
       })
@@ -51,9 +49,7 @@ describe('file upload', () => {
     stashFile(file)
       .then(url => {
         should(url).eql(
-          `${mocky.fakeSignedPostData.url}${
-            mocky.fakeSignedPostData.fields.key
-          }`
+          `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
         done();
       })
@@ -86,9 +82,7 @@ describe('file upload', () => {
     stashFile(file, knownLength)
       .then(url => {
         should(url).eql(
-          `${mocky.fakeSignedPostData.url}${
-            mocky.fakeSignedPostData.fields.key
-          }`
+          `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
         done();
       })
@@ -106,9 +100,7 @@ describe('file upload', () => {
     stashFile(file)
       .then(url => {
         should(url).eql(
-          `${mocky.fakeSignedPostData.url}${
-            mocky.fakeSignedPostData.fields.key
-          }`
+          `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
         done();
       })
@@ -119,13 +111,13 @@ describe('file upload', () => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
     mocky.mockUpload();
 
-    nock('http://example.com')
+    nock('https://example.com')
       .get('/stream-bytes')
       .reply(401);
 
     const request = createAppRequestClient(input);
     const file = request({
-      url: 'http://example.com/stream-bytes',
+      url: 'https://example.com/stream-bytes',
       raw: true
     });
     stashFile(file)
@@ -147,9 +139,7 @@ describe('file upload', () => {
     stashFile(file)
       .then(url => {
         should(url).eql(
-          `${mocky.fakeSignedPostData.url}${
-            mocky.fakeSignedPostData.fields.key
-          }`
+          `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
         done();
       })
@@ -217,9 +207,7 @@ describe('file upload', () => {
     stashFileTest(file)
       .then(url => {
         should(url).eql(
-          `${mocky.fakeSignedPostData.url}${
-            mocky.fakeSignedPostData.fields.key
-          }`
+          `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
         done();
       })
@@ -245,9 +233,7 @@ describe('file upload', () => {
     stashFile(file)
       .then(url => {
         should(url).eql(
-          `${mocky.fakeSignedPostData.url}${
-            mocky.fakeSignedPostData.fields.key
-          }`
+          `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
         done();
       })

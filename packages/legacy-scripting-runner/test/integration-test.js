@@ -519,12 +519,12 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
       input.bundle.meta = {
-        'isLoadingSample': true,
-        'isFillingDynamicDropdown': true,
-        'isTestingAuth': false,
-        'isPopulatingDedupe': true,
-        'limit': 20,
-        'page': 1
+        isLoadingSample: true,
+        isFillingDynamicDropdown: true,
+        isTestingAuth: false,
+        isPopulatingDedupe: true,
+        limit: 20,
+        page: 1
       };
       return _app(input).then(output => {
         const echoed = output.results[0];
@@ -555,6 +555,7 @@ describe('Integration Test', () => {
         should.equal(firstContact.name, 'Patched by KEY_post_poll!');
         should.equal(firstContact.jqueryText, 'jQuery works!');
         should.equal(firstContact.jqueryParam, 'width=1680&height=1050');
+        should.deepEqual(firstContact.randomJson, { hey: 1 });
       });
     });
 
@@ -580,6 +581,32 @@ describe('Integration Test', () => {
           should.not.exist(movie.id);
           should.exist(movie.title);
         });
+      });
+    });
+
+    it('KEY_post_poll, request options from KEY_pre_poll', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_request_options',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_request_options',
+        'movie_post_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then(output => {
+        const request = output.results[0];
+        should.equal(request.method, 'POST');
+        should.equal(request.headers.foo, '1234');
+        should.equal(request.params.bar, '5678');
+        should.equal(request.data, '{"aa":"bb"}');
       });
     });
 
@@ -1105,7 +1132,7 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'hey hey' };
       input.bundle.inputData = { foo: 'bar' };
-      input.bundle.targetUrl = 'http://foo.bar';
+      input.bundle.targetUrl = 'https://foo.bar';
       input.bundle.meta = { zap: { id: 9511 } };
       return app(input).then(output => {
         should.equal(output.results.json.event, 'contact.created');
@@ -1122,7 +1149,7 @@ describe('Integration Test', () => {
         should.deepEqual(output.results.json.bundleTriggerFields, {
           foo: 'bar'
         });
-        should.equal(output.results.json.bundleTargetUrl, 'http://foo.bar');
+        should.equal(output.results.json.bundleTargetUrl, 'https://foo.bar');
         should.equal(output.results.json.bundleEvent, 'contact.created');
         should.deepEqual(output.results.json.bundleZap, { id: 9511 });
       });
@@ -1139,7 +1166,7 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'yo yo' };
       input.bundle.inputData = { foo: 'bar' };
-      input.bundle.targetUrl = 'http://foo.bar';
+      input.bundle.targetUrl = 'https://foo.bar';
       input.bundle.meta = { zap: { id: 9512 } };
       return app(input).then(output => {
         should.equal(output.results.request.method, 'DELETE');
@@ -1151,7 +1178,7 @@ describe('Integration Test', () => {
 
         should.deepEqual(echoed.json.bundleAuthFields, { api_key: 'yo yo' });
         should.deepEqual(echoed.json.bundleTriggerFields, { foo: 'bar' });
-        should.equal(echoed.json.bundleTargetUrl, 'http://foo.bar');
+        should.equal(echoed.json.bundleTargetUrl, 'https://foo.bar');
         should.equal(echoed.json.bundleEvent, 'contact.created');
         should.deepEqual(echoed.json.bundleZap, { id: 9512 });
       });
@@ -1356,6 +1383,61 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_write, _.template(bundle.url_raw)', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'recipe_pre_write_underscore_template',
+        'recipe_pre_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.recipe.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        urlPath: '/recipes',
+        name: 'Egg & Cheese'
+      };
+      return app(input).then(output => {
+        const recipe = output.results;
+        should.exist(recipe.id);
+        should.equal(recipe.name, 'Egg & Cheese');
+      });
+    });
+
+    it('KEY_pre_write, request fallback', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_pre_write_request_fallback',
+        'movie_pre_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'IT 2',
+        genre: 'Horror',
+        year: 2019
+      };
+      return app(input).then(output => {
+        const movie = output.results;
+        should.exist(movie.id);
+        should.not.exist(movie.title); // title is in fieldsExcludedFromBody
+        should.equal(movie.genre, 'Horror');
+        should.equal(movie.year, 2019);
+      });
+    });
+
     it('KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
@@ -1527,6 +1609,50 @@ describe('Integration Test', () => {
       });
     });
 
+    it('sync KEY_write empty list', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_write_sync',
+        'movie_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = [];
+
+      return app(input).then(output => {
+        should.deepEqual(output.results, {});
+      });
+    });
+
+    it('sync KEY_write primitive', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_write_sync',
+        'movie_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = [1234];
+
+      return app(input).then(output => {
+        should.deepEqual(output.results, { message: 1234 });
+      });
+    });
+
     it('sync KEY_write, curlies in URL', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
@@ -1630,6 +1756,33 @@ describe('Integration Test', () => {
         should.equal(fields.length, 3);
         should.equal(fields[0].key, 'title');
         should.equal(fields[1].key, 'genre');
+        should.equal(fields[2].key, 'luckyNumber');
+      });
+    });
+
+    it('KEY_pre_custom_action_fields, _.template(bundle.raw_url)', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'recipe_pre_custom_action_fields_underscore_template',
+        'recipe_pre_custom_action_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.recipe.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        urlPath: '/input-fields'
+      };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 3);
+        should.equal(fields[0].key, 'name');
+        should.equal(fields[1].key, 'directions');
         should.equal(fields[2].key, 'luckyNumber');
       });
     });
@@ -2142,6 +2295,62 @@ describe('Integration Test', () => {
 
         const data = JSON.parse(output.results.data);
         should.equal(data.filename, 'dont.care');
+      });
+    });
+
+    it('file upload, KEY_pre_write, wrong content type', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'file_pre_write_wrong_content_type',
+        'file_pre_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.file.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        filename: 'dont.care',
+        file: 'https://httpbin.zapier-tooling.com/image/png'
+      };
+      return app(input).then(output => {
+        const file = output.results.file;
+        should.equal(file.sha1, '379f5137831350c900e757b39e525b9db1426d53');
+
+        const filename = output.results.filename;
+        should.equal(filename, 'dont.care');
+      });
+    });
+
+    it('file upload, KEY_pre_write, rename file field', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'file2_pre_write_rename_file_field',
+        'file2_pre_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.file2.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        id: 'whatever',
+        name: 'a pig',
+        file_1: 'https://httpbin.zapier-tooling.com/image/png'
+      };
+      return app(input).then(output => {
+        const file = output.results.file;
+        should.equal(file.sha1, '379f5137831350c900e757b39e525b9db1426d53');
+
+        const data = JSON.parse(output.results.data);
+        should.equal(data.id, 'whatever');
+        should.equal(data.name, 'a pig');
       });
     });
 

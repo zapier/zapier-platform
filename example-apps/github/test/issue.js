@@ -1,4 +1,5 @@
-'use strict';
+/* globals describe, it */
+
 const should = require('should');
 
 const zapier = require('zapier-platform-core');
@@ -6,15 +7,15 @@ const zapier = require('zapier-platform-core');
 const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
-const REPO = 'username/reponame' // CHANGE THIS
+const REPO = 'username/reponame'; // CHANGE THIS
 
-//These are automated tests for the Issue create and Issue Trigger.
-//They will run every time the `zapier test` command is executed.
+// These are automated tests for the Issue create and Issue Trigger.
+// They will run every time the `zapier test` command is executed.
 describe('issue trigger', () => {
   zapier.tools.env.inject();
 
   // Make sure there's an open issue to fetch here!
-  it('should get an issue', (done) => {
+  it('should get an issue', done => {
     const bundle = {
       authData: {
         username: process.env.TEST_USERNAME,
@@ -27,14 +28,14 @@ describe('issue trigger', () => {
       }
     };
     appTester(App.triggers.issue.operation.perform, bundle)
-      .then((response) => {
+      .then(response => {
         response.should.be.an.instanceOf(Array);
         done();
       })
       .catch(done);
   });
 
-  it('should create an issue', (done) => {
+  it('should create an issue', done => {
     const bundle = {
       authData: {
         username: process.env.TEST_USERNAME,
@@ -43,11 +44,12 @@ describe('issue trigger', () => {
       inputData: {
         repo: REPO,
         title: 'Test Issue',
-        body: 'This is a test issue created from an automated test for the Zapier GitHub Example App'
+        body:
+          'This is a test issue created from an automated test for the Zapier GitHub Example App'
       }
     };
     appTester(App.creates.issue.operation.perform, bundle)
-      .then((response) => {
+      .then(response => {
         should.exist(response.title);
         should.exist(response.body);
 

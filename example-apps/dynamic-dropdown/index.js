@@ -1,9 +1,9 @@
-const species = require("./triggers/species");
-const people = require("./triggers/people");
+const species = require('./triggers/species');
+const people = require('./triggers/people');
 
 const App = {
-  version: require("./package.json").version,
-  platformVersion: require("zapier-platform-core").version,
+  version: require('./package.json').version,
+  platformVersion: require('zapier-platform-core').version,
 
   beforeRequest: [],
 
@@ -21,13 +21,13 @@ const App = {
   creates: {},
 
   authentication: {
-    type: "custom",
+    type: 'custom',
     // "test" could also be a function
     test: () => true,
     fields: [
       {
-        key: "favorite_color",
-        type: "string",
+        key: 'favorite_color',
+        type: 'string',
         required: false
       }
     ]

@@ -4,14 +4,14 @@ const createRpcClient = require('../../src/tools/create-rpc-client');
 
 const makeRpc = () => {
   return createRpcClient({
-    rpc_base: 'http://mock.zapier.com/platform/rpc/cli',
+    rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
     token: 'debug:4001:1',
     storeKey: 'test_key'
   });
 };
 
 const mockRpcCall = result => {
-  nock('http://mock.zapier.com')
+  nock('https://mock.zapier.com')
     .post('/platform/rpc/cli')
     .reply(200, (uri, requestBody) => {
       const id = JSON.parse(requestBody).id;
@@ -20,7 +20,7 @@ const mockRpcCall = result => {
 };
 
 const mockRpcFail = error => {
-  nock('http://mock.zapier.com')
+  nock('https://mock.zapier.com')
     .post('/platform/rpc/cli')
     .reply(500, (uri, requestBody) => {
       const id = JSON.parse(requestBody).id;
@@ -29,7 +29,7 @@ const mockRpcFail = error => {
 };
 
 const fakeSignedPostData = {
-  url: 'http://s3-fake.zapier.com/',
+  url: 'https://s3-fake.zapier.com/',
   fields: {
     policy: 'bm8gZHJhbWE=',
     AWSAccessKeyId: 'AKIAIKIAAKIAIKIAAKIA',
@@ -40,7 +40,7 @@ const fakeSignedPostData = {
 };
 
 const mockUpload = bodyMatcher => {
-  nock('http://s3-fake.zapier.com')
+  nock('https://s3-fake.zapier.com')
     .post('/', bodyMatcher)
     .reply(204, '');
 };

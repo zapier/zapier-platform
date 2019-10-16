@@ -7,6 +7,9 @@ const { bundleConverter } = require('../bundle');
 describe('bundleConverter', () => {
   const defaultBundle = {
     _legacyUrl: 'https://zapier.com',
+    request: {
+      url: 'https://zapier.com'
+    },
     inputData: {
       user: 'Zapier'
     },
@@ -29,6 +32,9 @@ describe('bundleConverter', () => {
   const defaultHookBundle = {
     _legacyUrl: 'https://zapier.com',
     _legacyEvent: 'message',
+    request: {
+      url: 'https://zapier.com'
+    },
     targetUrl: 'https://hooks.zapier.com/abc',
     inputData: {
       user: 'Zapier'
@@ -82,6 +88,7 @@ describe('bundleConverter', () => {
       },
       zap: { id: 0 },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       trigger_fields: {
         user: 'Zapier'
       },
@@ -146,6 +153,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       trigger_fields: {
         user: 'Zapier'
       },
@@ -183,6 +191,7 @@ describe('bundleConverter', () => {
     };
     const bundle = {
       _legacyUrl: 'https://zapier.com',
+      request: { url: 'https://zapier.com' },
       inputData: {
         user: 'Zapier'
       },
@@ -210,8 +219,7 @@ describe('bundleConverter', () => {
         id: 1,
         name: 'Zapier'
       },
-      meta: {
-      },
+      meta: {},
       auth_fields: {
         apiKey: 'Zapier-API-Key'
       },
@@ -219,6 +227,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       trigger_fields: {
         user: 'Zapier'
       },
@@ -267,6 +276,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       trigger_fields: {
         user: 'Zapier'
       },
@@ -321,6 +331,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       trigger_fields: {
         user: 'Zapier'
       },
@@ -350,6 +361,7 @@ describe('bundleConverter', () => {
     const bundle = {
       _legacyUrl: 'https://zapier.com',
       _legacyEvent: 'message',
+      request: { url: 'https://zapier.com' },
       targetUrl: 'https://hooks.zapier.com/abc',
       inputData: {
         user: 'Zapier'
@@ -379,6 +391,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       trigger_fields: {
         user: 'Zapier'
       },
@@ -433,6 +446,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       trigger_fields: {
         user: 'Zapier'
       },
@@ -485,6 +499,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       trigger_fields: {
         user: 'Zapier'
       },
@@ -546,6 +561,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       action_fields: {
         user: 'Zapier'
       },
@@ -613,6 +629,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       action_fields: {
         user: 'Zapier'
       },
@@ -686,6 +703,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       search_fields: {
         user: 'Zapier'
       }
@@ -747,6 +765,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       search_fields: {
         user: 'Zapier'
       },
@@ -813,6 +832,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       search_fields: {
         user: 'Zapier'
       },
@@ -887,6 +907,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       search_fields: {
         user: 'Zapier'
       },
@@ -930,6 +951,7 @@ describe('bundleConverter', () => {
     const events = ['auth.oauth2.token.pre', 'auth.oauth2.refresh.pre'];
     const bundle = {
       _legacyUrl: 'https://zapier.com',
+      request: { url: 'https://zapier.com' },
       inputData: {
         user: 'Zapier'
       },
@@ -954,6 +976,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       oauth_data: {
         client_id: '1234',
         client_secret: 'asdf'
@@ -987,6 +1010,7 @@ describe('bundleConverter', () => {
     };
     const bundle = {
       _legacyUrl: 'https://zapier.com',
+      request: { url: 'https://zapier.com' },
       inputData: {
         user: 'Zapier'
       },
@@ -1017,6 +1041,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       oauth_data: {
         client_id: '1234',
         client_secret: 'asdf'
@@ -1048,6 +1073,7 @@ describe('bundleConverter', () => {
     const events = ['auth.session'];
     const bundle = {
       _legacyUrl: 'https://zapier.com',
+      request: { url: 'https://zapier.com' },
       inputData: {
         user: 'Zapier'
       },
@@ -1074,7 +1100,8 @@ describe('bundleConverter', () => {
       zap: {
         id: 0
       },
-      url_raw: 'https://zapier.com'
+      url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com'
     };
 
     const results = await Promise.all(
@@ -1098,6 +1125,7 @@ describe('bundleConverter', () => {
     const events = ['auth.connectionLabel'];
     const bundle = {
       _legacyUrl: 'https://zapier.com',
+      request: { url: 'https://zapier.com' },
       inputData: {
         user: 'Zapier'
       },
@@ -1123,6 +1151,7 @@ describe('bundleConverter', () => {
         id: 0
       },
       url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
       test_result: {
         user: 'Zapier'
       }

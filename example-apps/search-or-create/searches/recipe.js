@@ -6,8 +6,7 @@ const searchRecipe = (z, bundle) => {
       name: bundle.inputData.name
     }
   });
-  return responsePromise
-    .then(response => z.JSON.parse(response.content));
+  return responsePromise.then(response => z.JSON.parse(response.content));
 };
 
 module.exports = {
@@ -21,7 +20,11 @@ module.exports = {
 
   operation: {
     inputFields: [
-      {key: 'name', required: true, helpText: 'Find the Recipe with this name.'}
+      {
+        key: 'name',
+        required: true,
+        helpText: 'Find the Recipe with this name.'
+      }
     ],
     perform: searchRecipe,
 
@@ -30,9 +33,6 @@ module.exports = {
       name: 'Test'
     },
 
-    outputFields: [
-      {key: 'id', label: 'ID'},
-      {key: 'name', label: 'Name'}
-    ]
+    outputFields: [{ key: 'id', label: 'ID' }, { key: 'name', label: 'Name' }]
   }
 };

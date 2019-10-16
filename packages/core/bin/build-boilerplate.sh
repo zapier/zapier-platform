@@ -2,7 +2,7 @@
 
 # Usage like so:
 # ./build-boilerplate.sh
-# ./build-boilerplate.sh revert
+# ./build-boilerplate.sh production
 
 CONTENTS_DIR='boilerplate'
 BUILD_DIR='build-boilerplate'
@@ -23,12 +23,19 @@ FILE="$BUILD_DIR/$CORE_VERSION.zip"
 
 TIMESTAMP=`date +"%s"`
 
-# Build core and legacy-scripting-runner locally. Needs to generate a unique filename
-# with a timestamp to avoid yarn using cached packages.
-# See https://github.com/yarnpkg/yarn/issues/2165.
-yarn pack --filename "./boilerplate/core-$TIMESTAMP.tgz"
-cd ../legacy-scripting-runner
-yarn pack --filename "../core/boilerplate/legacy-scripting-runner-$TIMESTAMP.tgz"
+if [ "$1" == "production" ]; then
+    echo "Building from published packages"
+    cd ../legacy-scripting-runner
+    TIMESTAMP=""
+else
+    # Build core and legacy-scripting-runner locally. Needs to generate a unique filename
+    # with a timestamp to avoid yarn using cached packages.
+    # See https://github.com/yarnpkg/yarn/issues/2165.
+    echo "Building from local"
+    yarn pack --filename "./boilerplate/core-$TIMESTAMP.tgz"
+    cd ../legacy-scripting-runner
+    yarn pack --filename "../core/boilerplate/legacy-scripting-runner-$TIMESTAMP.tgz"
+fi
 
 cd ../core
 ./bin/update-boilerplate-dependencies.js $TIMESTAMP

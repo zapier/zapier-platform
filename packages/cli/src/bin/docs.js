@@ -8,20 +8,20 @@ const _ = require('lodash');
 
 const toc = require('markdown-toc');
 const litdoc = require('litdoc');
+const oCommands = require('../oclif/oCommands');
+const oclifCommands = new Set(Object.keys(oCommands));
 
-const commands = require('../commands');
+const commands = {
+  ...require('../commands'),
+  ...oCommands
+};
 
 const block = str => '> ' + str.split('\n').join('\n> ');
 
 const { LAMBDA_VERSION, PACKAGE_VERSION } = require('../constants');
 
-// Takes all the cmd.docs and puts them into a big md file.
-const generateCliMarkdown = () => {
-  return _.orderBy(Object.keys(commands))
-    .filter(name => !commands[name].hide)
-    .map(name => {
-      const command = commands[name];
-      return `\
+const _oldCommandMarkdown = (name, command) =>
+  `\
   ## ${name}
 
   ${block(command.help)}
@@ -29,7 +29,22 @@ const generateCliMarkdown = () => {
   **Usage:** \`${command.usage || command.example}\`
 
   ${command.docs}
-  `.trim();
+`.trim();
+
+// for oclif commands
+const _commandMarkdown = (name, command) => command.markdownHelp(name);
+
+const commandMarkdown = (name, command) =>
+  oclifCommands.has(name)
+    ? _commandMarkdown(name, command)
+    : _oldCommandMarkdown(name, command);
+
+// Takes all the cmd.docs and puts them into a big md file.
+const generateCliMarkdown = () => {
+  return _.orderBy(Object.keys(commands))
+    .filter(name => !commands[name].hide)
+    .map(name => {
+      return commandMarkdown(name, commands[name]);
     })
     .join('\n\n\n');
 };

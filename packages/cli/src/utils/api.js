@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
+const debug = require('debug')('zapier:api');
 
 const constants = require('../constants');
 
@@ -15,6 +16,8 @@ const { writeFile, readFile } = require('./files');
 const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
 
 const { localAppCommand } = require('./local');
+
+// TODO split these out into better files
 
 // Reads the JSON file at ~/.zapierrc (AUTH_LOCATION).
 const readCredentials = (explodeIfMissing = true) => {
@@ -46,6 +49,11 @@ const callAPI = (
   rawError = false,
   credentialsRequired = true
 ) => {
+  // temp manual enable while we're not all the way moved over
+  if (_.get(global, ['argOpts', 'debug'])) {
+    debug.enabled = true;
+  }
+
   options = options || {};
   const url = options.url || constants.ENDPOINT + route;
 
@@ -56,6 +64,7 @@ const callAPI = (
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json; charset=utf-8',
+      'User-Agent': `${constants.PACKAGE_NAME}/${constants.PACKAGE_VERSION}`,
       'X-Requested-With': 'XMLHttpRequest'
     }
   };
@@ -89,19 +98,23 @@ const callAPI = (
         }
       }
 
-      if (constants.DEBUG || global.argOpts.debug) {
-        console.log(`>> ${requestOptions.method} ${requestOptions.url}`);
-        if (requestOptions.body) {
-          const replacementStr = 'raw zip removed in logs';
-          const cleanedBody = _.assign({}, JSON.parse(requestOptions.body), {
-            zip_file: replacementStr,
-            source_zip_file: replacementStr
-          });
-          console.log(`>> ${JSON.stringify(cleanedBody)}`);
+      debug(`>> ${requestOptions.method} ${requestOptions.url}`);
+      if (requestOptions.body) {
+        const replacementStr = 'raw zip removed in logs';
+        const requestBody = JSON.parse(requestOptions.body);
+        const cleanedBody = {};
+        for (const k in requestBody) {
+          if (k.includes('zip_file')) {
+            cleanedBody[k] = replacementStr;
+          } else {
+            cleanedBody[k] = requestBody[k];
+          }
         }
-        console.log(`<< ${res.status}`);
-        console.log(`<< ${(text || '').substring(0, 2500)}\n`);
+        debug(`>> ${JSON.stringify(cleanedBody)}`);
       }
+      debug(`<< ${res.status}`);
+      debug(`<< ${(text || '').substring(0, 2500)}`);
+      debug('------------'); // to help differentiate request from each other
 
       if (hitError) {
         const niceMessage = `"${requestOptions.url}" returned "${res.status}" saying "${errors}"`;
@@ -184,7 +197,10 @@ const getLinkedApp = appDir => {
       }
       return callAPI('/apps/' + app.id);
     })
-    .catch(() => {
+    .catch(e => {
+      if (process.env.NODE_ENV === 'test') {
+        console.error(e);
+      }
       throw new Error(
         `Warning! ${constants.CURRENT_APP_FILE} seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
       );
@@ -205,27 +221,24 @@ const checkCredentials = () => {
   return callAPI('/check');
 };
 
-const listApps = () => {
-  return checkCredentials()
-    .then(() => {
-      return Promise.all([
-        getLinkedApp().catch(() => {
-          return undefined;
-        }),
-        callAPI('/apps')
-      ]);
+const listApps = async () => {
+  let linkedApp;
+  try {
+    linkedApp = await getLinkedApp();
+  } catch (e) {
+    // no worries
+  }
+
+  const apps = await callAPI('/apps');
+
+  return {
+    app: linkedApp,
+    apps: apps.objects.map(app => {
+      app.linked =
+        linkedApp && app.id === linkedApp.id ? colors.green('✔') : '';
+      return app;
     })
-    .then(values => {
-      const [linkedApp, data] = values;
-      return {
-        app: linkedApp,
-        apps: data.objects.map(app => {
-          app.linked =
-            linkedApp && app.id === linkedApp.id ? colors.green('✔') : '';
-          return app;
-        })
-      };
-    });
+  };
 };
 
 const listEndpoint = (endpoint, keyOverride) => {
@@ -266,6 +279,33 @@ const listEnv = version => {
     endpoint = 'environment';
   }
   return listEndpoint(endpoint, 'environment');
+};
+
+const validateApp = async definition => {
+  let checkResult;
+  try {
+    await getLinkedAppConfig();
+  } catch (error) {
+    checkResult = await callAPI('/check', {
+      skipDeployKey: true,
+      method: 'POST',
+      body: { app_definition: definition }
+    });
+  }
+
+  if (!checkResult) {
+    const linkedApp = await getLinkedApp();
+    checkResult = await callAPI('/check', {
+      method: 'POST',
+      body: {
+        app_id: linkedApp.id,
+        version: definition.version,
+        app_definition: definition
+      }
+    });
+  }
+
+  return checkResult;
 };
 
 const upload = (zipPath, sourceZipPath, appDir) => {
@@ -328,5 +368,6 @@ module.exports = {
   listVersions,
   readCredentials,
   upload,
-  writeLinkedAppConfig
+  writeLinkedAppConfig,
+  validateApp
 };

@@ -10,35 +10,31 @@ $ npm install -g zapier-platform-cli
 
 # Commands
 
+## analytics
+
+> Shows the status of the analytics that are collected. Also used to change what is collected.
+
+**Usage**: `zapier analytics`
+
+**Flags**
+* `-m, --mode` | Choose how much information to share. Anonymous mode drops the OS type and Zapier user id, but keeps command info. Identifying information is used only for debugging purposes. One of `[enabled | anonymous | disabled]`.
+* `-d, --debug` | Show extra debugging output
+
+**Examples**
+* `zapier analytics --mode enabled`
+
+
 ## apps
 
-  > Lists all the apps you can access.
+> Lists any apps that you have admin access to.
 
-  **Usage:** `zapier apps`
+**Usage**: `zapier apps`
 
-  
-Lists any apps that you have admin access to. Also checks the current directory for a linked app, which you can control with `zapier link`.
+This command also checks the current directory for a linked app.
 
-**Arguments**
-
-
-
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
-
-```bash
-$ zapier apps
-# All apps listed below.
-#
-# ┌─────────┬───────────-─┬─────────────────────┬────────┐
-# │ Title   │ Unique Slug │ Timestamp           │ Linked │
-# ├─────────┼───────────-─┼─────────────────────┼────────┤
-# │ Example │ Example     │ 2016-01-01T22:19:28 │ ✔      │
-# └─────────┴───────────-─┴─────────────────────┴────────┘
-#
-# Try linking the current directory to a different app with the `zapier link` command.
-```
+**Flags**
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
 
 
 ## build
@@ -98,7 +94,7 @@ Give any user registered on Zapier the ability to collaborate on your app. Commo
 * _none_ -- print all admins
 * `email [user@example.com]` -- _optional_, which user to add/remove
 * `--remove` -- _optional_, elect to remove this user
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
+* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
 * `--help` -- _optional_, prints this help text
 * `--debug` -- _optional_, print debug API calls and tracebacks
 
@@ -195,12 +191,9 @@ $ zapier delete version 1.0.0
 
 ## deprecate
 
-  > Mark a non-production version of your app as deprecated, with removal by a certain date.
+> Marks a non-production version of your app as deprecated, with removal by a certain date.
 
-  **Usage:** `zapier deprecate 1.0.0 2017-01-20`
-
-  
-A utility to alert users of breaking changes that require the deprecation of an app version.
+**Usage**: `zapier deprecate VERSION DATE`
 
 Use this when an app version will not be supported or start breaking at a known date.
 
@@ -208,23 +201,17 @@ Zapier will send an email warning users of the deprecation once a date is set, t
 
 After the deprecation date has passed it will be safe to delete that app version.
 
-> Do not use this if you have non-breaking changes, for example, just fixing help text or labels is a very safe operation.
+> Do not use this if you have non-breaking changes, such as fixing help text.
 
 **Arguments**
+* (required) `version` | The version to deprecate.
+* (required) `date` | The date (YYYY-MM-DD) when Zapier will make the specified version unavailable.
 
-* `version [1.0.0]` -- **required**, the version to deprecate
-* `deprecationDate [2017-01-20]` -- **required**, date Zapier will make the version unavailable
+**Flags**
+* `-d, --debug` | Show extra debugging output
 
-
-```bash
-$ zapier deprecate 1.0.0 2017-01-20
-# Preparing to deprecate version 1.0.0 your app "Example".
-#
-#   Deprecating 1.0.0 - done!
-#   Deprecation successful!
-#
-# We'll let users know that this version is no longer recommended and will cease to work on 2017-01-20.
-```
+**Examples**
+* `zapier deprecate 1.2.3 2011-10-01`
 
 
 ## describe
@@ -247,7 +234,7 @@ Prints a human readable enumeration of your app's triggers, searches, and action
 
 
 
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
+* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
 * `--help` -- _optional_, prints this help text
 * `--debug` -- _optional_, print debug API calls and tracebacks
 
@@ -293,7 +280,7 @@ Manage the environment of your app so that `process.env` has the necessary varia
 * `key [CLIENT_SECRET]` -- _optional_, the uppercase key of the environment variable to set
 * `value [12345]` -- _optional_, the raw value to set to the key
 * `--remove` -- _optional_, optionally remove environment variable with this key
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
+* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
 * `--help` -- _optional_, prints this help text
 * `--debug` -- _optional_, print debug API calls and tracebacks
 
@@ -345,7 +332,7 @@ The `zapier login` and `zapier register "Example"` or `zapier link` commands wil
 
 * _none_ -- print all commands
 * `cmd [value]` -- _optional_, the command to view docs for
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
+* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
 * `--help` -- _optional_, prints this help text
 * `--debug` -- _optional_, print debug API calls and tracebacks
 
@@ -387,34 +374,37 @@ $ │ logout      │ zapier logout                         │ Deactivates all 
 
 ## history
 
-  > Prints all edit history for your app.
+> Gets the history of your app.
 
-  **Usage:** `zapier history`
+**Usage**: `zapier history`
 
-  
-Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins and invitee changes as well as who made the change and when.
+History includes all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.
+
+**Flags**
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
+
+
+## init
+
+> Initializes a new Zapier app. Optionally uses a template.
+
+**Usage**: `zapier init PATH`
+
+After running this, you'll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
+
+> Note: this doesn't register or deploy the app with Zapier - try the `zapier register` and `zapier push` commands for that!
 
 **Arguments**
+* (required) `path` | Where to create the new app. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation
 
+**Flags**
+* `-t, --template` | The template to start your app with. One of `[minimal | trigger | search | create | basic-auth | custom-auth | digest-auth | oauth2 | oauth1-trello | oauth1-tumblr | oauth1-twitter | session-auth | dynamic-dropdown | files | middleware | resource | rest-hooks | search-or-create | babel | typescript | github | onedrive]`. Defaults to `minimal`.
+* `-d, --debug` | Show extra debugging output
 
-
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
-
-```bash
-$ zapier history
-# The history of your app "Example" listed below.
-#
-# ┌──────────────────────────┬───────────────────┬──────────────────┬─────────────────────┐
-# │ What                     │ Message           │ Who              │ Timestamp           │
-# ├──────────────────────────┼───────────────────┼──────────────────┼─────────────────────┤
-# │ admin added              │ other@example.com │ user@example.com │ 2016-01-10T16:12:33 │
-# │ environment variable set │ CLIENT_SECRET     │ user@example.com │ 2016-01-01T22:51:01 │
-# │ version added            │ 1.2.52            │ user@example.com │ 2016-01-01T22:19:36 │
-# │ app created              │ initial creation  │ user@example.com │ 2016-01-01T22:19:28 │
-# └──────────────────────────┴───────────────────┴──────────────────┴─────────────────────┘
-```
+**Examples**
+* `zapier init ./some/path`
+* `zapier init . --template typescript`
 
 
 ## invite
@@ -434,7 +424,7 @@ Invite any user registered on Zapier to test your app. Commonly, this is useful 
 * `email [user@example.com]` -- _optional_, which user to add/remove
 * `version [1.0.0]` -- _optional_, only invite to a specific version
 * `--remove` -- _optional_, elect to remove this user
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
+* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
 * `--help` -- _optional_, prints this help text
 * `--debug` -- _optional_, print debug API calls and tracebacks
 
@@ -485,7 +475,7 @@ Or, if you are making an app from scratch - you should prefer `zapier init`.
 
 
 
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
+* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
 * `--help` -- _optional_, prints this help text
 * `--debug` -- _optional_, print debug API calls and tracebacks
 
@@ -513,44 +503,23 @@ $ zapier link
 
 ## login
 
-  > Configure your `~/.zapierrc` with a deploy key.
+> Configures your `~/.zapierrc` with a deploy key.
 
-  **Usage:** `zapier login`
+**Usage**: `zapier login`
 
-  
-This is an interactive prompt which will create, retrieve and store a deploy key.
-
-> This will change the  `~/.zapierrc` (home directory identifies the deploy key & user).
-
-```bash
-$ zapier login
-# What is your Zapier login email address? (Ctrl-C to cancel)
-# What is your Zapier login password?
-#  <type here>
-# Your deploy key has been saved to ~/.zapierrc. Now try `zapier init .` to start a new local app.
-```
+**Flags**
+* `-s, --sso` | Use this flag if you log into Zapier a Single Sign-On (SSO) button and don't have a Zapier password
+* `-d, --debug` | Show extra debugging output
 
 
 ## logout
 
-  > Deactivates all your personal deploy keys and resets `~/.zapierrc`.
+> Deactivates your acive deploy key and resets `~/.zapierrc`.
 
-  **Usage:** `zapier logout`
+**Usage**: `zapier logout`
 
-  
-Deactivates all your personal deploy keys and resets your local config. Does not delete any apps or versions.
-
-> This will delete the  `~/.zapierrc` (home directory identifies the deploy key & user).
-
-```bash
-$ zapier logout
-Preparing to deactivate personal deploy keys and reset local configs.
-
-  Deactivating personal deploy keys - done!
-  Destroying `~/.zapierrc` - done!
-
-All personal keys deactivated - now try `zapier login` to login again.
-```
+**Flags**
+* `-d, --debug` | Show extra debugging output
 
 
 ## logs
@@ -573,7 +542,7 @@ Get the logs that are automatically collected during the running of your app. Ei
 * `--detailed` -- _optional_, show detailed logs (like request/response body and headers)
 * `--user=user@example.com` -- _optional_, display only this user's logs. Default is `me`
 * `--limit=50` -- _optional_, control the maximum result size. Default is `50`
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
+* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
 * `--help` -- _optional_, prints this help text
 * `--debug` -- _optional_, print debug API calls and tracebacks
 
@@ -595,7 +564,7 @@ $ zapier logs --type=http
 # ┌────────────────────────────────────────────────────────┐
 # │ = 1 =                                                  │
 # │     Status      │ 200                                  │
-# │     URL         │ http://httpbin.org/get               │
+# │     URL         │ https://httpbin.org/get               │
 # │     Querystring │ hello=world                          │
 # │     Version     │ 1.0.0                                │
 # │     Step        │ 99c16565-1547-4b16-bcb5-45189d9d8afa │
@@ -606,76 +575,65 @@ $ zapier logs --type=http
 
 ## migrate
 
-  > Migrate users from one version of your app to another.
+> Migrates users from one version of your app to another.
 
-  **Usage:** `zapier migrate 1.0.0 1.0.1 [10%]`
+**Usage**: `zapier migrate FROMVERSION TOVERSION [PERCENT]`
 
-  
-Starts a migration to move users between different versions of your app. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (IE: `zapier migrate 1.0.1 1.0.0`).
+Starts a migration to move users between different versions of your app. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. `zapier migrate 1.0.1 1.0.0`).
 
 Only migrate users between non-breaking versions, use `zapier deprecate` if you have breaking changes!
 
-Migrations can take between 5-10 minutes, so be patient and check `zapier history` to track the status
+Migrations can take between 5-10 minutes, so be patient and check `zapier history` to track the status.
 
 Note: since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.
 
-> Tip! We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
+> Tip: We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
-> Tip 2! You can migrate a single user by using `--user` (IE: `zapier migrate 1.0.0 1.0.1 --user=user@example.com`).
+> Tip 2: You can migrate a single user by using `--user` (i.e. `zapier migrate 1.0.0 1.0.1 --user=user@example.com`).
 
 **Arguments**
+* (required) `fromVersion` | The version FROM which to migrate users.
+* (required) `toVersion` | The version TO which to migrate users.
+* `percent` | Percentage (between 1 and 100) of users to migrate.
 
-* `fromVersion [1.0.0]` -- **required**, the version **from** which to migrate users
-* `toVersion [1.0.1]` -- **required**, the version **to** which to migrate users
-* `percent [100%]` -- _optional_, percent of users to migrate. Default is `100%`
-* `--user=user@example.com` -- _optional_, migrate only this user
+**Flags**
+* `--user` | Migrate only this user
+* `-d, --debug` | Show extra debugging output
 
-```bash
-$ zapier migrate 1.0.0 1.0.1 15%
-# Getting ready to migrate your app "Example" from 1.0.0 to 1.0.1.
-#
-#   Starting migration from 1.0.0 to 1.0.1 for 15% - done!
-#
-# Migration successfully queued, please check `zapier history` to track the status. Normal migrations take between 5-10 minutes.
-```
+**Examples**
+* `zapier migrate 1.0.0 1.0.1`
+* `zapier migrate 1.0.1 2.0.0 10`
+* `zapier migrate 2.0.0 2.0.1 --user=user@example.com`
 
 
 ## promote
 
-  > Promotes a specific version to public access.
+> Promotes a specific version to public access.
 
-  **Usage:** `zapier promote 1.0.0`
+**Usage**: `zapier promote VERSION`
 
-  
 Promotes an app version into production (non-private) rotation, which means new users can use this app version.
 
-* This **does** mark the version as the official public version - all other versions & users are grandfathered.
-* This **does not** build/upload or deploy a version to Zapier - you should `zapier push` first.
-* This **does not** move old users over to this version - `zapier migrate 1.0.0 1.0.1` does that.
-* This **does not** recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
+* This [1mdoes[22m mark the version as the official public version - all other versions & users are grandfathered.
+
+* This does [1mNOT[22m build/upload or deploy a version to Zapier - you should `zapier push` first.
+
+* This does [1mNOT[22m move old users over to this version - `zapier migrate 1.0.0 1.0.1` does that.
+
+* This does [1mNOT[22m recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
 
 Promotes are an inherently safe operation for all existing users of your app.
 
 > If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to make your app public. We'll respond within a few business days.
 
 **Arguments**
+* (required) `version` | The version you want promote.
 
-* `version [1.0.0]` -- **required**,
+**Flags**
+* `-d, --debug` | Show extra debugging output
 
-
-```bash
-$ zapier promote 1.0.0
-# Preparing to promote version 1.0.0 of your app "Example".
-* Changelog found for 1.0.0!
-* ---
-* Initial release!
-* ---
-#
-#   Promoting 1.0.0 - done!
-#   Promotion successful!
-#
-# Optionally try the `zapier migrate 1.0.0 1.0.1 [10%]` command to move users to this version.
-```
+**Examples**
+* `zapier promote 1.0.0`
 
 
 ## push
@@ -783,32 +741,22 @@ $ zapier scaffold resource "Tag" --entry=index.js --dest=resources/tag
 
 ## test
 
-  > Tests your app via `npm test`.
+> Tests your app via `npm test`.
 
-  **Usage:** `zapier test`
+**Usage**: `zapier test`
 
-  
 This command is effectively the same as `npm test`, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.
 
-**Arguments**
+**Flags**
+* `-t, --timeout` | Set test-case timeout in milliseconds  Defaults to `2000`.
+* `--grep` | Only run tests matching pattern
+* `--skip-validate` | Forgo running `zapier validate` before `npm test`
+* `--yarn` | Use yarn instead of npm
+* `-d, --debug` | Show extra debugging output
 
-
-* `--debug` -- _optional_, print zapier detailed logs to standard out
-* `--timeout=value` -- _optional_, set test-case timeout in milliseconds [2000]
-* `--grep=value` -- _optional_, only run tests matching pattern
-* `--skip-validate` -- _optional_, forgo running `zapier validate` before `npm test`
-
-```bash
-$ zapier test
-#
-#   triggers
-#     hello world
-#       ✓ should load fine (777ms)
-#       ✓ should accept parameters (331ms)
-#
-#   2 passing (817ms)
-#
-```
+**Examples**
+* `zapier test`
+* `zapier test -t 30000 --grep api --skip-validate`
 
 
 ## upload
@@ -834,67 +782,29 @@ $ zapier upload
 
 ## validate
 
-  > Validates the current app.
+> Validates your Zapier app.
 
-  **Usage:** `zapier validate`
+**Usage**: `zapier validate`
 
-  
 Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during `zapier build`, `zapier upload`, `zapier push` or even as a test in `zapier test`.
 
-**Arguments**
+**Flags**
+* `--without-style` | Forgo pinging the Zapier server to run further checks
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
 
-
-* `--without-style` -- _optional_, forgo pinging the Zapier server to do a style check
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
-
-```bash
-$ zapier validate
-# Validating project locally.
-#
-# No errors found during validation routine.
-#
-# This project is structurally sound!
-
-$ zapier validate
-# Validating project locally.
-#
-# ┌────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-# │ = 1 =                                                                                                      │
-# │     Property │ instance                                                                                    │
-# │     Message  │ requires property "platformVersion"                                                         │
-# │     Links    │ https://github.com/zapier/zapier-platform-schema/blob/v1.0.0/docs/build/schema.md#appschema │
-# └──────────────┴─────────────────────────────────────────────────────────────────────────────────────────────┘
-#
-# Make any changes to your project and rerun this command.
-```
+**Examples**
+* `zapier validate`
+* `zapier validate --without-style`
+* `zapier validate --format json`
 
 
 ## versions
 
-  > Lists all the versions of the current app.
+> Lists the versions of your app available for use in the Zapier editor.
 
-  **Usage:** `zapier versions`
+**Usage**: `zapier versions`
 
-  
-Lists the versions of your app available for use in the Zapier editor.
-
-**Arguments**
-
-
-
-* `--format={plain,json,raw,row,table,small}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
-
-```bash
-$ zapier versions
-# All versions of your app "Example" listed below.
-#
-# ┌─────────┬──────────┬───────┬────────────────┬──────────────────┬─────────────────────┐
-# │ Version │ Platform │ Users │ Deployment     │ Deprecation Date │ Timestamp           │
-# ├─────────┼──────────┼───────┼────────────────┼──────────────────┼─────────────────────┤
-# │ 1.0.0   │ 3.0.0    │ 0     │ non-production │ null             │ 2016-01-01T22:19:36 │
-# └─────────┴──────────┴───────┴────────────────┴──────────────────┴─────────────────────┘
-```
+**Flags**
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output

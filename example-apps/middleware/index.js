@@ -6,7 +6,7 @@ const movie = require('./triggers/movie');
 // HTTP before middleware that adds sorting query params.
 // We want *every* request to our API to be sorted in reverse chronological order.
 // Applying this middleware guarantees this.
-const addSortingParams = (request /*, z*/) => {
+const addSortingParams = (request /*, z */) => {
   request.params = _.extend({}, request.params, {
     _sort: 'id',
     _order: 'desc'
@@ -18,7 +18,9 @@ const addSortingParams = (request /*, z*/) => {
 const checkForErrors = (response, z) => {
   // If we get a bad status code, throw an error. This will halt the zap.
   if (response.status >= 300) {
-    throw new z.errors.HaltedError(`Unexpected status code ${response.status} from ${response.request.url}`);
+    throw new z.errors.HaltedError(
+      `Unexpected status code ${response.status} from ${response.request.url}`
+    );
   }
 
   // If no errors just return original response
@@ -42,8 +44,7 @@ const App = {
     checkForErrors
   ],
 
-  resources: {
-  },
+  resources: {},
 
   // If you want your trigger to show up, you better include it here!
   triggers: {
@@ -52,12 +53,10 @@ const App = {
   },
 
   // If you want your searches to show up, you better include it here!
-  searches: {
-  },
+  searches: {},
 
   // If you want your creates to show up, you better include it here!
-  creates: {
-  }
+  creates: {}
 };
 
 // Finally, export the app.

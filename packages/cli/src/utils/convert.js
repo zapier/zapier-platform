@@ -35,7 +35,8 @@ const createFile = async (content, filename, dir) => {
   endSpinner();
 };
 
-const prettifyJs = code => prettier.format(code, { singleQuote: true });
+const prettifyJs = code =>
+  prettier.format(code, { singleQuote: true, parser: 'babel' });
 const prettifyJSON = origString => JSON.stringify(origString, null, 2);
 
 const renderTemplate = async (

@@ -1,4 +1,5 @@
 const cp = require('child_process');
+const debug = require('debug')('zapier:misc');
 
 const _ = require('lodash');
 const colors = require('colors/safe');
@@ -28,15 +29,19 @@ const runCommand = (command, args, options) => {
     command += '.cmd';
   }
 
-  options = options || {};
-  if (global.argOpts.debug) {
-    console.log('\n');
-    console.log(
-      `Running ${colors.bold(
-        command + ' ' + args.join(' ')
-      )} command in ${colors.bold(options.cwd || process.cwd())}:\n`
-    );
+  if (_.get(global, ['argOpts', 'debug'])) {
+    debug.enabled = true;
   }
+
+  options = options || {};
+
+  debug('\n');
+  debug(
+    `Running ${colors.bold(
+      command + ' ' + args.join(' ')
+    )} command in ${colors.bold(options.cwd || process.cwd())}:\n`
+  );
+
   return new Promise((resolve, reject) => {
     const result = cp.spawn(command, args, options);
 
@@ -80,19 +85,23 @@ const isValidNodeVersion = () => {
 };
 
 const isValidAppInstall = command => {
-  if (['help', 'init', 'login', 'apps', 'convert'].includes(command)) {
+  if (
+    ['help', 'init', 'login', 'apps', 'convert', 'logout'].includes(command)
+  ) {
     return { valid: true };
   }
 
   let packageJson;
   try {
     packageJson = require(path.join(process.cwd(), 'package.json'));
-    const coreVersion = packageJson.dependencies[PLATFORM_PACKAGE];
+    const coreVersion = _.get(packageJson, ['dependencies', PLATFORM_PACKAGE]);
     // could check for a lot more, but this is probably enough: https://docs.npmjs.com/files/package.json#dependencies
     if (!coreVersion) {
       return {
         valid: false,
-        reason: `Your app doesn't depend on ${PLATFORM_PACKAGE}. Run \`npm install -E ${PLATFORM_PACKAGE}\` to resolve`
+        reason: `Your app doesn't depend on ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
+          `npm install -E ${PLATFORM_PACKAGE}`
+        )}\` to resolve`
       };
     } else if (!semver.valid(coreVersion)) {
       // semver.valid only matches single versions
@@ -110,7 +119,9 @@ const isValidAppInstall = command => {
   } catch (err) {
     return {
       valid: false,
-      reason: `Looks like you're missing a local installation of ${PLATFORM_PACKAGE}. Run \`npm install\` to resolve`
+      reason: `Looks like you're missing a local installation of ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
+        'npm install'
+      )}\` to resolve`
     };
   }
 

@@ -2,5 +2,15 @@
 
 module.exports = {
   analytics: require('./commands/analytics'),
-  init: require('./commands/init')
+  apps: require('./commands/apps'),
+  deprecate: require('./commands/deprecate'),
+  history: require('./commands/history'),
+  init: require('./commands/init'),
+  login: require('./commands/login'),
+  logout: require('./commands/logout'),
+  migrate: require('./commands/migrate'),
+  promote: require('./commands/promote'),
+  test: require('./commands/test'),
+  validate: require('./commands/validate'),
+  versions: require('./commands/versions')
 };

@@ -1,3 +1,5 @@
+/* globals describe, it */
+
 const should = require('should'); // required to use .exist()
 
 const zapier = require('zapier-platform-core');
@@ -6,9 +8,8 @@ const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
 describe('searches', () => {
-
   describe('search recipe', () => {
-    it('should find a recipe', (done) => {
+    it('should find a recipe', done => {
       const bundle = {
         inputData: {
           style: 'style 2'
@@ -29,5 +30,4 @@ describe('searches', () => {
         .catch(done);
     });
   });
-
 });

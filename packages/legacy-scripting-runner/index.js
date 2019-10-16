@@ -60,10 +60,16 @@ const FIELD_TYPE_CONVERT_MAP = {
 const makeMultipartBody = async (data, lazyFilesObject) => {
   const form = new FormData();
   if (data) {
-    if (typeof data !== 'string') {
-      data = JSON.stringify(data);
+    if (_.isPlainObject(data)) {
+      _.each(data, (v, k) => {
+        form.append(k, v);
+      });
+    } else {
+      if (typeof data !== 'string') {
+        data = JSON.stringify(data);
+      }
+      form.append('data', data);
     }
-    form.append('data', data);
   }
 
   const fileFieldKeys = Object.keys(lazyFilesObject);
@@ -84,6 +90,7 @@ const makeMultipartBody = async (data, lazyFilesObject) => {
 // Prepares request body from results.files and assign it to result.body. This
 // accepts the request object returned by a KEY_pre_ method.
 const addFilesToRequestBodyFromPreResult = async (request, event) => {
+  const originalHydrateUrls = _.map(event.originalFiles, (file, k) => file[1]);
   const lazyFiles = _.reduce(
     request.files,
     (result, file, k) => {
@@ -92,7 +99,7 @@ const addFilesToRequestBodyFromPreResult = async (request, event) => {
         const [filename, newFileValue, contentType] = file;
         // If pre_write changes the hydrate URL, file[1], we take it as a
         // string content even if it looks like a URL
-        const loadUrl = newFileValue === event.originalFiles[k][1];
+        const loadUrl = originalHydrateUrls.includes(newFileValue);
         lazyFile = LazyFile(
           newFileValue,
           { filename, contentType },
@@ -111,6 +118,7 @@ const addFilesToRequestBodyFromPreResult = async (request, event) => {
   );
 
   request.body = await makeMultipartBody(request.data || '{}', lazyFiles);
+  delete request.headers['Content-Type'];
   return request;
 };
 
@@ -128,7 +136,7 @@ const addFilesToRequestBodyFromBody = async (request, bundle) => {
     }
   });
 
-  request.body = await makeMultipartBody(data, lazyFiles);
+  request.body = await makeMultipartBody(JSON.stringify(data), lazyFiles);
   request.headers.Accept = '*/*';
   delete request.headers['Content-Type'];
   return request;
@@ -140,13 +148,15 @@ const parseFinalResult = async (result, event) => {
       return addFilesToRequestBodyFromPreResult(result, event);
     }
 
-    // Old request was .data (string), new is .body (object), which matters for _pre
-    try {
-      result.body = JSON.parse(result.data || '{}');
-    } catch (e) {
-      result.body = result.data;
+    if (result.data !== undefined) {
+      // Old request was .data (string), new is .body (object), which matters for _pre
+      try {
+        result.body = JSON.parse(result.data || '{}');
+      } catch (e) {
+        result.body = result.data;
+      }
     }
-    return Promise.resolve(result);
+    return result;
   }
 
   // Old writes accepted a list, but CLI doesn't anymore, which matters for _write and _post_write
@@ -159,7 +169,7 @@ const parseFinalResult = async (result, event) => {
     } else {
       resultObj = {};
     }
-    return Promise.resolve(resultObj);
+    return resultObj;
   }
 
   if (
@@ -175,13 +185,17 @@ const parseFinalResult = async (result, event) => {
     }
   }
 
-  return Promise.resolve(result);
+  return result;
 };
 
 const replaceCurliesInRequest = (request, bundle) => {
   const bank = cleaner.createBundleBank(undefined, { bundle: bundle });
   return cleaner.recurseReplaceBank(request, bank);
 };
+
+// Replace '{{bundle.inputData.abc}}' with '{{abc}}'
+const undoSmartCurlyReplacement = str =>
+  str.replace(/{{\s*bundle\.[^.]+\.([^}\s]+)\s*}}/g, '{{$1}}');
 
 const compileLegacyScriptingSource = (source, zcli, app) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
@@ -193,6 +207,11 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
     RefreshTokenException,
     InvalidSessionException
   } = require('./exceptions');
+
+  const underscore = require('underscore');
+  underscore.templateSettings = {
+    interpolate: /\{\{(.+?)\}\}/g
+  };
 
   return new Function( // eslint-disable-line no-new-func
     '_',
@@ -213,7 +232,7 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
     'InvalidSessionException',
     source + '\nreturn Zap;'
   )(
-    require('underscore'),
+    underscore,
     require('crypto'),
     require('async'),
     require('moment-timezone'),
@@ -341,7 +360,13 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       }
       throw new Error('JSON results array could not be located.');
     } else if (type.startsWith('object-')) {
-      if (_.isPlainObject(result)) {
+      if (['number', 'string', 'boolean'].includes(typeof result)) {
+        // primitive types that aren't null or undefined
+        return { message: result };
+      } else if (_.isEmpty(result)) {
+        // null, undefined, empty object or array
+        return {};
+      } else if (_.isPlainObject(result)) {
         return result;
       } else if (
         Array.isArray(result) &&
@@ -550,9 +575,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       result = await runEvent({ key, name: fullEventName }, zcli, bundle);
     } else {
       const preMethod = preMethodName ? Zap[preMethodName] : null;
-      const request = preMethod
+      let request = preMethod
         ? await runEvent({ key, name: preEventName }, zcli, bundle)
-        : bundle.request;
+        : {};
+      request = Object.assign({}, bundle.request, request);
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
       if (hasFileFields(bundle) && !isBodyStream) {
@@ -569,6 +595,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       if (!options.parseResponse) {
         return response;
       }
+
+      bundle.request = request;
 
       const postMethod = postMethodName ? Zap[postMethodName] : null;
       result = postMethod
@@ -715,6 +743,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       bundle.skipChecks.push('triggerIsArray');
     }
 
+    if (url) {
+      bundle._legacyUrl = undoSmartCurlyReplacement(url);
+    }
+
     let result = await runEventCombo(
       bundle,
       key,
@@ -848,6 +880,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       preEventName = typeOf + '.pre';
       postEventName = typeOf + '.post';
       bundle.request.url = url;
+
+      // Provide bundle.raw_url and bundle.url_raw
+      bundle._legacyUrl = undoSmartCurlyReplacement(url);
     }
 
     if (supportFullMethod) {
@@ -904,12 +939,17 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     bundle.request.url = url;
     bundle.request.body = body;
 
+    if (url) {
+      bundle._legacyUrl = undoSmartCurlyReplacement(url);
+    }
+
     return runEventCombo(
       bundle,
       key,
       'create.pre',
       'create.post',
-      'create.write'
+      'create.write',
+      { ensureType: 'object-first' }
     );
   };
 
@@ -933,6 +973,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const url = _.get(app, `legacy.searches.${key}.operation.url`);
 
     bundle.request.url = url;
+
+    if (url) {
+      bundle._legacyUrl = undoSmartCurlyReplacement(url);
+    }
 
     return runEventCombo(
       bundle,

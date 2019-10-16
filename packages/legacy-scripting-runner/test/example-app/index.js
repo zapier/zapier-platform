@@ -126,6 +126,7 @@ const legacyScriptingSource = `
         contacts[0].name = 'Patched by KEY_post_poll!';
         contacts[0].jqueryText = $('<div>jQuery works!</div>').text();
         contacts[0].jqueryParam = $.param({width: 1680, height: 1050});
+        contacts[0].randomJson = $.parseJSON('{"hey":1}');
         return contacts;
       },
 
@@ -173,6 +174,20 @@ const legacyScriptingSource = `
         bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
         bundle.request.data = z.JSON.stringify(bundle.meta);
         return bundle.request;
+      },
+
+      movie_pre_poll_request_options: function(bundle) {
+        bundle.request.method = 'POST';
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.headers.foo = '1234';
+        bundle.request.params.bar = '5678';
+        bundle.request.data = '{"aa":"bb"}';
+        return bundle.request;
+      },
+
+      movie_post_poll_request_options: function(bundle) {
+        // To make sure bundle.request is still available in post_poll
+        return [bundle.request];
       },
 
       movie_post_poll_make_array: function(bundle) {
@@ -376,6 +391,25 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      recipe_pre_write_underscore_template: function(bundle) {
+        var url = _.template(bundle.url_raw, {
+          urlPath: bundle.action_fields_full.urlPath
+        });
+        return {
+          method: 'POST',
+          url: url,
+          headers: bundle.request.headers,
+          data: bundle.request.data
+        };
+      },
+
+      movie_pre_write_request_fallback: function(bundle) {
+        // The remaining request options should fall back to bundle.request
+        return {
+          url: bundle.request.url + 's'
+        };
+      },
+
       movie_write_default_headers: function(bundle) {
         bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
         bundle.request.data = z.JSON.stringify({
@@ -441,6 +475,15 @@ const legacyScriptingSource = `
           type: 'int'
         });
         return fields;
+      },
+
+      // Make sure we respect WB's preset _.template settings
+      recipe_pre_custom_action_fields_underscore_template: function(bundle) {
+        return {
+          method: 'GET',
+          url: _.template(bundle.raw_url, { urlPath: bundle.action_fields.urlPath }),
+          headers: bundle.request.headers,
+        };
       },
 
       // To be replaced with 'movie_pre_custom_action_result_fields' at runtime
@@ -533,6 +576,21 @@ const legacyScriptingSource = `
         bundle.request.files.file =
           'https://httpbin.zapier-tooling.com/response-headers?' +
           'Content-Disposition=filename*=UTF-8%27%27%25E4%25B8%25AD%25E6%2596%2587.json';
+        return bundle.request;
+      },
+
+      file_pre_write_wrong_content_type: function(bundle) {
+        // Files should always be sent as multipart/form-data, no matter what
+        // the developer sets here
+        bundle.request.headers['Content-Type'] = 'applicaiton/x-www-form-urlencoded';
+        bundle.request.data = z.JSON.parse(bundle.request.data);
+        return bundle.request;
+      },
+
+      file2_pre_write_rename_file_field: function(bundle) {
+        bundle.request.files = {
+          file: bundle.request.files.file_1
+        };
         return bundle.request;
       },
 
@@ -831,6 +889,51 @@ const FileUpload = {
   }
 };
 
+const FileUpload2 = {
+  key: 'file2',
+  noun: 'File',
+  display: {
+    label: 'Upload a File 2'
+  },
+  operation: {
+    perform: {
+      source: "return z.legacyScripting.run(bundle, 'create', 'file2');"
+    },
+    inputFields: [
+      { key: 'id', label: 'ID', type: 'string' },
+      { key: 'name', label: 'Name', type: 'string' },
+      { key: 'file_1', label: 'File', type: 'file' }
+    ],
+    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }]
+  }
+};
+
+const RecipeCreate = {
+  key: 'recipe',
+  noun: 'Recipe',
+  display: {
+    label: 'Create a Recipe'
+  },
+  operation: {
+    perform: {
+      source: "return z.legacyScripting.run(bundle, 'create', 'recipe');"
+    },
+    inputFields: [
+      { key: 'name', label: 'Name', type: 'string' },
+      { key: 'directions', label: 'Directions', type: 'string' },
+      {
+        source:
+          "return z.legacyScripting.run(bundle, 'create.input', 'recipe');"
+      }
+    ],
+    outputFields: [
+      { key: 'id', label: 'ID', type: 'integer' },
+      { key: 'name', label: 'Name', type: 'string' },
+      { key: 'directions', label: 'directions', type: 'string' }
+    ]
+  }
+};
+
 const MovieSearch = {
   key: 'movie',
   noun: 'Movie',
@@ -877,7 +980,9 @@ const App = {
   },
   creates: {
     [MovieCreate.key]: MovieCreate,
-    [FileUpload.key]: FileUpload
+    [RecipeCreate.key]: RecipeCreate,
+    [FileUpload.key]: FileUpload,
+    [FileUpload2.key]: FileUpload2
   },
   searches: {
     [MovieSearch.key]: MovieSearch
@@ -948,7 +1053,18 @@ const App = {
           fieldsExcludedFromBody: ['title']
         }
       },
+      recipe: {
+        operation: {
+          url: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
+          inputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`
+        }
+      },
       file: {
+        operation: {
+          url: `${AUTH_JSON_SERVER_URL}/upload`
+        }
+      },
+      file2: {
         operation: {
           url: `${AUTH_JSON_SERVER_URL}/upload`
         }

@@ -245,6 +245,7 @@ a code {
       <ul>
 <li><a href="#zapier-cli-reference">Zapier CLI Reference</a></li>
 <li><a href="#commands">Commands</a><ul>
+<li><a href="#analytics">analytics</a></li>
 <li><a href="#apps">apps</a></li>
 <li><a href="#build">build</a></li>
 <li><a href="#collaborate">collaborate</a></li>
@@ -255,6 +256,7 @@ a code {
 <li><a href="#env">env</a></li>
 <li><a href="#help">help</a></li>
 <li><a href="#history">history</a></li>
+<li><a href="#init">init</a></li>
 <li><a href="#invite">invite</a></li>
 <li><a href="#link">link</a></li>
 <li><a href="#login">login</a></li>
@@ -309,6 +311,31 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="analytics">analytics</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Shows the status of the analytics that are collected. Also used to change what is collected.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier analytics</code></p><p><strong>Flags</strong></p><ul>
+<li><code>-m, --mode</code> | Choose how much information to share. Anonymous mode drops the OS type and Zapier user id, but keeps command info. Identifying information is used only for debugging purposes. One of <code>[enabled | anonymous | disabled]</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier analytics --mode enabled</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h2 id="apps">apps</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -319,25 +346,14 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Lists all the apps you can access.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier apps</code></p><p>Lists any apps that you have admin access to. Also checks the current directory for a linked app, which you can control with <code>zapier link</code>.</p><p><strong>Arguments</strong></p><ul>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
-<li><code>--help</code> -- <em>optional</em>, prints this help text</li>
-<li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
+<p>Lists any apps that you have admin access to.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier apps</code></p><p>This command also checks the current directory for a linked app.</p><p><strong>Flags</strong></p><ul>
+<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier apps
-<span class="hljs-comment"># All apps listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;-&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; Title   &#x2502; Unique Slug &#x2502; Timestamp           &#x2502; Linked &#x2502;</span>
-<span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;-&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
-<span class="hljs-comment"># &#x2502; Example &#x2502; Example     &#x2502; 2016-01-01T22:19:28 &#x2502; &#x2714;      &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;-&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Try linking the current directory to a different app with the `zapier link` command.</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -403,7 +419,7 @@ a code {
 <li><em>none</em> -- print all admins</li>
 <li><code>email [user@example.com]</code> -- <em>optional</em>, which user to add/remove</li>
 <li><code>--remove</code> -- <em>optional</em>, elect to remove this user</li>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
+<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
 <li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
 </ul>
@@ -513,23 +529,20 @@ $ zapier collaborate user@example.com --remove
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Mark a non-production version of your app as deprecated, with removal by a certain date.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier deprecate 1.0.0 2017-01-20</code></p><p>A utility to alert users of breaking changes that require the deprecation of an app version.</p><p>Use this when an app version will not be supported or start breaking at a known date.</p><p>Zapier will send an email warning users of the deprecation once a date is set, they&apos;ll start seeing it as &quot;Deprecated&quot; in the UI, and once the deprecation date arrives, if the Zaps weren&apos;t updated, they&apos;ll be paused and the users will be emailed again explaining what happened.</p><p>After the deprecation date has passed it will be safe to delete that app version.</p><blockquote>
-<p>Do not use this if you have non-breaking changes, for example, just fixing help text or labels is a very safe operation.</p>
+<p>Marks a non-production version of your app as deprecated, with removal by a certain date.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier deprecate VERSION DATE</code></p><p>Use this when an app version will not be supported or start breaking at a known date.</p><p>Zapier will send an email warning users of the deprecation once a date is set, they&apos;ll start seeing it as &quot;Deprecated&quot; in the UI, and once the deprecation date arrives, if the Zaps weren&apos;t updated, they&apos;ll be paused and the users will be emailed again explaining what happened.</p><p>After the deprecation date has passed it will be safe to delete that app version.</p><blockquote>
+<p>Do not use this if you have non-breaking changes, such as fixing help text.</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>version [1.0.0]</code> -- <strong>required</strong>, the version to deprecate</li>
-<li><code>deprecationDate [2017-01-20]</code> -- <strong>required</strong>, date Zapier will make the version unavailable</li>
+<li>(required) <code>version</code> | The version to deprecate.</li>
+<li>(required) <code>date</code> | The date (YYYY-MM-DD) when Zapier will make the specified version unavailable.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier deprecate 1.2.3 2011-10-01</code></li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier deprecate 1.0.0 2017-01-20
-<span class="hljs-comment"># Preparing to deprecate version 1.0.0 your app &quot;Example&quot;.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Deprecating 1.0.0 - done!</span>
-<span class="hljs-comment">#   Deprecation successful!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># We&apos;ll let users know that this version is no longer recommended and will cease to work on 2017-01-20.</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -554,7 +567,7 @@ $ zapier collaborate user@example.com --remove
 <li><code>Resource</code> -- the resource (if any) this action is tied to</li>
 <li><code>Available Methods</code> -- testable methods for this action</li>
 </ul><p><strong>Arguments</strong></p><ul>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
+<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
 <li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
 </ul>
@@ -605,7 +618,7 @@ $ zapier collaborate user@example.com --remove
 <li><code>key [CLIENT_SECRET]</code> -- <em>optional</em>, the uppercase key of the environment variable to set</li>
 <li><code>value [12345]</code> -- <em>optional</em>, the raw value to set to the key</li>
 <li><code>--remove</code> -- <em>optional</em>, optionally remove environment variable with this key</li>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
+<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
 <li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
 </ul>
@@ -658,7 +671,7 @@ $ zapier env 1.0.0 CLIENT_SECRET --remove
 </ul><p>The <code>zapier login</code> and <code>zapier register &quot;Example&quot;</code> or <code>zapier link</code> commands will help manage those files. All commands listed below.</p><p><strong>Arguments</strong></p><ul>
 <li><em>none</em> -- print all commands</li>
 <li><code>cmd [value]</code> -- <em>optional</em>, the command to view docs for</li>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
+<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
 <li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
 </ul>
@@ -712,26 +725,44 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Prints all edit history for your app.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier history</code></p><p>Get the history of your app, listing all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins and invitee changes as well as who made the change and when.</p><p><strong>Arguments</strong></p><ul>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
-<li><code>--help</code> -- <em>optional</em>, prints this help text</li>
-<li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
+<p>Gets the history of your app.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier history</code></p><p>History includes all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.</p><p><strong>Flags</strong></p><ul>
+<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier <span class="hljs-built_in">history</span>
-<span class="hljs-comment"># The history of your app &quot;Example&quot; listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; What                     &#x2502; Message           &#x2502; Who              &#x2502; Timestamp           &#x2502;</span>
-<span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
-<span class="hljs-comment"># &#x2502; admin added              &#x2502; other@example.com &#x2502; user@example.com &#x2502; 2016-01-10T16:12:33 &#x2502;</span>
-<span class="hljs-comment"># &#x2502; environment variable set &#x2502; CLIENT_SECRET     &#x2502; user@example.com &#x2502; 2016-01-01T22:51:01 &#x2502;</span>
-<span class="hljs-comment"># &#x2502; version added            &#x2502; 1.2.52            &#x2502; user@example.com &#x2502; 2016-01-01T22:19:36 &#x2502;</span>
-<span class="hljs-comment"># &#x2502; app created              &#x2502; initial creation  &#x2502; user@example.com &#x2502; 2016-01-01T22:19:28 &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="init">init</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Initializes a new Zapier app. Optionally uses a template.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier init PATH</code></p><p>After running this, you&apos;ll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.</p><blockquote>
+<p>Note: this doesn&apos;t register or deploy the app with Zapier - try the <code>zapier register</code> and <code>zapier push</code> commands for that!</p>
+</blockquote><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>path</code> | Where to create the new app. If the directory doesn&apos;t exist, it will be created. If the directory isn&apos;t empty, we&apos;ll ask for confirmation</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-t, --template</code> | The template to start your app with. One of <code>[minimal | trigger | search | create | basic-auth | custom-auth | digest-auth | oauth2 | oauth1-trello | oauth1-tumblr | oauth1-twitter | session-auth | dynamic-dropdown | files | middleware | resource | rest-hooks | search-or-create | babel | typescript | github | onedrive]</code>. Defaults to <code>minimal</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier init ./some/path</code></li>
+<li><code>zapier init . --template typescript</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -755,7 +786,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
 <li><code>email [user@example.com]</code> -- <em>optional</em>, which user to add/remove</li>
 <li><code>version [1.0.0]</code> -- <em>optional</em>, only invite to a specific version</li>
 <li><code>--remove</code> -- <em>optional</em>, elect to remove this user</li>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
+<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
 <li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
 </ul>
@@ -807,7 +838,7 @@ $ zapier invite user@example.com --remove
 </blockquote><p>  <strong>Usage:</strong> <code>zapier link</code></p><p>Link the current directory to an app you have access to. It is fairly uncommon to run this command - more often you&apos;d just <code>git clone git@github.com:example-inc/example.git</code> which would have a <code>.zapierapprc</code> file already included. If not, you&apos;d need to be an admin on the app and use this command to regenerate the <code>.zapierapprc</code> file.</p><p>Or, if you are making an app from scratch - you should prefer <code>zapier init</code>.</p><blockquote>
 <p>This will change the <code>./.zapierapprc</code> (which identifies the app assosciated with the current directory).</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
+<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
 <li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
 </ul>
@@ -847,18 +878,14 @@ $ zapier invite user@example.com --remove
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Configure your <code>~/.zapierrc</code> with a deploy key.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier login</code></p><p>This is an interactive prompt which will create, retrieve and store a deploy key.</p><blockquote>
-<p>This will change the  <code>~/.zapierrc</code> (home directory identifies the deploy key &amp; user).</p>
-</blockquote>
+<p>Configures your <code>~/.zapierrc</code> with a deploy key.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier login</code></p><p><strong>Flags</strong></p><ul>
+<li><code>-s, --sso</code> | Use this flag if you log into Zapier a Single Sign-On (SSO) button and don&apos;t have a Zapier password</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier login
-<span class="hljs-comment"># What is your Zapier login email address? (Ctrl-C to cancel)</span>
-<span class="hljs-comment"># What is your Zapier login password?</span>
-<span class="hljs-comment">#  &lt;type here&gt;</span>
-<span class="hljs-comment"># Your deploy key has been saved to ~/.zapierrc. Now try `zapier init .` to start a new local app.</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -874,20 +901,13 @@ $ zapier invite user@example.com --remove
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Deactivates all your personal deploy keys and resets <code>~/.zapierrc</code>.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier logout</code></p><p>Deactivates all your personal deploy keys and resets your local config. Does not delete any apps or versions.</p><blockquote>
-<p>This will delete the  <code>~/.zapierrc</code> (home directory identifies the deploy key &amp; user).</p>
-</blockquote>
+<p>Deactivates your acive deploy key and resets <code>~/.zapierrc</code>.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier logout</code></p><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier <span class="hljs-built_in">logout</span>
-Preparing to deactivate personal deploy keys and reset <span class="hljs-built_in">local</span> configs.
-
-  Deactivating personal deploy keys - <span class="hljs-keyword">done</span>!
-  Destroying `~/.zapierrc` - <span class="hljs-keyword">done</span>!
-
-All personal keys deactivated - now try `zapier login` to login again.
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -913,7 +933,7 @@ All personal keys deactivated - now try `zapier login` to login again.
 <li><code>--detailed</code> -- <em>optional</em>, show detailed logs (like request/response body and headers)</li>
 <li><a href="mailto:`--user=user@example.com">`--user=user@example.com</a><code>-- _optional_, display only this user&apos;s logs. Default is</code>me`</li>
 <li><code>--limit=50</code> -- <em>optional</em>, control the maximum result size. Default is <code>50</code></li>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
+<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
 <li><code>--help</code> -- <em>optional</em>, prints this help text</li>
 <li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
 </ul>
@@ -936,7 +956,7 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
 <span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
 <span class="hljs-comment"># &#x2502; = 1 =                                                  &#x2502;</span>
 <span class="hljs-comment"># &#x2502;     Status      &#x2502; 200                                  &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     URL         &#x2502; http://httpbin.org/get               &#x2502;</span>
+<span class="hljs-comment"># &#x2502;     URL         &#x2502; https://httpbin.org/get               &#x2502;</span>
 <span class="hljs-comment"># &#x2502;     Querystring &#x2502; hello=world                          &#x2502;</span>
 <span class="hljs-comment"># &#x2502;     Version     &#x2502; 1.0.0                                &#x2502;</span>
 <span class="hljs-comment"># &#x2502;     Step        &#x2502; 99c16565-1547-4b16-bcb5-45189d9d8afa &#x2502;</span>
@@ -958,26 +978,26 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Migrate users from one version of your app to another.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier migrate 1.0.0 1.0.1 [10%]</code></p><p>Starts a migration to move users between different versions of your app. You may also &quot;revert&quot; by simply swapping the from/to verion strings in the command line arguments (IE: <code>zapier migrate 1.0.1 1.0.0</code>).</p><p>Only migrate users between non-breaking versions, use <code>zapier deprecate</code> if you have breaking changes!</p><p>Migrations can take between 5-10 minutes, so be patient and check <code>zapier history</code> to track the status</p><p>Note: since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.</p><blockquote>
-<p>Tip! We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.</p>
+<p>Migrates users from one version of your app to another.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier migrate FROMVERSION TOVERSION [PERCENT]</code></p><p>Starts a migration to move users between different versions of your app. You may also &quot;revert&quot; by simply swapping the from/to verion strings in the command line arguments (i.e. <code>zapier migrate 1.0.1 1.0.0</code>).</p><p>Only migrate users between non-breaking versions, use <code>zapier deprecate</code> if you have breaking changes!</p><p>Migrations can take between 5-10 minutes, so be patient and check <code>zapier history</code> to track the status.</p><p>Note: since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.</p><blockquote>
+<p>Tip: We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.</p>
 </blockquote><blockquote>
-<p>Tip 2! You can migrate a single user by using <code>--user</code> (IE: <code>zapier migrate 1.0.0 1.0.1 --user=user@example.com</code>).</p>
+<p>Tip 2: You can migrate a single user by using <code>--user</code> (i.e. <code>zapier migrate 1.0.0 1.0.1 --user=user@example.com</code>).</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>fromVersion [1.0.0]</code> -- <strong>required</strong>, the version <strong>from</strong> which to migrate users</li>
-<li><code>toVersion [1.0.1]</code> -- <strong>required</strong>, the version <strong>to</strong> which to migrate users</li>
-<li><code>percent [100%]</code> -- <em>optional</em>, percent of users to migrate. Default is <code>100%</code></li>
-<li><a href="mailto:`--user=user@example.com">`--user=user@example.com</a>` -- <em>optional</em>, migrate only this user</li>
+<li>(required) <code>fromVersion</code> | The version FROM which to migrate users.</li>
+<li>(required) <code>toVersion</code> | The version TO which to migrate users.</li>
+<li><code>percent</code> | Percentage (between 1 and 100) of users to migrate.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>--user</code> | Migrate only this user</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier migrate 1.0.0 1.0.1</code></li>
+<li><code>zapier migrate 1.0.1 2.0.0 10</code></li>
+<li><code>zapier migrate 2.0.0 2.0.1 --user=user@example.com</code></li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier migrate 1.0.0 1.0.1 15%
-<span class="hljs-comment"># Getting ready to migrate your app &quot;Example&quot; from 1.0.0 to 1.0.1.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Starting migration from 1.0.0 to 1.0.1 for 15% - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Migration successfully queued, please check `zapier history` to track the status. Normal migrations take between 5-10 minutes.</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -994,30 +1014,27 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Promotes a specific version to public access.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier promote 1.0.0</code></p><p>Promotes an app version into production (non-private) rotation, which means new users can use this app version.</p><ul>
-<li>This <strong>does</strong> mark the version as the official public version - all other versions &amp; users are grandfathered.</li>
-<li>This <strong>does not</strong> build/upload or deploy a version to Zapier - you should <code>zapier push</code> first.</li>
-<li>This <strong>does not</strong> move old users over to this version - <code>zapier migrate 1.0.0 1.0.1</code> does that.</li>
-<li>This <strong>does not</strong> recommend old users stop using this version - <code>zapier deprecate 1.0.0 2017-01-01</code> does that.</li>
+</blockquote><p><strong>Usage</strong>: <code>zapier promote VERSION</code></p><p>Promotes an app version into production (non-private) rotation, which means new users can use this app version.</p><ul>
+<li><p>This [1mdoes[22m mark the version as the official public version - all other versions &amp; users are grandfathered.</p>
+</li>
+<li><p>This does [1mNOT[22m build/upload or deploy a version to Zapier - you should <code>zapier push</code> first.</p>
+</li>
+<li><p>This does [1mNOT[22m move old users over to this version - <code>zapier migrate 1.0.0 1.0.1</code> does that.</p>
+</li>
+<li><p>This does [1mNOT[22m recommend old users stop using this version - <code>zapier deprecate 1.0.0 2017-01-01</code> does that.</p>
+</li>
 </ul><p>Promotes are an inherently safe operation for all existing users of your app.</p><blockquote>
 <p>If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to make your app public. We&apos;ll respond within a few business days.</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>version [1.0.0]</code> -- <strong>required</strong>,</li>
+<li>(required) <code>version</code> | The version you want promote.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier promote 1.0.0</code></li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier promote 1.0.0
-<span class="hljs-comment"># Preparing to promote version 1.0.0 of your app &quot;Example&quot;.</span>
-* Changelog found <span class="hljs-keyword">for</span> 1.0.0!
-* ---
-* Initial release!
-* ---
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Promoting 1.0.0 - done!</span>
-<span class="hljs-comment">#   Promotion successful!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Optionally try the `zapier migrate 1.0.0 1.0.1 [10%]` command to move users to this version.</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -1149,24 +1166,19 @@ $ zapier scaffold resource <span class="hljs-string">&quot;Tag&quot;</span> --en
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Tests your app via <code>npm test</code>.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier test</code></p><p>This command is effectively the same as <code>npm test</code>, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.</p><p><strong>Arguments</strong></p><ul>
-<li><code>--debug</code> -- <em>optional</em>, print zapier detailed logs to standard out</li>
-<li><code>--timeout=value</code> -- <em>optional</em>, set test-case timeout in milliseconds [2000]</li>
-<li><code>--grep=value</code> -- <em>optional</em>, only run tests matching pattern</li>
-<li><code>--skip-validate</code> -- <em>optional</em>, forgo running <code>zapier validate</code> before <code>npm test</code></li>
+</blockquote><p><strong>Usage</strong>: <code>zapier test</code></p><p>This command is effectively the same as <code>npm test</code>, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.</p><p><strong>Flags</strong></p><ul>
+<li><code>-t, --timeout</code> | Set test-case timeout in milliseconds  Defaults to <code>2000</code>.</li>
+<li><code>--grep</code> | Only run tests matching pattern</li>
+<li><code>--skip-validate</code> | Forgo running <code>zapier validate</code> before <code>npm test</code></li>
+<li><code>--yarn</code> | Use yarn instead of npm</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier test</code></li>
+<li><code>zapier test -t 30000 --grep api --skip-validate</code></li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier <span class="hljs-built_in">test</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   triggers</span>
-<span class="hljs-comment">#     hello world</span>
-<span class="hljs-comment">#       &#x2713; should load fine (777ms)</span>
-<span class="hljs-comment">#       &#x2713; should accept parameters (331ms)</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   2 passing (817ms)</span>
-<span class="hljs-comment">#</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -1210,34 +1222,19 @@ $ zapier scaffold resource <span class="hljs-string">&quot;Tag&quot;</span> --en
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Validates the current app.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier validate</code></p><p>Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during <code>zapier build</code>, <code>zapier upload</code>, <code>zapier push</code> or even as a test in <code>zapier test</code>.</p><p><strong>Arguments</strong></p><ul>
-<li><code>--without-style</code> -- <em>optional</em>, forgo pinging the Zapier server to do a style check</li>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
-<li><code>--help</code> -- <em>optional</em>, prints this help text</li>
-<li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
+<p>Validates your Zapier app.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier validate</code></p><p>Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during <code>zapier build</code>, <code>zapier upload</code>, <code>zapier push</code> or even as a test in <code>zapier test</code>.</p><p><strong>Flags</strong></p><ul>
+<li><code>--without-style</code> | Forgo pinging the Zapier server to run further checks</li>
+<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier validate</code></li>
+<li><code>zapier validate --without-style</code></li>
+<li><code>zapier validate --format json</code></li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier validate
-<span class="hljs-comment"># Validating project locally.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># No errors found during validation routine.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># This project is structurally sound!</span>
-
-$ zapier validate
-<span class="hljs-comment"># Validating project locally.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; = 1 =                                                                                                      &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Property &#x2502; instance                                                                                    &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Message  &#x2502; requires property &quot;platformVersion&quot;                                                         &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Links    &#x2502; https://github.com/zapier/zapier-platform-schema/blob/v1.0.0/docs/build/schema.md#appschema &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Make any changes to your project and rerun this command.</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -1253,23 +1250,14 @@ $ zapier validate
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Lists all the versions of the current app.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier versions</code></p><p>Lists the versions of your app available for use in the Zapier editor.</p><p><strong>Arguments</strong></p><ul>
-<li><code>--format={plain,json,raw,row,table,small}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
-<li><code>--help</code> -- <em>optional</em>, prints this help text</li>
-<li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
+<p>Lists the versions of your app available for use in the Zapier editor.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier versions</code></p><p><strong>Flags</strong></p><ul>
+<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier versions
-<span class="hljs-comment"># All versions of your app &quot;Example&quot; listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; Version &#x2502; Platform &#x2502; Users &#x2502; Deployment     &#x2502; Deprecation Date &#x2502; Timestamp           &#x2502;</span>
-<span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
-<span class="hljs-comment"># &#x2502; 1.0.0   &#x2502; 3.0.0    &#x2502; 0     &#x2502; non-production &#x2502; null             &#x2502; 2016-01-01T22:19:36 &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div>

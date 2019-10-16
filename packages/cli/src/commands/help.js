@@ -6,6 +6,7 @@ const utils = require('../utils');
 const help = (context, cmd) => {
   const commands = require('./index');
   const oCommands = require('../oclif/oCommands');
+  const oclifCommands = new Set(Object.keys(oCommands));
 
   const allCommands = { ...commands, ...oCommands };
 
@@ -30,7 +31,9 @@ const help = (context, cmd) => {
         return {
           name,
           help: c.help || c.description.split('\n')[0],
-          example: c.example || (c.examples && c.examples[0])
+          example: oclifCommands.has(name)
+            ? c.zUsage(name) // new
+            : c.example // old
         };
       });
     utils.printData(commandList, [

@@ -5,11 +5,7 @@ const updateNotifier = require('update-notifier');
 
 const pkg = require('../package.json');
 
-const {
-  DEBUG,
-  LAMBDA_VERSION,
-  UPDATE_NOTIFICATION_INTERVAL
-} = require('./constants');
+const { LAMBDA_VERSION, UPDATE_NOTIFICATION_INTERVAL } = require('./constants');
 const commands = require('./commands');
 const oCommands = require('./oclif/oCommands');
 const utils = require('./utils');
@@ -43,7 +39,8 @@ module.exports = argv => {
         `Requires node version >= ${LAMBDA_VERSION}, found ${process.versions.node}. Please upgrade node.`
       )
     );
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   const notifier = updateNotifier({
@@ -52,12 +49,6 @@ module.exports = argv => {
   });
   if (notifier.update && notifier.update.latest !== pkg.version) {
     notifier.notify({ isGlobal: true });
-  }
-
-  if (DEBUG) {
-    console.log('running in:', process.cwd());
-    console.log('raw argv:', argv);
-    console.log('\n--------------------------------------------------\n\n');
   }
 
   argv = argv.slice(2); // strip path, zapier.js
@@ -77,6 +68,7 @@ module.exports = argv => {
     oclifCommands.has(command) || // zapier blah
     (command === 'help' && oclifCommands.has(args[0])) // zapier help blah
   ) {
+    global.argOpts = undefined; // prevent mixing the new and the old
     require('./bin/run'); // requiring shouldn't have side effects, but this one is temporary and special
     return;
   }
@@ -151,7 +143,7 @@ module.exports = argv => {
     analyticsPromise.then(() => {
       utils.endSpinner(false);
 
-      if (DEBUG || global.argOpts.debug) {
+      if (global.argOpts.debug) {
         context.line();
         context.line(err.stack);
         context.line();

@@ -1,6 +1,6 @@
-import { ZObject, Bundle } from "zapier-platform-core";
+import { ZObject, Bundle } from 'zapier-platform-core';
 
-const _sharedBaseUrl = "https://auth-json-server.zapier-staging.com";
+const _sharedBaseUrl = 'https://auth-json-server.zapier-staging.com';
 
 // you can optionally add add the shape of the inputData in bundle, which will pass that
 //   info down into the function and tests
@@ -13,7 +13,7 @@ const getRecipe = async (z: ZObject, bundle: Bundle<{ id: string }>) => {
 
 const listRecipes = async (z: ZObject, bundle: Bundle<{ style?: string }>) => {
   const response = await z.request({
-    url: _sharedBaseUrl + "/recipes",
+    url: _sharedBaseUrl + '/recipes',
     params: {
       style: bundle.inputData.style
     }
@@ -31,15 +31,15 @@ const createRecipe = async (
   }>
 ) => {
   const response = await z.request({
-    url: _sharedBaseUrl + "/recipes",
-    method: "POST",
-    body: JSON.stringify({
+    url: _sharedBaseUrl + '/recipes',
+    method: 'POST',
+    body: {
       name: bundle.inputData.name,
       directions: bundle.inputData.directions,
       authorId: bundle.inputData.authorId
-    }),
+    },
     headers: {
-      "content-type": "application/json"
+      'content-type': 'application/json'
     }
   });
   return z.JSON.parse(response.content);
@@ -47,7 +47,7 @@ const createRecipe = async (
 
 const searchRecipe = async (z: ZObject, bundle: Bundle) => {
   const response = await z.request({
-    url: _sharedBaseUrl + "/recipes",
+    url: _sharedBaseUrl + '/recipes',
     params: {
       nameSearch: bundle.inputData.name
     }
@@ -65,17 +65,17 @@ const searchRecipe = async (z: ZObject, bundle: Bundle) => {
 const sample = {
   id: 1,
   createdAt: 1472069465,
-  name: "Best Spagetti Ever",
+  name: 'Best Spagetti Ever',
   authorId: 1,
-  directions: "1. Boil Noodles\n2.Serve with sauce",
-  style: "italian"
+  directions: '1. Boil Noodles\n2.Serve with sauce',
+  style: 'italian'
 };
 
 // This file exports a Recipe resource. The definition below contains all of the keys available,
 // and implements the list and create methods.
 const Recipe = {
-  key: "recipe",
-  noun: "Recipe",
+  key: 'recipe',
+  noun: 'Recipe',
   // The get method is used by Zapier to fetch a complete representation of a record. This is helpful when the HTTP
   // response from a create call only return an ID, or a search that only returns a minimuml representation of the
   // record. Zapier will follow these up with the get() to retrieve the entire object.
@@ -83,26 +83,26 @@ const Recipe = {
   // You can delete this property if all your calls return the full object
   get: {
     display: {
-      label: "Get Recipe",
-      description: "Gets a recipe."
+      label: 'Get Recipe',
+      description: 'Gets a recipe.'
     },
     operation: {
-      inputFields: [{ key: "id", required: true }],
+      inputFields: [{ key: 'id', required: true }],
       perform: getRecipe
     }
   },
   // The list method on this resource becomes a Trigger on the app. Zapier will use polling to watch for new records
   list: {
     display: {
-      label: "New Recipe",
-      description: "Trigger when a new recipe is added."
+      label: 'New Recipe',
+      description: 'Trigger when a new recipe is added.'
     },
     operation: {
       inputFields: [
         {
-          key: "style",
-          type: "string",
-          helpText: "Explain what style of cuisine this is."
+          key: 'style',
+          type: 'string',
+          helpText: 'Explain what style of cuisine this is.'
         }
       ],
       perform: listRecipes
@@ -117,29 +117,29 @@ const Recipe = {
   // The create method on this resource becomes a Write on this app
   create: {
     display: {
-      label: "Create Recipe",
-      description: "Creates a new recipe."
+      label: 'Create Recipe',
+      description: 'Creates a new recipe.'
     },
     operation: {
       inputFields: [
-        { key: "name", required: true, type: "string" },
+        { key: 'name', required: true, type: 'string' },
         {
-          key: "directions",
+          key: 'directions',
           required: true,
-          type: "text",
-          helpText: "Explain how should one make the recipe, step by step."
+          type: 'text',
+          helpText: 'Explain how should one make the recipe, step by step.'
         },
         {
-          key: "authorId",
+          key: 'authorId',
           required: true,
-          type: "integer",
-          label: "Author ID"
+          type: 'integer',
+          label: 'Author ID'
         },
         {
-          key: "style",
+          key: 'style',
           required: false,
-          type: "string",
-          helpText: "Explain what style of cuisine this is."
+          type: 'string',
+          helpText: 'Explain what style of cuisine this is.'
         }
       ],
       perform: createRecipe
@@ -148,11 +148,11 @@ const Recipe = {
   // The search method on this resource becomes a Search on this app
   search: {
     display: {
-      label: "Find Recipe",
-      description: "Finds an existing recipe by name."
+      label: 'Find Recipe',
+      description: 'Finds an existing recipe by name.'
     },
     operation: {
-      inputFields: [{ key: "name", required: true, type: "string" }],
+      inputFields: [{ key: 'name', required: true, type: 'string' }],
       perform: searchRecipe
     }
   },
@@ -167,12 +167,12 @@ const Recipe = {
   // outputFields: () => { return []; }
   // Alternatively, a static field definition should be provided, to specify labels for the fields
   outputFields: [
-    { key: "id", label: "ID" },
-    { key: "createdAt", label: "Created At" },
-    { key: "name", label: "Name" },
-    { key: "directions", label: "Directions" },
-    { key: "authorId", label: "Author ID" },
-    { key: "style", label: "Style" }
+    { key: 'id', label: 'ID' },
+    { key: 'createdAt', label: 'Created At' },
+    { key: 'name', label: 'Name' },
+    { key: 'directions', label: 'Directions' },
+    { key: 'authorId', label: 'Author ID' },
+    { key: 'style', label: 'Style' }
   ]
 };
 

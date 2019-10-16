@@ -1,3 +1,5 @@
+/* globals describe, it */
+
 require('should');
 
 const zapier = require('zapier-platform-core');
@@ -6,9 +8,8 @@ const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
-
   describe('new recipe trigger', () => {
-    it('should load recipes', (done) => {
+    it('should load recipes', done => {
       const bundle = {
         inputData: {
           style: 'style 2'
@@ -28,7 +29,7 @@ describe('triggers', () => {
         .catch(done);
     });
 
-    it('should load recipes without filters', (done) => {
+    it('should load recipes without filters', done => {
       const bundle = {};
 
       appTester(App.triggers.recipe.operation.perform, bundle)
@@ -44,5 +45,4 @@ describe('triggers', () => {
         .catch(done);
     });
   });
-
 });

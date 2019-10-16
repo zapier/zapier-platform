@@ -1,4 +1,3 @@
-const { spawnSync } = require('child_process');
 const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
@@ -7,19 +6,9 @@ require('should');
 
 const { getPackageLatestVersion, getPackageSize } = require('../utils/npm');
 const { makeTempDir } = require('../utils/files');
+const { runCommand } = require('../tests/_helpers');
 
 const REGEX_VERSION = /\d+\.\d+\.\d+/;
-
-const runCommand = (cmd, args, opts = {}) => {
-  const { stdout, stderr, status } = spawnSync(cmd, args, {
-    encoding: 'utf8',
-    ...opts
-  });
-  if (status) {
-    throw new Error(stderr);
-  }
-  return stdout;
-};
 
 const setupZapierRC = () => {
   let hasRC = false;

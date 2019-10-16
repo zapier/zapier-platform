@@ -10,6 +10,7 @@
       "files": [
         "packages/*/test/**/*.js",
         "packages/*/smoke-test/**/*.js",
+        "packages/*/integration-test/**/*.js",
         "packages/cli/src/tests/**/*.js",
         "packages/cli/src/smoke-tests/**/*.js"
       ],

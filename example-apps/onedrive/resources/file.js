@@ -1,31 +1,40 @@
-'use strict';
+'use strict'
 
-const _ = require('lodash');
+const _ = require('lodash')
 
-const utils = require('../utils');
-const handleError = utils.handleError;
-const getFileDetailsFromRequest = utils.getFileDetailsFromRequest;
-const baseItem = require('./base-item');
+const utils = require('../utils')
+const handleError = utils.handleError
+const getFileDetailsFromRequest = utils.getFileDetailsFromRequest
+const baseItem = require('./base-item')
 
-const getFile = _.partial(baseItem.getItem, 'file');
+const getFile = _.partial(baseItem.getItem, 'file')
 
-const listFiles = _.partial(baseItem.listItems, 'file');
+const listFiles = _.partial(baseItem.listItems, 'file')
 
 const createFile = (z, bundle) => {
-  let folder = bundle.inputData.folder || '';
+  const folder = bundle.inputData.folder || ''
   // NOTE: `file` is really a URL like "https://zapier.com/engine/hydrate/<unique_id>/.blahblahblah:blah:blah/"
-  const file = bundle.inputData.file;
+  const file = bundle.inputData.file
 
   return getFileDetailsFromRequest(file)
     .then((fileDetails) => {
-      const name = bundle.inputData.name || fileDetails.filename || 'unnamedfile.unknown';
+      const name =
+        bundle.inputData.name || fileDetails.filename || 'unnamedfile.unknown'
 
-      return baseItem.handleCreateWithSession(z, bundle, fileDetails.content, fileDetails.size, fileDetails.contentType, folder, name);
+      return baseItem.handleCreateWithSession(
+        z,
+        bundle,
+        fileDetails.content,
+        fileDetails.size,
+        fileDetails.contentType,
+        folder,
+        name
+      )
     })
-    .catch(handleError);
-};
+    .catch(handleError)
+}
 
-const searchFile = _.partial(baseItem.searchItem, 'file');
+const searchFile = _.partial(baseItem.searchItem, 'file')
 
 module.exports = {
   key: 'file',
@@ -34,17 +43,17 @@ module.exports = {
   get: {
     display: {
       label: 'Get File',
-      description: 'Gets a file.',
+      description: 'Gets a file.'
     },
     operation: {
       inputFields: [
         {
           key: 'id',
-          required: true,
-        },
+          required: true
+        }
       ],
-      perform: getFile,
-    },
+      perform: getFile
+    }
   },
 
   // Will become a trigger on the app. Key will be `fileList`
@@ -52,7 +61,7 @@ module.exports = {
     display: {
       label: 'New File',
       description: 'Triggers when a new file is added in a folder.',
-      important: true,
+      important: true
     },
     operation: {
       inputFields: [
@@ -62,11 +71,12 @@ module.exports = {
           label: 'Folder',
           required: false,
           dynamic: 'folderList._path.name',
-          helpText: 'Folder where to look for the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.',
-        },
+          helpText:
+            'Folder where to look for the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.'
+        }
       ],
-      perform: listFiles,
-    },
+      perform: listFiles
+    }
   },
 
   // Will become a create on the app. Key will be `fileCreate`
@@ -74,7 +84,7 @@ module.exports = {
     display: {
       label: 'Upload File',
       description: 'Upload an existing file or attachment.',
-      important: true,
+      important: true
     },
     operation: {
       inputFields: [
@@ -84,25 +94,28 @@ module.exports = {
           label: 'Folder',
           required: false,
           dynamic: 'folderList._path.name',
-          helpText: 'Folder where to place the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.',
+          helpText:
+            'Folder where to place the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.'
         },
         {
           key: 'file',
           type: 'file',
           label: 'File',
           required: true,
-          helpText: 'Must be a file object from another service (or some text or URL).',
+          helpText:
+            'Must be a file object from another service (or some text or URL).'
         },
         {
           key: 'name',
           type: 'string',
           label: 'File Name',
           required: false,
-          helpText: 'By default, we use the same name and extension as the original file.',
-        },
+          helpText:
+            'By default, we use the same name and extension as the original file.'
+        }
       ],
-      perform: createFile,
-    },
+      perform: createFile
+    }
   },
 
   // Will become a search on the app. Key will be `fileSearch`
@@ -110,7 +123,7 @@ module.exports = {
     display: {
       label: 'Find File',
       description: 'Finds a file by name.',
-      important: true,
+      important: true
     },
     operation: {
       inputFields: [
@@ -120,16 +133,17 @@ module.exports = {
           label: 'Folder',
           required: false,
           dynamic: 'folderList._path.name',
-          helpText: 'Folder where to look for the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.',
+          helpText:
+            'Folder where to look for the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.'
         },
         {
           key: 'name',
           required: true,
-          type: 'string',
-        },
+          type: 'string'
+        }
       ],
-      perform: searchFile,
-    },
+      perform: searchFile
+    }
   },
 
   sample: {
@@ -137,10 +151,10 @@ module.exports = {
     name: 'Example.jpg',
     _path: '/Something/Example.jpg',
     _parent: '/Something',
-    webUrl: 'http://example.com',
-    '@microsoft.graph.downloadUrl': 'http://example.com',
+    webUrl: 'https://example.com',
+    '@microsoft.graph.downloadUrl': 'https://example.com',
     createdDateTime: '2016-09-16T03:37:04.72Z',
-    lastModifiedDateTime: '2016-09-16T03:37:04.72Z',
+    lastModifiedDateTime: '2016-09-16T03:37:04.72Z'
   },
 
   outputFields: [
@@ -149,6 +163,6 @@ module.exports = {
     { key: '_path', label: 'File Path' },
     { key: '_parent', label: 'Folder' },
     { key: 'webUrl', label: 'URL' },
-    { key: '@microsoft.graph.downloadUrl', label: 'Download URL' },
-  ],
-};
+    { key: '@microsoft.graph.downloadUrl', label: 'Download URL' }
+  ]
+}

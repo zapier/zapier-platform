@@ -7,6 +7,8 @@ const _ = require('lodash');
 const read = require('read');
 const ora = require('ora');
 
+const { CHECK_REF_DOC_LINK } = require('../constants');
+
 const notUndef = s => String(s === undefined ? '' : s).trim();
 
 const unBacktick = s => s.replace(/\n?`+(bash)?/g, '');
@@ -184,31 +186,16 @@ const makeJSON = (rows, columnDefs) =>
   prettyJSONstringify(rewriteLabels(rows, columnDefs));
 const makeRawJSON = rows => prettyJSONstringify(rows);
 
-const makeSmall = rows => {
-  const longestRow = _.max(rows.map(r => r.name.length));
-  const res = [];
-
-  rows.forEach(row => {
-    res.push(
-      `  ${row.name}${' '.repeat(longestRow - row.name.length + 1)} # ${
-        row.help
-      }`
-    );
-  });
-
-  return res.join('\n');
-};
-
 const DEFAULT_STYLE = 'table';
 const formatStyles = {
   plain: makePlain,
   json: makeJSON,
   raw: makeRawJSON,
   row: makeRowBasedTable,
-  table: makeTable,
-  small: makeSmall
+  table: makeTable
 };
 
+// DEPRECATED, use this.logTable instead
 const printData = (
   rows,
   columnDefs,
@@ -289,7 +276,39 @@ const getYesNoInput = (question, showCtrlC = true) => {
   });
 };
 
+const flattenCheckResult = checkResult => {
+  const res = [];
+  for (const severity in checkResult) {
+    for (const issueGroup of checkResult[severity]) {
+      if (!issueGroup.violations) {
+        break;
+      }
+
+      const opType =
+        {
+          write: 'creates',
+          read: 'triggers',
+          auth: 'authentication'
+        }[issueGroup.type] || issueGroup.type;
+
+      for (const violation of issueGroup.violations) {
+        for (const result of violation.results) {
+          res.push({
+            category: severity,
+            method: `${opType}.${violation.type}`,
+            description: `${result.message} (${result.tag})`,
+            link: `${CHECK_REF_DOC_LINK}#${result.tag}`
+          });
+        }
+      }
+    }
+  }
+  return res;
+};
+
 module.exports = {
+  endSpinner,
+  flattenCheckResult,
   formatStyles,
   getInput,
   getYesNoInput,
@@ -298,6 +317,5 @@ module.exports = {
   markdownLog,
   prettyJSONstringify,
   printData,
-  endSpinner,
   startSpinner
 };

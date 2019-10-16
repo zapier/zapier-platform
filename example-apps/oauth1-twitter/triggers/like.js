@@ -40,7 +40,7 @@ module.exports = {
         profile_sidebar_border_color: '181A1E',
         name: 'Sean Cook',
         profile_image_url:
-          'http://a0.twimg.com/profile_images/1751506047/dead_sexy_normal.JPG',
+          'https://a0.twimg.com/profile_images/1751506047/dead_sexy_normal.JPG',
         location: 'San Francisco',
         created_at: 'Sat May 09 17:58:22 +0000 2009',
         follow_request_sent: false,
@@ -78,7 +78,7 @@ module.exports = {
         default_profile_image: false,
         friends_count: 1186,
         profile_background_image_url:
-          'http://a0.twimg.com/profile_background_images/495742332/purty_wood.png',
+          'https://a0.twimg.com/profile_background_images/495742332/purty_wood.png',
         statuses_count: 2629,
         following: true,
         screen_name: 'theSeanCook',
@@ -89,7 +89,7 @@ module.exports = {
         country_code: 'US',
         country: 'United States',
         attributes: {},
-        url: 'http://api.twitter.com/1/geo/id/5a110d312052166f.json',
+        url: 'https://api.twitter.com/1/geo/id/5a110d312052166f.json',
         id: '5a110d312052166f',
         bounding_box: {
           coordinates: [
