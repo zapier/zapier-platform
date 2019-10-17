@@ -121,7 +121,7 @@ const listFiles = dir => {
 const respectGitIgnore = (dir, paths) => {
   const gitIgnorePath = path.join(dir, '.gitignore');
   if (!fs.existsSync(gitIgnorePath)) {
-    if (process.env.NODE_ENV !== 'test') {
+    if (!constants.IS_TESTING) {
       console.log(
         '\n\n!!Warning!! There is no .gitignore, so we are including all files. This might make the source.zip file too large\n\n'
       );
