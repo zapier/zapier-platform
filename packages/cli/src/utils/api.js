@@ -198,7 +198,7 @@ const getLinkedApp = appDir => {
       return callAPI('/apps/' + app.id);
     })
     .catch(e => {
-      if (process.env.NODE_ENV === 'test') {
+      if (constants.IS_TESTING) {
         console.error(e);
       }
       throw new Error(

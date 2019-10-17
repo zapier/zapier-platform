@@ -11,6 +11,9 @@ const ROW_HEADERS = [['Contact ID', 'id'], ['Neat Title', 'title']];
 
 class TestBaseCommand extends BaseCommand {
   throwForInvalidAppInstall() {}
+  _recordAnalytics() {
+    return Promise.resolve();
+  }
 }
 // logs both text and a table, which behave differently baed on the format flag
 class TestSampleCommand extends TestBaseCommand {

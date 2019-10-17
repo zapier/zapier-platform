@@ -4,7 +4,11 @@ const _ = require('lodash');
 const prettier = require('prettier');
 const semver = require('semver');
 
-const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');
+const {
+  PACKAGE_VERSION,
+  PLATFORM_PACKAGE,
+  IS_TESTING
+} = require('../constants');
 const { copyFile, ensureDir, readFile, writeFile } = require('./files');
 const { snakeCase } = require('./misc');
 const { getPackageLatestVersion } = require('./npm');
@@ -471,7 +475,7 @@ const convertApp = async (appInfo, appDefinition, newAppDir, opts = {}) => {
   const defaultOpts = { legacy: true };
   const { legacy } = { ...defaultOpts, ...opts };
 
-  if (process.env.NODE_ENV === 'test') {
+  if (IS_TESTING) {
     startSpinner = endSpinner = () => null;
   }
 

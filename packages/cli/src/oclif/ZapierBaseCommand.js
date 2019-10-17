@@ -31,7 +31,7 @@ class ZapierBaseCommand extends Command {
     // also, would be nice to plug into something a little more base-level so we catch invalid flags. Not super important
 
     return Promise.all([
-      recordAnalytics(this.id, true, Object.keys(this.args), this.flags),
+      this._recordAnalytics(),
 
       this.perform().catch(e => {
         this.stopSpinner({ success: false });
@@ -224,6 +224,14 @@ class ZapierBaseCommand extends Command {
     ]
       .join('\n')
       .trim();
+  }
+
+  _recordAnalytics() {
+    // if we got here, the command must be true
+    if (!this.args) {
+      throw new Error('unable to record analytics until args are parsed');
+    }
+    return recordAnalytics(this.id, true, Object.keys(this.args), this.flags);
   }
 }
 
