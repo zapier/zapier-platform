@@ -2,7 +2,7 @@ const { callAPI } = require('./api');
 // const { readFile } = require('./files');
 const debug = require('debug')('zapier:analytics');
 const pkg = require('../../package.json');
-const { ANALYTICS_KEY, ANALYTICS_MODES } = require('../constants');
+const { ANALYTICS_KEY, ANALYTICS_MODES, IS_TESTING } = require('../constants');
 const { readUserConfig, writeUserConfig } = require('./userConfig');
 
 const currentAnalyticsMode = async () => {
@@ -15,19 +15,22 @@ const setAnalyticsMode = newMode => {
   return writeUserConfig({ [ANALYTICS_KEY]: newMode });
 };
 
+const shouldSkipAnalytics = mode =>
+  IS_TESTING ||
+  process.env.DISABLE_ZAPIER_ANALYTICS ||
+  mode === ANALYTICS_MODES.disabled;
+
 const recordAnalytics = async (command, isValidCommand, args, flags) => {
   const analyticsMode = await currentAnalyticsMode();
 
-  const shouldRecordAnalytics =
-    process.env.DISABLE_ZAPIER_ANALYTICS ||
-    (process.NODE_ENV !== 'test' && analyticsMode !== ANALYTICS_MODES.disabled);
-
-  if (!shouldRecordAnalytics) {
+  if (shouldSkipAnalytics(analyticsMode)) {
+    debug('skipping analytics');
     return;
   }
 
   const shouldRecordAnonymously = analyticsMode === ANALYTICS_MODES.anonymous;
 
+  // to make this more testable, we should split this out into its own function
   const analyticsBody = {
     command,
     isValidCommand,
@@ -41,25 +44,24 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
   };
 
   debug('sending', analyticsBody);
-  return shouldRecordAnalytics
-    ? callAPI(
-        '/analytics',
-        {
-          method: 'POST',
-          body: analyticsBody,
-          skipDeployKey: shouldRecordAnonymously
-        },
-        true,
-        false
-      )
-        .then(({ success }) => debug('success:', success))
-        .catch(({ errText }) => debug('err:', errText))
-    : Promise.resolve();
+  return callAPI(
+    '/analytics',
+    {
+      method: 'POST',
+      body: analyticsBody,
+      skipDeployKey: shouldRecordAnonymously
+    },
+    true,
+    false
+  )
+    .then(({ success }) => debug('success:', success))
+    .catch(({ errText }) => debug('err:', errText));
 };
 
 module.exports = {
   currentAnalyticsMode,
   recordAnalytics,
+  shouldSkipAnalytics,
   modes: ANALYTICS_MODES,
   setAnalyticsMode
 };

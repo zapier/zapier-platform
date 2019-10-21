@@ -40,25 +40,36 @@ const ANALYTICS_MODES = {
 const PACKAGE_VERSION = require('../package.json').version;
 const UPDATE_NOTIFICATION_INTERVAL = 1000 * 60 * 60 * 24 * 7; // one week
 
+// can't just read from argv because they could have lots of extra data, such as
+// [ '/Users/david/.nvm/versions/node/v10.13.0/bin/node',
+//   '/Users/david/projects/zapier/platform/node_modules/.bin/mocha',
+//   'src/tests' ]
+const argvStr = process.argv.join(' ');
+const IS_TESTING =
+  argvStr.includes('mocha') ||
+  argvStr.includes('jest') ||
+  (process.env.NODE_ENV || '').toLowerCase().startsWith('test');
+
 module.exports = {
   ANALYTICS_KEY,
   ANALYTICS_MODES,
   API_PATH,
   AUTH_KEY,
-  AUTH_LOCATION,
   AUTH_LOCATION_RAW,
+  AUTH_LOCATION,
   BASE_ENDPOINT,
+  BLACKLISTED_PATHS,
   BUILD_DIR,
   BUILD_PATH,
-  SOURCE_PATH,
-  BLACKLISTED_PATHS,
   CURRENT_APP_FILE,
   DEBUG,
   DEFINITION_PATH,
   ENDPOINT,
+  IS_TESTING,
   LAMBDA_VERSION,
   PACKAGE_VERSION,
   PLATFORM_PACKAGE,
+  SOURCE_PATH,
   STARTER_REPO,
   UPDATE_NOTIFICATION_INTERVAL
 };
