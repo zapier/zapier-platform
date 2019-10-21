@@ -1,3 +1,5 @@
+const { URL } = require('url');
+
 const _ = require('lodash');
 const fetch = require('node-fetch');
 
@@ -28,7 +30,7 @@ const parseHttpList = s => {
   let part = '';
 
   let escape = false;
-    let quote = false;
+  let quote = false;
 
   for (let i = 0; i < s.length; i++) {
     const cur = s.charAt(i);
@@ -97,11 +99,18 @@ const parseDictHeader = s => {
 const unheader = h =>
   h instanceof fetch.Headers && _.isFunction(h.toJSON) ? h.toJSON() : h;
 
+const stripQueryFromURL = url => {
+  // Strip off querystring for any sensitive data
+  const u = new URL(url);
+  return u.origin + u.pathname;
+};
+
 module.exports = {
   FORM_TYPE,
   JSON_TYPE,
   JSON_TYPE_UTF8,
   getContentType,
   parseDictHeader,
+  stripQueryFromURL,
   unheader
 };
