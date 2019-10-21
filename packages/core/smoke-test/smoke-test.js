@@ -25,16 +25,17 @@ const REGEX_VERSION = /\d+\.\d+\.\d+/;
 
 const setupZapierRC = () => {
   let hasRC = false;
-  if (process.env.DEPLOY_KEY) {
-    const rcPath = path.join(os.homedir(), '.zapierrc');
-    if (!fs.existsSync(rcPath)) {
-      fs.writeFileSync(
-        rcPath,
-        JSON.stringify({ deployKey: process.env.DEPLOY_KEY })
-      );
-      hasRC = true;
-    }
+  const rcPath = path.join(os.homedir(), '.zapierrc');
+  if (fs.existsSync(rcPath)) {
+    hasRC = true;
+  } else if (process.env.DEPLOY_KEY) {
+    fs.writeFileSync(
+      rcPath,
+      JSON.stringify({ deployKey: process.env.DEPLOY_KEY })
+    );
+    hasRC = true;
   }
+
   return hasRC;
 };
 
@@ -90,7 +91,7 @@ const downloadRepoZip = async workdir => {
   const zipPath = path.join(workdir, 'repo.zip');
   const dest = fs.createWriteStream(zipPath);
 
-  return await new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     res.body.pipe(dest);
     res.body.on('error', err => {
       reject(err);
@@ -211,7 +212,11 @@ describe('smoke tests - setup will take some time', () => {
       it('zapier test', () => {
         const proc = spawnSync(context.cliBin, ['test'], {
           encoding: 'utf8',
-          cwd: context.workAppDir
+          cwd: context.workAppDir,
+          env: {
+            PATH: process.env.PATH,
+            DISABLE_ZAPIER_ANALYTICS: 1
+          }
         });
         if (proc.status !== 0) {
           console.log(proc.stdout);
@@ -231,7 +236,8 @@ describe('smoke tests - setup will take some time', () => {
           cwd: context.workAppDir,
           env: {
             SKIP_NPM_INSTALL: '1',
-            PATH: process.env.PATH
+            PATH: process.env.PATH,
+            DISABLE_ZAPIER_ANALYTICS: 1
           }
         });
         if (proc.status !== 0) {
