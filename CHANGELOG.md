@@ -1,3 +1,18 @@
+## 8.4.1
+
+### cli
+
+* (chore) Don't send analytics when running tests ([#84](https://github.com/zapier/zapier-platform/pull/84))
+
+### schema
+
+* No changes
+
+### core
+
+* (fix) Strip URL query parameters from error messages for security ([#85](https://github.com/zapier/zapier-platform/pull/85))
+* (chore) Don't send analytics when running tests ([#86](https://github.com/zapier/zapier-platform/pull/86))
+
 ## 8.4.0
 
 ### cli
