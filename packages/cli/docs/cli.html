@@ -1126,31 +1126,30 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Adds a starting resource, trigger, action or search to your app.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier scaffold {resource|trigger|search|create} &quot;Name&quot;</code></p><p>The scaffold command does two general things:</p><ul>
-<li>Creates a new destination file like <code>resources/contact.js</code></li>
-<li>(Attempts to) import and register it inside your entry <code>index.js</code></li>
+</blockquote><p><strong>Usage</strong>: <code>zapier scaffold TYPE NAME</code></p><p>The first argument should one of <code>resource|trigger|search|create</code> followed by the name of the file.</p><p>The scaffold command does two general things:</p><ul>
+<li><p>Creates a new destination file like <code>resources/contact.js</code></p>
+</li>
+<li><p>(Attempts to) import and register it inside your entry <code>index.js</code></p>
+</li>
 </ul><p>You can mix and match several options to customize the created scaffold for your project.</p><blockquote>
 <p>Note, we may fail to rewrite your <code>index.js</code> so you may need to handle the require and registration yourself.</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>type [{resource,trigger,search,create}]</code> -- <strong>required</strong>, what type of thing are you creating</li>
-<li><code>name [&quot;Some Name&quot;]</code> -- <strong>required</strong>, the name of the new thing to create</li>
-<li><code>--dest={type}s/{name}</code> -- <em>optional</em>, sets the new file&apos;s path. Default is <code>{type}s/{name}</code></li>
-<li><code>--entry=index.js</code> -- <em>optional</em>, where to import the new file. Default is <code>index.js</code></li>
-<li><code>--force=false</code> -- <em>optional</em>, should we overwrite an exisiting file. Default is <code>false</code></li>
+<li>(required) <code>type</code> | undefined</li>
+<li>(required) <code>name</code> | undefined</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>--dest</code> | Sets the new file&apos;s path. The default pattern is {type}s/{name}</li>
+<li><code>--entry</code> | Where to import the new file  Defaults to <code>index.js</code>.</li>
+<li><code>-f, --force</code> | Should we overwrite an exisiting file</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier scaffold resource &quot;Contact&quot;</code></li>
+<li><code>zapier scaffold resource &quot;Contact&quot; --entry=index.js</code></li>
+<li><code>zapier scaffold resource &quot;Contag Tag&quot; --dest=resources/tag</code></li>
+<li><code>zapier scaffold trigger &quot;Existing Create&quot; --force</code></li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier scaffold resource <span class="hljs-string">&quot;Contact&quot;</span>
-$ zapier scaffold resource <span class="hljs-string">&quot;Contact&quot;</span> --entry=index.js
-$ zapier scaffold resource <span class="hljs-string">&quot;Contag Tag&quot;</span> --dest=resources/tag
-$ zapier scaffold resource <span class="hljs-string">&quot;Tag&quot;</span> --entry=index.js --dest=resources/tag
-<span class="hljs-comment"># Adding resource scaffold to your project.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Writing new resources/tag.js - done!</span>
-<span class="hljs-comment">#   Rewriting your index.js - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Finished! We did the best we could, you might gut check your files though.</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
