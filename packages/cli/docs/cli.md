@@ -724,6 +724,7 @@ You can mix and match several options to customize the created scaffold for your
 * `name ["Some Name"]` -- **required**, the name of the new thing to create
 * `--dest={type}s/{name}` -- _optional_, sets the new file's path. Default is `{type}s/{name}`
 * `--entry=index.js` -- _optional_, where to import the new file. Default is `index.js`
+* `--force=false` -- _optional_, should we overwrite an exisiting file. Default is `false`
 
 ```bash
 $ zapier scaffold resource "Contact"

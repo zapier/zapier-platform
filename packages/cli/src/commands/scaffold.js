@@ -6,6 +6,25 @@ const utils = require('../utils');
 
 const writeTemplateFile = (templatePath, templateContext, dest) => {
   const destPath = path.join(process.cwd(), `${dest}.js`);
+  const preventOverwrite = !global.argOpts.force;
+
+  if (preventOverwrite && utils.fileExistsSync(destPath)) {
+    const [location, filename] = dest.concat('.js').split('/');
+    return Promise.reject(
+      [
+        `File ${colors.bold(filename)} already exists within ${colors.bold(
+          location
+        )}.`,
+        'You could:',
+        '1. Choose a different filename',
+        `2. Delete ${filename} from ${location}`,
+        `3. Run ${colors.italic('scaffold')} with ${colors.bold(
+          '--force'
+        )} to overwrite the current ${filename}`
+      ].join('\n')
+    );
+  }
+
   return utils
     .readFile(templatePath)
     .then(templateBuf => templateBuf.toString())
@@ -123,7 +142,13 @@ const scaffold = (context, type, name) => {
       context.line(
         '\nFinished! We did the best we could, you might gut check your files though.'
       )
-    );
+    )
+    .catch(message => {
+      utils.endSpinner(false);
+      context.line();
+      context.line(colors.red(`We couldn't scaffold your files:`));
+      context.line(message);
+    });
 };
 scaffold.argsSpec = [
   {
@@ -148,7 +173,8 @@ scaffold.argsSpec = [
 ];
 scaffold.argOptsSpec = {
   dest: { help: "sets the new file's path", default: '{type}s/{name}' },
-  entry: { help: 'where to import the new file', default: 'index.js' }
+  entry: { help: 'where to import the new file', default: 'index.js' },
+  force: { help: 'should we overwrite an exisiting file', default: 'false' }
 };
 scaffold.help =
   'Adds a starting resource, trigger, action or search to your app.';
