@@ -556,6 +556,15 @@ describe('Integration Test', () => {
         should.equal(firstContact.jqueryText, 'jQuery works!');
         should.equal(firstContact.jqueryParam, 'width=1680&height=1050');
         should.deepEqual(firstContact.randomJson, { hey: 1 });
+
+        should.equal(firstContact.inArray, 3);
+        firstContact.isArray.should.be.true();
+        firstContact.isEmptyObject.should.be.false();
+        firstContact.isFunction.should.be.true();
+        firstContact.isNumeric.should.be.true();
+        firstContact.isPlainObject.should.be.false();
+        should.equal(firstContact.trimmed, 'hello world');
+        should.equal(firstContact.type, 'array');
       });
     });
 
