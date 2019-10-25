@@ -127,6 +127,16 @@ const legacyScriptingSource = `
         contacts[0].jqueryText = $('<div>jQuery works!</div>').text();
         contacts[0].jqueryParam = $.param({width: 1680, height: 1050});
         contacts[0].randomJson = $.parseJSON('{"hey":1}');
+
+        contacts[0].inArray = $.inArray('a', ['a', 'b', 'b', 'a'], 2);
+        contacts[0].isArray = $.isArray(contacts);
+        contacts[0].isEmptyObject = $.isEmptyObject(contacts);
+        contacts[0].isFunction = $.isFunction(function() {});
+        contacts[0].isNumeric = $.isNumeric(123);
+        contacts[0].isPlainObject = $.isPlainObject(contacts);
+        contacts[0].trimmed = $.trim(' hello world  ');
+        contacts[0].type = $.type(contacts);
+
         return contacts;
       },
 
