@@ -718,15 +718,15 @@ The scaffold command does two general things:
 
 You can mix and match several options to customize the created scaffold for your project.
 
-> Note, we may fail to rewrite your `index.js` so you may need to handle the require and registration yourself.
+> Note, we may fail to correctly rewrite your `index.js`. You may need to write in the require and registration, but we'll provide the code you need.
 
 **Arguments**
 * (required) `type` | undefined
 * (required) `name` | undefined
 
 **Flags**
-* `--dest` | Sets the new file's path. The default pattern is {type}s/{name}
-* `--entry` | Where to import the new file  Defaults to `index.js`.
+* `-d, --dest` | Sets the new file's path. Use this flag when you want to create a different folder structure such as `src/triggers/my_trigger` The default destination is {type}s/{name}
+* `-e, --entry` | Where to import the new file  Defaults to `index.js`.
 * `-f, --force` | Should we overwrite an exisiting file
 * `-d, --debug` | Show extra debugging output
 

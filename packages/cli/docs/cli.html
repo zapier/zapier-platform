@@ -1132,13 +1132,13 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
 <li><p>(Attempts to) import and register it inside your entry <code>index.js</code></p>
 </li>
 </ul><p>You can mix and match several options to customize the created scaffold for your project.</p><blockquote>
-<p>Note, we may fail to rewrite your <code>index.js</code> so you may need to handle the require and registration yourself.</p>
+<p>Note, we may fail to correctly rewrite your <code>index.js</code>. You may need to write in the require and registration, but we&apos;ll provide the code you need.</p>
 </blockquote><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>type</code> | undefined</li>
 <li>(required) <code>name</code> | undefined</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li><code>--dest</code> | Sets the new file&apos;s path. The default pattern is {type}s/{name}</li>
-<li><code>--entry</code> | Where to import the new file  Defaults to <code>index.js</code>.</li>
+<li><code>-d, --dest</code> | Sets the new file&apos;s path. Use this flag when you want to create a different folder structure such as <code>src/triggers/my_trigger</code> The default destination is {type}s/{name}</li>
+<li><code>-e, --entry</code> | Where to import the new file  Defaults to <code>index.js</code>.</li>
 <li><code>-f, --force</code> | Should we overwrite an exisiting file</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul><p><strong>Examples</strong></p><ul>
