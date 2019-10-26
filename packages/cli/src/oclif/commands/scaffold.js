@@ -13,6 +13,7 @@ const {
   writeFile
 } = require('../../utils/files');
 const { camelCase, snakeCase } = require('../../utils/misc');
+const { splitFileFromPath } = require('../../utils/string');
 
 // what is the `resources: {}` app definition point?
 const typeMap = {
@@ -58,7 +59,8 @@ class ScaffoldCommand extends BaseCommand {
     const preventOverwrite = !this.flags.force;
 
     if (preventOverwrite && fileExistsSync(destPath)) {
-      const [location, filename] = dest.concat('.js').split('/');
+      const [filename, location] = splitFileFromPath(destPath);
+
       return this.error(
         [
           `File ${colors.bold(filename)} already exists within ${colors.bold(
