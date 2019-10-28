@@ -29,6 +29,8 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 
 ### What is an App?
 
+> Note: this document uses "app" while modern Zapier nomenclature refers instead to "integrations". In both cases, the phrase refers to your code that connects your API with Zapier.
+
 A CLI App is an implementation of your app's API. You build a Node.js application
 that exports a single object ([JSON Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#appschema)) and upload it to Zapier.
 Zapier introspects that definition to find out what your app is capable of and
@@ -1508,7 +1510,7 @@ Update your `zapier-platform-core` dependency in `package.json`.  Each major ver
 
 **IMPORTANT CAVEAT**: AWS periodically deprecates Node versions as they reach EOL. They announce this[on their blog](https://aws.amazon.com/blogs/developer/node-js-6-is-approaching-end-of-life-upgrade-your-aws-lambda-functions-to-the-node-js-10-lts/). Similar info and dates are available on [github](https://github.com/nodejs/Release). Well before this date, we'll have a version of `core` that targets the newer Node version.
 
-If you don't upgrade before the cutoff date, there's a chance that AWS will throw an errror when attempting to run your app's code. If that's the case, we'll instead run it under the oldest Node version still supported. All that is to say, **we may run your code on a newer version of Node.js than you intend** if you don't update your app's dependencies periodically.
+If you don't upgrade before the cutoff date, there's a chance that AWS will throw an error when attempting to run your app's code. If that's the case, we'll instead run it under the oldest Node version still supported. All that is to say, **we may run your code on a newer version of Node.js than you intend** if you don't update your app's dependencies periodically.
 
 ### When to use placeholders or curlies?
 
@@ -1671,6 +1673,10 @@ Lastly, analytics can be `disabled` entirely, either by running `zapier analytic
 
 We take great care not to collect any information about your filesystem or anything otherwise secret. You can see exactly what's being collecting at runtime by prefixing any command with `DEBUG=zapier:analytics`.
 
+### What's the Difference Between an "App" and an "Integration"?
+
+We're in the process of doing some renaming across our Zapier marketing terms. Eventually we'll use "integration" everywhere. Until then, know that these terms are interchangeable and describe the code that you write that connects your API to Zapier.
+
 ## Command Line Tab Completion
 
 We have provided two tab completion scripts to make it easier to use the Zapier Platform CLI, for zsh and bash.
@@ -1728,7 +1734,7 @@ The Zapier Platform consists of 3 npm packages that are released simultaneously 
 
 The Zapier platform and its tools are under active development. While you don't need to install every release, we release new versions because they are better than the last. We do our best to adhere to [Semantic Versioning](https://semver.org/) wherein we won't break your code unless there's a `major` release. Otherwise, we're just fixing bugs (`patch`) and adding features (`minor`).
 
-Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
+Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
 The most recently released version of `cli` and `core` is `PACKAGE_VERSION`. You can see the versions you're working with by running `zapier -v`.

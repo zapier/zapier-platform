@@ -377,6 +377,7 @@ a code {
 <li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&#39;t provide an explicit <code>id</code> field?</a></li>
 <li><a href="#node-6-no-longer-supported">Node 6 No Longer Supported</a></li>
 <li><a href="#what-analytics-are-collected">What Analytics are Collected?</a></li>
+<li><a href="#whats-the-difference-between-an-app-and-an-integration">What&#39;s the Difference Between an &quot;App&quot; and an &quot;Integration&quot;?</a></li>
 </ul>
 </li>
 <li><a href="#command-line-tab-completion">Command Line Tab Completion</a><ul>
@@ -577,6 +578,7 @@ a code {
 <li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&apos;t provide an explicit <code>id</code> field?</a></li>
 <li><a href="#node-6-no-longer-supported">Node 6 No Longer Supported</a></li>
 <li><a href="#what-analytics-are-collected">What Analytics are Collected?</a></li>
+<li><a href="#whats-the-difference-between-an-app-and-an-integration">What&apos;s the Difference Between an &quot;App&quot; and an &quot;Integration&quot;?</a></li>
 </ul>
 </li>
 <li><a href="#command-line-tab-completion">Command Line Tab Completion</a><ul>
@@ -632,7 +634,9 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>A CLI App is an implementation of your app&apos;s API. You build a Node.js application
+      <blockquote>
+<p>Note: this document uses &quot;app&quot; while modern Zapier nomenclature refers instead to &quot;integrations&quot;. In both cases, the phrase refers to your code that connects your API with Zapier.</p>
+</blockquote><p>A CLI App is an implementation of your app&apos;s API. You build a Node.js application
 that exports a single object (<a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#appschema">JSON Schema</a>) and upload it to Zapier.
 Zapier introspects that definition to find out what your app is capable of and
 what options to present end users in the Zap Editor.</p><p>For those not familiar with Zapier terminology, here is how concepts in the CLI
@@ -4578,7 +4582,7 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Update your <code>zapier-platform-core</code> dependency in <code>package.json</code>.  Each major version ties to a specific version of Node.js. You can find the mapping <a href="https://github.com/zapier/zapier-platform/blob/master/packages/cli/src/version-store.js">here</a>. We only support the version(s) supported by <a href="https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html">AWS Lambda</a>.</p><p><strong>IMPORTANT CAVEAT</strong>: AWS periodically deprecates Node versions as they reach EOL. They announce this<a href="https://aws.amazon.com/blogs/developer/node-js-6-is-approaching-end-of-life-upgrade-your-aws-lambda-functions-to-the-node-js-10-lts/">on their blog</a>. Similar info and dates are available on <a href="https://github.com/nodejs/Release">github</a>. Well before this date, we&apos;ll have a version of <code>core</code> that targets the newer Node version.</p><p>If you don&apos;t upgrade before the cutoff date, there&apos;s a chance that AWS will throw an errror when attempting to run your app&apos;s code. If that&apos;s the case, we&apos;ll instead run it under the oldest Node version still supported. All that is to say, <strong>we may run your code on a newer version of Node.js than you intend</strong> if you don&apos;t update your app&apos;s dependencies periodically.</p>
+      <p>Update your <code>zapier-platform-core</code> dependency in <code>package.json</code>.  Each major version ties to a specific version of Node.js. You can find the mapping <a href="https://github.com/zapier/zapier-platform/blob/master/packages/cli/src/version-store.js">here</a>. We only support the version(s) supported by <a href="https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html">AWS Lambda</a>.</p><p><strong>IMPORTANT CAVEAT</strong>: AWS periodically deprecates Node versions as they reach EOL. They announce this<a href="https://aws.amazon.com/blogs/developer/node-js-6-is-approaching-end-of-life-upgrade-your-aws-lambda-functions-to-the-node-js-10-lts/">on their blog</a>. Similar info and dates are available on <a href="https://github.com/nodejs/Release">github</a>. Well before this date, we&apos;ll have a version of <code>core</code> that targets the newer Node version.</p><p>If you don&apos;t upgrade before the cutoff date, there&apos;s a chance that AWS will throw an error when attempting to run your app&apos;s code. If that&apos;s the case, we&apos;ll instead run it under the oldest Node version still supported. All that is to say, <strong>we may run your code on a newer version of Node.js than you intend</strong> if you don&apos;t update your app&apos;s dependencies periodically.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4986,6 +4990,24 @@ items.forEach(<span class="hljs-function"><span class="hljs-params">item</span> 
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="whats-the-difference-between-an-app-and-an-integration">What&apos;s the Difference Between an &quot;App&quot; and an &quot;Integration&quot;?</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>We&apos;re in the process of doing some renaming across our Zapier marketing terms. Eventually we&apos;ll use &quot;integration&quot; everywhere. Until then, know that these terms are interchangeable and describe the code that you write that connects your API to Zapier.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h2 id="command-line-tab-completion">Command Line Tab Completion</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -5121,7 +5143,7 @@ curl https://raw.githubusercontent.com/zapier/zapier-platform/master/packages/cl
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <code>8.4.1</code>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://www.npmjs.com/package/zapier-platform-core?activeTab=versions">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
+      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <code>8.4.1</code>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://www.npmjs.com/package/zapier-platform-core?activeTab=versions">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
