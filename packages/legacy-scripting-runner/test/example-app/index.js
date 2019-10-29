@@ -195,6 +195,12 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_invalid_chars_in_headers: function(bundle) {
+        bundle.request.headers['x-api-key'] = ' \\t\\n\\r H\\t E \\nY \\r\\n\\t ';
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];

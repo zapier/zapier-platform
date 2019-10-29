@@ -197,6 +197,23 @@ const replaceCurliesInRequest = (request, bundle) => {
 const undoSmartCurlyReplacement = str =>
   str.replace(/{{\s*bundle\.[^.]+\.([^}\s]+)\s*}}/g, '{{$1}}');
 
+const cleanHeaders = headers => {
+  const newHeaders = {};
+  const badChars = /[\r\n\t]/g;
+  _.each(headers, (v, k) => {
+    if (k) {
+      k = k.replace(badChars, '').trim();
+    }
+    if (k) {
+      if (v) {
+        v = v.replace(badChars, '').trim();
+      }
+      newHeaders[k] = v;
+    }
+  });
+  return newHeaders;
+};
+
 const compileLegacyScriptingSource = (source, zcli, app) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
   const {
@@ -585,6 +602,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         // Runs only when there's no KEY_pre_ method
         await addFilesToRequestBodyFromBody(request, bundle);
       }
+
+      request.headers = cleanHeaders(request.headers);
 
       const response = await zcli.request(request);
 
