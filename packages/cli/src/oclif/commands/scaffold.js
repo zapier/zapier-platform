@@ -53,6 +53,41 @@ function getTemplatePath(type) {
 }
 
 class ScaffoldCommand extends BaseCommand {
+  async updateEntry(filePath, entryName, nameAdded, pathRequired) {
+    const { type } = this.args;
+    const entryBuf = await readFile(filePath);
+    const lines = entryBuf.toString().split('\n');
+
+    // this is very dumb and will definitely break, it inserts lines of code
+    // we should look at jscodeshift or friends to do this instead
+
+    // insert Resource = require() line at top
+    const varName = `${nameAdded}${camelCase(type)}`;
+    const importerLine = `const ${varName} = require('./${pathRequired}');`;
+    lines.splice(0, 0, importerLine);
+
+    // insert '[Resource.key]: Resource,' after 'resources:' line
+    const injectAfter = `${typeMap[type]}: {`;
+    const injectorLine = `[${varName}.key]: ${varName},`;
+    const linesDefIndex = lines.findIndex(line => line.endsWith(injectAfter));
+
+    if (linesDefIndex === -1) {
+      this.stopSpinner(false);
+      return this.error(
+        [
+          `\n${colors.bold(
+            `Oops, we could not reliably rewrite your ${entryName}.`
+          )} Please add:`,
+          ` * \`${importerLine}\` to the top`,
+          ` * \`${injectAfter} ${injectorLine} },\` in your app definition`
+        ].join('\n')
+      );
+    }
+
+    lines.splice(linesDefIndex + 1, 0, '    ' + injectorLine);
+    return lines.join('\n');
+  }
+
   async writeTemplateFile(type, templateContext, dest) {
     const templatePath = getTemplatePath(type);
     const destPath = path.join(process.cwd(), `${dest}.js`);
@@ -110,40 +145,16 @@ class ScaffoldCommand extends BaseCommand {
       await this.writeTemplateFile(type, templateContext, dest);
       await this.writeTemplateFile('test', templateContext, `test/${dest}`);
 
-      const entryBuf = await readFile(entryFile);
       this.startSpinner(`Rewriting your ${entry}`);
 
-      const lines = entryBuf.toString().split('\n');
+      const updatedEntry = await this.updateEntry(
+        entryFile,
+        entry,
+        templateContext.CAMEL,
+        dest
+      );
 
-      // this is very dumb and will definitely break, it inserts lines of code
-      // we should look at jscodeshift or friends to do this instead
-
-      // insert Resource = require() line at top
-      const varName = `${templateContext.CAMEL}${camelCase(type)}`;
-      const importerLine = `const ${varName} = require('./${dest}');`;
-      lines.splice(0, 0, importerLine);
-
-      // insert '[Resource.key]: Resource,' after 'resources:' line
-      const injectAfter = `${typeMap[type]}: {`;
-      const injectorLine = `[${varName}.key]: ${varName},`;
-      const linesDefIndex = lines.findIndex(line => line.endsWith(injectAfter));
-
-      if (linesDefIndex === -1) {
-        this.stopSpinner(false);
-        return this.error(
-          [
-            `\n${colors.bold(
-              `Oops, we could not reliably rewrite your ${entry}.`
-            )} Please add:`,
-            ` * \`${importerLine}\` to the top`,
-            ` * \`${injectAfter} ${injectorLine} },\` in your app definition`
-          ].join('\n')
-        );
-      }
-
-      lines.splice(linesDefIndex + 1, 0, '    ' + injectorLine);
-
-      await writeFile(entryFile, lines.join('\n'));
+      await writeFile(entryFile, updatedEntry);
       this.stopSpinner();
 
       this.log(

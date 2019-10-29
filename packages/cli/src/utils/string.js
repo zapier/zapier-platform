@@ -1,11 +1,10 @@
+const path = require('path');
+
 function splitFileFromPath(filePath, extension = 'js') {
-  const destParts = filePath.split('/');
-  const filename = destParts
-    .splice(-1, 1)
-    .concat(`.${extension}`)
-    .join('');
-  const dirPath = destParts.join('/');
-  return [filename, dirPath];
+  const { name, base, dir, ext } = path.parse(filePath);
+  const filename = ext ? base : `${name}.${extension}`;
+
+  return [dir, filename];
 }
 
 module.exports = {
