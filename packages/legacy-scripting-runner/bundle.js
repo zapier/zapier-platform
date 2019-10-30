@@ -5,6 +5,10 @@ const { isFileField, hasFileFields, LazyFile } = require('./file');
 // Max parts a key can have for unflattening
 const MAX_KEY_PARTS = 6;
 
+// Replace '{{bundle.inputData.abc}}' with '{{abc}}'
+const undoCurlyReplacement = str =>
+  str ? str.replace(/{{\s*bundle\.[^.]+\.([^}\s]+)\s*}}/g, '{{$1}}') : str;
+
 // Unflatten from {key__child: value} to {key: {child: value}}
 const unflattenObject = (data, separator = '__') => {
   if (Object(data) !== data || _.isArray(data)) {
@@ -231,7 +235,7 @@ const bundleConverter = async (bundle, event, z) => {
   const convertedBundle = {
     request: {
       method: requestMethod,
-      url: _.get(bundle, 'request.url', ''),
+      url: undoCurlyReplacement(_.get(bundle, 'request.url', '')),
       headers: {
         'Content-Type': 'application/json'
       },
@@ -244,7 +248,9 @@ const bundleConverter = async (bundle, event, z) => {
   };
 
   if (bundle._legacyUrl) {
-    convertedBundle.raw_url = convertedBundle.url_raw = bundle._legacyUrl;
+    convertedBundle.raw_url = convertedBundle.url_raw = undoCurlyReplacement(
+      bundle._legacyUrl
+    );
   }
 
   addAuthData(event, bundle, convertedBundle);

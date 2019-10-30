@@ -193,10 +193,6 @@ const replaceCurliesInRequest = (request, bundle) => {
   return cleaner.recurseReplaceBank(request, bank);
 };
 
-// Replace '{{bundle.inputData.abc}}' with '{{abc}}'
-const undoSmartCurlyReplacement = str =>
-  str.replace(/{{\s*bundle\.[^.]+\.([^}\s]+)\s*}}/g, '{{$1}}');
-
 const cleanHeaders = headers => {
   const newHeaders = {};
   const badChars = /[\r\n\t]/g;
@@ -763,7 +759,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     }
 
     if (url) {
-      bundle._legacyUrl = undoSmartCurlyReplacement(url);
+      bundle._legacyUrl = url;
     }
 
     let result = await runEventCombo(
@@ -901,7 +897,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       bundle.request.url = url;
 
       // Provide bundle.raw_url and bundle.url_raw
-      bundle._legacyUrl = undoSmartCurlyReplacement(url);
+      bundle._legacyUrl = url;
     }
 
     if (supportFullMethod) {
@@ -959,7 +955,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     bundle.request.body = body;
 
     if (url) {
-      bundle._legacyUrl = undoSmartCurlyReplacement(url);
+      bundle._legacyUrl = url;
     }
 
     return runEventCombo(
@@ -994,7 +990,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     bundle.request.url = url;
 
     if (url) {
-      bundle._legacyUrl = undoSmartCurlyReplacement(url);
+      bundle._legacyUrl = url;
     }
 
     return runEventCombo(

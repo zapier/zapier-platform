@@ -565,6 +565,27 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, _.template(bundle.request.url)', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'recipe_pre_poll_underscore_template',
+        'recipe_pre_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.recipe.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then(output => {
+        const firstRecipe = output.results[0];
+        should.equal(firstRecipe.name, 'name 1');
+      });
+    });
+
     it('KEY_post_poll, with jQuery', () => {
       const input = createTestInput(
         compiledApp,
