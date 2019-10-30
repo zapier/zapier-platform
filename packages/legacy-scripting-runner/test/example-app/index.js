@@ -221,6 +221,13 @@ const legacyScriptingSource = `
         return [z.JSON.parse(response.content)];
       },
 
+      recipe_pre_poll_underscore_template: function(bundle) {
+        bundle.request.url = _.template(bundle.request.url, {
+          urlPath: '/recipes'
+        });
+        return bundle.request;
+      },
+
       /*
        * Hook Trigger
        */
@@ -858,6 +865,18 @@ const MovieTrigger = {
   }
 };
 
+const RecipeTrigger = {
+  key: 'recipe',
+  display: {
+    label: 'New Recipe'
+  },
+  operation: {
+    perform: {
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'recipe');"
+    }
+  }
+};
+
 const MovieCreate = {
   key: 'movie',
   noun: 'Movie',
@@ -992,7 +1011,8 @@ const App = {
     [contactHookScriptingless.key]: contactHookScriptingless,
     [contactHookScripting.key]: contactHookScripting,
     [TestTrigger.key]: TestTrigger,
-    [MovieTrigger.key]: MovieTrigger
+    [MovieTrigger.key]: MovieTrigger,
+    [RecipeTrigger.key]: RecipeTrigger
   },
   creates: {
     [MovieCreate.key]: MovieCreate,
@@ -1053,6 +1073,12 @@ const App = {
       movie: {
         operation: {
           url: `${AUTH_JSON_SERVER_URL}/movies`
+        }
+      },
+      recipe: {
+        operation: {
+          url: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
+          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`
         }
       }
     },
