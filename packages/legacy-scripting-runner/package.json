@@ -28,7 +28,7 @@
     "deasync": "0.1.12",
     "flat": "4.1.0",
     "jquery-param": "1.0.1",
-    "lodash": "4.17.11",
+    "lodash": "4.17.15",
     "moment-timezone": "0.5.17",
     "request": "2.87.0",
     "underscore": "1.4.4",
