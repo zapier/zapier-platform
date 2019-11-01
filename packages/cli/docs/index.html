@@ -903,25 +903,25 @@ npm install
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// both version strings are required</span>
-  version: <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;./package.json&apos;</span>).version,
+  <span class="hljs-attr">version</span>: <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;./package.json&apos;</span>).version,
   <span class="hljs-attr">platformVersion</span>: <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>).version,
 
   <span class="hljs-comment">// see &quot;Authentication&quot; section below</span>
-  authentication: {},
+  <span class="hljs-attr">authentication</span>: {},
 
   <span class="hljs-comment">// see &quot;Dehydration&quot; section below</span>
-  hydrators: {},
+  <span class="hljs-attr">hydrators</span>: {},
 
   <span class="hljs-comment">// see &quot;Making HTTP Requests&quot; section below</span>
-  requestTemplate: {},
+  <span class="hljs-attr">requestTemplate</span>: {},
   <span class="hljs-attr">beforeRequest</span>: [],
   <span class="hljs-attr">afterResponse</span>: [],
 
   <span class="hljs-comment">// See &quot;Resources&quot; section below</span>
-  resources: {},
+  <span class="hljs-attr">resources</span>: {},
 
   <span class="hljs-comment">// See &quot;Triggers/Searches/Creates&quot; section below</span>
-  triggers: {},
+  <span class="hljs-attr">triggers</span>: {},
   <span class="hljs-attr">searches</span>: {},
   <span class="hljs-attr">creates</span>: {}
 };
@@ -1178,7 +1178,7 @@ zapier convert 1234 my-app 1.0.1
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> authentication = {
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;basic&apos;</span>,
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
-  test: {
+  <span class="hljs-attr">test</span>: {
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
   },
   <span class="hljs-attr">connectionLabel</span>: <span class="hljs-string">&apos;{{bundle.authData.username}}&apos;</span> <span class="hljs-comment">// Can also be a function, check digest auth below for an example</span>
@@ -1187,7 +1187,7 @@ zapier convert 1234 my-app 1.0.1
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  authentication: authentication
+  <span class="hljs-attr">authentication</span>: authentication
   <span class="hljs-comment">// ...</span>
 };
 
@@ -1216,7 +1216,7 @@ zapier convert 1234 my-app 1.0.1
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> authentication = {
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;digest&apos;</span>,
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
-  test: {
+  <span class="hljs-attr">test</span>: {
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
   },
   <span class="hljs-attr">connectionLabel</span>: <span class="hljs-string">&apos;{{bundle.authData.username}}&apos;</span> <span class="hljs-comment">// Can also be a function, check digest auth below for an example</span>
@@ -1225,7 +1225,7 @@ zapier convert 1234 my-app 1.0.1
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  authentication: authentication
+  <span class="hljs-attr">authentication</span>: authentication
   <span class="hljs-comment">// ...</span>
 };
 
@@ -1252,7 +1252,7 @@ zapier convert 1234 my-app 1.0.1
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> authentication = {
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;custom&apos;</span>,
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
-  test: {
+  <span class="hljs-attr">test</span>: {
     <span class="hljs-attr">url</span>:
       <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>
   },
@@ -1283,7 +1283,7 @@ zapier convert 1234 my-app 1.0.1
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  authentication: authentication,
+  <span class="hljs-attr">authentication</span>: authentication,
   <span class="hljs-attr">beforeRequest</span>: [addApiKeyToHeader]
   <span class="hljs-comment">// ...</span>
 };
@@ -1331,7 +1331,7 @@ zapier convert 1234 my-app 1.0.1
 <span class="hljs-keyword">const</span> authentication = {
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;session&apos;</span>,
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
-  test: {
+  <span class="hljs-attr">test</span>: {
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
   },
   <span class="hljs-attr">fields</span>: [
@@ -1377,7 +1377,7 @@ zapier convert 1234 my-app 1.0.1
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  authentication: authentication,
+  <span class="hljs-attr">authentication</span>: authentication,
   <span class="hljs-attr">beforeRequest</span>: [includeSessionKeyHeader],
   <span class="hljs-attr">afterResponse</span>: [sessionRefreshIf401]
   <span class="hljs-comment">// ...</span>
@@ -1453,7 +1453,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 
         <span class="hljs-comment">// &apos;HMAC-SHA1&apos; is used by default if not specified.</span>
         <span class="hljs-comment">// &apos;HMAC-SHA256&apos;, &apos;RSA-SHA1&apos;, &apos;PLAINTEXT&apos; are also supported.</span>
-        oauth_signature_method: <span class="hljs-string">&apos;HMAC-SHA1&apos;</span>,
+        <span class="hljs-attr">oauth_signature_method</span>: <span class="hljs-string">&apos;HMAC-SHA1&apos;</span>,
         <span class="hljs-attr">oauth_callback</span>: <span class="hljs-string">&apos;{{bundle.inputData.redirect_uri}}&apos;</span>
       }
     },
@@ -1479,7 +1479,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/me&apos;</span>
   },
   <span class="hljs-comment">// If you need any fields upfront, put them here</span>
-  fields: [
+  <span class="hljs-attr">fields</span>: [
     { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> }
     <span class="hljs-comment">// For OAuth1 we store `oauth_token` and `oauth_token_secret` automatically</span>
     <span class="hljs-comment">// in `bundle.authData` for future use. If you need to save/use something</span>
@@ -1512,7 +1512,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  authentication: authentication,
+  <span class="hljs-attr">authentication</span>: authentication,
   <span class="hljs-attr">beforeRequest</span>: [includeAccessToken]
   <span class="hljs-comment">// ...</span>
 };
@@ -1578,9 +1578,9 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
       <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>
   },
   <span class="hljs-comment">// you can provide additional fields for inclusion in authData</span>
-  oauth2Config: {
+  <span class="hljs-attr">oauth2Config</span>: {
     <span class="hljs-comment">// &quot;authorizeUrl&quot; could also be a function returning a string url</span>
-    authorizeUrl: {
+    <span class="hljs-attr">authorizeUrl</span>: {
       <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;GET&apos;</span>,
       <span class="hljs-attr">url</span>:
         <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize&apos;</span>,
@@ -1593,7 +1593,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
     },
     <span class="hljs-comment">// Zapier expects a response providing {access_token: &apos;abcd&apos;}</span>
     <span class="hljs-comment">// &quot;getAccessToken&quot; could also be a function returning an object</span>
-    getAccessToken: {
+    <span class="hljs-attr">getAccessToken</span>: {
       <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
       <span class="hljs-attr">url</span>:
         <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token&apos;</span>,
@@ -1611,7 +1611,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
     <span class="hljs-attr">scope</span>: <span class="hljs-string">&apos;read,write&apos;</span>
   },
   <span class="hljs-comment">// If you need any fields upfront, put them here</span>
-  fields: [
+  <span class="hljs-attr">fields</span>: [
     { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> }
     <span class="hljs-comment">// For OAuth2 we store `access_token` and `refresh_token` automatically</span>
     <span class="hljs-comment">// in `bundle.authData` for future use. If you need to save/use something</span>
@@ -1630,7 +1630,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  authentication: authentication,
+  <span class="hljs-attr">authentication</span>: authentication,
   <span class="hljs-attr">beforeRequest</span>: [addBearerHeader]
   <span class="hljs-comment">// ...</span>
 };
@@ -1670,11 +1670,11 @@ read, and search operations on that resource.</p>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> Recipe = {
   <span class="hljs-comment">// `key` is the unique identifier the Zapier backend references</span>
-  key: <span class="hljs-string">&apos;recipe&apos;</span>,
+  <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;recipe&apos;</span>,
   <span class="hljs-comment">// `noun` is the user-friendly name displayed in the Zapier UI</span>
-  noun: <span class="hljs-string">&apos;Recipe&apos;</span>,
+  <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Recipe&apos;</span>,
   <span class="hljs-comment">// `list` and `create` are just a couple of the methods you can define</span>
-  list: {
+  <span class="hljs-attr">list</span>: {
     <span class="hljs-comment">// ...</span>
   },
   <span class="hljs-attr">create</span>: {
@@ -1734,7 +1734,7 @@ For now, let&apos;s focus on two:</p><ul>
 <span class="hljs-keyword">const</span> Recipe = {
   <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;recipe&apos;</span>,
   <span class="hljs-comment">// ...</span>
-  list: {
+  <span class="hljs-attr">list</span>: {
     <span class="hljs-attr">display</span>: {
       <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Recipe&apos;</span>,
       <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new recipe is added.&apos;</span>
@@ -1766,7 +1766,7 @@ For now, let&apos;s focus on two:</p><ul>
 <span class="hljs-keyword">const</span> Recipe = {
   <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;recipe&apos;</span>,
   <span class="hljs-comment">// ...</span>
-  list: {
+  <span class="hljs-attr">list</span>: {
     <span class="hljs-comment">// ...</span>
   },
   <span class="hljs-attr">create</span>: {
@@ -1816,17 +1816,17 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  triggers: {
+  <span class="hljs-attr">triggers</span>: {
     <span class="hljs-attr">new_recipe</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;new_recipe&apos;</span>, <span class="hljs-comment">// uniquely identifies the trigger</span>
-      noun: <span class="hljs-string">&apos;Recipe&apos;</span>, <span class="hljs-comment">// user-friendly word that is used to refer to the resource</span>
+      <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Recipe&apos;</span>, <span class="hljs-comment">// user-friendly word that is used to refer to the resource</span>
       <span class="hljs-comment">// `display` controls the presentation in the Zapier Editor</span>
-      display: {
+      <span class="hljs-attr">display</span>: {
         <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Recipe&apos;</span>,
         <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new recipe is added.&apos;</span>
       },
       <span class="hljs-comment">// `operation` implements the API call used to fetch the data</span>
-      operation: {
+      <span class="hljs-attr">operation</span>: {
         <span class="hljs-attr">perform</span>: recipeListRequest
       }
     },
@@ -1926,12 +1926,12 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  creates: {
+  <span class="hljs-attr">creates</span>: {
     <span class="hljs-attr">create_recipe</span>: {
       <span class="hljs-comment">// ...</span>
-      operation: {
+      <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// an array of objects is the simplest way</span>
-        inputFields: [
+        <span class="hljs-attr">inputFields</span>: [
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
             <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
@@ -1989,12 +1989,12 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  creates: {
+  <span class="hljs-attr">creates</span>: {
     <span class="hljs-attr">create_recipe</span>: {
       <span class="hljs-comment">// ...</span>
-      operation: {
+      <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// an array of objects is the simplest way</span>
-        inputFields: [
+        <span class="hljs-attr">inputFields</span>: [
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
             <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
@@ -2081,12 +2081,12 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-comment">//...</span>
-issue: {
+<span class="hljs-attr">issue</span>: {
   <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
   <span class="hljs-comment">//...</span>
-  create: {
+  <span class="hljs-attr">create</span>: {
     <span class="hljs-comment">//...</span>
-    operation: {
+    <span class="hljs-attr">operation</span>: {
       <span class="hljs-attr">inputFields</span>: [
         {
           <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>,
@@ -2137,13 +2137,13 @@ issue: {
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  resources: {
+  <span class="hljs-attr">resources</span>: {
     <span class="hljs-attr">project</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project&apos;</span>,
       <span class="hljs-comment">// ...</span>
-      list: {
+      <span class="hljs-attr">list</span>: {
         <span class="hljs-comment">// ...</span>
-        operation: {
+        <span class="hljs-attr">operation</span>: {
           <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
             <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span> }];
           } <span class="hljs-comment">// called for project_id dropdown</span>
@@ -2153,9 +2153,9 @@ issue: {
     <span class="hljs-attr">issue</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
       <span class="hljs-comment">// ...</span>
-      create: {
+      <span class="hljs-attr">create</span>: {
         <span class="hljs-comment">// ...</span>
-        operation: {
+        <span class="hljs-attr">operation</span>: {
           <span class="hljs-attr">inputFields</span>: [
             {
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>,
@@ -2187,12 +2187,12 @@ issue: {
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  triggers: {
+  <span class="hljs-attr">triggers</span>: {
     <span class="hljs-attr">new_project</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project&apos;</span>,
       <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Project&apos;</span>,
       <span class="hljs-comment">// `display` controls the presentation in the Zapier Editor</span>
-      display: {
+      <span class="hljs-attr">display</span>: {
         <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Project&apos;</span>,
         <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new project is added.&apos;</span>,
         <span class="hljs-attr">hidden</span>: <span class="hljs-literal">true</span>
@@ -2237,14 +2237,14 @@ issue: {
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  triggers: {
+  <span class="hljs-attr">triggers</span>: {
     <span class="hljs-comment">// ...</span>
-    issue: {
+    <span class="hljs-attr">issue</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;new_records&apos;</span>,
       <span class="hljs-comment">// ...</span>
-      create: {
+      <span class="hljs-attr">create</span>: {
         <span class="hljs-comment">// ...</span>
-        operation: {
+        <span class="hljs-attr">operation</span>: {
           <span class="hljs-attr">inputFields</span>: [
             {
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;spreadsheet_id&apos;</span>,
@@ -2276,13 +2276,13 @@ issue: {
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  resources: {
+  <span class="hljs-attr">resources</span>: {
     <span class="hljs-attr">project</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project&apos;</span>,
       <span class="hljs-comment">// ...</span>
-      list: {
+      <span class="hljs-attr">list</span>: {
         <span class="hljs-comment">// ...</span>
-        operation: {
+        <span class="hljs-attr">operation</span>: {
           <span class="hljs-attr">canPaginate</span>: <span class="hljs-literal">true</span>,
           <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
             <span class="hljs-keyword">if</span> (bundle.meta.isFillingDynamicDropdown) {
@@ -2297,9 +2297,9 @@ issue: {
     <span class="hljs-attr">issue</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
       <span class="hljs-comment">// ...</span>
-      create: {
+      <span class="hljs-attr">create</span>: {
         <span class="hljs-comment">// ...</span>
-        operation: {
+        <span class="hljs-attr">operation</span>: {
           <span class="hljs-attr">inputFields</span>: [
             {
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>,
@@ -2340,13 +2340,13 @@ issue: {
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  resources: {
+  <span class="hljs-attr">resources</span>: {
     <span class="hljs-attr">project</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project&apos;</span>,
       <span class="hljs-comment">// ...</span>
-      search: {
+      <span class="hljs-attr">search</span>: {
         <span class="hljs-comment">// ...</span>
-        operation: {
+        <span class="hljs-attr">operation</span>: {
           <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
             <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span> }];
           } <span class="hljs-comment">// called for project_id</span>
@@ -2356,9 +2356,9 @@ issue: {
     <span class="hljs-attr">issue</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
       <span class="hljs-comment">// ...</span>
-      create: {
+      <span class="hljs-attr">create</span>: {
         <span class="hljs-comment">// ...</span>
-        operation: {
+        <span class="hljs-attr">operation</span>: {
           <span class="hljs-attr">inputFields</span>: [
             {
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>,
@@ -2427,9 +2427,9 @@ issue: {
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  operation: {
+  <span class="hljs-attr">operation</span>: {
     <span class="hljs-comment">// ...</span>
-    inputFields: [
+    <span class="hljs-attr">inputFields</span>: [
       {
         <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;lineItems&apos;</span>,
         <span class="hljs-attr">children</span>: [
@@ -2504,10 +2504,10 @@ issue: {
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  triggers: {
+  <span class="hljs-attr">triggers</span>: {
     <span class="hljs-attr">new_recipe</span>: {
       <span class="hljs-comment">// ...</span>
-      operation: {
+      <span class="hljs-attr">operation</span>: {
         <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {},
         <span class="hljs-attr">sample</span>: {
           <span class="hljs-attr">id</span>: <span class="hljs-number">1</span>,
@@ -2534,7 +2534,7 @@ issue: {
           ]
         },
         <span class="hljs-comment">// an array of objects is the simplest way</span>
-        outputFields: [
+        <span class="hljs-attr">outputFields</span>: [
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;id&apos;</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Recipe ID&apos;</span>,
@@ -2824,7 +2824,7 @@ issue: {
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js">{
   <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;his name is Bobby Flay&apos;</span>
-  style: <span class="hljs-string">&apos;he cooks mediterranean&apos;</span>
+  <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;he cooks mediterranean&apos;</span>
 }
 </code></pre>
     </div>
@@ -2846,7 +2846,7 @@ issue: {
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js">{
   <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;his name is {{123__chef_name}}&apos;</span>
-  style: <span class="hljs-string">&apos;he cooks {{456__style}}&apos;</span>
+  <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;he cooks {{456__style}}&apos;</span>
 }
 </code></pre>
     </div>
@@ -2944,7 +2944,7 @@ issue: {
     <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
     <span class="hljs-attr">body</span>: {
       <span class="hljs-attr">url</span>: bundle.targetUrl, <span class="hljs-comment">// bundle.targetUrl has the Hook URL this app should call</span>
-      zap_id: bundle.meta.zap.id,
+      <span class="hljs-attr">zap_id</span>: bundle.meta.zap.id,
     },
   };
 
@@ -2953,7 +2953,7 @@ issue: {
 
 <span class="hljs-built_in">module</span>.exports = {
   <span class="hljs-comment">// ... see our rest hook example for additional details: https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js</span>
-  performSubscribe: subscribeHook,
+  <span class="hljs-attr">performSubscribe</span>: subscribeHook,
   <span class="hljs-comment">// ...</span>
 };
 </code></pre>
@@ -3195,12 +3195,12 @@ zapier env 1.0.0
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  triggers: {
+  <span class="hljs-attr">triggers</span>: {
     <span class="hljs-attr">example</span>: {
       <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;{{process.env.MY_NOUN}}&apos;</span>,
       <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// ...</span>
-        perform: listExample
+        <span class="hljs-attr">perform</span>: listExample
       }
     }
   }
@@ -3277,12 +3277,12 @@ zapier env 1.0.0
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  triggers: {
+  <span class="hljs-attr">triggers</span>: {
     <span class="hljs-attr">example</span>: {
       <span class="hljs-comment">// ...</span>
-      operation: {
+      <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// ...</span>
-        perform: triggerShorthandRequest
+        <span class="hljs-attr">perform</span>: triggerShorthandRequest
       }
     }
   }
@@ -3338,12 +3338,12 @@ zapier env 1.0.0
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  triggers: {
+  <span class="hljs-attr">triggers</span>: {
     <span class="hljs-attr">example</span>: {
       <span class="hljs-comment">// ...</span>
-      operation: {
+      <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// ...</span>
-        perform: listExample
+        <span class="hljs-attr">perform</span>: listExample
       }
     }
   }
@@ -3369,12 +3369,12 @@ zapier env 1.0.0
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  triggers: {
+  <span class="hljs-attr">triggers</span>: {
     <span class="hljs-attr">example</span>: {
       <span class="hljs-comment">// ...</span>
-      operation: {
+      <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// ...</span>
-        perform: <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+        <span class="hljs-attr">perform</span>: <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
           <span class="hljs-keyword">const</span> recipe = {
             <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Baked Falafel&apos;</span>,
             <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;mediterranean&apos;</span>,
@@ -3449,7 +3449,7 @@ zapier env 1.0.0
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  beforeRequest: [addHeader],
+  <span class="hljs-attr">beforeRequest</span>: [addHeader],
   <span class="hljs-attr">afterResponse</span>: [mustBe200, autoParseJson]
   <span class="hljs-comment">// ...</span>
 };
@@ -3503,11 +3503,11 @@ zapier env 1.0.0
     <span class="hljs-string">&apos;Content-Type&apos;</span>: <span class="hljs-string">&apos;application/json&apos;</span>
   },
   <span class="hljs-comment">// only provide body, json or form...</span>
-  body: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>}, <span class="hljs-comment">// or &apos;{&quot;hello&quot;: &quot;world&quot;}&apos; or &apos;hello=world&apos;</span>
-  json: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>},
+  <span class="hljs-attr">body</span>: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>}, <span class="hljs-comment">// or &apos;{&quot;hello&quot;: &quot;world&quot;}&apos; or &apos;hello=world&apos;</span>
+  <span class="hljs-attr">json</span>: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>},
   <span class="hljs-attr">form</span>: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>},
   <span class="hljs-comment">// access node-fetch style response.body</span>
-  raw: <span class="hljs-literal">false</span>,
+  <span class="hljs-attr">raw</span>: <span class="hljs-literal">false</span>,
   <span class="hljs-attr">redirect</span>: <span class="hljs-string">&apos;follow&apos;</span>,
   <span class="hljs-attr">follow</span>: <span class="hljs-number">20</span>,
   <span class="hljs-attr">compress</span>: <span class="hljs-literal">true</span>,
@@ -3615,7 +3615,7 @@ zapier env 1.0.0
 
   <span class="hljs-comment">// don&apos;t forget to register hydrators here!</span>
   <span class="hljs-comment">// it can be imported from any module</span>
-  hydrators: {
+  <span class="hljs-attr">hydrators</span>: {
     <span class="hljs-attr">getExtraData</span>: getExtraDataFunction
   },
 
@@ -4317,8 +4317,8 @@ zapier <span class="hljs-built_in">test</span>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-yaml"><span class="hljs-attr">language:</span> <span class="hljs-string">node_js</span>
 <span class="hljs-attr">node_js:</span>
-<span class="hljs-bullet">  -</span> <span class="hljs-string">&quot;v8.10.0&quot;</span>
-<span class="hljs-attr">before_script:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span> <span class="hljs-bullet">-g</span> <span class="hljs-string">zapier-platform-cli</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;v8.10.0&quot;</span>
+<span class="hljs-attr">before_script:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span> <span class="hljs-string">-g</span> <span class="hljs-string">zapier-platform-cli</span>
 <span class="hljs-attr">script:</span> <span class="hljs-string">CLIENT_ID=1234</span> <span class="hljs-string">CLIENT_SECRET=abcd</span> <span class="hljs-string">zapier</span> <span class="hljs-string">test</span>
 </code></pre>
     </div>
@@ -4437,18 +4437,18 @@ zapier <span class="hljs-built_in">test</span>
       <pre><code class="lang-yml"><span class="hljs-attr">version:</span> <span class="hljs-string">&apos;3.4&apos;</span>
 
 <span class="hljs-attr">services:</span>
-<span class="hljs-attr">  pusher:</span>
-<span class="hljs-attr">    build:</span> <span class="hljs-string">.</span>
-<span class="hljs-attr">    volumes:</span>
-<span class="hljs-bullet">      -</span> <span class="hljs-string">.:/app</span>
-<span class="hljs-attr">      - node_modules:</span><span class="hljs-string">/app/node_modules:delegated</span>
-<span class="hljs-bullet">      -</span> <span class="hljs-string">~/.zapierrc:/root/.zapierrc</span>
-<span class="hljs-attr">    command:</span> <span class="hljs-string">&apos;bash -c &quot;npm i &amp;&amp; zapier push&quot;&apos;</span>
-<span class="hljs-attr">    environment:</span>
-<span class="hljs-attr">      ZAPIER_DEPLOY_KEY:</span> <span class="hljs-string">${ZAPIER_DEPLOY_KEY}</span>
+  <span class="hljs-attr">pusher:</span>
+    <span class="hljs-attr">build:</span> <span class="hljs-string">.</span>
+    <span class="hljs-attr">volumes:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">.:/app</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">node_modules:/app/node_modules:delegated</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">~/.zapierrc:/root/.zapierrc</span>
+    <span class="hljs-attr">command:</span> <span class="hljs-string">&apos;bash -c &quot;npm i &amp;&amp; zapier push&quot;&apos;</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-attr">ZAPIER_DEPLOY_KEY:</span> <span class="hljs-string">${ZAPIER_DEPLOY_KEY}</span>
 
 <span class="hljs-attr">volumes:</span>
-<span class="hljs-attr">  node_modules:</span>
+  <span class="hljs-attr">node_modules:</span>
 </code></pre>
     </div>
   </div>
@@ -4631,7 +4631,7 @@ npm run zapier-push
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  afterResponse: [
+  <span class="hljs-attr">afterResponse</span>: [
     <span class="hljs-function">(<span class="hljs-params">response, z, bundle</span>) =&gt;</span> {
       response.xml = xml.parse(response.content);
       <span class="hljs-keyword">return</span> response;
@@ -4858,7 +4858,7 @@ npm run zapier-push
     {
       <span class="hljs-comment">// if cursor is null, it&apos;s sent as an empty query</span>
       <span class="hljs-comment">//   param and should be ignored by the server</span>
-      params: { <span class="hljs-attr">cursor</span>: cursor }
+      <span class="hljs-attr">params</span>: { <span class="hljs-attr">cursor</span>: cursor }
     }
   );
 

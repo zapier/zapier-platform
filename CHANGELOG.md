@@ -1,3 +1,8 @@
+## 8.4.2
+
+The only change of this release is we bumped Lodash to 4.17.15 ([#95](https://github.com/zapier/zapier-platform/pull/95)).
+No more security warnings from `npm audit`!
+
 ## 8.4.1
 
 ### cli
