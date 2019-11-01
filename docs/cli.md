@@ -614,13 +614,13 @@ Note: since a migration is only for non-breaking changes, users are not emailed 
 
 Promotes an app version into production (non-private) rotation, which means new users can use this app version.
 
-* This does mark the version as the official public version - all other versions & users are grandfathered.
+* This [1mdoes[22m mark the version as the official public version - all other versions & users are grandfathered.
 
-* This does NOT build/upload or deploy a version to Zapier - you should `zapier push` first.
+* This does [1mNOT[22m build/upload or deploy a version to Zapier - you should `zapier push` first.
 
-* This does NOT move old users over to this version - `zapier migrate 1.0.0 1.0.1` does that.
+* This does [1mNOT[22m move old users over to this version - `zapier migrate 1.0.0 1.0.1` does that.
 
-* This does NOT recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
+* This does [1mNOT[22m recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
 
 Promotes are an inherently safe operation for all existing users of your app.
 
