@@ -1015,13 +1015,13 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
       <blockquote>
 <p>Promotes a specific version to public access.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier promote VERSION</code></p><p>Promotes an app version into production (non-private) rotation, which means new users can use this app version.</p><ul>
-<li><p>This does mark the version as the official public version - all other versions &amp; users are grandfathered.</p>
+<li><p>This [1mdoes[22m mark the version as the official public version - all other versions &amp; users are grandfathered.</p>
 </li>
-<li><p>This does NOT build/upload or deploy a version to Zapier - you should <code>zapier push</code> first.</p>
+<li><p>This does [1mNOT[22m build/upload or deploy a version to Zapier - you should <code>zapier push</code> first.</p>
 </li>
-<li><p>This does NOT move old users over to this version - <code>zapier migrate 1.0.0 1.0.1</code> does that.</p>
+<li><p>This does [1mNOT[22m move old users over to this version - <code>zapier migrate 1.0.0 1.0.1</code> does that.</p>
 </li>
-<li><p>This does NOT recommend old users stop using this version - <code>zapier deprecate 1.0.0 2017-01-01</code> does that.</p>
+<li><p>This does [1mNOT[22m recommend old users stop using this version - <code>zapier deprecate 1.0.0 2017-01-01</code> does that.</p>
 </li>
 </ul><p>Promotes are an inherently safe operation for all existing users of your app.</p><blockquote>
 <p>If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to make your app public. We&apos;ll respond within a few business days.</p>
