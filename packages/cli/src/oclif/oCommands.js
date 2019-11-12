@@ -10,6 +10,7 @@ module.exports = {
   logout: require('./commands/logout'),
   migrate: require('./commands/migrate'),
   promote: require('./commands/promote'),
+  scaffold: require('./commands/scaffold'),
   test: require('./commands/test'),
   validate: require('./commands/validate'),
   versions: require('./commands/versions')

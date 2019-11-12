@@ -704,39 +704,37 @@ $ zapier register "Example"
 
 ## scaffold
 
-  > Adds a starting resource, trigger, action or search to your app.
+> Adds a starting resource, trigger, action or search to your app.
 
-  **Usage:** `zapier scaffold {resource|trigger|search|create} "Name"`
+**Usage**: `zapier scaffold TYPE NAME`
 
-  
+The first argument should one of `resource|trigger|search|create` followed by the name of the file.
+
 The scaffold command does two general things:
 
 * Creates a new destination file like `resources/contact.js`
+
 * (Attempts to) import and register it inside your entry `index.js`
 
 You can mix and match several options to customize the created scaffold for your project.
 
-> Note, we may fail to rewrite your `index.js` so you may need to handle the require and registration yourself.
+> Note, we may fail to correctly rewrite your `index.js`. You may need to write in the require and registration, but we'll provide the code you need.
 
 **Arguments**
+* (required) `type` | undefined
+* (required) `name` | undefined
 
-* `type [{resource,trigger,search,create}]` -- **required**, what type of thing are you creating
-* `name ["Some Name"]` -- **required**, the name of the new thing to create
-* `--dest={type}s/{name}` -- _optional_, sets the new file's path. Default is `{type}s/{name}`
-* `--entry=index.js` -- _optional_, where to import the new file. Default is `index.js`
+**Flags**
+* `-d, --dest` | Sets the new file's path. Use this flag when you want to create a different folder structure such as `src/triggers/my_trigger` The default destination is {type}s/{name}
+* `-e, --entry` | Where to import the new file  Defaults to `index.js`.
+* `-f, --force` | Should we overwrite an exisiting file
+* `-d, --debug` | Show extra debugging output
 
-```bash
-$ zapier scaffold resource "Contact"
-$ zapier scaffold resource "Contact" --entry=index.js
-$ zapier scaffold resource "Contag Tag" --dest=resources/tag
-$ zapier scaffold resource "Tag" --entry=index.js --dest=resources/tag
-# Adding resource scaffold to your project.
-#
-#   Writing new resources/tag.js - done!
-#   Rewriting your index.js - done!
-#
-# Finished! We did the best we could, you might gut check your files though.
-```
+**Examples**
+* `zapier scaffold resource "Contact"`
+* `zapier scaffold resource "Contact" --entry=index.js`
+* `zapier scaffold resource "Contag Tag" --dest=resources/tag`
+* `zapier scaffold trigger "Existing Create" --force`
 
 
 ## test
