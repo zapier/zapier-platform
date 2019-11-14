@@ -207,7 +207,7 @@ const makeZip = async (dir, zipPath, disableDependencyInjection) => {
   const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
     requiredFiles(dir, entryPoints),
-    getLinkedAppConfig(dir)
+    getLinkedAppConfig(dir).catch(() => ({}))
   ]);
 
   if (disableDependencyInjection) {
