@@ -61,7 +61,7 @@ module.exports = argv => {
     args = ['help'].concat(args);
   }
 
-  const command = args[0];
+  const command = (args[0] || '').split(':')[0]; // accounts for subcommands
   args = args.slice(1);
 
   if (

@@ -370,35 +370,28 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Builds a pushable zip from the current directory.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier build</code></p><p>Builds a ready-to-upload zip file, but does not upload / push the zip file. Generally you&apos;d use <code>zapier push</code> which does this and <code>zapier upload</code> together.</p><p>It does the following steps:</p><ul>
-<li>Creates a temporary folder</li>
-<li>Copies all code into the temporary folder</li>
-<li>Adds an entry point <code>zapierwrapper.js</code></li>
-<li>Generates and validates app definition.</li>
-<li>Detects dependencies via browserify (optional)</li>
-<li>Zips up all needed <code>.js</code> files. If you want to include more files, add a &quot;includeInBuild&quot; property (array with strings of regexp paths) to your <code>.zapierapprc</code>.</li>
-<li>Moves the zip to <code>build/build.zip</code> and <code>build/source.zip</code></li>
-</ul><blockquote>
-<p>If you get live errors like <code>Error: Cannot find module &apos;some-path&apos;</code>, try disabling dependency detection.</p>
-</blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>--disable-dependency-detection</code> -- <em>optional</em>, disables walking required files to slim the build</li>
-<li><code>--include-js-map</code> -- <em>optional</em>, include .js.map files (usually source maps)</li>
+</blockquote><p><strong>Usage</strong>: <code>zapier build</code></p><p>This command does the following steps:</p><ul>
+<li><p>Creates a temporary folder</p>
+</li>
+<li><p>Copies all code into the temporary folder</p>
+</li>
+<li><p>Adds an entry point: <code>zapierwrapper.js</code></p>
+</li>
+<li><p>Generates and validates app definition.</p>
+</li>
+<li><p>Detects dependencies via browserify (optional, on by default)</p>
+</li>
+<li><p>Zips up all needed <code>.js</code> files. If you want to include more files, add a &quot;includeInBuild&quot; property (array with strings of regexp paths) to your <code>.zapierapprc</code>.</p>
+</li>
+<li><p>Moves the zip to <code>build/build.zip</code> and <code>build/source.zip</code> and deletes the temp folder</p>
+</li>
+</ul><p>This command is typically followed by <code>zapier upload</code>.</p><p><strong>Flags</strong></p><ul>
+<li><code>--disable-dependency-detection</code> | Disables &quot;smart&quot; file inclusion. By default, Zapier only includes files that are required by <code>index.js</code>. If you (or your dependencies) require files dynamically (such as with <code>require(someVar)</code>), then you may see &quot;Cannot find module&quot; errors. Disabling this may make your <code>build.zip</code> too large. If that&apos;s the case, try using the <code>includeInBuild</code> option in your <code>.zapierapprc</code>. <a href="includeInBuild">See the docs</a> for more info.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier build
-<span class="hljs-comment"># Building project.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Copying project to temp directory - done!</span>
-<span class="hljs-comment">#   Installing project dependencies - done!</span>
-<span class="hljs-comment">#   Applying entry point file - done!</span>
-<span class="hljs-comment">#   Validating project - done!</span>
-<span class="hljs-comment">#   Building app definition.json - done!</span>
-<span class="hljs-comment">#   Zipping project and dependencies - done!</span>
-<span class="hljs-comment">#   Cleaning up temp directory - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Build complete!</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">

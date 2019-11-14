@@ -39,45 +39,31 @@ This command also checks the current directory for a linked app.
 
 ## build
 
-  > Builds a pushable zip from the current directory.
+> Builds a pushable zip from the current directory.
 
-  **Usage:** `zapier build`
+**Usage**: `zapier build`
 
-  
-Builds a ready-to-upload zip file, but does not upload / push the zip file. Generally you'd use `zapier push` which does this and `zapier upload` together.
+This command does the following steps:
 
-It does the following steps:
+  * Creates a temporary folder
 
-* Creates a temporary folder
-* Copies all code into the temporary folder
-* Adds an entry point `zapierwrapper.js`
-* Generates and validates app definition.
-* Detects dependencies via browserify (optional)
-* Zips up all needed `.js` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your `.zapierapprc`.
-* Moves the zip to `build/build.zip` and `build/source.zip`
+  * Copies all code into the temporary folder
 
-> If you get live errors like `Error: Cannot find module 'some-path'`, try disabling dependency detection.
+  * Adds an entry point: `zapierwrapper.js`
 
-**Arguments**
+  * Generates and validates app definition.
 
+  * Detects dependencies via browserify (optional, on by default)
 
-* `--disable-dependency-detection` -- _optional_, disables walking required files to slim the build
-* `--include-js-map` -- _optional_, include .js.map files (usually source maps)
+  * Zips up all needed `.js` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your `.zapierapprc`.
 
-```bash
-$ zapier build
-# Building project.
-#
-#   Copying project to temp directory - done!
-#   Installing project dependencies - done!
-#   Applying entry point file - done!
-#   Validating project - done!
-#   Building app definition.json - done!
-#   Zipping project and dependencies - done!
-#   Cleaning up temp directory - done!
-#
-# Build complete!
-```
+  * Moves the zip to `build/build.zip` and `build/source.zip` and deletes the temp folder
+
+This command is typically followed by `zapier upload`.
+
+**Flags**
+* `--disable-dependency-detection` | Disables "smart" file inclusion. By default, Zapier only includes files that are required by `index.js`. If you (or your dependencies) require files dynamically (such as with `require(someVar)`), then you may see "Cannot find module" errors. Disabling this may make your `build.zip` too large. If that's the case, try using the `includeInBuild` option in your `.zapierapprc`. [See the docs](includeInBuild) for more info.
+* `-d, --debug` | Show extra debugging output
 
 
 ## collaborate

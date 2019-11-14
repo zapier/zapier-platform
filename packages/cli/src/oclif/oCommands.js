@@ -3,6 +3,7 @@
 module.exports = {
   analytics: require('./commands/analytics'),
   apps: require('./commands/apps'),
+  build: require('./commands/build'),
   deprecate: require('./commands/deprecate'),
   history: require('./commands/history'),
   init: require('./commands/init'),
