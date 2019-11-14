@@ -13,6 +13,7 @@ module.exports = {
   promote: require('./commands/promote'),
   scaffold: require('./commands/scaffold'),
   test: require('./commands/test'),
+  upload: require('./commands/upload'),
   validate: require('./commands/validate'),
   versions: require('./commands/versions')
 };

@@ -745,23 +745,16 @@ This command is effectively the same as `npm test`, except we also validate your
 
 ## upload
 
-  > Upload the last build as a version.
+> Uploads the latest build of your app to Zapier
 
-  **Usage:** `zapier upload`
+**Usage**: `zapier upload`
 
-  
-Upload the zip files already built by `zapier build` in build/build.zip and build/source.zip. The version and other app details are read by Zapier from the zip files.
+This command sends both build/build.zip and build/source.zip to Zapier for use.
 
-> Note: we generally recommend using `zapier push` which does both `zapier build && zapier upload` in one step.
+> Note: Typically we recommend using `zapier push`, which does a build and upload, rather than `upload` by itself.
 
-```bash
-$ zapier upload
-# Preparing to upload a new version.
-#
-#   Uploading version 1.0.0 - done!
-#
-# Upload of build/build.zip and build/source.zip complete! Try `zapier versions` now!
-```
+**Flags**
+* `-d, --debug` | Show extra debugging output
 
 
 ## validate

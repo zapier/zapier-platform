@@ -1187,19 +1187,15 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Upload the last build as a version.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier upload</code></p><p>Upload the zip files already built by <code>zapier build</code> in build/build.zip and build/source.zip. The version and other app details are read by Zapier from the zip files.</p><blockquote>
-<p>Note: we generally recommend using <code>zapier push</code> which does both <code>zapier build &amp;&amp; zapier upload</code> in one step.</p>
-</blockquote>
+<p>Uploads the latest build of your app to Zapier</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier upload</code></p><p>This command sends both build/build.zip and build/source.zip to Zapier for use.</p><blockquote>
+<p>Note: Typically we recommend using <code>zapier push</code>, which does a build and upload, rather than <code>upload</code> by itself.</p>
+</blockquote><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier upload
-<span class="hljs-comment"># Preparing to upload a new version.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Uploading version 1.0.0 - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Upload of build/build.zip and build/source.zip complete! Try `zapier versions` now!</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">

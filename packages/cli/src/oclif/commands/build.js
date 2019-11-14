@@ -14,7 +14,10 @@ class BuildCommand extends BaseCommand {
     this.log('Building Project\n');
     // build doesn't actually need a login or a linked app
     // upload does, but this speends up building/testing zips
-    await build();
+    await build({
+      skipNpmInstall: this.flags['skip-npm-install'],
+      disableDependencyInjection: this.flags['disable-dependency-injection']
+    });
     this.log(
       `\nBuild complete! Created ${BUILD_PATH} and ${SOURCE_PATH}. Try the \`zapier upload\` command now.`
     );
