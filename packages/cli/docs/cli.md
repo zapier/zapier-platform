@@ -43,21 +43,21 @@ This command also checks the current directory for a linked app.
 
 **Usage**: `zapier build`
 
-This command does the following steps:
+This command does the following:
 
-  * Creates a temporary folder
+* Creates a temporary folder
 
-  * Copies all code into the temporary folder
+* Copies all code into the temporary folder
 
-  * Adds an entry point: `zapierwrapper.js`
+* Adds an entry point: `zapierwrapper.js`
 
-  * Generates and validates app definition.
+* Generates and validates app definition.
 
-  * Detects dependencies via browserify (optional, on by default)
+* Detects dependencies via browserify (optional, on by default)
 
-  * Zips up all needed `.js` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your `.zapierapprc`.
+* Zips up all needed `.js` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your `.zapierapprc`.
 
-  * Moves the zip to `build/build.zip` and `build/source.zip` and deletes the temp folder
+* Moves the zip to `build/build.zip` and `build/source.zip` and deletes the temp folder
 
 This command is typically followed by `zapier upload`.
 
@@ -600,13 +600,13 @@ Note: since a migration is only for non-breaking changes, users are not emailed 
 
 Promotes an app version into production (non-private) rotation, which means new users can use this app version.
 
-* This [1mdoes[22m mark the version as the official public version - all other versions & users are grandfathered.
+* This does mark the version as the official public version - all other versions & users are grandfathered.
 
-* This does [1mNOT[22m build/upload or deploy a version to Zapier - you should `zapier push` first.
+* This does NOT build/upload or deploy a version to Zapier - you should `zapier push` first.
 
-* This does [1mNOT[22m move old users over to this version - `zapier migrate 1.0.0 1.0.1` does that.
+* This does NOT move old users over to this version - `zapier migrate 1.0.0 1.0.1` does that.
 
-* This does [1mNOT[22m recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
+* This does NOT recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
 
 Promotes are an inherently safe operation for all existing users of your app.
 

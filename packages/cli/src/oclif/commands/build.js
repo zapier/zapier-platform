@@ -40,15 +40,15 @@ BuildCommand.flags = buildFlags({
 });
 BuildCommand.description = `Builds a pushable zip from the current directory.
 
-This command does the following steps:
+This command does the following:
 
-  * Creates a temporary folder
-  * Copies all code into the temporary folder
-  * Adds an entry point: \`zapierwrapper.js\`
-  * Generates and validates app definition.
-  * Detects dependencies via browserify (optional, on by default)
-  * Zips up all needed \`.js\` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your \`${CURRENT_APP_FILE}\`.
-  * Moves the zip to \`${BUILD_PATH}\` and \`${SOURCE_PATH}\` and deletes the temp folder
+* Creates a temporary folder
+* Copies all code into the temporary folder
+* Adds an entry point: \`zapierwrapper.js\`
+* Generates and validates app definition.
+* Detects dependencies via browserify (optional, on by default)
+* Zips up all needed \`.js\` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your \`${CURRENT_APP_FILE}\`.
+* Moves the zip to \`${BUILD_PATH}\` and \`${SOURCE_PATH}\` and deletes the temp folder
 
 This command is typically followed by \`zapier upload\`.`;
 
