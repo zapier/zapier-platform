@@ -7,17 +7,19 @@ const {
   CURRENT_APP_FILE
 } = require('../../constants');
 
-const { build } = require('../../utils/build');
+const { buildAndOrUpload } = require('../../utils/build');
 
 class BuildCommand extends BaseCommand {
   async perform() {
     this.log('Building Project\n');
-    // build doesn't actually need a login or a linked app
-    // upload does, but this speends up building/testing zips
-    await build({
-      skipNpmInstall: this.flags['skip-npm-install'],
-      disableDependencyInjection: this.flags['disable-dependency-injection']
-    });
+    await buildAndOrUpload(
+      { build: true },
+      {
+        skipNpmInstall: this.flags['skip-npm-install'],
+        disableDependencyInjection: this.flags['disable-dependency-injection']
+      }
+    );
+
     this.log(
       `\nBuild complete! Created ${BUILD_PATH} and ${SOURCE_PATH}. Try the \`zapier upload\` command now.`
     );

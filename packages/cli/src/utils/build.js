@@ -30,7 +30,7 @@ const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
 const {
   getLinkedAppConfig,
   checkCredentials,
-  upload,
+  upload: _uploadFunc,
   callAPI
 } = require('./api');
 
@@ -283,13 +283,14 @@ const maybeNotifyAboutOutdated = () => {
   }
 };
 
-const build = async ({
-  zipPath = constants.BUILD_PATH,
-  sourceZipPath = constants.SOURCE_PATH,
-  wdir = process.cwd(),
+const _buildFunc = async ({
   skipNpmInstall = false,
   disableDependencyInjection = false
 } = {}) => {
+  const zipPath = constants.BUILD_PATH;
+  const sourceZipPath = constants.SOURCE_PATH;
+  const wdir = process.cwd();
+
   const osTmpDir = await fse.realpath(os.tmpdir());
   const tmpDir = path.join(
     osTmpDir,
@@ -425,18 +426,24 @@ const build = async ({
   return zipPath;
 };
 
-const buildAndUploadDir = async (zipPath, sourceZipPath, appDir) => {
-  zipPath = zipPath || constants.BUILD_PATH;
-  appDir = appDir || '.';
-  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
+const buildAndOrUpload = async (
+  { build = false, upload = false } = {},
+  buildOpts
+) => {
+  if (!(build || upload)) {
+    throw new Error('must either build or upload');
+  }
   await checkCredentials();
-  await build(zipPath, sourceZipPath, appDir);
-  await upload(zipPath, sourceZipPath, appDir);
+  if (build) {
+    await _buildFunc(buildOpts);
+  }
+  if (upload) {
+    await _uploadFunc();
+  }
 };
 
 module.exports = {
-  build,
-  buildAndUploadDir,
+  buildAndOrUpload,
   makeZip,
   makeSourceZip,
   listFiles,

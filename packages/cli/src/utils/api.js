@@ -202,7 +202,15 @@ const getLinkedApp = appDir => {
         console.error(e);
       }
       throw new Error(
-        `Warning! ${constants.CURRENT_APP_FILE} seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
+        `Unable to complete that operation. Either: your auth file is stale (run \`${colors.cyan(
+          'zapier login'
+        )}\`) or your ${
+          constants.CURRENT_APP_FILE
+        } points to an app you can't access (run \`${colors.cyan(
+          'zapier link'
+        )}\` to refresh the link to an existing app or \`${colors.cyan(
+          'zapier register'
+        )}\` to create a new app).`
       );
     });
 };
@@ -308,11 +316,11 @@ const validateApp = async definition => {
   return checkResult;
 };
 
-const upload = async (
-  zipPath = constants.BUILD_PATH,
-  sourceZipPath = constants.SOURCE_PATH,
-  appDir = '.'
-) => {
+const upload = async () => {
+  const zipPath = constants.BUILD_PATH;
+  const sourceZipPath = constants.SOURCE_PATH;
+  const appDir = process.cwd();
+
   const fullZipPath = path.resolve(appDir, zipPath);
   const fullSourceZipPath = path.resolve(appDir, sourceZipPath);
 

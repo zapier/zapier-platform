@@ -11,6 +11,7 @@ const ROW_HEADERS = [['Contact ID', 'id'], ['Neat Title', 'title']];
 
 class TestBaseCommand extends BaseCommand {
   throwForInvalidAppInstall() {}
+
   _recordAnalytics() {
     return Promise.resolve();
   }
