@@ -11,6 +11,5 @@ module.exports = {
   logs: require('./logs'),
   push: require('./push'),
   register: require('./register'),
-  upload: require('./upload'),
-  watch: require('./watch')
+  upload: require('./upload')
 };
