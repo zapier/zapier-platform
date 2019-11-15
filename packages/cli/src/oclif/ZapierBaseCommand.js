@@ -18,6 +18,7 @@ class ZapierBaseCommand extends Command {
       require('debug').enable('zapier:*'); // enables all further spawned functions, like API
     }
 
+    this.debug('arv is', this.argv);
     this.debug('args are', this.args);
     this.debug('flags are', this.flags);
     this.debug('------------');
