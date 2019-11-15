@@ -612,43 +612,18 @@ $ zapier collaborate user@example.com --remove
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Read, write, and delete environment variables.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier env 1.0.0 CLIENT_SECRET 12345</code></p><p>Manage the environment of your app so that <code>process.env</code> has the necessary variables, making it easy to match a local environment with a production environment via <code>CLIENT_SECRET=12345 zapier test</code>.</p><p><strong>Arguments</strong></p><ul>
-<li><code>version [1.0.0]</code> -- <strong>required</strong>, the app version&apos;s environment to work on</li>
-<li><code>key [CLIENT_SECRET]</code> -- <em>optional</em>, the uppercase key of the environment variable to set</li>
-<li><code>value [12345]</code> -- <em>optional</em>, the raw value to set to the key</li>
-<li><code>--remove</code> -- <em>optional</em>, optionally remove environment variable with this key</li>
-<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
-<li><code>--help</code> -- <em>optional</em>, prints this help text</li>
-<li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
+<p>Gets Environment variables for a version.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier env VERSION</code></p><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>version</code> | The version to get the environment for.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier env:get 1.2.3</code></li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier env 1.0.0
-<span class="hljs-comment"># The env of your &quot;Example&quot; listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; Version &#x2502; Key           &#x2502; Value &#x2502;</span>
-<span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
-<span class="hljs-comment"># &#x2502; 1.0.0   &#x2502; CLIENT_SECRET &#x2502; 12345 &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Try setting an env with the `zapier env 1.0.0 CLIENT_SECRET 12345` command.</span>
-
-$ zapier env 1.0.0 CLIENT_SECRET 12345
-<span class="hljs-comment"># Preparing to set environment CLIENT_SECRET for your 1.0.0 &quot;Example&quot;.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Setting CLIENT_SECRET to &quot;12345&quot; - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Environment updated! Try viewing it with `zapier env 1.0.0`.</span>
-
-$ zapier env 1.0.0 CLIENT_SECRET --remove
-<span class="hljs-comment"># Preparing to remove environment CLIENT_SECRET for your 1.0.0 &quot;Example&quot;.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Deleting CLIENT_SECRET - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Environment updated! Try viewing it with `zapier env 1.0.0`.</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">

@@ -69,6 +69,15 @@ class ZapierBaseCommand extends Command {
     }
   }
 
+  // validate that user input looks like a semver version
+  throwForInvalidVersion(version) {
+    if (!version.match(/^\d+\.\d+\.\d+$/g)) {
+      throw new Error(
+        `${version} is an invalid version str. Try something like \`1.2.3\``
+      );
+    }
+  }
+
   // UTILS
   /**
    * Helps us not have helpful UI messages when the whole output should only be JSON.
@@ -227,7 +236,7 @@ class ZapierBaseCommand extends Command {
   }
 
   _recordAnalytics() {
-    // if we got here, the command must be true
+    // if we got here, the command must be valid
     if (!this.args) {
       throw new Error('unable to record analytics until args are parsed');
     }

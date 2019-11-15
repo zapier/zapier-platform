@@ -61,12 +61,13 @@ module.exports = argv => {
     args = ['help'].concat(args);
   }
 
-  const command = args[0];
+  const rootCommand = c => (c || '').split(':')[0]; // accounts for subcommands
+  const command = rootCommand(args[0]);
   args = args.slice(1);
 
   if (
     oclifCommands.has(command) || // zapier blah
-    (command === 'help' && oclifCommands.has(args[0])) // zapier help blah
+    (command === 'help' && oclifCommands.has(rootCommand(args[0]))) // zapier help blah
   ) {
     global.argOpts = undefined; // prevent mixing the new and the old
     require('./bin/run'); // requiring shouldn't have side effects, but this one is temporary and special
