@@ -16,7 +16,7 @@ class BuildCommand extends BaseCommand {
       { build: true },
       {
         skipNpmInstall: this.flags['skip-npm-install'],
-        disableDependencyInjection: this.flags['disable-dependency-injection']
+        disableDependencyDetection: this.flags['disable-dependency-detection']
       }
     );
 

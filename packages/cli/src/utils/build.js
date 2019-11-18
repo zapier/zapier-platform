@@ -198,7 +198,7 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
   });
 };
 
-const makeZip = async (dir, zipPath, disableDependencyInjection) => {
+const makeZip = async (dir, zipPath, disableDependencyDetection) => {
   const entryPoints = [
     path.resolve(dir, 'zapierwrapper.js'),
     path.resolve(dir, 'index.js')
@@ -212,7 +212,7 @@ const makeZip = async (dir, zipPath, disableDependencyInjection) => {
     getLinkedAppConfig(dir).catch(() => ({}))
   ]);
 
-  if (disableDependencyInjection) {
+  if (disableDependencyDetection) {
     paths = dumbPaths;
   } else {
     let finalPaths = smartPaths.concat(
@@ -287,7 +287,7 @@ const maybeNotifyAboutOutdated = () => {
 
 const _buildFunc = async ({
   skipNpmInstall = false,
-  disableDependencyInjection = false
+  disableDependencyDetection = false
 } = {}) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
@@ -398,11 +398,11 @@ const _buildFunc = async ({
   endSpinner();
 
   startSpinner('Zipping project and dependencies');
-  await makeZip(tmpDir, path.join(wdir, zipPath), disableDependencyInjection);
+  await makeZip(tmpDir, path.join(wdir, zipPath), disableDependencyDetection);
   await makeSourceZip(
     tmpDir,
     path.join(wdir, sourceZipPath),
-    disableDependencyInjection
+    disableDependencyDetection
   );
   endSpinner();
 

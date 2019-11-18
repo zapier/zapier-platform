@@ -13,7 +13,7 @@ class PushCommand extends ZapierBaseCommand {
       { build: true, upload: true },
       {
         skipNpmInstall: this.flags['skip-npm-install'],
-        disableDependencyInjection: this.flags['disable-dependency-injection']
+        disableDependencyDetection: this.flags['disable-dependency-detection']
       }
     );
     await this.log(
