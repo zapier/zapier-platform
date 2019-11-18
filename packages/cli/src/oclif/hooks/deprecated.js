@@ -5,7 +5,7 @@ const deprecatedCommands = {
 
 module.exports = async function(options) {
   if (deprecatedCommands[options.id]) {
-    console.log(
+    console.warn(
       `\nWARNING: The \`${options.id}\` command is deprecated. Use the \`${
         deprecatedCommands[options.id]
       }\` command instead\n`
