@@ -407,6 +407,19 @@ After running this, you'll have a new example app in your directory. If you re-r
 * `zapier init . --template typescript`
 
 
+## integrations
+
+> Lists any apps that you have admin access to.
+
+**Usage**: `zapier integrations`
+
+This command also checks the current directory for a linked app.
+
+**Flags**
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
+
+
 ## invite
 
   > Manage the invitees/testers on your project. Can optionally specify a version or --remove.

@@ -2,10 +2,11 @@
 
 module.exports = {
   analytics: require('./commands/analytics'),
-  apps: require('./commands/apps'),
+  apps: require('./commands/integrations'), // TODO: remove
   deprecate: require('./commands/deprecate'),
   history: require('./commands/history'),
   init: require('./commands/init'),
+  integrations: require('./commands/integrations'),
   login: require('./commands/login'),
   logout: require('./commands/logout'),
   migrate: require('./commands/migrate'),
