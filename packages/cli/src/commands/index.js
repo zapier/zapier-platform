@@ -8,6 +8,5 @@ module.exports = {
   invite: require('./invite'),
   link: require('./link'),
   logs: require('./logs'),
-  register: require('./register'),
-  watch: require('./watch')
+  register: require('./register')
 };

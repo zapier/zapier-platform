@@ -1,6 +1,8 @@
 const { AUTH_JSON_SERVER_URL } = require('../auth-json-server');
 
 const legacyScriptingSource = `
+    var qs = require('querystring');
+
     var Zap = {
       getUser: function(bundle) {
         var response = z.request({
@@ -401,6 +403,10 @@ const legacyScriptingSource = `
         (14).sailing = 'home';
 
         return data;
+      },
+
+      movie_post_write_require: function(bundle) {
+        return qs.parse('title=Joker&year=2019');
       },
 
       movie_pre_write_default_headers: function(bundle) {

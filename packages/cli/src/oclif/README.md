@@ -35,14 +35,14 @@ Some notes to help an ongoing project
 
 ## hard
 
-- [ ] build
+- [x] build
 - [ ] collaborate
 - [ ] convert
 - [ ] env
 - [ ] invite
 - [x] promote
-- [ ] push
+- [x] push
 - [ ] scaffold
-- [ ] upload
-- [ ] watch - remove?
+- [x] upload
+- [x] watch - remove?
 - [x] validate
