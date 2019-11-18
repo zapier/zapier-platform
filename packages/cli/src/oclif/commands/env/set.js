@@ -15,7 +15,10 @@ class SetEnvCommand extends BaseCommand {
     const { version } = this.args;
     this.throwForInvalidVersion(version);
     // args should be [ '1.0.0', 'qer=123', 'qwer=123' ]
-    const valuesToSet = this.argv.slice(1);
+    const valuesToSet = this.argv
+      .slice(1)
+      .filter(k => !k.startsWith('-'))
+      .map(k => k.toUpperCase());
 
     if (!valuesToSet.length) {
       this.error(
@@ -66,16 +69,16 @@ class SetEnvCommand extends BaseCommand {
 SetEnvCommand.args = [
   {
     name: 'version',
-    description: 'The version to get the environment for.',
+    description: 'The version to set the environment for.',
     required: true
   },
   {
     name: 'key-value pairs...',
     description:
-      'The keys and values to set. Keys are upcased at save. Each pair should be space separated and keys and values should be separated by an `=`. For example: `A=123 B=456`'
+      'The key-value pairs to set. Keys are case-insensitive. Each pair should be space separated and pairs should be separated by an `=`. For example: `A=123 B=456`'
   }
 ];
-SetEnvCommand.flags = buildFlags({ opts: { format: true } });
+SetEnvCommand.flags = buildFlags();
 SetEnvCommand.description = `Sets environment variable(s) for a version.`;
 SetEnvCommand.examples = [`zapier env:set 1.2.3 SECRET=12345 OTHER=4321`];
 SetEnvCommand.strict = false;
