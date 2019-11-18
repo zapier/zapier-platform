@@ -1,5 +1,4 @@
 module.exports = {
-  build: require('./build'),
   collaborate: require('./collaborate'),
   convert: require('./convert'),
   delete: require('./delete'),
@@ -9,7 +8,5 @@ module.exports = {
   invite: require('./invite'),
   link: require('./link'),
   logs: require('./logs'),
-  push: require('./push'),
-  register: require('./register'),
-  upload: require('./upload')
+  register: require('./register')
 };

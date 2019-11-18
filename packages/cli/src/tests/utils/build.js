@@ -148,6 +148,58 @@ describe('build', () => {
       });
   });
 
+  it('should make a build.zip without .zapierapprc', () => {
+    const osTmpDir = fse.realpathSync(os.tmpdir());
+    const tmpProjectDir = path.join(
+      osTmpDir,
+      'zapier-' + crypto.randomBytes(4).toString('hex')
+    );
+    const tmpZipPath = path.join(
+      osTmpDir,
+      'zapier-' + crypto.randomBytes(4).toString('hex'),
+      'build.zip'
+    );
+    const tmpUnzipPath = path.join(
+      osTmpDir,
+      'zapier-' + crypto.randomBytes(4).toString('hex')
+    );
+    const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
+
+    fse.outputFileSync(
+      path.join(tmpProjectDir, 'zapierwrapper.js'),
+      "console.log('hello!')"
+    );
+    fse.outputFileSync(tmpIndexPath, "console.log('hello!')");
+    fs.chmodSync(tmpIndexPath, 0o700);
+    fse.ensureDirSync(path.dirname(tmpZipPath));
+
+    global.argOpts = {};
+
+    return build
+      .makeZip(tmpProjectDir, tmpZipPath)
+      .then(() => decompress(tmpZipPath, tmpUnzipPath))
+      .then(files => {
+        files.length.should.equal(2);
+
+        const indexFile = files.find(
+          ({ path: filePath }) => filePath === 'index.js'
+        );
+        should.exist(indexFile);
+        (indexFile.mode & 0o400).should.be.above(
+          0,
+          'no read permission for owner'
+        );
+        (indexFile.mode & 0o040).should.be.above(
+          0,
+          'no read permission for group'
+        );
+        (indexFile.mode & 0o004).should.be.above(
+          0,
+          'no read permission for public'
+        );
+      });
+  });
+
   it('should make a source.zip without .gitignore', () => {
     const osTmpDir = fse.realpathSync(os.tmpdir());
     const tmpProjectDir = path.join(

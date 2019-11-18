@@ -30,11 +30,13 @@ const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
 const {
   getLinkedAppConfig,
   checkCredentials,
-  upload,
+  upload: _uploadFunc,
   callAPI
 } = require('./api');
 
 const { runCommand, isWindows } = require('./misc');
+
+const debug = require('debug')('zapier:build');
 
 const stripPath = (cwd, filePath) => filePath.split(cwd).pop();
 
@@ -123,7 +125,9 @@ const respectGitIgnore = (dir, paths) => {
   if (!fs.existsSync(gitIgnorePath)) {
     if (!constants.IS_TESTING) {
       console.log(
-        '\n\n!!Warning!! There is no .gitignore, so we are including all files. This might make the source.zip file too large\n\n'
+        `\n\n\t${colors.yellow(
+          '!! Warning !!'
+        )}\n\nThere is no .gitignore, so we are including all files. This might make the source.zip file too large\n`
       );
     }
     return paths;
@@ -158,7 +162,6 @@ const forceIncludeDumbPath = (appConfig, filePath) => {
     filePath.match(
       path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/
     ) ||
-    (global.argOpts['include-js-map'] && filePath.endsWith('.js.map')) ||
     matchesConfigInclude
   );
 };
@@ -195,7 +198,7 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
   });
 };
 
-const makeZip = async (dir, zipPath) => {
+const makeZip = async (dir, zipPath, disableDependencyDetection) => {
   const entryPoints = [
     path.resolve(dir, 'zapierwrapper.js'),
     path.resolve(dir, 'index.js')
@@ -206,10 +209,10 @@ const makeZip = async (dir, zipPath) => {
   const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
     requiredFiles(dir, entryPoints),
-    getLinkedAppConfig(dir)
+    getLinkedAppConfig(dir).catch(() => ({}))
   ]);
 
-  if (global.argOpts['disable-dependency-detection']) {
+  if (disableDependencyDetection) {
     paths = dumbPaths;
   } else {
     let finalPaths = smartPaths.concat(
@@ -217,11 +220,9 @@ const makeZip = async (dir, zipPath) => {
     );
     finalPaths = _.uniq(finalPaths);
     finalPaths.sort();
-    if (global.argOpts.debug) {
-      console.log('\nZip files:');
-      finalPaths.forEach(filePath => console.log(`  ${filePath}`));
-      console.log('');
-    }
+    debug('\nZip files:');
+    finalPaths.forEach(filePath => debug(`  ${filePath}`));
+    debug('');
     paths = finalPaths;
   }
 
@@ -232,12 +233,9 @@ const makeSourceZip = async (dir, zipPath) => {
   const paths = await listFiles(dir);
   const finalPaths = respectGitIgnore(dir, paths);
   finalPaths.sort();
-
-  if (global.argOpts.debug) {
-    console.log('\nSource Zip files:');
-    finalPaths.forEach(filePath => console.log(`  ${filePath}`));
-    console.log('');
-  }
+  debug('\nSource Zip files:');
+  finalPaths.forEach(filePath => debug(`  ${filePath}`));
+  debug();
   await writeZipFromPaths(dir, zipPath, finalPaths);
 };
 
@@ -287,10 +285,14 @@ const maybeNotifyAboutOutdated = () => {
   }
 };
 
-const build = async (zipPath, sourceZipPath, wdir) => {
-  wdir = wdir || process.cwd();
-  zipPath = zipPath || constants.BUILD_PATH;
-  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
+const _buildFunc = async ({
+  skipNpmInstall = false,
+  disableDependencyDetection = false
+} = {}) => {
+  const zipPath = constants.BUILD_PATH;
+  const sourceZipPath = constants.SOURCE_PATH;
+  const wdir = process.cwd();
+
   const osTmpDir = await fse.realpath(os.tmpdir());
   const tmpDir = path.join(
     osTmpDir,
@@ -305,13 +307,11 @@ const build = async (zipPath, sourceZipPath, wdir) => {
 
   startSpinner('Copying project to temp directory');
   await copyDir(wdir, tmpDir, {
-    filter: process.env.SKIP_NPM_INSTALL
-      ? dir => !dir.includes('.zip')
-      : undefined
+    filter: skipNpmInstall ? dir => !dir.includes('.zip') : undefined
   });
 
   let output = {};
-  if (!process.env.SKIP_NPM_INSTALL) {
+  if (!skipNpmInstall) {
     endSpinner();
     startSpinner('Installing project dependencies');
     output = await runCommand('npm', ['install', '--production'], {
@@ -343,7 +343,10 @@ const build = async (zipPath, sourceZipPath, wdir) => {
       'zapierwrapper.js'
     )
   );
-  await writeFile(`${tmpDir}/zapierwrapper.js`, zapierWrapperBuf.toString());
+  await writeFile(
+    path.join(tmpDir, 'zapierwrapper.js'),
+    zapierWrapperBuf.toString()
+  );
   endSpinner();
 
   startSpinner('Building app definition.json');
@@ -352,16 +355,12 @@ const build = async (zipPath, sourceZipPath, wdir) => {
   })).results;
 
   const fileWriteError = await writeFile(
-    `${tmpDir}/definition.json`,
+    path.join(tmpDir, 'definition.json'),
     prettyJSONstringify(rawDefinition)
   );
 
   if (fileWriteError) {
-    if (global.argOpts.debug) {
-      console.log('\nFile Write Error:');
-      console.log(fileWriteError);
-      console.log('');
-    }
+    debug('\nFile Write Error:\n', fileWriteError, '\n');
     throw new Error(
       `Unable to write ${tmpDir}/definition.json, please check file permissions!`
     );
@@ -375,12 +374,7 @@ const build = async (zipPath, sourceZipPath, wdir) => {
 
   const validationErrors = validateResponse.results;
   if (validationErrors.length) {
-    if (global.argOpts.debug) {
-      console.log('\nErrors:');
-      console.log(validationErrors);
-      console.log('');
-    }
-
+    debug('\nErrors:\n', validationErrors, '\n');
     throw new Error(
       'We hit some validation errors, try running `zapier validate` to see them!'
     );
@@ -396,21 +390,20 @@ const build = async (zipPath, sourceZipPath, wdir) => {
 
   const styleErrors = styleChecksResponse.errors;
   if (!_.isEmpty(styleErrors)) {
-    if (global.argOpts.debug) {
-      console.log('\nErrors:');
-      console.log(styleErrors);
-      console.log('');
-    }
-
+    debug('\nErrors:\n', styleErrors, '\n');
     throw new Error(
-      'We hit some validation errors, try running `zapier validate` to see them!'
+      'We hit some style validation errors, try running `zapier validate` to see them!'
     );
   }
   endSpinner();
 
   startSpinner('Zipping project and dependencies');
-  await makeZip(tmpDir, wdir + path.sep + zipPath);
-  await makeSourceZip(tmpDir, wdir + path.sep + sourceZipPath);
+  await makeZip(tmpDir, path.join(wdir, zipPath), disableDependencyDetection);
+  await makeSourceZip(
+    tmpDir,
+    path.join(wdir, sourceZipPath),
+    disableDependencyDetection
+  );
   endSpinner();
 
   startSpinner('Testing build');
@@ -435,18 +428,24 @@ const build = async (zipPath, sourceZipPath, wdir) => {
   return zipPath;
 };
 
-const buildAndUploadDir = async (zipPath, sourceZipPath, appDir) => {
-  zipPath = zipPath || constants.BUILD_PATH;
-  appDir = appDir || '.';
-  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
+const buildAndOrUpload = async (
+  { build = false, upload = false } = {},
+  buildOpts
+) => {
+  if (!(build || upload)) {
+    throw new Error('must either build or upload');
+  }
   await checkCredentials();
-  await build(zipPath, sourceZipPath, appDir);
-  await upload(zipPath, sourceZipPath, appDir);
+  if (build) {
+    await _buildFunc(buildOpts);
+  }
+  if (upload) {
+    await _uploadFunc();
+  }
 };
 
 module.exports = {
-  build,
-  buildAndUploadDir,
+  buildAndOrUpload,
   makeZip,
   makeSourceZip,
   listFiles,

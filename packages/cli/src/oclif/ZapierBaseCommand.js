@@ -204,10 +204,9 @@ class ZapierBaseCommand extends Command {
 
     const descriptionParts = this.description.split('\n').filter(Boolean);
     const blurb = descriptionParts[0];
-    const lengthyDescription =
-      descriptionParts.length > 1 ? descriptionParts.slice(1).join('\n\n') : '';
-
-    // Object.getPrototypeOf(this).constructor.flags
+    const lengthyDescription = colors.stripColors(
+      descriptionParts.length > 1 ? descriptionParts.slice(1).join('\n\n') : ''
+    );
 
     return [
       `## ${name}`,
