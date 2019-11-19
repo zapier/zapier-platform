@@ -732,6 +732,19 @@ This command sends both build/build.zip and build/source.zip to Zapier for use.
 * `-d, --debug` | Show extra debugging output
 
 
+## users
+
+> Get a list of users who have been invited to your app.
+
+**Usage**: `zapier users`
+
+Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the `zapier users:add` command or the web UI). Users who joined by clicking links generated using the `zapier user:links` command won't show up here.
+
+**Flags**
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
+
+
 ## validate
 
 > Validates your Zapier app.

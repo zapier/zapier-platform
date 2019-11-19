@@ -15,6 +15,7 @@ module.exports = {
   scaffold: require('./commands/scaffold'),
   test: require('./commands/test'),
   upload: require('./commands/upload'),
+  users: require('./commands/users/get'),
   validate: require('./commands/validate'),
   versions: require('./commands/versions')
 };
