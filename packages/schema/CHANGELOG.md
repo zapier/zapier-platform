@@ -1,3 +1,3 @@
-Read docs: https://zapier.github.io/zapier-platform-cli/.
+Read docs: https://zapier.github.io/zapier-platform/.
 
-Changelog: https://github.com/zapier/zapier-platform-cli/blob/master/CHANGELOG.md
+Changelog: https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md
