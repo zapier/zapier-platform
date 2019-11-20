@@ -13,6 +13,7 @@ module.exports = {
   promote: require('./commands/promote'),
   push: require('./commands/push'),
   scaffold: require('./commands/scaffold'),
+  team: require('./commands/team/get'),
   test: require('./commands/test'),
   upload: require('./commands/upload'),
   users: require('./commands/users/get'),

@@ -250,22 +250,33 @@ const listApps = async () => {
 };
 
 // endpoint can be string or func(app)
-const listEndpoint = async (endpoint, keyOverride) => {
+const listEndpoint = async (endpoint, keyOverride) =>
+  listEndpointMulti({ endpoint, keyOverride });
+
+// takes {endpoint: string, keyOverride?: string}[]
+const listEndpointMulti = async (...calls) => {
   await checkCredentials();
-
   const app = await getLinkedApp();
+  let output = { app };
 
-  if ((_.isFunction(endpoint) || endpoint.includes('/')) && !keyOverride) {
-    throw new Error('must incude keyOverride with complex endpoint');
+  for (const { endpoint, keyOverride } of calls) {
+    if ((_.isFunction(endpoint) || endpoint.includes('/')) && !keyOverride) {
+      throw new Error('must incude keyOverride with complex endpoint');
+    }
+
+    const route = _.isFunction(endpoint)
+      ? endpoint(app)
+      : `/apps/${app.id}/${endpoint}`;
+
+    const results = await callAPI(route, {
+      // if a full url comes out of the function, we have to use that
+      url: route.startsWith('http') ? route : undefined
+    });
+
+    const { objects, theRest } = results;
+    output = { ...output, [keyOverride || endpoint]: objects, ...theRest };
   }
-
-  const route = _.isFunction(endpoint)
-    ? endpoint(app)
-    : `/apps/${app.id}/${endpoint}`;
-
-  const results = await callAPI(route);
-  const { objects, theRest } = results;
-  return { app, [keyOverride || endpoint]: objects, ...theRest };
+  return output;
 };
 
 const listVersions = () => {
@@ -370,6 +381,7 @@ module.exports = {
   getVersionInfo,
   listApps,
   listEndpoint,
+  listEndpointMulti,
   listEnv,
   listHistory,
   listInvitees,

@@ -700,11 +700,17 @@ You can mix and match several options to customize the created scaffold for your
 
 ## team
 
-> Get a list of users who have been invited to your app.
+> Get a list of team members involved with your app.
 
 **Usage**: `zapier team`
 
-Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the `zapier users:add` command or the web UI). Users who joined by clicking links generated using the `zapier user:links` command won't show up here.
+These users come in two levels:
+
+  * Admins, who can edit everything about the app
+
+  * Subscribers, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health socores and more.
+
+Use the `zapier team:add` and `zapier team:remove` commands to modify your team.
 
 **Flags**
 * `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.

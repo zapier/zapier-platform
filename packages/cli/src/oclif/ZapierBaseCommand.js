@@ -123,14 +123,15 @@ class ZapierBaseCommand extends Command {
    * @param {string} question the question to ask the user
    * @param {object} opts `inquierer.js` opts ([read more](https://github.com/SBoudrias/Inquirer.js/#question))
    */
-  async prompt(question, opts = {}) {
-    const { ans } = await inquirer.prompt({
-      type: 'string',
-      ...opts,
-      name: 'ans',
-      message: question
-    });
-    return ans;
+  prompt(question, opts = {}) {
+    return inquirer
+      .prompt({
+        type: 'string',
+        ...opts,
+        name: 'ans',
+        message: question
+      })
+      .then(({ ans }) => ans);
   }
 
   promptHidden(question) {
@@ -145,6 +146,11 @@ class ZapierBaseCommand extends Command {
       message += ' (Ctrl-C to cancel)';
     }
     return this.prompt(message, { default: defaultAns, type: 'confirm' });
+  }
+
+  // see here for options for choices: https://github.com/SBoudrias/Inquirer.js/#question
+  promptWithList(question, choices) {
+    return this.prompt(question, { type: 'list', choices });
   }
 
   /**

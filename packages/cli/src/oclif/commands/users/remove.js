@@ -15,7 +15,8 @@ class UsersRemoveCommand extends ZapierBaseCommand {
         true
       ))
     ) {
-      this.exit();
+      this.log('\ncancelled');
+      return;
     }
 
     this.startSpinner('Removing User');

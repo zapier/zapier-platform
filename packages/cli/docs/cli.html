@@ -1140,8 +1140,13 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Get a list of users who have been invited to your app.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier team</code></p><p>Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the <code>zapier users:add</code> command or the web UI). Users who joined by clicking links generated using the <code>zapier user:links</code> command won&apos;t show up here.</p><p><strong>Flags</strong></p><ul>
+<p>Get a list of team members involved with your app.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier team</code></p><p>These users come in two levels:</p><ul>
+<li><p>Admins, who can edit everything about the app</p>
+</li>
+<li><p>Subscribers, who can&apos;t directly access the app, but will receive periodic email updates. These updates include quarterly health socores and more.</p>
+</li>
+</ul><p>Use the <code>zapier team:add</code> and <code>zapier team:remove</code> commands to modify your team.</p><p><strong>Flags</strong></p><ul>
 <li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
