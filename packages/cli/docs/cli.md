@@ -698,6 +698,19 @@ You can mix and match several options to customize the created scaffold for your
 * `zapier scaffold trigger "Existing Create" --force`
 
 
+## team
+
+> Get a list of users who have been invited to your app.
+
+**Usage**: `zapier team`
+
+Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the `zapier users:add` command or the web UI). Users who joined by clicking links generated using the `zapier user:links` command won't show up here.
+
+**Flags**
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
+
+
 ## test
 
 > Tests your app via `npm test`.

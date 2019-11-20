@@ -1,16 +1,30 @@
 const ZapierBaseCommand = require('../../ZapierBaseCommand');
+const { flags } = require('@oclif/command');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
+const { callAPI, getLinkedApp } = require('../../../utils/api');
 
 class UsersAddCommand extends ZapierBaseCommand {
   async perform() {
-    await this.confirm(
-      `About to invite ${cyan(this.args.email)} to ${
-        this.args.version ? `version ${this.args.version}` : 'all versions'
-      } of your integration. An invite email will be sent. Is that ok?`,
-      true
-    );
-    // callapi
+    if (
+      !this.flags.force &&
+      !(await this.confirm(
+        `About to invite ${cyan(this.args.email)} to ${
+          this.args.version ? `version ${this.args.version}` : 'all versions'
+        } of your integration. An invite email will be sent. Is that ok?`,
+        true
+      ))
+    ) {
+      this.exit();
+    }
+
+    this.startSpinner('Inviting User');
+    const { id } = await getLinkedApp();
+    const url = `/apps/${id}/invitees/${this.args.email}${
+      this.args.version ? `/${this.args.version}` : ''
+    }`;
+    await callAPI(url, { method: 'POST' });
+    this.stopSpinner();
   }
 }
 
@@ -27,7 +41,14 @@ UsersAddCommand.args = [
       'A version string (like 1.2.3). Optional, used only if you want to invite a user to a specific version instead of all versions.'
   }
 ];
-UsersAddCommand.flags = buildFlags();
+UsersAddCommand.flags = buildFlags({
+  commandFlags: {
+    force: flags.boolean({
+      char: 'f',
+      description: 'Skip confirmation. Useful for running programatically.'
+    })
+  }
+});
 UsersAddCommand.description = `Add a user to some or all versions of your integration.
 
 When this command is run, we'll send an email to the user inviting them to try your app. You can track the status of that invite using the \`${cyan(

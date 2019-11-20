@@ -28,7 +28,7 @@ class UsersListCommand extends ZapierBaseCommand {
         ['Status', 'status'],
         ['Version', 'app_version']
       ],
-      emptyMessage: 'No users have been invited via the invite links below.'
+      emptyMessage: 'No users have been invited directly by email.'
     });
 
     this.log(

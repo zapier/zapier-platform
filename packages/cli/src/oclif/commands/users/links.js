@@ -39,6 +39,5 @@ class UsersLinksCommand extends ZapierBaseCommand {
 
 UsersLinksCommand.flags = buildFlags({ opts: { format: true } });
 UsersLinksCommand.description = `Get a list of links that are used to invite users to your app.`;
-UsersLinksCommand.aliases = ['users:invite'];
 
 module.exports = UsersLinksCommand;
