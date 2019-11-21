@@ -18,6 +18,7 @@ class ZapierBaseCommand extends Command {
       require('debug').enable('zapier:*'); // enables all further spawned functions, like API
     }
 
+    this.debug('argv is', this.argv);
     this.debug('args are', this.args);
     this.debug('flags are', this.flags);
     this.debug('------------');
@@ -66,6 +67,15 @@ class ZapierBaseCommand extends Command {
     const { valid, reason } = isValidAppInstall(this.id);
     if (!valid) {
       this.error(reason);
+    }
+  }
+
+  // validate that user input looks like a semver version
+  throwForInvalidVersion(version) {
+    if (!version.match(/^\d+\.\d+\.\d+$/g)) {
+      throw new Error(
+        `${version} is an invalid version str. Try something like \`1.2.3\``
+      );
     }
   }
 
@@ -226,7 +236,7 @@ class ZapierBaseCommand extends Command {
   }
 
   _recordAnalytics() {
-    // if we got here, the command must be true
+    // if we got here, the command must be valid
     if (!this.args) {
       throw new Error('unable to record analytics until args are parsed');
     }

@@ -251,51 +251,55 @@ $ zapier describe
 ```
 
 
-## env
+## env:get
 
-  > Read, write, and delete environment variables.
+> Gets Environment variables for a version.
 
-  **Usage:** `zapier env 1.0.0 CLIENT_SECRET 12345`
-
-  
-Manage the environment of your app so that `process.env` has the necessary variables, making it easy to match a local environment with a production environment via `CLIENT_SECRET=12345 zapier test`.
+**Usage**: `zapier env:get VERSION`
 
 **Arguments**
+* (required) `version` | The version to get the environment for.
 
-* `version [1.0.0]` -- **required**, the app version's environment to work on
-* `key [CLIENT_SECRET]` -- _optional_, the uppercase key of the environment variable to set
-* `value [12345]` -- _optional_, the raw value to set to the key
-* `--remove` -- _optional_, optionally remove environment variable with this key
-* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
+**Flags**
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
 
-```bash
-$ zapier env 1.0.0
-# The env of your "Example" listed below.
-#
-# ┌─────────┬───────────────┬───────┐
-# │ Version │ Key           │ Value │
-# ├─────────┼───────────────┼───────┤
-# │ 1.0.0   │ CLIENT_SECRET │ 12345 │
-# └─────────┴───────────────┴───────┘
-#
-# Try setting an env with the `zapier env 1.0.0 CLIENT_SECRET 12345` command.
+**Examples**
+* `zapier env:get 1.2.3`
 
-$ zapier env 1.0.0 CLIENT_SECRET 12345
-# Preparing to set environment CLIENT_SECRET for your 1.0.0 "Example".
-#
-#   Setting CLIENT_SECRET to "12345" - done!
-#
-# Environment updated! Try viewing it with `zapier env 1.0.0`.
 
-$ zapier env 1.0.0 CLIENT_SECRET --remove
-# Preparing to remove environment CLIENT_SECRET for your 1.0.0 "Example".
-#
-#   Deleting CLIENT_SECRET - done!
-#
-# Environment updated! Try viewing it with `zapier env 1.0.0`.
-```
+## env:set
+
+> Sets environment variable(s) for a version.
+
+**Usage**: `zapier env:set VERSION [KEY-VALUE PAIRS...]`
+
+**Arguments**
+* (required) `version` | The version to set the environment for. Values are copied forward when a new version is created, but this command will only ever affect the specified version.
+* `key-value pairs...` | The key-value pairs to set. Keys are case-insensitive. Each pair should be space separated and pairs should be separated by an `=`. For example: `A=123 B=456`
+
+**Flags**
+* `-d, --debug` | Show extra debugging output
+
+**Examples**
+* `zapier env:set 1.2.3 SECRET=12345 OTHER=4321`
+
+
+## env:unset
+
+> Unsets environment variable(s) for a version.
+
+**Usage**: `zapier env:unset VERSION [KEYS...]`
+
+**Arguments**
+* (required) `version` | The version to set the environment for.
+* `keys...` | The keys to unset. Keys are case-insensitive.
+
+**Flags**
+* `-d, --debug` | Show extra debugging output
+
+**Examples**
+* `zapier env:unset 1.2.3 SECRET OTHER`
 
 
 ## help

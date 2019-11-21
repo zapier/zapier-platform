@@ -263,31 +263,18 @@ const listEndpoint = (endpoint, keyOverride) => {
     });
 };
 
-const listVersions = () => {
-  return listEndpoint('versions');
-};
+const listVersions = () => listEndpoint('versions');
 
-const listHistory = () => {
-  return listEndpoint('history');
-};
+const listHistory = () => listEndpoint('history');
 
-const listInvitees = () => {
-  return listEndpoint('invitees');
-};
+const listInvitees = () => listEndpoint('invitees');
 
 const listLogs = opts => {
   return listEndpoint(`logs?${qs.stringify(_.omit(opts, 'debug'))}`, 'logs');
 };
 
-const listEnv = version => {
-  let endpoint;
-  if (version) {
-    endpoint = `versions/${version}/environment`;
-  } else {
-    endpoint = 'environment';
-  }
-  return listEndpoint(endpoint, 'environment');
-};
+const listEnv = version =>
+  listEndpoint(`versions/${version}/environment`, 'env');
 
 const validateApp = async definition => {
   let checkResult;

@@ -82,6 +82,9 @@
   "oclif": {
     "commands": "src/oclif/commands",
     "bin": "zapier",
-    "plugins": []
+    "plugins": [],
+    "topics": {
+      "env": {"description": "Interact with your integration's environment"}
+    }
   }
 }
