@@ -705,11 +705,41 @@ You can mix and match several options to customize the created scaffold for your
 * `zapier scaffold trigger "Existing Create" --force`
 
 
-## team
+## team:add
+
+> Add a team member to your integration.
+
+**Usage**: `zapier team:add EMAIL ROLE [MESSAGE]`
+
+These users come in two levels:
+
+  * Admins, who can edit everything about the app
+
+  * Subscribers, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health socores and more.
+
+Team members can be freely added and removed.
+
+**Arguments**
+* (required) `email` | The user to be invited. If they don't have a Zapier account, they'll be prompted to create one.
+* (required) `role` | The level the invited team member should be at. Admins can edit everything and get email updates. Subscribers only get email updates.
+* `message` | A message sent in the email to your team member, if you need to provide context. Wrap the message in quotes to ensure spaces get saved.
+
+**Flags**
+* `-d, --debug` | Show extra debugging output
+
+**Examples**
+* `zapier team:add bruce@wayne.com admin`
+* `zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."`
+
+**Aliases**
+* `team:invite`
+
+
+## team:get
 
 > Get a list of team members involved with your app.
 
-**Usage**: `zapier team`
+**Usage**: `zapier team:get`
 
 These users come in two levels:
 
@@ -722,6 +752,24 @@ Use the `zapier team:add` and `zapier team:remove` commands to modify your team.
 **Flags**
 * `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
+
+**Aliases**
+* `team:list`
+
+
+## team:remove
+
+> Remove a team member from all versions of your integration.
+
+**Usage**: `zapier team:remove`
+
+Admins will immediately lose write access to the app. Subscribers won't receive future email updates.
+
+**Flags**
+* `-d, --debug` | Show extra debugging output
+
+**Aliases**
+* `team:delete`
 
 
 ## test
@@ -758,17 +806,72 @@ This command sends both build/build.zip and build/source.zip to Zapier for use.
 * `-d, --debug` | Show extra debugging output
 
 
-## users
+## users:add
+
+> Add a user to some or all versions of your integration.
+
+**Usage**: `zapier users:add EMAIL [VERSION]`
+
+When this command is run, we'll send an email to the user inviting them to try your app. You can track the status of that invite using the `zapier users:get` command.
+
+Invited users will be able to see your integration's name, logo, and description. They'll also be able to create Zaps using any available triggers and actions.
+
+**Arguments**
+* (required) `email` | The user to be invited. If they don't have a Zapier account, they'll be prompted to create one.
+* `version` | A version string (like 1.2.3). Optional, used only if you want to invite a user to a specific version instead of all versions.
+
+**Flags**
+* `-f, --force` | Skip confirmation. Useful for running programatically.
+* `-d, --debug` | Show extra debugging output
+
+**Aliases**
+* `users:invite`
+
+
+## users:get
 
 > Get a list of users who have been invited to your app.
 
-**Usage**: `zapier users`
+**Usage**: `zapier users:get`
 
 Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the `zapier users:add` command or the web UI). Users who joined by clicking links generated using the `zapier user:links` command won't show up here.
 
 **Flags**
 * `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
+
+**Aliases**
+* `users:list`
+
+
+## users:links
+
+> Get a list of links that are used to invite users to your app.
+
+**Usage**: `zapier users:links`
+
+**Flags**
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
+
+
+## users:remove
+
+> Remove a user from all versions of your integration.
+
+**Usage**: `zapier users:remove EMAIL`
+
+When this command is run, their Zaps will immediately turn off. They won't be able to use your app again until they're re-invited or it has gone public. In practice, this command isn't run often as it's very disruptive to users.
+
+**Arguments**
+* (required) `email` | The user to be removed.
+
+**Flags**
+* `-f, --force` | Skip confirmation. Useful for running programatically.
+* `-d, --debug` | Show extra debugging output
+
+**Aliases**
+* `users:delete`
 
 
 ## validate
