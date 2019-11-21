@@ -31,7 +31,7 @@ const {
   getLinkedAppConfig,
   checkCredentials,
   upload: _uploadFunc,
-  callAPI
+  validateApp
 } = require('./api');
 
 const { runCommand, isWindows } = require('./misc');
@@ -382,15 +382,14 @@ const _buildFunc = async ({
 
   // No need to mention specifically we're validating style checks as that's
   //   implied from `zapier validate`, though it happens as a separate process
-  const styleChecksResponse = await callAPI('/style-check', {
-    skipDeployKey: true,
-    method: 'POST',
-    body: rawDefinition
-  });
+  const styleChecksResponse = await validateApp(rawDefinition);
 
-  const styleErrors = styleChecksResponse.errors;
-  if (!_.isEmpty(styleErrors)) {
-    debug('\nErrors:\n', styleErrors, '\n');
+  if (_.get(styleChecksResponse, ['errors', 'total_failures'])) {
+    debug(
+      '\nErrors:\n',
+      prettyJSONstringify(styleChecksResponse.errors.results),
+      '\n'
+    );
     throw new Error(
       'We hit some style validation errors, try running `zapier validate` to see them!'
     );
