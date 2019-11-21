@@ -24,19 +24,6 @@ $ npm install -g zapier-platform-cli
 * `zapier analytics --mode enabled`
 
 
-## apps
-
-> Lists any apps that you have admin access to.
-
-**Usage**: `zapier apps`
-
-This command also checks the current directory for a linked app.
-
-**Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
-* `-d, --debug` | Show extra debugging output
-
-
 ## build
 
 > Builds a pushable zip from the current directory.
@@ -149,13 +136,31 @@ $ zapier convert 1234 .
 ```
 
 
-## delete
+## delete:integration
 
 > Deletes your integration (including all versions).
 
-**Usage**: `zapier delete`
+**Usage**: `zapier delete:integration`
 
 This only works if there are no active users or Zaps on any version. If you only want to delete certain versions, use the zapier delete:version command instead. It's unlikely that you'll be able to run this on an app that you've pushed publicly, since there are usually still users.
+
+**Flags**
+* `-d, --debug` | Show extra debugging output
+
+**Aliases**
+* `delete:app`
+
+
+## delete:version
+
+> Deletes a specific version of your integration.
+
+**Usage**: `zapier delete:version VERSION`
+
+This only works if there are no users or Zaps on that version. You will probably need to have run zapier migrate and zapier deprecate before this comand will work.
+
+**Arguments**
+* (required) `version` | Specify the version to delete. It must have no users or Zaps.
 
 **Flags**
 * `-d, --debug` | Show extra debugging output
@@ -163,15 +168,15 @@ This only works if there are no active users or Zaps on any version. If you only
 
 ## deprecate
 
-> Marks a non-production version of your app as deprecated, with removal by a certain date.
+> Marks a non-production version of your integration as deprecated, with removal by a certain date.
 
 **Usage**: `zapier deprecate VERSION DATE`
 
-Use this when an app version will not be supported or start breaking at a known date.
+Use this when an integration version will not be supported or start breaking at a known date.
 
 Zapier will send an email warning users of the deprecation once a date is set, they'll start seeing it as "Deprecated" in the UI, and once the deprecation date arrives, if the Zaps weren't updated, they'll be paused and the users will be emailed again explaining what happened.
 
-After the deprecation date has passed it will be safe to delete that app version.
+After the deprecation date has passed it will be safe to delete that integration version.
 
 > Do not use this if you have non-breaking changes, such as fixing help text.
 
@@ -237,51 +242,55 @@ $ zapier describe
 ```
 
 
-## env
+## env:get
 
-  > Read, write, and delete environment variables.
+> Gets Environment variables for a version.
 
-  **Usage:** `zapier env 1.0.0 CLIENT_SECRET 12345`
-
-  
-Manage the environment of your app so that `process.env` has the necessary variables, making it easy to match a local environment with a production environment via `CLIENT_SECRET=12345 zapier test`.
+**Usage**: `zapier env:get VERSION`
 
 **Arguments**
+* (required) `version` | The version to get the environment for.
 
-* `version [1.0.0]` -- **required**, the app version's environment to work on
-* `key [CLIENT_SECRET]` -- _optional_, the uppercase key of the environment variable to set
-* `value [12345]` -- _optional_, the raw value to set to the key
-* `--remove` -- _optional_, optionally remove environment variable with this key
-* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
+**Flags**
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
 
-```bash
-$ zapier env 1.0.0
-# The env of your "Example" listed below.
-#
-# ┌─────────┬───────────────┬───────┐
-# │ Version │ Key           │ Value │
-# ├─────────┼───────────────┼───────┤
-# │ 1.0.0   │ CLIENT_SECRET │ 12345 │
-# └─────────┴───────────────┴───────┘
-#
-# Try setting an env with the `zapier env 1.0.0 CLIENT_SECRET 12345` command.
+**Examples**
+* `zapier env:get 1.2.3`
 
-$ zapier env 1.0.0 CLIENT_SECRET 12345
-# Preparing to set environment CLIENT_SECRET for your 1.0.0 "Example".
-#
-#   Setting CLIENT_SECRET to "12345" - done!
-#
-# Environment updated! Try viewing it with `zapier env 1.0.0`.
 
-$ zapier env 1.0.0 CLIENT_SECRET --remove
-# Preparing to remove environment CLIENT_SECRET for your 1.0.0 "Example".
-#
-#   Deleting CLIENT_SECRET - done!
-#
-# Environment updated! Try viewing it with `zapier env 1.0.0`.
-```
+## env:set
+
+> Sets environment variable(s) for a version.
+
+**Usage**: `zapier env:set VERSION [KEY-VALUE PAIRS...]`
+
+**Arguments**
+* (required) `version` | The version to set the environment for. Values are copied forward when a new version is created, but this command will only ever affect the specified version.
+* `key-value pairs...` | The key-value pairs to set. Keys are case-insensitive. Each pair should be space separated and pairs should be separated by an `=`. For example: `A=123 B=456`
+
+**Flags**
+* `-d, --debug` | Show extra debugging output
+
+**Examples**
+* `zapier env:set 1.2.3 SECRET=12345 OTHER=4321`
+
+
+## env:unset
+
+> Unsets environment variable(s) for a version.
+
+**Usage**: `zapier env:unset VERSION [KEYS...]`
+
+**Arguments**
+* (required) `version` | The version to set the environment for.
+* `keys...` | The keys to unset. Keys are case-insensitive.
+
+**Flags**
+* `-d, --debug` | Show extra debugging output
+
+**Examples**
+* `zapier env:unset 1.2.3 SECRET OTHER`
 
 
 ## help
@@ -346,11 +355,11 @@ $ │ logout      │ zapier logout                         │ Deactivates all 
 
 ## history
 
-> Gets the history of your app.
+> Gets the history of your integration.
 
 **Usage**: `zapier history`
 
-History includes all the changes made over the lifetime of your app. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.
+History includes all the changes made over the lifetime of your integration. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.
 
 **Flags**
 * `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
@@ -359,24 +368,40 @@ History includes all the changes made over the lifetime of your app. This includ
 
 ## init
 
-> Initializes a new Zapier app. Optionally uses a template.
+> Initializes a new Zapier integration. Optionally uses a template.
 
 **Usage**: `zapier init PATH`
 
-After running this, you'll have a new example app in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
+After running this, you'll have a new example integration in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
-> Note: this doesn't register or deploy the app with Zapier - try the `zapier register` and `zapier push` commands for that!
+> Note: this doesn't register or deploy the integration with Zapier - try the `zapier register` and `zapier push` commands for that!
 
 **Arguments**
-* (required) `path` | Where to create the new app. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation
+* (required) `path` | Where to create the new integration. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation
 
 **Flags**
-* `-t, --template` | The template to start your app with. One of `[minimal | trigger | search | create | basic-auth | custom-auth | digest-auth | oauth2 | oauth1-trello | oauth1-tumblr | oauth1-twitter | session-auth | dynamic-dropdown | files | middleware | resource | rest-hooks | search-or-create | babel | typescript | github | onedrive]`. Defaults to `minimal`.
+* `-t, --template` | The template to start your integration with. One of `[minimal | trigger | search | create | basic-auth | custom-auth | digest-auth | oauth2 | oauth1-trello | oauth1-tumblr | oauth1-twitter | session-auth | dynamic-dropdown | files | middleware | resource | rest-hooks | search-or-create | babel | typescript | github | onedrive]`. Defaults to `minimal`.
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
 * `zapier init ./some/path`
 * `zapier init . --template typescript`
+
+
+## integrations
+
+> Lists any integrations that you have admin access to.
+
+**Usage**: `zapier integrations`
+
+This command also checks the current directory for a linked integration.
+
+**Flags**
+* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
+
+**Aliases**
+* `apps`
 
 
 ## invite
@@ -547,11 +572,11 @@ $ zapier logs --type=http
 
 ## migrate
 
-> Migrates users from one version of your app to another.
+> Migrates users from one version of your integration to another.
 
 **Usage**: `zapier migrate FROMVERSION TOVERSION [PERCENT]`
 
-Starts a migration to move users between different versions of your app. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. `zapier migrate 1.0.1 1.0.0`).
+Starts a migration to move users between different versions of your integration. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. `zapier migrate 1.0.1 1.0.0`).
 
 Only migrate users between non-breaking versions, use `zapier deprecate` if you have breaking changes!
 
@@ -584,7 +609,7 @@ Note: since a migration is only for non-breaking changes, users are not emailed 
 
 **Usage**: `zapier promote VERSION`
 
-Promotes an app version into production (non-private) rotation, which means new users can use this app version.
+Promotes an integration version into production (non-private) rotation, which means new users can use this integration version.
 
 * This does mark the version as the official public version - all other versions & users are grandfathered.
 
@@ -594,7 +619,7 @@ Promotes an app version into production (non-private) rotation, which means new 
 
 * This does NOT recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
 
-Promotes are an inherently safe operation for all existing users of your app.
+Promotes are an inherently safe operation for all existing users of your integration.
 
 > If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to make your app public. We'll respond within a few business days.
 
@@ -686,11 +711,11 @@ You can mix and match several options to customize the created scaffold for your
 
 ## test
 
-> Tests your app via `npm test`.
+> Tests your integration via `npm test`.
 
 **Usage**: `zapier test`
 
-This command is effectively the same as `npm test`, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.
+This command is effectively the same as `npm test`, except we also validate your integration and set up the environment. We recommend using mocha as your testing framework.
 
 **Flags**
 * `-t, --timeout` | Set test-case timeout in milliseconds  Defaults to `2000`.
@@ -739,7 +764,7 @@ Runs the standard validation routine powered by json-schema that checks your app
 
 ## versions
 
-> Lists the versions of your app available for use in the Zapier editor.
+> Lists the versions of your integration available for use in the Zapier editor.
 
 **Usage**: `zapier versions`
 

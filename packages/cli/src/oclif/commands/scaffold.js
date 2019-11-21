@@ -79,7 +79,7 @@ class ScaffoldCommand extends BaseCommand {
             `Oops, we could not reliably rewrite your ${entryName}.`
           )} Please add:`,
           ` * \`${importerLine}\` to the top`,
-          ` * \`${injectAfter} ${injectorLine} },\` in your app definition`
+          ` * \`${injectAfter} ${injectorLine} },\` in your root integration definition`
         ].join('\n')
       );
     }

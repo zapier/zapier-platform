@@ -25,6 +25,7 @@ const help = (context, cmd) => {
   return Promise.resolve().then(() => {
     context.line();
     const commandList = _.orderBy(Object.keys(allCommands))
+      .filter(name => !_.isBoolean(allCommands[name]))
       .filter(name => !allCommands[name].hide)
       .map(name => {
         const c = allCommands[name];

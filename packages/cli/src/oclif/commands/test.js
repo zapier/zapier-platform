@@ -78,8 +78,8 @@ TestCommand.examples = [
   'zapier test',
   'zapier test -t 30000 --grep api --skip-validate'
 ];
-TestCommand.description = `Tests your app via \`npm test\`.
+TestCommand.description = `Tests your integration via \`npm test\`.
 
-This command is effectively the same as \`npm test\`, except we also validate your app and set up the environment. We recommend using mocha as your testing framework.`;
+This command is effectively the same as \`npm test\`, except we also validate your integration and set up the environment. We recommend using mocha as your testing framework.`;
 
 module.exports = TestCommand;

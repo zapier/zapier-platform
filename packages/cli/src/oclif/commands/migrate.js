@@ -104,9 +104,9 @@ MigrateCommand.examples = [
   'zapier migrate 1.0.1 2.0.0 10',
   'zapier migrate 2.0.0 2.0.1 --user=user@example.com'
 ];
-MigrateCommand.description = `Migrates users from one version of your app to another.
+MigrateCommand.description = `Migrates users from one version of your integration to another.
 
-Starts a migration to move users between different versions of your app. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. \`zapier migrate 1.0.1 1.0.0\`).
+Starts a migration to move users between different versions of your integration. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. \`zapier migrate 1.0.1 1.0.0\`).
 
 Only migrate users between non-breaking versions, use \`zapier deprecate\` if you have breaking changes!
 
