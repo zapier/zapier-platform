@@ -202,11 +202,11 @@ const getLinkedApp = appDir => {
         console.error(e);
       }
       throw new Error(
-        `Unable to complete that operation. Either: your auth file is stale (run \`${colors.cyan(
-          'zapier login'
-        )}\`) or your ${
-          constants.CURRENT_APP_FILE
-        } points to an app you can't access (run \`${colors.cyan(
+        `Unable to complete that operation. Either:
+  * your auth file is stale (run \`${colors.cyan('zapier login')}\`)
+  * your ${
+    constants.CURRENT_APP_FILE
+  } points to an app you can't access (run \`${colors.cyan(
           'zapier link'
         )}\` to refresh the link to an existing app or \`${colors.cyan(
           'zapier register'

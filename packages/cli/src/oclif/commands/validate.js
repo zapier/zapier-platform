@@ -14,7 +14,7 @@ class ValidateCommand extends BaseCommand {
     const errors = await localAppCommand({ command: 'validate' });
 
     const newErrors = errors.map(error => ({
-      error,
+      ...error,
       property: error.property.replace(/^instance/, 'App'),
       docLinks: (error.docLinks || []).join('\n')
     }));
