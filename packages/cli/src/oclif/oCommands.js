@@ -8,7 +8,7 @@ module.exports = {
   delete: true,
   'delete:integration': require('./commands/delete/integration'),
   'delete:version': require('./commands/delete/version'),
-  env: true, // used so that subcommands are properly routed into ocli, but `env` itself doesn't show in help/docs
+  env: true, // used so that aliases are properly routed into oclif, but `env` itself doesn't show in help/docs
   'env:get': require('./commands/env/get'),
   'env:set': require('./commands/env/set'),
   'env:unset': require('./commands/env/unset'),
@@ -21,8 +21,17 @@ module.exports = {
   promote: require('./commands/promote'),
   push: require('./commands/push'),
   scaffold: require('./commands/scaffold'),
+  team: true,
+  'team:add': require('./commands/team/add'),
+  'team:get': require('./commands/team/get'),
+  'team:remove': require('./commands/team/remove'),
   test: require('./commands/test'),
   upload: require('./commands/upload'),
+  users: true,
+  'users:add': require('./commands/users/add'),
+  'users:get': require('./commands/users/get'),
+  'users:links': require('./commands/users/links'),
+  'users:remove': require('./commands/users/remove'),
   validate: require('./commands/validate'),
   versions: require('./commands/versions')
 };

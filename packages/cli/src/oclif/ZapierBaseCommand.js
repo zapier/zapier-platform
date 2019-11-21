@@ -90,7 +90,6 @@ class ZapierBaseCommand extends Command {
     }
   }
 
-  // we may not end up needing this
   logJSON(o) {
     if (typeof o === 'string') {
       console.log(o);
@@ -100,7 +99,7 @@ class ZapierBaseCommand extends Command {
   }
 
   /**
-   * log data in table form
+   * log data in table form. Headers are `[header, key]`
    * @param {Object} opts
    * @param {any[]} opts.rows The data to display
    * @param {string[][]} opts.headers Array of pairs of the column header and the key in the row that that header applies to
@@ -111,10 +110,10 @@ class ZapierBaseCommand extends Command {
     rows = [],
     headers = [],
     emptyMessage = '',
-    usedRowBasedTable = false
+    formatOverride = ''
   } = {}) {
-    const formatter = usedRowBasedTable
-      ? formatStyles.row
+    const formatter = formatOverride
+      ? formatStyles[formatOverride]
       : formatStyles[this.flags.format];
     if (!formatter) {
       // throwing this error ensures that all commands that call this function take a format flag, since that provides the default
@@ -155,6 +154,11 @@ class ZapierBaseCommand extends Command {
       message += ' (Ctrl-C to cancel)';
     }
     return this.prompt(message, { default: defaultAns, type: 'confirm' });
+  }
+
+  // see here for options for choices: https://github.com/SBoudrias/Inquirer.js/#question
+  promptWithList(question, choices) {
+    return this.prompt(question, { type: 'list', choices });
   }
 
   /**
