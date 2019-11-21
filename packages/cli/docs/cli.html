@@ -372,35 +372,28 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Builds a pushable zip from the current directory.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier build</code></p><p>Builds a ready-to-upload zip file, but does not upload / push the zip file. Generally you&apos;d use <code>zapier push</code> which does this and <code>zapier upload</code> together.</p><p>It does the following steps:</p><ul>
-<li>Creates a temporary folder</li>
-<li>Copies all code into the temporary folder</li>
-<li>Adds an entry point <code>zapierwrapper.js</code></li>
-<li>Generates and validates app definition.</li>
-<li>Detects dependencies via browserify (optional)</li>
-<li>Zips up all needed <code>.js</code> files. If you want to include more files, add a &quot;includeInBuild&quot; property (array with strings of regexp paths) to your <code>.zapierapprc</code>.</li>
-<li>Moves the zip to <code>build/build.zip</code> and <code>build/source.zip</code></li>
-</ul><blockquote>
-<p>If you get live errors like <code>Error: Cannot find module &apos;some-path&apos;</code>, try disabling dependency detection.</p>
-</blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>--disable-dependency-detection</code> -- <em>optional</em>, disables walking required files to slim the build</li>
-<li><code>--include-js-map</code> -- <em>optional</em>, include .js.map files (usually source maps)</li>
+</blockquote><p><strong>Usage</strong>: <code>zapier build</code></p><p>This command does the following:</p><ul>
+<li><p>Creates a temporary folder</p>
+</li>
+<li><p>Copies all code into the temporary folder</p>
+</li>
+<li><p>Adds an entry point: <code>zapierwrapper.js</code></p>
+</li>
+<li><p>Generates and validates app definition.</p>
+</li>
+<li><p>Detects dependencies via browserify (optional, on by default)</p>
+</li>
+<li><p>Zips up all needed <code>.js</code> files. If you want to include more files, add a &quot;includeInBuild&quot; property (array with strings of regexp paths) to your <code>.zapierapprc</code>.</p>
+</li>
+<li><p>Moves the zip to <code>build/build.zip</code> and <code>build/source.zip</code> and deletes the temp folder</p>
+</li>
+</ul><p>This command is typically followed by <code>zapier upload</code>.</p><p><strong>Flags</strong></p><ul>
+<li><code>--disable-dependency-detection</code> | Disables &quot;smart&quot; file inclusion. By default, Zapier only includes files that are required by <code>index.js</code>. If you (or your dependencies) require files dynamically (such as with <code>require(someVar)</code>), then you may see &quot;Cannot find module&quot; errors. Disabling this may make your <code>build.zip</code> too large. If that&apos;s the case, try using the <code>includeInBuild</code> option in your <code>.zapierapprc</code>. <a href="includeInBuild">See the docs</a> for more info.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier build
-<span class="hljs-comment"># Building project.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Copying project to temp directory - done!</span>
-<span class="hljs-comment">#   Installing project dependencies - done!</span>
-<span class="hljs-comment">#   Applying entry point file - done!</span>
-<span class="hljs-comment">#   Validating project - done!</span>
-<span class="hljs-comment">#   Building app definition.json - done!</span>
-<span class="hljs-comment">#   Zipping project and dependencies - done!</span>
-<span class="hljs-comment">#   Cleaning up temp directory - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Build complete!</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -1046,13 +1039,13 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
       <blockquote>
 <p>Promotes a specific version to public access.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier promote VERSION</code></p><p>Promotes an app version into production (non-private) rotation, which means new users can use this app version.</p><ul>
-<li><p>This [1mdoes[22m mark the version as the official public version - all other versions &amp; users are grandfathered.</p>
+<li><p>This does mark the version as the official public version - all other versions &amp; users are grandfathered.</p>
 </li>
-<li><p>This does [1mNOT[22m build/upload or deploy a version to Zapier - you should <code>zapier push</code> first.</p>
+<li><p>This does NOT build/upload or deploy a version to Zapier - you should <code>zapier push</code> first.</p>
 </li>
-<li><p>This does [1mNOT[22m move old users over to this version - <code>zapier migrate 1.0.0 1.0.1</code> does that.</p>
+<li><p>This does NOT move old users over to this version - <code>zapier migrate 1.0.0 1.0.1</code> does that.</p>
 </li>
-<li><p>This does [1mNOT[22m recommend old users stop using this version - <code>zapier deprecate 1.0.0 2017-01-01</code> does that.</p>
+<li><p>This does NOT recommend old users stop using this version - <code>zapier deprecate 1.0.0 2017-01-01</code> does that.</p>
 </li>
 </ul><p>Promotes are an inherently safe operation for all existing users of your app.</p><blockquote>
 <p>If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to make your app public. We&apos;ll respond within a few business days.</p>
@@ -1081,34 +1074,14 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Build and upload the current app - does not promote.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier push</code></p><p>A shortcut for <code>zapier build &amp;&amp; zapier upload</code> - this is our recommended way to push an app. This is a common workflow:</p><ol>
-<li>Make changes in <code>index.js</code> or other files.</li>
-<li>Run <code>zapier test</code>.</li>
-<li>Run <code>zapier push</code>.</li>
-<li>QA/experiment in the Zapier.com Zap editor.</li>
-<li>Go to 1 and repeat.</li>
-</ol><blockquote>
-<p>Note: this is always a safe operation as live/production apps are protected from pushes. You must use <code>zapier promote</code> or <code>zapier migrate</code> to impact live users.</p>
-</blockquote><blockquote>
-<p>Note: this command will create (or overwrite) an AppVersion that matches the ones listed in your <code>package.json</code>. If you want to push to a new version, increment the &quot;version&quot; key in <code>package.json</code>.</p>
-</blockquote><p>If you have not yet registered your app, this command will prompt you for your app title and to register the app.</p>
+<p>Builds and uploads the current app.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier push</code></p><p>This command is the same as running <code>zapier build</code> and <code>zapier upload</code> in sequence. See those for more info.</p><p><strong>Flags</strong></p><ul>
+<li><code>--disable-dependency-detection</code> | Disables &quot;smart&quot; file inclusion. By default, Zapier only includes files that are required by <code>index.js</code>. If you (or your dependencies) require files dynamically (such as with <code>require(someVar)</code>), then you may see &quot;Cannot find module&quot; errors. Disabling this may make your <code>build.zip</code> too large. If that&apos;s the case, try using the <code>includeInBuild</code> option in your <code>.zapierapprc</code>. <a href="includeInBuild">See the docs</a> for more info.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier push
-<span class="hljs-comment"># Preparing to build and upload app.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Copying project to temp directory - done!</span>
-<span class="hljs-comment">#   Installing project dependencies - done!</span>
-<span class="hljs-comment">#   Applying entry point file - done!</span>
-<span class="hljs-comment">#   Validating project - done!</span>
-<span class="hljs-comment">#   Building app definition.json - done!</span>
-<span class="hljs-comment">#   Zipping project and dependencies - done!</span>
-<span class="hljs-comment">#   Cleaning up temp directory - done!</span>
-<span class="hljs-comment">#   Uploading version 1.0.0 - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Build and upload complete! Try loading the Zapier editor now, or try `zapier promote` to put it into rotation or `zapier migrate` to move users over</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -1225,19 +1198,15 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Upload the last build as a version.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier upload</code></p><p>Upload the zip files already built by <code>zapier build</code> in build/build.zip and build/source.zip. The version and other app details are read by Zapier from the zip files.</p><blockquote>
-<p>Note: we generally recommend using <code>zapier push</code> which does both <code>zapier build &amp;&amp; zapier upload</code> in one step.</p>
-</blockquote>
+<p>Uploads the latest build of your app to Zapier</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier upload</code></p><p>This command sends both build/build.zip and build/source.zip to Zapier for use.</p><blockquote>
+<p>Note: Typically we recommend using <code>zapier push</code>, which does a build and upload, rather than <code>upload</code> by itself.</p>
+</blockquote><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier upload
-<span class="hljs-comment"># Preparing to upload a new version.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Uploading version 1.0.0 - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Upload of build/build.zip and build/source.zip complete! Try `zapier versions` now!</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">

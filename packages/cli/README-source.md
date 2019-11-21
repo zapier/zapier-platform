@@ -1669,7 +1669,7 @@ When analytics are fully `enabled`, the above is sent, plus:
 
 **Disabled**
 
-Lastly, analytics can be `disabled` entirely, either by running `zapier analytics --mode disabled` or settings the `DISABLE_ZAPIER_ANALYTICS` environment variable to `1`.
+Lastly, analytics can be `disabled` entirely, either by running `zapier analytics --mode disabled` or setting the `DISABLE_ZAPIER_ANALYTICS` environment variable to `1`.
 
 We take great care not to collect any information about your filesystem or anything otherwise secret. You can see exactly what's being collecting at runtime by prefixing any command with `DEBUG=zapier:analytics`.
 

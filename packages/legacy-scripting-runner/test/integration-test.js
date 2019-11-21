@@ -1205,6 +1205,10 @@ describe('Integration Test', () => {
         should.equal(output.results.json.bundleTargetUrl, 'https://foo.bar');
         should.equal(output.results.json.bundleEvent, 'contact.created');
         should.deepEqual(output.results.json.bundleZap, { id: 9511 });
+        should.equal(
+          output.results.json.bundleSubscriptionUrl,
+          'https://foo.bar'
+        );
       });
     });
 
@@ -1234,6 +1238,7 @@ describe('Integration Test', () => {
         should.equal(echoed.json.bundleTargetUrl, 'https://foo.bar');
         should.equal(echoed.json.bundleEvent, 'contact.created');
         should.deepEqual(echoed.json.bundleZap, { id: 9512 });
+        should.equal(echoed.json.bundleSubscriptionUrl, 'https://foo.bar');
       });
     });
   });

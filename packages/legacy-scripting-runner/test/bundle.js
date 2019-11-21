@@ -284,6 +284,7 @@ describe('bundleConverter', () => {
         user: 'Zapier'
       },
       target_url: 'https://hooks.zapier.com/abc',
+      subscription_url: 'https://hooks.zapier.com/abc',
       event: 'message'
     };
 
@@ -344,6 +345,7 @@ describe('bundleConverter', () => {
         content: '[{"id": 1, "name": "Zapier"}]'
       },
       target_url: 'https://hooks.zapier.com/abc',
+      subscription_url: 'https://hooks.zapier.com/abc',
       event: 'message'
     };
 
@@ -399,6 +401,7 @@ describe('bundleConverter', () => {
         user: 'Zapier'
       },
       target_url: 'https://hooks.zapier.com/abc',
+      subscription_url: 'https://hooks.zapier.com/abc',
       event: 'message',
       subscribe_data: {
         id: 1

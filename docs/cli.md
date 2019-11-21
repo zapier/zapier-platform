@@ -39,45 +39,31 @@ This command also checks the current directory for a linked app.
 
 ## build
 
-  > Builds a pushable zip from the current directory.
+> Builds a pushable zip from the current directory.
 
-  **Usage:** `zapier build`
+**Usage**: `zapier build`
 
-  
-Builds a ready-to-upload zip file, but does not upload / push the zip file. Generally you'd use `zapier push` which does this and `zapier upload` together.
-
-It does the following steps:
+This command does the following:
 
 * Creates a temporary folder
+
 * Copies all code into the temporary folder
-* Adds an entry point `zapierwrapper.js`
+
+* Adds an entry point: `zapierwrapper.js`
+
 * Generates and validates app definition.
-* Detects dependencies via browserify (optional)
+
+* Detects dependencies via browserify (optional, on by default)
+
 * Zips up all needed `.js` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your `.zapierapprc`.
-* Moves the zip to `build/build.zip` and `build/source.zip`
 
-> If you get live errors like `Error: Cannot find module 'some-path'`, try disabling dependency detection.
+* Moves the zip to `build/build.zip` and `build/source.zip` and deletes the temp folder
 
-**Arguments**
+This command is typically followed by `zapier upload`.
 
-
-* `--disable-dependency-detection` -- _optional_, disables walking required files to slim the build
-* `--include-js-map` -- _optional_, include .js.map files (usually source maps)
-
-```bash
-$ zapier build
-# Building project.
-#
-#   Copying project to temp directory - done!
-#   Installing project dependencies - done!
-#   Applying entry point file - done!
-#   Validating project - done!
-#   Building app definition.json - done!
-#   Zipping project and dependencies - done!
-#   Cleaning up temp directory - done!
-#
-# Build complete!
-```
+**Flags**
+* `--disable-dependency-detection` | Disables "smart" file inclusion. By default, Zapier only includes files that are required by `index.js`. If you (or your dependencies) require files dynamically (such as with `require(someVar)`), then you may see "Cannot find module" errors. Disabling this may make your `build.zip` too large. If that's the case, try using the `includeInBuild` option in your `.zapierapprc`. [See the docs](includeInBuild) for more info.
+* `-d, --debug` | Show extra debugging output
 
 
 ## collaborate
@@ -618,13 +604,13 @@ Note: since a migration is only for non-breaking changes, users are not emailed 
 
 Promotes an app version into production (non-private) rotation, which means new users can use this app version.
 
-* This [1mdoes[22m mark the version as the official public version - all other versions & users are grandfathered.
+* This does mark the version as the official public version - all other versions & users are grandfathered.
 
-* This does [1mNOT[22m build/upload or deploy a version to Zapier - you should `zapier push` first.
+* This does NOT build/upload or deploy a version to Zapier - you should `zapier push` first.
 
-* This does [1mNOT[22m move old users over to this version - `zapier migrate 1.0.0 1.0.1` does that.
+* This does NOT move old users over to this version - `zapier migrate 1.0.0 1.0.1` does that.
 
-* This does [1mNOT[22m recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
+* This does NOT recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
 
 Promotes are an inherently safe operation for all existing users of your app.
 
@@ -642,40 +628,15 @@ Promotes are an inherently safe operation for all existing users of your app.
 
 ## push
 
-  > Build and upload the current app - does not promote.
+> Builds and uploads the current app.
 
-  **Usage:** `zapier push`
+**Usage**: `zapier push`
 
-  
-A shortcut for `zapier build && zapier upload` - this is our recommended way to push an app. This is a common workflow:
+This command is the same as running `zapier build` and `zapier upload` in sequence. See those for more info.
 
-1. Make changes in `index.js` or other files.
-2. Run `zapier test`.
-3. Run `zapier push`.
-4. QA/experiment in the Zapier.com Zap editor.
-5. Go to 1 and repeat.
-
-> Note: this is always a safe operation as live/production apps are protected from pushes. You must use `zapier promote` or `zapier migrate` to impact live users.
-
-> Note: this command will create (or overwrite) an AppVersion that matches the ones listed in your `package.json`. If you want to push to a new version, increment the "version" key in `package.json`.
-
-If you have not yet registered your app, this command will prompt you for your app title and to register the app.
-
-```bash
-$ zapier push
-# Preparing to build and upload app.
-#
-#   Copying project to temp directory - done!
-#   Installing project dependencies - done!
-#   Applying entry point file - done!
-#   Validating project - done!
-#   Building app definition.json - done!
-#   Zipping project and dependencies - done!
-#   Cleaning up temp directory - done!
-#   Uploading version 1.0.0 - done!
-#
-# Build and upload complete! Try loading the Zapier editor now, or try `zapier promote` to put it into rotation or `zapier migrate` to move users over
-```
+**Flags**
+* `--disable-dependency-detection` | Disables "smart" file inclusion. By default, Zapier only includes files that are required by `index.js`. If you (or your dependencies) require files dynamically (such as with `require(someVar)`), then you may see "Cannot find module" errors. Disabling this may make your `build.zip` too large. If that's the case, try using the `includeInBuild` option in your `.zapierapprc`. [See the docs](includeInBuild) for more info.
+* `-d, --debug` | Show extra debugging output
 
 
 ## register
@@ -763,23 +724,16 @@ This command is effectively the same as `npm test`, except we also validate your
 
 ## upload
 
-  > Upload the last build as a version.
+> Uploads the latest build of your app to Zapier
 
-  **Usage:** `zapier upload`
+**Usage**: `zapier upload`
 
-  
-Upload the zip files already built by `zapier build` in build/build.zip and build/source.zip. The version and other app details are read by Zapier from the zip files.
+This command sends both build/build.zip and build/source.zip to Zapier for use.
 
-> Note: we generally recommend using `zapier push` which does both `zapier build && zapier upload` in one step.
+> Note: Typically we recommend using `zapier push`, which does a build and upload, rather than `upload` by itself.
 
-```bash
-$ zapier upload
-# Preparing to upload a new version.
-#
-#   Uploading version 1.0.0 - done!
-#
-# Upload of build/build.zip and build/source.zip complete! Try `zapier versions` now!
-```
+**Flags**
+* `-d, --debug` | Show extra debugging output
 
 
 ## validate
