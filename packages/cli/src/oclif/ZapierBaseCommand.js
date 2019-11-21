@@ -229,6 +229,9 @@ class ZapierBaseCommand extends Command {
       ...(this.flags ? ['', '**Flags**', ...formattedFlags()] : []),
       ...(this.examples
         ? ['', '**Examples**', this.examples.map(e => `* \`${e}\``).join('\n')]
+        : []),
+      ...(this.aliases.length
+        ? ['', '**Aliases**', this.aliases.map(e => `* \`${e}\``).join('\n')]
         : [])
     ]
       .join('\n')
