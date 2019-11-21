@@ -58,7 +58,7 @@ class PromoteCommand extends BaseCommand {
 
     const app = await getLinkedApp();
     this.log(
-      `Preparing to promote version ${version} of your app "${app.title}".`
+      `Preparing to promote version ${version} of your integration "${app.title}".`
     );
 
     const body = {};
@@ -82,11 +82,11 @@ class PromoteCommand extends BaseCommand {
       const activationUrl = _.get(response, ['json', 'activationInfo', 'url']);
       if (activationUrl) {
         this.stopSpinner();
-        this.log('\nGood news! Your app passes validation.');
+        this.log('\nGood news! Your integration passes validation.');
         this.log(
           `The next step is to visit ${colors.cyan(
             activationUrl
-          )} to request public activation of your app.`
+          )} to request public activation of your integration.`
         );
       } else {
         this.stopSpinner({ success: false });
@@ -128,7 +128,7 @@ PromoteCommand.args = [
 PromoteCommand.examples = ['zapier promote 1.0.0'];
 PromoteCommand.description = `Promotes a specific version to public access.
 
-Promotes an app version into production (non-private) rotation, which means new users can use this app version.
+Promotes an integration version into production (non-private) rotation, which means new users can use this integration version.
 
 * This ${colors.bold(
   'does'
@@ -143,7 +143,7 @@ Promotes an app version into production (non-private) rotation, which means new 
   'NOT'
 )} recommend old users stop using this version - \`zapier deprecate 1.0.0 2017-01-01\` does that.
 
-Promotes are an inherently safe operation for all existing users of your app.
+Promotes are an inherently safe operation for all existing users of your integration.
 
 > If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to make your app public. We'll respond within a few business days.`;
 

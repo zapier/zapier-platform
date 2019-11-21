@@ -12,16 +12,17 @@ const REGEX_VERSION = /\d+\.\d+\.\d+/;
 
 const setupZapierRC = () => {
   let hasRC = false;
-  if (process.env.DEPLOY_KEY) {
-    const rcPath = path.join(os.homedir(), '.zapierrc');
-    if (!fs.existsSync(rcPath)) {
-      fs.writeFileSync(
-        rcPath,
-        JSON.stringify({ deployKey: process.env.DEPLOY_KEY })
-      );
-      hasRC = true;
-    }
+  const rcPath = path.join(os.homedir(), '.zapierrc');
+  if (fs.existsSync(rcPath)) {
+    hasRC = true;
+  } else if (process.env.DEPLOY_KEY) {
+    fs.writeFileSync(
+      rcPath,
+      JSON.stringify({ deployKey: process.env.DEPLOY_KEY })
+    );
+    hasRC = true;
   }
+
   return hasRC;
 };
 

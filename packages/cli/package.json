@@ -82,6 +82,12 @@
   "oclif": {
     "commands": "src/oclif/commands",
     "bin": "zapier",
-    "plugins": []
+    "plugins": [],
+    "hooks": {
+      "init": "./src/oclif/hooks/deprecated"
+    },
+    "topics": {
+      "env": {"description": "Interact with your integration's environment"}
+    }
   }
 }

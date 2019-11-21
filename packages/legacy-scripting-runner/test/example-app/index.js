@@ -288,6 +288,9 @@ const legacyScriptingSource = `
         data.bundleEvent = bundle.event;
         data.bundleZap = bundle.zap;
 
+        // Old alias for bundle.target_url
+        data.bundleSubscriptionUrl = bundle.subscription_url;
+
         bundle.request.data = z.JSON.stringify(data);
         return bundle.request;
       },
@@ -310,6 +313,9 @@ const legacyScriptingSource = `
         data.bundleSubscribeData = bundle.subscribe_data;
         data.bundleEvent = bundle.event;
         data.bundleZap = bundle.zap;
+
+        // Old alias for bundle.target_url
+        data.bundleSubscriptionUrl = bundle.subscription_url;
 
         bundle.request.data = z.JSON.stringify(data);
         bundle.request.method = 'DELETE';
