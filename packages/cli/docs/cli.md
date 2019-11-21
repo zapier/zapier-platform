@@ -98,7 +98,7 @@ $ zapier convert 1234 .
 
 **Usage**: `zapier delete:integration`
 
-This only works if there are no active users or Zaps on any version. If you only want to delete certain versions, use the zapier delete:version command instead. It's unlikely that you'll be able to run this on an app that you've pushed publicly, since there are usually still users.
+This only works if there are no active users or Zaps on any version. If you only want to delete certain versions, use the `zapier delete:version` command instead. It's unlikely that you'll be able to run this on an app that you've pushed publicly, since there are usually still users.
 
 **Flags**
 * `-d, --debug` | Show extra debugging output
@@ -113,7 +113,7 @@ This only works if there are no active users or Zaps on any version. If you only
 
 **Usage**: `zapier delete:version VERSION`
 
-This only works if there are no users or Zaps on that version. You will probably need to have run zapier migrate and zapier deprecate before this comand will work.
+This only works if there are no users or Zaps on that version. You will probably need to have run `zapier migrate` and `zapier deprecate` before this comand will work.
 
 **Arguments**
 * (required) `version` | Specify the version to delete. It must have no users or Zaps.

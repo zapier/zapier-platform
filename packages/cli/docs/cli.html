@@ -429,7 +429,7 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Deletes your integration (including all versions).</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier delete:integration</code></p><p>This only works if there are no active users or Zaps on any version. If you only want to delete certain versions, use the zapier delete:version command instead. It&apos;s unlikely that you&apos;ll be able to run this on an app that you&apos;ve pushed publicly, since there are usually still users.</p><p><strong>Flags</strong></p><ul>
+</blockquote><p><strong>Usage</strong>: <code>zapier delete:integration</code></p><p>This only works if there are no active users or Zaps on any version. If you only want to delete certain versions, use the <code>zapier delete:version</code> command instead. It&apos;s unlikely that you&apos;ll be able to run this on an app that you&apos;ve pushed publicly, since there are usually still users.</p><p><strong>Flags</strong></p><ul>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>delete:app</code></li>
@@ -453,7 +453,7 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Deletes a specific version of your integration.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier delete:version VERSION</code></p><p>This only works if there are no users or Zaps on that version. You will probably need to have run zapier migrate and zapier deprecate before this comand will work.</p><p><strong>Arguments</strong></p><ul>
+</blockquote><p><strong>Usage</strong>: <code>zapier delete:version VERSION</code></p><p>This only works if there are no users or Zaps on that version. You will probably need to have run <code>zapier migrate</code> and <code>zapier deprecate</code> before this comand will work.</p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>version</code> | Specify the version to delete. It must have no users or Zaps.</li>
 </ul><p><strong>Flags</strong></p><ul>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
