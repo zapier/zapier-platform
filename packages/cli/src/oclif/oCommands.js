@@ -5,7 +5,10 @@ module.exports = {
   apps: true,
   build: require('./commands/build'),
   deprecate: require('./commands/deprecate'),
-  env: true, // used so that aliases are properly routed into ocli, but `env` itself doesn't show in help/docs
+  delete: true,
+  'delete:integration': require('./commands/delete/integration'),
+  'delete:version': require('./commands/delete/version'),
+  env: true, // used so that aliases are properly routed into oclif, but `env` itself doesn't show in help/docs
   'env:get': require('./commands/env/get'),
   'env:set': require('./commands/env/set'),
   'env:unset': require('./commands/env/unset'),

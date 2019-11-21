@@ -87,6 +87,7 @@
       "init": "./src/oclif/hooks/deprecated"
     },
     "topics": {
+      "delete": { "description": "Delete your entire integration or a specific integration version" },
       "env": {"description": "Interact with your integration's environment"}
     }
   }

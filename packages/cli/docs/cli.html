@@ -248,7 +248,8 @@ a code {
 <li><a href="#analytics">analytics</a></li>
 <li><a href="#build">build</a></li>
 <li><a href="#convert">convert</a></li>
-<li><a href="#delete">delete</a></li>
+<li><a href="#deleteintegration">delete:integration</a></li>
+<li><a href="#deleteversion">delete:version</a></li>
 <li><a href="#deprecate">deprecate</a></li>
 <li><a href="#describe">describe</a></li>
 <li><a href="#envget">env:get</a></li>
@@ -417,7 +418,7 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="delete">delete</h2>
+      <h2 id="deleteintegration">delete:integration</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -427,21 +428,39 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Delete a version of your app (or the whole app) as long as it has no users/Zaps.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier delete version 1.0.0</code></p><p>A utility to allow deleting app versions that aren&apos;t used.</p><blockquote>
-<p>The app version needs to have no users/Zaps in order to be deleted.</p>
-</blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>appOrVersion [{app,version}]</code> -- <strong>required</strong>, delete the whole app, or just a version?</li>
-<li><code>version [1.0.0]</code> -- <em>optional</em>, the version to delete</li>
+<p>Deletes your integration (including all versions).</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier delete:integration</code></p><p>This only works if there are no active users or Zaps on any version. If you only want to delete certain versions, use the <code>zapier delete:version</code> command instead. It&apos;s unlikely that you&apos;ll be able to run this on an app that you&apos;ve pushed publicly, since there are usually still users.</p><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Aliases</strong></p><ul>
+<li><code>delete:app</code></li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier delete version 1.0.0
-<span class="hljs-comment"># Preparing to delete version 1.0.0 of your app &quot;Example&quot;.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Deleting 1.0.0 - done!</span>
-<span class="hljs-comment">#   Deletion successful!</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="deleteversion">delete:version</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Deletes a specific version of your integration.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier delete:version VERSION</code></p><p>This only works if there are no users or Zaps on that version. You will probably need to have run <code>zapier migrate</code> and <code>zapier deprecate</code> before this comand will work.</p><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>version</code> | Specify the version to delete. It must have no users or Zaps.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
