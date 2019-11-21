@@ -253,7 +253,9 @@ a code {
 <li><a href="#delete">delete</a></li>
 <li><a href="#deprecate">deprecate</a></li>
 <li><a href="#describe">describe</a></li>
-<li><a href="#env">env</a></li>
+<li><a href="#envget">env:get</a></li>
+<li><a href="#envset">env:set</a></li>
+<li><a href="#envunset">env:unset</a></li>
 <li><a href="#help">help</a></li>
 <li><a href="#history">history</a></li>
 <li><a href="#init">init</a></li>
@@ -602,7 +604,7 @@ $ zapier collaborate user@example.com --remove
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="env">env</h2>
+      <h2 id="envget">env:get</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -613,13 +615,67 @@ $ zapier collaborate user@example.com --remove
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Gets Environment variables for a version.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier env VERSION</code></p><p><strong>Arguments</strong></p><ul>
+</blockquote><p><strong>Usage</strong>: <code>zapier env:get VERSION</code></p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>version</code> | The version to get the environment for.</li>
 </ul><p><strong>Flags</strong></p><ul>
 <li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier env:get 1.2.3</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="envset">env:set</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Sets environment variable(s) for a version.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier env:set VERSION [KEY-VALUE PAIRS...]</code></p><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>version</code> | The version to set the environment for. Values are copied forward when a new version is created, but this command will only ever affect the specified version.</li>
+<li><code>key-value pairs...</code> | The key-value pairs to set. Keys are case-insensitive. Each pair should be space separated and pairs should be separated by an <code>=</code>. For example: <code>A=123 B=456</code></li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier env:set 1.2.3 SECRET=12345 OTHER=4321</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="envunset">env:unset</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Unsets environment variable(s) for a version.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier env:unset VERSION [KEYS...]</code></p><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>version</code> | The version to set the environment for.</li>
+<li><code>keys...</code> | The keys to unset. Keys are case-insensitive.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier env:unset 1.2.3 SECRET OTHER</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

@@ -42,6 +42,7 @@ const commandMarkdown = (name, command) =>
 // Takes all the cmd.docs and puts them into a big md file.
 const generateCliMarkdown = () => {
   return _.orderBy(Object.keys(commands))
+    .filter(name => !_.isBoolean(commands[name]))
     .filter(name => !commands[name].hide)
     .map(name => {
       return commandMarkdown(name, commands[name]);

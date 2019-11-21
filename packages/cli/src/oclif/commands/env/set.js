@@ -15,10 +15,7 @@ class SetEnvCommand extends BaseCommand {
     const { version } = this.args;
     this.throwForInvalidVersion(version);
     // args should be [ '1.0.0', 'qer=123', 'qwer=123' ]
-    const valuesToSet = this.argv
-      .slice(1)
-      .filter(k => !k.startsWith('-'))
-      .map(k => k.toUpperCase());
+    const valuesToSet = this.argv.slice(1).filter(kv => !kv.startsWith('-'));
 
     if (!valuesToSet.length) {
       this.error(
@@ -26,7 +23,7 @@ class SetEnvCommand extends BaseCommand {
       );
     }
 
-    if (!valuesToSet.every(v => v.includes('='))) {
+    if (!valuesToSet.every(kv => kv.includes('='))) {
       this.error('Every key-value pair must be in the format `SOME_KEY=1234`');
     }
 
@@ -58,9 +55,13 @@ class SetEnvCommand extends BaseCommand {
     } catch (e) {
       // comes back as json: { errors: [ 'The following keys failed to update: 3QER, 4WER' ] },
       const failedKeys = e.json.errors[0].split('update: ')[1].split(', ');
+      const successfulResult = omit(payload, failedKeys);
+      if (!Object.keys(successfulResult).length) {
+        this.error(e.json.errors);
+      }
 
       this.warn(successMessage(version));
-      this.logJSON(omit(payload, failedKeys));
+      this.logJSON(successfulResult);
       this.warn(`However, these keys failed to update: ${failedKeys}`);
     }
   }
@@ -69,7 +70,8 @@ class SetEnvCommand extends BaseCommand {
 SetEnvCommand.args = [
   {
     name: 'version',
-    description: 'The version to set the environment for.',
+    description:
+      'The version to set the environment for. Values are copied forward when a new version is created, but this command will only ever affect the specified version.',
     required: true
   },
   {

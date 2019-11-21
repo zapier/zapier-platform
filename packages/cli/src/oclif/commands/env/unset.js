@@ -24,9 +24,7 @@ class UnsetEnvCommand extends BaseCommand {
     }
 
     if (keysToUnset.some(v => v.includes('='))) {
-      this.error(
-        'Do not specify values using the unset operation, only values'
-      );
+      this.error('Do not specify values using the unset operation, only keys');
     }
 
     // if we get here, we should have well-formed input
@@ -58,13 +56,12 @@ UnsetEnvCommand.args = [
     required: true
   },
   {
-    name: 'key-value pairs...',
-    description:
-      'The keys and values to set. Keys are upcased at save. Each pair should be space separated and keys and values should be separated by an `=`. For example: `A=123 B=456`'
+    name: 'keys...',
+    description: 'The keys to unset. Keys are case-insensitive.'
   }
 ];
 UnsetEnvCommand.flags = buildFlags();
-UnsetEnvCommand.description = `Un-sets environment variable(s) for a version.`;
+UnsetEnvCommand.description = `Unsets environment variable(s) for a version.`;
 UnsetEnvCommand.examples = [`zapier env:unset 1.2.3 SECRET OTHER`];
 UnsetEnvCommand.strict = false;
 

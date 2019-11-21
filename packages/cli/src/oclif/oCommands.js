@@ -4,7 +4,10 @@ module.exports = {
   analytics: require('./commands/analytics'),
   apps: require('./commands/apps'),
   deprecate: require('./commands/deprecate'),
-  env: require('./commands/env/get'), // oclif actually routes, just need to import something valid here
+  env: true, // used so that subcommands are properly routed into ocli, but `env` itself doesn't show in help/docs
+  'env:get': require('./commands/env/get'),
+  'env:set': require('./commands/env/set'),
+  'env:unset': require('./commands/env/unset'),
   history: require('./commands/history'),
   init: require('./commands/init'),
   login: require('./commands/login'),

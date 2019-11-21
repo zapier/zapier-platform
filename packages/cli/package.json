@@ -84,7 +84,7 @@
     "bin": "zapier",
     "plugins": [],
     "topics": {
-      "env": {"description": "Interact with your app's environment"}
+      "env": {"description": "Interact with your integration's environment"}
     }
   }
 }
