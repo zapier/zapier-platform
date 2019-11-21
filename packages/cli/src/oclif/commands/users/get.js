@@ -18,7 +18,7 @@ class UsersListCommand extends ZapierBaseCommand {
     this.log(
       `\n${yellow(
         'Note'
-      )} that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the \`users:add --email\` command or the web UI).\n`
+      )} that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the \`users:add EMAIL\` command or the web UI).\n`
     );
 
     this.logTable({

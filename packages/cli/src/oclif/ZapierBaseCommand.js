@@ -90,7 +90,6 @@ class ZapierBaseCommand extends Command {
     }
   }
 
-  // we may not end up needing this
   logJSON(o) {
     if (typeof o === 'string') {
       console.log(o);
@@ -133,15 +132,14 @@ class ZapierBaseCommand extends Command {
    * @param {string} question the question to ask the user
    * @param {object} opts `inquierer.js` opts ([read more](https://github.com/SBoudrias/Inquirer.js/#question))
    */
-  prompt(question, opts = {}) {
-    return inquirer
-      .prompt({
-        type: 'string',
-        ...opts,
-        name: 'ans',
-        message: question
-      })
-      .then(({ ans }) => ans);
+  async prompt(question, opts = {}) {
+    const { ans } = await inquirer.prompt({
+      type: 'string',
+      ...opts,
+      name: 'ans',
+      message: question
+    });
+    return ans;
   }
 
   promptHidden(question) {

@@ -53,50 +53,6 @@ This command is typically followed by `zapier upload`.
 * `-d, --debug` | Show extra debugging output
 
 
-## collaborate
-
-  > Manage the admins on your project. Can optionally --remove.
-
-  **Usage:** `zapier collaborate [user@example.com]`
-
-  
-Give any user registered on Zapier the ability to collaborate on your app. Commonly, this is useful for teammates, contractors, or other developers who might want to make changes on your app. Only admin access is supported. If you'd only like to provide read-only or testing access, try `zapier invite`.
-
-**Arguments**
-
-* _none_ -- print all admins
-* `email [user@example.com]` -- _optional_, which user to add/remove
-* `--remove` -- _optional_, elect to remove this user
-* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
-
-```bash
-$ zapier collaborate
-# The admins on your app "Example" listed below.
-#
-# ┌──────────────────┬───────┬──────────┐
-# │ Email            │ Role  │ Status   │
-# ├──────────────────┼───────┼──────────┤
-# │ user@example.com │ admin │ accepted │
-# └──────────────────┴───────┴──────────┘
-
-$ zapier collaborate user@example.com
-# Preparing to add admin user@example.com to your app "Example".
-#
-#   Adding user@example.com - done!
-#
-# Admins updated! Try viewing them with `zapier collaborate`.
-
-$ zapier collaborate user@example.com --remove
-# Preparing to remove admin user@example.com from your app "Example".
-#
-#   Removing user@example.com - done!
-#
-# Admins updated! Try viewing them with `zapier collaborate`.
-```
-
-
 ## convert
 
   > Converts a Legacy Web Builder or Visual Builder app to a CLI app.
@@ -398,57 +354,6 @@ This command also checks the current directory for a linked integration.
 
 **Aliases**
 * `apps`
-
-
-## invite
-
-  > Manage the invitees/testers on your project. Can optionally specify a version or --remove.
-
-  **Usage:** `zapier invite [user@example.com] [1.0.0]`
-
-  
-Invite any user registered on Zapier to test your app. Commonly, this is useful for teammates, contractors, or other team members who might want to test, QA, or view your app versions. If you'd like to provide full admin access, try `zapier collaborate`.
-
-> Send an email directly, which contains a one-time use link for them only - or share the public URL to "bulk" invite folks!
-
-**Arguments**
-
-* _none_ -- print all invitees
-* `email [user@example.com]` -- _optional_, which user to add/remove
-* `version [1.0.0]` -- _optional_, only invite to a specific version
-* `--remove` -- _optional_, elect to remove this user
-* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
-
-```bash
-$ zapier invite
-# The invitees on your app listed below.
-
-# ┌───────────────────┬──────────┬──────────┬─────────┐
-# │ Email             │ Role     │ Status   │ Version │
-# ├───────────────────┼──────────┼──────────┼─────────┤
-# │ user@example.com  │ invitees │ accepted │ 1.0.0   │
-# └───────────────────┴──────────┴──────────┴─────────┘
-#
-# Don't want to send individual invite emails? Use this public link and share with anyone on the web:
-#
-#   https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/
-
-$ zapier invite user@example.com 1.0.0
-# Preparing to add invitee user@example.com to your app "Example (1.0.0)".
-#
-#   Adding user@example.com - done!
-#
-# Invitees updated! Try viewing them with `zapier invite`.
-
-$ zapier invite user@example.com --remove
-# Preparing to remove invitee user@example.com from your app "Example".
-#
-#   Removing user@example.com - done!
-#
-# Invitees updated! Try viewing them with `zapier invite`.
-```
 
 
 ## link

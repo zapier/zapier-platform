@@ -273,7 +273,7 @@ const listEndpointMulti = async (...calls) => {
       url: route.startsWith('http') ? route : undefined
     });
 
-    const { objects, theRest } = results;
+    const { objects, ...theRest } = results;
     output = { ...output, [keyOverride || endpoint]: objects, ...theRest };
   }
   return output;
