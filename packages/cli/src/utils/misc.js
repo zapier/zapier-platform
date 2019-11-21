@@ -50,9 +50,7 @@ const runCommand = (command, args, options) => {
       result.stdout.on('data', data => {
         const str = data.toString();
         stdout += str;
-        if (global.argOpts.debug) {
-          process.stdout.write(colors.green(str));
-        }
+        debug(colors.green(str));
       });
     }
 
@@ -61,9 +59,7 @@ const runCommand = (command, args, options) => {
       result.stderr.on('data', data => {
         const str = data.toString();
         stderr += str;
-        if (global.argOpts.debug) {
-          process.stderr.write(colors.red(str));
-        }
+        debug(colors.red(str));
       });
     }
 

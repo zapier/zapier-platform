@@ -202,7 +202,15 @@ const getLinkedApp = appDir => {
         console.error(e);
       }
       throw new Error(
-        `Warning! ${constants.CURRENT_APP_FILE} seems to be incorrect. Try running \`zapier link\` or \`zapier register\`.`
+        `Unable to complete that operation. Either: your auth file is stale (run \`${colors.cyan(
+          'zapier login'
+        )}\`) or your ${
+          constants.CURRENT_APP_FILE
+        } points to an app you can't access (run \`${colors.cyan(
+          'zapier link'
+        )}\` to refresh the link to an existing app or \`${colors.cyan(
+          'zapier register'
+        )}\` to create a new app).`
       );
     });
 };
@@ -255,31 +263,18 @@ const listEndpoint = (endpoint, keyOverride) => {
     });
 };
 
-const listVersions = () => {
-  return listEndpoint('versions');
-};
+const listVersions = () => listEndpoint('versions');
 
-const listHistory = () => {
-  return listEndpoint('history');
-};
+const listHistory = () => listEndpoint('history');
 
-const listInvitees = () => {
-  return listEndpoint('invitees');
-};
+const listInvitees = () => listEndpoint('invitees');
 
 const listLogs = opts => {
   return listEndpoint(`logs?${qs.stringify(_.omit(opts, 'debug'))}`, 'logs');
 };
 
-const listEnv = version => {
-  let endpoint;
-  if (version) {
-    endpoint = `versions/${version}/environment`;
-  } else {
-    endpoint = 'environment';
-  }
-  return listEndpoint(endpoint, 'environment');
-};
+const listEnv = version =>
+  listEndpoint(`versions/${version}/environment`, 'env');
 
 const validateApp = async definition => {
   let checkResult;
@@ -308,48 +303,44 @@ const validateApp = async definition => {
   return checkResult;
 };
 
-const upload = (zipPath, sourceZipPath, appDir) => {
-  zipPath = zipPath || constants.BUILD_PATH;
-  sourceZipPath = sourceZipPath || constants.SOURCE_PATH;
-  appDir = appDir || '.';
+const upload = async () => {
+  const zipPath = constants.BUILD_PATH;
+  const sourceZipPath = constants.SOURCE_PATH;
+  const appDir = process.cwd();
 
   const fullZipPath = path.resolve(appDir, zipPath);
   const fullSourceZipPath = path.resolve(appDir, sourceZipPath);
-  const isMissingZip = !fs.existsSync(fullZipPath);
 
-  if (isMissingZip) {
+  if (!fs.existsSync(fullZipPath)) {
     throw new Error(
-      'Missing a built app. Try running `zapier build` first.\nOr you could run `zapier push`, which will build and upload in one command.'
+      'Missing a built app. Try running `zapier build` first.\nAlternatively, run `zapier push`, which will build and upload in one command.'
     );
   }
 
-  return getLinkedApp(appDir)
-    .then(app => {
-      const zip = new AdmZip(fullZipPath);
-      const definitionJson = zip.readAsText('definition.json');
-      if (!definitionJson) {
-        throw new Error('definition.json in the zip was missing!');
-      }
-      const definition = JSON.parse(definitionJson);
+  const app = await getLinkedApp(appDir);
+  const zip = new AdmZip(fullZipPath);
+  const definitionJson = zip.readAsText('definition.json');
+  if (!definitionJson) {
+    throw new Error('definition.json in the zip was missing!');
+  }
+  const definition = JSON.parse(definitionJson);
 
-      const binaryZip = fs.readFileSync(fullZipPath);
-      const buffer = Buffer.from(binaryZip).toString('base64');
+  const binaryZip = fs.readFileSync(fullZipPath);
+  const buffer = Buffer.from(binaryZip).toString('base64');
 
-      const binarySourceZip = fs.readFileSync(fullSourceZipPath);
-      const sourceBuffer = Buffer.from(binarySourceZip).toString('base64');
+  const binarySourceZip = fs.readFileSync(fullSourceZipPath);
+  const sourceBuffer = Buffer.from(binarySourceZip).toString('base64');
 
-      startSpinner(`Uploading version ${definition.version}`);
-      return callAPI(`/apps/${app.id}/versions/${definition.version}`, {
-        method: 'PUT',
-        body: {
-          zip_file: buffer,
-          source_zip_file: sourceBuffer
-        }
-      });
-    })
-    .then(() => {
-      endSpinner();
-    });
+  startSpinner(`Uploading version ${definition.version}`);
+  await callAPI(`/apps/${app.id}/versions/${definition.version}`, {
+    method: 'PUT',
+    body: {
+      zip_file: buffer,
+      source_zip_file: sourceBuffer
+    }
+  });
+
+  endSpinner();
 };
 
 module.exports = {

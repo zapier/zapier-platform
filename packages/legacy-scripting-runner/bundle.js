@@ -116,9 +116,11 @@ const addHookData = (event, bundle, convertedBundle) => {
     }
   } else if (event.name.startsWith('trigger.hook.subscribe')) {
     convertedBundle.target_url = bundle.targetUrl;
+    convertedBundle.subscription_url = bundle.targetUrl;
     convertedBundle.event = bundle._legacyEvent;
   } else if (event.name.startsWith('trigger.hook.unsubscribe')) {
     convertedBundle.target_url = bundle.targetUrl;
+    convertedBundle.subscription_url = bundle.targetUrl;
     convertedBundle.subscribe_data = bundle.subscribeData;
     convertedBundle.event = bundle._legacyEvent;
   }
