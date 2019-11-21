@@ -5,6 +5,7 @@ module.exports = {
   apps: require('./commands/apps'),
   build: require('./commands/build'),
   deprecate: require('./commands/deprecate'),
+  delete: require('./commands/delete/integration'),
   history: require('./commands/history'),
   init: require('./commands/init'),
   login: require('./commands/login'),

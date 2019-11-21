@@ -151,28 +151,14 @@ $ zapier convert 1234 .
 
 ## delete
 
-  > Delete a version of your app (or the whole app) as long as it has no users/Zaps.
+> Deletes your integration (including all versions).
 
-  **Usage:** `zapier delete version 1.0.0`
+**Usage**: `zapier delete`
 
-  
-A utility to allow deleting app versions that aren't used.
+This only works if there are no active users or Zaps on any version. If you only want to delete certain versions, use the zapier delete:version command instead. It's unlikely that you'll be able to run this on an app that you've pushed publicly, since there are usually still users.
 
-> The app version needs to have no users/Zaps in order to be deleted.
-
-**Arguments**
-
-* `appOrVersion [{app,version}]` -- **required**, delete the whole app, or just a version?
-* `version [1.0.0]` -- _optional_, the version to delete
-
-
-```bash
-$ zapier delete version 1.0.0
-# Preparing to delete version 1.0.0 of your app "Example".
-#
-#   Deleting 1.0.0 - done!
-#   Deletion successful!
-```
+**Flags**
+* `-d, --debug` | Show extra debugging output
 
 
 ## deprecate

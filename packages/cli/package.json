@@ -82,6 +82,9 @@
   "oclif": {
     "commands": "src/oclif/commands",
     "bin": "zapier",
-    "plugins": []
+    "plugins": [],
+    "topics": {
+      "delete": { "description": "Delete your entire integration or a specific integration version" }
+    }
   }
 }

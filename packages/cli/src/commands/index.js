@@ -1,7 +1,6 @@
 module.exports = {
   collaborate: require('./collaborate'),
   convert: require('./convert'),
-  delete: require('./delete'),
   describe: require('./describe'),
   env: require('./env'),
   help: require('./help'),
