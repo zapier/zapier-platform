@@ -1,5 +1,4 @@
 // Index of each item is equivalent to the major of zapier-platform-core version.
-// The next item will be for zapier-platform-core version of major 7.
 
 // node version listed here: https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html
 module.exports = [
@@ -11,5 +10,6 @@ module.exports = [
   { nodeVersion: '6.10.3', npmVersion: '>=3.10.10' }, // 5.x // patch version change on AWS
   { nodeVersion: '6.10.3', npmVersion: '>=3.10.10' }, // 6.x
   { nodeVersion: '8.10.0', npmVersion: '>=5.6.0' }, // 7.x
-  { nodeVersion: '8.10.0', npmVersion: '>=5.6.0' } // 8.x
+  { nodeVersion: '8.10.0', npmVersion: '>=5.6.0' }, // 8.x
+  { nodeVersion: '10', npmVersion: '>=5.6.0' } // 9.x; it's no longer a specific version
 ];

@@ -1,6 +1,5 @@
 const os = require('os');
 const path = require('path');
-const semver = require('semver');
 const versionStore = require('./version-store');
 
 const BASE_ENDPOINT = process.env.ZAPIER_BASE_ENDPOINT || 'https://zapier.com';
@@ -24,9 +23,7 @@ const BLACKLISTED_PATHS = [
   '.environment',
   'build'
 ];
-const nodeVersion = semver.Comparator(
-  versionStore[versionStore.length - 1].nodeVersion
-).semver.version;
+const nodeVersion = versionStore[versionStore.length - 1].nodeVersion;
 const LAMBDA_VERSION = `v${nodeVersion}`;
 const AUTH_KEY = 'deployKey';
 const ANALYTICS_KEY = 'analyticsMode';

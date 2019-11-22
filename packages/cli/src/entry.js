@@ -36,7 +36,7 @@ module.exports = argv => {
   if (!utils.isValidNodeVersion()) {
     console.error(
       colors.red(
-        `Requires node version >= ${LAMBDA_VERSION}, found ${process.versions.node}. Please upgrade node.`
+        `Requires node version >= ${LAMBDA_VERSION}, found ${process.versions.node}. Please upgrade Node.js.`
       )
     );
     process.exitCode = 1;

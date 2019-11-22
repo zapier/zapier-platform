@@ -178,16 +178,16 @@ _→ Learn more in our [Zapier Platform UI vs CLI](https://platform.zapier.com/d
 
 ### Requirements
 
-All Zapier CLI apps are run using Node.js `v8.10.0`.
+All Zapier CLI apps are run using Node.js `v10`.
 
-You can develop using any version of Node you'd like, but your eventual code must be compatible with `v8.10.0`. If you're using features not yet available in `v8.10.0`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
+You can develop using any version of Node you'd like, but your eventual code must be compatible with `v10`. If you're using features not yet available in `v10`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
 
-To ensure stability for our users, we strongly encourage you run tests on `v8.10.0` sometime before your code reaches users. This can be done multiple ways.
+To ensure stability for our users, we strongly encourage you run tests on `v10` sometime before your code reaches users. This can be done multiple ways.
 
 Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform/blob/master/example-apps/minimal/.travis.yml) file in our template apps to get you started.
 
 Alternatively, you can change your local node version with tools such as [nvm](https://github.com/nvm-sh/nvm#installation-and-update) or [n](https://github.com/tj/n#installation).
-Then you can either swap to that version with `nvm use v8.10.0`, or do `nvm exec v8.10.0 zapier test` so you can run tests without having to switch versions while developing.
+Then you can either swap to that version with `nvm use v10`, or do `nvm exec v10 zapier test` so you can run tests without having to switch versions while developing.
 
 
 ### Quick Setup Guide
@@ -2609,7 +2609,7 @@ This makes it pretty straightforward to integrate into your testing interface. I
 ```yaml
 language: node_js
 node_js:
-  - "v8.10.0"
+  - "v10"
 before_script: npm install -g zapier-platform-cli
 script: CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
@@ -2748,7 +2748,7 @@ See [the wiki](https://github.com/zapier/zapier-platform/wiki/Example-Apps) for 
 
 ### Why doesn't Zapier support newer versions of Node.js?
 
-We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node (the latest of which is `v8.10.0`. As that updates, so too will we.
+We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node (the latest of which is `v10`. As that updates, so too will we.
 
 ### How do I manually set the Node.js version to run my app with?
 
@@ -3032,7 +3032,7 @@ then you need to update your `zapier-platform-core` dependency to a non-deprecat
 
 1. Edit `package.json` to depend on a version of `zapier-platform-core` >= `7.0.0`. (8.x is the latest) There's a list of all breaking changes (marked with an :exclamation:) in the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md).
 2. Increment the `version` property in `package.json`
-3. Ensure you're using version `v8.10.0` (or greater) of node locally (`node -v`). Use [nvm](https://github.com/nvm-sh/nvm) to use a different one if need be.
+3. Ensure you're using version `v10` (or greater) of node locally (`node -v`). Use [nvm](https://github.com/nvm-sh/nvm) to use a different one if need be.
 4. Run `rm -rf node_modules && npm i` to get a fresh copy of everything
 5. Run `zapier test` to ensure your tests still pass
 6. Run `zapier push`
@@ -3133,7 +3133,7 @@ The Zapier platform and its tools are under active development. While you don't 
 Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is `8.4.2`. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is `9.0.0`. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 
