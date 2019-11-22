@@ -4071,7 +4071,7 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
 
       <span class="hljs-comment">// Pass appTester the path to the trigger you want to call,</span>
       <span class="hljs-comment">// and the input bundle. appTester returns a promise for results.</span>
-      appTester(App.App.triggers.recipe.operation.perform, bundle)
+      appTester(App.triggers.recipe.operation.perform, bundle)
         .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
           <span class="hljs-comment">// Make assertions</span>
 

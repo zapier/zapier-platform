@@ -20,7 +20,7 @@ describe('triggers', () => {
 
       // Pass appTester the path to the trigger you want to call,
       // and the input bundle. appTester returns a promise for results.
-      appTester(App.App.triggers.recipe.operation.perform, bundle)
+      appTester(App.triggers.recipe.operation.perform, bundle)
         .then(results => {
           // Make assertions
 
