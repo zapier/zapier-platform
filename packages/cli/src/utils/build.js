@@ -150,7 +150,7 @@ const forceIncludeDumbPath = (appConfig, filePath) => {
     return true; // Because of consistent-return
   });
 
-  const nodeMajorVersion = semver(constants.LAMBDA_VERSION).major;
+  const nodeMajorVersion = semver.coerce(constants.LAMBDA_VERSION).major;
 
   return (
     filePath.endsWith('package.json') ||

@@ -53,7 +53,8 @@ cd ..
 
 # Build the zip!
 cd $CONTENTS_DIR
-zip -R ../$FILE '*.js' '*.json' '*/linux-x64-node-8/*.node'
+# the node-X segment in the next line should match the latest major version
+zip -R ../$FILE '*.js' '*.json' '*/linux-x64-node-10/*.node'
 
 # Remove generated files
 rm -f zapierwrapper.js definition.json core-*.tgz legacy-scripting-runner-*.tgz
