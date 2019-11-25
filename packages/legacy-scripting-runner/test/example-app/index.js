@@ -445,6 +445,11 @@ const legacyScriptingSource = `
         };
       },
 
+      movie_pre_write_no_content: function(bundle) {
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/status/204';
+        return bundle.request;
+      },
+
       movie_write_default_headers: function(bundle) {
         bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
         bundle.request.data = z.JSON.stringify({
