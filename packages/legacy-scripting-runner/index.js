@@ -616,9 +616,19 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       bundle.request = request;
 
       const postMethod = postMethodName ? Zap[postMethodName] : null;
-      result = postMethod
-        ? await runEvent({ key, name: postEventName, response }, zcli, bundle)
-        : zcli.JSON.parse(response.content);
+      if (postMethod) {
+        result = await runEvent(
+          { key, name: postEventName, response },
+          zcli,
+          bundle
+        );
+      } else {
+        try {
+          result = zcli.JSON.parse(response.content);
+        } catch {
+          result = {};
+        }
+      }
     }
 
     result = ensureIsType(result, options.ensureType);
