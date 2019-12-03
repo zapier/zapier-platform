@@ -27,6 +27,7 @@ See below for a detailed changelog:
 - :exclamation: Refactor `delete` into `delete:integration` and `delete:version` ([docs](https://github.com/zapier/zapier-platform/blob/master/docs/cli.md#deleteintegration)) ([#109](https://github.com/zapier/zapier-platform/pull/109))
 - :exclamation: Refactor `logout` command to only clear the local session, not all of them ([#60](https://github.com/zapier/zapier-platform/pull/60))
 - :exclamation: `scaffold` command errors if a file name already exists ([#88](https://github.com/zapier/zapier-platform/pull/88))
+- :exclamation: `validate` depends on having a valid `deployKey` available (either in the environment or in the auth file, `~/.zapierrc`). This is a regression and will be fixed in a later version. In the meantime, see [Using CI](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#testing-in-your-ci) for more info.
 - :tada: Add saml support during `login` ([#61](https://github.com/zapier/zapier-platform/pull/61))
 - Refactor the following commands to use the new CLI setup:
   - build
