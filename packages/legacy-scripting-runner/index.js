@@ -39,7 +39,11 @@ const {
   isFileField,
   LazyFile
 } = require('./file');
-const middlewareFactory = require('./middleware-factory');
+const {
+  createBeforeRequest,
+  createAfterResponse,
+  renderTemplate
+} = require('./middleware-factory');
 
 const FIELD_TYPE_CONVERT_MAP = {
   // field_type_in_wb: field_type_in_cli
@@ -650,23 +654,94 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       app,
       'legacy.authentication.oauth1Config.requestTokenUrl'
     );
+
+    const templateContext = Object.assign(
+      {},
+      bundle.authData,
+      bundle.inputData
+    );
+    const consumerKey = renderTemplate(process.env.CLIENT_ID, templateContext);
+    const consumerSecret = renderTemplate(
+      process.env.CLIENT_SECRET,
+      templateContext
+    );
+
     return fetchOAuth1Token(url, {
-      oauth_consumer_key: process.env.CLIENT_ID,
-      oauth_consumer_secret: process.env.CLIENT_SECRET,
+      oauth_consumer_key: consumerKey,
+      oauth_consumer_secret: consumerSecret,
       oauth_signature_method: 'HMAC-SHA1',
       oauth_callback: bundle.inputData.redirect_uri
     });
   };
 
+  const runOAuth1AuthorizeUrl = bundle => {
+    let url = _.get(app, 'legacy.authentication.oauth1Config.authorizeUrl');
+    if (!url) {
+      return '';
+    }
+
+    url = replaceCurliesInRequest({ url }, bundle).url;
+    const urlObj = new URL(url);
+
+    if (!urlObj.searchParams.has('oauth_token')) {
+      urlObj.searchParams.set('oauth_token', bundle.inputData.oauth_token);
+    }
+
+    return urlObj.href;
+  };
+
   const runOAuth1GetAccessToken = bundle => {
     const url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
+
+    const templateContext = Object.assign(
+      {},
+      bundle.authData,
+      bundle.inputData
+    );
+    const consumerKey = renderTemplate(process.env.CLIENT_ID, templateContext);
+    const consumerSecret = renderTemplate(
+      process.env.CLIENT_SECRET,
+      templateContext
+    );
+
     return fetchOAuth1Token(url, {
-      oauth_consumer_key: process.env.CLIENT_ID,
-      oauth_consumer_secret: process.env.CLIENT_SECRET,
+      oauth_consumer_key: consumerKey,
+      oauth_consumer_secret: consumerSecret,
       oauth_token: bundle.inputData.oauth_token,
       oauth_token_secret: bundle.inputData.oauth_token_secret,
       oauth_verifier: bundle.inputData.oauth_verifier
     });
+  };
+
+  const runOAuth2AuthorizeUrl = bundle => {
+    let url = _.get(app, 'legacy.authentication.oauth2Config.authorizeUrl');
+    if (!url) {
+      return '';
+    }
+
+    url = replaceCurliesInRequest({ url }, bundle).url;
+    const urlObj = new URL(url);
+
+    if (!urlObj.searchParams.has('client_id')) {
+      const templateContext = Object.assign(
+        {},
+        bundle.authData,
+        bundle.inputData
+      );
+      const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
+      urlObj.searchParams.set('client_id', clientId);
+    }
+    if (!urlObj.searchParams.has('redirect_uri')) {
+      urlObj.searchParams.set('redirect_uri', bundle.inputData.redirect_uri);
+    }
+    if (!urlObj.searchParams.has('response_type')) {
+      urlObj.searchParams.set('response_type', 'code');
+    }
+    if (!urlObj.searchParams.has('state')) {
+      urlObj.searchParams.set('state', bundle.inputData.state);
+    }
+
+    return urlObj.href;
   };
 
   const runOAuth2GetAccessToken = bundle => {
@@ -677,12 +752,23 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     request.url = url;
     request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
+    const templateContext = Object.assign(
+      {},
+      bundle.authData,
+      bundle.inputData
+    );
+    const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
+    const clientSecret = renderTemplate(
+      process.env.CLIENT_SECRET,
+      templateContext
+    );
+
     // Try two ways to get the token: POST with parameters in a form-encoded body. If
     // that returns a 4xx, retry a POST with parameters in querystring.
     const body = request.body;
     body.code = bundle.inputData.code;
-    body.client_id = process.env.CLIENT_ID;
-    body.client_secret = process.env.CLIENT_SECRET;
+    body.client_id = clientId;
+    body.client_secret = clientSecret;
     body.redirect_uri = bundle.inputData.redirect_uri;
     body.grant_type = 'authorization_code';
 
@@ -697,8 +783,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
       const params = request.params;
       params.code = bundle.inputData.code;
-      params.client_id = process.env.CLIENT_ID;
-      params.client_secret = process.env.CLIENT_SECRET;
+      params.client_id = clientId;
+      params.client_secret = clientSecret;
       params.redirect_uri = bundle.inputData.redirect_uri;
       params.grant_type = 'authorization_code';
 
@@ -722,9 +808,20 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     request.url = url;
     request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
+    const templateContext = Object.assign(
+      {},
+      bundle.authData,
+      bundle.inputData
+    );
+    const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
+    const clientSecret = renderTemplate(
+      process.env.CLIENT_SECRET,
+      templateContext
+    );
+
     const body = request.body;
-    body.client_id = process.env.CLIENT_ID;
-    body.client_secret = process.env.CLIENT_SECRET;
+    body.client_id = clientId;
+    body.client_secret = clientSecret;
     body.refresh_token = bundle.authData.refresh_token;
     body.grant_type = 'refresh_token';
 
@@ -733,8 +830,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       request.body = {};
 
       const params = request.params;
-      params.client_id = process.env.CLIENT_ID;
-      params.client_secret = process.env.CLIENT_SECRET;
+      params.client_id = clientId;
+      params.client_secret = clientSecret;
       params.refresh_token = bundle.authData.refresh_token;
       params.grant_type = 'refresh_token';
 
@@ -1098,8 +1195,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         return runEvent({ name: 'auth.connectionLabel' }, zcli, bundle);
       case 'auth.oauth1.requestToken':
         return runOAuth1GetRequestToken(bundle);
+      case 'auth.oauth1.authorize':
+        return runOAuth1AuthorizeUrl(bundle);
       case 'auth.oauth1.accessToken':
         return runOAuth1GetAccessToken(bundle);
+      case 'auth.oauth2.authorize':
+        return runOAuth2AuthorizeUrl(bundle);
       case 'auth.oauth2.token':
         return runOAuth2GetAccessToken(bundle);
       case 'auth.oauth2.refresh':
@@ -1139,8 +1240,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
   // Dynamically generate http middlewares based on auth config. The generated
   // middleware could be a no-op if the auth doesn't require a middleware.
-  const beforeRequest = middlewareFactory.createBeforeRequest(app);
-  const afterResponse = middlewareFactory.createAfterResponse(app);
+  const beforeRequest = createBeforeRequest(app);
+  const afterResponse = createAfterResponse(app);
 
   return {
     afterResponse,

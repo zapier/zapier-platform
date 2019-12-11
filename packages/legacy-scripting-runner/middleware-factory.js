@@ -138,10 +138,30 @@ const createBeforeRequest = app => {
       bundle.authData.oauth_token_secret
     ) {
       req.auth = req.auth || {};
-      req.auth.oauth_consumer_key =
-        req.auth.oauth_consumer_key || process.env.CLIENT_ID;
-      req.auth.oauth_consumer_secret =
-        req.auth.oauth_consumer_secret || process.env.CLIENT_SECRET;
+
+      let templateContext;
+
+      if (!req.auth.oauth_consumer_key) {
+        templateContext = Object.assign({}, bundle.authData, bundle.inputData);
+        req.auth.oauth_consumer_key = renderTemplate(
+          process.env.CLIENT_ID,
+          templateContext
+        );
+      }
+      if (!req.auth.oauth_consumer_secret) {
+        if (!templateContext) {
+          templateContext = Object.assign(
+            {},
+            bundle.authData,
+            bundle.inputData
+          );
+        }
+        req.auth.oauth_consumer_secret = renderTemplate(
+          process.env.CLIENT_SECRET,
+          templateContext
+        );
+      }
+
       req.auth.oauth_token =
         req.auth.oauth_token || bundle.authData.oauth_token;
       req.auth.oauth_token_secret =
@@ -205,5 +225,6 @@ const createAfterResponse = app => {
 
 module.exports = {
   createBeforeRequest,
-  createAfterResponse
+  createAfterResponse,
+  renderTemplate
 };
