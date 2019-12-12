@@ -3,6 +3,5 @@ module.exports = {
   describe: require('./describe'),
   help: require('./help'),
   link: require('./link'),
-  logs: require('./logs'),
   register: require('./register')
 };

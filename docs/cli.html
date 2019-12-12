@@ -868,46 +868,20 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Prints recent logs. See help for filter arguments.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier logs</code></p><p>Get the logs that are automatically collected during the running of your app. Either explicitly during <code>z.console.log()</code>, automatically via <code>z.request()</code>, or any sort of traceback or error.</p><blockquote>
-<p>Does not collect or list the errors found locally during <code>zapier test</code>.</p>
-</blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>--version=value</code> -- <em>optional</em>, display only this version&apos;s logs (default is all versions)</li>
-<li><code>--status={any,success,error}</code> -- <em>optional</em>, display only success logs (status code &lt; 400 / info) or error (status code &gt; 400 / tracebacks). Default is <code>any</code></li>
-<li><code>--type={console,bundle,http}</code> -- <em>optional</em>, display only console, bundle, or http logs. Default is <code>console</code></li>
-<li><code>--detailed</code> -- <em>optional</em>, show detailed logs (like request/response body and headers)</li>
-<li><a href="mailto:`--user=user@example.com">`--user=user@example.com</a><code>-- _optional_, display only this user&apos;s logs. Default is</code>me`</li>
-<li><code>--limit=50</code> -- <em>optional</em>, control the maximum result size. Default is <code>50</code></li>
-<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
-<li><code>--help</code> -- <em>optional</em>, prints this help text</li>
-<li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
+<p>Prints recent logs.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier logs</code></p><p>Logs are created when your integration is run as part of a Zap. They come from explicit calls to <code>z.console.log()</code>, usage of <code>z.request()</code>, and any runtime errors. Note: this won&apos;t show logs from running locally with <code>zapier test</code>, since those never hit our server.</p><p><strong>Flags</strong></p><ul>
+<li><code>-v, --version</code> | Filter logs to the specified version.</li>
+<li><code>-s, --status</code> | Filter logs to only see errors or successes One of <code>[any | success | error]</code>. Defaults to <code>any</code>.</li>
+<li><code>-t, --type</code> | See logs of the specified type One of <code>[console | bundle | http]</code>. Defaults to <code>console</code>.</li>
+<li><code>--detailed</code> | See extra info, like request/response body and headers.</li>
+<li><code>-u, --user</code> | Only show logs for this user. Defaults to your account.  Defaults to <code>me</code>.</li>
+<li><code>--limit</code> | Cap the number of logs returned. Max is 50 (also the default)  Defaults to <code>50</code>.</li>
+<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier logs
-<span class="hljs-comment"># The logs of your app &quot;Example&quot; listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; = 1 =                                                &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Log       &#x2502; console says hello world!            &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Version   &#x2502; 1.0.0                                &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Step      &#x2502; 99c16565-1547-4b16-bcb5-45189d9d8afa &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Timestamp &#x2502; 2016-01-01T23:04:36-05:00            &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-
-$ zapier logs --<span class="hljs-built_in">type</span>=http
-<span class="hljs-comment"># The logs of your app &quot;Example&quot; listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; = 1 =                                                  &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Status      &#x2502; 200                                  &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     URL         &#x2502; https://httpbin.org/get               &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Querystring &#x2502; hello=world                          &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Version     &#x2502; 1.0.0                                &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Step        &#x2502; 99c16565-1547-4b16-bcb5-45189d9d8afa &#x2502;</span>
-<span class="hljs-comment"># &#x2502;     Timestamp   &#x2502; 2016-01-01T23:04:36-05:00            &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
