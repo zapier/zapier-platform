@@ -1018,23 +1018,18 @@ $ zapier logs --<span class="hljs-built_in">type</span>=http
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Registers a new app in your account.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier register &quot;Example&quot;</code></p><p>This command registers your app with Zapier. After running this, you can run <code>zapier push</code> to push a version of your app that you can use in the Zapier editor.</p><blockquote>
-<p>This will change the  <code>./.zapierapprc</code> (which identifies the app associated with the current directory).</p>
-</blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>title [&quot;My App Name&quot;]</code> -- <strong>required</strong>,</li>
+<p>Registers a new integration in your account.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier register [TITLE]</code></p><p>After running this, you can run <code>zapier push</code> to build and upload your integration for use in the Zapier editor.</p><p>This will change the  <code>./.zapierapprc</code> (which identifies this directory as holding code for a specific integration).</p><p><strong>Arguments</strong></p><ul>
+<li><code>title</code> | Your integrations&apos;s public title. Asked interactively if not present.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier register</code></li>
+<li><code>zapier register &quot;My Cool Integration&quot;</code></li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier register <span class="hljs-string">&quot;Example&quot;</span>
-<span class="hljs-comment"># Let&apos;s register your app &quot;Example&quot; on Zapier!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Creating a new app named &quot;Example&quot; on Zapier - done!</span>
-<span class="hljs-comment">#   Setting up .zapierapprc file - done!</span>
-<span class="hljs-comment">#   Applying entry point file - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Finished!</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
