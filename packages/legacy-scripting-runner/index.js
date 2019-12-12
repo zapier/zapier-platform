@@ -352,7 +352,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const options = {
       interpolate: /{{([\s\S]+?)}}/g
     };
-    const values = _.extend({}, bundle.authData, bundle.inputData, result);
+    const values = { ...bundle.authData, ...bundle.inputData, ...result };
     return _.template(templateString, options)(values);
   };
 
@@ -410,7 +410,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           data[i][j] = textifyList(data[i][j]);
         } else if (_.isPlainObject(data[i][j])) {
           const flattened = flattenDictionary(j, data[i][j]);
-          data[i] = Object.assign(data[i], flattened);
+          data[i] = { ...data[i], ...flattened };
           delete data[i][j];
         }
       }
@@ -535,30 +535,28 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     fullEventName,
     options
   ) => {
-    options = _.extend(
-      {
-        // Options to deal with the final result returned by this function.
-        // * checkResponseStatus: throws an error if response status is not 2xx.
-        // * parseResponse:
-        //     assumes response content is JSON and parse it. post method won't
-        //     run if this is false.
-        // * ensureType: ensures the result type. Could be one of the following values:
-        //   - false:
-        //       returns whatever data parsed from response content or returned
-        //       by the post method.
-        //   - 'array-wrap': returns [result] if result is an object.
-        //   - 'array-first':
-        //       returns the first top-level array in the result if result
-        //       is an object.
-        //   - 'object-first': returns the first object if result is an array.
-        checkResponseStatus: true,
-        parseResponse: true,
-        ensureType: false,
+    options = {
+      // Options to deal with the final result returned by this function.
+      // * checkResponseStatus: throws an error if response status is not 2xx.
+      // * parseResponse:
+      //     assumes response content is JSON and parse it. post method won't
+      //     run if this is false.
+      // * ensureType: ensures the result type. Could be one of the following values:
+      //   - false:
+      //       returns whatever data parsed from response content or returned
+      //       by the post method.
+      //   - 'array-wrap': returns [result] if result is an object.
+      //   - 'array-first':
+      //       returns the first top-level array in the result if result
+      //       is an object.
+      //   - 'object-first': returns the first object if result is an array.
+      checkResponseStatus: true,
+      parseResponse: true,
+      ensureType: false,
+      resetRequestForFullMethod: false,
 
-        resetRequestForFullMethod: false
-      },
-      options
-    );
+      ...options
+    };
 
     if (bundle.request) {
       bundle.request = replaceCurliesInRequest(bundle.request, bundle);
@@ -584,10 +582,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     if (fullMethod) {
       if (options.resetRequestForFullMethod) {
         // Used by custom fields
-        _.extend(bundle.request, {
-          method: 'GET',
-          url: ''
-        });
+        bundle.request = { ...bundle.request, method: 'GET', url: '' };
       }
 
       // Running "full" scripting method like KEY_poll
@@ -597,7 +592,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       let request = preMethod
         ? await runEvent({ key, name: preEventName }, zcli, bundle)
         : {};
-      request = Object.assign({}, bundle.request, request);
+      request = { ...bundle.request, ...request };
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
       if (hasFileFields(bundle) && !isBodyStream) {
@@ -655,11 +650,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'legacy.authentication.oauth1Config.requestTokenUrl'
     );
 
-    const templateContext = Object.assign(
-      {},
-      bundle.authData,
-      bundle.inputData
-    );
+    const templateContext = { ...bundle.authData, ...bundle.inputData };
     const consumerKey = renderTemplate(process.env.CLIENT_ID, templateContext);
     const consumerSecret = renderTemplate(
       process.env.CLIENT_SECRET,
@@ -693,11 +684,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   const runOAuth1GetAccessToken = bundle => {
     const url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
 
-    const templateContext = Object.assign(
-      {},
-      bundle.authData,
-      bundle.inputData
-    );
+    const templateContext = { ...bundle.authData, ...bundle.inputData };
     const consumerKey = renderTemplate(process.env.CLIENT_ID, templateContext);
     const consumerSecret = renderTemplate(
       process.env.CLIENT_SECRET,
@@ -723,11 +710,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const urlObj = new URL(url);
 
     if (!urlObj.searchParams.has('client_id')) {
-      const templateContext = Object.assign(
-        {},
-        bundle.authData,
-        bundle.inputData
-      );
+      const templateContext = { ...bundle.authData, ...bundle.inputData };
       const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
       urlObj.searchParams.set('client_id', clientId);
     }
@@ -752,11 +735,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     request.url = url;
     request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
-    const templateContext = Object.assign(
-      {},
-      bundle.authData,
-      bundle.inputData
-    );
+    const templateContext = { ...bundle.authData, ...bundle.inputData };
     const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
     const clientSecret = renderTemplate(
       process.env.CLIENT_SECRET,
@@ -808,11 +787,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     request.url = url;
     request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
-    const templateContext = Object.assign(
-      {},
-      bundle.authData,
-      bundle.inputData
-    );
+    const templateContext = { ...bundle.authData, ...bundle.inputData };
     const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
     const clientSecret = renderTemplate(
       process.env.CLIENT_SECRET,
