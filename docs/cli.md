@@ -553,30 +553,23 @@ This command is the same as running `zapier build` and `zapier upload` in sequen
 
 ## register
 
-  > Registers a new app in your account.
+> Registers a new integration in your account.
 
-  **Usage:** `zapier register "Example"`
+**Usage**: `zapier register [TITLE]`
 
-  
-This command registers your app with Zapier. After running this, you can run `zapier push` to push a version of your app that you can use in the Zapier editor.
+After running this, you can run `zapier push` to build and upload your integration for use in the Zapier editor.
 
-> This will change the  `./.zapierapprc` (which identifies the app associated with the current directory).
+This will change the  `./.zapierapprc` (which identifies this directory as holding code for a specific integration).
 
 **Arguments**
+* `title` | Your integrations's public title. Asked interactively if not present.
 
-* `title ["My App Name"]` -- **required**,
+**Flags**
+* `-d, --debug` | Show extra debugging output
 
-
-```bash
-$ zapier register "Example"
-# Let's register your app "Example" on Zapier!
-#
-#   Creating a new app named "Example" on Zapier - done!
-#   Setting up .zapierapprc file - done!
-#   Applying entry point file - done!
-#
-# Finished!
-```
+**Examples**
+* `zapier register`
+* `zapier register "My Cool Integration"`
 
 
 ## scaffold
