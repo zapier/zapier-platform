@@ -63,7 +63,7 @@ class LogsCommand extends BaseCommand {
       ];
 
       if (this.flags.detailed) {
-        headers.concat([
+        headers = headers.concat([
           ['Request Headers', 'request_headers'],
           ['Request Body', 'request_data'],
           ['Response Headers', 'response_headers'],
@@ -100,8 +100,10 @@ class LogsCommand extends BaseCommand {
       this.log(grey('  Most recent logs near the bottom.'));
 
       if (this.flags.type === 'http' && !this.flags.detailed) {
-        grey(
-          '  TIP: Use `zapier logs --type=http --detailed` to include response information.'
+        this.log(
+          grey(
+            '  TIP: Use `zapier logs --type=http --detailed` to include response information.'
+          )
         );
       }
     }

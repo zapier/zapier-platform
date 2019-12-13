@@ -208,7 +208,7 @@ $ zapier describe
 * (required) `version` | The version to get the environment for.
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
@@ -318,7 +318,7 @@ $ │ logout      │ zapier logout                         │ Deactivates all 
 History includes all the changes made over the lifetime of your integration. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 
@@ -353,7 +353,7 @@ After running this, you'll have a new example integration in your directory. If 
 This command also checks the current directory for a linked integration.
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 **Aliases**
@@ -439,7 +439,7 @@ Logs are created when your integration is run as part of a Zap. They come from e
 * `--detailed` | See extra info, like request/response body and headers.
 * `-u, --user` | Only show logs for this user. Defaults to your account.  Defaults to `me`.
 * `--limit` | Cap the number of logs returned. Max is 50 (also the default)  Defaults to `50`.
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 
@@ -620,7 +620,7 @@ These users come in two levels:
 Use the `zapier team:add` and `zapier team:remove` commands to modify your team.
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 **Aliases**
@@ -707,7 +707,7 @@ Invited users will be able to see your integration's name, logo, and description
 Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the `zapier users:add` command or the web UI). Users who joined by clicking links generated using the `zapier user:links` command won't show up here.
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 **Aliases**
@@ -721,7 +721,7 @@ Note that this list of users is NOT a comprehensive list of everyone who is usin
 **Usage**: `zapier users:links`
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 
@@ -754,7 +754,7 @@ Runs the standard validation routine powered by json-schema that checks your app
 
 **Flags**
 * `--without-style` | Forgo pinging the Zapier server to run further checks
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
@@ -770,5 +770,5 @@ Runs the standard validation routine powered by json-schema that checks your app
 **Usage**: `zapier versions`
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output

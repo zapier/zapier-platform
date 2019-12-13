@@ -563,7 +563,7 @@ a code {
 </blockquote><p><strong>Usage</strong>: <code>zapier env:get VERSION</code></p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>version</code> | The version to get the environment for.</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as <code>jq</code>. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier env:get 1.2.3</code></li>
@@ -703,7 +703,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
       <blockquote>
 <p>Gets the history of your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier history</code></p><p>History includes all the changes made over the lifetime of your integration. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as <code>jq</code>. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
@@ -756,7 +756,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
       <blockquote>
 <p>Lists any integrations that you have admin access to.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier integrations</code></p><p>This command also checks the current directory for a linked integration.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as <code>jq</code>. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>apps</code></li>
@@ -876,7 +876,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
 <li><code>--detailed</code> | See extra info, like request/response body and headers.</li>
 <li><code>-u, --user</code> | Only show logs for this user. Defaults to your account.  Defaults to <code>me</code>.</li>
 <li><code>--limit</code> | Cap the number of logs returned. Max is 50 (also the default)  Defaults to <code>50</code>.</li>
-<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as <code>jq</code>. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
@@ -1102,7 +1102,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
 <li><p>Subscribers, who can&apos;t directly access the app, but will receive periodic email updates. These updates include quarterly health socores and more.</p>
 </li>
 </ul><p>Use the <code>zapier team:add</code> and <code>zapier team:remove</code> commands to modify your team.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as <code>jq</code>. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>team:list</code></li>
@@ -1232,7 +1232,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
       <blockquote>
 <p>Get a list of users who have been invited to your app.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier users:get</code></p><p>Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the <code>zapier users:add</code> command or the web UI). Users who joined by clicking links generated using the <code>zapier user:links</code> command won&apos;t show up here.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as <code>jq</code>. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>users:list</code></li>
@@ -1257,7 +1257,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
       <blockquote>
 <p>Get a list of links that are used to invite users to your app.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier users:links</code></p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as <code>jq</code>. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
@@ -1308,7 +1308,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
 <p>Validates your Zapier app.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier validate</code></p><p>Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during <code>zapier build</code>, <code>zapier upload</code>, <code>zapier push</code> or even as a test in <code>zapier test</code>.</p><p><strong>Flags</strong></p><ul>
 <li><code>--without-style</code> | Forgo pinging the Zapier server to run further checks</li>
-<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as <code>jq</code>. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier validate</code></li>
@@ -1335,7 +1335,7 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
       <blockquote>
 <p>Lists the versions of your integration available for use in the Zapier editor.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier versions</code></p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | undefined One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as <code>jq</code>. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>

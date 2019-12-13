@@ -209,7 +209,9 @@ class ZapierBaseCommand extends Command {
             ? null
             : `* ${flag.required ? '(required) ' : ''}\`${
                 flag.char ? `-${flag.char}, ` : ''
-              }--${longName}\` | ${flag.description} ${
+              }--${longName}\` |${
+                flag.description ? ` ${flag.description}` : ''
+              } ${
                 flag.options ? `One of \`[${flag.options.join(' | ')}]\`.` : ''
               }${flag.default ? ` Defaults to \`${flag.default}\`.` : ''}
       `.trim()
