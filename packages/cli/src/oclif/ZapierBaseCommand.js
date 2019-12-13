@@ -104,7 +104,7 @@ class ZapierBaseCommand extends Command {
    * @param {any[]} opts.rows The data to display
    * @param {string[][]} opts.headers Array of pairs of the column header and the key in the row that that header applies to
    * @param {string} opts.emptyMessage a message to print if there's no data. Printed in grey
-   * @param {boolean} opts.usedRowBasedTable override format and use `row` instead
+   * @param {boolean} opts.formatOverride override format and use this instead
    */
   logTable({
     rows = [],
@@ -209,7 +209,9 @@ class ZapierBaseCommand extends Command {
             ? null
             : `* ${flag.required ? '(required) ' : ''}\`${
                 flag.char ? `-${flag.char}, ` : ''
-              }--${longName}\` | ${flag.description} ${
+              }--${longName}\` |${
+                flag.description ? ` ${flag.description}` : ''
+              } ${
                 flag.options ? `One of \`[${flag.options.join(' | ')}]\`.` : ''
               }${flag.default ? ` Defaults to \`${flag.default}\`.` : ''}
       `.trim()

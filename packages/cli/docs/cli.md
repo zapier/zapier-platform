@@ -208,7 +208,7 @@ $ zapier describe
 * (required) `version` | The version to get the environment for.
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
@@ -318,7 +318,7 @@ $ │ logout      │ zapier logout                         │ Deactivates all 
 History includes all the changes made over the lifetime of your integration. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 
@@ -353,7 +353,7 @@ After running this, you'll have a new example integration in your directory. If 
 This command also checks the current directory for a linked integration.
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 **Aliases**
@@ -426,53 +426,21 @@ $ zapier link
 
 ## logs
 
-  > Prints recent logs. See help for filter arguments.
+> Prints recent logs.
 
-  **Usage:** `zapier logs`
+**Usage**: `zapier logs`
 
-  
-Get the logs that are automatically collected during the running of your app. Either explicitly during `z.console.log()`, automatically via `z.request()`, or any sort of traceback or error.
+Logs are created when your integration is run as part of a Zap. They come from explicit calls to `z.console.log()`, usage of `z.request()`, and any runtime errors. Note: this won't show logs from running locally with `zapier test`, since those never hit our server.
 
-> Does not collect or list the errors found locally during `zapier test`.
-
-**Arguments**
-
-
-* `--version=value` -- _optional_, display only this version's logs (default is all versions)
-* `--status={any,success,error}` -- _optional_, display only success logs (status code < 400 / info) or error (status code > 400 / tracebacks). Default is `any`
-* `--type={console,bundle,http}` -- _optional_, display only console, bundle, or http logs. Default is `console`
-* `--detailed` -- _optional_, show detailed logs (like request/response body and headers)
-* `--user=user@example.com` -- _optional_, display only this user's logs. Default is `me`
-* `--limit=50` -- _optional_, control the maximum result size. Default is `50`
-* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
-
-```bash
-$ zapier logs
-# The logs of your app "Example" listed below.
-#
-# ┌──────────────────────────────────────────────────────┐
-# │ = 1 =                                                │
-# │     Log       │ console says hello world!            │
-# │     Version   │ 1.0.0                                │
-# │     Step      │ 99c16565-1547-4b16-bcb5-45189d9d8afa │
-# │     Timestamp │ 2016-01-01T23:04:36-05:00            │
-# └───────────────┴──────────────────────────────────────┘
-
-$ zapier logs --type=http
-# The logs of your app "Example" listed below.
-#
-# ┌────────────────────────────────────────────────────────┐
-# │ = 1 =                                                  │
-# │     Status      │ 200                                  │
-# │     URL         │ https://httpbin.org/get               │
-# │     Querystring │ hello=world                          │
-# │     Version     │ 1.0.0                                │
-# │     Step        │ 99c16565-1547-4b16-bcb5-45189d9d8afa │
-# │     Timestamp   │ 2016-01-01T23:04:36-05:00            │
-# └─────────────────┴──────────────────────────────────────┘
-```
+**Flags**
+* `-v, --version` | Filter logs to the specified version.
+* `-s, --status` | Filter logs to only see errors or successes One of `[any | success | error]`. Defaults to `any`.
+* `-t, --type` | See logs of the specified type One of `[console | bundle | http]`. Defaults to `console`.
+* `--detailed` | See extra info, like request/response body and headers.
+* `-u, --user` | Only show logs for this user. Defaults to your account.  Defaults to `me`.
+* `--limit` | Cap the number of logs returned. Max is 50 (also the default)  Defaults to `50`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
 
 
 ## migrate
@@ -652,7 +620,7 @@ These users come in two levels:
 Use the `zapier team:add` and `zapier team:remove` commands to modify your team.
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 **Aliases**
@@ -739,7 +707,7 @@ Invited users will be able to see your integration's name, logo, and description
 Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the `zapier users:add` command or the web UI). Users who joined by clicking links generated using the `zapier user:links` command won't show up here.
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 **Aliases**
@@ -753,7 +721,7 @@ Note that this list of users is NOT a comprehensive list of everyone who is usin
 **Usage**: `zapier users:links`
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 
@@ -786,7 +754,7 @@ Runs the standard validation routine powered by json-schema that checks your app
 
 **Flags**
 * `--without-style` | Forgo pinging the Zapier server to run further checks
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
 
 **Examples**
@@ -802,5 +770,5 @@ Runs the standard validation routine powered by json-schema that checks your app
 **Usage**: `zapier versions`
 
 **Flags**
-* `-f, --format` | undefined One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output
