@@ -8,8 +8,10 @@
   "license": "BSD-3-Clause",
   "main": "index.js",
   "scripts": {
-    "zapier-build": "tsc",
-    "zapier-dev": "tsc --watch",
+    "zapier-clean": "rimraf ./lib || rimraf ./build",
+    "zapier-build": "npm run zapier-clean && tsc",
+    "zapier-dev": "npm run zapier-clean && tsc --watch",
+    "zapier-validate": "npm run zapier-build && zapier validate",
     "zapier-push": "npm run zapier-build && zapier push",
     "prepare": "npm run zapier-build",
     "pretest": "npm run zapier-build",
@@ -24,10 +26,11 @@
   },
   "devDependencies": {
     "@types/mocha": "5.2.0",
-    "@types/node": "10.1.2",
+    "@types/node": "10.17.9",
     "mocha": "5.1.0",
+    "rimraf": "3.0.0",
     "should": "13.2.1",
-    "typescript": "3.3"
+    "typescript": "3.7.3"
   },
   "private": true
 }

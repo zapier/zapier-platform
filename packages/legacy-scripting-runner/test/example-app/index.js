@@ -1056,6 +1056,8 @@ const App = {
 
     authentication: {
       oauth2Config: {
+        authorizeUrl: `${AUTH_JSON_SERVER_URL}/oauth/authorize`,
+
         // Incomplete URLs on purpose to test pre_oauthv2_token
         accessTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/access-`,
         refreshTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/refresh-`

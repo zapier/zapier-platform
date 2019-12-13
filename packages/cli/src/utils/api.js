@@ -155,64 +155,74 @@ const createCredentials = (username, password, totpCode) => {
   );
 };
 
-// Reads the JSON file in the app directory.
-const getLinkedAppConfig = appDir => {
+/**
+ * read local `apprc` file
+ */
+const getLinkedAppConfig = async (appDir, explodeIfMissing = true) => {
   appDir = appDir || '.';
 
   const file = path.resolve(appDir, constants.CURRENT_APP_FILE);
-  return readFile(file).then(buf => {
+  try {
+    const buf = await readFile(file);
     return JSON.parse(buf.toString());
-  });
+  } catch (e) {
+    if (explodeIfMissing) {
+      throw e;
+    }
+    return {};
+  }
 };
 
-const writeLinkedAppConfig = (app, appDir) => {
+/**
+ * write local `apprc` file
+ */
+const writeLinkedAppConfig = async (app, appDir) => {
   const file = appDir
     ? path.resolve(appDir, constants.CURRENT_APP_FILE)
     : constants.CURRENT_APP_FILE;
 
-  // read contents of existing config before writing
-  return (
-    readFile(file)
-      .then(configBuff => {
-        return Promise.resolve(JSON.parse(configBuff.toString()));
-      })
-      // we want to eat errors about bad json and missing files
-      // and ensure the below code is passes a js object
-      .catch(() => Promise.resolve({}))
-      .then(config => {
-        return Object.assign({}, config, { id: app.id, key: app.key });
-      })
-      .then(updatedConfig =>
-        writeFile(file, prettyJSONstringify(updatedConfig))
-      )
-  );
+  // we want to eat errors about bad json and missing files
+  // and ensure the below code is passes a js object
+  let config;
+  try {
+    // read contents of existing config before writing
+    const configBuff = await readFile(file);
+
+    config = JSON.parse(configBuff.toString());
+  } catch (e) {
+    config = {};
+  }
+  const updatedConfig = { ...config, id: app.id, key: app.key };
+
+  return writeFile(file, prettyJSONstringify(updatedConfig));
 };
 
-// Loads the linked app from the API.
-const getLinkedApp = appDir => {
-  return getLinkedAppConfig(appDir)
-    .then(app => {
-      if (!app) {
-        return {};
-      }
-      return callAPI('/apps/' + app.id);
-    })
-    .catch(e => {
-      if (constants.IS_TESTING) {
-        console.error(e);
-      }
-      throw new Error(
-        `Unable to complete that operation. Either:
-  * your auth file is stale (run \`${colors.cyan('zapier login')}\`)
-  * your ${
-    constants.CURRENT_APP_FILE
-  } points to an app you can't access (run \`${colors.cyan(
-          'zapier link'
-        )}\` to refresh the link to an existing app or \`${colors.cyan(
-          'zapier register'
-        )}\` to create a new app).`
-      );
-    });
+/**
+ * gets app details from API
+ */
+const getLinkedApp = async appDir => {
+  try {
+    const app = await getLinkedAppConfig(appDir);
+    if (!app) {
+      return {};
+    }
+    return callAPI('/apps/' + app.id);
+  } catch (e) {
+    if (constants.IS_TESTING) {
+      console.error(e);
+    }
+    throw new Error(
+      `Unable to complete that operation. Either:
+* your auth file is stale (run \`${colors.cyan('zapier login')}\`)
+* your ${
+        constants.CURRENT_APP_FILE
+      } points to an app you can't access (run \`${colors.cyan(
+        'zapier link'
+      )}\` to refresh the link to an existing app or \`${colors.cyan(
+        'zapier register'
+      )}\` to create a new app).`
+    );
+  }
 };
 
 // Loads the linked app version from the API
@@ -292,31 +302,33 @@ const listLogs = opts => {
 const listEnv = version =>
   listEndpoint(`versions/${version}/environment`, 'env');
 
+// the goal of this is to call `/check` with as much info as possible
+// if the app is registered and auth is available, then we can send app id
+// otherwise, we should just send the definition and get back checks about that
 const validateApp = async definition => {
-  let checkResult;
-  try {
-    await getLinkedAppConfig();
-  } catch (error) {
-    checkResult = await callAPI('/check', {
+  // if either of these are missing, do the simple definition check
+  if (
+    _.isEmpty(await readCredentials(false)) ||
+    _.isEmpty(await getLinkedAppConfig(undefined, false))
+  ) {
+    return callAPI('/check', {
       skipDeployKey: true,
       method: 'POST',
       body: { app_definition: definition }
     });
   }
 
-  if (!checkResult) {
-    const linkedApp = await getLinkedApp();
-    checkResult = await callAPI('/check', {
-      method: 'POST',
-      body: {
-        app_id: linkedApp.id,
-        version: definition.version,
-        app_definition: definition
-      }
-    });
-  }
-
-  return checkResult;
+  // otherwise, we have a "full" app. This could still fail (if their token is
+  // present but bad, or they've lost access to that app), but should probably be fine.
+  const linkedApp = await getLinkedApp(); // this fails in CI
+  return callAPI('/check', {
+    method: 'POST',
+    body: {
+      app_id: linkedApp.id,
+      version: definition.version,
+      app_definition: definition
+    }
+  });
 };
 
 const upload = async () => {

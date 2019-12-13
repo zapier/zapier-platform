@@ -22,6 +22,7 @@ module.exports = {
   promote: require('./commands/promote'),
   push: require('./commands/push'),
   scaffold: require('./commands/scaffold'),
+  register: require('./commands/register'),
   team: true,
   'team:add': require('./commands/team/add'),
   'team:get': require('./commands/team/get'),

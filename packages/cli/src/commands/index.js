@@ -2,6 +2,5 @@ module.exports = {
   convert: require('./convert'),
   describe: require('./describe'),
   help: require('./help'),
-  link: require('./link'),
-  register: require('./register')
+  link: require('./link')
 };

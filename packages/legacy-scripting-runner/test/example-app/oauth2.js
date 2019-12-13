@@ -12,6 +12,10 @@ const testAuthSource = `
   });
 `;
 
+const getAuthorizeUrlSource = `
+  return z.legacyScripting.run(bundle, 'auth.oauth2.authorize');
+`;
+
 const getAccessTokenSource = `
   return z.legacyScripting.run(bundle, 'auth.oauth2.token');
 `;
@@ -46,14 +50,7 @@ module.exports = {
     ],
     oauth2Config: {
       authorizeUrl: {
-        method: 'GET',
-        url: `${AUTH_JSON_SERVER_URL}/oauth/authorize`,
-        params: {
-          client_id: '{{process.env.CLIENT_ID}}',
-          state: '{{bundle.inputData.state}}',
-          redirect_uri: '{{bundle.inputData.redirect_uri}}',
-          response_type: 'code'
-        }
+        source: getAuthorizeUrlSource
       },
       getAccessToken: {
         source: getAccessTokenSource
