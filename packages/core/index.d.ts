@@ -68,7 +68,7 @@ declare class RefreshAuthError extends Error {}
 // copied http stuff from external typings
 export interface HttpRequestOptions {
   agent?: Agent;
-  body?: string | Buffer | ReadableStream | object;
+  body?: string | Buffer | NodeJS.ReadableStream | object;
   compress?: boolean;
   follow?: number;
   form?: object;
@@ -103,7 +103,7 @@ export interface HttpResponse extends BaseHttpResponse {
 export interface RawHttpResponse extends BaseHttpResponse {
   content: Buffer;
   json: Promise<object | undefined>;
-  body: ReadableStream;
+  body: NodeJS.ReadableStream;
 }
 
 export interface ZObject {
@@ -138,7 +138,7 @@ export interface ZObject {
    */
   stashFile: {
     (
-      input: string | Buffer | ReadableStream,
+      input: string | Buffer | NodeJS.ReadableStream,
       knownLength?: number,
       filename?: string,
       contentType?: string
