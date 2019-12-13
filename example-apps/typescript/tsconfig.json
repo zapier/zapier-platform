@@ -2,7 +2,12 @@
   "compilerOptions": {
     "target": "es2018",
     "module": "commonjs",
-    "lib": ["es2018"],
+    // uncomment this after the release of core 9.0.1
+    // if "lib" is missing, DOM is included, which has a readable stream def.
+    // since the example apps use the "master" branch but install the released core, there was a mismatch where Readable stream was no longer defined
+    // "lib": [
+    //   "es2018"
+    // ],
     "outDir": "./lib",
     "rootDir": "./src",
     "strict": true
