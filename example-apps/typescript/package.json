@@ -24,10 +24,10 @@
   },
   "devDependencies": {
     "@types/mocha": "5.2.0",
-    "@types/node": "10.1.2",
+    "@types/node": "10.17.9",
     "mocha": "5.1.0",
     "should": "13.2.1",
-    "typescript": "3.3"
+    "typescript": "3.7.3"
   },
   "private": true
 }
