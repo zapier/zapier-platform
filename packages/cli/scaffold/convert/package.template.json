@@ -7,7 +7,7 @@
     "test": "mocha --recursive -t 10000"
   },
   "engines": {
-    "node": "8.10.0",
+    "node": ">=10",
     "npm": ">=5.6.0"
   },
   "dependencies": {
