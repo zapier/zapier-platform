@@ -16,6 +16,7 @@ module.exports = {
   history: require('./commands/history'),
   init: require('./commands/init'),
   integrations: require('./commands/integrations'),
+  link: require('./commands/link'),
   login: require('./commands/login'),
   logs: require('./commands/logs'),
   logout: require('./commands/logout'),

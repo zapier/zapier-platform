@@ -757,35 +757,13 @@ $ &#x2502; <span class="hljs-built_in">logout</span>      &#x2502; zapier <span 
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Link the current directory to an app you have access to.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier link</code></p><p>Link the current directory to an app you have access to. It is fairly uncommon to run this command - more often you&apos;d just <code>git clone git@github.com:example-inc/example.git</code> which would have a <code>.zapierapprc</code> file already included. If not, you&apos;d need to be an admin on the app and use this command to regenerate the <code>.zapierapprc</code> file.</p><p>Or, if you are making an app from scratch - you should prefer <code>zapier init</code>.</p><blockquote>
-<p>This will change the <code>./.zapierapprc</code> (which identifies the app assosciated with the current directory).</p>
-</blockquote><p><strong>Arguments</strong></p><ul>
-<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
-<li><code>--help</code> -- <em>optional</em>, prints this help text</li>
-<li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
+<p>Link the current directory with an existing integration</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier link</code></p><p>This command generates a .zapierapprc file in the directory in which it&apos;s ran. This file ties this code to an integration and is referenced frequently during <code>push</code> and <code>validate</code> operations. This file should be checked into source control.</p><p>If you&apos;re starting an integration from scratch, use <code>zapier init</code> instead.</p><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier link
-<span class="hljs-comment"># Which app would you like to link the current directory to?</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; Number &#x2502; Title       &#x2502; Unique Key &#x2502; Timestamp           &#x2502; Linked &#x2502;</span>
-<span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
-<span class="hljs-comment"># &#x2502; 1      &#x2502; Example     &#x2502; Example    &#x2502; 2016-01-01T22:19:28 &#x2502; &#x2714;      &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-<span class="hljs-comment">#      ...or type any title to create new app!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Which app number do you want to link? You also may type a new app title to create one. (Ctrl-C to cancel)</span>
-<span class="hljs-comment">#</span>
-  1
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Selecting existing app &quot;Example&quot; - done!</span>
-<span class="hljs-comment">#   Setting up `.zapierapprc` file - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Finished! You can `zapier push` now to build &amp; upload a version!</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
