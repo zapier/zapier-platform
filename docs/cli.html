@@ -392,27 +392,26 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Converts a Legacy Web Builder or Visual Builder app to a CLI app.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier convert appid path</code></p><p>Creates a new CLI app from an existing app.</p><p>If you&apos;re converting a <strong>Legacy Web Builder</strong> app: the new app contains code stubs only. It is supposed to get you started - it isn&apos;t going to create a complete app!</p><p>After running this, you&apos;ll have a new app in your directory, with stubs for your trigger and actions.  If you re-run this command on an existing directory it will leave existing files alone and not clobber them.</p><p>Once you&apos;ve run the command, make sure to run <code>zapier push</code> to see it in the editor.</p><p>If you&apos;re converting a <strong>Visual Builder</strong> app, then it will be identical and ready to push and use immediately! You&apos;ll need to do a <code>zapier push</code> before the new version is visible in the editor, but otherwise you&apos;re good to go.</p><p><strong>Arguments</strong></p><ul>
-<li><code>appid [value]</code> -- <strong>required</strong>, Get the appid from &quot;<a href="https://zapier.com/app/developer&quot;">https://zapier.com/app/developer&quot;</a>, clicking on an integration, and taking the number after &quot;/app&quot; in the url.</li>
-<li><code>location [value]</code> -- <strong>required</strong>, Relative to your current path - IE: <code>.</code> for current directory</li>
-<li><code>--version=1.0.0</code> -- <em>optional</em>, Convert a specific version. Required when converting a Visual Builder app</li>
+<p>Describes the current integraiton.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier convert INTEGRATIONID PATH</code></p><p>Prints a human readable enumeration of your integrations&apos;s triggers, searches, and creates as seen by Zapier. Useful to understand how your resources convert and relate to different actions.</p><ul>
+<li><p><code>Noun</code> -- your action&apos;s noun</p>
+</li>
+<li><p><code>Label</code> -- your action&apos;s label</p>
+</li>
+<li><p><code>Resource</code> -- the resource (if any) this action is tied to</p>
+</li>
+<li><p><code>Available Methods</code> -- testable methods for this action</p>
+</li>
+</ul><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>integrationId</code> | To get the integration id, go to &quot;<a href="https://zapier.com/app/developer&quot;">https://zapier.com/app/developer&quot;</a>, click on an integration, and copy the number directly  after &quot;/app/&quot; in the url.</li>
+<li>(required) <code>path</code> | Relative to your current path - IE: <code>.</code> for current directory</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-v, --version</code> | Convert a specific version. Required when converting a Visual Builder app</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier convert 1234 .
-<span class="hljs-comment"># Let&apos;s convert your app!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#   Downloading app from Zapier - done!</span>
-<span class="hljs-comment">#   Writing triggers/trigger.js - done!</span>
-<span class="hljs-comment">#   Writing package.json - done!</span>
-<span class="hljs-comment">#   Writing index.js - done!</span>
-<span class="hljs-comment">#   Copy ./index.js - done!</span>
-<span class="hljs-comment">#   Copy ./package.json - done!</span>
-<span class="hljs-comment">#   Copy ./triggers/trigger.js - done!</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Finished! You might need to `npm install` then try `zapier test`!</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">

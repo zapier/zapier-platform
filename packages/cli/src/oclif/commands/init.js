@@ -6,7 +6,7 @@ const appTemplates = require('../../app-templates');
 
 const { isExistingEmptyDir } = require('../../utils/files');
 
-const { oInitApp } = require('../../utils/init');
+const { initApp } = require('../../utils/init');
 const {
   downloadExampleAppTo,
   removeReadme
@@ -41,7 +41,7 @@ class InitCommand extends BaseCommand {
       this.exit();
     }
 
-    await oInitApp(path, this.generateCreateFunc(template));
+    await initApp(path, this.generateCreateFunc(template));
   }
 }
 
