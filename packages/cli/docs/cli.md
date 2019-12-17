@@ -149,53 +149,23 @@ After the deprecation date has passed it will be safe to delete that integration
 
 ## describe
 
-  > Describes the current app.
+> Describes the current integraiton.
 
-  **Usage:** `zapier describe`
+**Usage**: `zapier describe`
 
-  
-Prints a human readable enumeration of your app's triggers, searches, and actions as seen by Zapier. Useful to understand how your resources convert and relate to different actions.
-
-> These are the same actions we'd display in our editor!
+Prints a human readable enumeration of your integrations's triggers, searches, and creates as seen by Zapier. Useful to understand how your resources convert and relate to different actions.
 
 * `Noun` -- your action's noun
+
 * `Label` -- your action's label
+
 * `Resource` -- the resource (if any) this action is tied to
+
 * `Available Methods` -- testable methods for this action
 
-**Arguments**
-
-
-
-* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
-
-```bash
-$ zapier describe
-# A description of your app "Example" listed below.
-#
-# Triggers
-#
-# ┌────────────┬────────────────────┬──────────────┬───────────────────────────────────────────────┐
-# │ Noun       │ Label              │ Resource Ref │ Available Methods                             │
-# ├────────────┼────────────────────┼──────────────┼───────────────────────────────────────────────┤
-# │ Member     │ Updated Subscriber │ member       │ triggers.updated_member.operation.perform     │
-# │            │                    │              │ triggers.updated_member.operation.inputFields │
-# │            │                    │              │ resources.member.list.operation.perform       │
-# │            │                    │              │ resources.member.list.operation.inputFields   │
-# └────────────┴────────────────────┴──────────────┴───────────────────────────────────────────────┘
-#
-# Searches
-#
-#  Nothing found for searches, maybe try the `zapier scaffold` command?
-#
-# Creates
-#
-#  Nothing found for creates, maybe try the `zapier scaffold` command?
-#
-# If you'd like to add more, try the `zapier scaffold` command to kickstart!
-```
+**Flags**
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`. One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output
 
 
 ## env:get
