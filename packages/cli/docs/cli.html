@@ -505,45 +505,23 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Describes the current app.</p>
-</blockquote><p>  <strong>Usage:</strong> <code>zapier describe</code></p><p>Prints a human readable enumeration of your app&apos;s triggers, searches, and actions as seen by Zapier. Useful to understand how your resources convert and relate to different actions.</p><blockquote>
-<p>These are the same actions we&apos;d display in our editor!</p>
-</blockquote><ul>
-<li><code>Noun</code> -- your action&apos;s noun</li>
-<li><code>Label</code> -- your action&apos;s label</li>
-<li><code>Resource</code> -- the resource (if any) this action is tied to</li>
-<li><code>Available Methods</code> -- testable methods for this action</li>
-</ul><p><strong>Arguments</strong></p><ul>
-<li><code>--format={plain,json,raw,row,table}</code> -- <em>optional</em>, display format. Default is <code>table</code></li>
-<li><code>--help</code> -- <em>optional</em>, prints this help text</li>
-<li><code>--debug</code> -- <em>optional</em>, print debug API calls and tracebacks</li>
+<p>Describes the current integraiton.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier describe</code></p><p>Prints a human readable enumeration of your integrations&apos;s triggers, searches, and creates as seen by Zapier. Useful to understand how your resources convert and relate to different actions.</p><ul>
+<li><p><code>Noun</code> -- your action&apos;s noun</p>
+</li>
+<li><p><code>Label</code> -- your action&apos;s label</p>
+</li>
+<li><p><code>Resource</code> -- the resource (if any) this action is tied to</p>
+</li>
+<li><p><code>Available Methods</code> -- testable methods for this action</p>
+</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as <code>jq</code>. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output</li>
 </ul>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">$ zapier describe
-<span class="hljs-comment"># A description of your app &quot;Example&quot; listed below.</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Triggers</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># &#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x252C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;</span>
-<span class="hljs-comment"># &#x2502; Noun       &#x2502; Label              &#x2502; Resource Ref &#x2502; Available Methods                             &#x2502;</span>
-<span class="hljs-comment"># &#x251C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x253C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2524;</span>
-<span class="hljs-comment"># &#x2502; Member     &#x2502; Updated Subscriber &#x2502; member       &#x2502; triggers.updated_member.operation.perform     &#x2502;</span>
-<span class="hljs-comment"># &#x2502;            &#x2502;                    &#x2502;              &#x2502; triggers.updated_member.operation.inputFields &#x2502;</span>
-<span class="hljs-comment"># &#x2502;            &#x2502;                    &#x2502;              &#x2502; resources.member.list.operation.perform       &#x2502;</span>
-<span class="hljs-comment"># &#x2502;            &#x2502;                    &#x2502;              &#x2502; resources.member.list.operation.inputFields   &#x2502;</span>
-<span class="hljs-comment"># &#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2534;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Searches</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#  Nothing found for searches, maybe try the `zapier scaffold` command?</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># Creates</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment">#  Nothing found for creates, maybe try the `zapier scaffold` command?</span>
-<span class="hljs-comment">#</span>
-<span class="hljs-comment"># If you&apos;d like to add more, try the `zapier scaffold` command to kickstart!</span>
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">

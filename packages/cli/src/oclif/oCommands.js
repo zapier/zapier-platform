@@ -8,6 +8,7 @@ module.exports = {
   delete: true,
   'delete:integration': require('./commands/delete/integration'),
   'delete:version': require('./commands/delete/version'),
+  describe: require('./commands/describe'),
   env: true, // used so that aliases are properly routed into oclif, but `env` itself doesn't show in help/docs
   'env:get': require('./commands/env/get'),
   'env:set': require('./commands/env/set'),
