@@ -22,9 +22,14 @@ class ConvertCommand extends BaseCommand {
             callAPI(`/apps/${appId}`, undefined, true),
             callAPI(`/apps/${appId}/versions/${version}`, undefined, true)
           ]);
+
+          if (!versionInfo.definition_override) {
+            this.error(
+              `Integration ${appId} @ ${version} is already a CLI integration and can't be converted. Instead, pick a version that was created using the Visual Builder.`
+            );
+          }
           this.stopSpinner();
-          this.logJSON(appInfo);
-          this.logJSON(versionInfo);
+
           return convertVisualApp(
             appInfo,
             versionInfo.definition_override,
@@ -33,7 +38,7 @@ class ConvertCommand extends BaseCommand {
         } catch (e) {
           if (e.status === 404) {
             this.error(
-              `Visual Builder integration ${appId} @ ${version} not found. If you want to convert a Legacy Web Builder app, don't pass a \`--version\` option.`
+              `Visual Builder integration ${appId} @ ${version} not found. If you want to convert a Legacy Web Builder app, don't pass a \`--version\` option. Otherwise, double check the integration id and version.`
             );
           }
           this.error(e);
