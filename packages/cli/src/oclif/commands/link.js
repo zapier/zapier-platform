@@ -1,22 +1,37 @@
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 const { cyan } = require('colors/safe');
+const { sortBy } = require('lodash');
 
-const { listApps, writeLinkedAppConfig } = require('../../utils/api');
+const {
+  listApps,
+  writeLinkedAppConfig,
+  getLinkedAppConfig
+} = require('../../utils/api');
 const { CURRENT_APP_FILE } = require('../../constants');
 
 class LinkCommand extends BaseCommand {
   async perform() {
     this.startSpinner('Loading Integrations');
+    const linkedAppId = (await getLinkedAppConfig(undefined, false)).id;
     const { apps } = await listApps();
     this.stopSpinner();
 
     const chosenApp = await this.promptWithList(
       'Which integration should be associated with the code in this directory?',
-      apps.map(app => ({
-        name: app.title,
-        value: { id: app.id, key: app.key }
-      }))
+      sortBy(
+        apps.map(app => ({
+          name: `${app.title} (${app.id})${
+            linkedAppId && app.id === linkedAppId
+              ? ' [currently linked app]'
+              : ''
+          }`,
+          short: app.title,
+          value: { id: app.id, key: app.key }
+        })),
+        app => app.name.toLowerCase()
+      ),
+      15
     );
 
     this.startSpinner(`Setting up ${CURRENT_APP_FILE}`);

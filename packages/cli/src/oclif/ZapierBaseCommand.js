@@ -157,8 +157,8 @@ class ZapierBaseCommand extends Command {
   }
 
   // see here for options for choices: https://github.com/SBoudrias/Inquirer.js/#question
-  promptWithList(question, choices) {
-    return this.prompt(question, { type: 'list', choices });
+  promptWithList(question, choices, pageSize) {
+    return this.prompt(question, { type: 'list', choices, pageSize });
   }
 
   /**
