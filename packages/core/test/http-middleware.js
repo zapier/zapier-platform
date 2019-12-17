@@ -321,8 +321,7 @@ describe('http addBasicAuthHeader before middelware', () => {
     req.headers.Authorization.should.eql(expectedValue);
   });
 
-  it('does not add the header when username or password is missing', () => {
-    const origReq = {};
+  it('does not add the header when username and password are missing', () => {
     const z = {};
     const bundle = {
       authData: {
@@ -330,15 +329,15 @@ describe('http addBasicAuthHeader before middelware', () => {
         password: ''
       }
     };
-    var req = addBasicAuthHeader(origReq, z, bundle);
-    should.not.exist(req.headers);
+    let req = addBasicAuthHeader({}, z, bundle);
+    req.headers.Authorization.should.eql('Basic dXNlcjo=');
 
     bundle.authData.username = '';
-    req = addBasicAuthHeader(origReq, z, bundle);
+    req = addBasicAuthHeader({}, z, bundle);
     should.not.exist(req.headers);
 
     delete bundle.authData;
-    req = addBasicAuthHeader(origReq, z, bundle);
+    req = addBasicAuthHeader({}, z, bundle);
     should.not.exist(req.headers);
   });
 
