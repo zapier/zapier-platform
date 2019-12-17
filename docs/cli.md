@@ -362,45 +362,16 @@ This command also checks the current directory for a linked integration.
 
 ## link
 
-  > Link the current directory to an app you have access to.
+> Link the current directory with an existing integration
 
-  **Usage:** `zapier link`
+**Usage**: `zapier link`
 
-  
-Link the current directory to an app you have access to. It is fairly uncommon to run this command - more often you'd just `git clone git@github.com:example-inc/example.git` which would have a `.zapierapprc` file already included. If not, you'd need to be an admin on the app and use this command to regenerate the `.zapierapprc` file.
+This command generates a .zapierapprc file in the directory in which it's ran. This file ties this code to an integration and is referenced frequently during `push` and `validate` operations. This file should be checked into source control.
 
-Or, if you are making an app from scratch - you should prefer `zapier init`.
+If you're starting an integration from scratch, use `zapier init` instead.
 
-> This will change the `./.zapierapprc` (which identifies the app assosciated with the current directory).
-
-**Arguments**
-
-
-
-* `--format={plain,json,raw,row,table}` -- _optional_, display format. Default is `table`
-* `--help` -- _optional_, prints this help text
-* `--debug` -- _optional_, print debug API calls and tracebacks
-
-```bash
-$ zapier link
-# Which app would you like to link the current directory to?
-#
-# ┌────────┬─────────────┬────────────┬─────────────────────┬────────┐
-# │ Number │ Title       │ Unique Key │ Timestamp           │ Linked │
-# ├────────┼─────────────┼────────────┼─────────────────────┼────────┤
-# │ 1      │ Example     │ Example    │ 2016-01-01T22:19:28 │ ✔      │
-# └────────┴─────────────┴────────────┴─────────────────────┴────────┘
-#      ...or type any title to create new app!
-#
-# Which app number do you want to link? You also may type a new app title to create one. (Ctrl-C to cancel)
-#
-  1
-#
-#   Selecting existing app "Example" - done!
-#   Setting up `.zapierapprc` file - done!
-#
-# Finished! You can `zapier push` now to build & upload a version!
-```
+**Flags**
+* `-d, --debug` | Show extra debugging output
 
 
 ## login
