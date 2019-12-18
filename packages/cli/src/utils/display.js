@@ -284,6 +284,8 @@ const flattenCheckResult = checkResult => {
       continue;
     }
 
+    const displaySeverity = checkResult[severity].display_label || severity;
+
     for (const issueGroup of results) {
       if (!issueGroup.violations) {
         break;
@@ -299,7 +301,7 @@ const flattenCheckResult = checkResult => {
       for (const violation of issueGroup.violations) {
         for (const result of violation.results) {
           res.push({
-            category: severity,
+            category: displaySeverity,
             method: `${opType}.${violation.type}`,
             description: `${result.message} (${result.tag})`,
             link: `${CHECK_REF_DOC_LINK}#${result.tag}`

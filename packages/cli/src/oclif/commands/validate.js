@@ -30,7 +30,7 @@ class ValidateCommand extends BaseCommand {
 
     if (newErrors.length) {
       this.log(
-        'Your app is structurally invalid. Address concerns and run this command again.'
+        'Your integration is structurally invalid. Address concerns and run this command again.'
       );
       process.exitCode = 1;
     } else {
@@ -41,13 +41,15 @@ class ValidateCommand extends BaseCommand {
     if (this.flags['without-style'] || process.exitCode === 1) {
       if (process.exitCode === 1) {
         this.log(
-          colors.grey('\nSkipping app checks because app did not validate.')
+          colors.grey(
+            '\nSkipping integration checks because schema did not validate.'
+          )
         );
       }
       return;
     } else {
       this.log();
-      this.startSpinner('Running app checks');
+      this.startSpinner('Running integration checks');
 
       const rawDefinition = await localAppCommand({
         command: 'definition'
@@ -57,13 +59,17 @@ class ValidateCommand extends BaseCommand {
     }
 
     const doneMessage = checkResult.passes
-      ? `Running app checks ... ${checkResult.passes.length} checks passed`
+      ? `Running integration checks ... ${checkResult.passes.length} checks passed`
       : undefined;
     this.stopSpinner({ message: doneMessage });
 
     const checkIssues = flattenCheckResult(checkResult);
 
-    this.log('\nHere are the issues we found:');
+    this.log();
+    if (checkIssues.length) {
+      this.log('Here are the issues we found:');
+    }
+
     this.logTable({
       rows: checkIssues,
       headers: [
@@ -72,21 +78,34 @@ class ValidateCommand extends BaseCommand {
         ['Description', 'description'],
         ['Link', 'link']
       ],
-      emptyMessage: 'App checks passed, no issues found.'
+      emptyMessage: 'Integration checks passed, no issues found.'
     });
 
-    if (checkResult.errors && checkResult.errors.results.length) {
-      process.exitCode = 1;
-      this.log(
-        'Errors will block you from pushing; warnings will only block you from going public or promoting a version.\n'
-      );
-    } else if (checkResult.warnings && checkResult.warnings.results.length) {
-      this.log(
-        'Your app looks great! Warnings only block you from going public or promoting a version.\n'
-      );
-    } else {
-      this.log('Your app looks great!\n');
+    const errorDisplay = checkResult.errors.display_label;
+    const warningDisplay = checkResult.warnings.display_label;
+    const suggestionDisplay = checkResult.suggestions.display_label;
+
+    if (checkIssues.length) {
+      this.logList([
+        [
+          `- ${colors.bold(errorDisplay)}`,
+          'Issues that will prevent your integration from functioning ' +
+            'properly. They block you from pushing.'
+        ],
+        [
+          `- ${colors.bold(warningDisplay)}`,
+          'To-dos that must be addressed before your integration can be ' +
+            'included in the App Directory. They block you from promoting and ' +
+            'publishing.'
+        ],
+        [
+          `- ${colors.bold(suggestionDisplay)}`,
+          'Issues and recommendations that need human reviews by Zapier before ' +
+            "publishing your integration. They don't block."
+        ]
+      ]);
     }
+    this.log();
   }
 }
 
@@ -106,8 +125,8 @@ ValidateCommand.examples = [
   'zapier validate --without-style',
   'zapier validate --format json'
 ];
-ValidateCommand.description = `Validates your Zapier app.
+ValidateCommand.description = `Validates your Zapier integration.
 
-Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during \`zapier build\`, \`zapier upload\`, \`zapier push\` or even as a test in \`zapier test\`.`;
+Runs the standard validation routine powered by json-schema that checks your integration for any structural errors. This is the same routine that runs during \`zapier build\`, \`zapier upload\`, \`zapier push\` or even as a test in \`zapier test\`.`;
 
 module.exports = ValidateCommand;
