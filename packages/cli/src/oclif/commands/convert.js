@@ -118,13 +118,13 @@ ConvertCommand.flags = buildFlags({
     })
   }
 });
-ConvertCommand.description = `Describes the current integraiton.
+ConvertCommand.description = `Converts a Legacy Web Builder or Visual Builder app to a CLI app.
 
-Prints a human readable enumeration of your integrations's triggers, searches, and creates as seen by Zapier. Useful to understand how your resources convert and relate to different actions.
+If you're converting a **Legacy Web Builder** app: the new app contains code stubs only. It is supposed to get you started - it isn't going to create a complete app!
+After running this, you'll have a new app in your directory, with stubs for your trigger and actions.  If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
-* \`Noun\` -- your action's noun
-* \`Label\` -- your action's label
-* \`Resource\` -- the resource (if any) this action is tied to
-* \`Available Methods\` -- testable methods for this action`;
+If you're converting a **Visual Builder** app, then it will be identical and ready to push and use immediately!
+
+You'll need to do a \`zapier push\` before the new version is visible in the editor, but otherwise you're good to go.`;
 
 module.exports = ConvertCommand;
