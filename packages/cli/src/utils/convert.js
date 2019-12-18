@@ -7,6 +7,7 @@ const semver = require('semver');
 const {
   PACKAGE_VERSION,
   PLATFORM_PACKAGE,
+  LAMBDA_VERSION,
   IS_TESTING
 } = require('../constants');
 const { copyFile, ensureDir, readFile, writeFile } = require('./files');
@@ -130,7 +131,7 @@ const renderVisualPackageJson = (appInfo, appDefinition) => {
       test: 'mocha --recursive -t 10000'
     },
     engines: {
-      node: '8.10.0',
+      node: `>=${LAMBDA_VERSION}`,
       npm: '>=5.6.0'
     },
     dependencies: {

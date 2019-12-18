@@ -55,41 +55,25 @@ This command is typically followed by `zapier upload`.
 
 ## convert
 
-  > Converts a Legacy Web Builder or Visual Builder app to a CLI app.
+> Converts a Legacy Web Builder or Visual Builder app to a CLI app.
 
-  **Usage:** `zapier convert appid path`
-
-  
-Creates a new CLI app from an existing app.
+**Usage**: `zapier convert INTEGRATIONID PATH`
 
 If you're converting a **Legacy Web Builder** app: the new app contains code stubs only. It is supposed to get you started - it isn't going to create a complete app!
 
 After running this, you'll have a new app in your directory, with stubs for your trigger and actions.  If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
-Once you've run the command, make sure to run `zapier push` to see it in the editor.
+If you're converting a **Visual Builder** app, then it will be identical and ready to push and use immediately!
 
-If you're converting a **Visual Builder** app, then it will be identical and ready to push and use immediately! You'll need to do a `zapier push` before the new version is visible in the editor, but otherwise you're good to go.
+You'll need to do a `zapier push` before the new version is visible in the editor, but otherwise you're good to go.
 
 **Arguments**
+* (required) `integrationId` | To get the integration id, go to "https://zapier.com/app/developer", click on an integration, and copy the number directly  after "/app/" in the url.
+* (required) `path` | Relative to your current path - IE: `.` for current directory
 
-* `appid [value]` -- **required**, Get the appid from "https://zapier.com/app/developer", clicking on an integration, and taking the number after "/app" in the url.
-* `location [value]` -- **required**, Relative to your current path - IE: `.` for current directory
-* `--version=1.0.0` -- _optional_, Convert a specific version. Required when converting a Visual Builder app
-
-```bash
-$ zapier convert 1234 .
-# Let's convert your app!
-#
-#   Downloading app from Zapier - done!
-#   Writing triggers/trigger.js - done!
-#   Writing package.json - done!
-#   Writing index.js - done!
-#   Copy ./index.js - done!
-#   Copy ./package.json - done!
-#   Copy ./triggers/trigger.js - done!
-#
-# Finished! You might need to `npm install` then try `zapier test`!
-```
+**Flags**
+* `-v, --version` | Convert a specific version. Required when converting a Visual Builder app
+* `-d, --debug` | Show extra debugging output
 
 
 ## delete:integration

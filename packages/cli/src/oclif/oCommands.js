@@ -4,6 +4,7 @@ module.exports = {
   analytics: require('./commands/analytics'),
   apps: true,
   build: require('./commands/build'),
+  convert: require('./commands/convert'),
   deprecate: require('./commands/deprecate'),
   delete: true,
   'delete:integration': require('./commands/delete/integration'),
