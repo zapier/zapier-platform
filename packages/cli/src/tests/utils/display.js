@@ -1,6 +1,6 @@
 require('should');
 
-const utils = require('../../utils');
+const { makeTable } = require('../../utils/display');
 
 describe('display', () => {
   describe('table', () => {
@@ -8,7 +8,7 @@ describe('display', () => {
       const originalWidth = process.stdout.columns;
       try {
         process.stdout.columns = 50;
-        const table = utils.makeTable(
+        const table = makeTable(
           [{ id: 123, title: 'hello' }, { id: 456, title: 'world' }],
           [['ID', 'id'], ['Title', 'title'], ['Missing', 'missing']]
         );
@@ -38,7 +38,7 @@ describe('display', () => {
       const originalWidth = process.stdout.columns;
       try {
         process.stdout.columns = 15;
-        const table = utils.makeTable(
+        const table = makeTable(
           [{ id: 123, title: 'hello' }, { id: 456, title: 'world' }],
           [['ID', 'id'], ['Title', 'title'], ['Missing', 'missing']]
         );

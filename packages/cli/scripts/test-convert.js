@@ -3,10 +3,10 @@
 const _ = require('lodash');
 const path = require('path');
 const tmp = require('tmp');
-const utils = require('../src/utils');
+const { promisifyAll } = require('../src/utils/promisify');
 
 const fse = require('fs-extra');
-const childProcess = utils.promisifyAll(require('child_process'));
+const childProcess = promisifyAll(require('child_process'));
 
 const appsToConvert = [
   { id: 80082, name: 'simple-basic-auth' },
@@ -26,7 +26,7 @@ const appsToConvert = [
 ];
 
 const testConvertedApp = (appToConvert, rootTmpDir) => {
-  const zapierCmd = path.resolve(__dirname, '../zapier.js');
+  const zapierCmd = path.resolve(__dirname, '../src/bin/run');
   // Prepare all env variables the apps might need
   const exportCmd =
     'export CLIENT_ID=1234 CLIENT_SECRET=asdf USERNAME=user PASSWORD=secret API_KEY=secret SESSION_KEY=secret ACCESS_TOKEN=a_token REFRESH_TOKEN=a_refresh_token';
@@ -41,11 +41,7 @@ const testConvertedApp = (appToConvert, rootTmpDir) => {
     .ensureFile(logFile)
     .then(() => {
       return new Promise((resolve, reject) => {
-        const cmd = `${zapierCmd} convert ${appToConvert.id} ${
-          appToConvert.name
-        } --debug && cd ${
-          appToConvert.name
-        } && npm install && ${zapierCmd} validate && ${exportCmd} && ${zapierCmd} test --timeout=10000`;
+        const cmd = `${zapierCmd} convert ${appToConvert.id} ${appToConvert.name} --debug && cd ${appToConvert.name} && npm install && ${zapierCmd} validate && ${exportCmd} && ${zapierCmd} test --timeout=10000`;
         const child = childProcess.exec(cmd, { cwd: rootTmpDir }, err => {
           if (err) {
             console.log('error starting child process:', err);

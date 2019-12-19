@@ -3,14 +3,14 @@
 const _ = require('lodash');
 const path = require('path');
 const tmp = require('tmp');
-const utils = require('../src/utils');
+const { promisifyAll } = require('../src/utils/promisify');
 const appTemplates = require('../src/app-templates');
 const versionStore = require('../src/version-store');
 
 const fse = require('fs-extra');
 const semver = require('semver');
 const yaml = require('yamljs');
-const childProcess = utils.promisifyAll(require('child_process'));
+const childProcess = promisifyAll(require('child_process'));
 
 const CLONE_URL_PREFIX = 'git@github.com:zapier/zapier-platform-example-app';
 const PACKAGES_NAMES = 'node, npm, and zapier-platform-core';

@@ -33,7 +33,7 @@
     "validate": "yarn test && yarn smoke-test && yarn lint"
   },
   "engines": {
-    "node": ">=8.10.0",
+    "node": ">=10",
     "npm": ">=5.6.0"
   },
   "engineStrict": true,
