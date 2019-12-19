@@ -3,15 +3,15 @@
 const _ = require('lodash');
 const path = require('path');
 const tmp = require('tmp');
-const utils = require('../src/utils');
+const { promisifyAll } = require('../src/utils/promisify');
 
 const fse = require('fs-extra');
-const childProcess = utils.promisifyAll(require('child_process'));
+const childProcess = promisifyAll(require('child_process'));
 
 const appTemplates = require('../src/app-templates');
 
 const validateAppTemplate = (template, rootTmpDir) => {
-  //const appDir = path.resolve(rootTmpDir, template);
+  // const appDir = path.resolve(rootTmpDir, template);
   const zapierCmd = path.resolve(__dirname, '../zapier.js');
   const extraCmd = template === 'babel' ? ' && npm run zapier-build' : '';
 

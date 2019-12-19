@@ -1,14 +1,18 @@
-// current => new
+// this is an init hook because the info about which command is clobbered by the time we get to the pre_run hook
+
+// deprecated => recommended
 const deprecatedCommands = {
   apps: 'integrations'
 };
 
-module.exports = async function(options) {
+// can't be fat arrow because it inherits `this` from commands
+module.exports = function(options) {
   if (deprecatedCommands[options.id]) {
-    console.warn(
-      `\nWARNING: The \`${options.id}\` command is deprecated. Use the \`${
+    this.warn(
+      `The \`${options.id}\` command is deprecated. Use the \`${
         deprecatedCommands[options.id]
-      }\` command instead\n`
+      }\` command instead.`
     );
+    console.log();
   }
 };

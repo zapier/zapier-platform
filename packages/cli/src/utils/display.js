@@ -4,22 +4,13 @@ const Table = require('cli-table3');
 const colors = require('colors/safe');
 const stringLength = require('string-length');
 const _ = require('lodash');
-const read = require('read');
 const ora = require('ora');
 
 const { CHECK_REF_DOC_LINK } = require('../constants');
 
 const notUndef = s => String(s === undefined ? '' : s).trim();
 
-const unBacktick = s => s.replace(/\n?`+(bash)?/g, '');
-
 const prettyJSONstringify = obj => JSON.stringify(obj, null, '  ');
-
-const markdownLog = str => {
-  // turn markdown into something with styles and stuff
-  // https://blog.mariusschulz.com/content/images/sublime_markdown_with_syntax_highlighting.png
-  console.log(unBacktick(str));
-};
 
 // Convert rows from keys to column labels.
 const rewriteLabels = (rows, columnDefs) => {
@@ -186,34 +177,12 @@ const makeJSON = (rows, columnDefs) =>
   prettyJSONstringify(rewriteLabels(rows, columnDefs));
 const makeRawJSON = rows => prettyJSONstringify(rows);
 
-const DEFAULT_STYLE = 'table';
 const formatStyles = {
   plain: makePlain,
   json: makeJSON,
   raw: makeRawJSON,
   row: makeRowBasedTable,
   table: makeTable
-};
-
-// DEPRECATED, use this.logTable instead
-const printData = (
-  rows,
-  columnDefs,
-  ifEmptyMessage = '',
-  useRowBasedTable = false
-) => {
-  const formatStyle =
-    (global.argOpts || {}).format || (useRowBasedTable ? 'row' : DEFAULT_STYLE);
-  const formatter = formatStyles[formatStyle] || formatStyles[DEFAULT_STYLE];
-  if (rows && !rows.length) {
-    if (['json', 'raw'].includes(formatStyle)) {
-      console.log([]);
-    } else {
-      console.log(ifEmptyMessage);
-    }
-  } else {
-    console.log(formatter(rows, columnDefs));
-  }
 };
 
 // single global instance of the spinner
@@ -234,46 +203,6 @@ const endSpinner = (success = true, message) => {
   } else {
     spinner.fail(message);
   }
-};
-
-// Get input from a user.
-const getInput = (question, { secret = false } = {}) => {
-  return new Promise((resolve, reject) => {
-    read(
-      {
-        prompt: question,
-        silent: secret,
-        replace: secret ? '*' : undefined
-      },
-      (err, result) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(result);
-      }
-    );
-  });
-};
-
-const hasAccepted = answer =>
-  answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes';
-
-const hasRejected = answer =>
-  answer.toLowerCase() === 'n' || answer.toLowerCase() === 'no';
-
-const getYesNoInput = (question, showCtrlC = true) => {
-  let message = question + ' (y/n) ';
-  if (showCtrlC) {
-    message += '(Ctrl-C to cancel) ';
-  }
-  return getInput(message).then(answer => {
-    const yes = hasAccepted(answer);
-    const no = hasRejected(answer);
-    if (!yes && !no) {
-      throw new Error('That answer is not valid. Please try "y" or "n".');
-    }
-    return yes;
-  });
 };
 
 const flattenCheckResult = checkResult => {
@@ -315,12 +244,7 @@ module.exports = {
   endSpinner,
   flattenCheckResult,
   formatStyles,
-  getInput,
-  getYesNoInput,
-  makeRowBasedTable,
-  makeTable,
-  markdownLog,
+  makeTable, // exported for tests
   prettyJSONstringify,
-  printData,
   startSpinner
 };

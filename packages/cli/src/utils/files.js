@@ -4,7 +4,6 @@ const os = require('os');
 const path = require('path');
 
 const fse = require('fs-extra');
-const { getYesNoInput } = require('./display');
 
 const fixHome = dir => {
   const home = process.env.HOME || process.env.USERPROFILE;
@@ -140,19 +139,6 @@ const isEmptyDir = dir => fse.readdir(dir).then(items => _.isEmpty(items));
 const isExistingEmptyDir = async dir =>
   fse.existsSync(dir) && !(await isEmptyDir(dir));
 
-const confirmNonEmptyDir = async location => {
-  if (fse.existsSync(location) && !(await isEmptyDir(location))) {
-    const yes = await getYesNoInput(
-      'Current directory not empty, continue anyway?',
-      false
-    );
-    if (!yes) {
-      /* eslint no-process-exit: 0 */
-      process.exit(0);
-    }
-  }
-};
-
 const makeTempDir = () => {
   let workdir;
   const tmpBaseDir = os.tmpdir();
@@ -170,7 +156,6 @@ module.exports = {
   fileExistsSync,
   isEmptyDir,
   isExistingEmptyDir,
-  confirmNonEmptyDir,
   readFile,
   removeDir,
   validateFileExists,
