@@ -133,8 +133,8 @@ class ZapierBaseCommand extends Command {
    * Print text in a list style.
    * @param {string[][]} items
    */
-  logList(items, { maxWidth = stdtermwidth } = {}) {
-    this.log(renderList(items, { spacer: '\n', maxWidth }));
+  logList(items) {
+    this.log(renderList(items, { spacer: '\n', maxWidth: stdtermwidth }));
   }
 
   /**
