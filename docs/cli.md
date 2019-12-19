@@ -671,11 +671,11 @@ When this command is run, their Zaps will immediately turn off. They won't be ab
 
 ## validate
 
-> Validates your Zapier app.
+> Validates your Zapier integration.
 
 **Usage**: `zapier validate`
 
-Runs the standard validation routine powered by json-schema that checks your app for any structural errors. This is the same routine that runs during `zapier build`, `zapier upload`, `zapier push` or even as a test in `zapier test`.
+Runs the standard validation routine powered by json-schema that checks your integration for any structural errors. This is the same routine that runs during `zapier build`, `zapier upload`, `zapier push` or even as a test in `zapier test`.
 
 **Flags**
 * `--without-style` | Forgo pinging the Zapier server to run further checks

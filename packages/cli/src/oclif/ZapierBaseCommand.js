@@ -1,4 +1,6 @@
 const { Command } = require('@oclif/command');
+const { stdtermwidth } = require('@oclif/plugin-help/lib/screen');
+const { renderList } = require('@oclif/plugin-help/lib/list');
 const colors = require('colors/safe');
 
 const { startSpinner, endSpinner, formatStyles } = require('../utils/display');
@@ -125,6 +127,14 @@ class ZapierBaseCommand extends Command {
       // data comes out of the formatter ready to be printed (and it's always in the type to match the format) so we don't need to do anything special with it
       console.log(formatter(rows, headers));
     }
+  }
+
+  /**
+   * Print text in a list style.
+   * @param {string[][]} items
+   */
+  logList(items) {
+    this.log(renderList(items, { spacer: '\n', maxWidth: stdtermwidth }));
   }
 
   /**
