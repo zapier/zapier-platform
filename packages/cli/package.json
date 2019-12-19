@@ -40,7 +40,8 @@
   "dependencies": {
     "@oclif/command": "1.5.18",
     "@oclif/config": "1.13.3",
-    "@oclif/plugin-help": "2.2.1",
+    "@oclif/plugin-autocomplete": "0.1.5",
+    "@oclif/plugin-help": "2.2.3",
     "@oclif/plugin-not-found": "1.2.3",
     "adm-zip": "0.4.13",
     "archiver": "3.1.1",
@@ -81,7 +82,9 @@
     "commands": "src/oclif/commands",
     "bin": "zapier",
     "plugins": [
-      "@oclif/plugin-not-found"
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found",
+      "@oclif/plugin-autocomplete"
     ],
     "hooks": {
       "init": [
