@@ -6,16 +6,15 @@
   "homepage": "https://zapier.com/",
   "author": "Bryan Helmig <bryan@zapier.com>",
   "license": "UNLICENSED",
-  "main": "./src/bin/run",
+  "main": "./src/index.js",
   "files": [
     "/src/*.js",
     "/src/commands/",
     "/src/oclif/",
-    "/src/bin/run",
+    "/src/bin/",
     "/src/bin/run.cmd",
     "/src/utils/",
     "/scaffold/",
-    "/zapier.js",
     "/oclif.manifest.json"
   ],
   "engines": {
@@ -29,10 +28,9 @@
     "precommit": "yarn docs && git add docs README.md ../../docs",
     "version": "yarn docs && yarn gen-completions && git add docs/* goodies/* README.md",
     "postversion": "git push && git push --tags",
-    "lint": "eslint zapier.js src snippets --fix",
+    "lint": "eslint src snippets --fix",
     "test": "NODE_ENV=test mocha -t 50000 --recursive src/tests",
     "smoke-test": "NODE_ENV=test mocha -t 120000 --recursive src/smoke-tests",
-    "zapier": "zapier.js",
     "validate-templates": "./scripts/validate-app-templates.js",
     "set-template-versions": "./scripts/set-app-template-versions.js",
     "gen-completions": "./scripts/gen-zsh-completions.js > ./goodies/zsh/_zapier && ./scripts/gen-bash-completions.js > ./goodies/bash/_zapier",
@@ -77,7 +75,7 @@
     "yamljs": "0.3.0"
   },
   "bin": {
-    "zapier": "zapier.js"
+    "zapier": "./src/bin/run"
   },
   "oclif": {
     "commands": "src/oclif/commands",

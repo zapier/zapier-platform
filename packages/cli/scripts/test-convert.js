@@ -26,7 +26,7 @@ const appsToConvert = [
 ];
 
 const testConvertedApp = (appToConvert, rootTmpDir) => {
-  const zapierCmd = path.resolve(__dirname, '../zapier.js');
+  const zapierCmd = path.resolve(__dirname, '../src/bin/run');
   // Prepare all env variables the apps might need
   const exportCmd =
     'export CLIENT_ID=1234 CLIENT_SECRET=asdf USERNAME=user PASSWORD=secret API_KEY=secret SESSION_KEY=secret ACCESS_TOKEN=a_token REFRESH_TOKEN=a_refresh_token';

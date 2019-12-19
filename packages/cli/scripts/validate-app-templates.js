@@ -12,7 +12,7 @@ const appTemplates = require('../src/app-templates');
 
 const validateAppTemplate = (template, rootTmpDir) => {
   // const appDir = path.resolve(rootTmpDir, template);
-  const zapierCmd = path.resolve(__dirname, '../zapier.js');
+  const zapierCmd = path.resolve(__dirname, '../src/bin/run');
   const extraCmd = template === 'babel' ? ' && npm run zapier-build' : '';
 
   const logFile = path.resolve(__dirname, '..', `${template}.log`);

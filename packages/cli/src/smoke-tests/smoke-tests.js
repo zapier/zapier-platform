@@ -95,10 +95,10 @@ describe('smoke tests - setup will take some time', () => {
   });
 
   it('zapier --version', () => {
-    const firstLine = runCommand(context.cliBin, ['--version'])
-      .split('\n')[0]
-      .trim();
-    firstLine.should.be.eql(`zapier-platform-cli/${context.package.version}`);
+    const firstLine = runCommand(context.cliBin, ['--version']);
+    firstLine
+      .includes(`zapier-platform-cli/${context.package.version}`)
+      .should.be.true();
   });
 
   it('zapier init', () => {
