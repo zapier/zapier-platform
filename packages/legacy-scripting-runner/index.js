@@ -184,6 +184,12 @@ const parseFinalResult = async (result, event) => {
   ) {
     if (Array.isArray(result)) {
       result.forEach(field => {
+        if (field.type === 'dict') {
+          // For CLI, we set field.dict to true to represet a dict field instead
+          // of setting field.type to 'dict'
+          field.dict = true;
+          delete field.list;
+        }
         field.type = FIELD_TYPE_CONVERT_MAP[field.type] || field.type;
       });
     }

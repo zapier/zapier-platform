@@ -1941,6 +1941,32 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_post_custom_action_fields, dict field', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.inputFieldsUrl += 's';
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_post_custom_action_fields_dict_field',
+        'movie_post_custom_action_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 4);
+        should.equal(fields[3].key, 'attrs');
+        should.equal(fields[3].type, 'string');
+        should.not.exist(fields[3].list);
+        fields[3].dict.should.be.true();
+      });
+    });
+
     it('KEY_pre_custom_action_fields & KEY_post_custom_action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
