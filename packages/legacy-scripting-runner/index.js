@@ -59,6 +59,17 @@ const FIELD_TYPE_CONVERT_MAP = {
   unicode: 'string'
 };
 
+const normalizeField = field => {
+  if (field.type === 'dict') {
+    // For CLI, we set field.dict to true to represet a dict field instead
+    // of setting field.type to 'dict'
+    field.dict = true;
+    delete field.list;
+  }
+  field.type = FIELD_TYPE_CONVERT_MAP[field.type] || field.type;
+  return field;
+};
+
 // Makes a multipart/form-data request body that can be set to request.body for
 // node-fetch.
 const makeMultipartBody = async (data, lazyFilesObject) => {
@@ -183,9 +194,7 @@ const parseFinalResult = async (result, event) => {
     event.name.endsWith('.output.post')
   ) {
     if (Array.isArray(result)) {
-      result.forEach(field => {
-        field.type = FIELD_TYPE_CONVERT_MAP[field.type] || field.type;
-      });
+      result = result.map(normalizeField);
     }
   }
 
@@ -967,7 +976,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     );
   };
 
-  const runCustomFields = (
+  const runCustomFields = async (
     bundle,
     key,
     typeOf,
@@ -990,7 +999,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
     bundle.request.method = 'GET';
 
-    return runEventCombo(
+    const fields = await runEventCombo(
       bundle,
       key,
       preEventName,
@@ -998,6 +1007,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       fullEventName,
       { ensureType: 'array-wrap', resetRequestForFullMethod: true }
     );
+    return fields.map(normalizeField);
   };
 
   const runTriggerOutputFields = (bundle, key) => {

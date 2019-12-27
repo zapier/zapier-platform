@@ -898,7 +898,7 @@
     supports-color "^5.4.0"
     tslib "^1"
 
-"@oclif/command@1.5.19", "@oclif/command@^1.5.1", "@oclif/command@^1.5.13", "@oclif/command@^1.5.3":
+"@oclif/command@1.5.19", "@oclif/command@^1.4.31", "@oclif/command@^1.5.1", "@oclif/command@^1.5.13", "@oclif/command@^1.5.3":
   version "1.5.19"
   resolved "https://registry.yarnpkg.com/@oclif/command/-/command-1.5.19.tgz#13f472450eb83bd6c6871a164c03eadb5e1a07ed"
   integrity sha512-6+iaCMh/JXJaB2QWikqvGE9//wLEVYYwZd5sud8aLoLKog1Q75naZh2vlGVtg5Mq/NqpqGQvdIjJb3Bm+64AUQ==
@@ -910,7 +910,7 @@
     debug "^4.1.1"
     semver "^5.6.0"
 
-"@oclif/config@1.13.3", "@oclif/config@^1", "@oclif/config@^1.12.12":
+"@oclif/config@1.13.3", "@oclif/config@^1", "@oclif/config@^1.12.12", "@oclif/config@^1.6.22":
   version "1.13.3"
   resolved "https://registry.yarnpkg.com/@oclif/config/-/config-1.13.3.tgz#1b13e18d0e4242ddbd9cbd100f0eec819aa2bf8c"
   integrity sha512-qs5XvGRw+1M41abOKCjd0uoeHCgsMxa2MurD2g2K8CtQlzlMXl0rW5idVeimIg5208LLuxkfzQo8TKAhhRCWLg==
@@ -962,7 +962,34 @@
     chalk "^2.4.2"
     tslib "^1.9.3"
 
-"@oclif/plugin-help@2.2.1", "@oclif/plugin-help@^2", "@oclif/plugin-help@^2.1.6":
+"@oclif/plugin-autocomplete@0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-autocomplete/-/plugin-autocomplete-0.1.5.tgz#b021b50db6d6b0d9e7d2227c58f43906578ae175"
+  integrity sha512-Afchpdd8FNfx9GaU/1D9IzyfiXvjfGybgzQ6G4GTFvPO0/hLdkXX3YyYq+SnxE6/bCrhg4pleiB+GuJACmmkEA==
+  dependencies:
+    "@oclif/command" "^1.4.31"
+    "@oclif/config" "^1.6.22"
+    chalk "^2.4.1"
+    cli-ux "^4.4.0"
+    debug "^3.1.0"
+    fs-extra "^6.0.1"
+    moment "^2.22.1"
+
+"@oclif/plugin-help@2.2.3":
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-2.2.3.tgz#b993041e92047f0e1762668aab04d6738ac06767"
+  integrity sha512-bGHUdo5e7DjPJ0vTeRBMIrfqTRDBfyR5w0MP41u0n3r7YG5p14lvMmiCXxi6WDaP2Hw5nqx3PnkAIntCKZZN7g==
+  dependencies:
+    "@oclif/command" "^1.5.13"
+    chalk "^2.4.1"
+    indent-string "^4.0.0"
+    lodash.template "^4.4.0"
+    string-width "^3.0.0"
+    strip-ansi "^5.0.0"
+    widest-line "^2.0.1"
+    wrap-ansi "^4.0.0"
+
+"@oclif/plugin-help@^2", "@oclif/plugin-help@^2.1.6":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-2.2.1.tgz#cb4d23e453b19340b07c48fb299948b7c74366d3"
   integrity sha512-psEA3t41MSGBErLk6xCaAq2jKrRtx3Br+kHpd43vZeGEeZ7Gos4wgK0JAaHBbvhvUQskCHg8dzoqv4XEeTWeVQ==
@@ -2924,7 +2951,7 @@ cli-truncate@^0.2.1:
     slice-ansi "0.0.4"
     string-width "^1.0.1"
 
-cli-ux@^4.9.0:
+cli-ux@^4.4.0, cli-ux@^4.9.0:
   version "4.9.3"
   resolved "https://registry.yarnpkg.com/cli-ux/-/cli-ux-4.9.3.tgz#4c3e070c1ea23eef010bbdb041192e0661be84ce"
   integrity sha512-/1owvF0SZ5Gn54cgrikJ0QskgTzeg30HGjkmjFoaHDJzAqFpuX1DBpFR8aLvsE1J5s9MgeYRENQK4BFwOag5VA==
@@ -7584,7 +7611,7 @@ moment-timezone@0.5.17:
   dependencies:
     moment ">= 2.9.0"
 
-"moment@>= 2.9.0":
+"moment@>= 2.9.0", moment@^2.22.1:
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==

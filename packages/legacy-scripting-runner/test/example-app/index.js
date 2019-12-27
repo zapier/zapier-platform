@@ -503,6 +503,18 @@ const legacyScriptingSource = `
         return fields;
       },
 
+      movie_post_custom_action_fields_dict_field: function(bundle) {
+        var fields = z.JSON.parse(bundle.response.content);
+        fields.push({
+          key: 'attrs',
+          label: 'Attributes',
+          type: 'dict',
+          list: true
+        });
+        debugger;
+        return fields;
+      },
+
       // To be replaced with 'movie_custom_action_fields' at runtime
       movie_custom_action_fields_disabled: function(bundle) {
         // bundle.request.url should be an empty string to start with

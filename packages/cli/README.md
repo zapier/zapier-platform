@@ -125,8 +125,6 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [What Analytics are Collected?](#what-analytics-are-collected)
   * [What's the Difference Between an "App" and an "Integration"?](#whats-the-difference-between-an-app-and-an-integration)
 - [Command Line Tab Completion](#command-line-tab-completion)
-  * [Zsh Completion Script](#zsh-completion-script)
-  * [Bash Completion Script](#bash-completion-script)
 - [The Zapier Platform Packages](#the-zapier-platform-packages)
   * [Updating](#updating)
 - [Development of the CLI](#development-of-the-cli)
@@ -3075,46 +3073,9 @@ We're in the process of doing some renaming across our Zapier marketing terms. E
 
 ## Command Line Tab Completion
 
-We have provided two tab completion scripts to make it easier to use the Zapier Platform CLI, for zsh and bash.
+Introduced in `9.1.0`, the `zapier autocomplete` command shows instructions for generating command line autocomplete.
 
-### Zsh Completion Script
-
-To use the zsh completion script, first setup support for completion, if you haven't already done so. This example assumes your completion scripts are in `~/.zsh/completion`. Adjust accordingly if you put them somewhere else:
-
-```zsh
-# add custom completion scripts
-fpath=(~/.zsh/completion $fpath)
-
-# compsys initialization
-autoload -U compinit
-compinit
-```
-
-Next download our completion script to your completions directory:
-
-```zsh
-cd ~/.zsh/completion
-curl https://raw.githubusercontent.com/zapier/zapier-platform/master/packages/cli/goodies/zsh/_zapier -O
-```
-
-Finally, restart your shell and start hitting TAB with the `zapier` command!
-
-### Bash Completion Script
-
-To use the bash completion script, first download the completion script. The example assumes your completion scripts are in `~/.bash_completion.d` directory. Adjust accordingly if you put them somewhere else.
-
-```bash
-cd ~/.bash_completion.d
-curl https://raw.githubusercontent.com/zapier/zapier-platform/master/packages/cli/goodies/bash/_zapier -O
-```
-
-Next source the script from your `~/.bash_profile`:
-
-```bash
-source ~/.bash_completion.d/_zapier
-```
-
-Finally, restart your shell and start hitting TAB with the `zapier` command!
+Follow those instructions to enable completion for `zapier` commands and flags!
 
 ## The Zapier Platform Packages
 
