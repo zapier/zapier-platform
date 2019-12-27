@@ -185,16 +185,16 @@ ScaffoldCommand.flags = buildFlags({
     dest: flags.string({
       char: 'd',
       description:
-        "Sets the new file's path. Use this flag when you want to create a different folder structure such as `src/triggers/my_trigger` The default destination is {type}s/{name}"
+        "Sets the new file's path. Use this flag when you want to create a different folder structure such as `src/triggers/my_trigger` The default destination is {type}s/{name}."
     }),
     entry: flags.string({
       char: 'e',
-      description: 'Where to import the new file',
+      description: 'Where to import the new file.',
       default: 'index.js'
     }),
     force: flags.boolean({
       char: 'f',
-      description: 'Should we overwrite an exisiting file',
+      description: 'Should we overwrite an exisiting file.',
       default: false
     })
   }
@@ -202,12 +202,12 @@ ScaffoldCommand.flags = buildFlags({
 
 ScaffoldCommand.examples = [
   'zapier scaffold resource "Contact"',
-  'zapier scaffold resource "Contact" --entry=index.js',
-  'zapier scaffold resource "Contag Tag" --dest=resources/tag',
-  'zapier scaffold trigger "Existing Create" --force'
+  'zapier scaffold create "Add Contact" --entry=index.js',
+  'zapier scaffold search "Find Contact" --dest=searches/contact',
+  'zapier scaffold trigger "New Contact" --force'
 ];
 
-ScaffoldCommand.description = `Adds a starting resource, trigger, action or search to your app.
+ScaffoldCommand.description = `Add a starting resource, trigger, action, or search to your integration.
 
 The first argument should one of \`resource|trigger|search|create\` followed by the name of the file.
 
@@ -218,7 +218,7 @@ The scaffold command does two general things:
 
 You can mix and match several options to customize the created scaffold for your project.
 
-> Note, we may fail to correctly rewrite your \`index.js\`. You may need to write in the require and registration, but we'll provide the code you need.
+We may fail to correctly rewrite your \`index.js\`. You may need to write in the require and registration, but we'll provide the code you need.
 `;
 
 module.exports = ScaffoldCommand;

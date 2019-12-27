@@ -11,7 +11,6 @@ const { buildAndOrUpload } = require('../../utils/build');
 
 class BuildCommand extends BaseCommand {
   async perform() {
-    this.log('Building Project\n');
     await buildAndOrUpload(
       { build: true },
       {
@@ -29,7 +28,7 @@ class BuildCommand extends BaseCommand {
 BuildCommand.flags = buildFlags({
   commandFlags: {
     'disable-dependency-detection': flags.boolean({
-      description: `Disables "smart" file inclusion. By default, Zapier only includes files that are required by \`index.js\`. If you (or your dependencies) require files dynamically (such as with \`require(someVar)\`), then you may see "Cannot find module" errors. Disabling this may make your \`build.zip\` too large. If that's the case, try using the \`includeInBuild\` option in your \`${CURRENT_APP_FILE}\`. [See the docs](includeInBuild) for more info.`
+      description: `Disable "smart" file inclusion. By default, Zapier only includes files that are required by \`index.js\`. If you (or your dependencies) require files dynamically (such as with \`require(someVar)\`), then you may see "Cannot find module" errors. Disabling this may make your \`build.zip\` too large. If that's the case, try using the \`includeInBuild\` option in your \`${CURRENT_APP_FILE}\`. See the docs about \`includeInBuild\` for more info.`
     }),
     'skip-npm-install': flags.boolean({
       description:
@@ -38,7 +37,7 @@ BuildCommand.flags = buildFlags({
     })
   }
 });
-BuildCommand.description = `Builds a pushable zip from the current directory.
+BuildCommand.description = `Build a pushable zip from the current directory.
 
 This command does the following:
 

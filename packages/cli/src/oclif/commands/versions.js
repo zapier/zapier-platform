@@ -5,7 +5,10 @@ const { listVersions } = require('../../utils/api');
 
 class VersionCommand extends BaseCommand {
   async perform() {
+    this.startSpinner('Loading versions');
     const { versions } = await listVersions();
+    this.stopSpinner();
+
     this.logTable({
       rows: versions,
       headers: [
@@ -23,6 +26,6 @@ class VersionCommand extends BaseCommand {
 }
 
 VersionCommand.flags = buildFlags({ opts: { format: true } });
-VersionCommand.description = `Lists the versions of your integration available for use in the Zapier editor.`;
+VersionCommand.description = `List the versions of your integration available for use in the Zapier editor.`;
 
 module.exports = VersionCommand;

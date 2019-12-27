@@ -12,7 +12,7 @@ const { CURRENT_APP_FILE } = require('../../constants');
 
 class LinkCommand extends BaseCommand {
   async perform() {
-    this.startSpinner('Loading Integrations');
+    this.startSpinner('Loading integrations');
     const linkedAppId = (await getLinkedAppConfig(undefined, false)).id;
     const { apps } = await listApps();
     this.stopSpinner();
@@ -42,12 +42,10 @@ class LinkCommand extends BaseCommand {
 }
 
 LinkCommand.flags = buildFlags();
-LinkCommand.description = `Link the current directory with an existing integration
+LinkCommand.description = `Link the current directory with an existing integration.
 
-This command generates a ${CURRENT_APP_FILE} file in the directory in which it's ran. This file ties this code to an integration and is referenced frequently during \`push\` and \`validate\` operations. This file should be checked into source control.
+This command generates a \`${CURRENT_APP_FILE}\` file in the directory in which it's ran. This file ties this code to an integration and is referenced frequently during \`push\` and \`validate\` operations. This file should be checked into source control.
 
-If you're starting an integration from scratch, use \`${cyan(
-  'zapier init'
-)}\` instead.`;
+If you're starting an integration from scratch, use \`zapier init\` instead.`;
 
 module.exports = LinkCommand;

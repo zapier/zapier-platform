@@ -71,7 +71,7 @@ class TeamRemoveCommand extends ZapierBaseCommand {
 TeamRemoveCommand.flags = buildFlags();
 TeamRemoveCommand.description = `Remove a team member from all versions of your integration.
 
-Admins will immediately lose write access to the app. Subscribers won't receive future email updates.`;
+Admins will immediately lose write access to the integration. Subscribers won't receive future email updates.`;
 TeamRemoveCommand.aliases = ['team:delete'];
 
 module.exports = TeamRemoveCommand;

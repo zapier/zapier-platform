@@ -186,6 +186,10 @@ class ZapierBaseCommand extends Command {
     endSpinner(success, message);
   }
 
+  description() {
+    return '';
+  }
+
   // pulled from https://github.com/oclif/plugin-help/blob/73bfd5a861e65844a1d6c3a0a9638ee49d16fee8/src/command.ts
   // renamed to avoid naming collision
   static zUsage(name) {

@@ -61,7 +61,7 @@ UnsetEnvCommand.args = [
   }
 ];
 UnsetEnvCommand.flags = buildFlags();
-UnsetEnvCommand.description = `Unsets environment variable(s) for a version.`;
+UnsetEnvCommand.description = `Unset environment variables for a version.`;
 UnsetEnvCommand.examples = [`zapier env:unset 1.2.3 SECRET OTHER`];
 UnsetEnvCommand.strict = false;
 

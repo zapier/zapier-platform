@@ -235,7 +235,7 @@ const getVersionInfo = () => {
   });
 };
 
-const checkCredentials = () => {
+const checkCredentials = async () => {
   return callAPI('/check');
 };
 
@@ -341,7 +341,7 @@ const upload = async () => {
 
   if (!fs.existsSync(fullZipPath)) {
     throw new Error(
-      'Missing a built app. Try running `zapier build` first.\nAlternatively, run `zapier push`, which will build and upload in one command.'
+      'Missing a built integration. Try running `zapier build` first.\nAlternatively, run `zapier push`, which will build and upload in one command.'
     );
   }
 

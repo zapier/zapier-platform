@@ -9,11 +9,11 @@ const baseFlags = {
     options: Object.keys(formatStyles),
     default: 'table',
     description:
-      'Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as `jq`.'
+      'Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq.'
   }),
   debug: flags.boolean({
     char: 'd',
-    description: 'Show extra debugging output'
+    description: 'Show extra debugging output.'
     // pull from env?
   }),
 

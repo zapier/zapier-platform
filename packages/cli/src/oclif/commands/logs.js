@@ -114,8 +114,10 @@ LogsCommand.flags = buildFlags({
   commandFlags,
   opts: { format: true }
 });
-LogsCommand.description = `Prints recent logs.
+LogsCommand.description = `Print recent logs.
 
-Logs are created when your integration is run as part of a Zap. They come from explicit calls to \`z.console.log()\`, usage of \`z.request()\`, and any runtime errors. Note: this won't show logs from running locally with \`zapier test\`, since those never hit our server.`;
+Logs are created when your integration is run as part of a Zap. They come from explicit calls to \`z.console.log()\`, usage of \`z.request()\`, and any runtime errors.
+
+This won't show logs from running locally with \`zapier test\`, since those never hit our server.`;
 
 module.exports = LogsCommand;

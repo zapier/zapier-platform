@@ -86,7 +86,7 @@ class PromoteCommand extends BaseCommand {
         this.log(
           `The next step is to visit ${colors.cyan(
             activationUrl
-          )} to request public activation of your integration.`
+          )} to request to publish your integration.`
         );
       } else {
         this.stopSpinner({ success: false });
@@ -126,25 +126,17 @@ PromoteCommand.args = [
 ];
 
 PromoteCommand.examples = ['zapier promote 1.0.0'];
-PromoteCommand.description = `Promotes a specific version to public access.
+PromoteCommand.description = `Promote a specific version to public access.
 
-Promotes an integration version into production (non-private) rotation, which means new users can use this integration version.
+Promote an integration version into production (non-private) rotation, which means new users can use this integration version.
 
-* This ${colors.bold(
-  'does'
-)} mark the version as the official public version - all other versions & users are grandfathered.
-* This does ${colors.bold(
-  'NOT'
-)} build/upload or deploy a version to Zapier - you should \`zapier push\` first.
-* This does ${colors.bold(
-  'NOT'
-)} move old users over to this version - \`zapier migrate 1.0.0 1.0.1\` does that.
-* This does ${colors.bold(
-  'NOT'
-)} recommend old users stop using this version - \`zapier deprecate 1.0.0 2017-01-01\` does that.
+* This **does** mark the version as the official public version - all other versions & users are grandfathered.
+* This does **NOT** build/upload or deploy a version to Zapier - you should \`zapier push\` first.
+* This does **NOT** move old users over to this version - \`zapier migrate 1.0.0 1.0.1\` does that.
+* This does **NOT** recommend old users stop using this version - \`zapier deprecate 1.0.0 2017-01-01\` does that.
 
 Promotes are an inherently safe operation for all existing users of your integration.
 
-> If this is your first time promoting - this will start the platform quality assurance process by alerting the Zapier platform team of your intent to make your app public. We'll respond within a few business days.`;
+If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.`;
 
 module.exports = PromoteCommand;

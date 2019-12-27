@@ -38,7 +38,7 @@ UsersRemoveCommand.flags = buildFlags({
   commandFlags: {
     force: flags.boolean({
       char: 'f',
-      description: 'Skip confirmation. Useful for running programatically.'
+      description: 'Skips confirmation. Useful for running programatically.'
     })
   }
 });

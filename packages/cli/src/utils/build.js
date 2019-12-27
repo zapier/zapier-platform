@@ -434,7 +434,11 @@ const buildAndOrUpload = async (
   if (!(build || upload)) {
     throw new Error('must either build or upload');
   }
+
+  startSpinner('Checking authentication');
   await checkCredentials();
+  endSpinner();
+
   if (build) {
     await _buildFunc(buildOpts);
   }

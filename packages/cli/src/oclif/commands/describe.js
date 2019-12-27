@@ -189,13 +189,15 @@ class DescribeCommand extends BaseCommand {
 }
 
 DescribeCommand.flags = buildFlags({ opts: { format: true } });
-DescribeCommand.description = `Describes the current integraiton.
+DescribeCommand.description = `Describe the current integraiton.
 
-Prints a human readable enumeration of your integrations's triggers, searches, and creates as seen by Zapier. Useful to understand how your resources convert and relate to different actions.
+This command prints a human readable enumeration of your integrations's
+triggers, searches, and creates as seen by Zapier. Useful to understand how your
+resources convert and relate to different actions.
 
-* \`Noun\` -- your action's noun
-* \`Label\` -- your action's label
-* \`Resource\` -- the resource (if any) this action is tied to
-* \`Available Methods\` -- testable methods for this action`;
+* **Noun**: your action's noun
+* **Label**: your action's label
+* **Resource**: the resource (if any) this action is tied to
+* **Available Methods**: testable methods for this action`;
 
 module.exports = DescribeCommand;

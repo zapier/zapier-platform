@@ -59,17 +59,17 @@ TestCommand.flags = buildFlags({
   commandFlags: {
     timeout: flags.integer({
       char: 't',
-      description: 'Set test-case timeout in milliseconds',
+      description: 'Set test-case timeout in milliseconds.',
       default: 2000
     }),
     grep: flags.string({
-      description: 'Only run tests matching pattern'
+      description: 'Only run tests matching pattern.'
     }),
     'skip-validate': flags.boolean({
-      description: 'Forgo running `zapier validate` before `npm test`'
+      description: 'Forgo running `zapier validate` before `npm test`.'
     }),
     yarn: flags.boolean({
-      description: 'Use yarn instead of npm'
+      description: 'Use yarn instead of npm.'
     })
   }
 });
@@ -78,7 +78,7 @@ TestCommand.examples = [
   'zapier test',
   'zapier test -t 30000 --grep api --skip-validate'
 ];
-TestCommand.description = `Tests your integration via \`npm test\`.
+TestCommand.description = `Test your integration via \`npm test\`.
 
 This command is effectively the same as \`npm test\`, except we also validate your integration and set up the environment. We recommend using mocha as your testing framework.`;
 

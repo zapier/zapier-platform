@@ -46,16 +46,14 @@ class TeamListCommand extends ZapierBaseCommand {
 }
 
 TeamListCommand.flags = buildFlags({ opts: { format: true } });
-TeamListCommand.description = `Get a list of team members involved with your app.
+TeamListCommand.description = `Get team members involved with your integration.
 
 These users come in two levels:
 
-  * Admins, who can edit everything about the app
-  * Subscribers, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health socores and more.
+  * \`admin\`, who can edit everything about the integration
+  * \`subscriber\`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health socores and more.
 
-Use the \`${cyan('zapier team:add')}\` and \`${cyan(
-  'zapier team:remove'
-)}\` commands to modify your team.
+Use the \`zapier team:add\` and \`zapier team:remove\` commands to modify your team.
 `;
 TeamListCommand.aliases = ['team:list'];
 

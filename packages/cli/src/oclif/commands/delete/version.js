@@ -1,6 +1,5 @@
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
-const { cyan } = require('colors/safe');
 const { getLinkedApp, callAPI } = require('../../../utils/api');
 
 class DeleteVersionCommand extends BaseCommand {
@@ -26,10 +25,8 @@ DeleteVersionCommand.args = [
   }
 ];
 DeleteVersionCommand.flags = buildFlags();
-DeleteVersionCommand.description = `Deletes a specific version of your integration.
+DeleteVersionCommand.description = `Delete a specific version of your integration.
 
-This only works if there are no users or Zaps on that version. You will probably need to have run \`${cyan(
-  'zapier migrate'
-)}\` and \`${cyan('zapier deprecate')}\` before this comand will work.`;
+This only works if there are no users or Zaps on that version. You will probably need to have run \`zapier migrate\` and \`zapier deprecate\` before this command will work.`;
 
 module.exports = DeleteVersionCommand;

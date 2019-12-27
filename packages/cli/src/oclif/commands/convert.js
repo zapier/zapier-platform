@@ -118,7 +118,7 @@ ConvertCommand.flags = buildFlags({
     })
   }
 });
-ConvertCommand.description = `Converts a Legacy Web Builder or Visual Builder app to a CLI app.
+ConvertCommand.description = `Convert a Legacy Web Builder or Visual Builder integration to a CLI integration.
 
 If you're converting a **Legacy Web Builder** app: the new app contains code stubs only. It is supposed to get you started - it isn't going to create a complete app!
 After running this, you'll have a new app in your directory, with stubs for your trigger and actions.  If you re-run this command on an existing directory it will leave existing files alone and not clobber them.

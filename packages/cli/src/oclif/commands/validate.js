@@ -112,7 +112,7 @@ class ValidateCommand extends BaseCommand {
 ValidateCommand.flags = buildFlags({
   commandFlags: {
     'without-style': flags.boolean({
-      description: 'Forgo pinging the Zapier server to run further checks'
+      description: 'Forgo pinging the Zapier server to run further checks.'
     })
   },
   opts: {
@@ -125,8 +125,8 @@ ValidateCommand.examples = [
   'zapier validate --without-style',
   'zapier validate --format json'
 ];
-ValidateCommand.description = `Validates your Zapier integration.
+ValidateCommand.description = `Validate your integration.
 
-Runs the standard validation routine powered by json-schema that checks your integration for any structural errors. This is the same routine that runs during \`zapier build\`, \`zapier upload\`, \`zapier push\` or even as a test in \`zapier test\`.`;
+Run the standard validation routine powered by json-schema that checks your integration for any structural errors. This is the same routine that runs during \`zapier build\`, \`zapier upload\`, \`zapier push\` or even as a test in \`zapier test\`.`;
 
 module.exports = ValidateCommand;

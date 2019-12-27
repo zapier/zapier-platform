@@ -104,18 +104,18 @@ MigrateCommand.examples = [
   'zapier migrate 1.0.1 2.0.0 10',
   'zapier migrate 2.0.0 2.0.1 --user=user@example.com'
 ];
-MigrateCommand.description = `Migrates users from one version of your integration to another.
+MigrateCommand.description = `Migrate users from one version of your integration to another.
 
-Starts a migration to move users between different versions of your integration. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. \`zapier migrate 1.0.1 1.0.0\`).
+Start a migration to move users between different versions of your integration. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. \`zapier migrate 1.0.1 1.0.0\`).
 
-Only migrate users between non-breaking versions, use \`zapier deprecate\` if you have breaking changes!
+Only use this command to migrate users between non-breaking versions, use \`zapier deprecate\` if you have breaking changes!
 
-Migrations can take between 5-10 minutes, so be patient and check \`zapier history\` to track the status.
+Migration time varies based on the number of affected Zaps. Be patient and check \`zapier history\` to track the status.
 
-Note: since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.
+Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.
 
-> Tip: We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
+We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
-> Tip 2: You can migrate a single user by using \`--user\` (i.e. \`zapier migrate 1.0.0 1.0.1 --user=user@example.com\`).`;
+You can migrate a single user by using \`--user\` (i.e. \`zapier migrate 1.0.0 1.0.1 --user=user@example.com\`).`;
 
 module.exports = MigrateCommand;
