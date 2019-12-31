@@ -65,7 +65,7 @@ class DescribeCommand extends BaseCommand {
   }
 
   async perform() {
-    this.startSpinner('Fetching app info');
+    this.startSpinner('Fetching integration info');
     const [app, appConfig, version, definition] = await Promise.all([
       getLinkedApp().catch(() => null),
       getLinkedAppConfig().catch(() => null),
