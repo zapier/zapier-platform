@@ -971,9 +971,7 @@ describe('bundleConverter', () => {
         data: ''
       },
       auth_fields: {},
-      load: {
-        user: 'Zapier'
-      },
+      load: {},
       meta: {},
       zap: {
         id: 0
@@ -1036,9 +1034,7 @@ describe('bundleConverter', () => {
         access_token: 'qwerty',
         refresh_token: 'zxcvb'
       },
-      load: {
-        user: 'Zapier'
-      },
+      load: {},
       meta: {},
       zap: {
         id: 0

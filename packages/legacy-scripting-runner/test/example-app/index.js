@@ -85,6 +85,14 @@ const legacyScriptingSource = `
         };
       },
 
+      pre_oauthv2_refresh_bundle_load: function(bundle) {
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        debugger;
+        bundle.request.data = qs.stringify(bundle.load);
+        bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        return bundle.request;
+      },
+
       get_connection_label: function(bundle) {
         return 'Hi ' + bundle.test_result.name;
       },

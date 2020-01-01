@@ -334,6 +334,29 @@ describe('Integration Test', () => {
         });
       });
     });
+
+    it('pre_oauthv2_refresh, bundle.load', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'pre_oauthv2_refresh_bundle_load',
+        'pre_oauthv2_refresh'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.refreshAccessToken'
+      );
+      input.bundle.authData = {
+        refresh_token: 'my_refresh_token',
+        access_token: 'my_access_token'
+      };
+      return app(input).then(output => {
+        const response = output.results;
+        should.not.exist(response.headers.Authorization);
+        should.equal(response.form.refresh_token, 'my_refresh_token');
+      });
+    });
   });
 
   describe('polling trigger', () => {
