@@ -74,7 +74,7 @@ const addAuthData = (event, bundle, convertedBundle) => {
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET
     };
-    convertedBundle.load = _.get(bundle, 'inputData', {});
+    convertedBundle.load = _.get(bundle, 'request.body', {});
   }
 };
 
