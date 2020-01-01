@@ -415,6 +415,12 @@ const legacyScriptingSource = `
         return qs.parse('title=Joker&year=2019');
       },
 
+      movie_post_write_returning_nothing: function(bundle) {},
+
+      movie_post_write_returning_string: function(bundle) {
+        return 'ok';
+      },
+
       movie_pre_write_default_headers: function(bundle) {
         // Copy Accept and Content-Type to request body so we know they're
         // already available in pre_write
