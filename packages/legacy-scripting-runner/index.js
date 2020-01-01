@@ -59,15 +59,19 @@ const FIELD_TYPE_CONVERT_MAP = {
   unicode: 'string'
 };
 
-const normalizeField = field => {
-  if (field.type === 'dict') {
-    // For CLI, we set field.dict to true to represet a dict field instead
-    // of setting field.type to 'dict'
-    field.dict = true;
-    delete field.list;
-  }
-  field.type = FIELD_TYPE_CONVERT_MAP[field.type] || field.type;
-  return field;
+const cleanCustomFields = fields => {
+  return fields
+    .filter(field => _.isPlainObject(field) && field.key)
+    .map(field => {
+      if (field.type === 'dict') {
+        // For CLI, we set field.dict to true to represet a dict field instead
+        // of setting field.type to 'dict'
+        field.dict = true;
+        delete field.list;
+      }
+      field.type = FIELD_TYPE_CONVERT_MAP[field.type] || field.type;
+      return field;
+    });
 };
 
 // Makes a multipart/form-data request body that can be set to request.body for
@@ -194,7 +198,9 @@ const parseFinalResult = async (result, event) => {
     event.name.endsWith('.output.post')
   ) {
     if (Array.isArray(result)) {
-      result = result.map(normalizeField);
+      result = cleanCustomFields(result);
+    } else {
+      result = [];
     }
   }
 
@@ -1010,7 +1016,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       fullEventName,
       { ensureType: 'array-wrap', resetRequestForFullMethod: true }
     );
-    return fields.map(normalizeField);
+    return cleanCustomFields(fields);
   };
 
   const runTriggerOutputFields = (bundle, key) => {

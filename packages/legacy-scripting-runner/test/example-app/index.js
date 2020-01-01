@@ -521,6 +521,8 @@ const legacyScriptingSource = `
         return fields;
       },
 
+      movie_post_custom_action_fields_returning_nothing: function(bundle) {},
+
       // To be replaced with 'movie_custom_action_fields' at runtime
       movie_custom_action_fields_disabled: function(bundle) {
         // bundle.request.url should be an empty string to start with
