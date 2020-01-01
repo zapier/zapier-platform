@@ -516,15 +516,18 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
             _.get(convertedBundle, 'request.files') || {}
           );
 
+          // method.length is the number of args method accepts
+          const method = Zap[methodName];
+          const isAsync = method.length > 1;
           let result;
           try {
-            result = Zap[methodName](convertedBundle, optionalCallback);
+            result = method(convertedBundle, optionalCallback);
           } catch (err) {
             reject(err);
           }
 
           // Handle sync
-          if (result !== undefined) {
+          if (!isAsync) {
             parseFinalResult(result, event).then(res => {
               resolve(res);
             });
