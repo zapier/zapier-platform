@@ -354,7 +354,12 @@ describe('Integration Test', () => {
       return app(input).then(output => {
         const response = output.results;
         should.not.exist(response.headers.Authorization);
-        should.equal(response.form.refresh_token, 'my_refresh_token');
+        should.deepEqual(response.form, {
+          client_id: [process.env.CLIENT_ID],
+          client_secret: [process.env.CLIENT_SECRET],
+          grant_type: ['refresh_token'],
+          refresh_token: ['my_refresh_token']
+        });
       });
     });
   });
