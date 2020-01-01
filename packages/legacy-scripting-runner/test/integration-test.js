@@ -2017,6 +2017,30 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_post_custom_action_fields, returning nothing', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.inputFieldsUrl += 's';
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_post_custom_action_fields_returning_nothing',
+        'movie_post_custom_action_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then(output => {
+        const fields = output.results;
+        should.equal(fields.length, 2);
+        should.equal(fields[0].key, 'title');
+        should.equal(fields[1].key, 'genre');
+      });
+    });
+
     it('KEY_pre_custom_action_fields & KEY_post_custom_action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
