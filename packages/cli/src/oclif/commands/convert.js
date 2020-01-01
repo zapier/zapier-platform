@@ -49,7 +49,7 @@ class ConvertCommand extends BaseCommand {
         // has a CLI version of the actual app implementation
         const cliDumpUrl = `${BASE_ENDPOINT}/api/developer/v1/apps/${appId}/cli-dump`;
 
-        this.startSpinner('Downloading app from Zapier');
+        this.startSpinner('Downloading integration from Zapier');
 
         try {
           const [legacyApp, appDefinition] = await Promise.all([
