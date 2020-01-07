@@ -5,11 +5,11 @@ const { listApps } = require('../../utils/api');
 
 class IntegrationsCommand extends BaseCommand {
   async perform() {
-    this.startSpinner('Loading Integrations');
+    this.startSpinner('Loading integrations');
     const { apps } = await listApps();
     this.stopSpinner();
 
-    this.log('\nHere are all the integrations you have write access to:\n');
+    this.log('\nHere are all the integrations you have write access to:');
 
     this.logTable({
       rows: apps,
@@ -26,7 +26,7 @@ class IntegrationsCommand extends BaseCommand {
 
 IntegrationsCommand.flags = buildFlags({ opts: { format: true } });
 IntegrationsCommand.aliases = ['apps'];
-IntegrationsCommand.description = `Lists any integrations that you have admin access to.
+IntegrationsCommand.description = `List integrations you have admin access to.
 
 This command also checks the current directory for a linked integration.`;
 

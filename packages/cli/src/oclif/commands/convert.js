@@ -49,7 +49,7 @@ class ConvertCommand extends BaseCommand {
         // has a CLI version of the actual app implementation
         const cliDumpUrl = `${BASE_ENDPOINT}/api/developer/v1/apps/${appId}/cli-dump`;
 
-        this.startSpinner('Downloading app from Zapier');
+        this.startSpinner('Downloading integration from Zapier');
 
         try {
           const [legacyApp, appDefinition] = await Promise.all([
@@ -66,7 +66,7 @@ class ConvertCommand extends BaseCommand {
         } catch (e) {
           if (e.status === 404) {
             this.error(
-              `Legacy Web Builder app ${appId} not found. If you want to convert a Visual Builder app, make sure to pass a \`--version\` option.`
+              `Legacy Web Builder app ${appId} not found. If you want to convert a Visual Builder integration, make sure to pass a \`--version\` option.`
             );
           }
           this.error(e);
@@ -100,13 +100,14 @@ ConvertCommand.args = [
   {
     name: 'integrationId',
     required: true,
-    description: `To get the integration id, go to "${BASE_ENDPOINT}/app/developer", click on an integration, and copy the number directly  after "/app/" in the url.`,
+    description: `To get the integration/app ID, go to "${BASE_ENDPOINT}/app/developer", click on an integration, and copy the number directly after "/app/" in the URL.`,
     parse: input => Number(input)
   },
   {
     name: 'path',
     required: true,
-    description: 'Relative to your current path - IE: `.` for current directory'
+    description:
+      'Relative to your current path - IE: `.` for current directory.'
   }
 ];
 ConvertCommand.flags = buildFlags({
@@ -114,16 +115,17 @@ ConvertCommand.flags = buildFlags({
     version: flags.string({
       char: 'v',
       description:
-        'Convert a specific version. Required when converting a Visual Builder app'
+        'Convert a specific version. Required when converting a Visual Builder integration.'
     })
   }
 });
-ConvertCommand.description = `Converts a Legacy Web Builder or Visual Builder app to a CLI app.
+ConvertCommand.description = `Convert a Legacy Web Builder app or Visual Builder integration to a CLI integration.
 
-If you're converting a **Legacy Web Builder** app: the new app contains code stubs only. It is supposed to get you started - it isn't going to create a complete app!
-After running this, you'll have a new app in your directory, with stubs for your trigger and actions.  If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
+If you're converting a **Legacy Web Builder** app: the new integration will have a dependency named zapier-platform-legacy-scripting-runner, a shim used to simulate behaviors that are specific to Legacy Web Builder. There could be differences on how the shim simulates and how Legacy Web Builder actually behaves on some edge cases, especially you have custom scripting code.
 
 If you're converting a **Visual Builder** app, then it will be identical and ready to push and use immediately!
+
+If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
 You'll need to do a \`zapier push\` before the new version is visible in the editor, but otherwise you're good to go.`;
 

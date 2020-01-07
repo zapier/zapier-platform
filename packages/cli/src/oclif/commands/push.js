@@ -7,8 +7,6 @@ const { buildAndOrUpload } = require('../../utils/build');
 
 class PushCommand extends ZapierBaseCommand {
   async perform() {
-    this.log('Pushing Project\n');
-
     await buildAndOrUpload(
       { build: true, upload: true },
       {
@@ -16,14 +14,14 @@ class PushCommand extends ZapierBaseCommand {
         disableDependencyDetection: this.flags['disable-dependency-detection']
       }
     );
-    await this.log(
+    this.log(
       `\nPush complete! Built ${BUILD_PATH} and ${SOURCE_PATH} and uploaded them to Zapier.`
     );
   }
 }
 
 PushCommand.flags = BuildCommand.flags;
-PushCommand.description = `Builds and uploads the current app.
+PushCommand.description = `Build and upload the current integration.
 
 This command is the same as running \`zapier build\` and \`zapier upload\` in sequence. See those for more info.`;
 

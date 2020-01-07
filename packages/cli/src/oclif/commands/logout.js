@@ -8,9 +8,6 @@ const { AUTH_LOCATION, AUTH_LOCATION_RAW } = require('../../constants');
 class LogoutCommand extends BaseCommand {
   async perform() {
     let success = true;
-    this.log(
-      'Preparing to deactivate local deploy key and reset local configs.'
-    );
     this.startSpinner('Deactivating local deploy key');
     try {
       await callAPI('/keys', { method: 'DELETE', body: { single: true } });
@@ -28,11 +25,12 @@ class LogoutCommand extends BaseCommand {
     this.debug(`file deletion success?: ${deletedFileResult}`);
     this.stopSpinner();
 
+    this.log();
     this.log('The active deploy key was deactivated');
   }
 }
 
 LogoutCommand.flags = buildFlags();
-LogoutCommand.description = `Deactivates your acive deploy key and resets \`${AUTH_LOCATION_RAW}\`.`;
+LogoutCommand.description = `Deactivate your active deploy key and reset \`${AUTH_LOCATION_RAW}\`.`;
 
 module.exports = LogoutCommand;

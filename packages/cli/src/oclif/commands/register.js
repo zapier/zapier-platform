@@ -36,7 +36,7 @@ RegisterCommand.examples = [
   'zapier register',
   'zapier register "My Cool Integration"'
 ];
-RegisterCommand.description = `Registers a new integration in your account.
+RegisterCommand.description = `Register a new integration in your account.
 
 After running this, you can run \`zapier push\` to build and upload your integration for use in the Zapier editor.
 

@@ -62,6 +62,7 @@ class LoginCommand extends BaseCommand {
     const [credentialsPresent, credentialsGood] = await Promise.all(checks);
 
     if (!credentialsPresent) {
+      this.stopSpinner(); // end the spinner in checkCredentials()
       this.log(
         colors.yellow(`Your ${AUTH_LOCATION} has not been set up yet.\n`)
       );
@@ -139,10 +140,10 @@ LoginCommand.flags = buildFlags({
     sso: flags.boolean({
       char: 's',
       description:
-        "Use this flag if you log into Zapier a Single Sign-On (SSO) button and don't have a Zapier password"
+        "Use this flag if you log into Zapier a Single Sign-On (SSO) button and don't have a Zapier password."
     })
   }
 });
-LoginCommand.description = `Configures your \`${AUTH_LOCATION_RAW}\` with a deploy key.`;
+LoginCommand.description = `Configure your \`${AUTH_LOCATION_RAW}\` with a deploy key.`;
 
 module.exports = LoginCommand;

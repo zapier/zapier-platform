@@ -11,7 +11,7 @@ const inviteMessage = (roleIsAdmin, title) =>
 
 class TeamAddCommand extends ZapierBaseCommand {
   async perform() {
-    this.startSpinner('Checking app');
+    this.startSpinner('Getting integration info');
     const { id, title } = await getLinkedApp();
     this.stopSpinner();
 
@@ -31,7 +31,7 @@ class TeamAddCommand extends ZapierBaseCommand {
       return;
     }
 
-    this.startSpinner('Inviting Team Member');
+    this.startSpinner('Inviting team member');
 
     const url = roleIsAdmin
       ? `/apps/${id}/collaborators`
@@ -70,8 +70,8 @@ TeamAddCommand.description = `Add a team member to your integration.
 
 These users come in two levels:
 
-  * Admins, who can edit everything about the app
-  * Subscribers, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health socores and more.
+  * \`admin\`, who can edit everything about the integration
+  * \`subscriber\`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health socores and more.
 
 Team members can be freely added and removed.`;
 

@@ -32,8 +32,6 @@ class InitCommand extends BaseCommand {
     if (path.startsWith('-')) {
       this.error(`Invalid path: "${path}"`);
     }
-    this.log('Initializing a new integration');
-    this.log();
     if (
       (await isExistingEmptyDir(path)) &&
       !(await this.confirm(`Path "${path}" is not empty. Continue anyway?`))
@@ -42,6 +40,9 @@ class InitCommand extends BaseCommand {
     }
 
     await initApp(path, this.generateCreateFunc(template));
+
+    this.log();
+    this.log(`A new integration has been created in directory "${path}"`);
   }
 }
 
@@ -67,10 +68,10 @@ InitCommand.examples = [
   'zapier init ./some/path',
   'zapier init . --template typescript'
 ];
-InitCommand.description = `Initializes a new Zapier integration. Optionally uses a template.
+InitCommand.description = `Initialize a new Zapier integration. Optionally uses a template.
 
 After running this, you'll have a new example integration in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
-> Note: this doesn't register or deploy the integration with Zapier - try the \`zapier register\` and \`zapier push\` commands for that!`;
+This doesn't register or deploy the integration with Zapier - try the \`zapier register\` and \`zapier push\` commands for that!`;
 
 module.exports = InitCommand;

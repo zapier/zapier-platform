@@ -16,12 +16,12 @@ class UsersLinksCommand extends ZapierBaseCommand {
     this.log(
       `\nYou can invite users to ${bold(
         'all'
-      )} versions of your app using the following link:`
+      )} versions of your integration using the following link:`
     );
-    this.log(`\n\n${cyan(inviteUrl)}\n\n`);
+    this.log(`\n${cyan(inviteUrl)}\n`);
 
     this.log(
-      'You can invite users to specific app versions using the following links:\n'
+      'You can invite users to specific an integration version using the following links:'
     );
     this.logTable({
       rows: Object.entries(versionInviteUrls).map(([version, url]) => ({
@@ -38,6 +38,6 @@ class UsersLinksCommand extends ZapierBaseCommand {
 }
 
 UsersLinksCommand.flags = buildFlags({ opts: { format: true } });
-UsersLinksCommand.description = `Get a list of links that are used to invite users to your app.`;
+UsersLinksCommand.description = `Get a list of links that are used to invite users to your integration.`;
 
 module.exports = UsersLinksCommand;

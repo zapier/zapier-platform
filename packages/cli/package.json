@@ -1,7 +1,7 @@
 {
   "name": "zapier-platform-cli",
   "version": "9.0.0",
-  "description": "The CLI for apps in the Zapier Developer Platform.",
+  "description": "The CLI for managing integrations in Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-cli",
   "homepage": "https://zapier.com/",
   "author": "Bryan Helmig <bryan@zapier.com>",
@@ -37,7 +37,7 @@
     "validate": "yarn test && yarn smoke-test && yarn lint"
   },
   "dependencies": {
-    "@oclif/command": "1.5.18",
+    "@oclif/command": "1.5.19",
     "@oclif/config": "1.13.3",
     "@oclif/plugin-autocomplete": "0.1.5",
     "@oclif/plugin-help": "2.2.3",
@@ -53,6 +53,8 @@
     "inquirer": "6.5.0",
     "klaw": "3.0.0",
     "lodash": "4.17.15",
+    "marked": "0.7.0",
+    "marked-terminal": "3.3.0",
     "node-fetch": "2.6.0",
     "ora": "3.4.0",
     "parse-gitignore": "0.4.0",
@@ -89,15 +91,22 @@
       "init": [
         "./src/oclif/hooks/deprecated",
         "./src/oclif/hooks/updateNotifier",
-        "./src/oclif/hooks/checkValidNodeVersion"
+        "./src/oclif/hooks/checkValidNodeVersion",
+        "./src/oclif/hooks/renderMarkdownHelp"
       ]
     },
     "topics": {
       "delete": {
-        "description": "Delete your entire integration or a specific integration version"
+        "description": "Delete your entire integration or a specific integration version."
       },
       "env": {
-        "description": "Interact with your integration's environment"
+        "description": "Interact with your integration's environment."
+      },
+      "team": {
+        "description": "Add, remove, or get team members of your integration."
+      },
+      "users": {
+        "description": "Add, remove, or get invited users of your integration."
       }
     }
   }
