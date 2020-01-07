@@ -1,7 +1,7 @@
 {
   "name": "zapier-platform-cli",
   "version": "9.0.0",
-  "description": "The CLI for apps in the Zapier Developer Platform.",
+  "description": "The CLI for managing integrations in Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-cli",
   "homepage": "https://zapier.com/",
   "author": "Bryan Helmig <bryan@zapier.com>",
@@ -53,7 +53,7 @@
     "inquirer": "6.5.0",
     "klaw": "3.0.0",
     "lodash": "4.17.15",
-    "marked": "0.8.0",
+    "marked": "0.7.0",
     "marked-terminal": "3.3.0",
     "node-fetch": "2.6.0",
     "ora": "3.4.0",
@@ -103,10 +103,10 @@
         "description": "Interact with your integration's environment."
       },
       "team": {
-        "description": "Add, remove, get team members of your integration."
+        "description": "Add, remove, or get team members of your integration."
       },
       "users": {
-        "description": "Add, remove, get invited users of your integration."
+        "description": "Add, remove, or get invited users of your integration."
       }
     }
   }

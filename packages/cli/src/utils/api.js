@@ -235,9 +235,7 @@ const getVersionInfo = () => {
   });
 };
 
-const checkCredentials = async () => {
-  return callAPI('/check');
-};
+const checkCredentials = () => callAPI('/check');
 
 const listApps = async () => {
   let linkedApp;
