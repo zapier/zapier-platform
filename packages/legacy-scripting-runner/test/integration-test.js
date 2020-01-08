@@ -166,6 +166,32 @@ describe('Integration Test', () => {
       });
     });
 
+    it('oauth2 authorizeUrl, redirect_uri and state replacement', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.authentication.oauth2Config.authorizeUrl +=
+        '?redirect_uri=https%3A%2F%2Fexample.com%2Fold&state=abcd';
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.authorizeUrl'
+      );
+      input.bundle.inputData = {
+        redirect_uri: 'https://example.com/new',
+        state: 'qwerty'
+      };
+      return app(input).then(output => {
+        should.equal(
+          output.results,
+          `${AUTH_JSON_SERVER_URL}/oauth/authorize?` +
+            'client_id=1234&' +
+            'redirect_uri=https%3A%2F%2Fexample.com%2Fnew&' +
+            'response_type=code&state=qwerty'
+        );
+      });
+    });
+
     it('pre_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
