@@ -732,15 +732,14 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
       urlObj.searchParams.set('client_id', clientId);
     }
-    if (!urlObj.searchParams.has('redirect_uri')) {
-      urlObj.searchParams.set('redirect_uri', bundle.inputData.redirect_uri);
-    }
     if (!urlObj.searchParams.has('response_type')) {
       urlObj.searchParams.set('response_type', 'code');
     }
-    if (!urlObj.searchParams.has('state')) {
-      urlObj.searchParams.set('state', bundle.inputData.state);
-    }
+
+    urlObj.searchParams.set('redirect_uri', bundle.inputData.redirect_uri);
+    urlObj.searchParams.set('state', bundle.inputData.state);
+
+    urlObj.searchParams.sort();
 
     return urlObj.href;
   };
