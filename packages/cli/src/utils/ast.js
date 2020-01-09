@@ -15,6 +15,7 @@ const createRootRequire = (codeStr, varName, path) => {
     // filters for top-level require statements
     .filter(path => j.Program.check(path.parent.value))
     .at(-1)
+    // TODO: detect duplicate identifier?
     .insertAfter(
       j.variableDeclaration('const', [
         j.variableDeclarator(
@@ -28,6 +29,7 @@ const createRootRequire = (codeStr, varName, path) => {
 };
 
 const addKeyToPropertyOnApp = (codeStr, property, varName) => {
+  // to play with this, use https://astexplorer.net/#/gist/cb4986b3f1c6eb975339608109a48e7d/0fbf2fabbcf27d0b6ebd8910f979bd5d97dd9404
   const root = j(codeStr);
   const subProp = root.find(j.Property, {
     key: { type: 'Identifier', name: property }
@@ -35,7 +37,8 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
   if (subProp.length) {
     // App has (for example) App.triggers
     subProp.get(0).node.value.properties.push(
-      // creates a new property on that
+      // creates a new property on that sub property
+      // TODO: detect duplicates
       j.property.from({
         kind: 'init',
         key: j.memberExpression(j.identifier(varName), j.identifier('key')),
@@ -44,6 +47,33 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
       })
     );
   } else {
+    const maybeApp = root.find(j.VariableDeclaration, {
+      declarations: [{ id: { type: 'Identifier', name: 'App' } }]
+    });
+    if (maybeApp.length) {
+      maybeApp.get().node.declarations[0].init.properties.push(
+        j.property(
+          'init',
+          j.identifier(property),
+          j.objectExpression([
+            j.property.from({
+              kind: 'init',
+              key: j.memberExpression(
+                j.identifier(varName),
+                j.identifier('key')
+              ),
+              value: j.identifier(varName),
+              computed: true
+            })
+          ])
+        )
+      );
+    } else {
+      throw new Error(
+        `Unable to add new property ${property} to exported app: Can't find variable declaration for "App". To fix, add \`${property}: {} to your exported app object and re-run the command.\``
+      );
+    }
+
     // create that property on App
     // find const App =
     // find the thing that's module.export = ?

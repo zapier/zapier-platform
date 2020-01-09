@@ -32,9 +32,6 @@ const App = {
     [BlahTrigger.key]: BlahTrigger
   },
 
-  // If you want your searches to show up, you better include it here!
-  searches: {},
-
   // If you want your creates to show up, you better include it here!
   creates: {
     [CryptoCreate.key]: CryptoCreate
@@ -55,6 +52,7 @@ describe('ast', () => {
       )
     ).be.true();
   });
+
   it('should add a property to an existing action type', () => {
     const codeByLine = addKeyToPropertyOnApp(
       sampleIndex,
@@ -70,6 +68,24 @@ describe('ast', () => {
       firstIndex + 1
     );
     should(codeByLine.indexOf('[getThing.key]: getThing')).eql(firstIndex + 2);
-    should(codeByLine[firstIndex + 3]).eql('},');
+
+    should(codeByLine.includes('searches: {')).be.false();
+  });
+
+  it('should add a new property if missing', () => {
+    const codeByLine = addKeyToPropertyOnApp(
+      sampleIndex,
+      'searches',
+      'findThing'
+    )
+      .split('\n')
+      .map(x => x.trim());
+    console.log(codeByLine);
+
+    const firstIndex = codeByLine.indexOf('searches: {');
+    // assertions about what comes in the trigger property
+    should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
+      firstIndex + 1
+    );
   });
 });
