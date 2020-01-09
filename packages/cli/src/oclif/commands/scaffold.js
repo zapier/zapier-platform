@@ -14,14 +14,15 @@ const {
 } = require('../../utils/files');
 const { camelCase, snakeCase } = require('../../utils/misc');
 const { splitFileFromPath } = require('../../utils/string');
+const { createRootRequire } = require('../../utils/ast');
 
 // what is the `resources: {}` app definition point?
-const typeMap = {
-  resource: 'resources',
-  trigger: 'triggers',
-  search: 'searches',
-  create: 'creates'
-};
+// const typeMap = {
+//   resource: 'resources',
+//   trigger: 'triggers',
+//   search: 'searches',
+//   create: 'creates'
+// };
 
 function createTemplateContext(type, name) {
   const contextKey = snakeCase(name);
@@ -55,37 +56,42 @@ function getTemplatePath(type) {
 class ScaffoldCommand extends BaseCommand {
   async updateEntry(filePath, entryName, nameAdded, pathRequired) {
     const { type } = this.args;
-    const entryBuf = await readFile(filePath);
-    const lines = entryBuf.toString().split('\n');
+    let entry = (await readFile(filePath)).toString();
+    // const lines = entry.split('\n');
 
     // this is very dumb and will definitely break, it inserts lines of code
     // we should look at jscodeshift or friends to do this instead
-
-    // insert Resource = require() line at top
     const varName = `${nameAdded}${camelCase(type)}`;
-    const importerLine = `const ${varName} = require('./${pathRequired}');`;
-    lines.splice(0, 0, importerLine);
 
-    // insert '[Resource.key]: Resource,' after 'resources:' line
-    const injectAfter = `${typeMap[type]}: {`;
-    const injectorLine = `[${varName}.key]: ${varName},`;
-    const linesDefIndex = lines.findIndex(line => line.endsWith(injectAfter));
+    try {
+      // insert Resource = require() line at top
+      entry = createRootRequire(entry, varName, `./${pathRequired}`);
+      // const importerLine = `const ${varName} = require('./${pathRequired}');`;
+      // lines.splice(0, 0, importerLine);
 
-    if (linesDefIndex === -1) {
+      // insert '[Resource.key]: Resource,' after 'resources:' line
+      // const injectAfter = `${typeMap[type]}: {`;
+      // const injectorLine = `[${varName}.key]: ${varName},`;
+      // const linesDefIndex = lines.findIndex(line => line.endsWith(injectAfter));
+    } catch (e) {
       this.stopSpinner(false);
       return this.error(
         [
           `\n${colors.bold(
             `Oops, we could not reliably rewrite your ${entryName}.`
           )} Please add:`,
-          ` * \`${importerLine}\` to the top`,
-          ` * \`${injectAfter} ${injectorLine} },\` in your root integration definition`
+          ` * "const ${varName} = require('./${pathRequired}');" to the top`
+          // ` * \`${injectAfter} ${injectorLine} },\` in your root integration definition`
         ].join('\n')
       );
     }
+    // if (linesDefIndex === -1) {
 
-    lines.splice(linesDefIndex + 1, 0, '    ' + injectorLine);
-    return lines.join('\n');
+    // }
+
+    // lines.splice(linesDefIndex + 1, 0, '    ' + injectorLine);
+
+    await writeFile(filePath, entry);
   }
 
   async writeTemplateFile(type, templateContext, dest) {
@@ -96,7 +102,7 @@ class ScaffoldCommand extends BaseCommand {
     if (preventOverwrite && fileExistsSync(destPath)) {
       const [filename, location] = splitFileFromPath(destPath);
 
-      return this.error(
+      this.error(
         [
           `File ${colors.bold(filename)} already exists within ${colors.bold(
             location
@@ -126,43 +132,27 @@ class ScaffoldCommand extends BaseCommand {
   async perform() {
     const { name, type } = this.args;
 
-    if (!typeMap[type]) {
-      return this.error(
-        `Scaffold type "${type}" not found! Please see \`zaper help scaffold\`.`
-      );
-    }
+    const { defaultDest, ...templateContext } = createTemplateContext(
+      type,
+      name
+    );
+    const { dest = defaultDest, entry = 'index.js' } = this.flags;
+    const entryFile = path.join(process.cwd(), entry);
 
-    try {
-      const { defaultDest, ...templateContext } = createTemplateContext(
-        type,
-        name
-      );
-      const { dest = defaultDest, entry = 'index.js' } = this.flags;
-      const entryFile = path.join(process.cwd(), entry);
+    this.log(`Adding ${type} scaffold to your project.\n`);
 
-      this.log(`Adding ${type} scaffold to your project.\n`);
+    await this.writeTemplateFile(type, templateContext, dest);
+    await this.writeTemplateFile('test', templateContext, `test/${dest}`);
 
-      await this.writeTemplateFile(type, templateContext, dest);
-      await this.writeTemplateFile('test', templateContext, `test/${dest}`);
+    this.startSpinner(`Rewriting your ${entry}`);
 
-      this.startSpinner(`Rewriting your ${entry}`);
+    await this.updateEntry(entryFile, entry, templateContext.CAMEL, dest);
 
-      const updatedEntry = await this.updateEntry(
-        entryFile,
-        entry,
-        templateContext.CAMEL,
-        dest
-      );
+    this.stopSpinner();
 
-      await writeFile(entryFile, updatedEntry);
-      this.stopSpinner();
-
-      this.log(
-        '\nFinished! We did the best we could, you might gut check your files though.'
-      );
-    } catch (error) {
-      this.error(error);
-    }
+    this.log(
+      '\nFinished! We did the best we could, you might gut check your files though.'
+    );
   }
 }
 
