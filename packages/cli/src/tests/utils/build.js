@@ -12,7 +12,7 @@ const decompress = require('decompress');
 const fs = require('fs');
 const fse = require('fs-extra');
 
-describe('build', () => {
+describe('build (runs slowly)', () => {
   let tmpDir, entryPoint;
   before(async () => {
     // basically does what `zapier init` does

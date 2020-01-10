@@ -3,20 +3,39 @@
 const j = require('jscodeshift');
 
 const createRootRequire = (codeStr, varName, path) => {
+  if (codeStr.includes(`const ${varName}`)) {
+    // duplicate identifier, no need to re-add
+    return codeStr;
+  }
   const root = j(codeStr);
   // insert a new require statement after all other requires (that get put into variables, like might happen at the top-level)
-  root
+  const reqStatements = root
     // searching for VariableDeclaration, like `const x = require('y')`
+    // skips over `require` statements not saved to variables, since that's (probably) not a common case
     .find(j.VariableDeclaration, {
       declarations: [
         { init: { type: 'CallExpression', callee: { name: 'require' } } }
       ]
     })
-    // filters for top-level require statements
-    .filter(path => j.Program.check(path.parent.value))
-    .at(-1)
-    // TODO: detect duplicate identifier?
-    .insertAfter(
+    // filters for top-level require statements by filtering only for statements whose parents are type Program, the root
+    .filter(path => j.Program.check(path.parent.value));
+
+  if (reqStatements.length) {
+    reqStatements
+      .at(-1)
+      .insertAfter(
+        j.variableDeclaration('const', [
+          j.variableDeclarator(
+            j.identifier(varName),
+            j.callExpression(j.identifier('require'), [j.literal(path)])
+          )
+        ])
+      );
+  } else {
+    // insert at top of program
+    const body = root.find(j.Program).get().node.body;
+
+    body.unshift(
       j.variableDeclaration('const', [
         j.variableDeclarator(
           j.identifier(varName),
@@ -25,6 +44,9 @@ const createRootRequire = (codeStr, varName, path) => {
       ])
     );
 
+    body[0].comments = body[1].comments;
+    delete body[1].comments;
+  }
   return root.toSource();
 };
 

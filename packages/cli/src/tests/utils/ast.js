@@ -2,43 +2,25 @@ const should = require('should');
 const { createRootRequire, addKeyToPropertyOnApp } = require('../../utils/ast');
 
 const sampleIndex = `
-// leading comment
-
 const CryptoCreate = require('./creates/crypto')
 const BlahTrigger = require('./triggers/blah')
-
-// We can roll up all our behaviors in an App.
+// comment!
 const App = {
-  // This is just shorthand to reference the installed dependencies you have. Zapier will
-  // need to know these before we can upload
   version: require('./package.json').version,
   platformVersion: require('zapier-platform-core').version,
-
-  // beforeRequest & afterResponse are optional hooks into the provided HTTP client
-  beforeRequest: [],
-
-  afterResponse: [],
-
-  // If you want to define optional resources to simplify creation of triggers, searches, creates - do that here!
   resources: {
   	test: () => {
       // red herring require
     	const fs = require('fs')
     }
   },
-
-  // If you want your trigger to show up, you better include it here!
   triggers: {
     [BlahTrigger.key]: BlahTrigger
   },
-
-  // If you want your creates to show up, you better include it here!
   creates: {
     [CryptoCreate.key]: CryptoCreate
   }
 }
-
-// Finally, export the app.
 module.exports = App
 `.trim();
 
@@ -46,11 +28,27 @@ describe('ast', () => {
   describe('adding require statements', () => {
     it('should add a new require statement at root', () => {
       // new nodes use a generic pretty printer, hence the ; and "
-      // it shoudl be inserted after other top-level imports
+      // it should be inserted after other top-level imports
+      const result = createRootRequire(sampleIndex, 'getThing', './a/b/c');
       should(
-        createRootRequire(sampleIndex, 'getThing', './a/b/c').includes(
-          'const BlahTrigger = require(\'./triggers/blah\')\n\nconst getThing = require("./a/b/c");'
+        result.includes(
+          'const BlahTrigger = require(\'./triggers/blah\')\nconst getThing = require("./a/b/c");'
         )
+      ).be.true();
+    });
+
+    it('should add a new require even when there are none to find', () => {
+      const result = createRootRequire(
+        sampleIndex
+          // drop existing require statements
+          .split('\n')
+          .slice(2)
+          .join('\n'),
+        'getThing',
+        './a/b/c'
+      );
+      should(
+        result.startsWith('// comment!\nconst getThing = require("./a/b/c");')
       ).be.true();
     });
   });
