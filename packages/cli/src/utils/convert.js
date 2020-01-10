@@ -157,7 +157,7 @@ const renderStep = (type, definition) => {
       if (func && func.source) {
         const args = func.args || ['z', 'bundle'];
         functionBlock.push(
-          `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
+          `const ${funcName} = (${args.join(', ')}) => {\n${func.source}\n};`
         );
 
         exportBlock.operation[funcName] = makePlaceholder(funcName);
@@ -178,7 +178,9 @@ const renderStep = (type, definition) => {
             funcNum ? funcNum++ : ++funcNum && ''
           }`;
           functionBlock.push(
-            `const ${funcName} = (${args.join(', ')}) => {${maybeFunc.source}};`
+            `const ${funcName} = (${args.join(', ')}) => {\n${
+              maybeFunc.source
+            }\n};`
           );
 
           exportBlock.operation[key][index] = makePlaceholder(funcName);
