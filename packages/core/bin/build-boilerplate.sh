@@ -7,26 +7,26 @@
 CONTENTS_DIR='boilerplate'
 BUILD_DIR='build-boilerplate'
 
-if [ -d $BUILD_DIR ]; then
-   rm -fr $BUILD_DIR
-fi
-
 mkdir -p $BUILD_DIR
 
 # Copy files
 cp "include/zapierwrapper.js" "$CONTENTS_DIR/"
 
 # Get current core version
-CORE_VERSION="$(node -p "require('./package.json').version")"
+if [ "$2" == "" ]; then
+    CORE_VERSION="$(node -p "require('./package.json').version")"
+else
+    CORE_VERSION=$2
+fi
 
 FILE="$BUILD_DIR/$CORE_VERSION.zip"
+rm -f $FILE
 
 TIMESTAMP=`date +"%s"`
 
 if [ "$1" == "production" ]; then
-    echo "Building from published packages"
-    cd ../legacy-scripting-runner
-    TIMESTAMP=""
+    echo "Building from published packages, core $CORE_VERSION"
+    ./bin/update-boilerplate-dependencies.js $CORE_VERSION
 else
     # Build core and legacy-scripting-runner locally. Needs to generate a unique filename
     # with a timestamp to avoid yarn using cached packages.
@@ -35,10 +35,10 @@ else
     yarn pack --filename "./boilerplate/core-$TIMESTAMP.tgz"
     cd ../legacy-scripting-runner
     yarn pack --filename "../core/boilerplate/legacy-scripting-runner-$TIMESTAMP.tgz"
-fi
 
-cd ../core
-./bin/update-boilerplate-dependencies.js $TIMESTAMP
+    cd ../core
+    ./bin/update-boilerplate-dependencies.js $TIMESTAMP
+fi
 
 # Install boilerplate deps, need to make sure local packages
 cd $CONTENTS_DIR
