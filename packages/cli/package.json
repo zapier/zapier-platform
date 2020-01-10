@@ -69,8 +69,6 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "1.22.2",
-    "@types/jscodeshift": "0.6.3",
-    "jscodeshift-helper": "1.1.0",
     "decompress": "4.2.0",
     "litdoc": "1.5.6",
     "markdown-toc": "1.1.0",

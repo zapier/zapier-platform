@@ -894,7 +894,7 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Add a starting resource, trigger, action, or search to your integration.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier scaffold TYPE NAME</code></p><p>The first argument should one of <code>resource|trigger|search|create</code> followed by the name of the file.</p><p>The scaffold command does two general things:</p><ul>
+</blockquote><p><strong>Usage</strong>: <code>zapier scaffold TYPE NAME</code></p><p>The first argument should be one of <code>resource|trigger|search|create</code> followed by the name of the file.</p><p>The scaffold command does two general things:</p><ul>
 <li><p>Creates a new destination file like <code>resources/contact.js</code></p>
 </li>
 <li><p>(Attempts to) import and register it inside your entry <code>index.js</code></p>
@@ -904,14 +904,14 @@ a code {
 <li>(required) <code>name</code> | undefined</li>
 </ul><p><strong>Flags</strong></p><ul>
 <li><code>-d, --dest</code> | Sets the new file&apos;s path. Use this flag when you want to create a different folder structure such as <code>src/triggers/my_trigger</code> The default destination is {type}s/{name}.</li>
-<li><code>-e, --entry</code> | Where to import the new file.  Defaults to <code>index.js</code>.</li>
-<li><code>-f, --force</code> | Should we overwrite an exisiting file.</li>
+<li><code>-e, --entry</code> | Where to import the new file. Supply this if your index is in a subfolder, like <code>src</code>.  Defaults to <code>index.js</code>.</li>
+<li><code>-f, --force</code> | Should we overwrite an exisiting trigger/search/create file?</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
-<li><code>zapier scaffold resource &quot;Contact&quot;</code></li>
-<li><code>zapier scaffold create &quot;Add Contact&quot; --entry=index.js</code></li>
-<li><code>zapier scaffold search &quot;Find Contact&quot; --dest=searches/contact</code></li>
 <li><code>zapier scaffold trigger &quot;New Contact&quot; --force</code></li>
+<li><code>zapier scaffold search &quot;Find Contact&quot; --dest=searches/contact</code></li>
+<li><code>zapier scaffold create &quot;Add Contact&quot; --entry=index.js</code></li>
+<li><code>zapier scaffold resource &quot;Contact&quot;</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

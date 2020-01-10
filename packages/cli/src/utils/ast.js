@@ -30,6 +30,8 @@ const createRootRequire = (codeStr, varName, path) => {
 
 const addKeyToPropertyOnApp = (codeStr, property, varName) => {
   // to play with this, use https://astexplorer.net/#/gist/cb4986b3f1c6eb975339608109a48e7d/0fbf2fabbcf27d0b6ebd8910f979bd5d97dd9404
+
+  // TODO: the last step will add a duplicate import, so we should fail gracefully here?s
   const root = j(codeStr);
   const subProp = root.find(j.Property, {
     key: { type: 'Identifier', name: property }
@@ -70,7 +72,7 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
       );
     } else {
       throw new Error(
-        `Unable to add new property ${property} to exported app: Can't find variable declaration for "App". To fix, add \`${property}: {} to your exported app object and re-run the command.\``
+        `Unable to add new property "${property}" to exported app. Can't find variable declaration for "App". To fix, either ensure there is a variable called "App" in your root file or add \`${property}: {},\` to your existing app. Then, re-run this command.\``
       );
     }
 

@@ -14,7 +14,7 @@ const {
 } = require('../../utils/files');
 const { camelCase, snakeCase } = require('../../utils/misc');
 const { splitFileFromPath } = require('../../utils/string');
-const { createRootRequire } = require('../../utils/ast');
+const { createRootRequire, addKeyToPropertyOnApp } = require('../../utils/ast');
 
 // what is the `resources: {}` app definition point?
 // const typeMap = {
@@ -24,7 +24,9 @@ const { createRootRequire } = require('../../utils/ast');
 //   create: 'creates'
 // };
 
-function createTemplateContext(type, name) {
+const plural = type => (type === 'search' ? `${type}es` : `${type}s`);
+
+const createTemplateContext = (type, name) => {
   const contextKey = snakeCase(name);
 
   // where will we create/required the new file?
@@ -42,56 +44,49 @@ function createTemplateContext(type, name) {
     LOWER_NOUN: name.toLowerCase(),
     INPUT_FIELDS: '',
     TYPE: type,
-    TYPE_PLURAL: type === 'search' ? `${type}es` : `${type}s`,
+    TYPE_PLURAL: plural(type),
     // resources need an extra line for tests to "just run"
     MAYBE_RESOURCE: type === 'resource' ? 'list.' : '',
     defaultDest: destMap[type]
   };
-}
+};
 
-function getTemplatePath(type) {
-  return path.join(__dirname, '../../..', `scaffold/${type}.template.js`);
-}
+const getTemplatePath = type =>
+  path.join(__dirname, '../../..', `scaffold/${type}.template.js`);
 
 class ScaffoldCommand extends BaseCommand {
-  async updateEntry(filePath, entryName, nameAdded, pathRequired) {
+  async updateEntry(filePath, entryName, nameAdded, pathRequired, actionKey) {
     const { type } = this.args;
-    let entry = (await readFile(filePath)).toString();
-    // const lines = entry.split('\n');
+    let codeStr = (await readFile(filePath)).toString();
 
-    // this is very dumb and will definitely break, it inserts lines of code
-    // we should look at jscodeshift or friends to do this instead
     const varName = `${nameAdded}${camelCase(type)}`;
 
     try {
-      // insert Resource = require() line at top
-      entry = createRootRequire(entry, varName, `./${pathRequired}`);
-      // const importerLine = `const ${varName} = require('./${pathRequired}');`;
-      // lines.splice(0, 0, importerLine);
+      codeStr = createRootRequire(codeStr, varName, `./${pathRequired}`);
+      codeStr = addKeyToPropertyOnApp(codeStr, plural(type), varName);
+      await writeFile(filePath, codeStr);
 
-      // insert '[Resource.key]: Resource,' after 'resources:' line
-      // const injectAfter = `${typeMap[type]}: {`;
-      // const injectorLine = `[${varName}.key]: ${varName},`;
-      // const linesDefIndex = lines.findIndex(line => line.endsWith(injectAfter));
+      // validate the edit happened correctly
+      // can't think of why it wouldn't, but it doesn't hurt to double check
+      const rewrittenIndex = require(filePath);
+      if (!_.get(rewrittenIndex, [plural(type), actionKey])) {
+        throw new Error();
+      }
     } catch (e) {
-      this.stopSpinner(false);
-      return this.error(
+      if (e.message) {
+        throw e;
+      }
+      // if we get here, just throw something generic
+      this.error(
         [
           `\n${colors.bold(
             `Oops, we could not reliably rewrite your ${entryName}.`
-          )} Please add:`,
-          ` * "const ${varName} = require('./${pathRequired}');" to the top`
-          // ` * \`${injectAfter} ${injectorLine} },\` in your root integration definition`
+          )} Please ensure the following lines exist:`,
+          ` * \`const ${varName} = require('./${pathRequired}');\` at the top-level`,
+          ` * \`[${varName}.key]: ${varName}\` in the "${type}" object in your root integration definition`
         ].join('\n')
       );
     }
-    // if (linesDefIndex === -1) {
-
-    // }
-
-    // lines.splice(linesDefIndex + 1, 0, '    ' + injectorLine);
-
-    await writeFile(filePath, entry);
   }
 
   async writeTemplateFile(type, templateContext, dest) {
@@ -100,14 +95,14 @@ class ScaffoldCommand extends BaseCommand {
     const preventOverwrite = !this.flags.force;
 
     if (preventOverwrite && fileExistsSync(destPath)) {
-      const [filename, location] = splitFileFromPath(destPath);
+      const [location, filename] = splitFileFromPath(destPath);
 
       this.error(
         [
           `File ${colors.bold(filename)} already exists within ${colors.bold(
             location
           )}.`,
-          'You could:',
+          'You can either:',
           '  1. Choose a different filename',
           `  2. Delete ${filename} from ${location}`,
           `  3. Run ${colors.italic('scaffold')} with ${colors.bold(
@@ -122,7 +117,7 @@ class ScaffoldCommand extends BaseCommand {
       interpolate: /<%=([\s\S]+?)%>/g
     });
 
-    this.startSpinner(`Writing new ${dest}.js`);
+    this.startSpinner(`Writing new file ${dest}.js`);
 
     await ensureDir(path.dirname(destPath));
     await writeFile(destPath, renderTemplate(templateContext));
@@ -132,27 +127,35 @@ class ScaffoldCommand extends BaseCommand {
   async perform() {
     const { name, type } = this.args;
 
+    // TODO: interactive portion here?
+
     const { defaultDest, ...templateContext } = createTemplateContext(
       type,
       name
     );
+
     const { dest = defaultDest, entry = 'index.js' } = this.flags;
     const entryFile = path.join(process.cwd(), entry);
 
     this.log(`Adding ${type} scaffold to your project.\n`);
 
+    // TODO: read from config file?
     await this.writeTemplateFile(type, templateContext, dest);
     await this.writeTemplateFile('test', templateContext, `test/${dest}`);
 
     this.startSpinner(`Rewriting your ${entry}`);
 
-    await this.updateEntry(entryFile, entry, templateContext.CAMEL, dest);
+    await this.updateEntry(
+      entryFile,
+      entry,
+      templateContext.CAMEL,
+      dest,
+      templateContext.KEY
+    );
 
     this.stopSpinner();
 
-    this.log(
-      '\nFinished! We did the best we could, you might gut check your files though.'
-    );
+    this.log(`\nFinished! Your new ${type} is ready to use.`);
   }
 }
 
@@ -179,27 +182,29 @@ ScaffoldCommand.flags = buildFlags({
     }),
     entry: flags.string({
       char: 'e',
-      description: 'Where to import the new file.',
+      description:
+        'Where to import the new file. Supply this if your index is in a subfolder, like `src`.',
       default: 'index.js'
     }),
     force: flags.boolean({
       char: 'f',
-      description: 'Should we overwrite an exisiting file.',
+      description:
+        'Should we overwrite an exisiting trigger/search/create file?',
       default: false
     })
   }
 });
 
 ScaffoldCommand.examples = [
-  'zapier scaffold resource "Contact"',
-  'zapier scaffold create "Add Contact" --entry=index.js',
+  'zapier scaffold trigger "New Contact" --force',
   'zapier scaffold search "Find Contact" --dest=searches/contact',
-  'zapier scaffold trigger "New Contact" --force'
+  'zapier scaffold create "Add Contact" --entry=index.js',
+  'zapier scaffold resource "Contact"'
 ];
 
 ScaffoldCommand.description = `Add a starting resource, trigger, action, or search to your integration.
 
-The first argument should one of \`resource|trigger|search|create\` followed by the name of the file.
+The first argument should be one of \`resource|trigger|search|create\` followed by the name of the file.
 
 The scaffold command does two general things:
 

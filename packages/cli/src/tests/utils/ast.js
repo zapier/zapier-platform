@@ -43,49 +43,54 @@ module.exports = App
 `.trim();
 
 describe('ast', () => {
-  it('should add a new require statement at root', () => {
-    // new nodes use a generic pretty printer, hence the ; and "
-    // it shoudl be inserted after other top-level imports
-    should(
-      createRootRequire(sampleIndex, 'getThing', './a/b/c').includes(
-        'const BlahTrigger = require(\'./triggers/blah\')\n\nconst getThing = require("./a/b/c");'
+  describe('adding require statements', () => {
+    it('should add a new require statement at root', () => {
+      // new nodes use a generic pretty printer, hence the ; and "
+      // it shoudl be inserted after other top-level imports
+      should(
+        createRootRequire(sampleIndex, 'getThing', './a/b/c').includes(
+          'const BlahTrigger = require(\'./triggers/blah\')\n\nconst getThing = require("./a/b/c");'
+        )
+      ).be.true();
+    });
+  });
+
+  describe('adding object properties', () => {
+    it('should add a property to an existing action type', () => {
+      const codeByLine = addKeyToPropertyOnApp(
+        sampleIndex,
+        'triggers',
+        'getThing'
       )
-    ).be.true();
-  });
+        .split('\n')
+        .map(x => x.trim());
 
-  it('should add a property to an existing action type', () => {
-    const codeByLine = addKeyToPropertyOnApp(
-      sampleIndex,
-      'triggers',
-      'getThing'
-    )
-      .split('\n')
-      .map(x => x.trim());
+      const firstIndex = codeByLine.indexOf('triggers: {');
+      // assertions about what comes in the trigger property
+      should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
+        firstIndex + 1
+      );
+      should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
+        firstIndex + 2
+      );
 
-    const firstIndex = codeByLine.indexOf('triggers: {');
-    // assertions about what comes in the trigger property
-    should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
-      firstIndex + 1
-    );
-    should(codeByLine.indexOf('[getThing.key]: getThing')).eql(firstIndex + 2);
+      should(codeByLine.includes('searches: {')).be.false();
+    });
 
-    should(codeByLine.includes('searches: {')).be.false();
-  });
+    it('should add a new property if missing', () => {
+      const codeByLine = addKeyToPropertyOnApp(
+        sampleIndex,
+        'searches',
+        'findThing'
+      )
+        .split('\n')
+        .map(x => x.trim());
 
-  it('should add a new property if missing', () => {
-    const codeByLine = addKeyToPropertyOnApp(
-      sampleIndex,
-      'searches',
-      'findThing'
-    )
-      .split('\n')
-      .map(x => x.trim());
-    console.log(codeByLine);
-
-    const firstIndex = codeByLine.indexOf('searches: {');
-    // assertions about what comes in the trigger property
-    should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
-      firstIndex + 1
-    );
+      const firstIndex = codeByLine.indexOf('searches: {');
+      // assertions about what comes in the trigger property
+      should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
+        firstIndex + 1
+      );
+    });
   });
 });

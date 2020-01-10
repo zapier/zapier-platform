@@ -417,7 +417,7 @@ This will change the  `./.zapierapprc` (which identifies this directory as holdi
 
 **Usage**: `zapier scaffold TYPE NAME`
 
-The first argument should one of `resource|trigger|search|create` followed by the name of the file.
+The first argument should be one of `resource|trigger|search|create` followed by the name of the file.
 
 The scaffold command does two general things:
 
@@ -435,15 +435,15 @@ We may fail to correctly rewrite your `index.js`. You may need to write in the r
 
 **Flags**
 * `-d, --dest` | Sets the new file's path. Use this flag when you want to create a different folder structure such as `src/triggers/my_trigger` The default destination is {type}s/{name}.
-* `-e, --entry` | Where to import the new file.  Defaults to `index.js`.
-* `-f, --force` | Should we overwrite an exisiting file.
+* `-e, --entry` | Where to import the new file. Supply this if your index is in a subfolder, like `src`.  Defaults to `index.js`.
+* `-f, --force` | Should we overwrite an exisiting trigger/search/create file?
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
-* `zapier scaffold resource "Contact"`
-* `zapier scaffold create "Add Contact" --entry=index.js`
-* `zapier scaffold search "Find Contact" --dest=searches/contact`
 * `zapier scaffold trigger "New Contact" --force`
+* `zapier scaffold search "Find Contact" --dest=searches/contact`
+* `zapier scaffold create "Add Contact" --entry=index.js`
+* `zapier scaffold resource "Contact"`
 
 
 ## team:add
