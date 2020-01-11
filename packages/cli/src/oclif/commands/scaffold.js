@@ -26,16 +26,19 @@ const { createRootRequire, addKeyToPropertyOnApp } = require('../../utils/ast');
 
 const plural = type => (type === 'search' ? `${type}es` : `${type}s`);
 
+const fileDestination = (type, name, test = false) =>
+  `${test ? 'test' : ''}${plural(type)}/${snakeCase(name)}`;
+
 const createTemplateContext = (type, name) => {
   const contextKey = snakeCase(name);
 
   // where will we create/required the new file?
-  const destMap = {
-    resource: `resources/${contextKey}`,
-    trigger: `triggers/${contextKey}`,
-    search: `searches/${contextKey}`,
-    create: `creates/${contextKey}`
-  };
+  // const destMap = {
+  //   resource: `resources/${contextKey}`,
+  //   trigger: `triggers/${contextKey}`,
+  //   search: `searches/${contextKey}`,
+  //   create: `creates/${contextKey}`
+  // };
 
   return {
     CAMEL: camelCase(name),
@@ -46,8 +49,9 @@ const createTemplateContext = (type, name) => {
     TYPE: type,
     TYPE_PLURAL: plural(type),
     // resources need an extra line for tests to "just run"
-    MAYBE_RESOURCE: type === 'resource' ? 'list.' : '',
-    defaultDest: destMap[type]
+    MAYBE_RESOURCE: type === 'resource' ? 'list.' : ''
+    // defaultDest: destMap[type],
+    // defaultTestDest: `test/${destMap[type]}`
   };
 };
 
@@ -55,38 +59,42 @@ const getTemplatePath = type =>
   path.join(__dirname, '../../..', `scaffold/${type}.template.js`);
 
 class ScaffoldCommand extends BaseCommand {
-  async updateEntry(filePath, entryName, nameAdded, pathRequired, actionKey) {
-    const { type } = this.args;
-    let codeStr = (await readFile(filePath)).toString();
+  async perform() {
+    const { noun, type: actionType } = this.args;
 
-    const varName = `${nameAdded}${camelCase(type)}`;
+    // TODO: interactive portion here?
 
-    try {
-      codeStr = createRootRequire(codeStr, varName, `./${pathRequired}`);
-      codeStr = addKeyToPropertyOnApp(codeStr, plural(type), varName);
-      await writeFile(filePath, codeStr);
+    const {
+      defaultDest,
+      defaultTestDest,
+      ...templateContext
+    } = createTemplateContext(actionType, name);
 
-      // validate the edit happened correctly
-      // can't think of why it wouldn't, but it doesn't hurt to double check
-      const rewrittenIndex = require(filePath);
-      if (!_.get(rewrittenIndex, [plural(type), actionKey])) {
-        throw new Error();
-      }
-    } catch (e) {
-      if (e.message) {
-        throw e;
-      }
-      // if we get here, just throw something generic
-      this.error(
-        [
-          `\n${colors.bold(
-            `Oops, we could not reliably rewrite your ${entryName}.`
-          )} Please ensure the following lines exist:`,
-          ` * \`const ${varName} = require('./${pathRequired}');\` at the top-level`,
-          ` * \`[${varName}.key]: ${varName}\` in the "${type}" object in your root integration definition`
-        ].join('\n')
-      );
-    }
+    const {
+      dest = defaultDest,
+      testDest = defaultTestDest,
+      entry = 'index.js'
+    } = this.flags;
+    const entryFilePath = path.join(process.cwd(), entry);
+
+    this.log(`Adding a new ${actionType} to your project.\n`);
+
+    // TODO: read from config file?
+    await this.writeTemplateFile(actionType, templateContext, dest);
+    await this.writeTemplateFile('test', templateContext, testDest);
+
+    this.startSpinner(`Rewriting your ${entry}`);
+
+    await this.updateEntryFile(
+      entryFilePath,
+      templateContext.CAMEL,
+      dest,
+      templateContext.KEY
+    );
+
+    this.stopSpinner();
+
+    this.log(`\nFinished! Your new ${actionType} is ready to use.`);
   }
 
   async writeTemplateFile(type, templateContext, dest) {
@@ -124,51 +132,53 @@ class ScaffoldCommand extends BaseCommand {
     this.stopSpinner();
   }
 
-  async perform() {
-    const { name, type } = this.args;
+  async updateEntryFile(entryFilePath, nameAdded, pathRequired, actionKey) {
+    const { type } = this.args;
+    let codeStr = (await readFile(entryFilePath)).toString();
+    const entryName = splitFileFromPath(entryFilePath)[1];
 
-    // TODO: interactive portion here?
+    const varName = `${nameAdded}${camelCase(type)}`;
 
-    const { defaultDest, ...templateContext } = createTemplateContext(
-      type,
-      name
-    );
+    try {
+      codeStr = createRootRequire(codeStr, varName, `./${pathRequired}`);
+      codeStr = addKeyToPropertyOnApp(codeStr, plural(type), varName);
+      await writeFile(entryFilePath, codeStr);
 
-    const { dest = defaultDest, entry = 'index.js' } = this.flags;
-    const entryFile = path.join(process.cwd(), entry);
-
-    this.log(`Adding ${type} scaffold to your project.\n`);
-
-    // TODO: read from config file?
-    await this.writeTemplateFile(type, templateContext, dest);
-    await this.writeTemplateFile('test', templateContext, `test/${dest}`);
-
-    this.startSpinner(`Rewriting your ${entry}`);
-
-    await this.updateEntry(
-      entryFile,
-      entry,
-      templateContext.CAMEL,
-      dest,
-      templateContext.KEY
-    );
-
-    this.stopSpinner();
-
-    this.log(`\nFinished! Your new ${type} is ready to use.`);
+      // validate the edit happened correctly
+      // can't think of why it wouldn't, but it doesn't hurt to double check
+      const rewrittenIndex = require(entryFilePath);
+      if (!_.get(rewrittenIndex, [plural(type), actionKey])) {
+        throw new Error();
+      }
+    } catch (e) {
+      if (e.message) {
+        throw e;
+      }
+      // if we get here, just throw something generic
+      this.error(
+        [
+          `\n${colors.bold(
+            `Oops, we could not reliably rewrite your ${entryName}.`
+          )} Please ensure the following lines exist:`,
+          ` * \`const ${varName} = require('./${pathRequired}');\` at the top-level`,
+          ` * \`[${varName}.key]: ${varName}\` in the "${type}" object in your root integration definition`
+        ].join('\n')
+      );
+    }
   }
 }
 
 ScaffoldCommand.args = [
   {
     name: 'type',
-    help: 'What type of thing are you creating',
+    help: 'What type of step type are you creating?',
     required: true,
-    options: ['resource', 'trigger', 'search', 'create']
+    options: ['trigger', 'search', 'create', 'resource']
   },
   {
-    name: 'name',
-    help: 'The name of the new thing to create',
+    name: 'noun',
+    help:
+      'What sort of object this action acts on. For example,  of the new thing to create',
     required: true
   }
 ];
@@ -179,6 +189,11 @@ ScaffoldCommand.flags = buildFlags({
       char: 'd',
       description:
         "Sets the new file's path. Use this flag when you want to create a different folder structure such as `src/triggers/my_trigger` The default destination is {type}s/{name}."
+    }),
+    'test-dest': flags.string({
+      char: 't',
+      description:
+        "Sets the new test file's path. Use this flag when you want to create a different folder structure such as `src/tests/triggers/my_trigger` The default destination is {type}s/{name}."
     }),
     entry: flags.string({
       char: 'e',
@@ -196,24 +211,24 @@ ScaffoldCommand.flags = buildFlags({
 });
 
 ScaffoldCommand.examples = [
-  'zapier scaffold trigger "New Contact" --force',
+  'zapier scaffold trigger "New Contact"',
   'zapier scaffold search "Find Contact" --dest=searches/contact',
   'zapier scaffold create "Add Contact" --entry=index.js',
-  'zapier scaffold resource "Contact"'
+  'zapier scaffold resource "Contact" --force'
 ];
 
-ScaffoldCommand.description = `Add a starting resource, trigger, action, or search to your integration.
+ScaffoldCommand.description = `Add a starting trigger, create, search, or resource to your integration.
 
 The first argument should be one of \`resource|trigger|search|create\` followed by the name of the file.
 
 The scaffold command does two general things:
 
-* Creates a new destination file like \`resources/contact.js\`
-* (Attempts to) import and register it inside your entry \`index.js\`
+* Creates a new file (such as \`triggers/contact.js\`)
+* Imports and register it inside your \`index.js\`
 
 You can mix and match several options to customize the created scaffold for your project.
 
-We may fail to correctly rewrite your \`index.js\`. You may need to write in the require and registration, but we'll provide the code you need.
+
 `;
 
 module.exports = ScaffoldCommand;

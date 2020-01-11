@@ -413,37 +413,36 @@ This will change the  `./.zapierapprc` (which identifies this directory as holdi
 
 ## scaffold
 
-> Add a starting resource, trigger, action, or search to your integration.
+> Add a starting trigger, create, search, or resource to your integration.
 
-**Usage**: `zapier scaffold TYPE NAME`
+**Usage**: `zapier scaffold TYPE NOUN`
 
 The first argument should be one of `resource|trigger|search|create` followed by the name of the file.
 
 The scaffold command does two general things:
 
-* Creates a new destination file like `resources/contact.js`
+* Creates a new file (such as `triggers/contact.js`)
 
-* (Attempts to) import and register it inside your entry `index.js`
+* Imports and register it inside your `index.js`
 
 You can mix and match several options to customize the created scaffold for your project.
 
-We may fail to correctly rewrite your `index.js`. You may need to write in the require and registration, but we'll provide the code you need.
-
 **Arguments**
 * (required) `type` | undefined
-* (required) `name` | undefined
+* (required) `noun` | undefined
 
 **Flags**
 * `-d, --dest` | Sets the new file's path. Use this flag when you want to create a different folder structure such as `src/triggers/my_trigger` The default destination is {type}s/{name}.
+* `-t, --test-dest` | Sets the new test file's path. Use this flag when you want to create a different folder structure such as `src/tests/triggers/my_trigger` The default destination is {type}s/{name}.
 * `-e, --entry` | Where to import the new file. Supply this if your index is in a subfolder, like `src`.  Defaults to `index.js`.
 * `-f, --force` | Should we overwrite an exisiting trigger/search/create file?
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
-* `zapier scaffold trigger "New Contact" --force`
+* `zapier scaffold trigger "New Contact"`
 * `zapier scaffold search "Find Contact" --dest=searches/contact`
 * `zapier scaffold create "Add Contact" --entry=index.js`
-* `zapier scaffold resource "Contact"`
+* `zapier scaffold resource "Contact" --force`
 
 
 ## team:add
