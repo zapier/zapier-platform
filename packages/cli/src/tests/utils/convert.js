@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
 
+const { cloneDeep } = require('lodash');
 const should = require('should');
 
 const { convertLegacyApp, convertVisualApp } = require('../../utils/convert');
@@ -380,6 +381,14 @@ describe('convert', () => {
       should(createFile.includes('getInputFields = ')).be.true();
       should(createFile.includes('getInputFields0')).be.false();
       should(createFile.includes('getInputFields1 = ')).be.true();
+    });
+
+    it('should not break over a comment', async () => {
+      // https://github.com/zapier/zapier-platform/issues/142
+      const appDefinition = cloneDeep(visualAppDefinition);
+      appDefinition.triggers.codemode.operation.perform.source +=
+        '\n// a comment';
+      await convertVisualApp(visualApp, appDefinition, tempAppDir);
     });
   });
 });
