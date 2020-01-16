@@ -12,46 +12,43 @@ const {
   readFile,
   writeFile
 } = require('../../utils/files');
-const { camelCase, snakeCase } = require('../../utils/misc');
+const { snakeCase } = require('../../utils/misc');
 const { splitFileFromPath } = require('../../utils/string');
 const { createRootRequire, addKeyToPropertyOnApp } = require('../../utils/ast');
 
-// what is the `resources: {}` app definition point?
-// const typeMap = {
-//   resource: 'resources',
-//   trigger: 'triggers',
-//   search: 'searches',
-//   create: 'creates'
-// };
-
 const plural = type => (type === 'search' ? `${type}es` : `${type}s`);
 
-const fileDestination = (type, name, test = false) =>
-  `${test ? 'test' : ''}${plural(type)}/${snakeCase(name)}`;
+const getNewFileDirectory = (action, test = false) =>
+  `${test ? 'test/' : ''}${plural(action)}`;
 
-const createTemplateContext = (type, name) => {
-  const contextKey = snakeCase(name);
+/**
+ * both the string to `require` and the filepath to write to
+ */
+const getFilename = (directory, noun) => `${directory}/${noun}.js`;
 
-  // where will we create/required the new file?
-  // const destMap = {
-  //   resource: `resources/${contextKey}`,
-  //   trigger: `triggers/${contextKey}`,
-  //   search: `searches/${contextKey}`,
-  //   create: `creates/${contextKey}`
-  // };
+// useful for making sure we don't conflict with other, similarly named things
+const variablePrefixes = {
+  trigger: 'get',
+  search: 'find',
+  create: 'create'
+};
+const getVariableName = (action, noun) =>
+  action === 'resource'
+    ? `${noun.toLowerCase()}Resource` // contactResource
+    : `${variablePrefixes[action]}${_.capitalize(noun)}`; // getContact
 
+const createTemplateContext = (action, noun, includeComments) => {
+  // if noun is "Cool Contact"
   return {
-    CAMEL: camelCase(name),
-    KEY: contextKey,
-    NOUN: _.capitalize(name),
-    LOWER_NOUN: name.toLowerCase(),
-    INPUT_FIELDS: '',
-    TYPE: type,
-    TYPE_PLURAL: plural(type),
+    ACTION: action, // trigger
+    ACTION_PLURAL: plural(action), // triggers
+
+    KEY: snakeCase(noun), // "cool_contact", the action key
+    NOUN: _.capitalize(noun), // "Cool contact", the noun
+    LOWER_NOUN: noun.toLowerCase(), // "cool contact", for use in comments
     // resources need an extra line for tests to "just run"
-    MAYBE_RESOURCE: type === 'resource' ? 'list.' : ''
-    // defaultDest: destMap[type],
-    // defaultTestDest: `test/${destMap[type]}`
+    MAYBE_RESOURCE: action === 'resource' ? 'list.' : '',
+    INCLUDE_INTRO_COMMENTS: includeComments
   };
 };
 
@@ -60,45 +57,54 @@ const getTemplatePath = type =>
 
 class ScaffoldCommand extends BaseCommand {
   async perform() {
-    const { noun, type: actionType } = this.args;
-
+    const { action, noun } = this.args;
     // TODO: interactive portion here?
-
     const {
-      defaultDest,
-      defaultTestDest,
-      ...templateContext
-    } = createTemplateContext(actionType, name);
-
-    const {
-      dest = defaultDest,
-      testDest = defaultTestDest,
+      dest = getNewFileDirectory(action),
+      testDest = getNewFileDirectory(action, true),
       entry = 'index.js'
     } = this.flags;
-    const entryFilePath = path.join(process.cwd(), entry);
 
-    this.log(`Adding a new ${actionType} to your project.\n`);
+    const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely init) this will be false
+    const templateContext = createTemplateContext(
+      action,
+      noun,
+      shouldIncludeComments
+    );
+
+    // * create 2 new files - the scaffold and the test
+    this.log(`Adding a new ${action} to your project.\n`);
 
     // TODO: read from config file?
-    await this.writeTemplateFile(actionType, templateContext, dest);
-    await this.writeTemplateFile('test', templateContext, testDest);
+    await this.writeTemplateFile(
+      action,
+      templateContext,
+      getFilename(dest, noun)
+    );
+    await this.writeTemplateFile(
+      'test',
+      templateContext,
+      getFilename(testDest, noun)
+    );
 
+    // * rewire the index.js to point ot the new file
     this.startSpinner(`Rewriting your ${entry}`);
 
+    const entryFilePath = path.join(process.cwd(), entry);
     await this.updateEntryFile(
       entryFilePath,
-      templateContext.CAMEL,
-      dest,
+      getVariableName(action, noun),
+      getFilename(dest, noun),
       templateContext.KEY
     );
 
     this.stopSpinner();
 
-    this.log(`\nFinished! Your new ${actionType} is ready to use.`);
+    this.log(`\nFinished! Your new ${action} is ready to use.`);
   }
 
-  async writeTemplateFile(type, templateContext, dest) {
-    const templatePath = getTemplatePath(type);
+  async writeTemplateFile(action, templateContext, dest) {
+    const templatePath = getTemplatePath(action);
     const destPath = path.join(process.cwd(), `${dest}.js`);
     const preventOverwrite = !this.flags.force;
 
@@ -120,34 +126,29 @@ class ScaffoldCommand extends BaseCommand {
       );
     }
 
-    const template = await readFile(templatePath);
-    const renderTemplate = _.template(template.toString(), {
-      interpolate: /<%=([\s\S]+?)%>/g
-    });
+    const template = (await readFile(templatePath)).toString();
+    const renderTemplate = _.template(template);
 
     this.startSpinner(`Writing new file ${dest}.js`);
-
     await ensureDir(path.dirname(destPath));
     await writeFile(destPath, renderTemplate(templateContext));
     this.stopSpinner();
   }
 
-  async updateEntryFile(entryFilePath, nameAdded, pathRequired, actionKey) {
-    const { type } = this.args;
+  async updateEntryFile(entryFilePath, varName, pathRequired, actionKey) {
+    const { action } = this.args;
     let codeStr = (await readFile(entryFilePath)).toString();
     const entryName = splitFileFromPath(entryFilePath)[1];
 
-    const varName = `${nameAdded}${camelCase(type)}`;
-
     try {
       codeStr = createRootRequire(codeStr, varName, `./${pathRequired}`);
-      codeStr = addKeyToPropertyOnApp(codeStr, plural(type), varName);
+      codeStr = addKeyToPropertyOnApp(codeStr, plural(action), varName);
       await writeFile(entryFilePath, codeStr);
 
       // validate the edit happened correctly
       // can't think of why it wouldn't, but it doesn't hurt to double check
       const rewrittenIndex = require(entryFilePath);
-      if (!_.get(rewrittenIndex, [plural(type), actionKey])) {
+      if (!_.get(rewrittenIndex, [plural(action), actionKey])) {
         throw new Error();
       }
     } catch (e) {
@@ -161,7 +162,7 @@ class ScaffoldCommand extends BaseCommand {
             `Oops, we could not reliably rewrite your ${entryName}.`
           )} Please ensure the following lines exist:`,
           ` * \`const ${varName} = require('./${pathRequired}');\` at the top-level`,
-          ` * \`[${varName}.key]: ${varName}\` in the "${type}" object in your root integration definition`
+          ` * \`[${varName}.key]: ${varName}\` in the "${action}" object in your root integration definition`
         ].join('\n')
       );
     }
@@ -170,7 +171,7 @@ class ScaffoldCommand extends BaseCommand {
 
 ScaffoldCommand.args = [
   {
-    name: 'type',
+    name: 'action',
     help: 'What type of step type are you creating?',
     required: true,
     options: ['trigger', 'search', 'create', 'resource']
@@ -188,17 +189,16 @@ ScaffoldCommand.flags = buildFlags({
     dest: flags.string({
       char: 'd',
       description:
-        "Sets the new file's path. Use this flag when you want to create a different folder structure such as `src/triggers/my_trigger` The default destination is {type}s/{name}."
+        "Specify the new file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `[triggers|searches|creates]/{noun}`."
     }),
     'test-dest': flags.string({
-      char: 't',
       description:
-        "Sets the new test file's path. Use this flag when you want to create a different folder structure such as `src/tests/triggers/my_trigger` The default destination is {type}s/{name}."
+        "Specify the new test file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `test/[triggers|searches|creates]/{noun}`."
     }),
     entry: flags.string({
       char: 'e',
       description:
-        'Where to import the new file. Supply this if your index is in a subfolder, like `src`.',
+        "Supply the path to your integration's root (`index.js`). Only needed if  your `index.js` is in a subfolder, like `src`.",
       default: 'index.js'
     }),
     force: flags.boolean({
@@ -206,29 +206,32 @@ ScaffoldCommand.flags = buildFlags({
       description:
         'Should we overwrite an exisiting trigger/search/create file?',
       default: false
+    }),
+    'no-help': flags.boolean({
+      description:
+        "When scaffolding, should we skip adding helpful intro comments? Useful if this isn't your first rodeo.",
+      default: false
     })
+    // TODO: typescript? jscodeshift supports it. We could tweak a template for it
   }
 });
 
 ScaffoldCommand.examples = [
-  'zapier scaffold trigger "New Contact"',
-  'zapier scaffold search "Find Contact" --dest=searches/contact',
-  'zapier scaffold create "Add Contact" --entry=index.js',
-  'zapier scaffold resource "Contact" --force'
+  'zapier scaffold trigger contact',
+  'zapier scaffold search contact --dest=my_src/searches',
+  'zapier scaffold create contact --entry=src/index.js',
+  'zapier scaffold resource contact --force'
 ];
 
 ScaffoldCommand.description = `Add a starting trigger, create, search, or resource to your integration.
 
-The first argument should be one of \`resource|trigger|search|create\` followed by the name of the file.
+The first argument should be one of \`trigger|search|create|resource\` followed by the noun that this will act on (something like "contact" or "deal").
 
 The scaffold command does two general things:
 
 * Creates a new file (such as \`triggers/contact.js\`)
-* Imports and register it inside your \`index.js\`
+* Imports and registers it inside your \`index.js\`
 
-You can mix and match several options to customize the created scaffold for your project.
-
-
-`;
+You can mix and match several options to customize the created scaffold for your project.`;
 
 module.exports = ScaffoldCommand;

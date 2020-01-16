@@ -1,13 +1,12 @@
 // find a particular <%= LOWER_NOUN %> by name
-const search<%= CAMEL %> = (z, bundle) => {
-  const responsePromise = z.request({
+const perform = async (z, bundle) => {
+  const response = await z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       name: bundle.inputData.name
     }
   });
-  return responsePromise
-    .then(response => z.JSON.parse(response.content));
+  return z.JSON.parse(response.content)
 };
 
 module.exports = {
@@ -15,7 +14,7 @@ module.exports = {
   noun: '<%= NOUN %>',
 
   display: {
-    label: 'Find a <%= NOUN %>',
+    label: 'Find <%= NOUN %>',
     description: 'Finds a <%= LOWER_NOUN %>.'
   },
 
@@ -23,7 +22,7 @@ module.exports = {
     inputFields: [
       {key: 'name', required: true, helpText: 'Find the <%= NOUN %> with this name.'}
     ],
-    perform: search<%= CAMEL %>,
+    perform,
 
     sample: {
       id: 1,

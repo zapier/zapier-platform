@@ -51,6 +51,18 @@ describe('ast', () => {
         result.startsWith('// comment!\nconst getThing = require("./a/b/c");')
       ).be.true();
     });
+
+    it('should skip duplicates', () => {
+      const result = createRootRequire(sampleIndex, 'CryptoCreate', './a/b/c');
+      should(
+        result.includes("const CryptoCreate = require('./a/b/c')")
+      ).be.false();
+    });
+
+    it('should not skip sneaky duplicates', () => {
+      const result = createRootRequire(sampleIndex, 'Crypto', './a/b/c');
+      should(result.includes('const Crypto = require("./a/b/c");')).be.true();
+    });
   });
 
   describe('adding object properties', () => {

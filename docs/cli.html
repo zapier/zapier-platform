@@ -894,25 +894,26 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Add a starting trigger, create, search, or resource to your integration.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier scaffold TYPE NOUN</code></p><p>The first argument should be one of <code>resource|trigger|search|create</code> followed by the name of the file.</p><p>The scaffold command does two general things:</p><ul>
+</blockquote><p><strong>Usage</strong>: <code>zapier scaffold ACTION NOUN</code></p><p>The first argument should be one of <code>trigger|search|create|resource</code> followed by the noun that this will act on (something like &quot;contact&quot; or &quot;deal&quot;).</p><p>The scaffold command does two general things:</p><ul>
 <li><p>Creates a new file (such as <code>triggers/contact.js</code>)</p>
 </li>
-<li><p>Imports and register it inside your <code>index.js</code></p>
+<li><p>Imports and registers it inside your <code>index.js</code></p>
 </li>
 </ul><p>You can mix and match several options to customize the created scaffold for your project.</p><p><strong>Arguments</strong></p><ul>
-<li>(required) <code>type</code> | undefined</li>
+<li>(required) <code>action</code> | undefined</li>
 <li>(required) <code>noun</code> | undefined</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li><code>-d, --dest</code> | Sets the new file&apos;s path. Use this flag when you want to create a different folder structure such as <code>src/triggers/my_trigger</code> The default destination is {type}s/{name}.</li>
-<li><code>-t, --test-dest</code> | Sets the new test file&apos;s path. Use this flag when you want to create a different folder structure such as <code>src/tests/triggers/my_trigger</code> The default destination is {type}s/{name}.</li>
-<li><code>-e, --entry</code> | Where to import the new file. Supply this if your index is in a subfolder, like <code>src</code>.  Defaults to <code>index.js</code>.</li>
+<li><code>-d, --dest</code> | Specify the new file&apos;s directory. Use this flag when you want to create a different folder structure such as <code>src/triggers</code> instead of the default <code>triggers</code>. Defaults to <code>[triggers|searches|creates]/{noun}</code>.</li>
+<li><code>--test-dest</code> | Specify the new test file&apos;s directory. Use this flag when you want to create a different folder structure such as <code>src/triggers</code> instead of the default <code>triggers</code>. Defaults to <code>test/[triggers|searches|creates]/{noun}</code>.</li>
+<li><code>-e, --entry</code> | Supply the path to your integration&apos;s root (<code>index.js</code>). Only needed if  your <code>index.js</code> is in a subfolder, like <code>src</code>.  Defaults to <code>index.js</code>.</li>
 <li><code>-f, --force</code> | Should we overwrite an exisiting trigger/search/create file?</li>
+<li><code>--no-help</code> | When scaffolding, should we skip adding helpful intro comments? Useful if this isn&apos;t your first rodeo.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
-<li><code>zapier scaffold trigger &quot;New Contact&quot;</code></li>
-<li><code>zapier scaffold search &quot;Find Contact&quot; --dest=searches/contact</code></li>
-<li><code>zapier scaffold create &quot;Add Contact&quot; --entry=index.js</code></li>
-<li><code>zapier scaffold resource &quot;Contact&quot; --force</code></li>
+<li><code>zapier scaffold trigger contact</code></li>
+<li><code>zapier scaffold search contact --dest=my_src/searches</code></li>
+<li><code>zapier scaffold create contact --entry=src/index.js</code></li>
+<li><code>zapier scaffold resource contact --force</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

@@ -3,8 +3,9 @@
 const j = require('jscodeshift');
 
 const createRootRequire = (codeStr, varName, path) => {
-  if (codeStr.includes(`const ${varName}`)) {
+  if (codeStr.includes(`const ${varName} = `)) {
     // duplicate identifier, no need to re-add
+    // TODO: throw error if it's a duplicate identifier but different require path
     return codeStr;
   }
   const root = j(codeStr);
@@ -53,7 +54,6 @@ const createRootRequire = (codeStr, varName, path) => {
 const addKeyToPropertyOnApp = (codeStr, property, varName) => {
   // to play with this, use https://astexplorer.net/#/gist/cb4986b3f1c6eb975339608109a48e7d/0fbf2fabbcf27d0b6ebd8910f979bd5d97dd9404
 
-  // TODO: the last step will add a duplicate import, so we should fail gracefully here?s
   const root = j(codeStr);
   const subProp = root.find(j.Property, {
     key: { type: 'Identifier', name: property }
