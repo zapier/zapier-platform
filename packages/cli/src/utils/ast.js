@@ -3,7 +3,7 @@
 const j = require('jscodeshift');
 
 const createRootRequire = (codeStr, varName, path) => {
-  if (codeStr.includes(`const ${varName} = `)) {
+  if (codeStr.includes(`${varName} = `)) {
     // duplicate identifier, no need to re-add
     // TODO: throw error if it's a duplicate identifier but different require path
     return codeStr;

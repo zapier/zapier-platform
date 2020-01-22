@@ -102,5 +102,29 @@ describe('ast', () => {
         firstIndex + 1
       );
     });
+
+    it('should work when there\'s not an "App", but there _is_ a "triggers" property', () => {
+      const code = sampleIndex.split('App').join('Blah'); // still valid, but wrong variable name now
+
+      const codeByLine = addKeyToPropertyOnApp(code, 'triggers', 'getThing')
+        .split('\n')
+        .map(x => x.trim());
+      const firstIndex = codeByLine.indexOf('triggers: {');
+      // assertions about what comes in the trigger property
+      should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
+        firstIndex + 1
+      );
+      should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
+        firstIndex + 2
+      );
+    });
+
+    it('should throw when there\'s not an "App" and there\'s no existing "triggers" property', () => {
+      const code = sampleIndex.split('App').join('Blah'); // still valid, but wrong variable name now
+
+      (() => addKeyToPropertyOnApp(code, 'searches', 'getThing')).should.throw(
+        /Unable to add new property/
+      );
+    });
   });
 });

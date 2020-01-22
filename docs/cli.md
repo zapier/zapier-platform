@@ -415,7 +415,7 @@ This will change the  `./.zapierapprc` (which identifies this directory as holdi
 
 > Add a starting trigger, create, search, or resource to your integration.
 
-**Usage**: `zapier scaffold ACTION NOUN`
+**Usage**: `zapier scaffold ACTIONTYPE NOUN`
 
 The first argument should be one of `trigger|search|create|resource` followed by the noun that this will act on (something like "contact" or "deal").
 
@@ -428,7 +428,7 @@ The scaffold command does two general things:
 You can mix and match several options to customize the created scaffold for your project.
 
 **Arguments**
-* (required) `action` | undefined
+* (required) `actionType` | undefined
 * (required) `noun` | undefined
 
 **Flags**

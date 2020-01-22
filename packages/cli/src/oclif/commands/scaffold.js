@@ -1,31 +1,29 @@
 const _ = require('lodash');
 const path = require('path');
-const colors = require('colors/safe');
 
 const { flags } = require('@oclif/command');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const {
-  ensureDir,
-  fileExistsSync,
-  readFile,
-  writeFile
-} = require('../../utils/files');
-const { snakeCase } = require('../../utils/misc');
-const { splitFileFromPath } = require('../../utils/string');
-const { createRootRequire, addKeyToPropertyOnApp } = require('../../utils/ast');
 
-const plural = type => (type === 'search' ? `${type}es` : `${type}s`);
+const {
+  plural,
+  updateEntryFile,
+  writeTemplateFile,
+  createTemplateContext
+} = require('../../utils/scaffold');
 
 const getNewFileDirectory = (action, test = false) =>
   `${test ? 'test/' : ''}${plural(action)}`;
 
 /**
- * both the string to `require` and the filepath to write to
+ * both the string to `require` and later, the filepath to write to
  */
-const getFilename = (directory, noun) => `${directory}/${noun}.js`;
+const getFilename = (directory, noun) =>
+  path.join(process.cwd(), `${directory}/${noun}`);
 
+const getFilenameWithExtension = (directory, noun) =>
+  `${getFilename(directory, noun)}.js`;
 // useful for making sure we don't conflict with other, similarly named things
 const variablePrefixes = {
   trigger: 'get',
@@ -37,141 +35,74 @@ const getVariableName = (action, noun) =>
     ? `${noun.toLowerCase()}Resource` // contactResource
     : `${variablePrefixes[action]}${_.capitalize(noun)}`; // getContact
 
-const createTemplateContext = (action, noun, includeComments) => {
-  // if noun is "Cool Contact"
-  return {
-    ACTION: action, // trigger
-    ACTION_PLURAL: plural(action), // triggers
-
-    KEY: snakeCase(noun), // "cool_contact", the action key
-    NOUN: _.capitalize(noun), // "Cool contact", the noun
-    LOWER_NOUN: noun.toLowerCase(), // "cool contact", for use in comments
-    // resources need an extra line for tests to "just run"
-    MAYBE_RESOURCE: action === 'resource' ? 'list.' : '',
-    INCLUDE_INTRO_COMMENTS: includeComments
-  };
-};
-
-const getTemplatePath = type =>
-  path.join(__dirname, '../../..', `scaffold/${type}.template.js`);
-
 class ScaffoldCommand extends BaseCommand {
   async perform() {
-    const { action, noun } = this.args;
+    const { actionType, noun } = this.args;
     // TODO: interactive portion here?
     const {
-      dest = getNewFileDirectory(action),
-      testDest = getNewFileDirectory(action, true),
+      dest: newActionDir = getNewFileDirectory(actionType),
+      testDest: newTestActionDir = getNewFileDirectory(actionType, true),
       entry = 'index.js'
     } = this.flags;
 
-    const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely init) this will be false
+    const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely "init") this will be false
     const templateContext = createTemplateContext(
-      action,
+      actionType,
       noun,
       shouldIncludeComments
     );
 
     // * create 2 new files - the scaffold and the test
-    this.log(`Adding a new ${action} to your project.\n`);
-
+    this.log(`Adding a new ${actionType} to your project.\n`);
+    const preventOverwrite = !this.flags.force;
     // TODO: read from config file?
-    await this.writeTemplateFile(
-      action,
-      templateContext,
-      getFilename(dest, noun)
+
+    this.startSpinner(
+      `Creating new file: ${getFilenameWithExtension(newActionDir, noun)}`
     );
-    await this.writeTemplateFile(
+    await writeTemplateFile(
+      actionType,
+      templateContext,
+      getFilenameWithExtension(newActionDir, noun),
+      preventOverwrite
+    );
+    this.stopSpinner();
+
+    this.startSpinner(
+      `Creating new test file: ${getFilenameWithExtension(
+        newTestActionDir,
+        noun
+      )}`
+    );
+    await writeTemplateFile(
       'test',
       templateContext,
-      getFilename(testDest, noun)
+      getFilenameWithExtension(newTestActionDir, noun),
+      preventOverwrite
     );
+    this.stopSpinner();
 
     // * rewire the index.js to point ot the new file
     this.startSpinner(`Rewriting your ${entry}`);
 
     const entryFilePath = path.join(process.cwd(), entry);
-    await this.updateEntryFile(
+    await updateEntryFile(
       entryFilePath,
-      getVariableName(action, noun),
-      getFilename(dest, noun),
-      templateContext.KEY
+      getVariableName(actionType, noun),
+      getFilename(newActionDir, noun),
+      templateContext.KEY,
+      actionType
     );
 
     this.stopSpinner();
 
-    this.log(`\nFinished! Your new ${action} is ready to use.`);
-  }
-
-  async writeTemplateFile(action, templateContext, dest) {
-    const templatePath = getTemplatePath(action);
-    const destPath = path.join(process.cwd(), `${dest}.js`);
-    const preventOverwrite = !this.flags.force;
-
-    if (preventOverwrite && fileExistsSync(destPath)) {
-      const [location, filename] = splitFileFromPath(destPath);
-
-      this.error(
-        [
-          `File ${colors.bold(filename)} already exists within ${colors.bold(
-            location
-          )}.`,
-          'You can either:',
-          '  1. Choose a different filename',
-          `  2. Delete ${filename} from ${location}`,
-          `  3. Run ${colors.italic('scaffold')} with ${colors.bold(
-            '--force'
-          )} to overwrite the current ${filename}`
-        ].join('\n')
-      );
-    }
-
-    const template = (await readFile(templatePath)).toString();
-    const renderTemplate = _.template(template);
-
-    this.startSpinner(`Writing new file ${dest}.js`);
-    await ensureDir(path.dirname(destPath));
-    await writeFile(destPath, renderTemplate(templateContext));
-    this.stopSpinner();
-  }
-
-  async updateEntryFile(entryFilePath, varName, pathRequired, actionKey) {
-    const { action } = this.args;
-    let codeStr = (await readFile(entryFilePath)).toString();
-    const entryName = splitFileFromPath(entryFilePath)[1];
-
-    try {
-      codeStr = createRootRequire(codeStr, varName, `./${pathRequired}`);
-      codeStr = addKeyToPropertyOnApp(codeStr, plural(action), varName);
-      await writeFile(entryFilePath, codeStr);
-
-      // validate the edit happened correctly
-      // can't think of why it wouldn't, but it doesn't hurt to double check
-      const rewrittenIndex = require(entryFilePath);
-      if (!_.get(rewrittenIndex, [plural(action), actionKey])) {
-        throw new Error();
-      }
-    } catch (e) {
-      if (e.message) {
-        throw e;
-      }
-      // if we get here, just throw something generic
-      this.error(
-        [
-          `\n${colors.bold(
-            `Oops, we could not reliably rewrite your ${entryName}.`
-          )} Please ensure the following lines exist:`,
-          ` * \`const ${varName} = require('./${pathRequired}');\` at the top-level`,
-          ` * \`[${varName}.key]: ${varName}\` in the "${action}" object in your root integration definition`
-        ].join('\n')
-      );
-    }
+    this.log(`\nFinished! Your new ${actionType} is ready to use.`);
   }
 }
 
 ScaffoldCommand.args = [
   {
-    name: 'action',
+    name: 'actionType',
     help: 'What type of step type are you creating?',
     required: true,
     options: ['trigger', 'search', 'create', 'resource']

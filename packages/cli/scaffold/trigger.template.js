@@ -6,6 +6,7 @@ const perform = async (z, bundle) => {
       tag: bundle.inputData.tagName
     }
   });
+  response.throwForStatus()
   return z.JSON.parse(response.content)
 };
 
@@ -44,8 +45,9 @@ module.exports = {
       '// Alternatively, a static field definition can be provided, to specify labels for the fields'
     ].join('\n    ') : '' %>
     outputFields: [
-      {key: 'id', label: 'Person ID'},
-      {key: 'name', label: 'Person Name'}
+      // placeholders to match the jsonplaceholder call
+      // {key: 'id', label: 'Person ID'},
+      // {key: 'name', label: 'Person Name'}
     ]
   }
 };

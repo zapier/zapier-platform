@@ -1,12 +1,11 @@
 const should = require('should');
 
-const crypto = require('crypto');
 const os = require('os');
 const path = require('path');
 
 const build = require('../../utils/build');
 const { copyDir } = require('../../utils/files');
-const { runCommand } = require('../_helpers');
+const { runCommand, getNewTempDirPath, randomStr } = require('../_helpers');
 
 const decompress = require('decompress');
 const fs = require('fs');
@@ -16,11 +15,7 @@ describe('build (runs slowly)', () => {
   let tmpDir, entryPoint;
   before(async () => {
     // basically does what `zapier init` does
-    const osTmpDir = fse.realpathSync(os.tmpdir());
-    tmpDir = path.join(
-      osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex')
-    );
+    tmpDir = getNewTempDirPath();
     await copyDir(
       path.resolve(__dirname, '../../../../../example-apps/typescript'),
       tmpDir
@@ -66,10 +61,7 @@ describe('build (runs slowly)', () => {
 
   it('list should not include blacklisted files', () => {
     const osTmpDir = fse.realpathSync(os.tmpdir());
-    const tmpProjectDir = path.join(
-      osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex')
-    );
+    const tmpProjectDir = path.join(osTmpDir, 'zapier-' + randomStr());
 
     [
       'safe.js',
@@ -97,19 +89,13 @@ describe('build (runs slowly)', () => {
 
   it('should make a build.zip', () => {
     const osTmpDir = fse.realpathSync(os.tmpdir());
-    const tmpProjectDir = path.join(
-      osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex')
-    );
+    const tmpProjectDir = path.join(osTmpDir, 'zapier-' + randomStr());
     const tmpZipPath = path.join(
       osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex'),
+      'zapier-' + randomStr(),
       'build.zip'
     );
-    const tmpUnzipPath = path.join(
-      osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex')
-    );
+    const tmpUnzipPath = path.join(osTmpDir, 'zapier-' + randomStr());
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
     fse.outputFileSync(
@@ -150,19 +136,13 @@ describe('build (runs slowly)', () => {
 
   it('should make a build.zip without .zapierapprc', () => {
     const osTmpDir = fse.realpathSync(os.tmpdir());
-    const tmpProjectDir = path.join(
-      osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex')
-    );
+    const tmpProjectDir = path.join(osTmpDir, 'zapier-' + randomStr());
     const tmpZipPath = path.join(
       osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex'),
+      'zapier-' + randomStr(),
       'build.zip'
     );
-    const tmpUnzipPath = path.join(
-      osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex')
-    );
+    const tmpUnzipPath = path.join(osTmpDir, 'zapier-' + randomStr());
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
     fse.outputFileSync(
@@ -202,19 +182,13 @@ describe('build (runs slowly)', () => {
 
   it('should make a source.zip without .gitignore', () => {
     const osTmpDir = fse.realpathSync(os.tmpdir());
-    const tmpProjectDir = path.join(
-      osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex')
-    );
+    const tmpProjectDir = path.join(osTmpDir, 'zapier-' + randomStr());
     const tmpZipPath = path.join(
       osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex'),
+      'zapier-' + randomStr(),
       'source.zip'
     );
-    const tmpUnzipPath = path.join(
-      osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex')
-    );
+    const tmpUnzipPath = path.join(osTmpDir, 'zapier-' + randomStr());
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
     const tmpReadmePath = path.join(tmpProjectDir, 'README.md');
     const tmpZapierAppPath = path.join(tmpProjectDir, '.zapierapprc');
@@ -263,19 +237,13 @@ describe('build (runs slowly)', () => {
 
   it('should make a source.zip with .gitignore', () => {
     const osTmpDir = fse.realpathSync(os.tmpdir());
-    const tmpProjectDir = path.join(
-      osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex')
-    );
+    const tmpProjectDir = path.join(osTmpDir, 'zapier-' + randomStr());
     const tmpZipPath = path.join(
       osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex'),
+      'zapier-' + randomStr(),
       'source.zip'
     );
-    const tmpUnzipPath = path.join(
-      osTmpDir,
-      'zapier-' + crypto.randomBytes(4).toString('hex')
-    );
+    const tmpUnzipPath = path.join(osTmpDir, 'zapier-' + randomStr());
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
     const tmpReadmePath = path.join(tmpProjectDir, 'README.md');
     const tmpZapierAppPath = path.join(tmpProjectDir, '.zapierapprc');

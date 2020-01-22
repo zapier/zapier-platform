@@ -894,13 +894,13 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Add a starting trigger, create, search, or resource to your integration.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier scaffold ACTION NOUN</code></p><p>The first argument should be one of <code>trigger|search|create|resource</code> followed by the noun that this will act on (something like &quot;contact&quot; or &quot;deal&quot;).</p><p>The scaffold command does two general things:</p><ul>
+</blockquote><p><strong>Usage</strong>: <code>zapier scaffold ACTIONTYPE NOUN</code></p><p>The first argument should be one of <code>trigger|search|create|resource</code> followed by the noun that this will act on (something like &quot;contact&quot; or &quot;deal&quot;).</p><p>The scaffold command does two general things:</p><ul>
 <li><p>Creates a new file (such as <code>triggers/contact.js</code>)</p>
 </li>
 <li><p>Imports and registers it inside your <code>index.js</code></p>
 </li>
 </ul><p>You can mix and match several options to customize the created scaffold for your project.</p><p><strong>Arguments</strong></p><ul>
-<li>(required) <code>action</code> | undefined</li>
+<li>(required) <code>actionType</code> | undefined</li>
 <li>(required) <code>noun</code> | undefined</li>
 </ul><p><strong>Flags</strong></p><ul>
 <li><code>-d, --dest</code> | Specify the new file&apos;s directory. Use this flag when you want to create a different folder structure such as <code>src/triggers</code> instead of the default <code>triggers</code>. Defaults to <code>[triggers|searches|creates]/{noun}</code>.</li>

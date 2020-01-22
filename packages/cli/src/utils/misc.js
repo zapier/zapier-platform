@@ -79,9 +79,15 @@ const isValidNodeVersion = (version = process.version) =>
 
 const isValidAppInstall = command => {
   if (
-    ['help', 'init', 'login', 'integrations', 'convert', 'logout'].includes(
-      command
-    )
+    [
+      'help',
+      'init',
+      'login',
+      'integrations',
+      'convert',
+      'logout',
+      'scaffold'
+    ].includes(command)
   ) {
     return { valid: true };
   }
