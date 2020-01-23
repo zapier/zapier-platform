@@ -63,15 +63,16 @@ const writeTemplateFile = async (
 const updateEntryFile = async (
   entryFilePath,
   varName,
-  pathRequired,
-  newActionKey,
-  actionType
+  newFilePath,
+  actionType,
+  newActionKey
 ) => {
   let codeStr = (await readFile(entryFilePath)).toString();
   const entryName = splitFileFromPath(entryFilePath)[1];
+  const relativePath = path.relative(path.dirname(entryFilePath), newFilePath);
 
   try {
-    codeStr = createRootRequire(codeStr, varName, `./${pathRequired}`);
+    codeStr = createRootRequire(codeStr, varName, `./${relativePath}`);
     codeStr = addKeyToPropertyOnApp(codeStr, plural(actionType), varName);
     await writeFile(entryFilePath, codeStr);
 
@@ -91,7 +92,7 @@ const updateEntryFile = async (
         `\n${colors.bold(
           `Oops, we could not reliably rewrite your ${entryName}.`
         )} Please ensure the following lines exist:`,
-        ` * \`const ${varName} = require('./${pathRequired}');\` at the top-level`,
+        ` * \`const ${varName} = require('./${newFilePath}');\` at the top-level`,
         ` * \`[${varName}.key]: ${varName}\` in the "${plural(
           actionType
         )}" object in your root integration definition`

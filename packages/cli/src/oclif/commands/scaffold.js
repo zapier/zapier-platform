@@ -16,14 +16,15 @@ const {
 const getNewFileDirectory = (action, test = false) =>
   `${test ? 'test/' : ''}${plural(action)}`;
 
+const getLocalFilePath = (directory, noun) => `${directory}/${noun}`;
 /**
  * both the string to `require` and later, the filepath to write to
  */
-const getFilename = (directory, noun) =>
-  path.join(process.cwd(), `${directory}/${noun}`);
+const getFullActionFilePath = (directory, noun) =>
+  path.join(process.cwd(), getLocalFilePath(directory, noun));
 
-const getFilenameWithExtension = (directory, noun) =>
-  `${getFilename(directory, noun)}.js`;
+const getFullActionFilePathWithExtension = (directory, noun) =>
+  `${getFullActionFilePath(directory, noun)}.js`;
 // useful for making sure we don't conflict with other, similarly named things
 const variablePrefixes = {
   trigger: 'get',
@@ -42,7 +43,8 @@ class ScaffoldCommand extends BaseCommand {
     const {
       dest: newActionDir = getNewFileDirectory(actionType),
       testDest: newTestActionDir = getNewFileDirectory(actionType, true),
-      entry = 'index.js'
+      entry = 'index.js',
+      force
     } = this.flags;
 
     const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely "init") this will be false
@@ -54,30 +56,27 @@ class ScaffoldCommand extends BaseCommand {
 
     // * create 2 new files - the scaffold and the test
     this.log(`Adding a new ${actionType} to your project.\n`);
-    const preventOverwrite = !this.flags.force;
+    const preventOverwrite = !force;
     // TODO: read from config file?
 
     this.startSpinner(
-      `Creating new file: ${getFilenameWithExtension(newActionDir, noun)}`
+      `Creating new file: ${getLocalFilePath(newActionDir, noun)}.js`
     );
     await writeTemplateFile(
       actionType,
       templateContext,
-      getFilenameWithExtension(newActionDir, noun),
+      getFullActionFilePathWithExtension(newActionDir, noun),
       preventOverwrite
     );
     this.stopSpinner();
 
     this.startSpinner(
-      `Creating new test file: ${getFilenameWithExtension(
-        newTestActionDir,
-        noun
-      )}`
+      `Creating new test file: ${getLocalFilePath(newTestActionDir, noun)}.js`
     );
     await writeTemplateFile(
       'test',
       templateContext,
-      getFilenameWithExtension(newTestActionDir, noun),
+      getFullActionFilePathWithExtension(newTestActionDir, noun),
       preventOverwrite
     );
     this.stopSpinner();
@@ -89,9 +88,9 @@ class ScaffoldCommand extends BaseCommand {
     await updateEntryFile(
       entryFilePath,
       getVariableName(actionType, noun),
-      getFilename(newActionDir, noun),
-      templateContext.KEY,
-      actionType
+      getFullActionFilePath(newActionDir, noun),
+      actionType,
+      templateContext.KEY
     );
 
     this.stopSpinner();

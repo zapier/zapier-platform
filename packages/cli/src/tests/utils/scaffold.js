@@ -116,9 +116,9 @@ describe('scaffold', () => {
       await updateEntryFile(
         indexPath,
         'getThing',
-        'triggers/things',
-        'thing',
-        'trigger'
+        `${tmpDir}/triggers/things`,
+        'trigger',
+        'thing'
       );
 
       // shouldn't throw

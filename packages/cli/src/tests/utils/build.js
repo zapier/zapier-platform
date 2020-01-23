@@ -1,11 +1,10 @@
 const should = require('should');
 
-const os = require('os');
 const path = require('path');
 
 const build = require('../../utils/build');
 const { copyDir } = require('../../utils/files');
-const { runCommand, getNewTempDirPath, randomStr } = require('../_helpers');
+const { runCommand, getNewTempDirPath } = require('../_helpers');
 
 const decompress = require('decompress');
 const fs = require('fs');
@@ -60,8 +59,7 @@ describe('build (runs slowly)', () => {
   });
 
   it('list should not include blacklisted files', () => {
-    const osTmpDir = fse.realpathSync(os.tmpdir());
-    const tmpProjectDir = path.join(osTmpDir, 'zapier-' + randomStr());
+    const tmpProjectDir = getNewTempDirPath();
 
     [
       'safe.js',
@@ -88,14 +86,9 @@ describe('build (runs slowly)', () => {
   });
 
   it('should make a build.zip', () => {
-    const osTmpDir = fse.realpathSync(os.tmpdir());
-    const tmpProjectDir = path.join(osTmpDir, 'zapier-' + randomStr());
-    const tmpZipPath = path.join(
-      osTmpDir,
-      'zapier-' + randomStr(),
-      'build.zip'
-    );
-    const tmpUnzipPath = path.join(osTmpDir, 'zapier-' + randomStr());
+    const tmpProjectDir = getNewTempDirPath();
+    const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
+    const tmpUnzipPath = getNewTempDirPath();
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
     fse.outputFileSync(
@@ -135,14 +128,9 @@ describe('build (runs slowly)', () => {
   });
 
   it('should make a build.zip without .zapierapprc', () => {
-    const osTmpDir = fse.realpathSync(os.tmpdir());
-    const tmpProjectDir = path.join(osTmpDir, 'zapier-' + randomStr());
-    const tmpZipPath = path.join(
-      osTmpDir,
-      'zapier-' + randomStr(),
-      'build.zip'
-    );
-    const tmpUnzipPath = path.join(osTmpDir, 'zapier-' + randomStr());
+    const tmpProjectDir = getNewTempDirPath();
+    const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
+    const tmpUnzipPath = getNewTempDirPath();
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
     fse.outputFileSync(
@@ -181,14 +169,9 @@ describe('build (runs slowly)', () => {
   });
 
   it('should make a source.zip without .gitignore', () => {
-    const osTmpDir = fse.realpathSync(os.tmpdir());
-    const tmpProjectDir = path.join(osTmpDir, 'zapier-' + randomStr());
-    const tmpZipPath = path.join(
-      osTmpDir,
-      'zapier-' + randomStr(),
-      'source.zip'
-    );
-    const tmpUnzipPath = path.join(osTmpDir, 'zapier-' + randomStr());
+    const tmpProjectDir = getNewTempDirPath();
+    const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
+    const tmpUnzipPath = getNewTempDirPath();
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
     const tmpReadmePath = path.join(tmpProjectDir, 'README.md');
     const tmpZapierAppPath = path.join(tmpProjectDir, '.zapierapprc');
@@ -236,14 +219,10 @@ describe('build (runs slowly)', () => {
   });
 
   it('should make a source.zip with .gitignore', () => {
-    const osTmpDir = fse.realpathSync(os.tmpdir());
-    const tmpProjectDir = path.join(osTmpDir, 'zapier-' + randomStr());
-    const tmpZipPath = path.join(
-      osTmpDir,
-      'zapier-' + randomStr(),
-      'source.zip'
-    );
-    const tmpUnzipPath = path.join(osTmpDir, 'zapier-' + randomStr());
+    const tmpProjectDir = getNewTempDirPath();
+    const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
+    const tmpUnzipPath = getNewTempDirPath();
+
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
     const tmpReadmePath = path.join(tmpProjectDir, 'README.md');
     const tmpZapierAppPath = path.join(tmpProjectDir, '.zapierapprc');
