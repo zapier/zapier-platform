@@ -646,6 +646,25 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, this binding', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_this_binding',
+        'movie_pre_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then(output => {
+        const movies = output.results;
+        movies.length.should.greaterThan(1);
+      });
+    });
+
     it('KEY_pre_poll, _.template(bundle.request.url)', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(

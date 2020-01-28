@@ -211,6 +211,15 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      getAnS: function() {
+        return 's';
+      },
+
+      movie_pre_poll_this_binding: function(bundle) {
+        bundle.request.url += this.getAnS();
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];
