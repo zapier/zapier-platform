@@ -49,6 +49,46 @@ const ensureMainPackageVersionsAreSame = () => {
   }
 };
 
+const confirmIfNotMasterBranch = async () => {
+  const result = spawnSync('git', ['branch', '--show-current'], {
+    encoding: 'utf8'
+  });
+  const branch = (result.stdout || '').trim();
+  if (branch !== 'master') {
+    const answer = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'continue',
+        message:
+          'This was supposed to be run on master branch. ' +
+          `You want to proceed with branch ${underline(branch)} anyway?`,
+        default: false
+      }
+    ]);
+    if (!answer.continue) {
+      throw new Error('Canceled.');
+    }
+  }
+};
+
+const ensureNoUncommittedChanges = () => {
+  const result = spawnSync(
+    'git',
+    ['status', '--untracked-files=no', '--porcelain'],
+    { encoding: 'utf8' }
+  );
+  const lines = result.stdout
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(line => line);
+  if (lines.length > 0) {
+    throw new Error(
+      `${bold.underline('git status')} shows you have uncommitted changes. ` +
+        'Commit or discard those before you try again.'
+    );
+  }
+};
+
 const promptPackagesToBump = async () => {
   const answer = await inquirer.prompt([
     {
@@ -237,6 +277,8 @@ const gitTag = versionsToBump => {
 const main = async () => {
   try {
     ensureMainPackageVersionsAreSame();
+    await confirmIfNotMasterBranch();
+    ensureNoUncommittedChanges();
   } catch (err) {
     console.error(err.message);
     return 1;
@@ -247,8 +289,8 @@ const main = async () => {
 
   const packagesToBump = await promptPackagesToBump();
   if (packagesToBump.length === 0) {
-    console.log('No packages selected, nothing to do here');
-    return 0;
+    console.error('No packages selected, nothing to do here.');
+    return 1;
   }
 
   const versionsToBump = {};
@@ -265,14 +307,18 @@ const main = async () => {
     gitCommit(versionsToBump);
     gitTag(versionsToBump);
   } catch (err) {
+    // TODO: Roll back
     console.error(err.message);
+    console.error(
+      `Now you may have to use ${bold.underline('git restore')} and ` +
+        `${bold.underline('git tag -d')} to roll back the changes.`
+    );
     return 1;
   }
 
   console.log(
-    `\nDone! Now you can ${bold.underline('git push origin master --tags')}.`
+    `\nDone! Now you should ${bold.underline('git push origin master --tags')}.`
   );
-
   return 0;
 };
 
