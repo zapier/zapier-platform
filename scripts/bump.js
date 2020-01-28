@@ -32,8 +32,7 @@ const PACKAGE_ORIG_VERSIONS = [
     'package.json'
   );
   const packageJson = readJson(packageJsonPath);
-  result[packageName] = packageJson.version;
-  return result;
+  return { ...result, [packageName]: packageJson.version };
 }, {});
 
 const ensureMainPackageVersionsAreSame = () => {
