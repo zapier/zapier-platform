@@ -102,7 +102,7 @@ fi
 # Install boilerplate deps
 pushd $BOILERPLATE_DIR > /dev/null
 echo "{\"version\": \"1.0.0\", \"platformVersion\": \"$CORE_VERSION\"}" > definition.json
-yarn --force --no-lockfile
+yarn --no-lockfile
 popd > /dev/null
 
 # Monkey patch boilerplate package.json so zapier-platform-core and
