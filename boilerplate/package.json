@@ -7,11 +7,12 @@
   "license": "UNLICENSED",
   "main": "index.js",
   "engines": {
-    "node": ">=8.10.0",
+    "node": ">=10",
     "npm": ">=5.6.0"
   },
   "dependencies": {
     "zapier-platform-core": "PLACEHOLDER",
     "zapier-platform-legacy-scripting-runner": "PLACEHOLDER"
-  }
+  },
+  "private": true
 }

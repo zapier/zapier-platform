@@ -28,9 +28,7 @@
     "lint": "lerna run --stream --ignore zapier-platform-example-app-* lint",
     "lint-examples": "eslint examples",
     "validate": "lerna run --ignore zapier-platform-example-app-* validate",
-    "bump": "./scripts/bump.js",
-    "build-boilerplate": "yarn workspace zapier-platform-core build-boilerplate",
-    "upload-boilerplate": "yarn workspace zapier-platform-core upload-boilerplate"
+    "bump": "./scripts/bump.js"
   },
   "husky": {
     "hooks": {
