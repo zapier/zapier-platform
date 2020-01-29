@@ -23,4 +23,4 @@ popd > /dev/null
 
 REPO_DIR=$(dirname $(dirname $SCRIPT_DIR))
 
-/usr/local/bin/aws s3 cp $REPO_DIR/boilerplate/build/$PKG_VERSION.zip s3://$BUCKET/$PKG_VERSION.zip --acl public-read
+aws s3 cp $REPO_DIR/boilerplate/build/$PKG_VERSION.zip s3://$BUCKET/$PKG_VERSION.zip --acl public-read
