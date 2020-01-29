@@ -649,8 +649,8 @@ describe('Integration Test', () => {
     it('KEY_pre_poll, this binding', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
-        'movie_post_poll_underscore',
-        'movie_post_poll'
+        'movie_pre_poll_this_binding',
+        'movie_pre_poll'
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
