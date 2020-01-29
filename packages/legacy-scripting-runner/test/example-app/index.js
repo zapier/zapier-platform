@@ -211,6 +211,16 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      getMovesUrl: function() {
+        return '${AUTH_JSON_SERVER_URL}/movies';
+      },
+
+      movie_pre_poll_this_binding: function(bundle) {
+        // 'this' should be bound to 'Zap'
+        bundle.request.url = this.getMovesUrl();
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];
