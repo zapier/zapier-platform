@@ -649,19 +649,22 @@ describe('Integration Test', () => {
     it('KEY_pre_poll, this binding', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
-        'movie_pre_poll_this_binding',
-        'movie_pre_poll'
+        'movie_post_poll_underscore',
+        'movie_post_poll'
       );
-      const _compiledApp = schemaTools.prepareApp(appDef);
-      const _app = createApp(appDef);
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
 
       const input = createTestInput(
         _compiledApp,
         'triggers.movie.operation.perform'
       );
+      input.bundle.authData = { api_key: 'secret' };
       return _app(input).then(output => {
         const movies = output.results;
         movies.length.should.greaterThan(1);
+        should.equal(movies[0].title, 'title 1');
       });
     });
 

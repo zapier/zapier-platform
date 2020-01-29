@@ -523,7 +523,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           );
 
           // method.length is the number of args method accepts
-          const method = Zap[methodName];
+          const method = Zap[methodName].bind(Zap);
           const isAsync = method.length > 1;
           let result;
           try {

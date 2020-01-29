@@ -211,12 +211,13 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
-      getAnS: function() {
-        return 's';
+      getMovesUrl: function() {
+        return '${AUTH_JSON_SERVER_URL}/movies';
       },
 
       movie_pre_poll_this_binding: function(bundle) {
-        bundle.request.url += this.getAnS();
+        // 'this' should be bound to 'Zap'
+        bundle.request.url = this.getMovesUrl();
         return bundle.request;
       },
 
