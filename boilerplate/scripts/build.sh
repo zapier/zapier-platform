@@ -114,7 +114,7 @@ pushd $BOILERPLATE_DIR > /dev/null
 
 # Build the zip!
 # the node-X segment in the next line should match the latest major version
-zip -R $TARGET_FILE '*.js' '*.json' '*/linux-x64-node-10/*.node'
+zip -R $TARGET_FILE '*.js' '*.json' '*/linux-x64-node-10/*.node' '*/linux-x64-node-12/*.node'
 
 # Remove generated files
 rm -f zapierwrapper.js definition.json core-*.tgz legacy-*.tgz
