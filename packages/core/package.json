@@ -27,9 +27,6 @@
     "upload-integration-test": "bin/upload-lambda.js local.bundle.zip",
     "deploy-integration-test":
       "yarn build-integration-test && yarn upload-integration-test",
-    "build-boilerplate": "bin/build-boilerplate.sh",
-    "upload-boilerplate": "bin/upload-boilerplate.sh",
-    "postpublish": "bin/build-boilerplate.sh && bin/upload-boilerplate.sh",
     "validate": "yarn test && yarn smoke-test && yarn lint"
   },
   "engines": {
