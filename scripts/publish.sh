@@ -45,6 +45,9 @@ if [[ "$PKG_NAME" == "zapier-platform-legacy-scripting-runner" ]]; then
 fi
 
 if [[ "$CORE_VERSION" != "" && "$LEGACY_VERSION" != "" ]]; then
+    echo "Let's wait for a second for the packages to be available on npm..."
+    sleep 10
+
     # Build boilerplate and let Zapier know about this
     ./boilerplate/scripts/build.sh $CORE_VERSION $LEGACY_VERSION &&
     ./boilerplate/scripts/upload.sh $CORE_VERSION &&
