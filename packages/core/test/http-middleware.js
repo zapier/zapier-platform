@@ -5,6 +5,7 @@ const request = require('../src/tools/request-client');
 
 const prepareRequest = require('../src/http-middlewares/before/prepare-request');
 const addBasicAuthHeader = require('../src/http-middlewares/before/add-basic-auth-header');
+const addDigestAuthHeader = require('../src/http-middlewares/before/add-digest-auth-header');
 const prepareResponse = require('../src/http-middlewares/after/prepare-response');
 const applyMiddleware = require('../src/middleware');
 const oauth1SignRequest = require('../src/http-middlewares/before/oauth1-sign-request');
@@ -340,7 +341,31 @@ describe('http addBasicAuthHeader before middelware', () => {
     req = addBasicAuthHeader({}, z, bundle);
     should.not.exist(req.headers);
   });
+});
 
+describe('http addDigestAuthHeader before middleware', () => {
+  it('computes the Authorization header', async () => {
+    const origReq = {
+      url: 'https://httpbin.zapier-tooling.com/digest-auth/auth/joe/mypass/MD5',
+      headers: {}
+    };
+    const z = {};
+    const bundle = {
+      authData: {
+        username: 'joe',
+        password: 'mypass'
+      }
+    };
+    const req = await addDigestAuthHeader(origReq, z, bundle);
+    const res = await request(req);
+    res.status.should.eql(200);
+
+    const json = await res.json();
+    json.user.should.eql('joe');
+  });
+});
+
+describe('http oauth1SignRequest before middelware', () => {
   it('should sign request for oauth1', () => {
     const origReq = {
       method: 'post',

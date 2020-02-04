@@ -1,7 +1,5 @@
 'use strict';
 
-const urllib = require('url');
-
 const fetch = require('node-fetch');
 
 const { NotImplementedError } = require('../../errors');
@@ -15,7 +13,7 @@ const buildDigestHeader = (username, password, url, method, creds) => {
     );
   }
 
-  const path = new urllib.URL(url).path;
+  const path = new URL(url).pathname;
 
   const HA1 = md5(`${username}:${creds.realm}:${password}`);
   const HA2 = md5(`${method}:${path}`);
