@@ -7,7 +7,6 @@ const os = require('os');
 const path = require('path');
 
 require('should');
-const AdmZip = require('adm-zip');
 const fetch = require('node-fetch');
 
 const TEST_APPS = [
@@ -84,45 +83,13 @@ const setupTempWorkingDir = () => {
   return workdir;
 };
 
-const downloadRepoZip = async workdir => {
-  const zipUrl = 'https://github.com/zapier/zapier-platform/archive/master.zip';
-  const res = await fetch(zipUrl);
-
-  const zipPath = path.join(workdir, 'repo.zip');
-  const dest = fs.createWriteStream(zipPath);
-
-  return new Promise((resolve, reject) => {
-    res.body.pipe(dest);
-    res.body.on('error', err => {
-      reject(err);
-    });
-    dest.on('finish', () => {
-      resolve(zipPath);
-    });
-    dest.on('error', err => {
-      reject(err);
-    });
+const copyTestApps = workdir => {
+  const repoRoot = path.dirname(path.dirname(path.dirname(__dirname)));
+  TEST_APPS.forEach(appName => {
+    const srcAppDir = path.join(repoRoot, 'example-apps', appName);
+    const destAppDir = path.join(workdir, appName);
+    fs.copySync(srcAppDir, destAppDir);
   });
-};
-
-const extractExampleApps = (zipPath, workdir) => {
-  const zip = new AdmZip(zipPath);
-
-  zip.getEntries().forEach(entry => {
-    if (!entry.isDirectory) {
-      // Skip top-level directory, we don't care if this would ever work on Windows
-      const entryPath = entry.entryName
-        .split('/')
-        .slice(1)
-        .join('/');
-      if (entryPath && entryPath.startsWith('example-apps')) {
-        const destDir = path.join(workdir, path.dirname(entryPath));
-        zip.extractEntryTo(entry, destDir, false);
-      }
-    }
-  });
-
-  fs.unlinkSync(zipPath);
 };
 
 const npmInstalls = (packagePath, workdir) => {
@@ -163,8 +130,8 @@ describe('smoke tests - setup will take some time', () => {
     context.package.path = path.join(process.cwd(), context.package.filename);
 
     context.workRepoDir = setupTempWorkingDir();
-    const repoZipPath = await downloadRepoZip(context.workRepoDir);
-    extractExampleApps(repoZipPath, context.workRepoDir);
+
+    copyTestApps(context.workRepoDir);
   });
 
   after(() => {
@@ -192,11 +159,7 @@ describe('smoke tests - setup will take some time', () => {
   TEST_APPS.forEach(appName => {
     describe(appName, () => {
       before(async () => {
-        context.workAppDir = path.join(
-          context.workRepoDir,
-          'example-apps',
-          appName
-        );
+        context.workAppDir = path.join(context.workRepoDir, appName);
         npmInstalls(context.package.path, context.workAppDir);
 
         context.hasAppRC = setupZapierAppRC(context.workAppDir);

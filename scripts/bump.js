@@ -134,31 +134,6 @@ const promptVersionToBump = async packageName => {
   return answer.versionToBump;
 };
 
-const bumpMainPackagesForExampleApps = versionToBump => {
-  const examplesDir = path.join(REPO_DIR, 'example-apps');
-  fs.readdirSync(examplesDir, { withFileTypes: true }).map(item => {
-    if (item.isDirectory()) {
-      const packageJsonPath = path.join(examplesDir, item.name, 'package.json');
-      const packageJson = readJson(packageJsonPath);
-
-      ['cli', 'core', 'schema'].map(packageName => {
-        const packageFullName = `zapier-platform-${packageName}`;
-        if (packageJson.dependencies) {
-          const depVersion = packageJson.dependencies[packageFullName];
-          if (depVersion) {
-            console.log(
-              `${item.name}'s dependency ${packageName} ${depVersion} -> ${versionToBump}`
-            );
-            packageJson.dependencies[packageFullName] = versionToBump;
-          }
-        }
-      });
-
-      writeJson(packageJsonPath, packageJson);
-    }
-  });
-};
-
 // Main packages are cli, core, schema
 const bumpMainPackages = versionToBump => {
   const PACKAGES = ['cli', 'core', 'schema'];
@@ -308,23 +283,6 @@ const main = async () => {
     gitAdd();
     gitCommit(buildCommitMessage(versionsToBump));
     gitTag(versionsToBump);
-  } catch (err) {
-    // TODO: Roll back
-    console.error(err.message);
-    console.error(
-      `Now you may have to use ${bold.underline('git restore')} and ` +
-        `${bold.underline('git tag -d')} to roll back the changes.`
-    );
-    return 1;
-  }
-
-  Object.keys(versionsToBump).map(packageName => {
-    bumpMainPackagesForExampleApps(versionsToBump[packageName]);
-  });
-
-  try {
-    gitAdd();
-    gitCommit('Bump deps for example apps');
   } catch (err) {
     // TODO: Roll back
     console.error(err.message);
