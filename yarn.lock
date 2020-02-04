@@ -11158,14 +11158,6 @@ zapier-platform-core@^7.6.0:
   optionalDependencies:
     "@types/node" "8.10.20"
 
-zapier-platform-schema@7.4.0:
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/zapier-platform-schema/-/zapier-platform-schema-7.4.0.tgz#c796606636890511a60732b49bee39808ebd139c"
-  integrity sha512-IFdccvEQ4QFS3ICrSWXiovvtUPzjdT/uk3ATnvENIpl5+CmkTvxw1y491XZKd/gXYb0mLPor2fwkhY0PCcv2iw==
-  dependencies:
-    jsonschema "1.1.1"
-    lodash "4.17.10"
-
 zapier-platform-schema@7.6.1:
   version "7.6.1"
   resolved "https://registry.yarnpkg.com/zapier-platform-schema/-/zapier-platform-schema-7.6.1.tgz#cb0bd7bd4aee824d5b0ceb4cdd5985ebf12ca01a"
