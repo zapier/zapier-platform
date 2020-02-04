@@ -207,10 +207,9 @@ const bumpExtensionPackage = (packageName, versionToBump) => {
   writeJson(packageJsonPath, packageJson);
 };
 
-const bump = (packageName, versionToBump) => {
+const bumpPackages = (packageName, versionToBump) => {
   if (packageName === 'cli, core, schema') {
     bumpMainPackages(versionToBump);
-    bumpMainPackagesForExampleApps(versionToBump);
   } else {
     bumpExtensionPackage(packageName, versionToBump);
   }
@@ -230,13 +229,16 @@ const gitAdd = () => {
   }
 };
 
-const gitCommit = versionsToBump => {
+const buildCommitMessage = versionsToBump => {
   const messageParts = Object.keys(versionsToBump).map(packageName => {
     const fromVersion = PACKAGE_ORIG_VERSIONS[packageName];
     const toVersion = versionsToBump[packageName];
     return `${packageName} ${fromVersion} -> ${toVersion}`;
   });
-  const message = 'Bump ' + messageParts.join(', ');
+  return 'Bump ' + messageParts.join(', ');
+};
+
+const gitCommit = message => {
   const result = spawnSync('git', ['commit', '-m', message], {
     stdio: [0, 1, 2]
   });
@@ -299,13 +301,30 @@ const main = async () => {
   }
 
   Object.keys(versionsToBump).map(packageName => {
-    bump(packageName, versionsToBump[packageName]);
+    bumpPackages(packageName, versionsToBump[packageName]);
   });
 
   try {
     gitAdd();
-    gitCommit(versionsToBump);
+    gitCommit(buildCommitMessage(versionsToBump));
     gitTag(versionsToBump);
+  } catch (err) {
+    // TODO: Roll back
+    console.error(err.message);
+    console.error(
+      `Now you may have to use ${bold.underline('git restore')} and ` +
+        `${bold.underline('git tag -d')} to roll back the changes.`
+    );
+    return 1;
+  }
+
+  Object.keys(versionsToBump).map(packageName => {
+    bumpMainPackagesForExampleApps(versionsToBump[packageName]);
+  });
+
+  try {
+    gitAdd();
+    gitCommit('Bump deps for example apps');
   } catch (err) {
     // TODO: Roll back
     console.error(err.message);
