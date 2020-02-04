@@ -2,7 +2,7 @@
 
 ### cli
 
-- :tada: CLI now has brand new tab completion! ([#134](https://github.com/zapier/zapier-platform/pull/134))
+- :tada: CLI now has brand new tab completion! Learn how to activate it in the [doc](https://github.com/zapier/zapier-platform/tree/master/packages/cli#command-line-tab-completion). ([#134](https://github.com/zapier/zapier-platform/pull/134))
 - :nail_care: Make CLI text style more consistent ([#132](https://github.com/zapier/zapier-platform/pull/132))
 - :nail_care: `validate` command now uses a language consistent with the UI ([#132](https://github.com/zapier/zapier-platform/pull/132))
 - :bug: `validate` command no longer requires login ([#119](https://github.com/zapier/zapier-platform/pull/119))
