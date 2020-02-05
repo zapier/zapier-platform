@@ -679,7 +679,7 @@ Key | Required | Type | Description
 `dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.
 `search` | no | [/RefResourceSchema](#refresourceschema) | A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.
 `choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
-`list` | no | `boolean` | Can a user provide multiples of this field?
+`list` | no | `boolean` | Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?
 `children` | no | `array`[[/FieldSchema](#fieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?
 `computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)?
