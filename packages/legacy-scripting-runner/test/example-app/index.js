@@ -221,6 +221,12 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_error: function(bundle) {
+        var foo;
+        foo.bar = 1;
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];
