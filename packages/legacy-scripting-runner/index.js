@@ -530,6 +530,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
             result = method(convertedBundle, optionalCallback);
           } catch (err) {
             reject(err);
+            return;
           }
 
           // Handle sync

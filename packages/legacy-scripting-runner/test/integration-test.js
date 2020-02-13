@@ -668,6 +668,22 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, error properly', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_error',
+        'movie_pre_poll'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return app(input).should.be.rejectedWith(/'bar' of undefined/);
+    });
+
     it('KEY_pre_poll, _.template(bundle.request.url)', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
