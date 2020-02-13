@@ -19,6 +19,10 @@ if [ -z "$PKG_NAME" ] || [ -z "$PKG_VERSION" ]; then
     exit 1
 fi
 
+echo "TRAVIS_TAG: $TRAVIS_TAG"
+echo "PKG_NAME: $PKG_NAME"
+echo "PKG_VERSION: $PKG_VERSION"
+
 NPM_REGISTRY="https://registry.npmjs.org"
 
 # Add auth token to .npmrc
