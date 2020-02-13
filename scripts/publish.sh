@@ -31,7 +31,8 @@ NPM_REGISTRY_NO_PROTO=`echo $NPM_REGISTRY | sed -E 's/^https?://'`
 echo "$NPM_REGISTRY_NO_PROTO/:_authToken=\"$NPM_TOKEN\"" > $NPMRC_PATH
 
 # cd to the package and publish it!
-PKG_PATH=`yarn workspaces info -s | jq -r ".[\"$PKG_NAME\"].location"`
+PKG_PATH=`yarn workspaces --json info | jq -r '.data'  | jq -r ".[\"$PKG_NAME\"].location"`
+echo "PKG_PATH: $PKG_PATH"
 pushd $PKG_PATH > /dev/null
 npm publish --registry $NPM_REGISTRY
 popd > /dev/null
