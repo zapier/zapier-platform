@@ -49,7 +49,7 @@ if [[ "$PKG_NAME" == "zapier-platform-legacy-scripting-runner" ]]; then
     LEGACY_VERSION=$(cat $PKG_PATH/package.json | jq -r .version)
 fi
 
-if [[ "$CORE_VERSION" != "" && "$LEGACY_VERSION" != "" ]]; then
+if [[ "$CORE_VERSION" != "" || "$LEGACY_VERSION" != "" ]]; then
     echo "Let's wait for a second for the packages to be available on npm..."
     sleep 10
 
