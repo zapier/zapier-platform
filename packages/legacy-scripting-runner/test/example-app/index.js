@@ -147,6 +147,11 @@ const legacyScriptingSource = `
         contacts[0].trimmed = $.trim(' hello world  ');
         contacts[0].type = $.type(contacts);
 
+        var base = 1000;
+        $.each(contacts, function(index) {
+          this.anotherId = base + index;
+        });
+
         return contacts;
       },
 
