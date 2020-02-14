@@ -53,4 +53,8 @@ $.type = obj => {
   return typeof obj;
 };
 
+$.each = (arr, func) => {
+  arr.forEach((elem, i) => func.bind(elem)(i));
+};
+
 module.exports = $;

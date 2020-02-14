@@ -728,6 +728,10 @@ describe('Integration Test', () => {
         firstContact.isPlainObject.should.be.false();
         should.equal(firstContact.trimmed, 'hello world');
         should.equal(firstContact.type, 'array');
+
+        const secondContact = output.results[1];
+        should.equal(firstContact.anotherId, 1000);
+        should.equal(secondContact.anotherId, 1001);
       });
     });
 
