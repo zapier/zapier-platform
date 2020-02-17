@@ -43,7 +43,7 @@ const isValidDeployKey = k =>
 class LoginCommand extends BaseCommand {
   promptForDeployKey() {
     this.log(
-      `To generate a deploy key, go to ${DEPLOY_KEY_DASH_URL}, create/copy a key, and then paste the result below.`
+      `To generate a deploy key, go to ${DEPLOY_KEY_DASH_URL} and create/copy a key, then paste the result below.`
     );
     return this.prompt('Paste your Deploy Key here:', {
       validate: isValidDeployKey
