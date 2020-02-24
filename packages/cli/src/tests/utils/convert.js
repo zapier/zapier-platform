@@ -6,7 +6,7 @@ const path = require('path');
 const { cloneDeep } = require('lodash');
 const should = require('should');
 
-const { convertLegacyApp, convertVisualApp } = require('../../utils/convert');
+const { convertApp } = require('../../utils/convert');
 
 const legacyAppDefinition = {
   beforeRequest: [
@@ -286,19 +286,21 @@ const setupTempWorkingDir = () => {
 };
 
 describe('convert', () => {
-  let tempAppDir;
+  let tempAppDir, readTempFile;
 
   beforeEach(() => {
     tempAppDir = setupTempWorkingDir();
+    readTempFile = fpath =>
+      fs.readFileSync(path.join(tempAppDir, fpath), 'utf-8');
   });
 
   afterEach(() => {
     fs.removeSync(tempAppDir);
   });
 
-  describe('legacy apps', () => {
+  describe('legacy web builder apps', () => {
     it('should create separate files', async () => {
-      await convertLegacyApp(legacyApp, legacyAppDefinition, tempAppDir);
+      await convertApp(legacyApp, legacyAppDefinition, tempAppDir);
       [
         '.zapierapprc',
         '.gitignore',
@@ -314,11 +316,9 @@ describe('convert', () => {
     });
   });
 
-  describe('visual apps apps', () => {
+  describe('visual builder apps', () => {
     it('should create separate files', async () => {
-      await convertVisualApp(visualApp, visualAppDefinition, tempAppDir);
-      const readTempFile = async fpath =>
-        fs.readFile(path.join(tempAppDir, fpath), 'utf-8');
+      await convertApp(visualApp, visualAppDefinition, tempAppDir);
       [
         '.zapierapprc',
         '.gitignore',
@@ -355,15 +355,15 @@ describe('convert', () => {
       );
       should(pkg.version).eql('1.0.2');
 
-      const rcFile = JSON.parse(await readTempFile('.zapierapprc'));
+      const rcFile = JSON.parse(readTempFile('.zapierapprc'));
       should(rcFile.id).eql(visualApp.id);
       should(rcFile.includeInBuild).be.undefined();
 
-      const envFile = await readTempFile('.env');
+      const envFile = readTempFile('.env');
       should(envFile.includes('ACCESS_TOKEN')).be.true();
       should(envFile.includes('REFRESH_TOKEN')).be.true();
 
-      const idxFile = await readTempFile('index.js');
+      const idxFile = readTempFile('index.js');
 
       should(idxFile.includes("require('./package.json').version")).be.true();
       should(
@@ -376,7 +376,7 @@ describe('convert', () => {
       should(idx.platformVersion).eql(visualAppDefinition.platformVersion);
 
       // dynamic fields
-      const createFile = await readTempFile('creates/create_project.js');
+      const createFile = readTempFile('creates/create_project.js');
       should(createFile.includes('source:')).be.false();
       should(createFile.includes('getInputFields = ')).be.true();
       should(createFile.includes('getInputFields0')).be.false();
@@ -388,7 +388,23 @@ describe('convert', () => {
       const appDefinition = cloneDeep(visualAppDefinition);
       appDefinition.triggers.codemode.operation.perform.source +=
         '\n// a comment';
-      await convertVisualApp(visualApp, appDefinition, tempAppDir);
+      await convertApp(visualApp, appDefinition, tempAppDir);
+    });
+
+    it('should include legacy stuff if it was from web builder', async () => {
+      const appDefinition = cloneDeep(visualAppDefinition);
+      appDefinition.legacy = {}; // 'legacy' property makes it, well, "legacy"
+
+      await convertApp(visualApp, appDefinition, tempAppDir);
+
+      const rcFile = JSON.parse(readTempFile('.zapierapprc'));
+      const packageJson = JSON.parse(readTempFile('package.json'));
+
+      should(rcFile.id).equal(visualApp.id);
+      should(rcFile.includeInBuild).deepEqual(['scripting.js']);
+      should.exist(
+        packageJson.dependencies['zapier-platform-legacy-scripting-runner']
+      );
     });
   });
 });

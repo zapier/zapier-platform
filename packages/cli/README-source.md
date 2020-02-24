@@ -1720,7 +1720,6 @@ This section is only relevant if you're editing the `zapier-platform-cli` packag
 - `npm run watch` for automatically building as you work
 - `npm test` for running tests (also runs `npm run build`)
 - `npm link` (while in this project's directory) and then use `zapier` command elsewhere
-- `npm run test-convert` for running integration tests for the `zapier convert` command
 - `npm run docs` for updating docs
 - `npm run gen-completions` for updating the auto complete scripts
 
