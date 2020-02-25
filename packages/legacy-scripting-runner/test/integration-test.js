@@ -1536,6 +1536,42 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_write, bundle.action_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_pre_write_unflatten',
+        'movie_pre_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'The Shape of Water'
+      };
+      input.bundle.inputDataRaw = {
+        title: '{{123__title}}'
+      };
+      return app(input).then(output => {
+        const echoed = output.results.json;
+
+        // Doesn't have 'title' because it's in fieldsExcludedFromBody
+        should.deepEqual(echoed.action_fields, {});
+        should.deepEqual(echoed.action_fields_full, {
+          title: 'The Shape of Water'
+        });
+        should.deepEqual(echoed.action_fields_raw, {
+          title: '{{123__title}}'
+        });
+        should.deepEqual(echoed.orig_data, {});
+      });
+    });
+
     it('KEY_pre_write, default headers', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
