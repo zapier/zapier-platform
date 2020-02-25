@@ -8,6 +8,7 @@ const {
   PACKAGE_VERSION,
   PLATFORM_PACKAGE,
   LAMBDA_VERSION,
+  LEGACY_RUNNER_PACKAGE,
   IS_TESTING
 } = require('../constants');
 const { copyFile, ensureDir, readFile, writeFile } = require('./files');
@@ -120,9 +121,8 @@ const renderPackageJson = async (appInfo, appDefinition) => {
     [PLATFORM_PACKAGE]: appDefinition.platformVersion
   };
   if (appDefinition.legacy) {
-    const RUNNER_PACKAGE = 'zapier-platform-legacy-scripting-runner';
-    const runnerVersion = await getPackageLatestVersion(RUNNER_PACKAGE);
-    dependencies[RUNNER_PACKAGE] = runnerVersion;
+    const runnerVersion = await getPackageLatestVersion(LEGACY_RUNNER_PACKAGE);
+    dependencies[LEGACY_RUNNER_PACKAGE] = runnerVersion;
   }
 
   const zapierMeta = {
