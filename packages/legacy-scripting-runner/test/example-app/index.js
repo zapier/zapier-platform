@@ -427,6 +427,19 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_write_action_fields: function(bundle) {
+        // Make sure bundle.action_fields is filtered, bundle.action_fields_full
+        // isn't, and bundle.action_fields_raw still got curlies
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.data = z.JSON.stringify({
+          action_fields: bundle.action_fields,
+          action_fields_full: bundle.action_fields_full,
+          action_fields_raw: bundle.action_fields_raw,
+          orig_data: z.JSON.parse(bundle.request.data)
+        });
+        return bundle.request;
+      },
+
       movie_post_write_sloppy_mode: function(bundle) {
         // Would throw a ReferenceError in strict mode
         data = z.JSON.parse(bundle.response.content);

@@ -1061,6 +1061,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       bundle._legacyUrl = url;
     }
 
+    bundle._fieldsExcludedFromBody = fieldsExcludedFromBody;
+
     return runEventCombo(
       bundle,
       key,

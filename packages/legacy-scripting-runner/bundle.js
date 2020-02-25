@@ -228,8 +228,16 @@ const bundleConverter = async (bundle, event, z) => {
     }
   }
 
+  // From inputData, remove keys that are in fieldsExcludedFromBody
+  const excludedFieldKeys = bundle._fieldsExcludedFromBody || [];
+  const filteredInputData = Object.keys(bundle.inputData || {})
+    .filter(key => !excludedFieldKeys.includes(key))
+    .reduce((fields, key) => {
+      return { [key]: bundle.inputData[key], ...fields };
+    }, {});
+
   // Attach to bundle so we can reuse it
-  bundle._unflatInputData = unflattenObject(_.clone(bundle.inputData || {}));
+  bundle._unflatInputData = unflattenObject(filteredInputData || {});
 
   const meta = convertBundleMeta(bundle.meta);
   const zap = _.get(bundle, 'meta.zap') || { id: 0 };
