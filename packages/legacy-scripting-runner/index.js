@@ -1034,6 +1034,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const legacyProps = _.get(app, `legacy.creates.${key}.operation`) || {};
     const needsFlattenedData = _.get(app, 'legacy.needsFlattenedData');
     const url = legacyProps.url;
+
+    // This represents the "Send to Action Endpoint URL in JSON body" checkbox.
+    // If unchecked, the action field will be in this array.
     const fieldsExcludedFromBody = legacyProps.fieldsExcludedFromBody || [];
 
     const inputFields =
