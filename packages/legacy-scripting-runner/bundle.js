@@ -237,7 +237,7 @@ const bundleConverter = async (bundle, event, z) => {
     }, {});
 
   // Attach to bundle so we can reuse it
-  bundle._unflatInputData = unflattenObject(filteredInputData || {});
+  bundle._unflatInputData = unflattenObject(filteredInputData);
 
   const meta = convertBundleMeta(bundle.meta);
   const zap = _.get(bundle, 'meta.zap') || { id: 0 };
