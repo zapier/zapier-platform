@@ -12,6 +12,7 @@ const AUTH_LOCATION =
   process.env.ZAPIER_AUTH_LOCATION || path.resolve(os.homedir(), '.zapierrc');
 const CURRENT_APP_FILE = process.env.ZAPIER_CURRENT_APP_FILE || '.zapierapprc';
 const PLATFORM_PACKAGE = 'zapier-platform-core';
+const LEGACY_RUNNER_PACKAGE = 'zapier-platform-legacy-scripting-runner';
 const BUILD_DIR = 'build';
 const DEFINITION_PATH = `${BUILD_DIR}/definition.json`;
 const BUILD_PATH = `${BUILD_DIR}/build.zip`;
@@ -69,6 +70,7 @@ module.exports = {
   ENDPOINT,
   IS_TESTING,
   LAMBDA_VERSION,
+  LEGACY_RUNNER_PACKAGE,
   PACKAGE_NAME,
   PACKAGE_VERSION,
   PLATFORM_PACKAGE,
