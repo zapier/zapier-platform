@@ -148,8 +148,10 @@ const legacyScriptingSource = `
         contacts[0].type = $.type(contacts);
 
         var base = 1000;
-        $.each(contacts, function(index) {
-          this.anotherId = base + index;
+        $.each(contacts, function(index, item) {
+          // 'item' and 'this' should be the same object
+          this.anotherId = base;
+          item.anotherId += index;
         });
 
         return contacts;

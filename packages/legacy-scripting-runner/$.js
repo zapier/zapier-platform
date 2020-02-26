@@ -54,7 +54,7 @@ $.type = obj => {
 };
 
 $.each = (arr, func) => {
-  arr.forEach((elem, i) => func.bind(elem)(i));
+  arr.forEach((elem, i) => func.bind(elem)(i, elem));
 };
 
 module.exports = $;
