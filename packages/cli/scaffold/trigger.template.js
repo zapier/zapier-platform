@@ -6,8 +6,8 @@ const perform = async (z, bundle) => {
       tag: bundle.inputData.tagName
     }
   });
-  response.throwForStatus()
-  return z.JSON.parse(response.content)
+  response.throwForStatus();
+  return z.JSON.parse(response.content);
 };
 
 module.exports = {

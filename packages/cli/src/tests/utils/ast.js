@@ -101,6 +101,7 @@ describe('ast', () => {
       should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
         firstIndex + 1
       );
+      should(codeByLine[firstIndex + 2]).eql('}');
     });
 
     it('should work when there\'s not an "App", but there _is_ a "triggers" property', () => {
@@ -117,14 +118,20 @@ describe('ast', () => {
       should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
         firstIndex + 2
       );
+      should(codeByLine[firstIndex + 3]).eql('},');
     });
 
-    it('should throw when there\'s not an "App" and there\'s no existing "triggers" property', () => {
+    it('should add a property when it has to find the variable', () => {
       const code = sampleIndex.split('App').join('Blah'); // still valid, but wrong variable name now
 
-      (() => addKeyToPropertyOnApp(code, 'searches', 'getThing')).should.throw(
-        /Unable to add new property/
+      const codeByLine = addKeyToPropertyOnApp(code, 'searches', 'getThing')
+        .split('\n')
+        .map(x => x.trim());
+      const firstIndex = codeByLine.indexOf('searches: {');
+      should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
+        firstIndex + 1
       );
+      should(codeByLine[firstIndex + 2]).eql('}');
     });
   });
 });

@@ -2,6 +2,21 @@
 
 const j = require('jscodeshift');
 
+// simple helper functions for searching
+// can't use j.identifier because it has extra properties and we have to have no extras to find nodes
+const typeHelpers = {
+  identifier: name => ({ type: 'Identifier', name }),
+  callExpression: name => ({
+    type: 'CallExpression',
+    callee: { name }
+  }),
+  memberExpression: (object, property) => ({
+    type: 'MemberExpression',
+    object,
+    property
+  })
+};
+
 const createRootRequire = (codeStr, varName, path) => {
   if (codeStr.includes(`${varName} = `)) {
     // duplicate identifier, no need to re-add
@@ -14,9 +29,7 @@ const createRootRequire = (codeStr, varName, path) => {
     // searching for VariableDeclaration, like `const x = require('y')`
     // skips over `require` statements not saved to variables, since that's (probably) not a common case
     .find(j.VariableDeclaration, {
-      declarations: [
-        { init: { type: 'CallExpression', callee: { name: 'require' } } }
-      ]
+      declarations: [{ init: typeHelpers.callExpression('require') }]
     })
     // filters for top-level require statements by filtering only for statements whose parents are type Program, the root
     .filter(path => j.Program.check(path.parent.value));
@@ -46,28 +59,73 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
   // to play with this, use https://astexplorer.net/#/gist/cb4986b3f1c6eb975339608109a48e7d/0fbf2fabbcf27d0b6ebd8910f979bd5d97dd9404
 
   const root = j(codeStr);
-  const subProp = root.find(j.Property, {
-    key: { type: 'Identifier', name: property }
-  });
+  // what we'll hopefully insert
   const newKeyProperty = j.property.from({
     kind: 'init',
     key: j.memberExpression(j.identifier(varName), j.identifier('key')),
     value: j.identifier(varName),
     computed: true
   });
+
+  const subProp = root.find(j.Property, {
+    key: typeHelpers.identifier(property)
+  });
+
   if (subProp.length) {
-    // App has (for example) App.triggers
-    subProp.get(0).node.value.properties.push(
+    // this is the easiest case, where we find whatever object has a "triggers" property
+    const value = subProp.get().node.value;
+    if (value.type !== 'ObjectExpression') {
+      throw new Error(
+        `Tried to edit the ${property} key, but the value wasn't an object`
+      );
+    }
+    subProp.get().node.value.properties.push(
       // creates a new property on that sub property
       // TODO: detect duplicates?
       newKeyProperty
     );
   } else {
-    const maybeApp = root.find(j.VariableDeclaration, {
-      declarations: [{ id: { type: 'Identifier', name: 'App' } }]
+    // if nothing has "triggers", then we need to find whatever is being exported
+    // that's either a variable or a plain object
+    const exportAssignment = root.find(j.AssignmentExpression, {
+      left: typeHelpers.memberExpression(
+        typeHelpers.identifier('module'),
+        typeHelpers.identifier('exports')
+      )
     });
-    if (maybeApp.length) {
-      maybeApp
+
+    if (!exportAssignment.length) {
+      throw new Error(
+        'Nothing is exported from this file; unable to find an object modify'
+      );
+    }
+
+    // there's either an object or a variable exported
+    const exported = exportAssignment.get().node.right;
+
+    if (exported.type === 'ObjectExpression') {
+      // we know this doesn't have a "triggers" property or we would have found it earlier. add away!
+      exported.properties.push(
+        j.property(
+          'init',
+          j.identifier(property),
+          j.objectExpression([newKeyProperty])
+        )
+      );
+    } else if (exported.type === 'Identifier') {
+      // variable, need to find that
+      const variableDeclaration = root.find(j.VariableDeclaration, {
+        declarations: [{ id: typeHelpers.identifier(exported.name) }]
+      });
+      if (
+        !variableDeclaration.length ||
+        // if the variable is just a different variable, we can't modify safely
+        variableDeclaration.get().node.declarations[0].init.type !==
+          'ObjectExpression'
+      ) {
+        throw new Error('Unable to find definition for exported variable');
+      }
+      variableDeclaration
         .get()
         .node.declarations[0].init.properties.push(
           j.property(
@@ -77,14 +135,8 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
           )
         );
     } else {
-      throw new Error(
-        `Unable to add new property "${property}" to exported app. Can't find variable declaration for "App". To fix, either ensure there is a variable called "App" in your root file or add \`${property}: {},\` to your existing app. Then, re-run this command.\``
-      );
+      throw new Error('Unknown export type');
     }
-
-    // create that property on App
-    // find const App =
-    // find the thing that's module.export = ?
   }
   return root.toSource();
 };

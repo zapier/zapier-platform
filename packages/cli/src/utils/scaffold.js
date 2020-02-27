@@ -68,6 +68,7 @@ const updateEntryFile = async (
   newActionKey
 ) => {
   let codeStr = (await readFile(entryFilePath)).toString();
+  // const originalCodeStr = codeStr; // untouched copy in case we need to bail
   const entryName = splitFileFromPath(entryFilePath)[1];
   const relativePath = path.relative(path.dirname(entryFilePath), newFilePath);
 
@@ -78,6 +79,8 @@ const updateEntryFile = async (
 
     // validate the edit happened correctly
     // can't think of why it wouldn't, but it doesn't hurt to double check
+    // ensure a clean access
+    delete require.cache[require.resolve(entryFilePath)];
     const rewrittenIndex = require(entryFilePath);
     if (!_.get(rewrittenIndex, [plural(actionType), newActionKey])) {
       throw new Error();
@@ -95,7 +98,7 @@ const updateEntryFile = async (
         ` * \`const ${varName} = require('./${newFilePath}');\` at the top-level`,
         ` * \`[${varName}.key]: ${varName}\` in the "${plural(
           actionType
-        )}" object in your root integration definition`
+        )}" object in your exported integration definition`
       ].join('\n')
     );
   }
