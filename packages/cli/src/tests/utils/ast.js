@@ -1,35 +1,28 @@
 const should = require('should');
 const { createRootRequire, addKeyToPropertyOnApp } = require('../../utils/ast');
 
-const sampleIndex = `
-const CryptoCreate = require('./creates/crypto')
-const BlahTrigger = require('./triggers/blah')
-// comment!
-const App = {
-  version: require('./package.json').version,
-  platformVersion: require('zapier-platform-core').version,
-  resources: {
-  	test: () => {
-      // red herring require
-    	const fs = require('fs')
-    }
-  },
-  triggers: {
-    [BlahTrigger.key]: BlahTrigger
-  },
-  creates: {
-    [CryptoCreate.key]: CryptoCreate
-  }
-}
-module.exports = App
-`.trim();
+const {
+  sampleExportVarIndex,
+  sampleExportObjectIndex,
+  sampleLegacyAppIndex
+} = require('./astFixtures');
+
+/**
+ * counts the numbers of times `subStr` occurs in `str`
+ */
+const countOcurrances = (str, subStr) =>
+  (str.match(new RegExp(subStr, 'g')) || []).length;
 
 describe('ast', () => {
   describe('adding require statements', () => {
     it('should add a new require statement at root', () => {
       // new nodes use a generic pretty printer, hence the ; and "
       // it should be inserted after other top-level imports
-      const result = createRootRequire(sampleIndex, 'getThing', './a/b/c');
+      const result = createRootRequire(
+        sampleExportVarIndex,
+        'getThing',
+        './a/b/c'
+      );
       should(
         result.includes(
           'const BlahTrigger = require(\'./triggers/blah\')\nconst getThing = require("./a/b/c");'
@@ -39,7 +32,7 @@ describe('ast', () => {
 
     it('should add a new require even when there are none to find', () => {
       const result = createRootRequire(
-        sampleIndex
+        sampleExportVarIndex
           // drop existing require statements
           .split('\n')
           .slice(2)
@@ -53,85 +46,110 @@ describe('ast', () => {
     });
 
     it('should skip duplicates', () => {
-      const result = createRootRequire(sampleIndex, 'CryptoCreate', './a/b/c');
+      const result = createRootRequire(
+        sampleExportVarIndex,
+        'CryptoCreate',
+        './a/b/c'
+      );
       should(
         result.includes("const CryptoCreate = require('./a/b/c')")
       ).be.false();
     });
 
     it('should not skip sneaky duplicates', () => {
-      const result = createRootRequire(sampleIndex, 'Crypto', './a/b/c');
+      const result = createRootRequire(
+        sampleExportVarIndex,
+        'Crypto',
+        './a/b/c'
+      );
       should(result.includes('const Crypto = require("./a/b/c");')).be.true();
     });
   });
 
+  // these tests would be improved if we could `eval` the object and check that App.triggers.thing` exists, but i'm not sure we can easily do that with all the requiring that goes on.
+  // the only risk we run is that it puts the new object in the wrong spot, but that feels unlikely. we'll also get some coverage in the smoke tests
   describe('adding object properties', () => {
-    it('should add a property to an existing action type', () => {
-      const codeByLine = addKeyToPropertyOnApp(
-        sampleIndex,
-        'triggers',
-        'getThing'
-      )
-        .split('\n')
-        .map(x => x.trim());
+    Object.entries({
+      variable: sampleExportVarIndex,
+      object: sampleExportObjectIndex
+    }).forEach(function([exportType, codeStr]) {
+      describe(`${exportType} export`, () => {
+        it('should add a property to an existing action type', () => {
+          const result = addKeyToPropertyOnApp(codeStr, 'triggers', 'getThing');
+          should(countOcurrances(result, 'triggers:')).eql(1);
+          should(countOcurrances(result, 'searches:')).eql(0);
 
-      const firstIndex = codeByLine.indexOf('triggers: {');
-      // assertions about what comes in the trigger property
-      should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
-        firstIndex + 1
-      );
-      should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
-        firstIndex + 2
-      );
+          const codeByLine = result.split('\n').map(x => x.trim());
+          const firstIndex = codeByLine.indexOf('triggers: {');
+          // assertions about what comes in the trigger property
+          should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
+            firstIndex + 1
+          );
+          should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
+            firstIndex + 2
+          );
+        });
 
-      should(codeByLine.includes('searches: {')).be.false();
+        it('should add a new property if action type is missing', () => {
+          const result = addKeyToPropertyOnApp(
+            codeStr,
+            'searches',
+            'findThing'
+          );
+          should(countOcurrances(result, 'triggers:')).eql(1);
+          should(countOcurrances(result, 'searches:')).eql(1);
+
+          const codeByLine = result.split('\n').map(x => x.trim());
+          const firstIndex = codeByLine.indexOf('searches: {');
+          // assertions about what comes in the trigger property
+          should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
+            firstIndex + 1
+          );
+          should(codeByLine[firstIndex + 2]).eql('}');
+        });
+      });
     });
 
-    it('should add a new property if missing', () => {
-      const codeByLine = addKeyToPropertyOnApp(
-        sampleIndex,
-        'searches',
-        'findThing'
-      )
-        .split('\n')
-        .map(x => x.trim());
+    describe.skip('legacy apps', () => {
+      it('should add a property to an existing action type', () => {
+        const result = addKeyToPropertyOnApp(
+          sampleLegacyAppIndex,
+          'triggers',
+          'getThing'
+        );
+        should(countOcurrances(result, 'triggers:')).eql(1);
+        should(countOcurrances(result, 'searches:')).eql(0);
 
-      const firstIndex = codeByLine.indexOf('searches: {');
-      // assertions about what comes in the trigger property
-      should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
-        firstIndex + 1
-      );
-      should(codeByLine[firstIndex + 2]).eql('}');
-    });
+        const codeByLine = result.split('\n').map(x => x.trim());
+        const firstIndex = codeByLine.indexOf('triggers: {');
+        // assertions about what comes in the trigger property
+        should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
+          firstIndex + 1
+        );
+        should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
+          firstIndex + 2
+        );
+      });
 
-    it('should work when there\'s not an "App", but there _is_ a "triggers" property', () => {
-      const code = sampleIndex.split('App').join('Blah'); // still valid, but wrong variable name now
+      it('should add a new property if action type is missing', () => {
+        const result = addKeyToPropertyOnApp(
+          sampleLegacyAppIndex,
+          'searches',
+          'findThing'
+        );
+        should(countOcurrances(result, 'triggers:')).eql(1);
+        should(countOcurrances(result, 'searches:')).eql(1);
 
-      const codeByLine = addKeyToPropertyOnApp(code, 'triggers', 'getThing')
-        .split('\n')
-        .map(x => x.trim());
-      const firstIndex = codeByLine.indexOf('triggers: {');
-      // assertions about what comes in the trigger property
-      should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
-        firstIndex + 1
-      );
-      should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
-        firstIndex + 2
-      );
-      should(codeByLine[firstIndex + 3]).eql('},');
-    });
-
-    it('should add a property when it has to find the variable', () => {
-      const code = sampleIndex.split('App').join('Blah'); // still valid, but wrong variable name now
-
-      const codeByLine = addKeyToPropertyOnApp(code, 'searches', 'getThing')
-        .split('\n')
-        .map(x => x.trim());
-      const firstIndex = codeByLine.indexOf('searches: {');
-      should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
-        firstIndex + 1
-      );
-      should(codeByLine[firstIndex + 2]).eql('}');
+        const codeByLine = result.split('\n').map(x => x.trim());
+        const firstIndex = codeByLine.indexOf('searches: {');
+        // assertions about what comes in the trigger property
+        should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
+          firstIndex + 1
+        );
+        should(codeByLine[firstIndex + 2]).eql('}');
+      });
     });
   });
+
+  describe('errors', () => {});
 });
