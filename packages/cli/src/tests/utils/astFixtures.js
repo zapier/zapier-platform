@@ -97,24 +97,17 @@ module.exports = {
     triggers: {
       business: {
         operation: { url: 'https://graph.facebook.com/' }
-      },
-      event_sets: {
-        operation: {
-          url:
-            'https://graph.facebook.com/'
-        }
       }
     }
   },
   platformVersion: require('zapier-platform-core').version,
   searches: {},
   triggers: {
-    [businessTrigger.key]: businessTrigger,
-    [eventSetsTrigger.key]: eventSetsTrigger
+    [businessTrigger.key]: businessTrigger
   },
   version: require('./package.json').version
 };
-`;
+`.trim();
 
 module.exports = {
   sampleExportVarIndex,

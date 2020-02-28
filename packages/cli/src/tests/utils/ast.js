@@ -110,38 +110,62 @@ describe('ast', () => {
       });
     });
 
-    describe.skip('legacy apps', () => {
+    describe('legacy apps', () => {
       it('should add a property to an existing action type', () => {
         const result = addKeyToPropertyOnApp(
           sampleLegacyAppIndex,
           'triggers',
           'getThing'
         );
-        should(countOcurrances(result, 'triggers:')).eql(1);
-        should(countOcurrances(result, 'searches:')).eql(0);
+        should(countOcurrances(result, 'triggers:')).eql(2);
+        should(countOcurrances(result, 'searches:')).eql(2);
 
         const codeByLine = result.split('\n').map(x => x.trim());
-        const firstIndex = codeByLine.indexOf('triggers: {');
-        // assertions about what comes in the trigger property
-        should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
-          firstIndex + 1
+
+        // find the second occurance, the one that's not in the "legacy" property
+        const operativeIndex = codeByLine.indexOf(
+          'triggers: {',
+          codeByLine.indexOf('triggers: {') + 1
         );
+
+        should(
+          codeByLine.indexOf('[businessTrigger.key]: businessTrigger,')
+        ).eql(operativeIndex + 1);
         should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
-          firstIndex + 2
+          operativeIndex + 2
         );
+        should(codeByLine[operativeIndex + 3]).eql('},');
       });
 
-      it('should add a new property if action type is missing', () => {
+      it('should add a property to an existing empty action type', () => {
         const result = addKeyToPropertyOnApp(
           sampleLegacyAppIndex,
           'searches',
           'findThing'
         );
-        should(countOcurrances(result, 'triggers:')).eql(1);
-        should(countOcurrances(result, 'searches:')).eql(1);
+        should(countOcurrances(result, 'searches:')).eql(2);
 
         const codeByLine = result.split('\n').map(x => x.trim());
-        const firstIndex = codeByLine.indexOf('searches: {');
+        // find the second occurance, the one that's not in the "legacy" property
+        const operativeIndex = codeByLine.indexOf('searches: {');
+        should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
+          operativeIndex + 1
+        );
+        should(codeByLine[operativeIndex + 2]).eql('},');
+      });
+
+      it('should add a new property if action type is missing', () => {
+        const result = addKeyToPropertyOnApp(
+          sampleLegacyAppIndex,
+          'resources',
+          'findThing'
+        );
+        should(countOcurrances(result, 'triggers:')).eql(2);
+        should(countOcurrances(result, 'searches:')).eql(2);
+        should(countOcurrances(result, 'resources:')).eql(1);
+
+        const codeByLine = result.split('\n').map(x => x.trim());
+        const firstIndex = codeByLine.indexOf('resources: {');
         // assertions about what comes in the trigger property
         should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
           firstIndex + 1

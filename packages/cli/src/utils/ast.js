@@ -54,6 +54,7 @@ const createRootRequire = (codeStr, varName, path) => {
 
     body.unshift(newRequireStatement);
 
+    // retain leading comments
     body[0].comments = body[1].comments;
     delete body[1].comments;
   }
@@ -65,41 +66,14 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
 
   const root = j(codeStr);
   // what we'll hopefully insert
-  const newKeyProperty = j.property.from({
+  const newProperty = j.property.from({
     kind: 'init',
     key: j.memberExpression(j.identifier(varName), j.identifier('key')),
     value: j.identifier(varName),
     computed: true
   });
 
-  // const subProp = root.find(j.Property, {
-  //   key: typeHelpers.identifier(property)
-  // });
-
-  // if (subProp.length) {
-  //   // this is the easiest case, where we find whatever object has a "triggers" property
-  //   // there's a slight wrinkle that converted legacy apps have a `legacy.triggers` property, so we have to make sure the parent isn't legacy
-
-  //   if (subProp.length > 1) {
-  //     // legacy app
-  //     // filter for parent property not being legacy
-  //     subProp == 3;
-  //   }
-
-  //   const value = subProp.get().node.value;
-  //   if (value.type !== 'ObjectExpression') {
-  //     throw new Error(
-  //       `Tried to edit the ${property} key, but the value wasn't an object`
-  //     );
-  //   }
-  //   subProp.get().node.value.properties.push(
-  //     // creates a new property on that sub property
-  //     // TODO: detect duplicates?
-  //     newKeyProperty
-  //   );
-  // } else {
-  // if nothing has "triggers", then we need to find whatever is being exported
-  // that's either a variable or a plain object
+  // we start by looking for what's on the right side of a `module.exports` call
   const exportAssignment = root.find(j.AssignmentExpression, {
     left: typeHelpers.memberExpression(
       typeHelpers.identifier('module'),
@@ -109,74 +83,56 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
 
   if (!exportAssignment.length) {
     throw new Error(
-      'Nothing is exported from this file; unable to find an object modify'
+      'Nothing is exported from this file; unable to find an object to modify'
     );
   }
 
-  // there's either an object or a variable exported
-  const exported = exportAssignment.get().node.right;
+  let objToModify = exportAssignment.get().node.right;
 
-  if (exported.type === 'ObjectExpression') {
-    // we know this doesn't have a "triggers" property or we would have found it earlier. add away!
-    // TODO: no longer true ^ !!
+  if (objToModify.type === 'Identifier') {
+    // variable, need to find that
+    const exportedVarDeclaration = root.find(j.VariableDeclaration, {
+      declarations: [{ id: typeHelpers.identifier(objToModify.name) }]
+    });
+    if (
+      !exportedVarDeclaration.length ||
+      // if the variable is just a different variable, we can't modify safely
+      exportedVarDeclaration.get().node.declarations[0].init.type !==
+        'ObjectExpression'
+    ) {
+      throw new Error('Unable to find object definition for exported variable');
+    }
+    objToModify = exportedVarDeclaration.get().node.declarations[0].init;
+  } else if (objToModify.type !== 'ObjectExpression') {
+    // i'm not sure what else could be here, but it doesn't hurt to cover our bases
+    throw new Error('Unknown export type');
+  }
 
-    // NOTE
+  // now we have an object to modify
 
-    // when there are 2 `triggers:`, the grandparent of one is the declaration we found before
-    // if it's a variable, anyway. if it's an object, it's probably the module.exports call
-    // l.isEqual(variableDeclaration.get().node.declarations[0], existingProp.paths()[1].parent.parent.node)
-
-    exported.properties.push(
+  // check if this object already has the property at the top level
+  const existingProp = objToModify.properties.find(
+    props => props.key.name === property
+  );
+  if (existingProp) {
+    // `triggers: myTriggers` means we shouldn't bother
+    const value = existingProp.value;
+    if (value.type !== 'ObjectExpression') {
+      throw new Error(
+        `Tried to edit the ${property} key, but the value wasn't an object`
+      );
+    }
+    value.properties.push(newProperty);
+  } else {
+    objToModify.properties.push(
       j.property(
         'init',
         j.identifier(property),
-        j.objectExpression([newKeyProperty])
+        j.objectExpression([newProperty])
       )
     );
-  } else if (exported.type === 'Identifier') {
-    // variable, need to find that
-    const variableDeclaration = root.find(j.VariableDeclaration, {
-      declarations: [{ id: typeHelpers.identifier(exported.name) }]
-    });
-    if (
-      !variableDeclaration.length ||
-      // if the variable is just a different variable, we can't modify safely
-      variableDeclaration.get().node.declarations[0].init.type !==
-        'ObjectExpression'
-    ) {
-      throw new Error('Unable to find definition for exported variable');
-    }
-    // check if this variable already has the property
-    const existingProp = variableDeclaration.find(j.Property, {
-      key: typeHelpers.identifier(property)
-    });
-    if (existingProp.length) {
-      const value = existingProp.get().node.value;
-      if (value.type !== 'ObjectExpression') {
-        throw new Error(
-          `Tried to edit the ${property} key, but the value wasn't an object`
-        );
-      }
-      existingProp.get().node.value.properties.push(
-        // creates a new property on that sub property
-        // TODO: detect duplicates?
-        newKeyProperty
-      );
-    } else {
-      variableDeclaration
-        .get()
-        .node.declarations[0].init.properties.push(
-          j.property(
-            'init',
-            j.identifier(property),
-            j.objectExpression([newKeyProperty])
-          )
-        );
-    }
-  } else {
-    throw new Error('Unknown export type');
   }
-  // }
+
   return root.toSource();
 };
 
