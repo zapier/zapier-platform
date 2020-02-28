@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const path = require('path');
 
 const { flags } = require('@oclif/command');
@@ -25,20 +24,13 @@ const getFullActionFilePath = (directory, noun) =>
 
 const getFullActionFilePathWithExtension = (directory, noun) =>
   `${getFullActionFilePath(directory, noun)}.js`;
-// useful for making sure we don't conflict with other, similarly named things
-const variablePrefixes = {
-  trigger: 'get',
-  search: 'find',
-  create: 'create'
-};
-const getVariableName = (action, noun) =>
-  action === 'resource'
-    ? `${noun.toLowerCase()}Resource` // contactResource
-    : `${variablePrefixes[action]}${_.capitalize(noun)}`; // getContact
 
 class ScaffoldCommand extends BaseCommand {
   async perform() {
     const { actionType, noun } = this.args;
+
+    // able to be used for filepaths and stuff
+
     // TODO: interactive portion here?
     const {
       dest: newActionDir = getNewFileDirectory(actionType),
@@ -47,12 +39,14 @@ class ScaffoldCommand extends BaseCommand {
       force
     } = this.flags;
 
-    const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely "init") this will be false
+    const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely `init`) this will be false
     const templateContext = createTemplateContext(
       actionType,
       noun,
       shouldIncludeComments
     );
+
+    const safeNoun = templateContext.KEY;
 
     // * create 2 new files - the scaffold and the test
     this.log(`Adding a new ${actionType} to your project.\n`);
@@ -60,23 +54,26 @@ class ScaffoldCommand extends BaseCommand {
     // TODO: read from config file?
 
     this.startSpinner(
-      `Creating new file: ${getLocalFilePath(newActionDir, noun)}.js`
+      `Creating new file: ${getLocalFilePath(newActionDir, safeNoun)}.js`
     );
     await writeTemplateFile(
       actionType,
       templateContext,
-      getFullActionFilePathWithExtension(newActionDir, noun),
+      getFullActionFilePathWithExtension(newActionDir, safeNoun),
       preventOverwrite
     );
     this.stopSpinner();
 
     this.startSpinner(
-      `Creating new test file: ${getLocalFilePath(newTestActionDir, noun)}.js`
+      `Creating new test file: ${getLocalFilePath(
+        newTestActionDir,
+        safeNoun
+      )}.js`
     );
     await writeTemplateFile(
       'test',
       templateContext,
-      getFullActionFilePathWithExtension(newTestActionDir, noun),
+      getFullActionFilePathWithExtension(newTestActionDir, safeNoun),
       preventOverwrite
     );
     this.stopSpinner();
@@ -87,8 +84,8 @@ class ScaffoldCommand extends BaseCommand {
     const entryFilePath = path.join(process.cwd(), entry);
     await updateEntryFile(
       entryFilePath,
-      getVariableName(actionType, noun),
-      getFullActionFilePath(newActionDir, noun),
+      templateContext.VARIABLE,
+      getFullActionFilePath(newActionDir, safeNoun),
       actionType,
       templateContext.KEY
     );

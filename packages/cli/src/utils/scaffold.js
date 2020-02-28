@@ -12,14 +12,32 @@ const plural = type => (type === 'search' ? `${type}es` : `${type}s`);
 const getTemplatePath = actionType =>
   path.join(__dirname, '../..', `scaffold/${actionType}.template.js`);
 
+// useful for making sure we don't conflict with other, similarly named things
+const variablePrefixes = {
+  trigger: 'get',
+  search: 'find',
+  create: 'create'
+};
+
+const getVariableName = (action, noun) =>
+  action === 'resource'
+    ? [noun, 'resource'].join(' ')
+    : // `${noun.toLowerCase()}Resource` // contactResource
+      [variablePrefixes[action], noun];
+// `${variablePrefixes[action]}${_.capitalize(noun)}`; // getContact
+
 const createTemplateContext = (action, noun, includeComments) => {
   // if noun is "Cool Contact"
   return {
     ACTION: action, // trigger
     ACTION_PLURAL: plural(action), // triggers
 
+    VARIABLE: _.camelCase(getVariableName(action, noun)), // getContact, the variable that's imported
     KEY: snakeCase(noun), // "cool_contact", the action key
-    NOUN: _.capitalize(noun), // "Cool contact", the noun
+    NOUN: noun
+      .split(' ')
+      .map(s => _.capitalize(s))
+      .join(' '), // "Cool Contact", the noun
     LOWER_NOUN: noun.toLowerCase(), // "cool contact", for use in comments
     // resources need an extra line for tests to "just run"
     MAYBE_RESOURCE: action === 'resource' ? 'list.' : '',
@@ -78,7 +96,7 @@ const updateEntryFile = async (
     await writeFile(entryFilePath, codeStr);
 
     // validate the edit happened correctly
-    // can't think of why it wouldn't, but it doesn't hurt to double check
+    // can't think of why it wouldn't if we've gotten this far, but it doesn't hurt to double check
     // ensure a clean access
     delete require.cache[require.resolve(entryFilePath)];
     const rewrittenIndex = require(entryFilePath);
