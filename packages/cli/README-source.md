@@ -1731,4 +1731,4 @@ This section is only relevant if you're editing the `zapier-platform-cli` packag
 
 ## Get Help!
 
-You can get help by either emailing partners@zapier.com or by [joining our Slack team here](https://join.slack.com/t/zapier-platform/shared_invite/enQtNTg1MjM5NjMzNTI3LTUyYWJjM2E1NTQ3NjViMGY0MzQ1NWJiMDJmNjcyNTJjMWRlOTg4MTNjOWEwNDFlNGExODU5OTgzNWM3MzZlMjk).
+You can get help by either emailing partners@zapier.com or by [joining our Slack team here](https://join.slack.com/t/zapier-platform/shared_invite/enQtOTgyMjkzNDU1NjM5LWM1MGQ1YmY5ODgxNmM1NjIzZTk3NjNkMzFlZWExYzU2MDJjNTVmNDEzMWUzYjdlNmMzZGViMzE0YjhlOGIyZDA).
