@@ -53,8 +53,12 @@ class ZapierBaseCommand extends Command {
     ]);
   }
 
+  get _staticClassReference() {
+    return Object.getPrototypeOf(this).constructor;
+  }
+
   _parseFlags() {
-    const { flags, args } = this.parse(Object.getPrototypeOf(this).constructor);
+    const { flags, args } = this.parse(this._staticClassReference);
 
     this.flags = flags;
     this.args = args;
@@ -64,9 +68,12 @@ class ZapierBaseCommand extends Command {
     this.error(`subclass the "perform" method in the "${this.id}" command`);
   }
 
-  // ; put ina method so we can disable it easily in tests
+  // put ina method so we can disable it easily in tests
   throwForInvalidAppInstall() {
-    const { valid, reason } = isValidAppInstall(this.id);
+    if (this._staticClassReference.skipValidInstallCheck) {
+      return;
+    }
+    const { valid, reason } = isValidAppInstall();
     if (!valid) {
       this.error(reason);
     }
@@ -262,5 +269,7 @@ class ZapierBaseCommand extends Command {
     return recordAnalytics(this.id, true, Object.keys(this.args), this.flags);
   }
 }
+
+ZapierBaseCommand.skipValidInstallCheck = false;
 
 module.exports = ZapierBaseCommand;

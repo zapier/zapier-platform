@@ -9,8 +9,13 @@ const {
   plural,
   updateEntryFile,
   writeTemplateFile,
-  createTemplateContext
+  createTemplateContext,
+  verifyEntryFileUpdate
 } = require('../../utils/scaffold');
+const { splitFileFromPath } = require('../../utils/string');
+const { isValidAppInstall } = require('../../utils/misc');
+const { writeFile } = require('../../utils/files');
+const { ISSUES_URL } = require('../../constants');
 
 const getNewFileDirectory = (action, test = false) =>
   `${test ? 'test/' : ''}${plural(action)}`;
@@ -38,6 +43,16 @@ class ScaffoldCommand extends BaseCommand {
       entry = 'index.js',
       force
     } = this.flags;
+
+    // this is possible, just extra work that's out of scope
+    // const tsParser = j.withParser('ts')
+    // tsParser(codeStr)
+    // will have to change logic probably though
+    if (entry.endsWith('ts')) {
+      this.error(
+        `Typescript isn't supported for scaffolding yet. Instead, try copying the example code at https://github.com/zapier/zapier-platform/blob/b8224ec9855be91c66c924b731199a068b1e913a/example-apps/typescript/src/resources/recipe.ts`
+      );
+    }
 
     const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely `init`) this will be false
     const templateContext = createTemplateContext(
@@ -82,7 +97,8 @@ class ScaffoldCommand extends BaseCommand {
     this.startSpinner(`Rewriting your ${entry}`);
 
     const entryFilePath = path.join(process.cwd(), entry);
-    await updateEntryFile(
+
+    const originalContents = await updateEntryFile(
       entryFilePath,
       templateContext.VARIABLE,
       getFullActionFilePath(newActionDir, safeNoun),
@@ -90,9 +106,48 @@ class ScaffoldCommand extends BaseCommand {
       templateContext.KEY
     );
 
-    this.stopSpinner();
+    if (isValidAppInstall()) {
+      const success = await verifyEntryFileUpdate(
+        entryFilePath,
+        actionType,
+        templateContext.KEY
+      );
 
-    this.log(`\nFinished! Your new ${actionType} is ready to use.`);
+      this.stopSpinner({ success });
+
+      if (!success) {
+        const entryName = splitFileFromPath(entryFilePath)[1];
+
+        this.startSpinner(
+          `Unable to successfully rewrite your ${entryName}. Rolling back...`
+        );
+        await writeFile(entryFilePath, originalContents);
+        this.stopSpinner();
+
+        this.error(
+          [
+            `\nPlease add the following lines to ${entryFilePath}:`,
+            ` * \`const ${
+              templateContext.VARIABLE
+            } = require('./${getFullActionFilePath(
+              newActionDir,
+              safeNoun
+            )}');\` at the top-level`,
+            ` * \`[${templateContext.VARIABLE}.key]: ${
+              templateContext.VARIABLE
+            }\` in the "${plural(
+              actionType
+            )}" object in your exported integration definition.`,
+            '',
+            `Also, please file an issue at ${ISSUES_URL} with the contents of your ${entryFilePath}.`
+          ].join('\n')
+        );
+      }
+    }
+
+    if (!this.flags.invokedFromAnotherCommand) {
+      this.log(`\nAll done! Your new ${actionType} is ready to use.`);
+    }
   }
 }
 
@@ -160,5 +215,7 @@ The scaffold command does two general things:
 * Imports and registers it inside your \`index.js\`
 
 You can mix and match several options to customize the created scaffold for your project.`;
+
+ScaffoldCommand.skipValidInstallCheck = true;
 
 module.exports = ScaffoldCommand;

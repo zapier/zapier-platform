@@ -3,7 +3,7 @@ const colors = require('colors/safe');
 const _ = require('lodash');
 
 const { ensureDir, fileExistsSync, readFile, writeFile } = require('./files');
-const { splitFileFromPath } = require('../utils/string');
+const { splitFileFromPath } = require('./string');
 const { createRootRequire, addKeyToPropertyOnApp } = require('./ast');
 const { snakeCase } = require('./misc');
 
@@ -22,9 +22,7 @@ const variablePrefixes = {
 const getVariableName = (action, noun) =>
   action === 'resource'
     ? [noun, 'resource'].join(' ')
-    : // `${noun.toLowerCase()}Resource` // contactResource
-      [variablePrefixes[action], noun];
-// `${variablePrefixes[action]}${_.capitalize(noun)}`; // getContact
+    : [variablePrefixes[action], noun];
 
 const createTemplateContext = (action, noun, includeComments) => {
   // if noun is "Cool Contact"
@@ -78,6 +76,11 @@ const writeTemplateFile = async (
   await writeFile(destinationPath, renderTemplate(templateContext));
 };
 
+/**
+ * performs a series of updates to a file at a path.
+ *
+ * returns the original file contents in case a revert is needed
+ */
 const updateEntryFile = async (
   entryFilePath,
   varName,
@@ -86,45 +89,32 @@ const updateEntryFile = async (
   newActionKey
 ) => {
   let codeStr = (await readFile(entryFilePath)).toString();
-  // const originalCodeStr = codeStr; // untouched copy in case we need to bail
-  const entryName = splitFileFromPath(entryFilePath)[1];
+  const originalCodeStr = codeStr; // untouched copy in case we need to bail
   const relativePath = path.relative(path.dirname(entryFilePath), newFilePath);
 
-  try {
-    codeStr = createRootRequire(codeStr, varName, `./${relativePath}`);
-    codeStr = addKeyToPropertyOnApp(codeStr, plural(actionType), varName);
-    await writeFile(entryFilePath, codeStr);
+  codeStr = createRootRequire(codeStr, varName, `./${relativePath}`);
+  codeStr = addKeyToPropertyOnApp(codeStr, plural(actionType), varName);
+  await writeFile(entryFilePath, codeStr);
+  return originalCodeStr;
+};
 
-    // validate the edit happened correctly
-    // can't think of why it wouldn't if we've gotten this far, but it doesn't hurt to double check
-    // ensure a clean access
-    delete require.cache[require.resolve(entryFilePath)];
-    const rewrittenIndex = require(entryFilePath);
-    if (!_.get(rewrittenIndex, [plural(actionType), newActionKey])) {
-      throw new Error();
-    }
-  } catch (e) {
-    if (e.message) {
-      throw e;
-    }
-    // if we get here, just throw something generic
-    throw new Error(
-      [
-        `\n${colors.bold(
-          `Oops, we could not reliably rewrite your ${entryName}.`
-        )} Please ensure the following lines exist:`,
-        ` * \`const ${varName} = require('./${newFilePath}');\` at the top-level`,
-        ` * \`[${varName}.key]: ${varName}\` in the "${plural(
-          actionType
-        )}" object in your exported integration definition`
-      ].join('\n')
-    );
-  }
+const verifyEntryFileUpdate = async (
+  entryFilePath,
+  actionType,
+  newActionKey
+) => {
+  // ensure a clean access
+  delete require.cache[require.resolve(entryFilePath)];
+
+  // this line fails if `npm install` hasn't been run, since core isn't present yet.
+  const rewrittenIndex = require(entryFilePath);
+  return Boolean(!_.get(rewrittenIndex, [plural(actionType), newActionKey]));
 };
 
 module.exports = {
   plural,
   updateEntryFile,
   writeTemplateFile,
-  createTemplateContext
+  createTemplateContext,
+  verifyEntryFileUpdate
 };

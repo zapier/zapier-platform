@@ -32,5 +32,6 @@ class LogoutCommand extends BaseCommand {
 
 LogoutCommand.flags = buildFlags();
 LogoutCommand.description = `Deactivate your active deploy key and reset \`${AUTH_LOCATION_RAW}\`.`;
+LogoutCommand.skipValidInstallCheck = true;
 
 module.exports = LogoutCommand;

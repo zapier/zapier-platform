@@ -74,4 +74,6 @@ After running this, you'll have a new example integration in your directory. If 
 
 This doesn't register or deploy the integration with Zapier - try the \`zapier register\` and \`zapier push\` commands for that!`;
 
+InitCommand.skipValidInstallCheck = true;
+
 module.exports = InitCommand;

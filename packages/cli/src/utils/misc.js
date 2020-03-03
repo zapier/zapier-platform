@@ -77,21 +77,7 @@ const runCommand = (command, args, options) => {
 const isValidNodeVersion = (version = process.version) =>
   semver.satisfies(version, `>=${semver.coerce(LAMBDA_VERSION)}`);
 
-const isValidAppInstall = command => {
-  if (
-    [
-      'help',
-      'init',
-      'login',
-      'integrations',
-      'convert',
-      'logout',
-      'scaffold'
-    ].includes(command)
-  ) {
-    return { valid: true };
-  }
-
+const isValidAppInstall = () => {
   let packageJson;
   try {
     packageJson = require(path.join(process.cwd(), 'package.json'));
