@@ -728,6 +728,7 @@ describe('Integration Test', () => {
         firstContact.isPlainObject.should.be.false();
         should.equal(firstContact.trimmed, 'hello world');
         should.equal(firstContact.type, 'array');
+        should.equal(firstContact.extend, { extended: true });
 
         const secondContact = output.results[1];
         should.equal(firstContact.anotherId, 1000);
