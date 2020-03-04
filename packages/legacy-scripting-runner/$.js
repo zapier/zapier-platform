@@ -42,6 +42,7 @@ $.isNumeric = _.isNumber;
 $.isPlainObject = _.isPlainObject;
 $.parseJSON = JSON.parse;
 $.trim = _.trim;
+$.extend = _.extend;
 
 $.type = obj => {
   if (obj == null) {
