@@ -1,5 +1,5 @@
 // get a list of <%= LOWER_NOUN %>s
-const performList = (z, bundle) => {
+const performList = async (z, bundle) => {
   const response = await z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
@@ -11,11 +11,11 @@ const performList = (z, bundle) => {
 };
 
 // find a particular <%= LOWER_NOUN %> by name (or other search criteria)
-const performSearch = (z, bundle) => {
+const performSearch = async (z, bundle) => {
   const response = await z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
-      query: `name:${bundle.inputData.name}`
+      name: bundle.inputData.name
     }
   });
   response.throwForStatus()
@@ -23,7 +23,7 @@ const performSearch = (z, bundle) => {
 };
 
 // creates a new <%= LOWER_NOUN %>
-const performCreate = (z, bundle) => {
+const performCreate = async (z, bundle) => {
   const response = await z.request({
     method: 'POST',
     url: 'https://jsonplaceholder.typicode.com/posts',
