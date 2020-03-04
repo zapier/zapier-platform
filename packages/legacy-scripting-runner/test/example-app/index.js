@@ -146,6 +146,7 @@ const legacyScriptingSource = `
         contacts[0].isPlainObject = $.isPlainObject(contacts);
         contacts[0].trimmed = $.trim(' hello world  ');
         contacts[0].type = $.type(contacts);
+        contacts[0].extend = $.extend({}, { extended: true });
 
         var base = 1000;
         $.each(contacts, function(index, item) {
