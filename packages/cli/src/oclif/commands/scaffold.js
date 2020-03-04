@@ -6,11 +6,12 @@ const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 
 const {
+  createTemplateContext,
+  getRelativeRequirePath,
   plural,
   updateEntryFile,
-  writeTemplateFile,
-  createTemplateContext,
-  verifyEntryFileUpdate
+  isValidEntryFileUpdate,
+  writeTemplateFile
 } = require('../../utils/scaffold');
 const { splitFileFromPath } = require('../../utils/string');
 const { isValidAppInstall } = require('../../utils/misc');
@@ -33,8 +34,6 @@ const getFullActionFilePathWithExtension = (directory, noun) =>
 class ScaffoldCommand extends BaseCommand {
   async perform() {
     const { actionType, noun } = this.args;
-
-    // able to be used for filepaths and stuff
 
     // TODO: interactive portion here?
     const {
@@ -106,8 +105,8 @@ class ScaffoldCommand extends BaseCommand {
       templateContext.KEY
     );
 
-    if (isValidAppInstall()) {
-      const success = await verifyEntryFileUpdate(
+    if (isValidAppInstall().valid) {
+      const success = isValidEntryFileUpdate(
         entryFilePath,
         actionType,
         templateContext.KEY
@@ -129,9 +128,9 @@ class ScaffoldCommand extends BaseCommand {
             `\nPlease add the following lines to ${entryFilePath}:`,
             ` * \`const ${
               templateContext.VARIABLE
-            } = require('./${getFullActionFilePath(
-              newActionDir,
-              safeNoun
+            } = require('./${getRelativeRequirePath(
+              entryFilePath,
+              getFullActionFilePath(newActionDir, safeNoun)
             )}');\` at the top-level`,
             ` * \`[${templateContext.VARIABLE}.key]: ${
               templateContext.VARIABLE
@@ -144,6 +143,8 @@ class ScaffoldCommand extends BaseCommand {
         );
       }
     }
+
+    this.stopSpinner();
 
     if (!this.flags.invokedFromAnotherCommand) {
       this.log(`\nAll done! Your new ${actionType} is ready to use.`);

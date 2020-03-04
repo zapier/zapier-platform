@@ -7,15 +7,18 @@ const perform = async (z, bundle) => {
     }
   });
   response.throwForStatus();
+  // this should return an array of objects
   return z.JSON.parse(response.content);
 };
 
 module.exports = {
+  // see here for a full list of available properties:
+  // https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#triggerschema
   key: '<%= KEY %>',
   noun: '<%= NOUN %>',
 
   display: {
-    label: 'Get <%= NOUN %>',
+    label: 'New <%= NOUN %>',
     description: 'Triggers when a new <%= LOWER_NOUN %> is created.'
   },
 
@@ -31,7 +34,7 @@ module.exports = {
     <%= INCLUDE_INTRO_COMMENTS ? [
       '// In cases where Zapier needs to show an example record to the user, but we are unable to get a live example',
       '// from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of',
-      '// returned records, and have obviously dummy values that we can show to any user.'
+      '// returned records, and have obvious placeholder values that we can show to any user.'
     ].join('\n    ') : '' %>
     sample: {
       id: 1,
@@ -45,7 +48,7 @@ module.exports = {
       '// Alternatively, a static field definition can be provided, to specify labels for the fields'
     ].join('\n    ') : '' %>
     outputFields: [
-      // placeholders to match the jsonplaceholder call
+      // these are placeholders to match the example `perform` above
       // {key: 'id', label: 'Person ID'},
       // {key: 'name', label: 'Person Name'}
     ]

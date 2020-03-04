@@ -28,7 +28,7 @@ class InitCommand extends BaseCommand {
     const { path } = this.args;
     const { template } = this.flags;
     // sometimes the parser acts funny if there's an invalid flag and no arg, so just to double check,
-    // I've filed https://github.com/oclif/parser/issues/57
+    // see: https://github.com/oclif/parser/issues/57
     if (path.startsWith('-')) {
       this.error(`Invalid path: "${path}"`);
     }

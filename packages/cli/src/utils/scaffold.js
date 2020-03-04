@@ -76,6 +76,9 @@ const writeTemplateFile = async (
   await writeFile(destinationPath, renderTemplate(templateContext));
 };
 
+const getRelativeRequirePath = (entryFilePath, newFilePath) =>
+  path.relative(path.dirname(entryFilePath), newFilePath);
+
 /**
  * performs a series of updates to a file at a path.
  *
@@ -90,7 +93,7 @@ const updateEntryFile = async (
 ) => {
   let codeStr = (await readFile(entryFilePath)).toString();
   const originalCodeStr = codeStr; // untouched copy in case we need to bail
-  const relativePath = path.relative(path.dirname(entryFilePath), newFilePath);
+  const relativePath = getRelativeRequirePath(entryFilePath, newFilePath);
 
   codeStr = createRootRequire(codeStr, varName, `./${relativePath}`);
   codeStr = addKeyToPropertyOnApp(codeStr, plural(actionType), varName);
@@ -98,23 +101,20 @@ const updateEntryFile = async (
   return originalCodeStr;
 };
 
-const verifyEntryFileUpdate = async (
-  entryFilePath,
-  actionType,
-  newActionKey
-) => {
+const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
   // ensure a clean access
   delete require.cache[require.resolve(entryFilePath)];
 
   // this line fails if `npm install` hasn't been run, since core isn't present yet.
   const rewrittenIndex = require(entryFilePath);
-  return Boolean(!_.get(rewrittenIndex, [plural(actionType), newActionKey]));
+  return Boolean(_.get(rewrittenIndex, [plural(actionType), newActionKey]));
 };
 
 module.exports = {
+  createTemplateContext,
+  getRelativeRequirePath,
   plural,
   updateEntryFile,
-  writeTemplateFile,
-  createTemplateContext,
-  verifyEntryFileUpdate
+  isValidEntryFileUpdate,
+  writeTemplateFile
 };

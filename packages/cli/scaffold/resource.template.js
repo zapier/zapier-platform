@@ -1,65 +1,62 @@
-// get a single <%= LOWER_NOUN %>
-const get<%= CAMEL %> = (z, bundle) => {
-  const responsePromise = z.request({
-    url: `https://jsonplaceholder.typicode.com/posts/${bundle.inputData.id}`,
-  });
-  return responsePromise
-    .then(response => z.JSON.parse(response.content));
-};
-
 // get a list of <%= LOWER_NOUN %>s
-const list<%= CAMEL %>s = (z) => {
-  const responsePromise = z.request({
+const performList = (z, bundle) => {
+  const response = await z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       order_by: 'id desc'
     }
   });
-  return responsePromise
-    .then(response => z.JSON.parse(response.content));
+  response.throwForStatus()
+  return z.JSON.parse(response.content)
 };
 
-// find a particular <%= LOWER_NOUN %> by name
-const search<%= CAMEL %>s = (z, bundle) => {
-  const responsePromise = z.request({
+// find a particular <%= LOWER_NOUN %> by name (or other search criteria)
+const performSearch = (z, bundle) => {
+  const response = await z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       query: `name:${bundle.inputData.name}`
     }
   });
-  return responsePromise
-    .then(response => z.JSON.parse(response.content));
+  response.throwForStatus()
+  return z.JSON.parse(response.content)
 };
 
-// create a <%= LOWER_NOUN %>
-const create<%= CAMEL %> = (z, bundle) => {
-  const responsePromise = z.request({
+// creates a new <%= LOWER_NOUN %>
+const performCreate = (z, bundle) => {
+  const response = await z.request({
     method: 'POST',
     url: 'https://jsonplaceholder.typicode.com/posts',
     body: {
       name: bundle.inputData.name // json by default
     }
   });
-  return responsePromise
-    .then(response => z.JSON.parse(response.content));
+  response.throwForStatus()
+  return z.JSON.parse(response.content)
 };
 
 module.exports = {
+  // see here for a full list of available properties:
+  // https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#resourceschema
   key: '<%= KEY %>',
   noun: '<%= NOUN %>',
 
-  get: {
-    display: {
-      label: 'Get <%= NOUN %>',
-      description: 'Gets a <%= LOWER_NOUN %>.'
-    },
-    operation: {
-      inputFields: [
-        {key: 'id', required: true}
-      ],
-      perform: get<%= CAMEL %>
-    }
-  },
+  <%= INCLUDE_INTRO_COMMENTS ? [
+    '// If `get` is defined, it will be called after a `search` or `create`'
+  ].join('\n    ') : '' %>
+  // useful if your `searches` and `creates` return sparse objects
+  // get: {
+  //   display: {
+  //     label: 'Get <%= NOUN %>',
+  //     description: 'Gets a <%= LOWER_NOUN %>.'
+  //   },
+  //   operation: {
+  //     inputFields: [
+  //       {key: 'id', required: true}
+  //     ],
+  //     perform: defineMe
+  //   }
+  // },
 
   list: {
     display: {
@@ -67,20 +64,25 @@ module.exports = {
       description: 'Lists the <%= LOWER_NOUN %>s.'
     },
     operation: {
-      perform: list<%= CAMEL %>s
+      perform: performList,
+      <%= INCLUDE_INTRO_COMMENTS ? [
+        '// `inputFields` defines the fields a user could provide',
+        '// Zapier will pass them in as `bundle.inputData` later. They\'re optional on triggers, but required on searches and creates.'
+      ].join('\n      ') : '' %>
+      inputFields: []
     }
   },
 
   search: {
     display: {
       label: 'Find <%= NOUN %>',
-      description: 'Finds a <%= LOWER_NOUN %> by searching.'
+      description: 'Finds a <%= LOWER_NOUN %> give.'
     },
     operation: {
       inputFields: [
         {key: 'name', required: true}
       ],
-      perform: search<%= CAMEL %>s
+      perform: performSearch
     },
   },
 
@@ -93,15 +95,28 @@ module.exports = {
       inputFields: [
         {key: 'name', required: true}
       ],
-      perform: create<%= CAMEL %>
+      perform: performCreate
     },
   },
 
+  <%= INCLUDE_INTRO_COMMENTS ? [
+    '// In cases where Zapier needs to show an example record to the user, but we are unable to get a live example',
+    '// from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of',
+    '// returned records, and have obvious placeholder values that we can show to any user.',
+    '// In this resource, the sample is reused across all methods'
+  ].join('\n  ') : '' %>
   sample: {
     id: 1,
     name: 'Test'
   },
 
+  <%= INCLUDE_INTRO_COMMENTS ? [
+    '// If fields are custom to each user (like spreadsheet columns), `outputFields` can create human labels',
+    '// For a more complete example of using dynamic fields see',
+    '// https://github.com/zapier/zapier-platform/tree/master/packages/cli#customdynamic-fields',
+    '// Alternatively, a static field definition can be provided, to specify labels for the fields',
+    '// In this resource, these output fields are reused across all resources'
+  ].join('\n  ') : '' %>
   outputFields: [
     {key: 'id', label: 'ID'},
     {key: 'name', label: 'Name'}
