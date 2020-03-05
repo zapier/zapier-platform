@@ -220,7 +220,7 @@ const cleanHeaders = headers => {
       k = k.replace(badChars, '').trim();
     }
     if (k) {
-      if (v) {
+      if (v && v.replace) {
         v = v.replace(badChars, '').trim();
       }
       newHeaders[k] = v;
