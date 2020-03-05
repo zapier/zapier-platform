@@ -219,6 +219,12 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_number_header: function(bundle) {
+        bundle.request.headers['x-api-key'] = Math.floor( Date.now() / 1000 )
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        return bundle.request;
+      },
+
       getMovesUrl: function() {
         return '${AUTH_JSON_SERVER_URL}/movies';
       },
