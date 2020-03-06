@@ -12,10 +12,8 @@ describe('z', () => {
   });
 
   it('z.hmac', done => {
-    const result = z.hmac('sha256', 'key', 'string');
-    result.should.equal(
-      '473287f8298dba7163a897908958f7c0eae733e25d2e027992ea2edc9bed2fa8'
-    );
+    const result = z.hmac('sha1', 'secret', 'signme');
+    result.should.equal('f67a0be1fa49a3f1dbd659726d8983b838ee6e7d');
     done();
   });
 
