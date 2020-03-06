@@ -55,6 +55,6 @@
     "mock-fs": "4.10.1"
   },
   "optionalDependencies": {
-    "@types/node": "8.10.20"
+    "@types/node": "^10"
   }
 }
