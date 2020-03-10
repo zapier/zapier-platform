@@ -87,10 +87,13 @@ const legacyScriptingSource = `
 
       pre_oauthv2_refresh_bundle_load: function(bundle) {
         bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
-        debugger;
         bundle.request.data = qs.stringify(bundle.load);
         bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
         return bundle.request;
+      },
+
+      post_oauthv2_token_returns_nothing: function(bundle) {
+        // do nothing
       },
 
       get_connection_label: function(bundle) {
@@ -568,7 +571,6 @@ const legacyScriptingSource = `
           type: 'dict',
           list: true
         });
-        debugger;
         return fields;
       },
 

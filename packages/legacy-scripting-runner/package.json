@@ -37,6 +37,6 @@
   "devDependencies": {
     "aws-sdk": "2.140.0",
     "nock": "10.0.6",
-    "zapier-platform-core": "^7.6.0"
+    "zapier-platform-core": ">=7.6.0"
   }
 }

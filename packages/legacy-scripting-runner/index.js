@@ -569,10 +569,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       //       returns the first top-level array in the result if result
       //       is an object.
       //   - 'object-first': returns the first object if result is an array.
+      // * defaultToResponse: default to response if post method returns empty
       checkResponseStatus: true,
       parseResponse: true,
       ensureType: false,
       resetRequestForFullMethod: false,
+      defaultToResponse: false,
 
       ...options
     };
@@ -640,6 +642,13 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           zcli,
           bundle
         );
+        if (options.defaultToResponse && !result) {
+          try {
+            result = zcli.JSON.parse(response.content);
+          } catch {
+            result = {};
+          }
+        }
       } else {
         try {
           result = zcli.JSON.parse(response.content);
@@ -773,7 +782,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       bundle,
       '',
       'auth.oauth2.token.pre',
-      'auth.oauth2.token.post'
+      'auth.oauth2.token.post',
+      undefined,
+      { defaultToResponse: true }
     ).catch(() => {
       request = bundle.request;
       request.body = {};
@@ -789,7 +800,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         bundle,
         '',
         'auth.oauth2.token.pre',
-        'auth.oauth2.token.post'
+        'auth.oauth2.token.post',
+        undefined,
+        { defaultToResponse: true }
       );
     });
   };
