@@ -9,6 +9,8 @@ const path = require('path');
 require('should');
 const fetch = require('node-fetch');
 
+const CORE_PACKAGE_NAME = 'zapier-platform-core';
+
 const TEST_APPS = [
   'basic-auth',
   'create',
@@ -88,23 +90,38 @@ const copyTestApps = workdir => {
   TEST_APPS.forEach(appName => {
     const srcAppDir = path.join(repoRoot, 'example-apps', appName);
     const destAppDir = path.join(workdir, appName);
-    fs.copySync(srcAppDir, destAppDir);
+    fs.copySync(srcAppDir, destAppDir, {
+      filter: (src, dest) => !src.includes('node_modules/')
+    });
   });
 };
 
-const npmInstalls = (packagePath, workdir) => {
-  spawnSync('npm', ['install'], {
-    encoding: 'utf8',
-    cwd: workdir
-  });
-  spawnSync('npm', ['install', 'zapier-platform-cli'], {
-    encoding: 'utf8',
-    cwd: workdir
-  });
-  spawnSync('npm', ['install', '--no-save', packagePath], {
-    encoding: 'utf8',
-    cwd: workdir
-  });
+const npmInstalls = (coreZipPath, workdir) => {
+  // When releasing a new core version, example apps would have bumped their
+  // core before the new core version is published to npm. So we need to patch
+  // example app's package.json to use local core temporarily to avoid `npm
+  // install` error.
+  const packageJsonPath = path.join(workdir, 'package.json');
+  const origPackageJsonText = fs.readFileSync(packageJsonPath);
+  const packageJson = JSON.parse(origPackageJsonText);
+  packageJson.dependencies[CORE_PACKAGE_NAME] = `file:${coreZipPath}`;
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
+
+  try {
+    spawnSync('npm', ['install'], {
+      encoding: 'utf8',
+      cwd: workdir
+    });
+    spawnSync('npm', ['install', 'zapier-platform-cli'], {
+      encoding: 'utf8',
+      cwd: workdir
+    });
+  } finally {
+    fs.writeFileSync(packageJsonPath, origPackageJsonText, {
+      encoding: 'utf8'
+    });
+  }
 };
 
 describe('smoke tests - setup will take some time', () => {
@@ -139,7 +156,7 @@ describe('smoke tests - setup will take some time', () => {
     fs.removeSync(context.workRepoDir);
   });
 
-  it('package size should not change much', async () => {
+  it('package size should not change much', async function() {
     const baseUrl = 'https://registry.npmjs.org/zapier-platform-core';
     let res = await fetch(baseUrl);
     const packageInfo = await res.json();
@@ -154,6 +171,8 @@ describe('smoke tests - setup will take some time', () => {
     const baselineSize = res.headers.get('content-length');
     const newSize = fs.statSync(context.package.path).size;
     newSize.should.be.within(baselineSize * 0.7, baselineSize * 1.3);
+
+    this.test.title += ` (${baselineSize} -> ${newSize} bytes)`;
   });
 
   TEST_APPS.forEach(appName => {
@@ -194,15 +213,18 @@ describe('smoke tests - setup will take some time', () => {
           return;
         }
 
-        const proc = spawnSync(context.cliBin, ['build'], {
-          encoding: 'utf8',
-          cwd: context.workAppDir,
-          env: {
-            SKIP_NPM_INSTALL: '1',
-            PATH: process.env.PATH,
-            DISABLE_ZAPIER_ANALYTICS: 1
+        const proc = spawnSync(
+          context.cliBin,
+          ['build', '--skip-npm-install'],
+          {
+            encoding: 'utf8',
+            cwd: context.workAppDir,
+            env: {
+              PATH: process.env.PATH,
+              DISABLE_ZAPIER_ANALYTICS: 1
+            }
           }
-        });
+        );
         if (proc.status !== 0) {
           console.log(proc.stdout);
           console.log(proc.stderr);
