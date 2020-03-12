@@ -357,6 +357,7 @@ const createEventNameToMethodMapping = key => {
 
 const legacyScriptingRunner = (Zap, zcli, input) => {
   const app = _.get(input, '_zapier.app');
+  const logger = _.get(input, '_zapier.logger');
 
   if (typeof Zap === 'string') {
     Zap = compileLegacyScriptingSource(Zap, zcli, app);
@@ -533,12 +534,17 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
             return;
           }
 
-          // Handle sync
-          if (!isAsync) {
-            parseFinalResult(result, event).then(res => {
-              resolve(res);
-            });
-          }
+          logger(`Called legacy scripting ${methodName}`, {
+            request_data: convertedBundle,
+            log_type: 'bundle'
+          }).then(() => {
+            // Handle sync
+            if (!isAsync) {
+              parseFinalResult(result, event).then(res => {
+                resolve(res);
+              });
+            }
+          });
         } else {
           resolve({});
         }
