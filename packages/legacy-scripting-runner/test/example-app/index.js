@@ -291,6 +291,16 @@ const legacyScriptingSource = `
         return results;
       },
 
+      contact_hook_scripting_catch_hook_raw_request: function(bundle) {
+        // Make sure bundle.request is kept intact
+        return {
+          id: 1,
+          headers: bundle.request.headers,
+          querystring: bundle.request.querystring,
+          content: bundle.request.content
+        };
+      },
+
       // To be replaced with 'contact_hook_scripting_pre_hook' at runtime to enable
       contact_hook_scripting_pre_hook_disabled: function(bundle) {
         bundle.request.url = bundle.request.url.replace('/users/', '/movies/');

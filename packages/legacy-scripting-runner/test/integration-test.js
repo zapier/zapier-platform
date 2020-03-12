@@ -1144,6 +1144,34 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_catch_hook, raw request', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'contact_hook_scripting_catch_hook_raw_request',
+        'contact_hook_scripting_catch_hook'
+      );
+      const app = createApp(appDef);
+      const input = createTestInput(
+        appDef,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      input.bundle.rawRequest = {
+        headers: {
+          'Content-Type': 'application/xml',
+          'Http-X-Custom': 'hello'
+        },
+        content: '<name>Tom</name>',
+        querystring: 'foo=bar'
+      };
+      return app(input).then(output => {
+        const result = output.results[0];
+        should.equal(result.headers['Content-Type'], 'application/xml');
+        should.equal(result.headers['Http-X-Custom'], 'hello');
+        should.equal(result.content, '<name>Tom</name>');
+        should.equal(result.querystring, 'foo=bar');
+      });
+    });
+
     it('REST Hook should ignore KEY_pre_hook', () => {
       // Not a Notication REST hook, KEY_pre_hook should be ignored
       const appDef = _.cloneDeep(appDefinition);

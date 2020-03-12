@@ -97,7 +97,7 @@ const addInputData = (event, bundle, convertedBundle) => {
       convertedBundle.read_context = bundle.inputData;
     }
   } else if (event.name === 'hydrate.method') {
-    _.extend(convertedBundle, bundle.inputData.bundle);
+    Object.assign(convertedBundle, bundle.inputData.bundle);
   }
 };
 
@@ -127,11 +127,15 @@ const addHookData = (event, bundle, convertedBundle) => {
 };
 
 const addRequestData = async (event, z, bundle, convertedBundle) => {
-  const headers = _.get(bundle, 'request.headers', {});
-  _.extend(convertedBundle.request.headers, headers);
+  Object.assign(
+    convertedBundle.request.headers,
+    _.get(bundle, 'request.headers')
+  );
 
-  const params = _.get(bundle, 'request.params', {});
-  _.extend(convertedBundle.request.params, params);
+  Object.assign(
+    convertedBundle.request.params,
+    _.get(bundle, 'request.params')
+  );
 
   const body = _.get(bundle, 'request.body');
   if (!_.isEmpty(body)) {
@@ -265,8 +269,8 @@ const bundleConverter = async (bundle, event, z) => {
 
   addAuthData(event, bundle, convertedBundle);
   addInputData(event, bundle, convertedBundle);
-  addHookData(event, bundle, convertedBundle);
   await addRequestData(event, z, bundle, convertedBundle);
+  addHookData(event, bundle, convertedBundle);
   addResponse(event, bundle, convertedBundle);
 
   return convertedBundle;
