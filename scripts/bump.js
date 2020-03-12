@@ -134,6 +134,31 @@ const promptVersionToBump = async packageName => {
   return answer.versionToBump;
 };
 
+const bumpMainPackagesForExampleApps = versionToBump => {
+  const examplesDir = path.join(REPO_DIR, 'example-apps');
+  fs.readdirSync(examplesDir, { withFileTypes: true }).map(item => {
+    if (item.isDirectory()) {
+      const packageJsonPath = path.join(examplesDir, item.name, 'package.json');
+      const packageJson = readJson(packageJsonPath);
+
+      ['cli', 'core', 'schema'].map(packageName => {
+        const packageFullName = `zapier-platform-${packageName}`;
+        if (packageJson.dependencies) {
+          const depVersion = packageJson.dependencies[packageFullName];
+          if (depVersion) {
+            console.log(
+              `${item.name}'s dependency ${packageName} ${depVersion} -> ${versionToBump}`
+            );
+            packageJson.dependencies[packageFullName] = versionToBump;
+          }
+        }
+      });
+
+      writeJson(packageJsonPath, packageJson);
+    }
+  });
+};
+
 // Main packages are cli, core, schema
 const bumpMainPackages = versionToBump => {
   const PACKAGES = ['cli', 'core', 'schema'];
@@ -185,6 +210,7 @@ const bumpExtensionPackage = (packageName, versionToBump) => {
 const bumpPackages = (packageName, versionToBump) => {
   if (packageName === 'cli, core, schema') {
     bumpMainPackages(versionToBump);
+    bumpMainPackagesForExampleApps(versionToBump);
   } else {
     bumpExtensionPackage(packageName, versionToBump);
   }

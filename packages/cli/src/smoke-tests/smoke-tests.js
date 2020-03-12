@@ -82,12 +82,14 @@ describe('smoke tests - setup will take some time', () => {
     fs.removeSync(context.workdir);
   });
 
-  it('package size should not change much', async () => {
+  it('package size should not change much', async function() {
     const packageName = 'zapier-platform-cli';
     const latestVersion = await getPackageLatestVersion(packageName);
     const baselineSize = await getPackageSize(packageName, latestVersion);
     const newSize = fs.statSync(context.package.path).size;
     newSize.should.be.within(baselineSize * 0.7, baselineSize * 1.3);
+
+    this.test.title += ` (${baselineSize} -> ${newSize} bytes)`;
   });
 
   it('cli executable should exist', () => {
@@ -134,11 +136,14 @@ describe('smoke tests - setup will take some time', () => {
     pkg.name.should.containEql('babel');
   });
 
-  it('zapier apps', function() {
+  it('zapier integrations', function() {
     if (!context.hasRC) {
       this.skip();
     }
-    const stdout = runCommand(context.cliBin, ['apps', '--format=json']);
+    const stdout = runCommand(context.cliBin, [
+      'integrations',
+      '--format=json'
+    ]);
     const result = JSON.parse(stdout);
     result.should.be.Array();
   });
