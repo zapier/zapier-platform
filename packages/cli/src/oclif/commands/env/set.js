@@ -30,7 +30,8 @@ class SetEnvCommand extends BaseCommand {
     // if we get here, we should have well-formed input
 
     const payload = valuesToSet.reduce((result, kvPair) => {
-      const [key, value] = kvPair.split('=');
+      const key = kvPair.split('=')[0]
+      const value = kvPair.split(/=(.+)/)[1] // Guards against SECURE_KEY=8n*e9!=92g
       result[key.toUpperCase()] = value;
       return result;
     }, {});
