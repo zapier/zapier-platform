@@ -18,6 +18,8 @@ const DEFAULT_BUNDLE = {
   targetUrl: ''
 };
 
+const isCurlies = /{{.*?}}/g;
+
 const recurseCleanFuncs = (obj, path) => {
   // mainly turn functions into $func${arity}${arguments}$
   path = path || [];
@@ -120,10 +122,25 @@ const createBundleBank = (appRaw, event = {}) => {
 
 const maskOutput = output => _.pick(output, 'results', 'status');
 
+// These normalize functions are called after the initial before middleware that
+// cleans the request. The reason is that we need to know why a value is empty
+// later on. If we resolve all templates (even with undefined values) first, we
+// don't know _why_ it was an empty string. Was it from a user supplied value in
+// an earlier Zap step? Or was it a null value? Each has different results depending
+// on how the partner has configued their integration.
 const normalizeEmptyRequestFields = (shouldCleanup, field, req) => {
-  const handleEmpty = req.removeMissingValuesFrom[field]
-    ? key => delete req[field][key]
-    : key => (req[field][key] = '');
+  const handleEmpty = key => {
+    const value = req[field][key] || '';
+    const cleaned = value.replace(isCurlies, '');
+
+    if (value !== cleaned) {
+      req[field][key] = cleaned;
+    }
+
+    if (!cleaned && req.removeMissingValuesFrom[field]) {
+      delete req[field][key];
+    }
+  };
 
   Object.entries(req[field]).forEach(([key, value]) => {
     if (shouldCleanup(value)) {
@@ -132,7 +149,6 @@ const normalizeEmptyRequestFields = (shouldCleanup, field, req) => {
   });
 };
 
-const isCurlies = /{{.*?}}/;
 const isEmptyQueryParam = value =>
   value === '' ||
   value === null ||

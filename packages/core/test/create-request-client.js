@@ -653,12 +653,16 @@ describe('request client', () => {
         url: 'https://httpbin.org/post',
         method: 'POST',
         body: {
-          empty: '{{bundle.inputData.empty}}'
+          empty: '{{bundle.inputData.empty}}',
+          partial: 'text {{bundle.inputData.partial}}',
+          value: 'exists'
         }
       }).then(response => {
         const { json } = response.json;
 
         should(json.empty).eql('');
+        should(json.partial).eql('text ');
+        should(json.value).eql('exists');
       });
     });
 
