@@ -161,6 +161,24 @@ const legacyScriptingSource = `
         return contacts;
       },
 
+      contact_post_post_poll_jquery_dom: function(bundle) {
+        // Common jQuery DOM manipulation
+        var xml = $.parseXML(
+          '<?xml version="1.0">' +
+          '<contacts>' +
+          '<contact><id>123</id><name>Alice</name></contact>' +
+          '<contact><id>456</id><name>Bob</name></contact>' +
+          '</contacts>'
+        );
+        return _.map($(xml).find('contact'), function(contact) {
+          var $contact = $(contact);
+          return {
+            id: parseInt($contact.find('id').text()),
+            name: $contact.find('name').text()
+          };
+        });
+      },
+
       contact_pre_post_pre_poll: function(bundle) {
         bundle.request.url = '${AUTH_JSON_SERVER_URL}/users';
         bundle.request.params.id = 4;
