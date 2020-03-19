@@ -51,6 +51,10 @@
           "description": "All the triggers for your app. You can add your own here, or Zapier will automatically register any from the list/hook methods on your resources.",
           "$ref": "/TriggersSchema"
         },
+        "reads": {
+          "description": "All of the reads (GETs) your app exposes to retrieve resources in batches.",
+          "$ref": "/ReadsSchema"
+        },
         "searches": {
           "description": "All the searches for your app. You can add your own here, or Zapier will automatically register any from the search method on your resources.",
           "$ref": "/SearchesSchema"
@@ -1024,6 +1028,33 @@
       },
       "additionalProperties": false
     },
+    "ReadSchema": {
+      "id": "/ReadSchema",
+      "description": "How will Zapier fetch resources from your application?",
+      "type": "object",
+      "required": ["key", "noun", "display", "operation"],
+      "properties": {
+        "key": {
+          "description": "A key to uniquely identify this trigger.",
+          "$ref": "/KeySchema"
+        },
+        "noun": {
+          "description": "A noun for this trigger that completes the sentence \"triggers on a new XXX\".",
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 255
+        },
+        "display": {
+          "description": "Configures the UI for this trigger.",
+          "$ref": "/BasicDisplaySchema"
+        },
+        "operation": {
+          "description": "Powers the functionality for this trigger.",
+          "$ref": "/BasicActionOperationSchema"
+        }
+      },
+      "additionalProperties": false
+    },
     "TriggerSchema": {
       "id": "/TriggerSchema",
       "description": "How will Zapier get notified of new objects?",
@@ -1268,6 +1299,18 @@
         "^[a-zA-Z]+[a-zA-Z0-9_]*$": {
           "description": "Any unique key can be used and its values will be validated against the ResourceSchema.",
           "$ref": "/ResourceSchema"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ReadsSchema": {
+      "id": "/ReadsSchema",
+      "description": "Enumerates the reads your app exposes.",
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z]+[a-zA-Z0-9_]*$": {
+          "description": "Any unique key can be used and its values will be validated against the ReadSchema.",
+          "$ref": "/ReadSchema"
         }
       },
       "additionalProperties": false
