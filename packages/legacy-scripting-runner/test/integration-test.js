@@ -756,7 +756,7 @@ describe('Integration Test', () => {
       });
     });
 
-    it('KEY_post_poll, with jQuery', () => {
+    it('KEY_post_poll, jQuery utils', () => {
       const input = createTestInput(
         compiledApp,
         'triggers.contact_post.operation.perform'
@@ -784,6 +784,40 @@ describe('Integration Test', () => {
         const secondContact = output.results[1];
         should.equal(firstContact.anotherId, 1000);
         should.equal(secondContact.anotherId, 1001);
+      });
+    });
+
+    it('KEY_post_poll, jQuery DOM', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'contact_post_post_poll:',
+        'contact_post_post_poll_disabled:'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'contact_post_post_poll_jquery_dom',
+        'contact_post_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.contact_post.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then(output => {
+        const contacts = output.results;
+        should.equal(contacts.length, 2);
+
+        should.deepEqual(contacts[0], {
+          id: 123,
+          name: 'Alice'
+        });
+        should.deepEqual(contacts[1], {
+          id: 456,
+          name: 'Bob'
+        });
       });
     });
 
