@@ -104,8 +104,8 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
     }
     objToModify = exportedVarDeclaration.get().node.declarations[0].init;
   } else if (objToModify.type !== 'ObjectExpression') {
-    // i'm not sure what else could be here, but it doesn't hurt to cover our bases
-    throw new Error('Unknown export type');
+    // If the exported value isn't an object or variable
+    throw new Error(`Invalid export type: "${objToModify.type}"`);
   }
 
   // now we have an object to modify

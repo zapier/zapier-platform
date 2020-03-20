@@ -54,7 +54,7 @@ describe('scaffold', () => {
       should(newFile.includes('// Zapier will pass them in')).be.false();
     });
 
-    it('should create files without comments', async () => {
+    it('should create files with comments', async () => {
       const path = `${tmpDir}/triggers/thing.js`;
       await writeTemplateFile(
         'trigger',

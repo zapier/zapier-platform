@@ -10,7 +10,7 @@ const { snakeCase } = require('./misc');
 const plural = type => (type === 'search' ? `${type}es` : `${type}s`);
 
 const getTemplatePath = actionType =>
-  path.join(__dirname, '..', '..', 'scaffold', actionType, '.template.js');
+  path.join(__dirname, '..', '..', 'scaffold', `${actionType}.template.js`);
 
 // useful for making sure we don't conflict with other, similarly named things
 const variablePrefixes = {

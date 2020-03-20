@@ -175,5 +175,38 @@ describe('ast', () => {
     });
   });
 
-  describe('errors', () => {});
+  describe('error handling', () => {
+    const errors = [
+      {
+        title: "error when there's no export",
+        input: `const app = { very: 'cool', triggers: { key: 'cool' } }`,
+        error: 'Nothing is exported'
+      },
+      {
+        title: 'error for an unknown expression type',
+        input: `module.exports = 3`,
+        error: 'Invalid export type'
+      },
+      {
+        title: 'error for an unknown expression type',
+        input: `const app = { triggers: {} }; const exportedApp = app; module.exports = exportedApp;`,
+        error: 'Unable to find object definition'
+      },
+      {
+        title: 'error for an unknown expression type',
+        input: `module.exports = {triggers: 4};`,
+        error: "Tried to edit the triggers key, but the value wasn't an object"
+      }
+    ];
+
+    errors.forEach(
+      ({ title, input, error, prop = 'triggers', varName = 'newThing' }) => {
+        it(`should ${title}`, () => {
+          should(() => addKeyToPropertyOnApp(input, prop, varName)).throw(
+            new RegExp(error)
+          );
+        });
+      }
+    );
+  });
 });
