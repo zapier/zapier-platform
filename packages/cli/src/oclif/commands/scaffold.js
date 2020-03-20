@@ -19,17 +19,18 @@ const { writeFile } = require('../../utils/files');
 const { ISSUES_URL } = require('../../constants');
 
 const getNewFileDirectory = (action, test = false) =>
-  `${test ? 'test/' : ''}${plural(action)}`;
+  path.join(test ? 'test/' : '', plural(action));
 
-const getLocalFilePath = (directory, noun) => `${directory}/${noun}`;
+const getLocalFilePath = (directory, actionKey) =>
+  path.join(directory, actionKey);
 /**
  * both the string to `require` and later, the filepath to write to
  */
-const getFullActionFilePath = (directory, noun) =>
-  path.join(process.cwd(), getLocalFilePath(directory, noun));
+const getFullActionFilePath = (directory, actionKey) =>
+  path.join(process.cwd(), getLocalFilePath(directory, actionKey));
 
-const getFullActionFilePathWithExtension = (directory, noun) =>
-  `${getFullActionFilePath(directory, noun)}.js`;
+const getFullActionFilePathWithExtension = (directory, actionKey) =>
+  `${getFullActionFilePath(directory, actionKey)}.js`;
 
 class ScaffoldCommand extends BaseCommand {
   async perform() {
@@ -60,20 +61,18 @@ class ScaffoldCommand extends BaseCommand {
       shouldIncludeComments
     );
 
-    const safeNoun = templateContext.KEY;
+    const actionKey = templateContext.KEY;
 
-    // * create 2 new files - the scaffold and the test
-    this.log(`Adding a new ${actionType} to your project.\n`);
     const preventOverwrite = !force;
     // TODO: read from config file?
 
     this.startSpinner(
-      `Creating new file: ${getLocalFilePath(newActionDir, safeNoun)}.js`
+      `Creating new file: ${getLocalFilePath(newActionDir, actionKey)}.js`
     );
     await writeTemplateFile(
       actionType,
       templateContext,
-      getFullActionFilePathWithExtension(newActionDir, safeNoun),
+      getFullActionFilePathWithExtension(newActionDir, actionKey),
       preventOverwrite
     );
     this.stopSpinner();
@@ -81,18 +80,18 @@ class ScaffoldCommand extends BaseCommand {
     this.startSpinner(
       `Creating new test file: ${getLocalFilePath(
         newTestActionDir,
-        safeNoun
+        actionKey
       )}.js`
     );
     await writeTemplateFile(
       'test',
       templateContext,
-      getFullActionFilePathWithExtension(newTestActionDir, safeNoun),
+      getFullActionFilePathWithExtension(newTestActionDir, actionKey),
       preventOverwrite
     );
     this.stopSpinner();
 
-    // * rewire the index.js to point ot the new file
+    // * rewire the index.js to point to the new file
     this.startSpinner(`Rewriting your ${entry}`);
 
     const entryFilePath = path.join(process.cwd(), entry);
@@ -100,7 +99,7 @@ class ScaffoldCommand extends BaseCommand {
     const originalContents = await updateEntryFile(
       entryFilePath,
       templateContext.VARIABLE,
-      getFullActionFilePath(newActionDir, safeNoun),
+      getFullActionFilePath(newActionDir, actionKey),
       actionType,
       templateContext.KEY
     );
@@ -130,7 +129,7 @@ class ScaffoldCommand extends BaseCommand {
               templateContext.VARIABLE
             } = require('./${getRelativeRequirePath(
               entryFilePath,
-              getFullActionFilePath(newActionDir, safeNoun)
+              getFullActionFilePath(newActionDir, actionKey)
             )}');\` at the top-level`,
             ` * \`[${templateContext.VARIABLE}.key]: ${
               templateContext.VARIABLE
@@ -162,7 +161,7 @@ ScaffoldCommand.args = [
   {
     name: 'noun',
     help:
-      'What sort of object this action acts on. For example,  of the new thing to create',
+      'What sort of object this action acts on. For example, the name of the new thing to create',
     required: true
   }
 ];
@@ -181,7 +180,7 @@ ScaffoldCommand.flags = buildFlags({
     entry: flags.string({
       char: 'e',
       description:
-        "Supply the path to your integration's root (`index.js`). Only needed if  your `index.js` is in a subfolder, like `src`.",
+        "Supply the path to your integration's root (`index.js`). Only needed if your `index.js` is in a subfolder, like `src`.",
       default: 'index.js'
     }),
     force: flags.boolean({
