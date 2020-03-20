@@ -28,7 +28,7 @@ class InitCommand extends BaseCommand {
     const { path } = this.args;
     const { template } = this.flags;
     // sometimes the parser acts funny if there's an invalid flag and no arg, so just to double check,
-    // I've filed https://github.com/oclif/parser/issues/57
+    // see: https://github.com/oclif/parser/issues/57
     if (path.startsWith('-')) {
       this.error(`Invalid path: "${path}"`);
     }
@@ -73,5 +73,7 @@ InitCommand.description = `Initialize a new Zapier integration. Optionally uses 
 After running this, you'll have a new example integration in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
 This doesn't register or deploy the integration with Zapier - try the \`zapier register\` and \`zapier push\` commands for that!`;
+
+InitCommand.skipValidInstallCheck = true;
 
 module.exports = InitCommand;

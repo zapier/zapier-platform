@@ -136,6 +136,36 @@ describe('smoke tests - setup will take some time', () => {
     pkg.name.should.containEql('babel');
   });
 
+  it('zapier scaffold trigger neat', () => {
+    runCommand(context.cliBin, ['init', 'scaffold-town'], {
+      cwd: context.workdir
+    });
+
+    const newAppDir = path.join(context.workdir, 'scaffold-town');
+    fs.existsSync(newAppDir).should.be.true();
+
+    // npm install was already run, so it'll run the validaion function
+    runCommand(context.cliBin, ['scaffold', 'trigger', 'neat'], {
+      cwd: newAppDir
+    });
+
+    const appIndexJs = path.join(newAppDir, 'index.js');
+    const appPackageJson = path.join(newAppDir, 'package.json');
+    fs.existsSync(appIndexJs).should.be.true();
+    fs.existsSync(appPackageJson).should.be.true();
+
+    const newTrigger = path.join(newAppDir, 'triggers', 'neat.js');
+    fs.existsSync(newTrigger).should.be.true();
+
+    const newTriggerTest = path.join(newAppDir, 'test', 'triggers', 'neat.js');
+    fs.existsSync(newTriggerTest).should.be.true();
+
+    const pkg = JSON.parse(
+      fs.readFileSync(appPackageJson, { encoding: 'utf8' })
+    );
+    pkg.name.should.containEql('minimal');
+  });
+
   it('zapier integrations', function() {
     if (!context.hasRC) {
       this.skip();

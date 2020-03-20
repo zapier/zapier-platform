@@ -71,6 +71,7 @@ describe('smoke tests - setup will take some time', () => {
       context.workdir
     );
     context.testScripts.export = copyTestScript('test-export', context.workdir);
+    console.log('setup complete!');
   });
 
   after(() => {

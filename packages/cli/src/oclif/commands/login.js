@@ -145,5 +145,6 @@ LoginCommand.flags = buildFlags({
   }
 });
 LoginCommand.description = `Configure your \`${AUTH_LOCATION_RAW}\` with a deploy key.`;
+LoginCommand.skipValidInstallCheck = true;
 
 module.exports = LoginCommand;

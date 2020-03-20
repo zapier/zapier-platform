@@ -413,37 +413,37 @@ This will change the  `./.zapierapprc` (which identifies this directory as holdi
 
 ## scaffold
 
-> Add a starting resource, trigger, action, or search to your integration.
+> Add a starting trigger, create, search, or resource to your integration.
 
-**Usage**: `zapier scaffold TYPE NAME`
+**Usage**: `zapier scaffold ACTIONTYPE NOUN`
 
-The first argument should one of `resource|trigger|search|create` followed by the name of the file.
+The first argument should be one of `trigger|search|create|resource` followed by the noun that this will act on (something like "contact" or "deal").
 
 The scaffold command does two general things:
 
-* Creates a new destination file like `resources/contact.js`
+* Creates a new file (such as `triggers/contact.js`)
 
-* (Attempts to) import and register it inside your entry `index.js`
+* Imports and registers it inside your `index.js`
 
 You can mix and match several options to customize the created scaffold for your project.
 
-We may fail to correctly rewrite your `index.js`. You may need to write in the require and registration, but we'll provide the code you need.
-
 **Arguments**
-* (required) `type` | undefined
-* (required) `name` | undefined
+* (required) `actionType` | undefined
+* (required) `noun` | undefined
 
 **Flags**
-* `-d, --dest` | Sets the new file's path. Use this flag when you want to create a different folder structure such as `src/triggers/my_trigger` The default destination is {type}s/{name}.
-* `-e, --entry` | Where to import the new file.  Defaults to `index.js`.
-* `-f, --force` | Should we overwrite an exisiting file.
+* `-d, --dest` | Specify the new file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `[triggers|searches|creates]/{noun}`.
+* `--test-dest` | Specify the new test file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `test/[triggers|searches|creates]/{noun}`.
+* `-e, --entry` | Supply the path to your integration's root (`index.js`). Only needed if your `index.js` is in a subfolder, like `src`.  Defaults to `index.js`.
+* `-f, --force` | Should we overwrite an exisiting trigger/search/create file?
+* `--no-help` | When scaffolding, should we skip adding helpful intro comments? Useful if this isn't your first rodeo.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
-* `zapier scaffold resource "Contact"`
-* `zapier scaffold create "Add Contact" --entry=index.js`
-* `zapier scaffold search "Find Contact" --dest=searches/contact`
-* `zapier scaffold trigger "New Contact" --force`
+* `zapier scaffold trigger contact`
+* `zapier scaffold search contact --dest=my_src/searches`
+* `zapier scaffold create contact --entry=src/index.js`
+* `zapier scaffold resource contact --force`
 
 
 ## team:add

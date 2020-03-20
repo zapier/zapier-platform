@@ -9,14 +9,10 @@ const appTester = zapier.createAppTester(App);
 zapier.tools.env.inject();
 
 describe('My App', () => {
-  it('should run <%= TYPE %>s.<%= KEY %>', done => {
+  it('should run <%= ACTION_PLURAL %>.<%= KEY %>', async () => {
     const bundle = { inputData: {} };
 
-    appTester(App.<%= TYPE_PLURAL %>.<%= KEY %>.<%= MAYBE_RESOURCE %>operation.perform, bundle)
-      .then(results => {
-        should.exist(results);
-        done();
-      })
-      .catch(done);
+    const results = await appTester(App.<%= ACTION_PLURAL %>.<%= KEY %>.<%= MAYBE_RESOURCE %>operation.perform, bundle);
+    should.exist(results);
   });
 });

@@ -29,5 +29,6 @@ IntegrationsCommand.aliases = ['apps'];
 IntegrationsCommand.description = `List integrations you have admin access to.
 
 This command also checks the current directory for a linked integration.`;
+IntegrationsCommand.skipValidInstallCheck = true;
 
 module.exports = IntegrationsCommand;

@@ -129,4 +129,6 @@ If you re-run this command on an existing directory it will leave existing files
 
 You'll need to do a \`zapier push\` before the new version is visible in the editor, but otherwise you're good to go.`;
 
+ConvertCommand.skipValidInstallCheck = true;
+
 module.exports = ConvertCommand;

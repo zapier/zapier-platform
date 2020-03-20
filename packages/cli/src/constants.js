@@ -43,6 +43,9 @@ const UPDATE_NOTIFICATION_INTERVAL = 1000 * 60 * 60 * 24 * 7; // one week
 const CHECK_REF_DOC_LINK =
   'https://platform.zapier.com/docs/integration-checks-reference';
 
+const ISSUES_URL =
+  'https://github.com/zapier/zapier-platform/issues/new/choose';
+
 // can't just read from argv because they could have lots of extra data, such as
 // [ '/Users/david/.nvm/versions/node/v10.13.0/bin/node',
 //   '/Users/david/projects/zapier/platform/node_modules/.bin/mocha',
@@ -69,6 +72,7 @@ module.exports = {
   DEFINITION_PATH,
   ENDPOINT,
   IS_TESTING,
+  ISSUES_URL,
   LAMBDA_VERSION,
   LEGACY_RUNNER_PACKAGE,
   PACKAGE_NAME,
