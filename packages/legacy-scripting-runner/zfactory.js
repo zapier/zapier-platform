@@ -118,7 +118,7 @@ const zfactory = (zcli, app) => {
   };
 
   const hmac = (algorithm, key, string, encoding = 'hex') => {
-    const hasher = crypto.createHash(algorithm, key);
+    const hasher = crypto.createHmac(algorithm, key);
     hasher.update(string);
 
     return hasher.digest(encoding);

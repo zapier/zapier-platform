@@ -30,7 +30,7 @@ module.exports = {
   noun: 'Recipe',
   display: {
     label: 'New Recipe',
-    description: 'Trigger when a new recipe is added.'
+    description: 'Triggers when a new recipe is added.'
   },
 
   // `operation` is where the business logic goes.

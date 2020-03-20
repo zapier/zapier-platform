@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-core",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "description": "The core SDK for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-core",
   "homepage": "https://zapier.com/",
@@ -8,11 +8,15 @@
   "license": "UNLICENSED",
   "main": "index.js",
   "typings": "index.d.ts",
-  "files": ["/include/", "/index.d.ts", "/index.js", "/src/"],
+  "files": [
+    "/include/",
+    "/index.d.ts",
+    "/index.js",
+    "/src/"
+  ],
   "scripts": {
     "preversion": "git pull && yarn test",
-    "version":
-      "node bin/bump-dependencies.js && yarn && git add package.json yarn.lock",
+    "version": "node bin/bump-dependencies.js && yarn && git add package.json yarn.lock",
     "postversion": "git push && git push --tags",
     "test": "mocha -t 20000 --recursive test",
     "debug": "mocha -t 10000 --inspect-brk --recursive test",
@@ -25,11 +29,7 @@
     "lint": "eslint src test --fix",
     "build-integration-test": "bin/build.sh local.bundle.zip",
     "upload-integration-test": "bin/upload-lambda.js local.bundle.zip",
-    "deploy-integration-test":
-      "yarn build-integration-test && yarn upload-integration-test",
-    "build-boilerplate": "bin/build-boilerplate.sh",
-    "upload-boilerplate": "bin/upload-boilerplate.sh",
-    "postpublish": "bin/build-boilerplate.sh && bin/upload-boilerplate.sh",
+    "deploy-integration-test": "yarn build-integration-test && yarn upload-integration-test",
     "validate": "yarn test && yarn smoke-test && yarn lint"
   },
   "engines": {
@@ -46,7 +46,7 @@
     "node-fetch": "2.6.0",
     "oauth-sign": "0.9.0",
     "semver": "5.6.0",
-    "zapier-platform-schema": "9.0.0"
+    "zapier-platform-schema": "9.1.0"
   },
   "devDependencies": {
     "adm-zip": "0.4.13",
@@ -55,6 +55,6 @@
     "mock-fs": "4.10.1"
   },
   "optionalDependencies": {
-    "@types/node": "8.10.20"
+    "@types/node": "^10"
   }
 }

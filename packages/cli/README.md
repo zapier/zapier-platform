@@ -3094,7 +3094,7 @@ The Zapier platform and its tools are under active development. While you don't 
 Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is `9.0.0`. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is `9.1.0`. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 
@@ -3114,7 +3114,6 @@ This section is only relevant if you're editing the `zapier-platform-cli` packag
 - `npm run watch` for automatically building as you work
 - `npm test` for running tests (also runs `npm run build`)
 - `npm link` (while in this project's directory) and then use `zapier` command elsewhere
-- `npm run test-convert` for running integration tests for the `zapier convert` command
 - `npm run docs` for updating docs
 - `npm run gen-completions` for updating the auto complete scripts
 
@@ -3126,4 +3125,4 @@ This section is only relevant if you're editing the `zapier-platform-cli` packag
 
 ## Get Help!
 
-You can get help by either emailing partners@zapier.com or by [joining our Slack team here](https://join.slack.com/t/zapier-platform/shared_invite/enQtNTg1MjM5NjMzNTI3LTUyYWJjM2E1NTQ3NjViMGY0MzQ1NWJiMDJmNjcyNTJjMWRlOTg4MTNjOWEwNDFlNGExODU5OTgzNWM3MzZlMjk).
+You can get help by either emailing partners@zapier.com or by [joining our Slack team here](https://join.slack.com/t/zapier-platform/shared_invite/enQtOTgyMjkzNDU1NjM5LWM1MGQ1YmY5ODgxNmM1NjIzZTk3NjNkMzFlZWExYzU2MDJjNTVmNDEzMWUzYjdlNmMzZGViMzE0YjhlOGIyZDA).

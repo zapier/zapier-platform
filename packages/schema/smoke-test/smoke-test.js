@@ -79,7 +79,7 @@ describe('smoke tests - setup will take some time', () => {
     fs.removeSync(context.workdir);
   });
 
-  it('package size should not change much', async () => {
+  it('package size should not change much', async function() {
     const baseUrl = 'https://registry.npmjs.org/zapier-platform-schema';
     let res = await fetch(baseUrl);
     const packageInfo = await res.json();
@@ -94,6 +94,8 @@ describe('smoke tests - setup will take some time', () => {
     const baselineSize = res.headers.get('content-length');
     const newSize = fs.statSync(context.package.path).size;
     newSize.should.be.within(baselineSize * 0.7, baselineSize * 1.3);
+
+    this.test.title += ` (${baselineSize} -> ${newSize} bytes)`;
   });
 
   it('should to able to validate app definitions', () => {

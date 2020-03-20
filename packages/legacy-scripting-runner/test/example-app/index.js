@@ -87,10 +87,13 @@ const legacyScriptingSource = `
 
       pre_oauthv2_refresh_bundle_load: function(bundle) {
         bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
-        debugger;
         bundle.request.data = qs.stringify(bundle.load);
         bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
         return bundle.request;
+      },
+
+      post_oauthv2_token_returns_nothing: function(bundle) {
+        // do nothing
       },
 
       get_connection_label: function(bundle) {
@@ -146,8 +149,34 @@ const legacyScriptingSource = `
         contacts[0].isPlainObject = $.isPlainObject(contacts);
         contacts[0].trimmed = $.trim(' hello world  ');
         contacts[0].type = $.type(contacts);
+        contacts[0].extend = $.extend({}, { extended: true });
+
+        var base = 1000;
+        $.each(contacts, function(index, item) {
+          // 'item' and 'this' should be the same object
+          this.anotherId = base;
+          item.anotherId += index;
+        });
 
         return contacts;
+      },
+
+      contact_post_post_poll_jquery_dom: function(bundle) {
+        // Common jQuery DOM manipulation
+        var xml = $.parseXML(
+          '<?xml version="1.0">' +
+          '<contacts>' +
+          '<contact><id>123</id><name>Alice</name></contact>' +
+          '<contact><id>456</id><name>Bob</name></contact>' +
+          '</contacts>'
+        );
+        return _.map($(xml).find('contact'), function(contact) {
+          var $contact = $(contact);
+          return {
+            id: parseInt($contact.find('id').text()),
+            name: $contact.find('name').text()
+          };
+        });
       },
 
       contact_pre_post_pre_poll: function(bundle) {
@@ -211,6 +240,28 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_number_header: function(bundle) {
+        bundle.request.headers['x-api-key'] = Math.floor( Date.now() / 1000 )
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        return bundle.request;
+      },
+
+      getMovesUrl: function() {
+        return '${AUTH_JSON_SERVER_URL}/movies';
+      },
+
+      movie_pre_poll_this_binding: function(bundle) {
+        // 'this' should be bound to 'Zap'
+        bundle.request.url = this.getMovesUrl();
+        return bundle.request;
+      },
+
+      movie_pre_poll_error: function(bundle) {
+        var foo;
+        foo.bar = 1;
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];
@@ -256,6 +307,16 @@ const legacyScriptingSource = `
           contact.luckyNumber = contact.id * 10;
         }
         return results;
+      },
+
+      contact_hook_scripting_catch_hook_raw_request: function(bundle) {
+        // Make sure bundle.request is kept intact
+        return {
+          id: 1,
+          headers: bundle.request.headers,
+          querystring: bundle.request.querystring,
+          content: bundle.request.content
+        };
       },
 
       // To be replaced with 'contact_hook_scripting_pre_hook' at runtime to enable
@@ -406,6 +467,19 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_write_action_fields: function(bundle) {
+        // Make sure bundle.action_fields is filtered, bundle.action_fields_full
+        // isn't, and bundle.action_fields_raw still got curlies
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.data = z.JSON.stringify({
+          action_fields: bundle.action_fields,
+          action_fields_full: bundle.action_fields_full,
+          action_fields_raw: bundle.action_fields_raw,
+          orig_data: z.JSON.parse(bundle.request.data)
+        });
+        return bundle.request;
+      },
+
       movie_post_write_sloppy_mode: function(bundle) {
         // Would throw a ReferenceError in strict mode
         data = z.JSON.parse(bundle.response.content);
@@ -525,7 +599,6 @@ const legacyScriptingSource = `
           type: 'dict',
           list: true
         });
-        debugger;
         return fields;
       },
 

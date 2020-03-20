@@ -8,6 +8,7 @@ const {
   PACKAGE_VERSION,
   PLATFORM_PACKAGE,
   LAMBDA_VERSION,
+  LEGACY_RUNNER_PACKAGE,
   IS_TESTING
 } = require('../constants');
 const { copyFile, ensureDir, readFile, writeFile } = require('./files');
@@ -97,35 +98,45 @@ const getAuthFieldKeys = appDefinition => {
   return fieldKeys;
 };
 
-const renderLegacyPackageJson = async (legacyApp, appDefinition) => {
+const renderPackageJson = async (appInfo, appDefinition) => {
+  const name = _.kebabCase(
+    appInfo.title || _.get(appInfo, ['general', 'title'])
+  );
+
   // Not using escapeSpecialChars because we don't want to escape single quotes (not
   // allowed in JSON)
-  const description = legacyApp.general.description
+  const description = (
+    appInfo.description ||
+    _.get(appInfo, ['general', 'description']) ||
+    ''
+  )
     .replace(/\n/g, '\\n')
     .replace(/"/g, '\\"');
 
-  const runnerVersion = await getPackageLatestVersion(
-    'zapier-platform-legacy-scripting-runner'
-  );
+  const version = appDefinition.version
+    ? semver.inc(appDefinition.version, 'patch')
+    : '1.0.0';
 
-  const templateContext = {
-    name: _.kebabCase(legacyApp.general.title),
-    description,
-    appId: legacyApp.general.app_id || 'null',
-    cliVersion: PACKAGE_VERSION,
-    coreVersion: appDefinition.platformVersion,
-    runnerVersion
+  const dependencies = {
+    [PLATFORM_PACKAGE]: appDefinition.platformVersion
   };
+  if (appDefinition.legacy) {
+    const runnerVersion = await getPackageLatestVersion(LEGACY_RUNNER_PACKAGE);
+    dependencies[LEGACY_RUNNER_PACKAGE] = runnerVersion;
+  }
 
-  const templateFile = path.join(TEMPLATE_DIR, '/package.template.json');
-  return renderTemplate(templateFile, templateContext);
-};
+  const zapierMeta = {
+    convertedByCLIVersion: PACKAGE_VERSION
+  };
+  const legacyAppId = _.get(appInfo, ['general', 'app_id']);
+  if (legacyAppId) {
+    zapierMeta.convertedFromAppID = legacyAppId;
+  }
 
-const renderVisualPackageJson = (appInfo, appDefinition) => {
   const pkg = {
-    name: _.kebabCase(appInfo.title),
-    version: semver.inc(appDefinition.version, 'patch'),
-    description: appInfo.description,
+    name,
+    version,
+    description,
     main: 'index.js',
     scripts: {
       test: 'mocha --recursive -t 10000'
@@ -134,14 +145,13 @@ const renderVisualPackageJson = (appInfo, appDefinition) => {
       node: `>=${LAMBDA_VERSION}`,
       npm: '>=5.6.0'
     },
-    dependencies: {
-      [PLATFORM_PACKAGE]: appDefinition.platformVersion
-    },
+    dependencies,
     devDependencies: {
       mocha: '^5.2.0',
       should: '^13.2.0'
     },
-    private: true
+    private: true,
+    zapier: zapierMeta
   };
 
   return prettifyJSON(pkg);
@@ -157,7 +167,7 @@ const renderStep = (type, definition) => {
       if (func && func.source) {
         const args = func.args || ['z', 'bundle'];
         functionBlock.push(
-          `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
+          `const ${funcName} = (${args.join(', ')}) => {\n${func.source}\n};`
         );
 
         exportBlock.operation[funcName] = makePlaceholder(funcName);
@@ -178,7 +188,9 @@ const renderStep = (type, definition) => {
             funcNum ? funcNum++ : ++funcNum && ''
           }`;
           functionBlock.push(
-            `const ${funcName} = (${args.join(', ')}) => {${maybeFunc.source}};`
+            `const ${funcName} = (${args.join(', ')}) => {\n${
+              maybeFunc.source
+            }\n};`
           );
 
           exportBlock.operation[key][index] = makePlaceholder(funcName);
@@ -416,10 +428,8 @@ const writeAuth = async (appDefinition, newAppDir) => {
   await createFile(content, 'authentication.js', newAppDir);
 };
 
-const writePackageJson = async (appInfo, appDefinition, newAppDir, legacy) => {
-  const content = legacy
-    ? await renderLegacyPackageJson(appInfo, appDefinition)
-    : renderVisualPackageJson(appInfo, appDefinition);
+const writePackageJson = async (appInfo, appDefinition, newAppDir) => {
+  const content = await renderPackageJson(appInfo, appDefinition);
   await createFile(content, 'package.json', newAppDir);
 };
 
@@ -450,32 +460,21 @@ const writeGitIgnore = async newAppDir => {
   const srcPath = path.join(TEMPLATE_DIR, '/gitignore');
   const destPath = path.join(newAppDir, '/.gitignore');
   await copyFile(srcPath, destPath);
-  startSpinner('Writing .gitignore');
-  endSpinner();
 };
 
-const writeLegacyZapierAppRc = async newAppDir => {
-  const content = prettifyJSON({
-    includeInBuild: ['scripting.js']
-  });
+const writeZapierAppRc = async (appInfo, appDefinition, newAppDir) => {
+  const json = {};
+  if (appInfo.id) {
+    json.id = appInfo.id;
+  }
+  if (appDefinition.legacy) {
+    json.includeInBuild = ['scripting.js'];
+  }
+  const content = prettifyJSON(json);
   await createFile(content, '.zapierapprc', newAppDir);
-  startSpinner('Writing .zapierapprc');
-  endSpinner();
 };
 
-const writeVisualZapierAppRc = async (newAppDir, id) => {
-  const content = prettifyJSON({
-    id
-  });
-  await createFile(content, '.zapierapprc', newAppDir);
-  startSpinner('Writing .zapierapprc');
-  endSpinner();
-};
-
-const convertApp = async (appInfo, appDefinition, newAppDir, opts = {}) => {
-  const defaultOpts = { legacy: true };
-  const { legacy } = { ...defaultOpts, ...opts };
-
+const convertApp = async (appInfo, appDefinition, newAppDir) => {
   if (IS_TESTING) {
     startSpinner = endSpinner = () => null;
   }
@@ -484,8 +483,8 @@ const convertApp = async (appInfo, appDefinition, newAppDir, opts = {}) => {
 
   ['triggers', 'creates', 'searches'].forEach(stepType => {
     _.each(appDefinition[stepType], (definition, key) => {
-      promises.push(writeStep(stepType, definition, key, newAppDir));
       promises.push(
+        writeStep(stepType, definition, key, newAppDir),
         writeStepTest(stepType, definition, key, appDefinition, newAppDir)
       );
     });
@@ -501,24 +500,18 @@ const convertApp = async (appInfo, appDefinition, newAppDir, opts = {}) => {
     promises.push(writeScripting(appDefinition, newAppDir));
   }
 
-  promises.push(writePackageJson(appInfo, appDefinition, newAppDir, legacy));
-  promises.push(writeIndex(appDefinition, newAppDir));
-  promises.push(writeEnvironment(appDefinition, newAppDir));
-  promises.push(writeGitIgnore(newAppDir));
   promises.push(
-    legacy
-      ? writeLegacyZapierAppRc(newAppDir)
-      : writeVisualZapierAppRc(newAppDir, appInfo.id)
+    writePackageJson(appInfo, appDefinition, newAppDir),
+    writeIndex(appDefinition, newAppDir),
+    writeEnvironment(appDefinition, newAppDir),
+    writeGitIgnore(newAppDir),
+    writeZapierAppRc(appInfo, appDefinition, newAppDir)
   );
 
   return Promise.all(promises);
 };
 
-const convertVisualApp = _.partialRight(convertApp, { legacy: false });
-const convertLegacyApp = _.partialRight(convertApp, { legacy: true });
-
 module.exports = {
   renderTemplate,
-  convertLegacyApp,
-  convertVisualApp
+  convertApp
 };

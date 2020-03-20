@@ -7,8 +7,9 @@ const os = require('os');
 const path = require('path');
 
 require('should');
-const AdmZip = require('adm-zip');
 const fetch = require('node-fetch');
+
+const CORE_PACKAGE_NAME = 'zapier-platform-core';
 
 const TEST_APPS = [
   'basic-auth',
@@ -84,60 +85,43 @@ const setupTempWorkingDir = () => {
   return workdir;
 };
 
-const downloadRepoZip = async workdir => {
-  const zipUrl = 'https://github.com/zapier/zapier-platform/archive/master.zip';
-  const res = await fetch(zipUrl);
-
-  const zipPath = path.join(workdir, 'repo.zip');
-  const dest = fs.createWriteStream(zipPath);
-
-  return new Promise((resolve, reject) => {
-    res.body.pipe(dest);
-    res.body.on('error', err => {
-      reject(err);
-    });
-    dest.on('finish', () => {
-      resolve(zipPath);
-    });
-    dest.on('error', err => {
-      reject(err);
+const copyTestApps = workdir => {
+  const repoRoot = path.dirname(path.dirname(path.dirname(__dirname)));
+  TEST_APPS.forEach(appName => {
+    const srcAppDir = path.join(repoRoot, 'example-apps', appName);
+    const destAppDir = path.join(workdir, appName);
+    fs.copySync(srcAppDir, destAppDir, {
+      filter: (src, dest) => !src.includes('node_modules/')
     });
   });
 };
 
-const extractExampleApps = (zipPath, workdir) => {
-  const zip = new AdmZip(zipPath);
+const npmInstalls = (coreZipPath, workdir) => {
+  // When releasing a new core version, example apps would have bumped their
+  // core before the new core version is published to npm. So we need to patch
+  // example app's package.json to use local core temporarily to avoid `npm
+  // install` error.
+  const packageJsonPath = path.join(workdir, 'package.json');
+  const origPackageJsonText = fs.readFileSync(packageJsonPath);
+  const packageJson = JSON.parse(origPackageJsonText);
+  packageJson.dependencies[CORE_PACKAGE_NAME] = `file:${coreZipPath}`;
 
-  zip.getEntries().forEach(entry => {
-    if (!entry.isDirectory) {
-      // Skip top-level directory, we don't care if this would ever work on Windows
-      const entryPath = entry.entryName
-        .split('/')
-        .slice(1)
-        .join('/');
-      if (entryPath && entryPath.startsWith('example-apps')) {
-        const destDir = path.join(workdir, path.dirname(entryPath));
-        zip.extractEntryTo(entry, destDir, false);
-      }
-    }
-  });
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
 
-  fs.unlinkSync(zipPath);
-};
-
-const npmInstalls = (packagePath, workdir) => {
-  spawnSync('npm', ['install'], {
-    encoding: 'utf8',
-    cwd: workdir
-  });
-  spawnSync('npm', ['install', 'zapier-platform-cli'], {
-    encoding: 'utf8',
-    cwd: workdir
-  });
-  spawnSync('npm', ['install', '--no-save', packagePath], {
-    encoding: 'utf8',
-    cwd: workdir
-  });
+  try {
+    spawnSync('npm', ['install'], {
+      encoding: 'utf8',
+      cwd: workdir
+    });
+    spawnSync('npm', ['install', 'zapier-platform-cli'], {
+      encoding: 'utf8',
+      cwd: workdir
+    });
+  } finally {
+    fs.writeFileSync(packageJsonPath, origPackageJsonText, {
+      encoding: 'utf8'
+    });
+  }
 };
 
 describe('smoke tests - setup will take some time', () => {
@@ -163,8 +147,8 @@ describe('smoke tests - setup will take some time', () => {
     context.package.path = path.join(process.cwd(), context.package.filename);
 
     context.workRepoDir = setupTempWorkingDir();
-    const repoZipPath = await downloadRepoZip(context.workRepoDir);
-    extractExampleApps(repoZipPath, context.workRepoDir);
+
+    copyTestApps(context.workRepoDir);
   });
 
   after(() => {
@@ -172,7 +156,7 @@ describe('smoke tests - setup will take some time', () => {
     fs.removeSync(context.workRepoDir);
   });
 
-  it('package size should not change much', async () => {
+  it('package size should not change much', async function() {
     const baseUrl = 'https://registry.npmjs.org/zapier-platform-core';
     let res = await fetch(baseUrl);
     const packageInfo = await res.json();
@@ -187,16 +171,14 @@ describe('smoke tests - setup will take some time', () => {
     const baselineSize = res.headers.get('content-length');
     const newSize = fs.statSync(context.package.path).size;
     newSize.should.be.within(baselineSize * 0.7, baselineSize * 1.3);
+
+    this.test.title += ` (${baselineSize} -> ${newSize} bytes)`;
   });
 
   TEST_APPS.forEach(appName => {
     describe(appName, () => {
       before(async () => {
-        context.workAppDir = path.join(
-          context.workRepoDir,
-          'example-apps',
-          appName
-        );
+        context.workAppDir = path.join(context.workRepoDir, appName);
         npmInstalls(context.package.path, context.workAppDir);
 
         context.hasAppRC = setupZapierAppRC(context.workAppDir);
@@ -231,15 +213,18 @@ describe('smoke tests - setup will take some time', () => {
           return;
         }
 
-        const proc = spawnSync(context.cliBin, ['build'], {
-          encoding: 'utf8',
-          cwd: context.workAppDir,
-          env: {
-            SKIP_NPM_INSTALL: '1',
-            PATH: process.env.PATH,
-            DISABLE_ZAPIER_ANALYTICS: 1
+        const proc = spawnSync(
+          context.cliBin,
+          ['build', '--skip-npm-install'],
+          {
+            encoding: 'utf8',
+            cwd: context.workAppDir,
+            env: {
+              PATH: process.env.PATH,
+              DISABLE_ZAPIER_ANALYTICS: 1
+            }
           }
-        });
+        );
         if (proc.status !== 0) {
           console.log(proc.stdout);
           console.log(proc.stderr);

@@ -220,7 +220,7 @@ const cleanHeaders = headers => {
       k = k.replace(badChars, '').trim();
     }
     if (k) {
-      if (v) {
+      if (v && v.replace) {
         v = v.replace(badChars, '').trim();
       }
       newHeaders[k] = v;
@@ -357,6 +357,7 @@ const createEventNameToMethodMapping = key => {
 
 const legacyScriptingRunner = (Zap, zcli, input) => {
   const app = _.get(input, '_zapier.app');
+  const logger = _.get(input, '_zapier.logger');
 
   if (typeof Zap === 'string') {
     Zap = compileLegacyScriptingSource(Zap, zcli, app);
@@ -523,21 +524,27 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           );
 
           // method.length is the number of args method accepts
-          const method = Zap[methodName];
+          const method = Zap[methodName].bind(Zap);
           const isAsync = method.length > 1;
           let result;
           try {
             result = method(convertedBundle, optionalCallback);
           } catch (err) {
             reject(err);
+            return;
           }
 
-          // Handle sync
-          if (!isAsync) {
-            parseFinalResult(result, event).then(res => {
-              resolve(res);
-            });
-          }
+          logger(`Called legacy scripting ${methodName}`, {
+            request_data: convertedBundle,
+            log_type: 'bundle'
+          }).then(() => {
+            // Handle sync
+            if (!isAsync) {
+              parseFinalResult(result, event).then(res => {
+                resolve(res);
+              });
+            }
+          });
         } else {
           resolve({});
         }
@@ -568,10 +575,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       //       returns the first top-level array in the result if result
       //       is an object.
       //   - 'object-first': returns the first object if result is an array.
+      // * defaultToResponse: default to response if post method returns empty
       checkResponseStatus: true,
       parseResponse: true,
       ensureType: false,
       resetRequestForFullMethod: false,
+      defaultToResponse: false,
 
       ...options
     };
@@ -639,6 +648,13 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           zcli,
           bundle
         );
+        if (options.defaultToResponse && !result) {
+          try {
+            result = zcli.JSON.parse(response.content);
+          } catch {
+            result = {};
+          }
+        }
       } else {
         try {
           result = zcli.JSON.parse(response.content);
@@ -732,15 +748,14 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
       urlObj.searchParams.set('client_id', clientId);
     }
-    if (!urlObj.searchParams.has('redirect_uri')) {
-      urlObj.searchParams.set('redirect_uri', bundle.inputData.redirect_uri);
-    }
     if (!urlObj.searchParams.has('response_type')) {
       urlObj.searchParams.set('response_type', 'code');
     }
-    if (!urlObj.searchParams.has('state')) {
-      urlObj.searchParams.set('state', bundle.inputData.state);
-    }
+
+    urlObj.searchParams.set('redirect_uri', bundle.inputData.redirect_uri);
+    urlObj.searchParams.set('state', bundle.inputData.state);
+
+    urlObj.searchParams.sort();
 
     return urlObj.href;
   };
@@ -773,7 +788,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       bundle,
       '',
       'auth.oauth2.token.pre',
-      'auth.oauth2.token.post'
+      'auth.oauth2.token.post',
+      undefined,
+      { defaultToResponse: true }
     ).catch(() => {
       request = bundle.request;
       request.body = {};
@@ -789,7 +806,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         bundle,
         '',
         'auth.oauth2.token.pre',
-        'auth.oauth2.token.post'
+        'auth.oauth2.token.post',
+        undefined,
+        { defaultToResponse: true }
       );
     });
   };
@@ -1034,6 +1053,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const legacyProps = _.get(app, `legacy.creates.${key}.operation`) || {};
     const needsFlattenedData = _.get(app, 'legacy.needsFlattenedData');
     const url = legacyProps.url;
+
+    // This represents the "Send to Action Endpoint URL in JSON body" checkbox.
+    // If unchecked, the action field will be in this array.
     const fieldsExcludedFromBody = legacyProps.fieldsExcludedFromBody || [];
 
     const inputFields =
@@ -1060,6 +1082,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     if (url) {
       bundle._legacyUrl = url;
     }
+
+    bundle._fieldsExcludedFromBody = fieldsExcludedFromBody;
 
     return runEventCombo(
       bundle,

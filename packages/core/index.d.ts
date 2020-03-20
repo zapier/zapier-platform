@@ -14,10 +14,10 @@ export const tools: { env: { inject: (filename?: string) => void } };
 export const createAppTester: (
   appRaw: object,
   options?: { customStoreKey?: string }
-) => <T extends any, B extends Bundle>(
-  func: (z: ZObject, bundle: B) => Promise<T>,
+) => <T, B extends Bundle>(
+  func: (z: ZObject, bundle: B) => T | Promise<T>,
   bundle?: Partial<B> // partial so we don't have to make a full bundle in tests
-) => T extends Promise<T> ? T : Promise<T>;
+) => Promise<T>; // appTester always returns a promise
 
 // internal only
 // export const integrationTestHandler: () => any;
@@ -51,12 +51,14 @@ export interface Bundle<InputData = { [x: string]: any }> {
     headers: { [x: string]: string };
     content: string;
   }>;
-  cleanedRequest?: Partial<{
-    method: HttpMethod;
-    querystring: { [x: string]: string };
-    headers: { [x: string]: string };
-    content: { [x: string]: string };
-  }> | any;
+  cleanedRequest?:
+    | Partial<{
+        method: HttpMethod;
+        querystring: { [x: string]: string };
+        headers: { [x: string]: string };
+        content: { [x: string]: string };
+      }>
+    | any;
   subscribeData?: { id: string };
   targetUrl?: string;
 }

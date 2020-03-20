@@ -2,7 +2,7 @@ const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 
 const { callAPI } = require('../../utils/api');
-const { convertVisualApp, convertLegacyApp } = require('../../utils/convert');
+const { convertApp } = require('../../utils/convert');
 const { isExistingEmptyDir } = require('../../utils/files');
 const { initApp } = require('../../utils/init');
 const { BASE_ENDPOINT } = require('../../constants');
@@ -30,7 +30,7 @@ class ConvertCommand extends BaseCommand {
           }
           this.stopSpinner();
 
-          return convertVisualApp(
+          return convertApp(
             appInfo,
             versionInfo.definition_override,
             tempAppDir
@@ -62,7 +62,7 @@ class ConvertCommand extends BaseCommand {
 
           this.stopSpinner();
 
-          return convertLegacyApp(legacyApp, appDefinition, tempAppDir);
+          return convertApp(legacyApp, appDefinition, tempAppDir);
         } catch (e) {
           if (e.status === 404) {
             this.error(

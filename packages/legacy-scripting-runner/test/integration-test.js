@@ -166,6 +166,32 @@ describe('Integration Test', () => {
       });
     });
 
+    it('oauth2 authorizeUrl, redirect_uri and state replacement', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.authentication.oauth2Config.authorizeUrl +=
+        '?redirect_uri=https%3A%2F%2Fexample.com%2Fold&state=abcd';
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.authorizeUrl'
+      );
+      input.bundle.inputData = {
+        redirect_uri: 'https://example.com/new',
+        state: 'qwerty'
+      };
+      return app(input).then(output => {
+        should.equal(
+          output.results,
+          `${AUTH_JSON_SERVER_URL}/oauth/authorize?` +
+            'client_id=1234&' +
+            'redirect_uri=https%3A%2F%2Fexample.com%2Fnew&' +
+            'response_type=code&state=qwerty'
+        );
+      });
+    });
+
     it('pre_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
@@ -360,6 +386,34 @@ describe('Integration Test', () => {
           grant_type: ['refresh_token'],
           refresh_token: ['my_refresh_token']
         });
+      });
+    });
+
+    it('post_oauthv2_token, returns nothing', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'post_oauthv2_token:',
+        'dont_care:'
+      );
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'post_oauthv2_token_returns_nothing',
+        'post_oauthv2_token'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.getAccessToken'
+      );
+      input.bundle.inputData = {
+        redirect_uri: 'https://example.com',
+        code: 'one_time_code'
+      };
+      return app(input).then(output => {
+        should.equal(output.results.access_token, 'a_token');
+        should.equal(output.results.something_custom, 'alright!');
+        should.not.exist(output.results.name);
       });
     });
   });
@@ -620,6 +674,67 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, hash in headers', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_number_header',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then(output => {
+        const echoed = output.results[0];
+        should.exist(echoed.headers['X-Api-Key']);
+      });
+    });
+
+    it('KEY_pre_poll, this binding', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_this_binding',
+        'movie_pre_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then(output => {
+        const movies = output.results;
+        movies.length.should.greaterThan(1);
+        should.equal(movies[0].title, 'title 1');
+      });
+    });
+
+    it('KEY_pre_poll, error properly', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_error',
+        'movie_pre_poll'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return app(input).should.be.rejectedWith(/'bar' of undefined/);
+    });
+
     it('KEY_pre_poll, _.template(bundle.request.url)', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
@@ -641,7 +756,7 @@ describe('Integration Test', () => {
       });
     });
 
-    it('KEY_post_poll, with jQuery', () => {
+    it('KEY_post_poll, jQuery utils', () => {
       const input = createTestInput(
         compiledApp,
         'triggers.contact_post.operation.perform'
@@ -664,6 +779,45 @@ describe('Integration Test', () => {
         firstContact.isPlainObject.should.be.false();
         should.equal(firstContact.trimmed, 'hello world');
         should.equal(firstContact.type, 'array');
+        firstContact.extend.should.deepEqual({ extended: true });
+
+        const secondContact = output.results[1];
+        should.equal(firstContact.anotherId, 1000);
+        should.equal(secondContact.anotherId, 1001);
+      });
+    });
+
+    it('KEY_post_poll, jQuery DOM', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'contact_post_post_poll:',
+        'contact_post_post_poll_disabled:'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'contact_post_post_poll_jquery_dom',
+        'contact_post_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.contact_post.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then(output => {
+        const contacts = output.results;
+        should.equal(contacts.length, 2);
+
+        should.deepEqual(contacts[0], {
+          id: 123,
+          name: 'Alice'
+        });
+        should.deepEqual(contacts[1], {
+          id: 456,
+          name: 'Bob'
+        });
       });
     });
 
@@ -1021,6 +1175,34 @@ describe('Integration Test', () => {
         should.equal(contacts[1].id, 22);
         should.equal(contacts[1].name, 'Dave');
         should.equal(contacts[1].luckyNumber, 220);
+      });
+    });
+
+    it('KEY_catch_hook, raw request', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'contact_hook_scripting_catch_hook_raw_request',
+        'contact_hook_scripting_catch_hook'
+      );
+      const app = createApp(appDef);
+      const input = createTestInput(
+        appDef,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      input.bundle.rawRequest = {
+        headers: {
+          'Content-Type': 'application/xml',
+          'Http-X-Custom': 'hello'
+        },
+        content: '<name>Tom</name>',
+        querystring: 'foo=bar'
+      };
+      return app(input).then(output => {
+        const result = output.results[0];
+        should.equal(result.headers['Content-Type'], 'application/xml');
+        should.equal(result.headers['Http-X-Custom'], 'hello');
+        should.equal(result.content, '<name>Tom</name>');
+        should.equal(result.querystring, 'foo=bar');
       });
     });
 
@@ -1465,6 +1647,42 @@ describe('Integration Test', () => {
             genre: 'Fantasy'
           }
         });
+      });
+    });
+
+    it('KEY_pre_write, bundle.action_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_pre_write_unflatten',
+        'movie_pre_write'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        title: 'The Shape of Water'
+      };
+      input.bundle.inputDataRaw = {
+        title: '{{123__title}}'
+      };
+      return app(input).then(output => {
+        const echoed = output.results.json;
+
+        // Doesn't have 'title' because it's in fieldsExcludedFromBody
+        should.deepEqual(echoed.action_fields, {});
+        should.deepEqual(echoed.action_fields_full, {
+          title: 'The Shape of Water'
+        });
+        should.deepEqual(echoed.action_fields_raw, {
+          title: '{{123__title}}'
+        });
+        should.deepEqual(echoed.orig_data, {});
       });
     });
 

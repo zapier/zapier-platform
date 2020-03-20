@@ -125,7 +125,8 @@ module.exports = makeSchema(
         $ref: FieldChoicesSchema.id
       },
       list: {
-        description: 'Can a user provide multiples of this field?',
+        description:
+          'Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?',
         type: 'boolean'
       },
       children: {
