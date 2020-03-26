@@ -633,11 +633,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
       const response = await zcli.request(request);
 
-      if (options.checkResponseStatus) {
-        response.throwForStatus();
-      }
-
       if (!options.parseResponse) {
+        if (options.checkResponseStatus) {
+          response.throwForStatus();
+        }
         return response;
       }
 
@@ -650,6 +649,13 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           zcli,
           bundle
         );
+
+        if (options.checkResponseStatus) {
+          // Raising this error AFTER postMethod is executed allows devs to
+          // intercept and throw another error from postMethod
+          response.throwForStatus();
+        }
+
         if (options.defaultToResponse && !result) {
           try {
             result = zcli.JSON.parse(response.content);
@@ -658,6 +664,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           }
         }
       } else {
+        if (options.checkResponseStatus) {
+          response.throwForStatus();
+        }
+
         try {
           result = zcli.JSON.parse(response.content);
         } catch {

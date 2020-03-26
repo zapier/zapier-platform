@@ -1944,6 +1944,28 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_post_write, intercept error', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_write_intercept_error',
+        'movie_pre_write'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_write_intercept_error',
+        'movie_post_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).should.be.rejectedWith(
+        /teapot here, go find a coffee machine/
+      );
+    });
+
     it('KEY_pre_write & KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
