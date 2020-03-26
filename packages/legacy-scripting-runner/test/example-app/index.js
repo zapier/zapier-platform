@@ -503,6 +503,18 @@ const legacyScriptingSource = `
         return 'ok';
       },
 
+      movie_pre_write_intercept_error: function(bundle) {
+        bundle.request.url = 'https://httpbin.zapier-tooling.com/status/418';
+        return bundle.request;
+      },
+
+      movie_post_write_intercept_error: function(bundle) {
+        if (bundle.response.status_code == 418) {
+          throw new HaltedException('teapot here, go find a coffee machine');
+        }
+        return z.JSON.parse(bundle.response.content);
+      },
+
       movie_pre_write_default_headers: function(bundle) {
         // Copy Accept and Content-Type to request body so we know they're
         // already available in pre_write
