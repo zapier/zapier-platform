@@ -22,8 +22,6 @@ const TEST_APPS = [
   'trigger'
 ];
 
-const REGEX_VERSION = /\d+\.\d+\.\d+/;
-
 const setupZapierRC = () => {
   let hasRC = false;
   const rcPath = path.join(os.homedir(), '.zapierrc');
@@ -58,10 +56,12 @@ const setupZapierAppRC = workdir => {
   return hasAppRC;
 };
 
-const npmPack = () => {
-  let filename;
-  const proc = spawnSync('npm', ['pack'], { encoding: 'utf8' });
+const getSchemaDir = () => path.resolve(path.dirname(process.cwd()), 'schema');
+
+const npmPackSchema = schemaDir => {
+  const proc = spawnSync('npm', ['pack'], { encoding: 'utf8', cwd: schemaDir });
   const lines = proc.stdout.split('\n');
+  let filename;
   for (let i = lines.length - 1; i >= 0; i--) {
     const line = lines[i].trim();
     if (line) {
@@ -69,6 +69,37 @@ const npmPack = () => {
       break;
     }
   }
+  return filename;
+};
+
+const npmPackCore = schemaPackagePath => {
+  // Patch core's package.json to use schema from local
+  const packageJsonPath = path.join(process.cwd(), 'package.json');
+  const originalPackageJsonText = fs.readFileSync(packageJsonPath, {
+    encoding: 'utf8'
+  });
+  const packageJson = JSON.parse(originalPackageJsonText);
+  packageJson.dependencies[
+    'zapier-platform-schema'
+  ] = `file:${schemaPackagePath}`;
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
+
+  let filename;
+
+  try {
+    const proc = spawnSync('npm', ['pack'], { encoding: 'utf8' });
+    const lines = proc.stdout.split('\n');
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i].trim();
+      if (line) {
+        filename = line;
+        break;
+      }
+    }
+  } finally {
+    fs.writeFile(packageJsonPath, originalPackageJsonText);
+  }
+
   return filename;
 };
 
@@ -113,23 +144,24 @@ const npmInstalls = (coreZipPath, workdir) => {
       encoding: 'utf8',
       cwd: workdir
     });
-    spawnSync('npm', ['install', 'zapier-platform-cli'], {
+    spawnSync('npm', ['install', '--no-save', 'zapier-platform-cli'], {
       encoding: 'utf8',
       cwd: workdir
     });
   } finally {
-    fs.writeFileSync(packageJsonPath, origPackageJsonText, {
-      encoding: 'utf8'
-    });
+    fs.writeFileSync(packageJsonPath, origPackageJsonText);
   }
 };
 
 describe('smoke tests - setup will take some time', () => {
   const context = {
     // Global context that will be available for all test cases in this test suite
-    package: {
+    corePackage: {
       filename: null,
-      version: null,
+      path: null
+    },
+    schemaPackage: {
+      filename: null,
       path: null
     },
     workRepoDir: null,
@@ -142,9 +174,18 @@ describe('smoke tests - setup will take some time', () => {
   before(async () => {
     context.hasRC = setupZapierRC();
 
-    context.package.filename = npmPack();
-    context.package.version = context.package.filename.match(REGEX_VERSION)[0];
-    context.package.path = path.join(process.cwd(), context.package.filename);
+    const schemaDir = getSchemaDir();
+    context.schemaPackage.filename = npmPackSchema(schemaDir);
+    context.schemaPackage.path = path.join(
+      schemaDir,
+      context.schemaPackage.filename
+    );
+
+    context.corePackage.filename = npmPackCore(context.schemaPackage.path);
+    context.corePackage.path = path.join(
+      process.cwd(),
+      context.corePackage.filename
+    );
 
     context.workRepoDir = setupTempWorkingDir();
 
@@ -152,7 +193,8 @@ describe('smoke tests - setup will take some time', () => {
   });
 
   after(() => {
-    fs.unlinkSync(context.package.path);
+    fs.unlinkSync(context.corePackage.path);
+    fs.unlinkSync(context.schemaPackage.path);
     fs.removeSync(context.workRepoDir);
   });
 
@@ -169,7 +211,7 @@ describe('smoke tests - setup will take some time', () => {
       }
     );
     const baselineSize = res.headers.get('content-length');
-    const newSize = fs.statSync(context.package.path).size;
+    const newSize = fs.statSync(context.corePackage.path).size;
     newSize.should.be.within(baselineSize * 0.7, baselineSize * 1.3);
 
     this.test.title += ` (${baselineSize} -> ${newSize} bytes)`;
@@ -179,7 +221,7 @@ describe('smoke tests - setup will take some time', () => {
     describe(appName, () => {
       before(async () => {
         context.workAppDir = path.join(context.workRepoDir, appName);
-        npmInstalls(context.package.path, context.workAppDir);
+        npmInstalls(context.corePackage.path, context.workAppDir);
 
         context.hasAppRC = setupZapierAppRC(context.workAppDir);
 
