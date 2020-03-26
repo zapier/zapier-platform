@@ -1,14 +1,14 @@
-const should = require('should');
-
+const fs = require('fs-extra');
 const path = require('path');
+
+const decompress = require('decompress');
+const should = require('should');
 
 const build = require('../../utils/build');
 const { copyDir } = require('../../utils/files');
+const { getPackageLatestVersion } = require('../../utils/npm');
+const { PLATFORM_PACKAGE } = require('../../constants');
 const { runCommand, getNewTempDirPath } = require('../_helpers');
-
-const decompress = require('decompress');
-const fs = require('fs');
-const fse = require('fs-extra');
 
 describe('build (runs slowly)', () => {
   let tmpDir, entryPoint;
@@ -19,10 +19,25 @@ describe('build (runs slowly)', () => {
       path.resolve(__dirname, '../../../../../example-apps/typescript'),
       tmpDir
     );
-    // tests depend on live npm install, which isn't great. Does make for a nice isolated test though!
-    // the typescript app builds on install
+
+    // When releasing, the core version the example apps points can be still
+    // non-existent. Let's make sure  it points to the latest one available on
+    // npm.
+    const packageJsonPath = path.join(tmpDir, 'package.json');
+    const packageJson = JSON.parse(
+      fs.readFileSync(packageJsonPath, { encoding: 'utf8' })
+    );
+    packageJson.dependencies[PLATFORM_PACKAGE] = await getPackageLatestVersion(
+      PLATFORM_PACKAGE
+    );
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
+
     await runCommand('npm', ['i'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
+  });
+
+  after(() => {
+    fs.removeSync(tmpDir);
   });
 
   it('should list only required files', () => {
@@ -54,10 +69,6 @@ describe('build (runs slowly)', () => {
     });
   });
 
-  after(() => {
-    fse.removeSync(tmpDir);
-  });
-
   it('list should not include blacklisted files', () => {
     const tmpProjectDir = getNewTempDirPath();
 
@@ -71,9 +82,9 @@ describe('build (runs slowly)', () => {
       const fileDir = file.split(path.sep);
       fileDir.pop();
       if (fileDir.length > 0) {
-        fse.ensureDirSync(path.join(tmpProjectDir, fileDir.join(path.sep)));
+        fs.ensureDirSync(path.join(tmpProjectDir, fileDir.join(path.sep)));
       }
-      fse.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
+      fs.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
     });
 
     return build.listFiles(tmpProjectDir).then(dumbPaths => {
@@ -91,14 +102,14 @@ describe('build (runs slowly)', () => {
     const tmpUnzipPath = getNewTempDirPath();
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
-    fse.outputFileSync(
+    fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
       "console.log('hello!')"
     );
-    fse.outputFileSync(tmpIndexPath, "console.log('hello!')");
+    fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
-    fse.outputFileSync(path.join(tmpProjectDir, '.zapierapprc'), '{}');
-    fse.ensureDirSync(path.dirname(tmpZipPath));
+    fs.outputFileSync(path.join(tmpProjectDir, '.zapierapprc'), '{}');
+    fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
 
@@ -133,13 +144,13 @@ describe('build (runs slowly)', () => {
     const tmpUnzipPath = getNewTempDirPath();
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
-    fse.outputFileSync(
+    fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
       "console.log('hello!')"
     );
-    fse.outputFileSync(tmpIndexPath, "console.log('hello!')");
+    fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
-    fse.ensureDirSync(path.dirname(tmpZipPath));
+    fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
 
@@ -176,15 +187,15 @@ describe('build (runs slowly)', () => {
     const tmpReadmePath = path.join(tmpProjectDir, 'README.md');
     const tmpZapierAppPath = path.join(tmpProjectDir, '.zapierapprc');
 
-    fse.outputFileSync(
+    fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
       "console.log('hello!')"
     );
-    fse.outputFileSync(tmpIndexPath, "console.log('hello!')");
-    fse.outputFileSync(tmpReadmePath, 'README');
+    fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
+    fs.outputFileSync(tmpReadmePath, 'README');
     fs.chmodSync(tmpIndexPath, 0o700);
-    fse.outputFileSync(tmpZapierAppPath, '{}');
-    fse.ensureDirSync(path.dirname(tmpZipPath));
+    fs.outputFileSync(tmpZapierAppPath, '{}');
+    fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
 
@@ -231,19 +242,19 @@ describe('build (runs slowly)', () => {
     const tmpDSStorePath = path.join(tmpProjectDir, '.DS_Store');
     const tmpEnvironmentPath = path.join(tmpProjectDir, '.environment');
 
-    fse.outputFileSync(
+    fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
       "console.log('hello!')"
     );
-    fse.outputFileSync(tmpIndexPath, "console.log('hello!')");
+    fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
-    fse.outputFileSync(tmpReadmePath, 'README');
-    fse.outputFileSync(tmpZapierAppPath, '{}');
-    fse.outputFileSync(tmpGitIgnorePath, '.DS_Store\n*.log');
-    fse.outputFileSync(tmpTestLogPath, 'Something');
-    fse.outputFileSync(tmpDSStorePath, 'Something Else');
-    fse.outputFileSync(tmpEnvironmentPath, 'ZAPIER_TOKEN=YEAH');
-    fse.ensureDirSync(path.dirname(tmpZipPath));
+    fs.outputFileSync(tmpReadmePath, 'README');
+    fs.outputFileSync(tmpZapierAppPath, '{}');
+    fs.outputFileSync(tmpGitIgnorePath, '.DS_Store\n*.log');
+    fs.outputFileSync(tmpTestLogPath, 'Something');
+    fs.outputFileSync(tmpDSStorePath, 'Something Else');
+    fs.outputFileSync(tmpEnvironmentPath, 'ZAPIER_TOKEN=YEAH');
+    fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
 
