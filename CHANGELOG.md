@@ -1,3 +1,22 @@
+## 9.2.0
+
+### cli
+
+- :tada: `scaffold` command was entirely rewritten. Now it generates better code and is more resilient. ([#146](https://github.com/zapier/zapier-platform/pull/146))
+- :bug: Fix `convert` command so it correctly handles a visual builder app converted from Web Builder ([#159](https://github.com/zapier/zapier-platform/pull/159))
+- :bug: Allow env variables containing equals ([#179](https://github.com/zapier/zapier-platform/pull/179))
+- :bug: Fix SSO link in `login` command output ([#157](https://github.com/zapier/zapier-platform/pull/157))
+
+### core
+
+- :bug: Preserve non-empty values that include empty curlies in request objects ([#162](https://github.com/zapier/zapier-platform/pull/162))
+- :bug: Improve `appTester` types and bump Node versions ([#172](https://github.com/zapier/zapier-platform/pull/172))
+- :hammer: Fix smoke test circular dependency ([#175](https://github.com/zapier/zapier-platform/pull/175))
+
+### schema
+
+- :scroll: Clarify `FieldSchema.list` when used in `inputFields` vs. `outputFields` ([#143](https://github.com/zapier/zapier-platform/pull/143))
+
 ## 9.1.0
 
 ### cli
