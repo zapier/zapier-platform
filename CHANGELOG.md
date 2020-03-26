@@ -6,12 +6,13 @@
 - :bug: Fix `convert` command so it correctly handles a visual builder app converted from Web Builder ([#159](https://github.com/zapier/zapier-platform/pull/159))
 - :bug: Allow env variables containing equals ([#179](https://github.com/zapier/zapier-platform/pull/179))
 - :bug: Fix SSO link in `login` command output ([#157](https://github.com/zapier/zapier-platform/pull/157))
+- :hammer: Fix test circular dependency ([#184](https://github.com/zapier/zapier-platform/pull/184))
 
 ### core
 
 - :bug: Preserve non-empty values that include empty curlies in request objects ([#162](https://github.com/zapier/zapier-platform/pull/162))
 - :bug: Improve `appTester` types and bump Node versions ([#172](https://github.com/zapier/zapier-platform/pull/172))
-- :hammer: Fix smoke test circular dependency ([#175](https://github.com/zapier/zapier-platform/pull/175))
+- :hammer: Fix smoke test circular dependency ([#175](https://github.com/zapier/zapier-platform/pull/175), [#185](https://github.com/zapier/zapier-platform/pull/185))
 
 ### schema
 
