@@ -92,9 +92,9 @@ const ensureNoUncommittedChanges = () => {
 const promptPackagesToBump = async () => {
   const answer = await inquirer.prompt([
     {
-      type: 'checkbox',
+      type: 'list',
       message: 'What package(s) you want to bump?',
-      name: 'packages',
+      name: 'package',
       choices: [
         {
           name: `cli, core, schema (currently ${PACKAGE_ORIG_VERSIONS.cli})`,
@@ -109,7 +109,7 @@ const promptPackagesToBump = async () => {
       ]
     }
   ]);
-  return answer.packages;
+  return [answer.package];
 };
 
 const promptVersionToBump = async packageName => {
@@ -320,7 +320,9 @@ const main = async () => {
   }
 
   console.log(
-    `\nDone! Now you should ${bold.underline('git push origin master --tags')}.`
+    `\nDone! Review the change with ${bold.underline(
+      'git diff HEAD~1..HEAD'
+    )} then ${bold.underline('git push origin master --tags')}.`
   );
   return 0;
 };
