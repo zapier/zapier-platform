@@ -77,10 +77,12 @@ const recurseReplaceBank = (obj, bank = {}) => {
         (Array.isArray(replacementValue) || _.isPlainObject(replacementValue));
 
       if (shouldThrowTypeError) {
+        const bareKey = _.trimEnd(_.trimStart(key, '{'), '}');
         throw new TypeError(
-          `Cannot reliably interpolate objects or arrays into a string. We received an ${getObjectType(
-            replacementValue
-          )}:\n"${replacementValue}"`
+          'Cannot reliably interpolate objects or arrays into a string. ' +
+            `Variable \`${bareKey}\` is an ${getObjectType(
+              replacementValue
+            )}:\n"${replacementValue}"`
         );
       }
 

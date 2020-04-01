@@ -713,7 +713,8 @@ describe('request client', () => {
           message: 'No arrays, thank you: {{bundle.inputData.badData}}'
         }
       }).should.be.rejectedWith(
-        'Cannot reliably interpolate objects or arrays into a string. We received an Array:\n"1,2,3"'
+        'Cannot reliably interpolate objects or arrays into a string. ' +
+          'Variable `bundle.inputData.badData` is an Array:\n"1,2,3"'
       );
     });
 
