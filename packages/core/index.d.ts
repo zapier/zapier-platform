@@ -63,6 +63,9 @@ export interface Bundle<InputData = { [x: string]: any }> {
   targetUrl?: string;
 }
 
+declare class AppError extends Error {
+  constructor(message: string, code?: string, status?: number);
+}
 declare class HaltedError extends Error {}
 declare class ExpiredAuthError extends Error {}
 declare class RefreshAuthError extends Error {}
@@ -171,6 +174,7 @@ export interface ZObject {
   ) => string;
 
   errors: {
+    Error: typeof AppError;
     HaltedError: typeof HaltedError;
     ExpiredAuthError: typeof ExpiredAuthError;
     RefreshAuthError: typeof RefreshAuthError;
