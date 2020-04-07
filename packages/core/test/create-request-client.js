@@ -779,5 +779,47 @@ describe('request client', () => {
         headers.Authorization.should.eql('Bearer Let me in');
       });
     });
+
+    it('should be able to interpolate arrays/objects to a string', async () => {
+      const event = {
+        bundle: {
+          inputData: {
+            arr: [1, 2, 3, 'red', 'blue'],
+            obj: {
+              id: '456',
+              name: 'John'
+            },
+            str: 'hello'
+          }
+        }
+      };
+      const bodyInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(bodyInput);
+      const response = await request({
+        url: 'https://httpbin.zapier-tooling.com/post',
+        method: 'POST',
+        body: {
+          arr: 'arr: {{bundle.inputData.arr}}',
+          obj: 'obj: {{bundle.inputData.obj}}',
+          str: 'str: {{bundle.inputData.str}}'
+        },
+        serializeValueForCurlies: value => {
+          if (Array.isArray(value)) {
+            return value.join(',');
+          } else if (_.isPlainObject(value)) {
+            return Object.entries(value)
+              .map(([k, v]) => `${k}=${v}`)
+              .join(',');
+          }
+          return value;
+        }
+      });
+
+      response.json.json.should.deepEqual({
+        arr: 'arr: 1,2,3,red,blue',
+        obj: 'obj: id=456,name=John',
+        str: 'str: hello'
+      });
+    });
   });
 });

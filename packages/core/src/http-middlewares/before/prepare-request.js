@@ -126,7 +126,11 @@ const prepareRequest = function(req) {
 
   // replace {{curlies}} in the request
   if (req.replace) {
-    const bank = createBundleBank(input._zapier.app, input._zapier.event);
+    const bank = createBundleBank(
+      input._zapier.app,
+      input._zapier.event,
+      req.serializeValueForCurlies
+    );
     req = recurseReplaceBank(req, bank);
   }
 
