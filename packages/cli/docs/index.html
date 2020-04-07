@@ -2733,6 +2733,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p><code>z.errors</code> is a collection error classes that you can throw in your code, like <code>throw new z.errors.HaltedError(&apos;...&apos;)</code>.</p><p>The available errors are:</p><ul>
+<li>Error - Stops the current operation, allowing for (auto) replay. Read more on <a href="#general-errors">General Errors</a></li>
 <li>HaltedError - Stops current operation, but will never turn off Zap. Read more on <a href="#halting-execution">Halting Execution</a></li>
 <li>ExpiredAuthError - Turns off Zap and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
 <li>RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
@@ -3946,13 +3947,16 @@ various kinds of errors occur.</p>
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Errors due to a misconfiguration in a user&apos;s Zap should be handled in your app
-by throwing a standard JavaScript <code>Error</code> with a user-friendly message.
-Typically, this will be prettifying 4xx responses or APIs that return errors as
-200s with a payload that describes the error.</p><p>Example: <code>throw new Error(&apos;Your error message.&apos;);</code></p><p>A couple best practices to keep in mind:</p><ul>
+by throwing <code>z.errors.Error</code> with a user-friendly message and optional error and
+status code. Typically, this will be prettifying 4xx responses or APIs that return
+errors as 200s with a payload that describes the error.</p><p>Example: <code>throw new z.errors.Error(&apos;Contact name is too long.&apos;, &apos;InvalidData&apos;, 400);</code></p><p>A couple best practices to keep in mind:</p><ul>
 <li>Elaborate on terse messages. &quot;not_authenticated&quot; -&gt; &quot;Your API Key is invalid. Please reconnect your account.&quot;</li>
-<li>If the error calls out a specific field, surface that information to the user. &quot;Invalid Request&quot; -&gt; &quot;contact name is invalid&quot;</li>
-<li>If the error provides details about why a field is invalid, add that in too! &quot;contact name is invalid&quot; -&gt; &quot;contact name is too long&quot;</li>
-</ul><p>Note that if a Zap raises too many error messages it will be automatically
+<li>If the error calls out a specific field, surface that information to the user. &quot;Provided data is invalid&quot; -&gt; &quot;Contact name is invalid&quot;</li>
+<li>If the error provides details about why a field is invalid, add that in too! &quot;Contact name is invalid&quot; -&gt; &quot;Contact name is too long&quot;</li>
+<li>The second, optional argument should be a code that a computer could use to identify the type of error.</li>
+<li>The last, optional argument should be the HTTP status code, if any.</li>
+</ul><p>The code and status can be used by us to provide relevant troubleshooting to the
+user when we communicate the error.</p><p>Note that if a Zap raises too many error messages it will be automatically
 turned off, so only use these if the scenario is truly an error that needs to
 be fixed.</p>
     </div>
@@ -3977,7 +3981,7 @@ stopped for some specific reason) with a <code>HaltedError</code>. You might fin
 using this error in cases where a required pre-condition is not met. For instance,
 in a create to add an email address to a list where duplicates are not allowed,
 you would want to throw a <code>HaltedError</code> if the Zap attempted to add a duplicate.
-This would indicate failure, but it would be treated as a soft failure.</p><p>Unlike throwing <code>Error</code>, a Zap will never by turned off when this error is thrown
+This would indicate failure, but it would be treated as a soft failure.</p><p>Unlike throwing <code>z.errors.Error</code>, a Zap will never by turned off when this error is thrown
 (even if it is raised more often than not).</p><p>Example: <code>throw new z.errors.HaltedError(&apos;Your reason.&apos;);</code></p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

@@ -165,7 +165,13 @@ const createLambdaHandler = appRawOrPath => {
       // the default behavior with callbacks anyway, but don't want
       // to rely on that.
       logger(logMsg, logData).then(() => {
-        if (!constants.IS_TESTING && err) {
+        // Check for `.message` in case someone did `throw "My Error"`
+        if (
+          !constants.IS_TESTING &&
+          err &&
+          !err.doNotContextify &&
+          err.message
+        ) {
           err.message += `\n\nConsole logs:\n${logBuffer
             .map(s => `  ${s.message}`)
             .join('')}`;

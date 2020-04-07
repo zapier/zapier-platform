@@ -23,7 +23,7 @@ const enrichErrorMessage = (err, frameStack) => {
 
 // Because reject callbacks stack, we have to skip errors we've already seen.
 const contextifyOnce = (err, attachErrorTrace, frameStack) => {
-  if (!err || err.isContextified) {
+  if (!err || err.doNotContextify || err.isContextified) {
     return err;
   }
 

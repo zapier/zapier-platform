@@ -1,16 +1,15 @@
 'use strict';
 
 require('should');
+
+const errors = require('../../src/errors');
 const ZapierPromise = require('../../src/tools/promise');
 
 describe('contextual promise', () => {
   const contextifyErrorFn = err => {
     try {
       err.message = `${err.message} contextified!`;
-      
-    } catch (_err) {
-      
-    }
+    } catch (_err) {}
   };
 
   it('should handle normal promises', done => {
@@ -44,6 +43,33 @@ describe('contextual promise', () => {
         const firstStackLine = err.stack.split('\n')[0];
         firstStackLine.should.match(/^Error: whoops$/);
 
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should not contextify errors that have opted out', done => {
+    const promise = ZapierPromise.resolve({}).bind(
+      ZapierPromise.makeContext(contextifyErrorFn)
+    );
+
+    promise
+      .then(() => {
+        throw new errors.ResponseError({
+          status: 400,
+          headers: {
+            get: () => {}
+          },
+          content: '',
+          request: {
+            url: ''
+          }
+        });
+      })
+      .catch(err => {
+        err.message.should.eql(
+          '{"status":400,"headers":{},"content":"","request":{"url":""}}'
+        );
         done();
       })
       .catch(done);

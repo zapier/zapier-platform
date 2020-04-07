@@ -1,12 +1,10 @@
 'use strict';
 
-const { stripQueryFromURL } = require('../../tools/http');
+const errors = require('../../errors');
 
 const throwForStatus = resp => {
   if (resp.status > 300) {
-    const cleanURL = stripQueryFromURL(resp.request.url);
-    const message = `Got ${resp.status} calling ${resp.request.method} ${cleanURL}, expected 2xx.`;
-    throw new Error(message);
+    throw new errors.ResponseError(resp);
   }
 
   return resp;

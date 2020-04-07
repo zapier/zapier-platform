@@ -1,14 +1,14 @@
 'use strict';
 
-const { stripQueryFromURL } = require('../../tools/http');
-
 const errors = require('../../errors');
 
+/**
+ * The server-side will raise `RefreshAuthError` when `autoRefresh === true`.
+ * Once we always run `throwForStatus` or a custom `afterResponse`, we can drop `throwForStaleAuth`.
+ */
 const throwForStaleAuth = resp => {
   if (resp.status === 401) {
-    const cleanURL = stripQueryFromURL(resp.request.url);
-    const message = `Got ${resp.status} calling ${resp.request.method} ${cleanURL}, triggering auth refresh.`;
-    throw new errors.RefreshAuthError(message);
+    throw new errors.ResponseError(resp);
   }
 
   return resp;

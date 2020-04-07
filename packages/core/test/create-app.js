@@ -4,6 +4,7 @@ const should = require('should');
 const createApp = require('../src/create-app');
 const createInput = require('../src/tools/create-input');
 const dataTools = require('../src/tools/data');
+const errors = require('../src/errors');
 const appDefinition = require('./userapp');
 
 describe('create-app', () => {
@@ -130,12 +131,15 @@ describe('create-app', () => {
         done('expected an error');
       })
       .catch(err => {
-        should(err.message).startWith(
-          'Got 403 calling GET https://httpbin.org/status/403, expected 2xx.\nWhat happened:\n  Starting GET request to https://httpbin.org/status/403\n  Received 403 code from https://httpbin.org/status/403 after '
+        should(err).instanceOf(errors.ResponseError);
+        err.name.should.eql('ResponseError');
+        const response = JSON.parse(err.message);
+        should(response.status).equal(403);
+        should(response.request.url).equal('https://httpbin.org/status/403');
+        should(response.headers['content-type']).equal(
+          'text/html; charset=utf-8'
         );
-        should(err.message).endWith(
-          'ms\n  Received content ""\n  Got 403 calling GET https://httpbin.org/status/403, expected 2xx.'
-        );
+        should(response.content).equal('');
         done();
       })
       .catch(done);
@@ -149,12 +153,15 @@ describe('create-app', () => {
         done('expected an error');
       })
       .catch(err => {
-        should(err.message).startWith(
-          'Got 403 calling GET https://httpbin.org/status/403, expected 2xx.\nWhat happened:\n  Starting GET request to https://httpbin.org/status/403\n  Received 403 code from https://httpbin.org/status/403 after '
+        should(err).instanceOf(errors.ResponseError);
+        err.name.should.eql('ResponseError');
+        const response = JSON.parse(err.message);
+        should(response.status).equal(403);
+        should(response.request.url).equal('https://httpbin.org/status/403');
+        should(response.headers['content-type']).equal(
+          'text/html; charset=utf-8'
         );
-        should(err.message).endWith(
-          'ms\n  Received content ""\n  Got 403 calling GET https://httpbin.org/status/403, expected 2xx.'
-        );
+        should(response.content).equal('');
         done();
       })
       .catch(done);
@@ -361,7 +368,10 @@ describe('create-app', () => {
           done('expected an error, got success');
         })
         .catch(error => {
-          error.name.should.eql('RefreshAuthError');
+          should(error).instanceOf(errors.ResponseError);
+          error.name.should.eql('ResponseError');
+          const response = JSON.parse(error.message);
+          should(response.status).equal(401);
           done();
         });
     });
@@ -395,7 +405,10 @@ describe('create-app', () => {
           done('expected an error, got success');
         })
         .catch(error => {
-          error.name.should.eql('RefreshAuthError');
+          should(error).instanceOf(errors.ResponseError);
+          error.name.should.eql('ResponseError');
+          const response = JSON.parse(error.message);
+          should(response.status).equal(401);
           done();
         });
     });
@@ -427,7 +440,10 @@ describe('create-app', () => {
           done('expected an error, got success');
         })
         .catch(error => {
-          error.name.should.eql('RefreshAuthError');
+          should(error).instanceOf(errors.ResponseError);
+          error.name.should.eql('ResponseError');
+          const response = JSON.parse(error.message);
+          should(response.status).equal(401);
           done();
         });
     });

@@ -3,6 +3,20 @@
 const _ = require('lodash');
 const util = require('util');
 
+class AppError extends Error {
+  constructor(message, code, status) {
+    super(
+      JSON.stringify({
+        message,
+        code,
+        status
+      })
+    );
+    this.name = 'AppError';
+    this.contextify = false;
+  }
+}
+
 // Make some of the errors we'll use!
 const createError = name => {
   const NewError = function(message) {
@@ -29,11 +43,13 @@ const cliErrors = _.reduce(
     error[name] = createError(name);
     return error;
   },
-  {}
+  {
+    Error: AppError
+  }
 );
 
 const exceptions = {
-  ErrorException: Error,
+  ErrorException: cliErrors.Error,
   HaltedException: cliErrors.HaltedError,
   StopRequestException: cliErrors.StopRequestError,
   ExpiredAuthException: cliErrors.ExpiredAuthError,

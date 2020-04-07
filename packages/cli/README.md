@@ -1617,6 +1617,7 @@ We provide several methods off of the `z` object, which is provided as the first
 
 The available errors are:
 
+* Error - Stops the current operation, allowing for (auto) replay. Read more on [General Errors](#general-errors)
 * HaltedError - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
 * ExpiredAuthError - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
 * RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
@@ -2364,17 +2365,22 @@ various kinds of errors occur.
 ### General Errors
 
 Errors due to a misconfiguration in a user's Zap should be handled in your app
-by throwing a standard JavaScript `Error` with a user-friendly message.
-Typically, this will be prettifying 4xx responses or APIs that return errors as
-200s with a payload that describes the error.
+by throwing `z.errors.Error` with a user-friendly message and optional error and
+status code. Typically, this will be prettifying 4xx responses or APIs that return
+errors as 200s with a payload that describes the error.
 
-Example: `throw new Error('Your error message.');`
+Example: `throw new z.errors.Error('Contact name is too long.', 'InvalidData', 400);`
 
 A couple best practices to keep in mind:
 
   * Elaborate on terse messages. "not_authenticated" -> "Your API Key is invalid. Please reconnect your account."
-  * If the error calls out a specific field, surface that information to the user. "Invalid Request" -> "contact name is invalid"
-  * If the error provides details about why a field is invalid, add that in too! "contact name is invalid" -> "contact name is too long"
+  * If the error calls out a specific field, surface that information to the user. "Provided data is invalid" -> "Contact name is invalid"
+  * If the error provides details about why a field is invalid, add that in too! "Contact name is invalid" -> "Contact name is too long"
+  * The second, optional argument should be a code that a computer could use to identify the type of error.
+  * The last, optional argument should be the HTTP status code, if any.
+
+The code and status can be used by us to provide relevant troubleshooting to the
+user when we communicate the error.
 
 Note that if a Zap raises too many error messages it will be automatically
 turned off, so only use these if the scenario is truly an error that needs to
@@ -2389,7 +2395,7 @@ in a create to add an email address to a list where duplicates are not allowed,
 you would want to throw a `HaltedError` if the Zap attempted to add a duplicate.
 This would indicate failure, but it would be treated as a soft failure.
 
-Unlike throwing `Error`, a Zap will never by turned off when this error is thrown
+Unlike throwing `z.errors.Error`, a Zap will never by turned off when this error is thrown
 (even if it is raised more often than not).
 
 Example: `throw new z.errors.HaltedError('Your reason.');`
