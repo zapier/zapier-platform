@@ -756,6 +756,37 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, array curlies', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_array_curlies',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.inputData = {
+        things: ['eyedrops', 'cyclops', 'ipod']
+      };
+      return app(input).then(output => {
+        const req = output.results[0];
+        req.args.should.deepEqual({
+          things: ['eyedrops,cyclops,ipod']
+        });
+        req.url.should.equal(
+          'https://httpbin.zapier-tooling.com/get?things=eyedrops%2Ccyclops%2Cipod'
+        );
+      });
+    });
+
     it('KEY_post_poll, jQuery utils', () => {
       const input = createTestInput(
         compiledApp,

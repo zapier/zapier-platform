@@ -630,6 +630,16 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       }
 
       request.headers = cleanHeaders(request.headers);
+      request.serializeValueForCurlies = value => {
+        if (Array.isArray(value)) {
+          return value.join(',');
+        } else if (_.isPlainObject(value)) {
+          // Not sure if anyone would ever expect a '[object Object]',
+          // but who knows?
+          return value.toString();
+        }
+        return value;
+      };
 
       const response = await zcli.request(request);
 

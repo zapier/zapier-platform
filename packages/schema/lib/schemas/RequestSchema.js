@@ -3,6 +3,7 @@
 const makeSchema = require('../utils/makeSchema');
 
 const FlatObjectSchema = require('./FlatObjectSchema');
+const FunctionSchema = require('./FunctionSchema');
 
 module.exports = makeSchema(
   {
@@ -74,9 +75,14 @@ module.exports = makeSchema(
           }
         },
         additionalProperties: false
+      },
+      serializeValueForCurlies: {
+        description:
+          'A function to customize how to serialize a value for curlies `{{var}}` in the request object. By default, when this is unspecified, the request client only replaces curlies where variables are strings, and would throw an error for non-strings. The function should accepts a single argument as the value to be serialized and return the string representation of the argument.',
+        $ref: FunctionSchema.id
       }
     },
     additionalProperties: false
   },
-  [FlatObjectSchema]
+  [FlatObjectSchema, FunctionSchema]
 );
