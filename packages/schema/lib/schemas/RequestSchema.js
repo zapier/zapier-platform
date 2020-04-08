@@ -84,5 +84,5 @@ module.exports = makeSchema(
     },
     additionalProperties: false
   },
-  [FlatObjectSchema]
+  [FlatObjectSchema, FunctionSchema]
 );
