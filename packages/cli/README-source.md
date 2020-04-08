@@ -289,7 +289,7 @@ Your CLI app will be created and you can continue working on it.
 
 > Note - there is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.
 
-Introduced in `v8.2.0`, you are able to convert new integrations built in Zapier Platform UI to CLI.
+Introduced in v8.2.0, you are able to convert new integrations built in Zapier Platform UI to CLI.
 
 ```sh
 # the --version flag is what denotes this command is interacting with a Visual Builder app
@@ -504,7 +504,7 @@ You can find more details on the definition for each by looking at the [Trigger 
 
 ### Return Types
 
-Each of the 3 types of function expects a certain type of object. As of core `v1.0.11`, there are automated checks to let you know when you're trying to pass the wrong type back. There's more info in each relevant `post_X` section of the [v2 docs](https://zapier.com/developer/documentation/v2/scripting/#available-methods). For reference, each expects:
+Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you're trying to pass the wrong type back. There's more info in each relevant `post_X` section of the [v2 docs](https://zapier.com/developer/documentation/v2/scripting/#available-methods). For reference, each expects:
 
 | Method | Return Type | Notes |
 | --- | --- | --- |
@@ -704,11 +704,10 @@ We provide several methods off of the `z` object, which is provided as the first
 
 The available errors are:
 
-* Error - Stops the current operation, allowing for (auto) replay. Read more on [General Errors](#general-errors)
+* (*New in v9.3.0*) Error - Stops the current operation, allowing for (auto) replay. Read more on [General Errors](#general-errors)
 * HaltedError - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
 * ExpiredAuthError - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
 * RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
-
 
 For more details on error handling in general, see [here](#error-handling).
 
@@ -1228,6 +1227,8 @@ status code. Typically, this will be prettifying 4xx responses or APIs that retu
 errors as 200s with a payload that describes the error.
 
 Example: `throw new z.errors.Error('Contact name is too long.', 'InvalidData', 400);`
+
+> `z.errors.Error` is new in v9.3.0. If you're on an older version of `zapier-platform-core`, throw a standard JavaScript `Error` instead, such as `throw new Error('A user-friendly message')`.
 
 A couple best practices to keep in mind:
 

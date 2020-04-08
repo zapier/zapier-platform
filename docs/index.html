@@ -1119,7 +1119,7 @@ zapier convert 1234 my-app
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Your CLI app will be created and you can continue working on it.</p><blockquote>
 <p>Note - there is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.</p>
-</blockquote><p>Introduced in <code>v8.2.0</code>, you are able to convert new integrations built in Zapier Platform UI to CLI.</p>
+</blockquote><p>Introduced in v8.2.0, you are able to convert new integrations built in Zapier Platform UI to CLI.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-sh"><span class="hljs-comment"># the --version flag is what denotes this command is interacting with a Visual Builder app</span>
@@ -1861,7 +1861,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Each of the 3 types of function expects a certain type of object. As of core <code>v1.0.11</code>, there are automated checks to let you know when you&apos;re trying to pass the wrong type back. There&apos;s more info in each relevant <code>post_X</code> section of the <a href="https://zapier.com/developer/documentation/v2/scripting/#available-methods">v2 docs</a>. For reference, each expects:</p>
+      <p>Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you&apos;re trying to pass the wrong type back. There&apos;s more info in each relevant <code>post_X</code> section of the <a href="https://zapier.com/developer/documentation/v2/scripting/#available-methods">v2 docs</a>. For reference, each expects:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2733,7 +2733,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p><code>z.errors</code> is a collection error classes that you can throw in your code, like <code>throw new z.errors.HaltedError(&apos;...&apos;)</code>.</p><p>The available errors are:</p><ul>
-<li>Error - Stops the current operation, allowing for (auto) replay. Read more on <a href="#general-errors">General Errors</a></li>
+<li>(<em>New in v9.3.0</em>) Error - Stops the current operation, allowing for (auto) replay. Read more on <a href="#general-errors">General Errors</a></li>
 <li>HaltedError - Stops current operation, but will never turn off Zap. Read more on <a href="#halting-execution">Halting Execution</a></li>
 <li>ExpiredAuthError - Turns off Zap and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
 <li>RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
@@ -3949,7 +3949,9 @@ various kinds of errors occur.</p>
       <p>Errors due to a misconfiguration in a user&apos;s Zap should be handled in your app
 by throwing <code>z.errors.Error</code> with a user-friendly message and optional error and
 status code. Typically, this will be prettifying 4xx responses or APIs that return
-errors as 200s with a payload that describes the error.</p><p>Example: <code>throw new z.errors.Error(&apos;Contact name is too long.&apos;, &apos;InvalidData&apos;, 400);</code></p><p>A couple best practices to keep in mind:</p><ul>
+errors as 200s with a payload that describes the error.</p><p>Example: <code>throw new z.errors.Error(&apos;Contact name is too long.&apos;, &apos;InvalidData&apos;, 400);</code></p><blockquote>
+<p><code>z.errors.Error</code> is new in v9.3.0. If you&apos;re on an older version of <code>zapier-platform-core</code>, throw a standard JavaScript <code>Error</code> instead, such as <code>throw new Error(&apos;A user-friendly message&apos;)</code>.</p>
+</blockquote><p>A couple best practices to keep in mind:</p><ul>
 <li>Elaborate on terse messages. &quot;not_authenticated&quot; -&gt; &quot;Your API Key is invalid. Please reconnect your account.&quot;</li>
 <li>If the error calls out a specific field, surface that information to the user. &quot;Provided data is invalid&quot; -&gt; &quot;Contact name is invalid&quot;</li>
 <li>If the error provides details about why a field is invalid, add that in too! &quot;Contact name is invalid&quot; -&gt; &quot;Contact name is too long&quot;</li>
