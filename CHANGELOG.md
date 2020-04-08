@@ -1,3 +1,18 @@
+## 9.3.0
+
+### cli
+
+* No changes
+
+### core
+
+- :tada: We have new error classes! Use them to help improve user-facing error messages. Read [Error Handling](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#error-handling) in the docs for more. ([#189](https://github.com/zapier/zapier-platform/pull/189))
+- :nail_care: Show variable name when curlies have a type error ([#188](https://github.com/zapier/zapier-platform/pull/188))
+
+### schema
+
+- :nail_care: `RequestSchema` now has a `serializeValueForCurlies` option, allowing to "reliably interpolate arrays or objects to a string" ([#190](https://github.com/zapier/zapier-platform/pull/190))
+
 ## 9.2.0
 
 ### cli
