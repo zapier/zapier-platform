@@ -3,17 +3,6 @@ const issueCreate = require('./creates/issue');
 const issueTrigger = require('./triggers/issue');
 const authentication = require('./authentication');
 
-const handleHTTPError = (response, z) => {
-  if (response.status >= 400) {
-    throw new z.errors.Error(
-      `Unexpected status code ${response.status}`,
-      'StatusError',
-      response.status
-    );
-  }
-  return response;
-};
-
 const App = {
   // This is just shorthand to reference the installed dependencies you have. Zapier will
   // need to know these before we can upload
@@ -24,7 +13,7 @@ const App = {
   // beforeRequest & afterResponse are optional hooks into the provided HTTP client
   beforeRequest: [],
 
-  afterResponse: [handleHTTPError],
+  afterResponse: [],
 
   // If you want to define optional resources to simplify creation of triggers, searches, creates - do that here!
   resources: {},

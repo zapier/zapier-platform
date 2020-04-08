@@ -996,7 +996,7 @@ The second argument for middleware is the `z` object, but it does *not* include 
 
 #### Error Response Handling
 
-Since v10, we call `response.throwForStatus()` before we return a response. You can prevent this by setting `skipThrowForStatus` on the request or response object. You can do this in `afterResponse` middleware if the API uses a status code > 300 that should not be treated as an error.
+Since v10, we call `response.throwForStatus()` before we return a response. You can prevent this by setting `skipThrowForStatus` on the request or response object. You can do this in `afterResponse` middleware if the API uses a status code >= 400 that should not be treated as an error.
 
 For developers using v9.x and below, it's your responsibility to throw an exception for an error response. That means you should call `response.throwForStatus()` or throw an error yourself, likely following the `z.request` call.
 
@@ -1052,8 +1052,8 @@ The response object returned by `z.request([url], options)` supports the followi
 * `body`: A stream available only if you provide `options.raw = true`.
 * `headers`: Response headers object. The header keys are all lower case.
 * `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
-* `throwForStatus()`: Throw error if final `response.status > 300`. Will throw `z.error.RefreshAuthError` if 401.
 * `skipThrowForStatus`: don't call `throwForStatus()` before resolving the request with this response.
+* `throwForStatus()`: Throw error if 400 <= `status` < 600.
 * `request`: The original request options object (see above).
 
 ```js
@@ -1225,7 +1225,7 @@ Zapier provides a couple of tools to help with error handling. First is the
 `afterResponse` middleware ([docs](#using-http-middleware)), which provides a hook for
 processing all responses from HTTP calls. Second is `response.throwForStatus()`
 ([docs](#http-response-object)), which throws an error if the response status indicates
-an error (status > 300). We automatically call this method before returning the
+an error (status >= 400). We automatically call this method before returning the
 response, unless you set `skipThrowForStatus` on the request or response object. The
 last tool is the collection of errors in `z.errors` ([docs](#zerrors)), which control
 the behavior of Zaps when various kinds of errors occur.

@@ -8,8 +8,6 @@ const listExample = (z, bundle) => {
   return z
     .request('https://example.com/api/v2/recipes.json', customHttpOptions)
     .then(response => {
-      response.throwForStatus();
-
       const recipes = response.json;
       // do any custom processing of recipes here...
 
