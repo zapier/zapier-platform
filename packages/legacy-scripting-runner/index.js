@@ -2,8 +2,12 @@ const querystring = require('querystring');
 
 const _ = require('lodash');
 const FormData = require('form-data');
-const cleaner = require('zapier-platform-core/src/tools/cleaner');
 const flatten = require('flat');
+
+const {
+  createBundleBank,
+  recurseReplaceBank
+} = require('zapier-platform-core/src/tools/cleaner');
 
 const createInternalRequestClient = input => {
   const addQueryParams = require('zapier-platform-core/src/http-middlewares/before/add-query-params');
@@ -207,9 +211,23 @@ const parseFinalResult = async (result, event) => {
   return result;
 };
 
+const serializeValueForCurlies = value => {
+  if (Array.isArray(value)) {
+    return value.join(',');
+  } else if (_.isPlainObject(value)) {
+    // Not sure if anyone would ever expect '[object Object]', but who knows?
+    return value.toString();
+  }
+  return value;
+};
+
 const replaceCurliesInRequest = (request, bundle) => {
-  const bank = cleaner.createBundleBank(undefined, { bundle: bundle });
-  return cleaner.recurseReplaceBank(request, bank);
+  const bank = createBundleBank(
+    undefined,
+    { bundle },
+    serializeValueForCurlies
+  );
+  return recurseReplaceBank(request, bank);
 };
 
 const cleanHeaders = headers => {
@@ -630,16 +648,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       }
 
       request.headers = cleanHeaders(request.headers);
-      request.serializeValueForCurlies = value => {
-        if (Array.isArray(value)) {
-          return value.join(',');
-        } else if (_.isPlainObject(value)) {
-          // Not sure if anyone would ever expect a '[object Object]',
-          // but who knows?
-          return value.toString();
-        }
-        return value;
-      };
+      request.serializeValueForCurlies = serializeValueForCurlies;
 
       const response = await zcli.request(request);
 
