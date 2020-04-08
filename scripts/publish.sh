@@ -68,6 +68,9 @@ if [[ "$CORE_VERSION" != "" && "$LEGACY_VERSION" != "" ]]; then
         exit 1
     fi
 
+    echo "Let's wait for yarnpkg.com to be aware of the latest zapier-platform-schema..."
+    sleep 15
+
     # Build boilerplate and let Zapier know about this
     ./boilerplate/scripts/build.sh $CORE_VERSION $LEGACY_VERSION &&
     ./boilerplate/scripts/upload.sh $CORE_VERSION &&
