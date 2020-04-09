@@ -423,12 +423,34 @@ describe('Integration Test', () => {
     const compiledApp = schemaTools.prepareApp(appDefWithAuth);
     const app = createApp(appDefWithAuth);
 
-    it('KEY_poll', () => {
+    it('scriptingless, curlies in URL', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
-        'movie_post_poll_no_id',
-        'movie_post_poll'
+        'movie_post_poll_make_array',
+        'recipe_post_poll'
       );
+      appDef.legacy.triggers.recipe.operation.url =
+        'https://httpbin.zapier-tooling.com/get?name={{name}}&active={{active}}';
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.recipe.operation.perform'
+      );
+      input.bundle.authData = { name: 'john' };
+      input.bundle.inputData = { name: 'johnny', active: false };
+      return _app(input).then(output => {
+        const echoed = output.results[0];
+        should.deepEqual(echoed.args, { name: ['john'], active: ['False'] });
+        should.equal(
+          echoed.url,
+          'https://httpbin.zapier-tooling.com/get?name=john&active=False'
+        );
+      });
+    });
+
+    it('KEY_poll', () => {
       const input = createTestInput(
         compiledApp,
         'triggers.contact_full.operation.perform'
@@ -758,10 +780,8 @@ describe('Integration Test', () => {
 
     it('KEY_pre_poll, array curlies', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
-        'movie_pre_poll_array_curlies',
-        'movie_pre_poll'
-      );
+      appDef.legacy.triggers.movie.operation.url =
+        'https://httpbin.zapier-tooling.com/get?things={{things}}';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
         'movie_post_poll'
@@ -1490,19 +1510,24 @@ describe('Integration Test', () => {
         'triggers.contact_hook_scripting.operation.performUnsubscribe'
       );
       input.bundle.authData = { api_key: 'yo yo' };
-      input.bundle.inputData = { foo: 'bar' };
+      input.bundle.inputData = { foo: 'bar', subscription_id: 8866 };
       input.bundle.targetUrl = 'https://foo.bar';
+      input.bundle.subscribeData = { subscription_id: 7744 };
       input.bundle.meta = { zap: { id: 9512 } };
       return app(input).then(output => {
         should.equal(output.results.request.method, 'DELETE');
 
         const echoed = output.results.json;
+        should.equal(echoed.args.sub_id, '7744');
         should.equal(echoed.json.event, 'contact.created');
         should.equal(echoed.json.hidden_message, 'pre_unsubscribe was here!');
         should.equal(echoed.headers['X-Api-Key'], 'yo yo');
 
         should.deepEqual(echoed.json.bundleAuthFields, { api_key: 'yo yo' });
-        should.deepEqual(echoed.json.bundleTriggerFields, { foo: 'bar' });
+        should.deepEqual(echoed.json.bundleTriggerFields, {
+          foo: 'bar',
+          subscription_id: 8866
+        });
         should.equal(echoed.json.bundleTargetUrl, 'https://foo.bar');
         should.equal(echoed.json.bundleEvent, 'contact.created');
         should.deepEqual(echoed.json.bundleZap, { id: 9512 });

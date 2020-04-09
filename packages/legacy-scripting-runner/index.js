@@ -5,9 +5,10 @@ const FormData = require('form-data');
 const flatten = require('flat');
 
 const {
-  createBundleBank,
   recurseReplaceBank
 } = require('zapier-platform-core/src/tools/cleaner');
+
+const { flattenPaths } = require('zapier-platform-core/src/tools/data');
 
 const createInternalRequestClient = input => {
   const addQueryParams = require('zapier-platform-core/src/http-middlewares/before/add-query-params');
@@ -212,7 +213,9 @@ const parseFinalResult = async (result, event) => {
 };
 
 const serializeValueForCurlies = value => {
-  if (Array.isArray(value)) {
+  if (typeof value === 'boolean') {
+    return value ? 'True' : 'False';
+  } else if (Array.isArray(value)) {
     return value.join(',');
   } else if (_.isPlainObject(value)) {
     // Not sure if anyone would ever expect '[object Object]', but who knows?
@@ -221,12 +224,31 @@ const serializeValueForCurlies = value => {
   return value;
 };
 
+const createCurliesBank = bundle => {
+  const bank = {
+    // This is for new curlies syntax, such as '{{bundle.inputData.var}}' and
+    // '{{bundle.authData.var}}'
+    bundle,
+
+    // These are for legacy curlies syntax without the 'bundle' prefix, such as
+    // {{var}}. The order matters.
+    ...bundle.inputData,
+    ...bundle.subscribeData,
+    ...bundle.authData
+  };
+  const flattenedBank = flattenPaths(bank, {
+    perseve: {
+      'bundle.inputData': true
+    }
+  });
+  return Object.entries(flattenedBank).reduce((coll, [key, value]) => {
+    coll[`{{${key}}}`] = serializeValueForCurlies(value);
+    return coll;
+  }, {});
+};
+
 const replaceCurliesInRequest = (request, bundle) => {
-  const bank = createBundleBank(
-    undefined,
-    { bundle },
-    serializeValueForCurlies
-  );
+  const bank = createCurliesBank(bundle);
   return recurseReplaceBank(request, bank);
 };
 
@@ -648,7 +670,6 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       }
 
       request.headers = cleanHeaders(request.headers);
-      request.serializeValueForCurlies = serializeValueForCurlies;
 
       const response = await zcli.request(request);
 
