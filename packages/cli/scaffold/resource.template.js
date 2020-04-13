@@ -6,7 +6,6 @@ const performList = async (z, bundle) => {
       order_by: 'id desc'
     }
   });
-  response.throwForStatus()
   return z.JSON.parse(response.content)
 };
 
@@ -18,7 +17,6 @@ const performSearch = async (z, bundle) => {
       name: bundle.inputData.name
     }
   });
-  response.throwForStatus()
   return z.JSON.parse(response.content)
 };
 
@@ -31,7 +29,6 @@ const performCreate = async (z, bundle) => {
       name: bundle.inputData.name // json by default
     }
   });
-  response.throwForStatus()
   return z.JSON.parse(response.content)
 };
 

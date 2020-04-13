@@ -8,6 +8,7 @@ const should = require('should');
 
 const createAppRequestClient = require('../src/tools/create-app-request-client');
 const createInput = require('../src/tools/create-input');
+const errors = require('../src/errors');
 
 describe('request client', () => {
   const testLogger = () => Promise.resolve({});
@@ -270,7 +271,21 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should run any afterResponse functions', done => {
+  it('should default afterResponse to [throwForStatus]', () => {
+    const inputWithAfterMiddleware = createInput(
+      {
+        afterResponse: []
+      },
+      {},
+      testLogger
+    );
+    const request = createAppRequestClient(inputWithAfterMiddleware);
+    return request({
+      url: 'https://httpbin.org/status/400'
+    }).should.be.rejectedWith(errors.ResponseError);
+  });
+
+  it('should run any afterResponse functions instead of [throwForStatus]', async () => {
     const inputWithAfterMiddleware = createInput(
       {
         afterResponse: [
@@ -284,18 +299,10 @@ describe('request client', () => {
       testLogger
     );
     const request = createAppRequestClient(inputWithAfterMiddleware);
-    request({ url: 'https://httpbin.org/get' })
-      .then(responseBefore => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
+    const response = await request({ url: 'https://httpbin.org/status/400' });
 
-        response.json.testing.should.eql(true);
-        response.status.should.eql(200);
-
-        const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
-        done();
-      })
-      .catch(done);
+    response.json.testing.should.eql(true);
+    response.status.should.eql(400);
   });
 
   it('should parse form type request body', done => {

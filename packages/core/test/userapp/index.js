@@ -505,22 +505,20 @@ const addRequestHeader = (request, z, bundle) => {
   changes the status code if there's an error. Something like this
   could be useful for APIs that always return 200 even on errors.
  */
-const changeStatusOnErrorResponses = response => {
+const changeStatusOnErrorResponses = (response, z) => {
   const contentType = response.getHeader('Content-Type');
-  if (!contentType) {
-    return response;
+
+  if (contentType && contentType.match(/^application\/json/)) {
+    const error = response.json.args.error;
+
+    if (response.status === 200 && error) {
+      throw z.errors.Error(error);
+    }
   }
 
-  const isJsonResponse = contentType.match(/^application\/json/);
-  if (!isJsonResponse) {
-    return response;
-  }
+  // defining `afterResponse` makes use responsible for calling `throwForStatus()`
+  response.throwForStatus();
 
-  const data = JSON.parse(response.content);
-  const error = data.args.error;
-  if (response.status === 200 && error) {
-    response.status = 500;
-  }
   return response;
 };
 

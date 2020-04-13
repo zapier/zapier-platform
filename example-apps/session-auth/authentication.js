@@ -2,17 +2,8 @@ const testAuth = (z /*, bundle */) => {
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
-  const promise = z.request({
+  return z.request({
     url: 'https://auth-json-server.zapier-staging.com/me'
-  });
-
-  // This method can return any truthy value to indicate the credentials are valid.
-  // Raise an error to show
-  return promise.then(response => {
-    if (response.status === 401) {
-      throw new Error('The Session Key you supplied is invalid');
-    }
-    return response;
   });
 };
 
@@ -27,9 +18,6 @@ const getSessionKey = (z, bundle) => {
   });
 
   return promise.then(response => {
-    if (response.status === 401) {
-      throw new Error('The username/password you supplied is invalid');
-    }
     const json = JSON.parse(response.content);
     return {
       sessionKey: json.sessionKey || 'secret'

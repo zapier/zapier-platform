@@ -1,5 +1,15 @@
 const authentication = require('./authentication');
 
+const errorHandler = response => {
+  if (response.status === 401) {
+    throw new Error('The username and/or password you supplied is incorrect');
+  }
+
+  response.throwForStatus();
+
+  return response;
+};
+
 const App = {
   // This is just shorthand to reference the installed dependencies you have. Zapier will
   // need to know these before we can upload
@@ -10,7 +20,7 @@ const App = {
 
   beforeRequest: [],
 
-  afterResponse: [],
+  afterResponse: [errorHandler],
 
   resources: {},
 

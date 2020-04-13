@@ -203,7 +203,7 @@ Key | Required | Type | Description
 `getAccessToken` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier fetches an access token from the API
 `refreshAccessToken` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier will refresh the access token from the API
 `scope` | no | `string` | What scope should Zapier request?
-`autoRefresh` | no | `boolean` | Should Zapier include a pre-built afterResponse middleware that invokes `refreshAccessToken` when we receive a 401 response?
+`autoRefresh` | no | `boolean` | Should Zapier invoke `refreshAccessToken` when we receive an error for a 401 response?
 
 -----
 

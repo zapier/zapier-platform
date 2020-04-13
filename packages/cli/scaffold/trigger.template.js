@@ -6,7 +6,6 @@ const perform = async (z, bundle) => {
       tag: bundle.inputData.tagName
     }
   });
-  response.throwForStatus();
   // this should return an array of objects
   return z.JSON.parse(response.content);
 };

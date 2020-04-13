@@ -17,6 +17,8 @@ const sessionRefreshIf401 = (response, z, bundle) => {
       throw new z.errors.RefreshAuthError('Session key needs refreshing.');
     }
   }
+  // When you define an `afterResponse`, make sure one of them calls `throwForStatus`
+  response.throwForStatus();
   return response;
 };
 

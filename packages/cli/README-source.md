@@ -994,6 +994,10 @@ Middleware functions can be asynchronous - just return a promise from the middle
 
 The second argument for middleware is the `z` object, but it does *not* include `z.request()` as using that would easily create infinite loops.
 
+#### Error Response Handling
+
+Since v10 `afterResponse` defaults to one that calls `response.throwForStatus()`. This makes you responsible for error response  handling when you do use `afterResponse`. Like in the above example, first handle any cases that `throwForStatus` shouldn't or doesn't (correctly) throw for.
+
 ### HTTP Request Options
 
 Shorthand requests and manual `z.request([url], options)` calls support the following HTTP `options`:
@@ -1215,7 +1219,11 @@ have incomprehensible messages for end users, or possibly go uncaught.
 
 Zapier provides a couple tools to help with error handling. First is the `afterResponse`
 middleware ([docs](#using-http-middleware)), which provides a hook for processing
-all responses from HTTP calls. The other tool is the collection of errors in
+all responses from HTTP calls. Second is `response.throwForStatus()`
+([docs](#http-response-object)), which throws an error if the response status
+indicates an error. Since v10, `afterResponse` defaults to calling `throwForStatus`
+and using `afterResponse` makes you responsible for error response handling
+([docs](#error-response-handling)). The last tool is the collection of errors in
 `z.errors` ([docs](#zerrors)), which control the behavior of Zaps when
 various kinds of errors occur.
 

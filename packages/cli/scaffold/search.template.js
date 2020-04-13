@@ -6,7 +6,6 @@ const perform = async (z, bundle) => {
       name: bundle.inputData.name
     }
   });
-  response.throwForStatus();
   // this should return an array of objects (but only the first will be used)
   return z.JSON.parse(response.content)
 };

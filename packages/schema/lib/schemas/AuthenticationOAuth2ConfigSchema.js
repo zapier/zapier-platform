@@ -33,7 +33,7 @@ module.exports = makeSchema(
       },
       autoRefresh: {
         description:
-          'Should Zapier include a pre-built afterResponse middleware that invokes `refreshAccessToken` when we receive a 401 response?',
+          'Should Zapier invoke `refreshAccessToken` when we receive an error for a 401 response?',
         type: 'boolean'
       }
     },

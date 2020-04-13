@@ -14,6 +14,16 @@ const includeApiKey = (request, z, bundle) => {
   return request;
 };
 
+const errorHandler = response => {
+  if (response.status === 401) {
+    throw new Error('The API Key you supplied is invalid');
+  }
+
+  response.throwForStatus();
+
+  return response;
+};
+
 const App = {
   // This is just shorthand to reference the installed dependencies you have. Zapier will
   // need to know these before we can upload
@@ -24,7 +34,7 @@ const App = {
 
   beforeRequest: [includeApiKey],
 
-  afterResponse: [],
+  afterResponse: [errorHandler],
 
   resources: {},
 

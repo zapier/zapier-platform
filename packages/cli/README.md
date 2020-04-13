@@ -85,6 +85,7 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
   * [Manual HTTP Requests](#manual-http-requests)
     + [POST and PUT Requests](#post-and-put-requests)
   * [Using HTTP middleware](#using-http-middleware)
+    + [Error Response Handling](#error-response-handling)
   * [HTTP Request Options](#http-request-options)
   * [HTTP Response Object](#http-response-object)
 - [Dehydration](#dehydration)
@@ -609,20 +610,10 @@ const includeSessionKeyHeader = (request, z, bundle) => {
   return request;
 };
 
-const sessionRefreshIf401 = (response, z, bundle) => {
-  if (bundle.authData.sessionKey) {
-    if (response.status === 401) {
-      throw new z.errors.RefreshAuthError(); // ask for a refresh & retry
-    }
-  }
-  return response;
-};
-
 const App = {
   // ...
   authentication: authentication,
-  beforeRequest: [includeSessionKeyHeader],
-  afterResponse: [sessionRefreshIf401]
+  beforeRequest: [includeSessionKeyHeader]
   // ...
 };
 
@@ -2020,6 +2011,26 @@ const mustBe200 = (response, z, bundle) => {
   return response;
 };
 
+const handleErrors = (response, z) => {
+  // Throw an error that `throwForStatus` wouldn't throw (correctly) for.
+  if (response.status === 206) {
+    throw new z.errors.Error(
+      `Received incomplete data: ${response.json.error_message}`,
+      response.json.error_code,
+      response.status
+    );
+  }
+
+  // Prevent `throwForStatus` from throwing for a certain status.
+  if (response.status === 404) {
+    return response;
+  }
+
+  response.throwForStatus();
+
+  return response;
+};
+
 const autoParseJson = (response, z, bundle) => {
   response.json = z.JSON.parse(response.content);
   return response;
@@ -2028,7 +2039,7 @@ const autoParseJson = (response, z, bundle) => {
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [mustBe200, autoParseJson]
+  afterResponse: [handleErrors, autoParseJson]
   // ...
 };
 
@@ -2039,6 +2050,10 @@ A `beforeRequest` middleware function takes a request options object, and return
 Middleware functions can be asynchronous - just return a promise from the middleware function.
 
 The second argument for middleware is the `z` object, but it does *not* include `z.request()` as using that would easily create infinite loops.
+
+#### Error Response Handling
+
+Since v10 `afterResponse` defaults to one that calls `response.throwForStatus()`. This makes you responsible for error response  handling when you do use `afterResponse`. Like in the above example, first handle any cases that `throwForStatus` shouldn't or doesn't (correctly) throw for.
 
 ### HTTP Request Options
 
@@ -2357,7 +2372,11 @@ have incomprehensible messages for end users, or possibly go uncaught.
 
 Zapier provides a couple tools to help with error handling. First is the `afterResponse`
 middleware ([docs](#using-http-middleware)), which provides a hook for processing
-all responses from HTTP calls. The other tool is the collection of errors in
+all responses from HTTP calls. Second is `response.throwForStatus()`
+([docs](#http-response-object)), which throws an error if the response status
+indicates an error. Since v10, `afterResponse` defaults to calling `throwForStatus`
+and using `afterResponse` makes you responsible for error response handling
+([docs](#error-response-handling)). The last tool is the collection of errors in
 `z.errors` ([docs](#zerrors)), which control the behavior of Zaps when
 various kinds of errors occur.
 
@@ -2791,6 +2810,8 @@ const App = {
   afterResponse: [
     (response, z, bundle) => {
       response.xml = xml.parse(response.content);
+      // When you define an `afterResponse`, make sure one of them calls `throwForStatus`
+      response.throwForStatus();
       return response;
     }
   ]

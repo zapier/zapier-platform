@@ -5,16 +5,9 @@ const testAuth = (z /*, bundle */) => {
 
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
-  return z
-    .request({
-      url: 'https://auth-json-server.zapier-staging.com/me'
-    })
-    .then(response => {
-      if (response.status === 401) {
-        throw new Error('The API Key you supplied is invalid');
-      }
-      return response.json;
-    });
+  return z.request({
+    url: 'https://auth-json-server.zapier-staging.com/me'
+  });
 };
 
 module.exports = {
