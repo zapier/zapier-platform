@@ -1,4 +1,4 @@
-const test = (z /*, bundle*/) => {
+const test = (z /*, bundle */) => {
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
@@ -11,8 +11,10 @@ const test = (z /*, bundle*/) => {
     })
     .then(response => {
       if (response.status === 401) {
-        throw new Error(
-          'The username and/or password you supplied is incorrect'
+        throw new z.errors.Error(
+          'The username and/or password you supplied is incorrect',
+          'AuthenticationError',
+          response.status
         );
       }
       return response;

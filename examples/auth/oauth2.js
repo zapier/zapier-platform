@@ -20,7 +20,11 @@ const getAccessToken = async (z, bundle) => {
   // Needs to return `access_token`.
   // If your app does an app refresh, then `refresh_token` should be returned as well
   if (response.status !== 200) {
-    throw new Error('Unable to fetch access token: ' + response.content);
+    throw new z.error.Error(
+      'Unable to fetch access token: ' + response.content,
+      'GetAccessTokenError',
+      response.status
+    );
   }
 
   return {
@@ -50,7 +54,11 @@ const refreshAccessToken = async (z, bundle) => {
   // If the refresh token stays constant, no need to return it
   // If the refresh token changes, return it here to update the stored value in Zapier
   if (response.status !== 200) {
-    throw new Error('Unable to fetch access token: ' + response.content);
+    throw new z.errors.Error(
+      'Unable to fetch access token: ' + response.content,
+      'RefreshAccessTokenError',
+      response.status
+    );
   }
 
   return {
@@ -77,7 +85,11 @@ const testAuth = async (z /*, bundle */) => {
 
   if (response.status === 401) {
     // This message is surfaced to the user
-    throw new Error('The access token you supplied is not valid');
+    throw new z.errors.Error(
+      'The access token you supplied is not valid',
+      'AuthenticationError',
+      response.status
+    );
   }
 
   // This method can return any truthy value to indicate the credentials are valid.

@@ -5,8 +5,14 @@ const addHeader = (request, z, bundle) => {
 
 const mustBe200 = (response, z, bundle) => {
   if (response.status !== 200) {
-    throw new Error(`Unexpected status code ${response.status}`);
+    throw new z.errors.Error(
+      `Unexpected status code ${response.status}`,
+      'UnexpectedStatus',
+      response.status
+    );
   }
+  // throw for standard error statuses
+  response.throwForStatus();
   return response;
 };
 

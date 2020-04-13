@@ -9,7 +9,11 @@ const test = async (z /*, bundle */) => {
 
   if (response.status === 401) {
     // This message is surfaced to the user
-    throw new Error('The username and/or password you supplied is incorrect');
+    throw new z.errors.Error(
+      'The username and/or password you supplied is incorrect',
+      'AuthenticationError',
+      response.status
+    );
   }
 
   // anything truthy indicates the credentials are valid. Data returned from this test is available to the connection label
