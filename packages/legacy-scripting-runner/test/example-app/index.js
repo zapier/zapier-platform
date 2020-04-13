@@ -262,6 +262,16 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_GET_with_body: function(bundle) {
+        // Use postman-echo because httpbin doesn't echo a GET request's body
+        bundle.request.url = 'https://postman-echo.com/get';
+        bundle.request.method = 'GET';
+        bundle.request.data = JSON.stringify({
+          name: 'Luke Skywalker'
+        });
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];

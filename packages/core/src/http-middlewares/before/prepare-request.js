@@ -44,7 +44,7 @@ const coerceBody = req => {
   const contentType = getContentType(req.headers || {});
 
   // No need for body on get
-  if (req.method === 'GET') {
+  if (req.method === 'GET' && !req.allowGetBody) {
     delete req.body;
   }
 

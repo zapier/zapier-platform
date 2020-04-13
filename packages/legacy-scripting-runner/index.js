@@ -670,6 +670,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       }
 
       request.headers = cleanHeaders(request.headers);
+      request.allowGetBody = true;
 
       const response = await zcli.request(request);
 
