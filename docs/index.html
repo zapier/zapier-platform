@@ -1315,7 +1315,7 @@ zapier convert 1234 my-app 1.0.1
       <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&apos;The username/password you supplied is invalid&apos;</span>);
     }
     <span class="hljs-keyword">return</span> {
-      <span class="hljs-attr">sessionKey</span>: z.JSON.parse(response.content).sessionKey
+      <span class="hljs-attr">sessionKey</span>: response.json.sessionKey
     };
   });
 };
@@ -2215,7 +2215,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         <span class="hljs-attr">spreadsheet_id</span>: bundle.inputData.spreadsheet_id
       }
     })
-    .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> z.JSON.parse(response.content));
+    .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> response.json);
 };
 
 </code></pre>
@@ -2493,7 +2493,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeOutputFields = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> response = z.request(<span class="hljs-string">&apos;https://example.com/api/v2/fields.json&apos;</span>);
   <span class="hljs-comment">// json is like [{&quot;key&quot;:&quot;field_1&quot;,&quot;label&quot;:&quot;Label for Custom Field&quot;}]</span>
-  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> z.JSON.parse(res.content));
+  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json);
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -3322,7 +3322,7 @@ zapier env 1.0.0
     .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
       response.throwForStatus();
 
-      <span class="hljs-keyword">const</span> recipes = z.JSON.parse(response.content);
+      <span class="hljs-keyword">const</span> recipes = response.json;
       <span class="hljs-comment">// do any custom processing of recipes here...</span>
 
       <span class="hljs-keyword">return</span> recipes;
@@ -3447,15 +3447,10 @@ zapier env 1.0.0
   <span class="hljs-keyword">return</span> response;
 };
 
-<span class="hljs-keyword">const</span> autoParseJson = <span class="hljs-function">(<span class="hljs-params">response, z, bundle</span>) =&gt;</span> {
-  response.json = z.JSON.parse(response.content);
-  <span class="hljs-keyword">return</span> response;
-};
-
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">beforeRequest</span>: [addHeader],
-  <span class="hljs-attr">afterResponse</span>: [mustBe200, autoParseJson]
+  <span class="hljs-attr">afterResponse</span>: [mustBe200]
   <span class="hljs-comment">// ...</span>
 };
 
@@ -3557,8 +3552,8 @@ zapier env 1.0.0
   response.request; <span class="hljs-comment">// original request options</span>
   response.throwForStatus();
   <span class="hljs-comment">// if options.raw === false (default)...</span>
+  response.json; <span class="hljs-comment">// identical to:</span>
   <span class="hljs-built_in">JSON</span>.parse(response.content);
-  response.json;
   <span class="hljs-comment">// if options.raw === true...</span>
   response.buffer().then(<span class="hljs-function"><span class="hljs-params">buf</span> =&gt;</span> buf.toString());
   response.text().then(<span class="hljs-function"><span class="hljs-params">content</span> =&gt;</span> content);
@@ -3595,13 +3590,13 @@ zapier env 1.0.0
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> getExtraDataFunction = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> url = <span class="hljs-string">`https://example.com/movies/<span class="hljs-subst">${bundle.inputData.id}</span>.json`</span>;
-  <span class="hljs-keyword">return</span> z.request(url).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> z.JSON.parse(res.content));
+  <span class="hljs-keyword">return</span> z.request(url).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json);
 };
 
 <span class="hljs-keyword">const</span> movieList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">return</span> z
     .request(<span class="hljs-string">&apos;https://example.com/movies.json&apos;</span>)
-    .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> z.JSON.parse(res.content))
+    .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json)
     .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
       <span class="hljs-keyword">return</span> results.map(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
         <span class="hljs-comment">// so maybe /movies.json is thin content but</span>
@@ -3730,7 +3725,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 <span class="hljs-keyword">const</span> pdfList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">return</span> z
     .request(<span class="hljs-string">&apos;https://example.com/pdfs.json&apos;</span>)
-    .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> z.JSON.parse(res.content))
+    .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json)
     .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
       <span class="hljs-keyword">return</span> results.map(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
         <span class="hljs-comment">// lazily convert a secret_download_url to a stashed url</span>
@@ -4924,7 +4919,7 @@ npm run zapier-push
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-comment">// ...</span>
-<span class="hljs-keyword">let</span> items = z.JSON.parse(response.content).items;
+<span class="hljs-keyword">let</span> items = response.json.items;
 items.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
   item.id = item.contactId;
 })

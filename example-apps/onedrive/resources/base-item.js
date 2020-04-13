@@ -121,7 +121,7 @@ const handleCreateWithSession = (
         )
       }
 
-      const uploadUrl = z.JSON.parse(response.content).uploadUrl
+      const uploadUrl = response.json.uploadUrl
 
       // This should work fine for files up to 60MB (https://dev.onedrive.com/items/upload_large_files.htm#upload-fragments)
 

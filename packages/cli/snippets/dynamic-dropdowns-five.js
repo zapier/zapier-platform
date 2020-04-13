@@ -5,5 +5,5 @@ perform: () => {
         spreadsheet_id: bundle.inputData.spreadsheet_id
       }
     })
-    .then(response => z.JSON.parse(response.content));
+    .then(response => response.json);
 };

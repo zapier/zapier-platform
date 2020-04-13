@@ -566,7 +566,7 @@ const getSessionKey = (z, bundle) => {
       throw new Error('The username/password you supplied is invalid');
     }
     return {
-      sessionKey: z.JSON.parse(response.content).sessionKey
+      sessionKey: response.json.sessionKey
     };
   });
 };
@@ -1277,7 +1277,7 @@ perform: () => {
         spreadsheet_id: bundle.inputData.spreadsheet_id
       }
     })
-    .then(response => z.JSON.parse(response.content));
+    .then(response => response.json);
 };
 
 ```
@@ -1497,7 +1497,7 @@ To define an Output Field for a nested field use `{{parent}}__{{key}}`. For chil
 const recipeOutputFields = (z, bundle) => {
   const response = z.request('https://example.com/api/v2/fields.json');
   // json is like [{"key":"field_1","label":"Label for Custom Field"}]
-  return response.then(res => z.JSON.parse(res.content));
+  return response.then(res => res.json);
 };
 
 const App = {
@@ -1934,7 +1934,7 @@ const listExample = (z, bundle) => {
     .then(response => {
       response.throwForStatus();
 
-      const recipes = z.JSON.parse(response.content);
+      const recipes = response.json;
       // do any custom processing of recipes here...
 
       return recipes;
@@ -2030,15 +2030,10 @@ const mustBe200 = (response, z, bundle) => {
   return response;
 };
 
-const autoParseJson = (response, z, bundle) => {
-  response.json = z.JSON.parse(response.content);
-  return response;
-};
-
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [mustBe200, autoParseJson]
+  afterResponse: [mustBe200]
   // ...
 };
 
@@ -2115,8 +2110,8 @@ z.request({
   response.request; // original request options
   response.throwForStatus();
   // if options.raw === false (default)...
+  response.json; // identical to:
   JSON.parse(response.content);
-  response.json;
   // if options.raw === true...
   response.buffer().then(buf => buf.toString());
   response.text().then(content => content);
@@ -2147,13 +2142,13 @@ Here is an example that pulls in extra data for a movie:
 ```js
 const getExtraDataFunction = (z, bundle) => {
   const url = `https://example.com/movies/${bundle.inputData.id}.json`;
-  return z.request(url).then(res => z.JSON.parse(res.content));
+  return z.request(url).then(res => res.json);
 };
 
 const movieList = (z, bundle) => {
   return z
     .request('https://example.com/movies.json')
-    .then(res => z.JSON.parse(res.content))
+    .then(res => res.json)
     .then(results => {
       return results.map(result => {
         // so maybe /movies.json is thin content but
@@ -2251,7 +2246,7 @@ const stashPDFfunction = (z, bundle) => {
 const pdfList = (z, bundle) => {
   return z
     .request('https://example.com/pdfs.json')
-    .then(res => z.JSON.parse(res.content))
+    .then(res => res.json)
     .then(results => {
       return results.map(result => {
         // lazily convert a secret_download_url to a stashed url
@@ -3029,7 +3024,7 @@ For deduplication to work, we need to be able to identify and use a unique field
 
 ```js
 // ...
-let items = z.JSON.parse(response.content).items;
+let items = response.json.items;
 items.forEach(item => {
   item.id = item.contactId;
 })

@@ -10,7 +10,7 @@ const listExample = (z, bundle) => {
     .then(response => {
       response.throwForStatus();
 
-      const recipes = z.JSON.parse(response.content);
+      const recipes = response.json;
       // do any custom processing of recipes here...
 
       return recipes;

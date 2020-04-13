@@ -4,7 +4,7 @@ const triggerRepo = (z, bundle) => {
   const responsePromise = z.request({
     url: 'https://api.github.com/user/repos?per_page=100'
   });
-  return responsePromise.then(response => JSON.parse(response.content));
+  return responsePromise.then(response => response.json);
 };
 
 module.exports = {

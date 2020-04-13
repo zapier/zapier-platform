@@ -2,7 +2,7 @@
 const triggerBoard = async (z, bundle) => {
   const url = 'https://trello.com/1/members/me/boards';
   const response = await z.request(url);
-  return z.JSON.parse(response.content);
+  return response.json;
 };
 
 module.exports = {

@@ -9,7 +9,7 @@ const createIssue = (z, bundle) => {
       body: bundle.inputData.body
     }
   });
-  return responsePromise.then(response => JSON.parse(response.content));
+  return responsePromise.then(response => response.json);
 };
 
 module.exports = {

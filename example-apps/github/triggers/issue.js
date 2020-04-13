@@ -11,7 +11,7 @@ const triggerIssue = (z, bundle) => {
       direction: 'desc'
     }
   });
-  return responsePromise.then(response => JSON.parse(response.content));
+  return responsePromise.then(response => response.json);
 };
 
 module.exports = {
