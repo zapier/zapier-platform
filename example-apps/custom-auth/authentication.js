@@ -11,7 +11,11 @@ const testAuth = (z /*, bundle */) => {
     })
     .then(response => {
       if (response.status === 401) {
-        throw new Error('The API Key you supplied is invalid');
+        throw new z.errors.Error(
+          'The API Key you supplied is invalid',
+          'AuthenticationError',
+          response.status
+        );
       }
       return response.json;
     });

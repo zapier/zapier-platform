@@ -1932,9 +1932,7 @@ const listExample = (z, bundle) => {
   return z
     .request('https://example.com/api/v2/recipes.json', customHttpOptions)
     .then(response => {
-      if (response.status >= 300) {
-        throw new Error(`Unexpected status code ${response.status}`);
-      }
+      response.throwForStatus();
 
       const recipes = z.JSON.parse(response.content);
       // do any custom processing of recipes here...
@@ -1985,8 +1983,14 @@ const App = {
           return z
             .request('https://example.com/api/v2/recipes.json', options)
             .then(response => {
+              // throw and try to extract message from standard error responses
+              response.throwForStatus();
               if (response.status !== 201) {
-                throw new Error(`Unexpected status code ${response.status}`);
+                throw new z.errors.Error(
+                  `Unexpected status code ${response.status}`,
+                  'CreateRecipeError',
+                  response.status
+                );
               }
             });
         }
@@ -2015,8 +2019,14 @@ const addHeader = (request, z, bundle) => {
 
 const mustBe200 = (response, z, bundle) => {
   if (response.status !== 200) {
-    throw new Error(`Unexpected status code ${response.status}`);
+    throw new z.errors.Error(
+      `Unexpected status code ${response.status}`,
+      'UnexpectedStatus',
+      response.status
+    );
   }
+  // throw for standard error statuses
+  response.throwForStatus();
   return response;
 };
 

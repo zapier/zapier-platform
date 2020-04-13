@@ -51,7 +51,11 @@ const getAccessToken = (z, bundle) => {
 
   return promise.then((response) => {
     if (response.status !== 200) {
-      throw new Error('Unable to fetch access token: ' + response.content)
+      throw new z.errors.Error(
+        'Unable to fetch access token: ' + response.content,
+        'GetAccessTokenError',
+        response.status
+      )
     }
 
     const result = z.JSON.parse(response.content)
@@ -89,7 +93,11 @@ const refreshAccessToken = (z, bundle) => {
 
   return promise.then((response) => {
     if (response.status !== 200) {
-      throw new Error('Unable to fetch access token: ' + response.content)
+      throw new z.errors.Error(
+        'Unable to fetch access token: ' + response.content,
+        'RefreshAccessTokenError',
+        response.status
+      )
     }
 
     const result = z.JSON.parse(response.content)
@@ -112,7 +120,11 @@ const testAuth = (z) => {
 
   return promise.then((response) => {
     if (response.status === 401) {
-      throw new Error('The access token you supplied is not valid')
+      throw new z.errors.Error(
+        'The access token you supplied is not valid',
+        'AuthenticationError',
+        response.status
+      )
     }
     return z.JSON.parse(response.content)
   })

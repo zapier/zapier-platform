@@ -7,7 +7,11 @@ const test = async (z /*, bundle */) => {
 
   if (response.status === 401) {
     // This message is surfaced to the user
-    throw new Error('The Session Key you supplied is invalid');
+    throw new z.errors.Error(
+      'The Session Key you supplied is invalid',
+      'AuthenticationError',
+      response.status
+    );
   }
 
   // This method can return any truthy value to indicate the credentials are valid.
@@ -26,7 +30,11 @@ const getSessionKey = async (z, bundle) => {
   });
 
   if (response.status === 401) {
-    throw new Error('The username/password you supplied is invalid');
+    throw new z.errors.Error(
+      'The username/password you supplied is invalid',
+      'GetSessionKeyError',
+      response.status
+    );
   }
 
   return {

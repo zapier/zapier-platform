@@ -45,7 +45,7 @@ const createFolder = (z, bundle) => {
         'content-type': 'application/json'
       }
     })
-    .then(_.partial(parseResponse, 'folder'))
+    .then(_.partial(parseResponse, z, 'folder'))
     .then(cleanupPaths)
     .catch(handleError)
 }

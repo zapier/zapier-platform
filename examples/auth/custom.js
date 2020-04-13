@@ -7,7 +7,11 @@ const test = async (z /*, bundle */) => {
 
   if (response.status === 401) {
     // This message is surfaced to the user
-    throw new Error('The API Key you supplied is invalid');
+    throw new z.errors.Error(
+      'The API Key you supplied is invalid',
+      'AuthenticationError',
+      response.status
+    );
   }
   return response;
 };
