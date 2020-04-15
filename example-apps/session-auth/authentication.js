@@ -38,7 +38,7 @@ const getSessionKey = (z, bundle) => {
         response.status
       );
     }
-    const json = JSON.parse(response.content);
+    const json = response.json;
     return {
       sessionKey: json.sessionKey || 'secret'
     };

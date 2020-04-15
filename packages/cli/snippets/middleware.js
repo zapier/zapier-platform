@@ -16,14 +16,9 @@ const mustBe200 = (response, z, bundle) => {
   return response;
 };
 
-const autoParseJson = (response, z, bundle) => {
-  response.json = z.JSON.parse(response.content);
-  return response;
-};
-
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [mustBe200, autoParseJson]
+  afterResponse: [mustBe200]
   // ...
 };

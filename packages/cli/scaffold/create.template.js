@@ -11,7 +11,7 @@ const perform = async (z, bundle) => {
   });
   response.throwForStatus();
   // this should return a single object
-  return z.JSON.parse(response.content);
+  return response.json;
 };
 
 module.exports = {

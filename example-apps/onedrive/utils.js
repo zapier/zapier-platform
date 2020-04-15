@@ -12,7 +12,7 @@ const parseResponse = (z, type, response) => {
   let results = []
 
   if (response.status >= 200 && response.status < 300) {
-    results = JSON.parse(response.content)
+    results = response.json
 
     // OneDrive puts the contents of lists inside .value property
     if (!_.isArray(results) && _.isArray(results.value)) {

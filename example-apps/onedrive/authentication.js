@@ -58,7 +58,7 @@ const getAccessToken = (z, bundle) => {
       )
     }
 
-    const result = z.JSON.parse(response.content)
+    const result = response.json
     return {
       access_token: result.access_token,
       refresh_token: result.refresh_token,
@@ -100,7 +100,7 @@ const refreshAccessToken = (z, bundle) => {
       )
     }
 
-    const result = z.JSON.parse(response.content)
+    const result = response.json
     return {
       access_token: result.access_token,
       refresh_token: result.refresh_token,
@@ -126,7 +126,7 @@ const testAuth = (z) => {
         response.status
       )
     }
-    return z.JSON.parse(response.content)
+    return response.json
   })
 }
 

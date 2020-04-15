@@ -7,7 +7,7 @@ const performList = async (z, bundle) => {
     }
   });
   response.throwForStatus()
-  return z.JSON.parse(response.content)
+  return response.json
 };
 
 // find a particular <%= LOWER_NOUN %> by name (or other search criteria)
@@ -19,7 +19,7 @@ const performSearch = async (z, bundle) => {
     }
   });
   response.throwForStatus()
-  return z.JSON.parse(response.content)
+  return response.json
 };
 
 // creates a new <%= LOWER_NOUN %>
@@ -32,7 +32,7 @@ const performCreate = async (z, bundle) => {
     }
   });
   response.throwForStatus()
-  return z.JSON.parse(response.content)
+  return response.json
 };
 
 module.exports = {
