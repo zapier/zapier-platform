@@ -1059,8 +1059,8 @@ z.request({
   response.request; // original request options
   response.throwForStatus();
   // if options.raw === false (default)...
+  response.json; // identical to:
   JSON.parse(response.content);
-  response.json;
   // if options.raw === true...
   response.buffer().then(buf => buf.toString());
   response.text().then(content => content);
@@ -1625,7 +1625,7 @@ For deduplication to work, we need to be able to identify and use a unique field
 
 ```js
 // ...
-let items = z.JSON.parse(response.content).items;
+let items = response.json.items;
 items.forEach(item => {
   item.id = item.contactId;
 })

@@ -5,7 +5,11 @@ const authentication = require('./authentication');
 
 const handleHTTPError = (response, z) => {
   if (response.status >= 400) {
-    throw new Error(`Unexpected status code ${response.status}`);
+    throw new z.errors.Error(
+      `Unexpected status code ${response.status}`,
+      'StatusError',
+      response.status
+    );
   }
   return response;
 };

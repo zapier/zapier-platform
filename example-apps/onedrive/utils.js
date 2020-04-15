@@ -8,18 +8,18 @@ const contentDisposition = require('content-disposition')
 // on the OneDrive API. We intentionally don't set it up as an `afterResposne`
 // handler because not *all* calls need it (i.e. the auth test and file create),
 // so we break it out and share the code this way instead.
-const parseResponse = (type, response) => {
+const parseResponse = (z, type, response) => {
   let results = []
 
   if (response.status >= 200 && response.status < 300) {
-    results = JSON.parse(response.content)
+    results = response.json
 
     // OneDrive puts the contents of lists inside .value property
     if (!_.isArray(results) && _.isArray(results.value)) {
       results = results.value
     }
   } else {
-    throw new Error(response.content)
+    throw new z.errors.Error(response.content, null, response.status)
   }
 
   // Only return files or folders, according to type

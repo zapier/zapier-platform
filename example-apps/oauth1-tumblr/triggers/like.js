@@ -1,7 +1,7 @@
 const perform = async (z, bundle) => {
   const url = 'https://api.tumblr.com/v2/user/likes';
   const response = await z.request(url);
-  const result = z.JSON.parse(response.content);
+  const result = response.json;
   return result.response.liked_posts || [];
 };
 

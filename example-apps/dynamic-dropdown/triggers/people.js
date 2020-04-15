@@ -10,7 +10,7 @@ const fetchList = (z, bundle) => {
   //   we're going to omit that part. Thus, this trigger only "see" the people
   //   in their first page of results
   return z.request(request).then(response => {
-    let peopleArray = JSON.parse(response.content).results;
+    let peopleArray = response.json.results;
     if (bundle.inputData.species) {
       // The Zap's setup has requested a specific species of person.
       // Since the API/endpoint can't perform the filtering, we'll perform it

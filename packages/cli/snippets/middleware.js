@@ -5,19 +5,20 @@ const addHeader = (request, z, bundle) => {
 
 const mustBe200 = (response, z, bundle) => {
   if (response.status !== 200) {
-    throw new Error(`Unexpected status code ${response.status}`);
+    throw new z.errors.Error(
+      `Unexpected status code ${response.status}`,
+      'UnexpectedStatus',
+      response.status
+    );
   }
-  return response;
-};
-
-const autoParseJson = (response, z, bundle) => {
-  response.json = z.JSON.parse(response.content);
+  // throw for standard error statuses
+  response.throwForStatus();
   return response;
 };
 
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [mustBe200, autoParseJson]
+  afterResponse: [mustBe200]
   // ...
 };

@@ -10,7 +10,11 @@ const testAuth = (z /*, bundle */) => {
   // Raise an error to show
   return promise.then(response => {
     if (response.status === 401) {
-      throw new Error('The Session Key you supplied is invalid');
+      throw new z.errors.Error(
+        'The Session Key you supplied is invalid',
+        'AuthenticationError',
+        response.status
+      );
     }
     return response;
   });
@@ -28,9 +32,13 @@ const getSessionKey = (z, bundle) => {
 
   return promise.then(response => {
     if (response.status === 401) {
-      throw new Error('The username/password you supplied is invalid');
+      throw new z.errors.Error(
+        'The username/password you supplied is invalid',
+        'GetSessionKeyError',
+        response.status
+      );
     }
-    const json = JSON.parse(response.content);
+    const json = response.json;
     return {
       sessionKey: json.sessionKey || 'secret'
     };
