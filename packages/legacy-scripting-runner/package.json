@@ -30,7 +30,7 @@
     "jsdom": "7.0.0",
     "lodash": "4.17.15",
     "moment-timezone": "0.5.17",
-    "request": "2.87.0",
+    "request": "2.88.2",
     "underscore": "1.4.4",
     "xmldom": "0.1.27"
   },
