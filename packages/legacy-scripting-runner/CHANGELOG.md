@@ -1,6 +1,6 @@
 ## 3.6.0
 
-- :nail_care: Allow GET requests to have body ([#195](https://github.com/zapier/zapier-platform/pull/195))
+- :nail_care: Allow GET requests to have body (requires zapier-platform-core 9.4.0+) ([#195](https://github.com/zapier/zapier-platform/pull/195))
 - :bug: More "reliably interpolate arrays or objects to a string" ([#203](https://github.com/zapier/zapier-platform/pull/203))
 - :hammer: Upgrade `request` package ([#196](https://github.com/zapier/zapier-platform/pull/196))
 
