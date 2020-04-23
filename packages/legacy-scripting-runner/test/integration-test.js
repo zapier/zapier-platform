@@ -786,6 +786,16 @@ describe('Integration Test', () => {
         'movie_post_poll_make_array',
         'movie_post_poll'
       );
+
+      // appDef will be injected to `input` as `input._zapier.app` by
+      // createInput(). core has an injectInput beforeRequest middleware that
+      // inject `input` to the request object. When core does prepareRequest,
+      // it's going to replace every curlies in req.input._zapier.app. So apart
+      // from the request options passed into z.request, we also need to make
+      // sure array curlies from another trigger/action don't break either.
+      appDef.legacy.triggers.recipe.operation.url =
+        'https://example.com?things={{bundle.inputData.things}}';
+
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDefWithAuth);
 
