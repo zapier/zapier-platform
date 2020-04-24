@@ -14,9 +14,6 @@ describe('http requests', () => {
         response.content.headers['User-Agent']
           .includes('zapier-platform-core/')
           .should.be.true();
-        response.content.headers['User-Agent']
-          .includes('(via node-fetch)')
-          .should.be.true();
         response.content.url.should.eql('https://httpbin.org/get');
         done();
       })
