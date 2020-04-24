@@ -25,7 +25,7 @@ const request = async options => {
   const { url: fetchUrl, ...fetchOptions } = options;
 
   fetchOptions.headers = {
-    'user-agent': `${PACKAGE_NAME} v${PACKAGE_VERSION} (via node-fetch)`,
+    'user-agent': `${PACKAGE_NAME}/${PACKAGE_VERSION}`,
     ...(fetchOptions.headers || {})
   };
 

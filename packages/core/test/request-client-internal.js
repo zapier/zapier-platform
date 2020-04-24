@@ -12,7 +12,7 @@ describe('http requests', () => {
         // httpbin capitalizes the response header name
         should.exist(response.content.headers['User-Agent']);
         response.content.headers['User-Agent']
-          .includes('zapier-platform-core v')
+          .includes('zapier-platform-core/')
           .should.be.true();
         response.content.headers['User-Agent']
           .includes('(via node-fetch)')
