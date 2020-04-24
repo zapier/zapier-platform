@@ -9,6 +9,11 @@ describe('http requests', () => {
       .then(response => {
         response.status.should.eql(200);
         should.exist(response.content);
+        // httpbin capitalizes the response header name
+        should.exist(response.content.headers['User-Agent']);
+        response.content.headers['User-Agent']
+          .includes('zapier-platform-core/')
+          .should.be.true();
         response.content.url.should.eql('https://httpbin.org/get');
         done();
       })
@@ -27,13 +32,15 @@ describe('http requests', () => {
   });
 
   it('should make GET with url sugar param and options', done => {
-    const options = { headers: { A: 'B' } };
+    const options = { headers: { A: 'B', 'user-agent': 'cool thing' } };
     request('https://httpbin.org/get', options)
       .then(response => {
         response.status.should.eql(200);
         should.exist(response.content);
         response.content.url.should.eql('https://httpbin.org/get');
         response.content.headers.A.should.eql('B');
+        // don't clobber other internal user-agent headers if we decide to use them
+        response.content.headers['User-Agent'].should.eql('cool thing');
         done();
       })
       .catch(done);
