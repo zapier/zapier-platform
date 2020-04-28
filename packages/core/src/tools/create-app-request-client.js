@@ -51,16 +51,13 @@ const createAppRequestClient = (input, options) => {
     httpBefores.push(disableSSLCertCheck);
   }
 
-  const httpOriginalAfters = [prepareResponse, logResponse];
+  const beforeAppAfterResponse = [prepareResponse, logResponse];
+  const afterAppAfterResponse = [throwForStatus];
 
-  // default `afterResponse` to `[throwForStatus]` to force developers
-  // to define their own if it doesn't throw as expected.
-  const afterResponse =
-    Array.isArray(app.afterResponse) && app.afterResponse.length > 0
-      ? app.afterResponse
-      : [throwForStatus];
-
-  const httpAfters = httpOriginalAfters.concat(ensureArray(afterResponse));
+  const httpAfters = beforeAppAfterResponse.concat(
+    ensureArray(app.afterResponse),
+    afterAppAfterResponse
+  );
 
   return createRequestClient(httpBefores, httpAfters, options);
 };

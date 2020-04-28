@@ -105,7 +105,7 @@ const finalRequest = req => {
 const prepareRequest = function(req) {
   const input = req.input || {};
 
-  // We will want to use _.defeaultsDeep if one of these nested values ever defaults to true.
+  // We will want to use _.defaultsDeep if one of these nested values ever defaults to true.
   req = _.defaults(req, {
     merge: true,
     removeMissingValuesFrom: {
@@ -113,6 +113,7 @@ const prepareRequest = function(req) {
       body: false
     },
     replace: true, // always replace curlies
+    skipThrowForStatus: false,
     _addContext: () => {}
   });
 

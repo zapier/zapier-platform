@@ -28,6 +28,10 @@ const beforeRequestSource = `
   return z.legacyScripting.beforeRequest(request, z, bundle);
 `;
 
+const afterResponseSource = `
+  return z.legacyScripting.afterResponse(response, z, bundle);
+`;
+
 module.exports = {
   legacy: {
     authentication: {
@@ -63,8 +67,8 @@ module.exports = {
   },
   beforeRequest: [
     { source: beforeRequestSource, args: ['request', 'z', 'bundle'] }
+  ],
+  afterResponse: [
+    { source: afterResponseSource, args: ['response', 'z', 'bundle'] }
   ]
-
-  // We don't need afterResponse to refresh auth as core appends one
-  // automatically when autoRefresh is true
 };

@@ -1171,6 +1171,19 @@ const App = {
       source: "return z.legacyScripting.run(bundle, 'hydrate.file');"
     }
   },
+  // This breaks `applyBeforeMiddleware` which it looks like gets the original definition without `findSourceRequireFunctions` applied?!
+  // beforeRequest: [
+  //   {
+  //     source: 'return z.legacyScripting.beforeRequest(request, z, bundle);',
+  //     args: ['request', 'z', 'bundle']
+  //   }
+  // ],
+  afterResponse: [
+    {
+      source: 'return z.legacyScripting.afterResponse(response, z, bundle);',
+      args: ['response', 'z', 'bundle']
+    }
+  ],
   legacy: {
     scriptingSource: legacyScriptingSource,
 
