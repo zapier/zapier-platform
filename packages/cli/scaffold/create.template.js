@@ -10,7 +10,7 @@ const perform = async (z, bundle) => {
     }
   });
   // this should return a single object
-  return z.JSON.parse(response.content);
+  return response.json;
 };
 
 module.exports = {

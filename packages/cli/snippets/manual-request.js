@@ -8,11 +8,9 @@ const listExample = (z, bundle) => {
   return z
     .request('https://example.com/api/v2/recipes.json', customHttpOptions)
     .then(response => {
-      if (response.status >= 300) {
-        throw new Error(`Unexpected status code ${response.status}`);
-      }
+      response.throwForStatus();
 
-      const recipes = z.JSON.parse(response.content);
+      const recipes = response.json;
       // do any custom processing of recipes here...
 
       return recipes;

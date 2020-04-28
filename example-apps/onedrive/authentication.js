@@ -49,14 +49,11 @@ const getAccessToken = (z, bundle) => {
     }
   })
 
-  return promise.then((response) => {
-    const result = z.JSON.parse(response.content)
-    return {
-      access_token: result.access_token,
-      refresh_token: result.refresh_token,
-      id_token: result.id_token
-    }
-  })
+  return promise.then((response) => ({
+    access_token: response.json.access_token,
+    refresh_token: response.json.refresh_token,
+    id_token: response.json.id_token
+  }))
 }
 
 const refreshAccessToken = (z, bundle) => {
@@ -83,14 +80,11 @@ const refreshAccessToken = (z, bundle) => {
     }
   })
 
-  return promise.then((response) => {
-    const result = z.JSON.parse(response.content)
-    return {
-      access_token: result.access_token,
-      refresh_token: result.refresh_token,
-      id_token: result.id_token
-    }
-  })
+  return promise.then((response) => ({
+    access_token: response.json.access_token,
+    refresh_token: response.json.refresh_token,
+    id_token: response.json.id_token
+  }))
 }
 
 // The test call Zapier makes to ensure an access token is valid
@@ -102,9 +96,7 @@ const testAuth = (z) => {
     url: 'https://graph.microsoft.com/v1.0/me'
   })
 
-  return promise.then((response) => {
-    return z.JSON.parse(response.content)
-  })
+  return promise.then((response) => response.json)
 }
 
 module.exports = {

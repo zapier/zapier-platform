@@ -262,11 +262,13 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
-      movie_pre_poll_array_curlies: function(bundle) {
-        // TODO: devs won't ever write {{bundle.inputData.things}} in the
-        // scripting as bundle.inputData is of CLI world. We'll change it to
-        // {{things}} once we add support for "original" curlies (PDE-1467).
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get?things={{bundle.inputData.things}}';
+      movie_pre_poll_GET_with_body: function(bundle) {
+        // Use postman-echo because httpbin doesn't echo a GET request's body
+        bundle.request.url = 'https://postman-echo.com/get';
+        bundle.request.method = 'GET';
+        bundle.request.data = JSON.stringify({
+          name: 'Luke Skywalker'
+        });
         return bundle.request;
       },
 
@@ -1173,7 +1175,8 @@ const App = {
     scriptingSource: legacyScriptingSource,
 
     subscribeUrl: 'https://httpbin.zapier-tooling.com/post',
-    unsubscribeUrl: 'https://httpbin.zapier-tooling.com/delete',
+    unsubscribeUrl:
+      'https://httpbin.zapier-tooling.com/delete?sub_id={{subscription_id}}',
 
     authentication: {
       oauth2Config: {

@@ -15,6 +15,10 @@ const ignore = require('ignore');
 const gitIgnore = require('parse-gitignore');
 const semver = require('semver');
 
+const {
+  constants: { Z_BEST_COMPRESSION }
+} = require('zlib');
+
 const constants = require('../constants');
 
 const {
@@ -170,7 +174,7 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
   return new Promise((resolve, reject) => {
     const output = fs.createWriteStream(zipPath);
     const zip = archiver('zip', {
-      store: true // Sets the compression method to STORE.
+      zlib: { level: Z_BEST_COMPRESSION }
     });
 
     // listen for all archive data to be written

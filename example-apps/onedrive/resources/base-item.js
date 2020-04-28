@@ -20,7 +20,7 @@ const getItem = (itemType, z, bundle) => {
   }
   return z
     .request(options)
-    .then(_.partial(parseResponse, itemType))
+    .then(_.partial(parseResponse, z, itemType))
     .then((item) => cleanupPaths([item])[0])
     .then((item) => {
       if (item.file) {
@@ -47,7 +47,7 @@ const listItems = (itemType, z, bundle) => {
 
   return z
     .request(options)
-    .then(_.partial(parseResponse, itemType))
+    .then(_.partial(parseResponse, z, itemType))
     .then(cleanupPaths)
     .then((items) => {
       items.forEach((item) => {
@@ -78,7 +78,7 @@ const searchItem = (itemType, z, bundle) => {
 
   return z
     .request(options)
-    .then(_.partial(parseResponse, itemType))
+    .then(_.partial(parseResponse, z, itemType))
     .then(cleanupPaths)
     .catch(handleError)
 }
@@ -113,7 +113,7 @@ const handleCreateWithSession = (
       }
     })
     .then((response) => {
-      const uploadUrl = z.JSON.parse(response.content).uploadUrl
+      const uploadUrl = response.json.uploadUrl
 
       // This should work fine for files up to 60MB (https://dev.onedrive.com/items/upload_large_files.htm#upload-fragments)
 

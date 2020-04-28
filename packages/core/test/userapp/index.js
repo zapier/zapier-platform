@@ -127,7 +127,7 @@ const RequestFunc = {
     operation: {
       perform: (z /* , bundle */) => {
         return z.request({ url: '{{process.env.BASE_URL}}/get' }).then(resp => {
-          const result = JSON.parse(resp.content);
+          const result = resp.json;
           result.id = 123;
           return [result];
         });
@@ -147,7 +147,7 @@ const RequestSugar = {
     operation: {
       perform: (z /* , bundle */) => {
         return z.request('https://httpbin.org/get').then(resp => {
-          return JSON.parse(resp.content);
+          return resp.json;
         });
       }
     }
@@ -412,7 +412,7 @@ const ExecuteRequestAsFunc = {
       perform: (z, bundle) => {
         const req = _.defaults({}, bundle.inputData.options);
         return z.request(req).then(resp => {
-          return bundle.inputData.returnValue || JSON.parse(resp.content);
+          return bundle.inputData.returnValue || resp.json;
         });
       },
       inputFields: [

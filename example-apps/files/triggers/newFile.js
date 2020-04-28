@@ -13,7 +13,7 @@ const listFiles = (z, bundle) => {
       url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/files'
     })
     .then(response => {
-      const files = JSON.parse(response.content);
+      const files = response.json;
 
       // Make it possible to get the actual file contents if necessary (no need to make the request now)
       return files.map(file => {

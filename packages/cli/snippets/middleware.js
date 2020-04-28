@@ -5,7 +5,11 @@ const addHeader = (request, z, bundle) => {
 
 const mustBe200 = (response, z, bundle) => {
   if (response.status !== 200) {
-    throw new Error(`Unexpected status code ${response.status}`);
+    throw new z.errors.Error(
+      `Unexpected status code ${response.status}`,
+      'UnexpectedStatus',
+      response.status
+    );
   }
   return response;
 };
@@ -30,14 +34,9 @@ const handleErrors = (response, z) => {
   return response;
 };
 
-const autoParseJson = (response, z, bundle) => {
-  response.json = z.JSON.parse(response.content);
-  return response;
-};
-
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [handleErrors, autoParseJson]
+  afterResponse: [handleErrors]
   // ...
 };

@@ -1,12 +1,10 @@
-const test = async (z /*, bundle */) => {
+const test = (z /*, bundle */) =>
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
-  const response = await z.request({
+  z.request({
     url: 'https://auth-json-server.zapier-staging.com/me'
   });
-  return response;
-};
 
 const Authentication = {
   type: 'basic',

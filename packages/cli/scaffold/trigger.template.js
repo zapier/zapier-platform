@@ -7,7 +7,7 @@ const perform = async (z, bundle) => {
     }
   });
   // this should return an array of objects
-  return z.JSON.parse(response.content);
+  return response.json;
 };
 
 module.exports = {

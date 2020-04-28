@@ -15,13 +15,10 @@ const getAccessToken = (z, bundle) => {
   });
 
   // Needs to return at minimum, `access_token`, and if your app also does refresh, then `refresh_token` too
-  return promise.then(response => {
-    const result = JSON.parse(response.content);
-    return {
-      access_token: result.access_token,
-      refresh_token: result.refresh_token
-    };
-  });
+  return promise.then(response => ({
+    access_token: response.json.access_token,
+    refresh_token: response.json.refresh_token
+  }));
 };
 
 const refreshAccessToken = (z, bundle) => {
@@ -40,22 +37,20 @@ const refreshAccessToken = (z, bundle) => {
 
   // Needs to return `access_token`. If the refresh token stays constant, can skip it. If it changes, can
   // return it here to update the user's auth on Zapier.
-  return promise.then(response => {
-    const result = JSON.parse(response.content);
-    return {
-      access_token: result.access_token
-    };
-  });
+  return promise.then(response => ({
+    access_token: response.json.access_token
+  }));
 };
 
-const testAuth = (z /*, bundle */) => {
+const testAuth = (z /*, bundle */) =>
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
   // every user will have access to, such as an account or profile endpoint like /me.
-  return z.request({
-    method: 'GET',
-    url: `${process.env.BASE_URL}/me`
-  });
-};
+  z
+    .request({
+      method: 'GET',
+      url: `${process.env.BASE_URL}/me`
+    })
+    .then(response => response.json);
 
 module.exports = {
   type: 'oauth2',

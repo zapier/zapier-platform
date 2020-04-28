@@ -2,8 +2,13 @@ const querystring = require('querystring');
 
 const _ = require('lodash');
 const FormData = require('form-data');
-const cleaner = require('zapier-platform-core/src/tools/cleaner');
 const flatten = require('flat');
+
+const {
+  recurseReplaceBank
+} = require('zapier-platform-core/src/tools/cleaner');
+
+const { flattenPaths } = require('zapier-platform-core/src/tools/data');
 
 const createInternalRequestClient = input => {
   const addQueryParams = require('zapier-platform-core/src/http-middlewares/before/add-query-params');
@@ -207,9 +212,44 @@ const parseFinalResult = async (result, event) => {
   return result;
 };
 
+const serializeValueForCurlies = value => {
+  if (typeof value === 'boolean') {
+    return value ? 'True' : 'False';
+  } else if (Array.isArray(value)) {
+    return value.join(',');
+  } else if (_.isPlainObject(value)) {
+    // Not sure if anyone would ever expect '[object Object]', but who knows?
+    return value.toString();
+  }
+  return value;
+};
+
+const createCurliesBank = bundle => {
+  const bank = {
+    // This is for new curlies syntax, such as '{{bundle.inputData.var}}' and
+    // '{{bundle.authData.var}}'
+    bundle,
+
+    // These are for legacy curlies syntax without the 'bundle' prefix, such as
+    // {{var}}. The order matters.
+    ...bundle.inputData,
+    ...bundle.subscribeData,
+    ...bundle.authData
+  };
+  const flattenedBank = flattenPaths(bank, {
+    perseve: {
+      'bundle.inputData': true
+    }
+  });
+  return Object.entries(flattenedBank).reduce((coll, [key, value]) => {
+    coll[`{{${key}}}`] = serializeValueForCurlies(value);
+    return coll;
+  }, {});
+};
+
 const replaceCurliesInRequest = (request, bundle) => {
-  const bank = cleaner.createBundleBank(undefined, { bundle: bundle });
-  return cleaner.recurseReplaceBank(request, bank);
+  const bank = createCurliesBank(bundle);
+  return recurseReplaceBank(request, bank);
 };
 
 const cleanHeaders = headers => {
@@ -630,16 +670,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       }
 
       request.headers = cleanHeaders(request.headers);
-      request.serializeValueForCurlies = value => {
-        if (Array.isArray(value)) {
-          return value.join(',');
-        } else if (_.isPlainObject(value)) {
-          // Not sure if anyone would ever expect a '[object Object]',
-          // but who knows?
-          return value.toString();
-        }
-        return value;
-      };
+      request.allowGetBody = true;
+      request.serializeValueForCurlies = serializeValueForCurlies;
 
       const response = await zcli.request(request);
 

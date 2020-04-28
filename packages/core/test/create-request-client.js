@@ -379,6 +379,35 @@ describe('request client', () => {
     });
   });
 
+  it('should delete GET body by default', async () => {
+    const request = createAppRequestClient(input);
+    const response = await request({
+      // Use postman-echo because httpbin doesn't echo GET body
+      method: 'GET',
+      url: 'https://postman-echo.com/get',
+      body: {
+        name: 'Darth Vader'
+      }
+    });
+    response.status.should.eql(200);
+    response.json.args.should.deepEqual({});
+  });
+
+  it('should allow GET with body', async () => {
+    const request = createAppRequestClient(input);
+    const response = await request({
+      // Use postman-echo because httpbin doesn't echo GET body
+      method: 'GET',
+      url: 'https://postman-echo.com/get',
+      body: {
+        name: 'Darth Vader'
+      },
+      allowGetBody: true
+    });
+    response.status.should.eql(200);
+    response.json.args.should.deepEqual({ name: 'Darth Vader' });
+  });
+
   describe('adds query params', () => {
     it('should replace remaining curly params with empty string by default', () => {
       const request = createAppRequestClient(input);

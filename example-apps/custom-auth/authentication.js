@@ -1,14 +1,15 @@
-const testAuth = (z /*, bundle */) => {
+const testAuth = (z /*, bundle */) =>
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
 
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
-  return z.request({
-    url: 'https://auth-json-server.zapier-staging.com/me'
-  });
-};
+  z
+    .request({
+      url: 'https://auth-json-server.zapier-staging.com/me'
+    })
+    .then(response => response.json);
 
 module.exports = {
   type: 'custom',

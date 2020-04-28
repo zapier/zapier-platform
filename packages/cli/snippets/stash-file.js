@@ -11,7 +11,7 @@ const stashPDFfunction = (z, bundle) => {
 const pdfList = (z, bundle) => {
   return z
     .request('https://example.com/pdfs.json')
-    .then(res => z.JSON.parse(res.content))
+    .then(res => res.json)
     .then(results => {
       return results.map(result => {
         // lazily convert a secret_download_url to a stashed url
