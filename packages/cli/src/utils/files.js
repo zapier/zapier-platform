@@ -36,6 +36,11 @@ const readFile = (fileName, errMsg) => {
   );
 };
 
+const readFileStr = async (fileName, errMsg) => {
+  const buf = await readFile(fileName, errMsg);
+  return buf.toString();
+};
+
 // Returns a promise that writes a file.
 const writeFile = (fileName, data) => {
   if (!data) {
@@ -157,6 +162,7 @@ module.exports = {
   isEmptyDir,
   isExistingEmptyDir,
   readFile,
+  readFileStr,
   removeDir,
   validateFileExists,
   writeFile,

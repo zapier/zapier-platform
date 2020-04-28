@@ -1,10 +1,11 @@
-const { resolve } = require('path');
+const { resolve, join: pjoin } = require('path');
 const tmp = require('tmp');
 
 const { startSpinner, endSpinner } = require('./display');
-const { copyDir, removeDir, ensureDir } = require('./files');
+const { copyDir, removeDir, ensureDir, readFileStr } = require('./files');
 
-const { inspect } = require('util');
+// const { inspect } = require('util');
+const { template } = require('lodash');
 
 const initApp = async (path, createFunc) => {
   const appDir = resolve(path);
@@ -30,27 +31,45 @@ const initApp = async (path, createFunc) => {
   await removeDir(tempAppDir);
 };
 
-const testAuth = authType => {
+const loadTemplate = name =>
+  readFileStr(pjoin(__dirname, '..', '..', 'scaffold', `${name}.template.js`));
+
+const testAuth = async authType => {
+  const authTestStr = await loadTemplate('authTest');
+  const authTestTemplate = template(authTestStr);
   // todo: oauth1 trello url?
   const testUrl =
     authType === 'digest'
       ? 'https://httpbin.org/digest-auth/auth/myuser/mypass'
       : 'https://auth-json-server.zapier-staging.com/me';
 
-  return `
-      const test = (z, bundle) => {
-        return z.request({
-          url: '${testUrl}',
-          ${authType === 'oauth2' ? inspect({}) : ''}
-        })
-      }
-      `.trim();
+  return authTestTemplate({
+    testUrl,
+    // this has to be a string because we don't want `process.env.CLIENT_ID` evaluated here. But, it needs to be a varaiable when it's spit out in the template
+    extraRequestProps:
+      authType === 'oauth2'
+        ? `
+      method: 'POST',
+      body: {
+        // extra data pulled from the users query string
+        accountDomain: bundle.cleanedRequest.querystring.accountDomain,
+        code: bundle.inputData.code,
+        client_id: process.env.CLIENT_ID,
+        client_secret: process.env.CLIENT_SECRET,
+        grant_type: 'authorization_code'
+      },
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+    `.trim()
+        : ''
+  });
 };
 
 /**
  * given an authType (such as `basic` or `oauth2`, return a string of valid JS code that be saved into an `authentication.js` file
  */
-const createAuthFile = authType => {
+const createAuthFileStr = authType => {
   // TODO: call prettier on this
 
   const suppliedItem =
@@ -93,7 +112,27 @@ const createAuthFile = authType => {
   return output;
 };
 
+const createAuthFileTemplates = async authType => {
+  const authFileTemplateStr = await loadTemplate('auth');
+  const authFileTemplate = template(authFileTemplateStr);
+
+  const suppliedItem =
+    {
+      custom: 'API Key',
+      oauth2: 'access token'
+    }[authType] || 'username and/or password';
+
+  const authFileResult = authFileTemplate({
+    authType,
+    suppliedItem,
+    test: await testAuth(authType)
+  });
+
+  return authFileResult;
+};
+
 module.exports = {
   initApp,
-  createAuthFile
+  createAuthFileStr,
+  createAuthFileTemplates
 };
