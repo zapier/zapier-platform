@@ -4,8 +4,21 @@ const tmp = require('tmp');
 const { startSpinner, endSpinner } = require('./display');
 const { copyDir, removeDir, ensureDir, readFileStr } = require('./files');
 
-// const { inspect } = require('util');
+const { format } = require('prettier');
 const { template } = require('lodash');
+
+const {
+  obj,
+  exportStatement,
+  objProperty,
+  func,
+  zRequest,
+  returnStatement,
+  arr,
+  zResponseErr,
+  ifStatement,
+  file
+} = require('./codegen');
 
 const initApp = async (path, createFunc) => {
   const appDir = resolve(path);
@@ -70,8 +83,6 @@ const testAuth = async authType => {
  * given an authType (such as `basic` or `oauth2`, return a string of valid JS code that be saved into an `authentication.js` file
  */
 const createAuthFileStr = authType => {
-  // TODO: call prettier on this
-
   const suppliedItem =
     {
       custom: 'API Key',
@@ -109,7 +120,7 @@ const createAuthFileStr = authType => {
       afters: [ handleBadResponses ]
     }
   `.trim();
-  return output;
+  return format(output);
 };
 
 const createAuthFileTemplates = async authType => {
@@ -128,11 +139,54 @@ const createAuthFileTemplates = async authType => {
     test: await testAuth(authType)
   });
 
-  return authFileResult;
+  return format(authFileResult);
+};
+
+const createAuthFileComposable = authType => {
+  const badFuncName = 'handleBadResponses';
+  return format(
+    file(
+      func(
+        'test',
+        ['z', 'bundle'],
+        returnStatement(
+          zRequest('https://auth-json-server.zapier-staging.com/me')
+        )
+      ),
+      func(
+        badFuncName,
+        ['response', 'z', 'bundle'],
+        ifStatement(
+          'response.status === 401',
+          zResponseErr('The username and/or password you supplied is incorrect')
+        ),
+        returnStatement('response')
+      ),
+      exportStatement(
+        obj(
+          objProperty(
+            'config',
+            obj(
+              objProperty('type', 'basic', true),
+              objProperty('test'),
+              objProperty(
+                'connectionLabel',
+                '{{bundle.inputData.username}}',
+                true
+              )
+            )
+          ),
+          objProperty('afters', arr(badFuncName))
+        )
+      )
+    ),
+    { parser: 'babel' }
+  );
 };
 
 module.exports = {
   initApp,
   createAuthFileStr,
-  createAuthFileTemplates
+  createAuthFileTemplates,
+  createAuthFileComposable
 };

@@ -25,5 +25,8 @@ module.exports = {
   },
 
   befores: [],
-  afters: [handleBadResponses]
+  afters: [
+    handleBadResponses,
+
+  ]
 };
