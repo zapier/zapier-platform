@@ -38,5 +38,6 @@ module.exports = {
   'users:links': require('./commands/users/links'),
   'users:remove': require('./commands/users/remove'),
   validate: require('./commands/validate'),
-  versions: require('./commands/versions')
+  versions: require('./commands/versions'),
+  yo: require('./commands/yo') // TODO: replace `init` command once it's done
 };

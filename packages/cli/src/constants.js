@@ -24,8 +24,8 @@ const BLACKLISTED_PATHS = [
   '.environment',
   'build'
 ];
-const nodeVersion = versionStore[versionStore.length - 1].nodeVersion;
-const LAMBDA_VERSION = `v${nodeVersion}`;
+const NODE_VERSION = versionStore[versionStore.length - 1].nodeVersion;
+const LAMBDA_VERSION = `v${NODE_VERSION}`;
 const AUTH_KEY = 'deployKey';
 const ANALYTICS_KEY = 'analyticsMode';
 const ANALYTICS_MODES = {
@@ -61,8 +61,8 @@ module.exports = {
   ANALYTICS_MODES,
   API_PATH,
   AUTH_KEY,
-  AUTH_LOCATION_RAW,
   AUTH_LOCATION,
+  AUTH_LOCATION_RAW,
   BASE_ENDPOINT,
   BLACKLISTED_PATHS,
   BUILD_DIR,
@@ -75,6 +75,7 @@ module.exports = {
   ISSUES_URL,
   LAMBDA_VERSION,
   LEGACY_RUNNER_PACKAGE,
+  NODE_VERSION,
   PACKAGE_NAME,
   PACKAGE_VERSION,
   PLATFORM_PACKAGE,

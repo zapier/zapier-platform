@@ -655,7 +655,7 @@ Run the standard validation routine powered by json-schema that checks your inte
 
 **Usage**: `zapier yo PATH`
 
-After running this, you'll have a new example integration in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
+After running this, you'll have a new integration in the specified directory. If you re-run this command on an existing directory, it will prompt before overwriting any existing files.
 
 This doesn't register or deploy the integration with Zapier - try the `zapier register` and `zapier push` commands for that!
 
@@ -663,9 +663,9 @@ This doesn't register or deploy the integration with Zapier - try the `zapier re
 * (required) `path` | Where to create the new integration. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation
 
 **Flags**
-* `-a, --auth` | Your integration's auth type.
+* `-a, --auth` | Your integration's auth type. One of `[basic | custom | digest | oauth1 | oauth2 | session]`.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
-* `zapier yo ./some/path`
-* `zapier yo . --auth oauth2`
+* `zapier yo myapp`
+* `zapier yo ./path/myapp --auth oauth2`
