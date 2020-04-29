@@ -647,3 +647,25 @@ Run the standard validation routine powered by json-schema that checks your inte
 **Flags**
 * `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+
+
+## yo
+
+> Initialize a new Zapier integration. Optionally uses a template.
+
+**Usage**: `zapier yo PATH`
+
+After running this, you'll have a new example integration in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
+
+This doesn't register or deploy the integration with Zapier - try the `zapier register` and `zapier push` commands for that!
+
+**Arguments**
+* (required) `path` | Where to create the new integration. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation
+
+**Flags**
+* `-a, --auth` | Your integration's auth type.
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier yo ./some/path`
+* `zapier yo . --auth oauth2`

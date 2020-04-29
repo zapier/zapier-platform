@@ -278,6 +278,7 @@ a code {
 <li><a href="#usersremove">users:remove</a></li>
 <li><a href="#validate">validate</a></li>
 <li><a href="#versions">versions</a></li>
+<li><a href="#yo">yo</a></li>
 </ul>
 </li>
 </ul>
@@ -1212,6 +1213,34 @@ a code {
 </blockquote><p><strong>Usage</strong>: <code>zapier versions</code></p><p><strong>Flags</strong></p><ul>
 <li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="yo">yo</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Initialize a new Zapier integration. Optionally uses a template.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier yo PATH</code></p><p>After running this, you&apos;ll have a new example integration in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.</p><p>This doesn&apos;t register or deploy the integration with Zapier - try the <code>zapier register</code> and <code>zapier push</code> commands for that!</p><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>path</code> | Where to create the new integration. If the directory doesn&apos;t exist, it will be created. If the directory isn&apos;t empty, we&apos;ll ask for confirmation</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-a, --auth</code> | Your integration&apos;s auth type.</li>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier yo ./some/path</code></li>
+<li><code>zapier yo . --auth oauth2</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
