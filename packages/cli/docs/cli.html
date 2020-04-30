@@ -1236,11 +1236,11 @@ a code {
 </blockquote><p><strong>Usage</strong>: <code>zapier yo PATH</code></p><p>After running this, you&apos;ll have a new integration in the specified directory. If you re-run this command on an existing directory, it will prompt before overwriting any existing files.</p><p>This doesn&apos;t register or deploy the integration with Zapier - try the <code>zapier register</code> and <code>zapier push</code> commands for that!</p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>path</code> | Where to create the new integration. If the directory doesn&apos;t exist, it will be created. If the directory isn&apos;t empty, we&apos;ll ask for confirmation</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li><code>-a, --auth</code> | Your integration&apos;s auth type. One of <code>[basic | custom | digest | oauth1 | oauth2 | session]</code>.</li>
+<li><code>-t, --template</code> | The template to start your integration with. One of <code>[basic-auth | custom-auth | digest-auth | dynamic-dropdown | files | minimal | oauth1-trello | oauth2 | search-or-create | session-auth | typescript]</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier yo myapp</code></li>
-<li><code>zapier yo ./path/myapp --auth oauth2</code></li>
+<li><code>zapier yo ./path/myapp --template oauth2</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

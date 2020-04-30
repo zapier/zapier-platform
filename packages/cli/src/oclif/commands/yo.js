@@ -3,17 +3,17 @@ const yeoman = require('yeoman-environment');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const { AUTH_TYPE_CHOICES, ProjectGenerator } = require('../../generators');
+const { TEMPLATE_CHOICES, ProjectGenerator } = require('../../generators');
 
 class InitCommand extends BaseCommand {
   async perform() {
     const { path } = this.args;
-    const { auth } = this.flags;
+    const { template } = this.flags;
 
     const env = yeoman.createEnv();
     env.registerStub(ProjectGenerator, 'zapier:integration');
 
-    env.run('zapier:integration', { path, authType: auth }, () => {
+    env.run('zapier:integration', { path, template }, () => {
       this.log();
       this.log(`A new integration has been created in directory "${path}"`);
     });
@@ -22,10 +22,10 @@ class InitCommand extends BaseCommand {
 
 InitCommand.flags = buildFlags({
   commandFlags: {
-    auth: flags.string({
-      char: 'a',
-      description: "Your integration's auth type.",
-      options: AUTH_TYPE_CHOICES.map(x => x.value)
+    template: flags.string({
+      char: 't',
+      description: 'The template to start your integration with.',
+      options: TEMPLATE_CHOICES
     })
   }
 });
@@ -39,7 +39,7 @@ InitCommand.args = [
 ];
 InitCommand.examples = [
   'zapier yo myapp',
-  'zapier yo ./path/myapp --auth oauth2'
+  'zapier yo ./path/myapp --template oauth2'
 ];
 InitCommand.description = `Initialize a new Zapier integration. Optionally uses a template.
 
