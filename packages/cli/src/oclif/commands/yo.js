@@ -1,3 +1,5 @@
+const { join } = require('path');
+
 const { flags } = require('@oclif/command');
 const yeoman = require('yeoman-environment');
 
@@ -15,7 +17,8 @@ class InitCommand extends BaseCommand {
 
     env.run('zapier:integration', { path, template }, () => {
       this.log();
-      this.log(`A new integration has been created in directory "${path}"`);
+      this.log(`A new integration has been created in directory "${path}".`);
+      this.log(`Find out more instructions in "${join(path, 'README.md')}".`);
     });
   }
 }

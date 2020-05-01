@@ -1,5 +1,6 @@
 const path = require('path');
 
+const filter = require('gulp-filter');
 const prettier = require('gulp-prettier');
 
 const {
@@ -18,6 +19,20 @@ const writeGenericReadme = gen => {
   );
 };
 
+const appendReadme = gen => {
+  const content = gen.fs.read(
+    gen.templatePath(gen.options.template, 'README.md'),
+    { defaults: '' }
+  );
+  if (content) {
+    gen.fs.append(gen.destinationPath('README.md'), '\n' + content);
+  }
+};
+
+const writeGitignore = gen => {
+  gen.fs.copy(gen.templatePath('gitignore'), gen.destinationPath('.gitignore'));
+};
+
 const writeGenericPackageJson = gen => {
   gen.fs.writeJSON('package.json', {
     name: gen.options.packageName,
@@ -25,7 +40,7 @@ const writeGenericPackageJson = gen => {
     description: '',
     main: 'index.js',
     scripts: {
-      test: 'mocha --recursive -t 10000 test'
+      test: 'jest'
     },
     engines: {
       node: `>=${NODE_VERSION}`,
@@ -35,8 +50,7 @@ const writeGenericPackageJson = gen => {
       [PLATFORM_PACKAGE]: PACKAGE_VERSION
     },
     devDependencies: {
-      mocha: '^5.2.0',
-      should: '^13.2.0'
+      jest: '^25.5.3'
     },
     private: true
   });
@@ -60,6 +74,7 @@ const writeGenericAuthTest = gen => {
 
 // Write files for templates that demonstrate an auth type
 const writeForAuthTemplate = gen => {
+  writeGitignore(gen);
   writeGenericReadme(gen);
   writeGenericPackageJson(gen);
   writeGenericIndex(gen);
@@ -70,16 +85,17 @@ const writeForAuthTemplate = gen => {
 // Write files for "standalone" templates, which essentially just copies an
 // example directory
 const writeForStandaloneTemplate = gen => {
+  writeGitignore(gen);
+
+  writeGenericReadme(gen);
+  appendReadme(gen);
+
+  writeGenericPackageJson(gen);
+
   gen.fs.copy(
-    gen.templatePath(gen.options.template, '**', '*.{js,json,md,ts}'),
+    gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
     gen.destinationPath()
   );
-  if (!gen.fs.exists(gen.destinationPath('README.md'))) {
-    writeGenericReadme(gen);
-  }
-  if (!gen.fs.exists(gen.destinationPath('package.json'))) {
-    writeGenericPackageJson(gen);
-  }
 };
 
 const TEMPLATE_ROUTES = {
@@ -103,7 +119,12 @@ class ProjectGenerator extends Generator {
     this.sourceRoot(path.resolve(__dirname, 'templates'));
     this.destinationRoot(path.resolve(this.options.path));
 
-    this.registerTransformStream(prettier({ singleQuote: true }));
+    const jsFilter = filter(['*.js', '*.json'], { restore: true });
+    this.registerTransformStream([
+      jsFilter,
+      prettier({ singleQuote: true }),
+      jsFilter.restore
+    ]);
   }
 
   async prompting() {

@@ -1,5 +1,5 @@
-# "Dynamic Dropdown" Example Integration for Zapier Platform
+# The "dynamic-dropdown" Template
 
-A simple integration that uses the [Star Wars API](https://swapi.dev/) to provide a dynamic listing of choices for an `inputField` in a trigger.
+This example integration uses the [Star Wars API](https://swapi.dev/) to provide a dynamic listing of choices for an `inputField` in a trigger.
 
-![](https://cdn.zapier.com/storage/photos/c6dd59450171cf9a883a29190198ac3f.png)
+![](https://cdn.zappy.app/d985065c5098089795d9b60c77791e12.png)
