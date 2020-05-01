@@ -1,66 +1,134 @@
-const obj = (...properties) => `
-    {
-      ${properties.join(',\n')}
-    }
-  `;
+'use strict';
+
+/**
+ * can call this multiple times safely
+ */
+const strLiteral = input =>
+  !(input.startsWith("'") || input.startsWith('"')) ? `"${input}"` : input;
+
+const interpLiteral = input => '`' + input + '`';
+
+const block = (...statements) => statements.join('\n');
+
+const RESPONSE_VAR = 'response';
+
+// extra logic to handle inline comments
+const obj = (...properties) =>
+  `
+    {${properties
+      // if we don't join this with new lines, then prettier will minimize its height where possible
+      // i was doing some trickery with ending comments with : to group things, but that wasn't working well
+      // could probably do it if we took the block holistically and spaced things after the fact, but that's overkill for now.
+      .map(p => (p.startsWith('/') ? `\n\n${p}\n` : p + ','))
+      .join('')}}
+  `.trim();
 
 const exportStatement = obj => `
-module.exports = ${obj}
-`;
+module.exports = ${obj}`;
 
-const maybeQ = valueIsStr => (valueIsStr ? "'" : '');
 /**
  * @param {string} key could be a variable name or string value
  * @param {string | undefined} value can either be a variable or actual string. or could be missing, in which case the input is treated as a variable
- * @param {boolean} shouldWrap denotes whether we should wrap the value in quotes. ignored if value is undefined
  */
-const objProperty = (key, value, shouldWrap = false) => {
+const objProperty = (key, value) => {
   if (value === undefined) {
     return `${key}`;
   }
-  return `'${key}': ${maybeQ(shouldWrap)}${value}${maybeQ(shouldWrap)}`;
+  // wrap key in quotes here in case the key isn't a valid property. prettier will remove if needed
+  return `'${key}': ${value}`;
 };
 
-const func = (varName, args, ...statements) => `
-  const ${varName} = (${args.join(', ')}) => {
-    ${statements.join('\n')}
-  }
-`;
+const variableAssignmentDeclaration = (varName, value) =>
+  `const ${varName} = ${value}`;
 
-const zRequest = (url, ...properties) => `
-  z.request({
-    url: '${url}',
-    ${properties.join(',\n')}
-  })
+const fatArrowReturnFunctionDeclaration = (varname, args, statement) =>
+  `const ${varname} = (${args.join(', ')}) => ${statement}`;
+
+const functionDeclaration = (
+  varName,
+  { args = [], isAsync = false } = {},
+  ...statements
+) =>
+  `
+   const ${varName} = ${isAsync ? 'async ' : ''}(${args.join(', ')}) => {
+    ${block(...statements)}
+  }
+`.trim();
+
+/**
+ * takes a bunch of object properties that get folded into z.request
+ */
+const zRequest = (url, ...requestOptions) => `
+  z.request(${obj(objProperty('url', url), ...requestOptions)})
 `;
 
 // trim here is important because ASI adds a semi after a lonely return
 const returnStatement = statement => `return ${statement.trim()}`;
+
+const awaitStatement = statement => `await ${statement.trim()}`;
+
 const arr = (...elements) => `[${elements.join(', ')}]`;
-const zResponseErr = (message, type = 'AuthenticationError') => `
+
+const zResponseErr = (message, type = strLiteral('AuthenticationError')) =>
+  `
   throw new z.errors.Error(
     // This message is surfaced to the user
-    '${message}',
-    '${type}',
-    response.status
+    ${message},
+    ${type},
+    ${RESPONSE_VAR}.status
   )
-`;
+`.trim();
+
+const throwSessionRefresh = () =>
+  "throw new z.errors.RefreshAuthError('Session key needs refreshing.')";
+
+const throwForStatus = (varName = RESPONSE_VAR) =>
+  `${varName}.throwForStatus();`;
+
 const ifStatement = (condition, ...results) => `
     if (${condition}) {
-      ${results.join('\n')}
+      ${block(...results)}
     }
 `;
 
-const file = (...statements) => statements.join('\n');
+const comment = (text, leadingNewlines = 0) => {
+  // TODO: fancy length chunking here since prettier doesn't work on comments
+  return `${'\n'.repeat(leadingNewlines)}// ${text}`;
+};
+
+const assignmentStatement = (variable, result) =>
+  `
+  ${variable} = ${result};
+`.trim();
+
+// files look more natural when each block is spaced a bit.
+const file = (...statements) =>
+  `
+    'use strict'
+
+    ${statements.join('\n\n')}
+`.trim();
+
 module.exports = {
-  obj,
-  exportStatement,
-  objProperty,
-  func,
-  zRequest,
-  returnStatement,
   arr,
-  zResponseErr,
+  assignmentStatement,
+  awaitStatement,
+  block,
+  comment,
+  exportStatement,
+  fatArrowReturnFunctionDeclaration,
+  file,
+  functionDeclaration,
   ifStatement,
-  file
+  interpLiteral,
+  obj,
+  objProperty,
+  RESPONSE_VAR,
+  returnStatement,
+  strLiteral,
+  throwForStatus,
+  throwSessionRefresh,
+  variableAssignmentDeclaration,
+  zRequest,
+  zResponseErr
 };

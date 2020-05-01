@@ -48,7 +48,7 @@ describe('oauth2 app', () => {
     );
 
     authorizeUrl.should.eql(
-      'https://auth-json-server.zapier-staging.com/oauth/authorize?client_id=1234&state=4444&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code'
+      'https://auth-json-server.zapier-staging.com/oauth/authorize?client_id=1234&state=4444&redirect_uri=https%3A%2F%2Fzapier.com%2F&response_type=code'
     );
   });
 

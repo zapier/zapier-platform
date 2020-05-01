@@ -29,7 +29,7 @@ describe('custom auth', () => {
     try {
       await appTester(App.authentication.test, bundle);
     } catch (error) {
-      error.message.should.containEql('The API Key you supplied is invalid');
+      error.message.should.containEql('The API Key you supplied is incorrect');
       return;
     }
     throw new Error('appTester should have thrown');
