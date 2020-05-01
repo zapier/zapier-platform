@@ -9,9 +9,8 @@ const getChangelogFromMarkdown = (version, markdown) => {
     .replace(/\r/g, '\n')
     .split('\n');
 
-  let startingLine = _.findIndex(
-    lines,
-    line => line.indexOf(`## ${version}`) === 0
+  let startingLine = _.findIndex(lines, line =>
+    RegExp(`## .*${version}`).test(line)
   );
 
   if (startingLine === -1) {
