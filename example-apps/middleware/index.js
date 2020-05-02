@@ -15,15 +15,17 @@ const addSortingParams = (request /*, z */) => {
 };
 
 // HTTP after middleware that checks for errors in the response.
-const checkForErrors = (response, z) => {
-  // If we get a bad status code, throw an error. This will halt the zap.
-  if (response.status >= 300) {
-    throw new z.errors.HaltedError(
-      `Unexpected status code ${response.status} from ${response.request.url}`
-    );
+const handleErrors = (response, z) => {
+  // Prevent `throwForStatus` from throwing for a certain status.
+  if (response.status === 456) {
+    response.skipThrowForStatus = true;
   }
 
-  // If no errors just return original response
+  // Throw an error that `throwForStatus` wouldn't throw (correctly) for.
+  else if (response.status === 200 && response.json.success === false) {
+    throw new z.errors.Error(response.json.message, response.json.code);
+  }
+
   return response;
 };
 
@@ -41,7 +43,7 @@ const App = {
 
   afterResponse: [
     // add our after middlewares
-    checkForErrors
+    handleErrors
   ],
 
   resources: {},

@@ -203,18 +203,21 @@ const createBeforeRequest = app => {
 
 const createAfterResponse = app => {
   const authType = _.get(app, 'authentication.type');
+  const autoRefresh =
+    _.get(app, 'legacy.authentication.oauth2Config.autoRefresh') ||
+    _.get(app, 'authentication.oauth2Config.autoRefresh');
 
-  const sessionAuthCheckResponse = (response, z) => {
+  const throwForStaleAuth = (response, z) => {
     if (response.status === 401) {
-      throw new z.errors.RefreshAuthError('Session key needs refreshing');
+      throw new z.errors.RefreshAuthError('Authentication needs refreshing');
     }
     return response;
   };
 
   let afterResponse;
 
-  if (authType === 'session') {
-    afterResponse = sessionAuthCheckResponse;
+  if (authType === 'session' || (authType === 'oauth2' && autoRefresh)) {
+    afterResponse = throwForStaleAuth;
   }
 
   if (!afterResponse) {

@@ -21,7 +21,7 @@ describe("My Test", () => {
     );
   });
 
-  it("should test the auth fails", async () => {
+  it("should test the auth fails", () => {
     const bundle = {
       authData: {
         username: "user",
@@ -29,12 +29,7 @@ describe("My Test", () => {
       }
     };
 
-    try {
-      const response = await appTester(App.authentication.test, bundle);
-    } catch (e) {
-      e.message.should.containEql(
-        "The username and/or password you supplied is incorrect"
-      );
-    }
+    // @ts-ignore: rejected() is there
+    return should(appTester(App.authentication.test, bundle)).be.rejected();
   });
 });

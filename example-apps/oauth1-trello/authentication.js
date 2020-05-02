@@ -17,7 +17,6 @@ const getRequestToken = async (z, bundle) => {
       oauth_callback: bundle.inputData.redirect_uri
     }
   });
-  response.throwForStatus();
   return querystring.parse(response.content);
 };
 
@@ -33,7 +32,6 @@ const getAccessToken = async (z, bundle) => {
       oauth_verifier: bundle.inputData.oauth_verifier
     }
   });
-  response.throwForStatus();
   return querystring.parse(response.content);
 };
 

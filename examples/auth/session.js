@@ -1,22 +1,9 @@
-const test = async (z /*, bundle */) => {
+const test = (z /*, bundle */) =>
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
   // every user will have access to, such as an account or profile endpoint like /me.
-  const response = await z.request({
+  z.request({
     url: 'https://auth-json-server.zapier-staging.com/me'
   });
-
-  if (response.status === 401) {
-    // This message is surfaced to the user
-    throw new z.errors.Error(
-      'The Session Key you supplied is invalid',
-      'AuthenticationError',
-      response.status
-    );
-  }
-
-  // This method can return any truthy value to indicate the credentials are valid.
-  return response;
-};
 
 // this function exchanges user-provided data for a token
 const getSessionKey = async (z, bundle) => {
@@ -28,14 +15,6 @@ const getSessionKey = async (z, bundle) => {
       password: bundle.authData.password
     }
   });
-
-  if (response.status === 401) {
-    throw new z.errors.Error(
-      'The username/password you supplied is invalid',
-      'GetSessionKeyError',
-      response.status
-    );
-  }
 
   return {
     sessionKey: response.json.sessionKey // || 'secret'
@@ -52,17 +31,6 @@ const includeSessionKeyHeader = (request, z, bundle) => {
     request.headers['X-API-Key'] = bundle.authData.sessionKey;
   }
   return request;
-};
-
-// If we get a response and it is a 401, we can raise a special error (z.errors.RefreshAuthError)
-// telling Zapier to retry the initial request with a refreshed token
-const sessionRefreshIf401 = (response, z, bundle) => {
-  if (bundle.authData.sessionKey) {
-    if (response.status === 401) {
-      throw new z.errors.RefreshAuthError('Session key needs refreshing.');
-    }
-  }
-  return response;
 };
 
 module.exports = {
@@ -85,5 +53,5 @@ module.exports = {
     connectionLabel: '{{username}}'
   },
   befores: [includeSessionKeyHeader],
-  afters: [sessionRefreshIf401]
+  afters: []
 };

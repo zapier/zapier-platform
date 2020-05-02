@@ -19,19 +19,13 @@ describe('custom auth', () => {
     response.json.should.have.property('username');
   });
 
-  it('fails on bad auth', async () => {
+  it('fails on bad auth', () => {
     const bundle = {
       authData: {
         apiKey: 'bad'
       }
     };
 
-    try {
-      await appTester(App.authentication.test, bundle);
-    } catch (error) {
-      error.message.should.containEql('The API Key you supplied is invalid');
-      return;
-    }
-    throw new Error('appTester should have thrown');
+    return appTester(App.authentication.test, bundle).should.be.rejected();
   });
 });

@@ -500,33 +500,9 @@ const addRequestHeader = (request, z, bundle) => {
   return request;
 };
 
-/*
-  After HTTP middleware that looks at the response content, and
-  changes the status code if there's an error. Something like this
-  could be useful for APIs that always return 200 even on errors.
- */
-const changeStatusOnErrorResponses = response => {
-  const contentType = response.getHeader('Content-Type');
-  if (!contentType) {
-    return response;
-  }
-
-  const isJsonResponse = contentType.match(/^application\/json/);
-  if (!isJsonResponse) {
-    return response;
-  }
-
-  const data = response.json;
-  const error = data.args.error;
-  if (response.status === 200 && error) {
-    response.status = 500;
-  }
-  return response;
-};
-
 const App = {
-  beforeRequest: addRequestHeader,
-  afterResponse: [changeStatusOnErrorResponses],
+  beforeRequest: [addRequestHeader],
+  afterResponse: [],
   resources: {
     [List.key]: List,
     [Contact.key]: Contact,

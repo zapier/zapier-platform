@@ -18,7 +18,6 @@ const getRequestToken = async (z, bundle) => {
       oauth_version: '1.0' // Twitter says this should be 1.0
     }
   });
-  response.throwForStatus();
   return querystring.parse(response.content);
 };
 
@@ -34,7 +33,6 @@ const getAccessToken = async (z, bundle) => {
       oauth_verifier: bundle.inputData.oauth_verifier
     }
   });
-  response.throwForStatus();
   return querystring.parse(response.content);
 };
 

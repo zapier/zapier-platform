@@ -113,14 +113,6 @@ const handleCreateWithSession = (
       }
     })
     .then((response) => {
-      if (response.status >= 300) {
-        throw new z.errors.Error(
-          'Unable to start an upload session.',
-          'UploadSessionError',
-          response.status
-        )
-      }
-
       const uploadUrl = response.json.uploadUrl
 
       // This should work fine for files up to 60MB (https://dev.onedrive.com/items/upload_large_files.htm#upload-fragments)

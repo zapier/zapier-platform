@@ -19,14 +19,6 @@ const getAccessToken = async (z, bundle) => {
 
   // Needs to return `access_token`.
   // If your app does an app refresh, then `refresh_token` should be returned as well
-  if (response.status !== 200) {
-    throw new z.error.Error(
-      'Unable to fetch access token: ' + response.content,
-      'GetAccessTokenError',
-      response.status
-    );
-  }
-
   return {
     access_token: response.json.access_token,
     refresh_token: response.json.refresh_token
@@ -53,14 +45,6 @@ const refreshAccessToken = async (z, bundle) => {
   // This function should return `access_token`.
   // If the refresh token stays constant, no need to return it
   // If the refresh token changes, return it here to update the stored value in Zapier
-  if (response.status !== 200) {
-    throw new z.errors.Error(
-      'Unable to fetch access token: ' + response.content,
-      'RefreshAccessTokenError',
-      response.status
-    );
-  }
-
   return {
     access_token: response.json.access_token
   };
@@ -75,26 +59,13 @@ const includeBearerToken = (request, z, bundle) => {
   return request;
 };
 
-const testAuth = async (z /*, bundle */) => {
+const testAuth = (z /*, bundle */) =>
   // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
   // every user will have access to, such as an account or profile endpoint like /me.
-  const response = await z.request({
+  z.request({
     method: 'GET',
     url: `https://auth-json-server.zapier-staging.com/me`
   });
-
-  if (response.status === 401) {
-    // This message is surfaced to the user
-    throw new z.errors.Error(
-      'The access token you supplied is not valid',
-      'AuthenticationError',
-      response.status
-    );
-  }
-
-  // This method can return any truthy value to indicate the credentials are valid.
-  return response;
-};
 
 module.exports = {
   config: {

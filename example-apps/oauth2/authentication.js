@@ -15,21 +15,10 @@ const getAccessToken = (z, bundle) => {
   });
 
   // Needs to return at minimum, `access_token`, and if your app also does refresh, then `refresh_token` too
-  return promise.then(response => {
-    if (response.status !== 200) {
-      throw new z.errors.Error(
-        'Unable to fetch access token: ' + response.content,
-        'GetAccessTokenError',
-        response.status
-      );
-    }
-
-    const result = response.json;
-    return {
-      access_token: result.access_token,
-      refresh_token: result.refresh_token
-    };
-  });
+  return promise.then(response => ({
+    access_token: response.json.access_token,
+    refresh_token: response.json.refresh_token
+  }));
 };
 
 const refreshAccessToken = (z, bundle) => {
@@ -48,20 +37,9 @@ const refreshAccessToken = (z, bundle) => {
 
   // Needs to return `access_token`. If the refresh token stays constant, can skip it. If it changes, can
   // return it here to update the user's auth on Zapier.
-  return promise.then(response => {
-    if (response.status !== 200) {
-      throw new z.errors.Error(
-        'Unable to fetch access token: ' + response.content,
-        'RefreshAccessTokenError',
-        response.status
-      );
-    }
-
-    const result = response.json;
-    return {
-      access_token: result.access_token
-    };
-  });
+  return promise.then(response => ({
+    access_token: response.json.access_token
+  }));
 };
 
 const testAuth = (z /*, bundle */) => {
@@ -74,16 +52,7 @@ const testAuth = (z /*, bundle */) => {
 
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
-  return promise.then(response => {
-    if (response.status === 401) {
-      throw new z.errors.Error(
-        'The access token you supplied is not valid',
-        'AuthenticationError',
-        response.status
-      );
-    }
-    return response.json;
-  });
+  return promise.then(response => response.json);
 };
 
 module.exports = {

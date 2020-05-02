@@ -1,3 +1,5 @@
+/* globals describe, it */
+
 require('should');
 
 const zapier = require('zapier-platform-core');
@@ -31,8 +33,6 @@ describe('digest auth app', () => {
       }
     };
 
-    return appTester(App.authentication.test, bundle).should.be.rejectedWith(
-      /The username and\/or password you supplied is incorrect/
-    );
+    return appTester(App.authentication.test, bundle).should.be.rejected();
   });
 });

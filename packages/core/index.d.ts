@@ -90,6 +90,7 @@ export interface HttpRequestOptions {
   size?: number;
   timeout?: number;
   url?: string;
+  skipThrowForStatus?: boolean;
 }
 
 interface BaseHttpResponse {
@@ -97,6 +98,7 @@ interface BaseHttpResponse {
   headers: { [key: string]: string };
   getHeader(key: string): string | undefined;
   throwForStatus(): void;
+  skipThrowForStatus: boolean;
   request: HttpRequestOptions;
 }
 

@@ -994,6 +994,10 @@ Middleware functions can be asynchronous - just return a promise from the middle
 
 The second argument for middleware is the `z` object, but it does *not* include `z.request()` as using that would easily create infinite loops.
 
+#### Error Response Handling
+
+Since v10, we call `response.throwForStatus()` before we return a response. You can prevent this by setting `skipThrowForStatus` on the request or response object. You can do this in `afterResponse` middleware if the API uses a status code > 300 that should not be treated as an error.
+
 ### HTTP Request Options
 
 Shorthand requests and manual `z.request([url], options)` calls support the following HTTP `options`:
@@ -1012,6 +1016,7 @@ Shorthand requests and manual `z.request([url], options)` calls support the foll
 * `agent`: Node.js `http.Agent` instance, allows custom proxy, certificate etc. Default is `null`.
 * `timeout`: request / response timeout in ms. Set to `0` to disable (OS limit still applies), timeout reset on `redirect`. Default is `0` (disabled).
 * `size`: maximum response body size in bytes. Set to `0` to disable. Default is `0` (disabled).
+* `skipThrowForStatus`: don't call `response.throwForStatus()` before returning it.
 
 ```js
 z.request({
@@ -1046,6 +1051,7 @@ The response object returned by `z.request([url], options)` supports the followi
 * `headers`: Response headers object. The header keys are all lower case.
 * `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
 * `throwForStatus()`: Throw error if final `response.status > 300`. Will throw `z.error.RefreshAuthError` if 401.
+* `skipThrowForStatus`: don't call `throwForStatus()` before returning it.
 * `request`: The original request options object (see above).
 
 ```js
@@ -1213,11 +1219,14 @@ formulate valid requests. Thus, it is a good idea to write apps defensively and
 plan for 4xx and 5xx responses from APIs. Without proper handling, errors often
 have incomprehensible messages for end users, or possibly go uncaught.
 
-Zapier provides a couple tools to help with error handling. First is the `afterResponse`
-middleware ([docs](#using-http-middleware)), which provides a hook for processing
-all responses from HTTP calls. The other tool is the collection of errors in
-`z.errors` ([docs](#zerrors)), which control the behavior of Zaps when
-various kinds of errors occur.
+Zapier provides a couple tools to help with error handling. First is the
+`afterResponse` middleware ([docs](#using-http-middleware)), which provides a hook for
+processing all responses from HTTP calls. Second is `response.throwForStatus()`
+([docs](#http-response-object)), which throws an error if the response status indicates
+an error. We automatically call this method before returning the response, unless
+you set `skipThrowForStatus` on the request or response object. The last tool is the
+collection of errors in `z.errors` ([docs](#zerrors)), which control the behavior of
+Zaps when various kinds of errors occur.
 
 ### General Errors
 

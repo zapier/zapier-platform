@@ -16,7 +16,6 @@ const getRequestToken = async (z, bundle) => {
       // oauth_version: '1.0' // sometimes required
     }
   });
-  response.throwForStatus();
   return querystring.parse(response.content);
 };
 
@@ -32,7 +31,6 @@ const getAccessToken = async (z, bundle) => {
       oauth_verifier: bundle.inputData.oauth_verifier
     }
   });
-  response.throwForStatus();
   return querystring.parse(response.content);
 };
 
