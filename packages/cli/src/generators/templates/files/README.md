@@ -1,6 +1,5 @@
-# "Files" Example App For Zapier Platform
+# The "files" Template
 
-A barebones app that has a trigger and a create showcasing file handling.
+This example has a trigger and a create showcasing file handling.
 
-> We recommend using the zapier-platform-cli and `zapier init . --template=files` to create an app.
-
+Find out more in the docs: https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#stashing-files.

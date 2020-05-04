@@ -1,33 +1,29 @@
 const hydrators = require('../hydrators');
 
-const listFiles = (z, bundle) => {
-  // `z.console.log()` is similar to `console.log()`.
-  z.console.log('console says hello world!');
+const perform = (z, bundle) => {
+  // In reality you're more likely to get file info by make requests. Here we're
+  // hard coding some links just to demonstrate.
+  const fileURLs = [
+    'https://httpbin.zapier-tooling.com/image/png',
+    'https://httpbin.zapier-tooling.com/image/jpeg',
+    'https://httpbin.zapier-tooling.com/xml'
+  ];
 
-  // You can build requests and our client will helpfully inject all the variables
-  // you need to complete. You can also register middleware to control this.
+  return fileURLs.map(fileURL => {
+    const fileInfo = {
+      id: fileURL,
+      url: fileURL,
 
-  // You may return a promise or a normal data structure from any perform method.
-  return z
-    .request({
-      url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/files'
-    })
-    .then(response => {
-      const files = response.json;
-
-      // Make it possible to get the actual file contents if necessary (no need to make the request now)
-      return files.map(file => {
-        file.file = z.dehydrateFile(hydrators.downloadFile, {
-          fileId: file.id
-        });
-
-        return file;
-      });
-    });
+      // Make it possible to get the actual file contents if necessary. No need
+      // to make the request to download files now when the trigger is run.
+      file: z.dehydrateFile(hydrators.downloadFile, { url: fileURL })
+    };
+    return fileInfo;
+  });
 };
 
-// We recommend writing your triggers separate like this and rolling them
-// into the App definition at the end.
+// We recommend writing your triggers separate like this and rolling them into
+// the App definition at the end.
 module.exports = {
   key: 'newFile',
 
@@ -36,25 +32,17 @@ module.exports = {
   noun: 'File',
   display: {
     label: 'New File',
-    description: 'Trigger when a new file is added.'
+    description: 'Triggers when a new file is added.'
   },
 
   // `operation` is where the business logic goes.
   operation: {
-    perform: listFiles,
+    perform,
 
     sample: {
-      id: 1,
-      name: 'Example PDF',
-      file: 'SAMPLE FILE',
-      filename: 'example.pdf'
-    },
-
-    outputFields: [
-      { key: 'id', type: 'integer', label: 'ID' },
-      { key: 'name', type: 'string', label: 'Name' },
-      { key: 'filename', type: 'string', label: 'Filename' },
-      { key: 'file', type: 'file', label: 'File' }
-    ]
+      id: 'https://example.com/file.txt',
+      url: 'https://example.com/file.txt',
+      file: 'content'
+    }
   }
 };
