@@ -21,7 +21,7 @@ describe('basic auth', () => {
     response.request.headers.Authorization.should.eql('Basic dXNlcjpzZWNyZXQ=');
   });
 
-  it('fails on bad auth', async () => {
+  it('fails on bad auth', () => {
     const bundle = {
       authData: {
         username: 'user',
@@ -29,14 +29,6 @@ describe('basic auth', () => {
       }
     };
 
-    try {
-      await appTester(App.authentication.test, bundle);
-    } catch (err) {
-      err.message.should.containEql(
-        'The username and/or password you supplied is incorrect'
-      );
-      return;
-    }
-    throw new Error('appTester should have thrown');
+    return appTester(App.authentication.test, bundle).should.be.rejected();
   });
 });

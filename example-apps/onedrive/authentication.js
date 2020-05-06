@@ -49,22 +49,11 @@ const getAccessToken = (z, bundle) => {
     }
   })
 
-  return promise.then((response) => {
-    if (response.status !== 200) {
-      throw new z.errors.Error(
-        'Unable to fetch access token: ' + response.content,
-        'GetAccessTokenError',
-        response.status
-      )
-    }
-
-    const result = response.json
-    return {
-      access_token: result.access_token,
-      refresh_token: result.refresh_token,
-      id_token: result.id_token
-    }
-  })
+  return promise.then((response) => ({
+    access_token: response.json.access_token,
+    refresh_token: response.json.refresh_token,
+    id_token: response.json.id_token
+  }))
 }
 
 const refreshAccessToken = (z, bundle) => {
@@ -91,22 +80,11 @@ const refreshAccessToken = (z, bundle) => {
     }
   })
 
-  return promise.then((response) => {
-    if (response.status !== 200) {
-      throw new z.errors.Error(
-        'Unable to fetch access token: ' + response.content,
-        'RefreshAccessTokenError',
-        response.status
-      )
-    }
-
-    const result = response.json
-    return {
-      access_token: result.access_token,
-      refresh_token: result.refresh_token,
-      id_token: result.id_token
-    }
-  })
+  return promise.then((response) => ({
+    access_token: response.json.access_token,
+    refresh_token: response.json.refresh_token,
+    id_token: response.json.id_token
+  }))
 }
 
 // The test call Zapier makes to ensure an access token is valid
@@ -118,16 +96,7 @@ const testAuth = (z) => {
     url: 'https://graph.microsoft.com/v1.0/me'
   })
 
-  return promise.then((response) => {
-    if (response.status === 401) {
-      throw new z.errors.Error(
-        'The access token you supplied is not valid',
-        'AuthenticationError',
-        response.status
-      )
-    }
-    return response.json
-  })
+  return promise.then((response) => response.json)
 }
 
 module.exports = {

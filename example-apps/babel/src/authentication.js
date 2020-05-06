@@ -5,16 +5,6 @@ const test = async (z /*, bundle */) => {
   const response = await z.request({
     url: 'https://auth-json-server.zapier-staging.com/me'
   });
-
-  // This method can return any truthy value to indicate the credentials are valid.
-  // Raise an error to show
-  if (response.status === 401) {
-    throw new z.errors.Error(
-      'The username and/or password you supplied is incorrect',
-      'AuthenticationError',
-      response.status
-    );
-  }
   return response;
 };
 

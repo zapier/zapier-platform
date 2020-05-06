@@ -3,22 +3,23 @@ const addHeader = (request, z, bundle) => {
   return request;
 };
 
-const mustBe200 = (response, z, bundle) => {
-  if (response.status !== 200) {
-    throw new z.errors.Error(
-      `Unexpected status code ${response.status}`,
-      'UnexpectedStatus',
-      response.status
-    );
+const handleErrors = (response, z) => {
+  // Prevent `throwForStatus` from throwing for a certain status.
+  if (response.status === 456) {
+    response.skipThrowForStatus = true;
   }
-  // throw for standard error statuses
-  response.throwForStatus();
+
+  // Throw an error that `throwForStatus` wouldn't throw (correctly) for.
+  else if (response.status === 200 && response.json.success === false) {
+    throw new z.errors.Error(response.json.message, response.json.code);
+  }
+
   return response;
 };
 
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [mustBe200]
+  afterResponse: [handleErrors]
   // ...
 };

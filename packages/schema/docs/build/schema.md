@@ -203,7 +203,7 @@ Key | Required | Type | Description
 `getAccessToken` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier fetches an access token from the API
 `refreshAccessToken` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier will refresh the access token from the API
 `scope` | no | `string` | What scope should Zapier request?
-`autoRefresh` | no | `boolean` | Should Zapier include a pre-built afterResponse middleware that invokes `refreshAccessToken` when we receive a 401 response?
+`autoRefresh` | no | `boolean` | Should Zapier invoke `refreshAccessToken` when we receive an error for a 401 response?
 
 -----
 
@@ -932,6 +932,7 @@ Key | Required | Type | Description
 `auth` | no | oneOf(`array`[`string`], [/FlatObjectSchema](#flatobjectschema)) | An object holding the auth parameters for OAuth1 request signing, like `{oauth_token: 'abcd', oauth_token_secret: '1234'}`. Or an array reserved (i.e. not implemented yet) to hold the username and password for Basic Auth. Like `['AzureDiamond', 'hunter2']`.
 `removeMissingValuesFrom` | no | `object` | Should missing values be sent? (empty strings, `null`, and `undefined` only — `[]`, `{}`, and `false` will still be sent). Allowed fields are `params` and `body`. The default is `false`, ex: ```removeMissingValuesFrom: { params: false, body: false }```
 `serializeValueForCurlies` | no | [/FunctionSchema](#functionschema) | A function to customize how to serialize a value for curlies `{{var}}` in the request object. By default, when this is unspecified, the request client only replaces curlies where variables are strings, and would throw an error for non-strings. The function should accepts a single argument as the value to be serialized and return the string representation of the argument.
+`skipThrowForStatus` | no | `boolean` | If `true`, don't throw an exception for response status > 300 automatically before resolving with the response. Defaults to `false`.
 
 -----
 

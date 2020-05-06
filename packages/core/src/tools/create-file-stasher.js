@@ -151,7 +151,6 @@ const createFileStasher = input => {
             };
 
             if (isStreamed) {
-              maybeResponse.throwForStatus();
               return maybeResponse.buffer().then(buffer => {
                 maybeResponse.dataBuffer = buffer;
                 return parseFinalResponse(maybeResponse);

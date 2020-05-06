@@ -23,7 +23,7 @@ describe('digest auth', () => {
     response.json.user.should.eql('myuser');
   });
 
-  it('fails on bad auth', async () => {
+  it('fails on bad auth', () => {
     // Try changing the values of username or password to see how the test method behaves
     const bundle = {
       authData: {
@@ -32,14 +32,6 @@ describe('digest auth', () => {
       }
     };
 
-    try {
-      await appTester(App.authentication.test, bundle);
-    } catch (err) {
-      err.message.should.containEql(
-        'The username and/or password you supplied is incorrect'
-      );
-      return;
-    }
-    throw new Error('appTester should have thrown');
+    return appTester(App.authentication.test, bundle).should.be.rejected();
   });
 });

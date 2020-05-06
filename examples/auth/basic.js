@@ -1,22 +1,9 @@
-const test = async (z /*, bundle */) => {
-  const response = await z.request({
+const test = (z /*, bundle */) =>
+  z.request({
     // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
     // every user will have access to, such as an account or profile endpoint like /me.
     url: 'https://auth-json-server.zapier-staging.com/me'
   });
-
-  if (response.status === 401) {
-    // This message is surfaced to the user
-    throw new z.errors.Error(
-      'The username and/or password you supplied is incorrect',
-      'AuthenticationError',
-      response.status
-    );
-  }
-
-  // anything truthy indicates the credentials are valid. Data returned from this test is available to the connection label
-  return response;
-};
 
 module.exports = {
   config: {

@@ -10,16 +10,6 @@ const includeSessionKeyHeader = (request, z, bundle) => {
   return request;
 };
 
-// If we get a response and it is a 401, we can raise a special error telling Zapier to retry this after another exchange.
-const sessionRefreshIf401 = (response, z, bundle) => {
-  if (bundle.authData.sessionKey) {
-    if (response.status === 401) {
-      throw new z.errors.RefreshAuthError('Session key needs refreshing.');
-    }
-  }
-  return response;
-};
-
 const App = {
   // This is just shorthand to reference the installed dependencies you have. Zapier will
   // need to know these before we can upload
@@ -30,7 +20,7 @@ const App = {
 
   beforeRequest: [includeSessionKeyHeader],
 
-  afterResponse: [sessionRefreshIf401],
+  afterResponse: [],
 
   resources: {},
 

@@ -666,6 +666,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       request.headers = cleanHeaders(request.headers);
       request.allowGetBody = true;
       request.serializeValueForCurlies = serializeValueForCurlies;
+      request.skipThrowForStatus = true;
 
       const response = await zcli.request(request);
 
@@ -720,7 +721,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const response = await zcli.request({
       method: 'POST',
       url,
-      auth: authParams
+      auth: authParams,
+      skipThrowForStatus: true
     });
     response.throwForStatus();
     return querystring.parse(response.content);
@@ -1220,6 +1222,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
     requestOptions.url = bundle.inputData.url || requestOptions.url;
     requestOptions.raw = true;
+    requestOptions.throwForStatus = true;
 
     const filePromise = request(requestOptions);
     return zcli.stashFile(filePromise, meta.length, meta.name);

@@ -80,6 +80,12 @@ module.exports = makeSchema(
         description:
           'A function to customize how to serialize a value for curlies `{{var}}` in the request object. By default, when this is unspecified, the request client only replaces curlies where variables are strings, and would throw an error for non-strings. The function should accepts a single argument as the value to be serialized and return the string representation of the argument.',
         $ref: FunctionSchema.id
+      },
+      skipThrowForStatus: {
+        description:
+          "If `true`, don't throw an exception for response status > 300 automatically before resolving with the response. Defaults to `false`.",
+        type: 'boolean',
+        default: false
       }
     },
     additionalProperties: false

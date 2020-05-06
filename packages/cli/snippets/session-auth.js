@@ -56,19 +56,9 @@ const includeSessionKeyHeader = (request, z, bundle) => {
   return request;
 };
 
-const sessionRefreshIf401 = (response, z, bundle) => {
-  if (bundle.authData.sessionKey) {
-    if (response.status === 401) {
-      throw new z.errors.RefreshAuthError(); // ask for a refresh & retry
-    }
-  }
-  return response;
-};
-
 const App = {
   // ...
   authentication: authentication,
-  beforeRequest: [includeSessionKeyHeader],
-  afterResponse: [sessionRefreshIf401]
+  beforeRequest: [includeSessionKeyHeader]
   // ...
 };

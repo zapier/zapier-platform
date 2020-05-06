@@ -8,7 +8,8 @@ const prepareRawResponse = (resp, request) => {
   // TODO: if !2xx should we go ahead and get response.content for them?
   // retain the response signature for raw control
   const extendedResp = {
-    request: request
+    request: request,
+    skipThrowForStatus: request.skipThrowForStatus
   };
   const outResp = _.extend(resp, extendedResp, replaceHeaders(resp));
   outResp.throwForStatus = () => throwForStatus(outResp) && undefined;
@@ -38,7 +39,8 @@ const prepareContentResponse = (resp, request) => {
       status: resp.status,
       json: json,
       content: content,
-      request: request
+      request: request,
+      skipThrowForStatus: request.skipThrowForStatus
     };
     const outResp = _.extend(preppedResp, replaceHeaders(resp));
     outResp.throwForStatus = () => throwForStatus(outResp) && undefined;

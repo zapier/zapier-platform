@@ -8,6 +8,7 @@ const should = require('should');
 
 const createAppRequestClient = require('../src/tools/create-app-request-client');
 const createInput = require('../src/tools/create-input');
+const errors = require('../src/errors');
 
 describe('request client', () => {
   const testLogger = () => Promise.resolve({});
@@ -270,12 +271,28 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should run any afterResponse functions', done => {
+  it('should default to run throwForStatus', () => {
+    const request = createAppRequestClient(input);
+    return request({
+      url: 'https://httpbin.org/status/400'
+    }).should.be.rejectedWith(errors.ResponseError);
+  });
+
+  it('should be able to skip throwForStatus via request', async () => {
+    const request = createAppRequestClient(input);
+    const response = await request({
+      url: 'https://httpbin.org/status/400',
+      skipThrowForStatus: true
+    });
+    response.status.should.eql(400);
+  });
+
+  it('should be able to skip throwForStatus via afterResponse', async () => {
     const inputWithAfterMiddleware = createInput(
       {
         afterResponse: [
           response => {
-            response.json = { testing: true };
+            response.skipThrowForStatus = true;
             return response;
           }
         ]
@@ -284,18 +301,8 @@ describe('request client', () => {
       testLogger
     );
     const request = createAppRequestClient(inputWithAfterMiddleware);
-    request({ url: 'https://httpbin.org/get' })
-      .then(responseBefore => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
-
-        response.json.testing.should.eql(true);
-        response.status.should.eql(200);
-
-        const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
-        done();
-      })
-      .catch(done);
+    const response = await request({ url: 'https://httpbin.org/status/400' });
+    response.status.should.eql(400);
   });
 
   it('should parse form type request body', done => {
