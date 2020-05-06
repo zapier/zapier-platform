@@ -186,8 +186,16 @@ const addRequestData = async (event, z, bundle, convertedBundle) => {
 
 const addResponse = (event, bundle, convertedBundle) => {
   if (event.name.endsWith('.post')) {
-    convertedBundle.response = event.response;
-    convertedBundle.response.status_code = event.response.status;
+    convertedBundle.response = { ...event.response };
+    convertedBundle.response.status_code = convertedBundle.response.status;
+    if (convertedBundle.response.request) {
+      convertedBundle.response.request = {
+        ...convertedBundle.response.request
+      };
+      // `request.input` contains the entire app definition, which is big and
+      // unnecessary for legacy scripting
+      delete convertedBundle.response.request.input;
+    }
   }
 };
 

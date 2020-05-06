@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const querystring = require('querystring');
 
 const _ = require('lodash');
@@ -537,61 +538,54 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return out;
   };
 
-  const runEvent = (event, z, bundle) =>
-    new Promise((resolve, reject) => {
-      if (!Zap || _.isEmpty(Zap) || !event || !event.name || !z) {
-        resolve();
-        return;
+  const runEvent = async (event, z, bundle) => {
+    if (!Zap || _.isEmpty(Zap) || !event || !event.name || !z) {
+      return;
+    }
+
+    const eventNameToMethod = createEventNameToMethodMapping(event.key);
+    const methodName = eventNameToMethod[event.name];
+
+    if (!methodName || !_.isFunction(Zap[methodName])) {
+      return;
+    }
+
+    const convertedBundle = await bundleConverter(bundle, event, z);
+
+    // To know if request.files is changed by scripting
+    event.originalFiles = _.cloneDeep(
+      _.get(convertedBundle, 'request.files') || {}
+    );
+
+    const method = Zap[methodName].bind(Zap);
+
+    // method.length is the number of args method accepts
+    const isAsync = method.length > 1;
+
+    let result;
+    try {
+      if (isAsync) {
+        result = await promisify(method)(convertedBundle);
+      } else {
+        result = method(convertedBundle);
       }
-
-      bundleConverter(bundle, event, z).then(convertedBundle => {
-        const eventNameToMethod = createEventNameToMethodMapping(event.key);
-        const methodName = eventNameToMethod[event.name];
-
-        if (methodName && _.isFunction(Zap[methodName])) {
-          // Handle async
-          const optionalCallback = (err, asyncResult) => {
-            if (err) {
-              reject(err);
-            } else {
-              parseFinalResult(asyncResult, event).then(res => {
-                resolve(res);
-              });
-            }
-          };
-
-          // To know if request.files is changed by scripting
-          event.originalFiles = _.cloneDeep(
-            _.get(convertedBundle, 'request.files') || {}
-          );
-
-          // method.length is the number of args method accepts
-          const method = Zap[methodName].bind(Zap);
-          const isAsync = method.length > 1;
-          let result;
-          try {
-            result = method(convertedBundle, optionalCallback);
-          } catch (err) {
-            reject(err);
-            return;
-          }
-
-          logger(`Called legacy scripting ${methodName}`, {
-            request_data: convertedBundle,
-            log_type: 'bundle'
-          }).then(() => {
-            // Handle sync
-            if (!isAsync) {
-              parseFinalResult(result, event).then(res => {
-                resolve(res);
-              });
-            }
-          });
-        } else {
-          resolve({});
-        }
+    } catch (err) {
+      logger(`Errored calling legacy scripting ${methodName}`, {
+        log_type: 'bundle',
+        input: convertedBundle,
+        error_message: err.stack
       });
+      throw err;
+    }
+
+    logger(`Called legacy scripting ${methodName}`, {
+      log_type: 'bundle',
+      input: convertedBundle,
+      output: result
     });
+
+    return parseFinalResult(result, event);
+  };
 
   // Simulates how WB backend runs JS scripting methods
   const runEventCombo = async (
