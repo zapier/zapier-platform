@@ -278,15 +278,16 @@ describe('request client', () => {
     }).should.be.rejectedWith(errors.ResponseError);
   });
 
-  it('should be able to skip throwForStatus via request', () => {
+  it('should be able to skip throwForStatus via request', async () => {
     const request = createAppRequestClient(input);
-    return request({
+    const response = await request({
       url: 'https://httpbin.org/status/400',
       skipThrowForStatus: true
-    }).should.not.be.rejected;
+    });
+    response.status.should.eql(400);
   });
 
-  it('should be able to skip throwForStatus via afterResponse', () => {
+  it('should be able to skip throwForStatus via afterResponse', async () => {
     const inputWithAfterMiddleware = createInput(
       {
         afterResponse: [
@@ -300,8 +301,8 @@ describe('request client', () => {
       testLogger
     );
     const request = createAppRequestClient(inputWithAfterMiddleware);
-    return request({ url: 'https://httpbin.org/status/400' }).should.not.be
-      .rejected;
+    const response = await request({ url: 'https://httpbin.org/status/400' });
+    response.status.should.eql(400);
   });
 
   it('should parse form type request body', done => {

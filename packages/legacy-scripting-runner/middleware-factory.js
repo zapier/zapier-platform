@@ -203,9 +203,7 @@ const createBeforeRequest = app => {
 
 const createAfterResponse = app => {
   const authType = _.get(app, 'authentication.type');
-  const autoRefresh =
-    _.get(app, 'legacy.authentication.oauth2Config.autoRefresh') ||
-    _.get(app, 'authentication.oauth2Config.autoRefresh');
+  const autoRefresh = _.get(app, 'authentication.oauth2Config.autoRefresh');
 
   const throwForStaleAuth = (response, z) => {
     if (response.status === 401) {

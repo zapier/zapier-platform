@@ -83,7 +83,7 @@ module.exports = makeSchema(
       },
       skipThrowForStatus: {
         description:
-          'Should throwForStatus be calld before returning the response?',
+          "If `true`, don't throw an exception for response status > 300 automatically before resolving with the response. Defaults to `false`.",
         type: 'boolean',
         default: false
       }
