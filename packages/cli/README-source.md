@@ -1219,7 +1219,7 @@ formulate valid requests. Thus, it is a good idea to write apps defensively and
 plan for 4xx and 5xx responses from APIs. Without proper handling, errors often
 have incomprehensible messages for end users, or possibly go uncaught.
 
-Zapier provides a couple tools to help with error handling. First is the
+Zapier provides a couple of tools to help with error handling. First is the
 `afterResponse` middleware ([docs](#using-http-middleware)), which provides a hook for
 processing all responses from HTTP calls. Second is `response.throwForStatus()`
 ([docs](#http-response-object)), which throws an error if the response status indicates
