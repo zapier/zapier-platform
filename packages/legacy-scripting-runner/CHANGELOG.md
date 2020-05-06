@@ -1,3 +1,8 @@
+## 3.7.0
+
+- :tada: More complete bundle logs ([#213](https://github.com/zapier/zapier-platform/pull/213))
+- :bug: Trim bloated bundles for `KEY_post` methods ([#213](https://github.com/zapier/zapier-platform/pull/213))
+
 ## 3.6.0
 
 - :nail_care: Allow GET requests to have body (requires zapier-platform-core 9.4.0+) ([#195](https://github.com/zapier/zapier-platform/pull/195))

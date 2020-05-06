@@ -13,7 +13,7 @@ describe('changelog utils', () => {
       appDir = makeTempDir();
       fs.writeFileSync(
         path.join(appDir, 'CHANGELOG.md'),
-        '## 2.0.0\n\n' +
+        '## new and improved version! (v2.0.0)\n\n' +
           '* Fix some bugs.\n' +
           '* Major docs fixes.\n\n' +
           '## 1.0.0\n\n' +
@@ -42,5 +42,10 @@ describe('changelog utils', () => {
         .then(log => {
           log.should.eql('');
         }));
+
+    it('should not fail when versions follow "different" formatting', () =>
+      changelog.getVersionChangelog('2.0.0', appDir).then(log => {
+        log.should.eql('* Fix some bugs.\n* Major docs fixes.');
+      }));
   });
 });
