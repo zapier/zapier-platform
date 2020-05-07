@@ -6,15 +6,25 @@ const prepareRequestLog = (req, resp) => {
   req = req || {};
   resp = resp || {};
 
-  let body;
+  let responseBody;
   if (!req.raw) {
     if (typeof resp.content !== 'string') {
-      body = JSON.stringify(resp.content);
+      responseBody = JSON.stringify(resp.content);
     } else {
-      body = resp.content;
+      responseBody = resp.content;
     }
   } else {
-    body = '<probably streaming data>';
+    responseBody = '<probably streaming data>';
+  }
+
+  let requestBody = req.body;
+  if (
+    requestBody &&
+    requestBody.constructor &&
+    requestBody.constructor.name === 'FormData'
+  ) {
+    // Avoid JSON.stringify form data
+    requestBody = '<form data>';
   }
 
   const data = {
@@ -23,11 +33,11 @@ const prepareRequestLog = (req, resp) => {
     request_url: req.url,
     request_method: req.method || 'GET',
     request_headers: req.headers,
-    request_data: req.body,
+    request_data: requestBody,
     request_via_client: true,
     response_status_code: resp.status,
     response_headers: resp.headers,
-    response_content: body
+    response_content: responseBody
   };
 
   if (req._requestStart) {
@@ -43,9 +53,7 @@ const prepareRequestLog = (req, resp) => {
   }
 
   return {
-    message: `${data.response_status_code} ${data.request_method} ${
-      data.request_url
-    }`,
+    message: `${data.response_status_code} ${data.request_method} ${data.request_url}`,
     data: data
   };
 };
