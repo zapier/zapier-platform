@@ -3,11 +3,7 @@ const path = require('path');
 const filter = require('gulp-filter');
 const prettier = require('gulp-prettier');
 
-const {
-  NODE_VERSION,
-  PACKAGE_VERSION,
-  PLATFORM_PACKAGE
-} = require('../constants');
+const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');
 
 const Generator = require('yeoman-generator');
 
@@ -33,7 +29,7 @@ const writeGitignore = gen => {
   gen.fs.copy(gen.templatePath('gitignore'), gen.destinationPath('.gitignore'));
 };
 
-const writeGenericPackageJson = gen => {
+const writeGenericPackageJson = (gen, additionalDeps) => {
   gen.fs.writeJSON('package.json', {
     name: gen.options.packageName,
     version: '1.0.0',
@@ -42,12 +38,9 @@ const writeGenericPackageJson = gen => {
     scripts: {
       test: 'jest'
     },
-    engines: {
-      node: `>=${NODE_VERSION}`,
-      npm: '>=5.6.0'
-    },
     dependencies: {
-      [PLATFORM_PACKAGE]: PACKAGE_VERSION
+      [PLATFORM_PACKAGE]: PACKAGE_VERSION,
+      ...additionalDeps
     },
     devDependencies: {
       jest: '^25.5.3'
@@ -90,7 +83,14 @@ const writeForStandaloneTemplate = gen => {
   writeGenericReadme(gen);
   appendReadme(gen);
 
-  writeGenericPackageJson(gen);
+  const additionalDeps = {
+    // Put template-specific dependencies here
+    files: {
+      'form-data': '3.0.0'
+    }
+  }[gen.options.template];
+
+  writeGenericPackageJson(gen, additionalDeps);
 
   gen.fs.copy(
     gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),

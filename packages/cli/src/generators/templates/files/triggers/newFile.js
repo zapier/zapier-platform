@@ -1,8 +1,8 @@
 const hydrators = require('../hydrators');
 
 const perform = (z, bundle) => {
-  // In reality you're more likely to get file info by make requests. Here we're
-  // hard coding some links just to demonstrate.
+  // In reality you're more likely to get file info from a remote server. Here
+  // we're hard coding some links just to demonstrate.
   const fileURLs = [
     'https://httpbin.zapier-tooling.com/image/png',
     'https://httpbin.zapier-tooling.com/image/jpeg',
@@ -12,7 +12,6 @@ const perform = (z, bundle) => {
   return fileURLs.map(fileURL => {
     const fileInfo = {
       id: fileURL,
-      url: fileURL,
 
       // Make it possible to get the actual file contents if necessary. No need
       // to make the request to download files now when the trigger is run.
@@ -41,7 +40,6 @@ module.exports = {
 
     sample: {
       id: 'https://example.com/file.txt',
-      url: 'https://example.com/file.txt',
       file: 'content'
     }
   }

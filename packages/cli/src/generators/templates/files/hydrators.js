@@ -1,16 +1,16 @@
 module.exports = {
   downloadFile: async (z, bundle) => {
     // Use standard auth to request the file
-    const response = await z.request({
+    const filePromise = z.request({
       url: bundle.inputData.url,
       raw: true
     });
 
-    // When `raw` is true, response.body will be a stream, which can be passed
-    // to z.stashFile(). z.stashFile() will upload the file to a Zapier-owned S3
-    // storage, allowing Zapier to get this file without auth. If your file is
-    // publicly available permanently, you may skip z.stashFile().
-    const stashedURL = await z.stashFile(response.body);
-    return stashedURL;
+    // When `raw` is true, the result of z.request() can be passed to
+    // z.stashFile(). z.stashFile() will upload the file to a Zapier-owned S3
+    // bucket and return a promise of an S3 URL that allows Zapier to get the
+    // file without auth. If your file URL is permanently publicly available,
+    // you may skip z.stashFile() and return that URL directly here.
+    return z.stashFile(filePromise);
   }
 };
