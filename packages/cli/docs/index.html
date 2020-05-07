@@ -3316,8 +3316,6 @@ zapier env 1.0.0
   <span class="hljs-keyword">return</span> z
     .request(<span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>, customHttpOptions)
     .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
-      response.throwForStatus();
-
       <span class="hljs-keyword">const</span> recipes = response.json;
       <span class="hljs-comment">// do any custom processing of recipes here...</span>
 
@@ -3475,7 +3473,7 @@ zapier env 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Since v10, we call <code>response.throwForStatus()</code> before we return a response. You can prevent this by setting <code>skipThrowForStatus</code> on the request or response object. You can do this in <code>afterResponse</code> middleware if the API uses a status code &gt; 300 that should not be treated as an error.</p><p>For developers using v9.x and below, it&apos;s your responsibility to throw an exception for an error response. That means you should call <code>response.throwForStatus()</code> or throw an error yourself, likely following the <code>z.request</code> call.</p>
+      <p>Since v10, we call <code>response.throwForStatus()</code> before we return a response. You can prevent this by setting <code>skipThrowForStatus</code> on the request or response object. You can do this in <code>afterResponse</code> middleware if the API uses a status code &gt;= 400 that should not be treated as an error.</p><p>For developers using v9.x and below, it&apos;s your responsibility to throw an exception for an error response. That means you should call <code>response.throwForStatus()</code> or throw an error yourself, likely following the <code>z.request</code> call.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3553,8 +3551,8 @@ zapier env 1.0.0
 <li><code>body</code>: A stream available only if you provide <code>options.raw = true</code>.</li>
 <li><code>headers</code>: Response headers object. The header keys are all lower case.</li>
 <li><code>getHeader(key)</code>: Retrieve response header, case insensitive: <code>response.getHeader(&apos;My-Header&apos;)</code></li>
-<li><code>throwForStatus()</code>: Throw error if final <code>response.status &gt; 300</code>. Will throw <code>z.error.RefreshAuthError</code> if 401.</li>
 <li><code>skipThrowForStatus</code>: don&apos;t call <code>throwForStatus()</code> before resolving the request with this response.</li>
+<li><code>throwForStatus()</code>: Throw error if 400 &lt;= <code>status</code> &lt; 600.</li>
 <li><code>request</code>: The original request options object (see above).</li>
 </ul>
     </div>
@@ -3950,7 +3948,7 @@ have incomprehensible messages for end users, or possibly go uncaught.</p><p>Zap
 <code>afterResponse</code> middleware (<a href="#using-http-middleware">docs</a>), which provides a hook for
 processing all responses from HTTP calls. Second is <code>response.throwForStatus()</code>
 (<a href="#http-response-object">docs</a>), which throws an error if the response status indicates
-an error (status &gt; 300). We automatically call this method before returning the
+an error (status &gt;= 400). We automatically call this method before returning the
 response, unless you set <code>skipThrowForStatus</code> on the request or response object. The
 last tool is the collection of errors in <code>z.errors</code> (<a href="#zerrors">docs</a>), which control
 the behavior of Zaps when various kinds of errors occur.</p>
