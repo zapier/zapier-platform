@@ -51,7 +51,7 @@ const npmInstall = (packagePath, workdir, productionOnly = true) => {
   );
 };
 
-describe.only('smoke tests - setup will take some time', () => {
+describe('smoke tests - setup will take some time', () => {
   const context = {
     // Global context that will be available for all test cases in this test suite
     package: {
@@ -84,8 +84,8 @@ describe.only('smoke tests - setup will take some time', () => {
   });
 
   after(() => {
-    // fs.unlinkSync(context.package.path);
-    // fs.removeSync(context.workdir);
+    fs.unlinkSync(context.package.path);
+    fs.removeSync(context.workdir);
   });
 
   it('package size should not change much', async function() {
@@ -184,28 +184,36 @@ describe.only('smoke tests - setup will take some time', () => {
     result.should.be.Array();
   });
 
-  describe.only('init w/ auth (runs very slowly)', () => {
+  describe('init w/ auth (runs very slowly)', () => {
     const testableAuthTypes = [
-      'basic-auth'
-      // 'custom-auth',
-      // 'digest-auth',
-      // // 'oauth1-trello',
-      // 'oauth2',
-      // 'session-auth',
+      'basic-auth',
+      'custom-auth',
+      'digest-auth',
+      // 'oauth1-trello',
+      'oauth2',
+      'session-auth'
     ];
+
+    const subfolder = 'auth-tests';
+    let subfolderPath;
+    before(() => {
+      subfolderPath = path.join(context.workdir, subfolder);
+      // TODO: can use `minimal` here, but it's broken right now?
+      runCommand(context.cliBin, ['yo', subfolder, '-t', 'basic-auth'], {
+        cwd: context.workdir,
+        input: 'a' // tells `yo` to replace the auth file
+      });
+
+      runCommand('yarn', [], {
+        cwd: subfolderPath
+      });
+    });
 
     testableAuthTypes.forEach(authType => {
       it(`${authType} should test out of the box`, () => {
-        const subfolder = `test-auth-${authType}`;
-        const subfolderPath = path.join(context.workdir, subfolder);
-        console.log('working inn', subfolderPath);
         runCommand(context.cliBin, ['yo', subfolder, '-t', authType], {
-          cwd: context.workdir
-        });
-
-        // use yarn because it's faster, we'll be doing this a lot
-        runCommand('yarn', [], {
-          cwd: subfolderPath
+          cwd: context.workdir,
+          input: 'a' // tells `yo` to replace the auth file
         });
 
         // should not throw an error

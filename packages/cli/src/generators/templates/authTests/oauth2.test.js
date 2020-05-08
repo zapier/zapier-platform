@@ -1,4 +1,4 @@
-/* globals describe, it, expect, before */
+/* globals describe, it, expect, beforeAll */
 
 const zapier = require('zapier-platform-core');
 
@@ -19,7 +19,7 @@ process.env.CLIENT_ID = process.env.CLIENT_ID || '1234';
 process.env.CLIENT_SECRET = process.env.CLIENT_SECRET || 'asdf';
 
 describe('oauth2 app', () => {
-  before(() => {
+  beforeAll(() => {
     // It's a good idea to store your Client ID and Secret in the environment rather than in code.
     if (!(process.env.CLIENT_ID && process.env.CLIENT_SECRET)) {
       throw new Error(

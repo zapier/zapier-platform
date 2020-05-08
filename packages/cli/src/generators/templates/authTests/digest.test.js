@@ -10,8 +10,8 @@ describe('digest auth', () => {
     // Try changing the values of username or password to see how the test method behaves
     const bundle = {
       authData: {
-        username: 'user',
-        password: 'secret'
+        username: 'myuser',
+        password: 'mypass'
       }
     };
 
