@@ -1,26 +1,17 @@
-# Typescript Example App For Zapier Platform
+# The "typescript" Template
 
-[![Build Status](https://travis-ci.org/zapier/zapier-platform-example-app-typescript.svg?branch=master)](https://travis-ci.org/zapier/zapier-platform-example-app-typescript)
+This example is mainly a proof-of-concept for using features not yet available
+in Node.
 
-A barebones app that has a resource defined. This is mainly a proof-of-concept for using features not yet available in node.
-
-Run this:
-
-```bash
-npm run zapier-dev # compiles & watches your app
-zapier test
-```
-
-There's also a non-watch command:
+In `package.json`, we've define some commonly-used scripts:
 
 ```bash
-npm run zapier-build
+# Watch and compile as you edit code
+npm run watch
+
+# There's also a non-watch compile command
+npm run build
+
+# To push to Zapier, make sure you compile first
+npm run build && zapier push
 ```
-
-To push, instead of `zapier push`, we do:
-
-```bash
-npm run zapier-push # compiles first
-```
-
-> We recommend using the zapier-platform-cli and `zapier init . --template=typescript` to create an app.

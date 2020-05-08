@@ -1,5 +1,6 @@
 const path = require('path');
 
+const { merge } = require('lodash');
 const filter = require('gulp-filter');
 const Generator = require('yeoman-generator');
 const prettier = require('gulp-prettier');
@@ -29,24 +30,29 @@ const writeGitignore = (gen) => {
   gen.fs.copy(gen.templatePath('gitignore'), gen.destinationPath('.gitignore'));
 };
 
-const writeGenericPackageJson = (gen, additionalDeps = {}) => {
-  gen.fs.writeJSON('package.json', {
-    name: gen.options.packageName,
-    version: '1.0.0',
-    description: '',
-    main: 'index.js',
-    scripts: {
-      test: 'jest',
-    },
-    dependencies: {
-      [PLATFORM_PACKAGE]: PACKAGE_VERSION,
-      ...additionalDeps,
-    },
-    devDependencies: {
-      jest: '^25',
-    },
-    private: true,
-  });
+const writeGenericPackageJson = (gen, packageJsonExtension) => {
+  gen.fs.writeJSON(
+    'package.json',
+    merge(
+      {
+        name: gen.options.packageName,
+        version: '1.0.0',
+        description: '',
+        main: 'index.js',
+        scripts: {
+          test: 'jest --testTimeout 10000',
+        },
+        dependencies: {
+          [PLATFORM_PACKAGE]: PACKAGE_VERSION,
+        },
+        devDependencies: {
+          jest: '^25.5.3',
+        },
+        private: true,
+      },
+      packageJsonExtension
+    )
+  );
 };
 
 const writeGenericIndex = (gen) => {
@@ -98,14 +104,31 @@ const writeForStandaloneTemplate = (gen) => {
   writeGenericReadme(gen);
   appendReadme(gen);
 
-  const additionalDeps = {
-    // Put template-specific dependencies here
+  const packageJsonExtension = {
+    // Put template-specific package.json settings here, grouped by template
+    // names. This is going to used to extend the generic package.json.
     files: {
-      'form-data': '3.0.0',
+      dependencies: {
+        'form-data': '3.0.0',
+      },
+    },
+    typescript: {
+      scripts: {
+        build: 'npm run clean && tsc',
+        clean: 'rimraf ./lib ./build',
+        watch: 'npm run clean && tsc --watch',
+        test: 'npm run build && jest --testTimeout 10000 --rootDir ./lib/test',
+      },
+      devDependencies: {
+        '@types/jest': '^25.2.1',
+        '@types/node': '^13.13.5',
+        rimraf: '^3.0.2',
+        typescript: '^3.8.3',
+      },
     },
   }[gen.options.template];
 
-  writeGenericPackageJson(gen, additionalDeps);
+  writeGenericPackageJson(gen, packageJsonExtension);
 
   gen.fs.copy(
     gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
