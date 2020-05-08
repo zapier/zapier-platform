@@ -1,8 +1,10 @@
+<% if (hasAuth) { %>
 const {
   config: authentication,
   befores = [],
   afters = [],
 } = require('./authentication');
+<% } %>
 
 module.exports = {
   // This is just shorthand to reference the installed dependencies you have.
@@ -10,11 +12,13 @@ module.exports = {
   version: require('./package.json').version,
   platformVersion: require('<%= corePackageName %>').version,
 
+  <% if (hasAuth) { %>
   authentication,
 
   beforeRequest: [...befores],
 
   afterResponse: [...afters],
+  <% } %>
 
   // If you want your trigger to show up, you better include it here!
   triggers: {},

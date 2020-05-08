@@ -55,11 +55,11 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
   );
 };
 
-const writeGenericIndex = (gen) => {
+const writeGenericIndex = (gen, hasAuth) => {
   gen.fs.copyTpl(
     gen.templatePath('index.template.js'),
     gen.destinationPath('index.js'),
-    { corePackageName: PLATFORM_PACKAGE }
+    { corePackageName: PLATFORM_PACKAGE, hasAuth }
   );
 };
 
@@ -86,14 +86,29 @@ const writeGenericAuthTest = (gen) => {
   );
 };
 
+const writeGenericTest = (gen) => {
+  gen.fs.copyTpl(
+    gen.templatePath('authTests/generic.test.js'),
+    gen.destinationPath('test/example.test.js')
+  );
+};
+
 // Write files for templates that demonstrate an auth type
 const writeForAuthTemplate = (gen) => {
   writeGitignore(gen);
   writeGenericReadme(gen);
   writeGenericPackageJson(gen);
-  writeGenericIndex(gen);
+  writeGenericIndex(gen, true);
   writeGenericAuth(gen);
   writeGenericAuthTest(gen);
+};
+
+const writeForMinimalTemplate = (gen) => {
+  writeGitignore(gen);
+  writeGenericReadme(gen);
+  writeGenericPackageJson(gen);
+  writeGenericIndex(gen, false);
+  writeGenericTest(gen);
 };
 
 // Write files for "standalone" templates, which essentially just copies an
@@ -142,7 +157,7 @@ const TEMPLATE_ROUTES = {
   'digest-auth': writeForAuthTemplate,
   'dynamic-dropdown': writeForStandaloneTemplate,
   files: writeForStandaloneTemplate,
-  minimal: null,
+  minimal: writeForMinimalTemplate,
   'oauth1-trello': writeForAuthTemplate,
   oauth2: writeForAuthTemplate,
   'search-or-create': writeForStandaloneTemplate,
