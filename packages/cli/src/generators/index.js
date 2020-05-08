@@ -43,7 +43,7 @@ const writeGenericPackageJson = (gen, additionalDeps = {}) => {
       ...additionalDeps,
     },
     devDependencies: {
-      jest: '^25.5.3',
+      jest: '^25',
     },
     private: true,
   });
@@ -76,7 +76,7 @@ const writeGenericAuthTest = (gen) => {
   const authType = authTypes[gen.options.template];
   gen.fs.copyTpl(
     gen.templatePath(`authTests/${authType || 'generic'}.test.js`),
-    gen.destinationPath('test/authentication.js')
+    gen.destinationPath('test/authentication.test.js')
   );
 };
 

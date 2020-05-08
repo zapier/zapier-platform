@@ -84,8 +84,8 @@ describe.only('smoke tests - setup will take some time', () => {
   });
 
   after(() => {
-    fs.unlinkSync(context.package.path);
-    fs.removeSync(context.workdir);
+    // fs.unlinkSync(context.package.path);
+    // fs.removeSync(context.workdir);
   });
 
   it('package size should not change much', async function() {
@@ -185,12 +185,20 @@ describe.only('smoke tests - setup will take some time', () => {
   });
 
   describe.only('init w/ auth (runs very slowly)', () => {
-    const testableAuthTypes = ['basic-auth'];
+    const testableAuthTypes = [
+      'basic-auth'
+      // 'custom-auth',
+      // 'digest-auth',
+      // // 'oauth1-trello',
+      // 'oauth2',
+      // 'session-auth',
+    ];
 
     testableAuthTypes.forEach(authType => {
-      it('should test out of the box', () => {
+      it(`${authType} should test out of the box`, () => {
         const subfolder = `test-auth-${authType}`;
         const subfolderPath = path.join(context.workdir, subfolder);
+        console.log('working inn', subfolderPath);
         runCommand(context.cliBin, ['yo', subfolder, '-t', authType], {
           cwd: context.workdir
         });
@@ -201,7 +209,7 @@ describe.only('smoke tests - setup will take some time', () => {
         });
 
         // should not throw an error
-        runCommand(context.cliBin, ['test'], {
+        runCommand(context.cliBin, ['test', '--skip-validate'], {
           cwd: subfolderPath
         });
       });

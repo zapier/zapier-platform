@@ -1,5 +1,4 @@
-/* globals describe, it */
-require('should');
+/* globals describe, it, expect */
 
 const zapier = require('zapier-platform-core');
 
@@ -17,8 +16,10 @@ describe('basic auth', () => {
 
     const response = await appTester(App.authentication.test, bundle);
 
-    response.status.should.eql(200);
-    response.request.headers.Authorization.should.eql('Basic dXNlcjpzZWNyZXQ=');
+    expect(response.status).toBe(200);
+    expect(response.request.headers.Authorization).toBe(
+      'Basic dXNlcjpzZWNyZXQ='
+    );
   });
 
   it('fails on bad auth', async () => {
@@ -32,7 +33,7 @@ describe('basic auth', () => {
     try {
       await appTester(App.authentication.test, bundle);
     } catch (err) {
-      err.message.should.containEql(
+      expect(err.message).toContain(
         'The username and/or password you supplied is incorrect'
       );
       return;

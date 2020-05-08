@@ -1,6 +1,4 @@
-/* globals describe, it */
-
-require('should');
+/* globals describe, it, expect */
 
 const zapier = require('zapier-platform-core');
 
@@ -16,7 +14,7 @@ describe('custom auth', () => {
     };
 
     const response = await appTester(App.authentication.test, bundle);
-    response.json.should.have.property('username');
+    expect(response.json).toHaveProperty('username');
   });
 
   it('fails on bad auth', async () => {
@@ -29,7 +27,7 @@ describe('custom auth', () => {
     try {
       await appTester(App.authentication.test, bundle);
     } catch (error) {
-      error.message.should.containEql('The API Key you supplied is incorrect');
+      expect(error.message).toContain('The API Key you supplied is incorrect');
       return;
     }
     throw new Error('appTester should have thrown');
