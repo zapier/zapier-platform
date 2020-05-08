@@ -1,11 +1,11 @@
 const path = require('path');
 
 const filter = require('gulp-filter');
+const Generator = require('yeoman-generator');
 const prettier = require('gulp-prettier');
 
 const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');
-
-const Generator = require('yeoman-generator');
+const authFilesCodegen = require('../utils/auth-files-codegen');
 
 const writeGenericReadme = gen => {
   gen.fs.copyTpl(
@@ -58,7 +58,16 @@ const writeGenericIndex = gen => {
 };
 
 const writeGenericAuth = gen => {
-  gen.fs.write('authentication.js', '// TODO\n');
+  const authType = {
+    'basic-auth': 'basic',
+    'custom-auth': 'custom',
+    'digest-auth': 'digest',
+    'oauth1-trello': 'oauth1',
+    oauth2: 'oauth2',
+    'session-auth': 'session'
+  }[gen.options.template];
+  const content = authFilesCodegen[authType]();
+  gen.fs.write('authentication.js', content);
 };
 
 const writeGenericAuthTest = gen => {
