@@ -1,7 +1,5 @@
-# "Search or Create" Example App For Zapier Platform
+# The "search-or-create" Template
 
-[![Build Status](https://travis-ci.org/zapier/zapier-platform-example-app-search-or-create.svg?branch=master)](https://travis-ci.org/zapier/zapier-platform-example-app-search-or-create)
+An example showcasing a Search-or-Create.
 
-A barebones app that has a Search or Create.
-
-> We recommend using the zapier-platform-cli and `zapier init . --template=search-or-create` to create an app.
+![](https://cdn.zappy.app/5fc31d104c6bd0050c44510557b3b98f.png)

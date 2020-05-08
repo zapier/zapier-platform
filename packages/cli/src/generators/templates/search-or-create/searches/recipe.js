@@ -1,12 +1,11 @@
-// find a particular recipe by name
-const searchRecipe = (z, bundle) => {
-  const responsePromise = z.request({
-    url: 'https://jsonplaceholder.typicode.com/posts',
+const perform = async (z, bundle) => {
+  const response = await z.request({
+    url: 'https://auth-json-server.zapier-staging.com/recipes',
     params: {
       name: bundle.inputData.name
     }
   });
-  return responsePromise.then(response => response.json);
+  return response.json;
 };
 
 module.exports = {
@@ -14,7 +13,7 @@ module.exports = {
   noun: 'Recipe',
 
   display: {
-    label: 'Find a Recipe',
+    label: 'Find Recipe',
     description: 'Finds a recipe.'
   },
 
@@ -26,13 +25,11 @@ module.exports = {
         helpText: 'Find the Recipe with this name.'
       }
     ],
-    perform: searchRecipe,
+    perform,
 
     sample: {
       id: 1,
       name: 'Test'
-    },
-
-    outputFields: [{ key: 'id', label: 'ID' }, { key: 'name', label: 'Name' }]
+    }
   }
 };

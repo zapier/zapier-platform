@@ -1,13 +1,12 @@
-// create a particular recipe by name
-const createRecipe = (z, bundle) => {
-  const responsePromise = z.request({
+const perform = async (z, bundle) => {
+  const response = await z.request({
     method: 'POST',
-    url: 'https://jsonplaceholder.typicode.com/posts',
+    url: 'https://auth-json-server.zapier-staging.com/recipes',
     body: {
       name: bundle.inputData.name
     }
   });
-  return responsePromise.then(response => response.json);
+  return response.json;
 };
 
 module.exports = {
@@ -22,15 +21,14 @@ module.exports = {
   operation: {
     inputFields: [
       { key: 'name', required: true },
-      { key: 'favorite', required: true }
+      { key: 'directions', required: false },
+      { key: 'style', required: false }
     ],
-    perform: createRecipe,
+    perform,
 
     sample: {
       id: 1,
       name: 'Test'
-    },
-
-    outputFields: [{ key: 'id', label: 'ID' }, { key: 'name', label: 'Name' }]
+    }
   }
 };
