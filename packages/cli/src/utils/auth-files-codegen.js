@@ -17,7 +17,6 @@ const {
   RESPONSE_VAR,
   returnStatement,
   strLiteral,
-  throwForStatus,
   throwSessionRefresh,
   variableAssignmentDeclaration,
   zRequest,
@@ -464,7 +463,6 @@ const oauth1TokenExchangeFunc = (funcName, url, ...authProperties) => {
         )
       )
     ),
-    throwForStatus(),
     returnStatement(`querystring.parse(${RESPONSE_VAR}.content)`)
   );
 };
