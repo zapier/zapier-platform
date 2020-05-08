@@ -518,7 +518,7 @@ describe('http logResponse after middleware', () => {
       log_type: 'http',
       request_url: url,
       request_method: 'POST',
-      request_data: '<form data>',
+      request_data: '<streaming data>',
       response_status_code: 200
     });
 

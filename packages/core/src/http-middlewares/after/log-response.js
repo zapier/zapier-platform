@@ -1,5 +1,7 @@
 'use strict';
 
+const stream = require('stream');
+
 // Prepare a request/reponse to be logged to the backend.
 // Generally respects the "Zapier" request and resp object format.
 const prepareRequestLog = (req, resp) => {
@@ -18,13 +20,9 @@ const prepareRequestLog = (req, resp) => {
   }
 
   let requestBody = req.body;
-  if (
-    requestBody &&
-    requestBody.constructor &&
-    requestBody.constructor.name === 'FormData'
-  ) {
-    // Avoid JSON.stringify form data
-    requestBody = '<form data>';
+  if (requestBody instanceof stream) {
+    // Avoid JSON.stringify form data or any streams
+    requestBody = '<streaming data>';
   }
 
   const data = {
