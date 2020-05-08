@@ -29,7 +29,7 @@ const writeGitignore = (gen) => {
   gen.fs.copy(gen.templatePath('gitignore'), gen.destinationPath('.gitignore'));
 };
 
-const writeGenericPackageJson = (gen, additionalDeps) => {
+const writeGenericPackageJson = (gen, additionalDeps = {}) => {
   gen.fs.writeJSON('package.json', {
     name: gen.options.packageName,
     version: '1.0.0',
@@ -57,21 +57,27 @@ const writeGenericIndex = (gen) => {
   );
 };
 
+const authTypes = {
+  'basic-auth': 'basic',
+  'custom-auth': 'custom',
+  'digest-auth': 'digest',
+  'oauth1-trello': 'oauth1',
+  oauth2: 'oauth2',
+  'session-auth': 'session',
+};
+
 const writeGenericAuth = (gen) => {
-  const authType = {
-    'basic-auth': 'basic',
-    'custom-auth': 'custom',
-    'digest-auth': 'digest',
-    'oauth1-trello': 'oauth1',
-    oauth2: 'oauth2',
-    'session-auth': 'session',
-  }[gen.options.template];
+  const authType = authTypes[gen.options.template];
   const content = authFilesCodegen[authType]();
   gen.fs.write('authentication.js', content);
 };
 
 const writeGenericAuthTest = (gen) => {
-  gen.fs.write(path.join('test', 'authentication.js'), '// TODO\n');
+  const authType = authTypes[gen.options.template];
+  gen.fs.copyTpl(
+    gen.templatePath(`authTests/${authType || 'generic'}.test.js`),
+    gen.destinationPath('test/authentication.js')
+  );
 };
 
 // Write files for templates that demonstrate an auth type

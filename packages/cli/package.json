@@ -10,6 +10,7 @@
   "files": [
     "/src/*.js",
     "/src/commands/",
+    "/src/generators/",
     "/src/oclif/",
     "/src/bin/",
     "/src/bin/run.cmd",

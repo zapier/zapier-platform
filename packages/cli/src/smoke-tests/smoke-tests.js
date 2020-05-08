@@ -39,13 +39,19 @@ const npmPack = () => {
   return filename;
 };
 
-const npmInstall = (packagePath, workdir) => {
-  runCommand('npm', ['install', '--production', packagePath], {
-    cwd: workdir
-  });
+const npmInstall = (packagePath, workdir, productionOnly = true) => {
+  runCommand(
+    'npm',
+    ['install', productionOnly ? '--production' : '', packagePath].filter(
+      Boolean
+    ),
+    {
+      cwd: workdir
+    }
+  );
 };
 
-describe('smoke tests - setup will take some time', () => {
+describe.only('smoke tests - setup will take some time', () => {
   const context = {
     // Global context that will be available for all test cases in this test suite
     package: {
@@ -176,5 +182,29 @@ describe('smoke tests - setup will take some time', () => {
     ]);
     const result = JSON.parse(stdout);
     result.should.be.Array();
+  });
+
+  describe.only('init w/ auth (runs very slowly)', () => {
+    const testableAuthTypes = ['basic-auth'];
+
+    testableAuthTypes.forEach(authType => {
+      it('should test out of the box', () => {
+        const subfolder = `test-auth-${authType}`;
+        const subfolderPath = path.join(context.workdir, subfolder);
+        runCommand(context.cliBin, ['yo', subfolder, '-t', authType], {
+          cwd: context.workdir
+        });
+
+        // use yarn because it's faster, we'll be doing this a lot
+        runCommand('yarn', [], {
+          cwd: subfolderPath
+        });
+
+        // should not throw an error
+        runCommand(context.cliBin, ['test'], {
+          cwd: subfolderPath
+        });
+      });
+    });
   });
 });

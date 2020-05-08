@@ -2,7 +2,7 @@ const {
   config: authentication,
   befores = [],
   afters = [],
-} = require('authentication');
+} = require('./authentication');
 
 module.exports = {
   // This is just shorthand to reference the installed dependencies you have.
