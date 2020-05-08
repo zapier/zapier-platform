@@ -1,13 +1,11 @@
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 
-const { callAPI, getLinkedApp, checkCredentials } = require('../../utils/api');
+const { callAPI, getWritableApp } = require('../../utils/api');
 
 class DeprecateCommand extends BaseCommand {
   async perform() {
-    await checkCredentials();
-
-    const app = await getLinkedApp();
+    const app = await getWritableApp();
     const { version, date } = this.args;
     this.log(
       `Preparing to deprecate version ${version} your app "${app.title}".\n`

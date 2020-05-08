@@ -2,7 +2,7 @@ const ZapierBaseCommand = require('../../ZapierBaseCommand');
 const { flags } = require('@oclif/command');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
-const { callAPI, getLinkedApp } = require('../../../utils/api');
+const { callAPI, getWritableApp } = require('../../../utils/api');
 
 class UsersRemoveCommand extends ZapierBaseCommand {
   async perform() {
@@ -19,8 +19,8 @@ class UsersRemoveCommand extends ZapierBaseCommand {
       return;
     }
 
+    const { id } = await getWritableApp();
     this.startSpinner('Removing User');
-    const { id } = await getLinkedApp();
     const url = `/apps/${id}/invitees/${this.args.email}`;
     await callAPI(url, { method: 'DELETE' });
     this.stopSpinner();

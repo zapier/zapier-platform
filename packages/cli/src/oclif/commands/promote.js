@@ -3,7 +3,7 @@ const colors = require('colors/safe');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const { callAPI, checkCredentials, getLinkedApp } = require('../../utils/api');
+const { callAPI, getWritableApp } = require('../../utils/api');
 const { flattenCheckResult } = require('../../utils/display');
 const { getVersionChangelog } = require('../../utils/changelog');
 
@@ -25,7 +25,7 @@ const serializeErrors = errors => {
 
 class PromoteCommand extends BaseCommand {
   async perform() {
-    await checkCredentials();
+    const app = await getWritableApp();
 
     const version = this.args.version;
 
@@ -56,7 +56,6 @@ class PromoteCommand extends BaseCommand {
       this.error('Cancelled promote.');
     }
 
-    const app = await getLinkedApp();
     this.log(
       `Preparing to promote version ${version} of your integration "${app.title}".`
     );
