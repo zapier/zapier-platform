@@ -1,6 +1,11 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
+const FormData = require('form-data');
 const should = require('should');
+
 const errors = require('../src/errors');
 const createAppRequestClient = require('../src/tools/create-app-request-client');
 const createInput = require('../src/tools/create-input');
@@ -463,5 +468,64 @@ describe('http throwForStatus after middleware', () => {
     });
 
     response.status.should.equal(600);
+  });
+});
+
+describe('http logResponse after middleware', () => {
+  let logged;
+  const testLogger = async (message, data) => {
+    logged = { message, data: JSON.stringify(data) };
+    return {};
+  };
+  const input = createInput({}, {}, testLogger);
+  const request = createAppRequestClient(input);
+
+  it('post JSON data', async () => {
+    const url = 'https://httpbin.zapier-tooling.com/post';
+    await request({ method: 'POST', url, body: { foo: 'bar' } });
+
+    logged.message.should.equal(`200 POST ${url}`);
+
+    const logData = JSON.parse(logged.data);
+    logData.should.containEql({
+      log_type: 'http',
+      request_url: url,
+      request_method: 'POST',
+      request_data: '{"foo":"bar"}',
+      response_status_code: 200
+    });
+
+    const loggedResponseBody = JSON.parse(logData.response_content);
+    loggedResponseBody.should.containEql({
+      url,
+      data: '{"foo":"bar"}'
+    });
+  });
+
+  it('upload file in form data', async () => {
+    const url = 'https://httpbin.zapier-tooling.com/post';
+
+    const form = new FormData();
+    form.append('filename', 'sample.txt');
+    form.append('file', fs.createReadStream(path.join(__dirname, 'test.txt')));
+
+    await request({ method: 'POST', url, body: form });
+
+    logged.message.should.equal(`200 POST ${url}`);
+
+    const logData = JSON.parse(logged.data);
+    logData.should.containEql({
+      log_type: 'http',
+      request_url: url,
+      request_method: 'POST',
+      request_data: '<streaming data>',
+      response_status_code: 200
+    });
+
+    const loggedResponseBody = JSON.parse(logData.response_content);
+    loggedResponseBody.should.containEql({
+      url,
+      form: { filename: ['sample.txt'] }
+    });
   });
 });
