@@ -39,16 +39,10 @@ const npmPack = () => {
   return filename;
 };
 
-const npmInstall = (packagePath, workdir, productionOnly = true) => {
-  runCommand(
-    'npm',
-    ['install', productionOnly ? '--production' : '', packagePath].filter(
-      Boolean
-    ),
-    {
-      cwd: workdir
-    }
-  );
+const npmInstall = (packagePath, workdir) => {
+  runCommand('npm', ['install', '--production', packagePath], {
+    cwd: workdir
+  });
 };
 
 describe('smoke tests - setup will take some time', () => {
