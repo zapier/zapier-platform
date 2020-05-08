@@ -14,8 +14,8 @@ describe('uploadFile', () => {
 
         // in production, this will be an hydration URL to the selected file's data
         file:
-          'https://cdn.zapier.com/storage/files/f6679cf77afeaf6b8426de8d7b9642fc.pdf'
-      }
+          'https://cdn.zapier.com/storage/files/f6679cf77afeaf6b8426de8d7b9642fc.pdf',
+      },
     };
 
     const result = await appTester(

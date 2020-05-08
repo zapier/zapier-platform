@@ -12,13 +12,13 @@ const perform = async (z, bundle) => {
     // The Zap's setup has requested a specific species of person. Since the
     // API/endpoint can't perform the filtering, we'll perform it here, within
     // the integration, and return the matching objects/records back to Zapier.
-    peopleArray = peopleArray.filter(person => {
+    peopleArray = peopleArray.filter((person) => {
       const speciesID = extractID(person.species[0]);
       return speciesID === bundle.inputData.species_id;
     });
   }
 
-  return peopleArray.map(person => {
+  return peopleArray.map((person) => {
     person.id = extractID(person.url);
     return person;
   });
@@ -29,7 +29,7 @@ module.exports = {
   noun: 'person',
   display: {
     label: 'New Person',
-    description: 'Triggers when a new person is added.'
+    description: 'Triggers when a new person is added.',
   },
 
   operation: {
@@ -39,8 +39,8 @@ module.exports = {
         type: 'integer',
         helpText: 'Species of person',
         dynamic: 'species.id.name',
-        altersDynamicFields: true
-      }
+        altersDynamicFields: true,
+      },
     ],
     perform,
     sample: {
@@ -54,7 +54,7 @@ module.exports = {
       mass: '77',
       skin_color: 'Fair',
       created: '2014-12-09T13:50:51.644000Z',
-      edited: '2014-12-10T13:52:43.172000Z'
-    }
-  }
+      edited: '2014-12-10T13:52:43.172000Z',
+    },
+  },
 };

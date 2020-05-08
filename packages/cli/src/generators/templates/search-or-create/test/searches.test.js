@@ -18,7 +18,7 @@ describe('recipe', () => {
     const firstRecipe = results[0];
     expect(firstRecipe).toMatchObject({
       id: '1',
-      name: 'name 1'
+      name: 'name 1',
     });
   });
 });

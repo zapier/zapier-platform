@@ -13,11 +13,11 @@ module.exports = {
 
   // If you want your triggers to show up, you better include it here!
   triggers: {
-    [newFile.key]: newFile
+    [newFile.key]: newFile,
   },
 
   // If you want your creates to show up, you better include it here!
   creates: {
-    [uploadFile.key]: uploadFile
-  }
+    [uploadFile.key]: uploadFile,
+  },
 };

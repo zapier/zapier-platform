@@ -15,8 +15,8 @@ describe('downloadFile', () => {
 
     const bundle = {
       inputData: {
-        url: 'https://httpbin.zapier-tooling.com/xml'
-      }
+        url: 'https://httpbin.zapier-tooling.com/xml',
+      },
     };
 
     const url = await appTester(App.hydrators.downloadFile, bundle);

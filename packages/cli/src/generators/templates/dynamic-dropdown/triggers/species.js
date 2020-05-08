@@ -4,7 +4,7 @@ const { extractID } = require('../utils');
 const perform = async (z, bundle) => {
   const request = {
     url: 'https://swapi.dev/api/species/',
-    params: {}
+    params: {},
   };
 
   // This API returns things in "pages" of results
@@ -14,7 +14,7 @@ const perform = async (z, bundle) => {
 
   const response = await z.request(request);
   const speciesArray = response.json.results;
-  return speciesArray.map(species => {
+  return speciesArray.map((species) => {
     species.id = extractID(species.url);
     return species;
   });
@@ -27,7 +27,7 @@ module.exports = {
     label: 'List of Species',
     description:
       'This is a hidden trigger, and is used in a Dynamic Dropdown of another trigger.',
-    hidden: true
+    hidden: true,
   },
 
   operation: {
@@ -36,6 +36,6 @@ module.exports = {
     // The folowing is a "hint" to the Zap Editor that this trigger returns data
     // "in pages", and that the UI should display an option to "load more" to
     // the human.
-    canPaginate: true
-  }
+    canPaginate: true,
+  },
 };

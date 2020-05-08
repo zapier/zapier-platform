@@ -1,7 +1,7 @@
 const {
   config: authentication,
   befores = [],
-  afters = []
+  afters = [],
 } = require('authentication');
 
 module.exports = {
@@ -25,5 +25,5 @@ module.exports = {
   // If you want your creates to show up, you better include it here!
   creates: {},
 
-  resources: {}
+  resources: {},
 };

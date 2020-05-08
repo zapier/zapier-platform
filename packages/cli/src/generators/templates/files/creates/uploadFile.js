@@ -6,7 +6,7 @@ const path = require('path');
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 
-const makeDownloadStream = async url => {
+const makeDownloadStream = async (url) => {
   // Create a temp file to store the downloaded file
   const filename = randomBytes(16).toString('hex');
   const tmpFilePath = path.join(os.tmpdir(), filename);
@@ -58,8 +58,8 @@ const perform = async (z, bundle) => {
     headers: {
       // DO NOT do auth like this! We do this here because this is a file
       // uploading example so the auth is not the point.
-      'x-api-key': 'secret'
-    }
+      'x-api-key': 'secret',
+    },
   });
 
   return response.json;
@@ -70,18 +70,18 @@ module.exports = {
   noun: 'File',
   display: {
     label: 'Upload File',
-    description: 'Uploads a file.'
+    description: 'Uploads a file.',
   },
   operation: {
     inputFields: [
       { key: 'filename', required: true, type: 'string', label: 'Filename' },
-      { key: 'file', required: true, type: 'file', label: 'File' }
+      { key: 'file', required: true, type: 'file', label: 'File' },
     ],
     perform,
     sample: {
       id: 1,
       filename: 'example.pdf',
-      file: 'SAMPLE FILE'
-    }
-  }
+      file: 'SAMPLE FILE',
+    },
+  },
 };

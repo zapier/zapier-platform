@@ -3,7 +3,7 @@ module.exports = {
     // Use standard auth to request the file
     const filePromise = z.request({
       url: bundle.inputData.url,
-      raw: true
+      raw: true,
     });
 
     // When `raw` is true, the result of z.request() can be passed to
@@ -12,5 +12,5 @@ module.exports = {
     // file without auth. If your file URL is permanently publicly available,
     // you may skip z.stashFile() and return that URL directly here.
     return z.stashFile(filePromise);
-  }
+  },
 };

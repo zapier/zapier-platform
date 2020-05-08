@@ -26,10 +26,10 @@ module.exports = {
         // The label shows up when the search-or-create checkbox is checked.
         // See https://cdn.zappy.app/5fc31d104c6bd0050c44510557b3b98f.png
         label: 'Find or Create a Recipe',
-        description: 'x' // this is ignored
+        description: 'x', // this is ignored
       },
       search: RecipeSearch.key,
-      create: RecipeCreate.key
-    }
-  }
+      create: RecipeCreate.key,
+    },
+  },
 };

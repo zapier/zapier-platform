@@ -10,7 +10,7 @@ describe('triggers', () => {
   test('species', async () => {
     const bundle = {
       inputData: {},
-      meta: {}
+      meta: {},
     };
 
     const results = await appTester(
@@ -27,8 +27,8 @@ describe('triggers', () => {
   test('people', async () => {
     const bundle = {
       inputData: {
-        species: 1
-      }
+        species: 1,
+      },
     };
 
     const results = await appTester(

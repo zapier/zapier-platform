@@ -20,7 +20,7 @@ describe('newFile', () => {
     const firstFile = results[0];
     expect(firstFile).toEqual({
       id: expect.stringMatching(/^https:/),
-      file: expect.stringMatching(/^hydrate\|\|\|/)
+      file: expect.stringMatching(/^hydrate\|\|\|/),
     });
   });
 });

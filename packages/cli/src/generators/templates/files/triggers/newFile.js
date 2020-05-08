@@ -6,16 +6,16 @@ const perform = (z, bundle) => {
   const fileURLs = [
     'https://httpbin.zapier-tooling.com/image/png',
     'https://httpbin.zapier-tooling.com/image/jpeg',
-    'https://httpbin.zapier-tooling.com/xml'
+    'https://httpbin.zapier-tooling.com/xml',
   ];
 
-  return fileURLs.map(fileURL => {
+  return fileURLs.map((fileURL) => {
     const fileInfo = {
       id: fileURL,
 
       // Make it possible to get the actual file contents if necessary. No need
       // to make the request to download files now when the trigger is run.
-      file: z.dehydrateFile(hydrators.downloadFile, { url: fileURL })
+      file: z.dehydrateFile(hydrators.downloadFile, { url: fileURL }),
     };
     return fileInfo;
   });
@@ -31,7 +31,7 @@ module.exports = {
   noun: 'File',
   display: {
     label: 'New File',
-    description: 'Triggers when a new file is added.'
+    description: 'Triggers when a new file is added.',
   },
 
   // `operation` is where the business logic goes.
@@ -40,7 +40,7 @@ module.exports = {
 
     sample: {
       id: 'https://example.com/file.txt',
-      file: 'content'
-    }
-  }
+      file: 'content',
+    },
+  },
 };

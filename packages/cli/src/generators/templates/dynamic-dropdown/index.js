@@ -7,6 +7,6 @@ module.exports = {
 
   triggers: {
     [people.key]: people,
-    [species.key]: species
-  }
+    [species.key]: species,
+  },
 };

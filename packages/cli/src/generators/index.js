@@ -7,7 +7,7 @@ const prettier = require('gulp-prettier');
 const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');
 const authFilesCodegen = require('../utils/auth-files-codegen');
 
-const writeGenericReadme = gen => {
+const writeGenericReadme = (gen) => {
   gen.fs.copyTpl(
     gen.templatePath('README.template.md'),
     gen.destinationPath('README.md'),
@@ -15,7 +15,7 @@ const writeGenericReadme = gen => {
   );
 };
 
-const appendReadme = gen => {
+const appendReadme = (gen) => {
   const content = gen.fs.read(
     gen.templatePath(gen.options.template, 'README.md'),
     { defaults: '' }
@@ -25,7 +25,7 @@ const appendReadme = gen => {
   }
 };
 
-const writeGitignore = gen => {
+const writeGitignore = (gen) => {
   gen.fs.copy(gen.templatePath('gitignore'), gen.destinationPath('.gitignore'));
 };
 
@@ -36,20 +36,20 @@ const writeGenericPackageJson = (gen, additionalDeps) => {
     description: '',
     main: 'index.js',
     scripts: {
-      test: 'jest'
+      test: 'jest',
     },
     dependencies: {
       [PLATFORM_PACKAGE]: PACKAGE_VERSION,
-      ...additionalDeps
+      ...additionalDeps,
     },
     devDependencies: {
-      jest: '^25.5.3'
+      jest: '^25.5.3',
     },
-    private: true
+    private: true,
   });
 };
 
-const writeGenericIndex = gen => {
+const writeGenericIndex = (gen) => {
   gen.fs.copyTpl(
     gen.templatePath('index.template.js'),
     gen.destinationPath('index.js'),
@@ -57,25 +57,25 @@ const writeGenericIndex = gen => {
   );
 };
 
-const writeGenericAuth = gen => {
+const writeGenericAuth = (gen) => {
   const authType = {
     'basic-auth': 'basic',
     'custom-auth': 'custom',
     'digest-auth': 'digest',
     'oauth1-trello': 'oauth1',
     oauth2: 'oauth2',
-    'session-auth': 'session'
+    'session-auth': 'session',
   }[gen.options.template];
   const content = authFilesCodegen[authType]();
   gen.fs.write('authentication.js', content);
 };
 
-const writeGenericAuthTest = gen => {
+const writeGenericAuthTest = (gen) => {
   gen.fs.write(path.join('test', 'authentication.js'), '// TODO\n');
 };
 
 // Write files for templates that demonstrate an auth type
-const writeForAuthTemplate = gen => {
+const writeForAuthTemplate = (gen) => {
   writeGitignore(gen);
   writeGenericReadme(gen);
   writeGenericPackageJson(gen);
@@ -86,7 +86,7 @@ const writeForAuthTemplate = gen => {
 
 // Write files for "standalone" templates, which essentially just copies an
 // example directory
-const writeForStandaloneTemplate = gen => {
+const writeForStandaloneTemplate = (gen) => {
   writeGitignore(gen);
 
   writeGenericReadme(gen);
@@ -95,8 +95,8 @@ const writeForStandaloneTemplate = gen => {
   const additionalDeps = {
     // Put template-specific dependencies here
     files: {
-      'form-data': '3.0.0'
-    }
+      'form-data': '3.0.0',
+    },
   }[gen.options.template];
 
   writeGenericPackageJson(gen, additionalDeps);
@@ -118,7 +118,7 @@ const TEMPLATE_ROUTES = {
   oauth2: writeForAuthTemplate,
   'search-or-create': writeForStandaloneTemplate,
   'session-auth': writeForAuthTemplate,
-  typescript: writeForStandaloneTemplate
+  typescript: writeForStandaloneTemplate,
 };
 
 const TEMPLATE_CHOICES = Object.keys(TEMPLATE_ROUTES);
@@ -132,7 +132,7 @@ class ProjectGenerator extends Generator {
     this.registerTransformStream([
       jsFilter,
       prettier({ singleQuote: true }),
-      jsFilter.restore
+      jsFilter.restore,
     ]);
   }
 
@@ -144,8 +144,8 @@ class ProjectGenerator extends Generator {
           name: 'template',
           choices: TEMPLATE_CHOICES,
           message: 'Choose a project template to start with:',
-          default: 'minimal'
-        }
+          default: 'minimal',
+        },
       ]);
       this.options.template = this.answers.template;
     }
@@ -161,5 +161,5 @@ class ProjectGenerator extends Generator {
 
 module.exports = {
   TEMPLATE_CHOICES,
-  ProjectGenerator
+  ProjectGenerator,
 };
