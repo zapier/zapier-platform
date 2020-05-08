@@ -11,7 +11,11 @@ const colors = require('colors/safe');
 class AnalyticsCommand extends BaseCommand {
   async perform() {
     const currentMode = await currentAnalyticsMode();
-    this.log(`The current analytics mode is ${colors.cyan(currentMode)}.`);
+    this.log(
+      `The current analytics mode is ${colors.cyan(
+        currentMode
+      )}. Analytics may be skipped anyway if you've got DISABLE_ZAPIER_ANALYTICS set to a truthy value.`
+    );
 
     if (this.flags.mode) {
       this.log(`\nSetting analytics mode to ${colors.cyan(this.flags.mode)}.`);

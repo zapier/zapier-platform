@@ -43,7 +43,9 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     os: shouldRecordAnonymously ? undefined : process.platform
   };
 
-  debug('sending', analyticsBody);
+  // provide a little more visibility about whether we're getting customuserId
+  // it's actually controlled via the `skipDeployKey` below
+  debug('sending', { ...analyticsBody, sendUserId: !shouldRecordAnonymously });
   return callAPI(
     '/analytics',
     {
