@@ -211,43 +211,47 @@ const getWritableApp = async () => {
   const linkedAppConfig = await getLinkedAppConfig(undefined, false);
   if (!linkedAppConfig.id) {
     throw new Error(
-      `Your integration hasn't been registered. Run \`${colors.cyan(
+      `This project hasn't yet been associated with an existing Zapier integration.\n\nIf it's a brand new integration, run \`${colors.cyan(
         'zapier register'
-      )}\` before pushing.`
+      )}\`.\n\nIf this project already exists in your Zapier account, run \`${colors.cyan(
+        'zapier link'
+      )}\` instead.`
     );
   }
 
   try {
-    return await callAPI(`/apps/${linkedAppConfig.id}`);
-  } catch (err) {
-    // we're seeing an already-helpful error message; probably that the auth file is missing entirely
-    if (err.message.includes('`zapier')) {
-      throw err;
+    return await callAPI(`/apps/${linkedAppConfig.id}`, undefined, true);
+  } catch (errOrRejectedResponse) {
+    if (errOrRejectedResponse instanceof Error) {
+      // this is likely a missing auth file or an actual unexpected error
+      throw errOrRejectedResponse;
     }
 
-    if (err.message.includes('Not authenticated')) {
+    if (errOrRejectedResponse.status === 401) {
       throw new Error(
         `Your credentials are present, but invalid${
           process.env.ZAPIER_BASE_ENDPOINT ? ' in this environment' : ''
         }. Please run \`${colors.cyan('zapier login')}\` to resolve.`
       );
+    } else if (errOrRejectedResponse.status === 404) {
+      // if this fails, we know the issue is they can't see this app
+      const message = `You don't have access to integration ID ${
+        linkedAppConfig.id
+      } (or it doesn't exist${
+        process.env.ZAPIER_BASE_ENDPOINT ? ' in this environment.' : ''
+      }). Try running \`${colors.cyan('zapier link')}\` to correct that.${
+        process.env.ZAPIER_BASE_ENDPOINT
+          ? `\n\nFor local dev: make sure you've run  \`${colors.cyan(
+              'zapier login'
+            )}\` and \`${colors.cyan(
+              'zapier register'
+            )}\` while providing ZAPIER_BASE_ENDPOINT.`
+          : ''
+      }`;
+      throw new Error(message);
     }
-
-    // if this fails, we know the issue is they can't see this app
-    const message = `You don't have access to integration ID ${
-      linkedAppConfig.id
-    } (or it doesn't exist${
-      process.env.ZAPIER_BASE_ENDPOINT ? ' in this environment.' : ''
-    }). Try running \`${colors.cyan('zapier link')}\` to correct that.${
-      process.env.ZAPIER_BASE_ENDPOINT
-        ? `\n\nFor local dev: make sure you've run  \`${colors.cyan(
-            'zapier login'
-          )}\` and \`${colors.cyan(
-            'zapier register'
-          )}\` while providing ZAPIER_BASE_ENDPOINT.`
-        : ''
-    }`;
-    throw new Error(message);
+    // some other API error
+    throw new Error(errOrRejectedResponse.errText);
   }
 };
 
