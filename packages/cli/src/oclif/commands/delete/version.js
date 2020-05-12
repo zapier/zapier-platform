@@ -1,13 +1,13 @@
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
-const { getWritableApp, callAPI } = require('../../../utils/api');
+const { callAPI } = require('../../../utils/api');
 
 class DeleteVersionCommand extends BaseCommand {
   async perform() {
     const { version } = this.args;
     this.throwForInvalidVersion(version);
 
-    const { id, title } = await getWritableApp();
+    const { id, title } = await this.getWritableApp();
 
     this.startSpinner(`Deleting version ${version} of app "${title}"`);
     await callAPI(`/apps/${id}/versions/${version}`, {

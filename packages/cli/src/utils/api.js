@@ -29,7 +29,10 @@ const readCredentials = (explodeIfMissing = true) => {
     });
   } else {
     return Promise.resolve(
-      readFile(constants.AUTH_LOCATION, 'Please run `zapier login`.')
+      readFile(
+        constants.AUTH_LOCATION,
+        `Please run \`${colors.cyan('zapier login')}\`.`
+      )
         .then(buf => {
           return JSON.parse(buf.toString());
         })
@@ -205,31 +208,43 @@ const checkCredentials = () => callAPI('/check');
  * get app info from server and provide specifc error messages if a user doesn't have write permissions for that app
  */
 const getWritableApp = async () => {
-  startSpinner('Checking authentication & permissions');
-  await checkCredentials();
-
   const linkedAppConfig = await getLinkedAppConfig(undefined, false);
   if (!linkedAppConfig.id) {
     throw new Error(
-      `It looks like your integration hasn't been registered. Run \`${colors.cyan(
+      `Your integration hasn't been registered. Run \`${colors.cyan(
         'zapier register'
       )}\` before pushing.`
     );
   }
 
   try {
-    const app = await callAPI(`/apps/${linkedAppConfig.id}`);
-    endSpinner();
-    return app;
+    return await callAPI(`/apps/${linkedAppConfig.id}`);
   } catch (err) {
+    // we're seeing an already-helpful error message; probably that the auth file is missing entirely
+    if (err.message.includes('`zapier')) {
+      throw err;
+    }
+
+    if (err.message.includes('Not authenticated')) {
+      throw new Error(
+        `Your credentials are present, but invalid${
+          process.env.ZAPIER_BASE_ENDPOINT ? ' in this environment' : ''
+        }. Please run \`${colors.cyan('zapier login')}\` to resolve.`
+      );
+    }
+
     // if this fails, we know the issue is they can't see this app
     const message = `You don't have access to integration ID ${
       linkedAppConfig.id
-    } (or it doesn't exist). Try running \`${colors.cyan(
-      'zapier link'
-    )}\` to correct that.${
+    } (or it doesn't exist${
+      process.env.ZAPIER_BASE_ENDPOINT ? ' in this environment.' : ''
+    }). Try running \`${colors.cyan('zapier link')}\` to correct that.${
       process.env.ZAPIER_BASE_ENDPOINT
-        ? "\n\nAlso, it looks like you're testing against a non-production environment. Make sure you've run `zapier link` while providing ZAPIER_BASE_ENDPOINT."
+        ? `\n\nFor local dev: make sure you've run  \`${colors.cyan(
+            'zapier login'
+          )}\` and \`${colors.cyan(
+            'zapier register'
+          )}\` while providing ZAPIER_BASE_ENDPOINT.`
         : ''
     }`;
     throw new Error(message);
@@ -337,7 +352,7 @@ const validateApp = async definition => {
   });
 };
 
-const upload = async probablyApp => {
+const upload = async app => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
   const appDir = process.cwd();
@@ -350,9 +365,6 @@ const upload = async probablyApp => {
       'Missing a built integration. Try running `zapier build` first.\nAlternatively, run `zapier push`, which will build and upload in one command.'
     );
   }
-
-  // I think we don't need this, but just to be safe
-  const app = probablyApp || (await getWritableApp());
 
   const zip = new AdmZip(fullZipPath);
   const definitionJson = zip.readAsText('definition.json');

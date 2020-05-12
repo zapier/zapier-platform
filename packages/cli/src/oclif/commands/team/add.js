@@ -2,7 +2,7 @@ const ZapierBaseCommand = require('../../ZapierBaseCommand');
 // const { flags } = require('@oclif/command');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
-const { callAPI, getWritableApp } = require('../../../utils/api');
+const { callAPI } = require('../../../utils/api');
 
 const inviteMessage = (roleIsAdmin, title) =>
   roleIsAdmin
@@ -11,7 +11,7 @@ const inviteMessage = (roleIsAdmin, title) =>
 
 class TeamAddCommand extends ZapierBaseCommand {
   async perform() {
-    const { id, title } = await getWritableApp();
+    const { id, title } = await this.getWritableApp();
 
     const roleIsAdmin = this.args.role === 'admin';
     const message = this.args.message || inviteMessage(roleIsAdmin, title);

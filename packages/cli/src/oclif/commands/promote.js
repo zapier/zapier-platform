@@ -3,7 +3,7 @@ const colors = require('colors/safe');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const { callAPI, getWritableApp } = require('../../utils/api');
+const { callAPI } = require('../../utils/api');
 const { flattenCheckResult } = require('../../utils/display');
 const { getVersionChangelog } = require('../../utils/changelog');
 
@@ -25,7 +25,7 @@ const serializeErrors = errors => {
 
 class PromoteCommand extends BaseCommand {
   async perform() {
-    const app = await getWritableApp();
+    const app = await this.getWritableApp();
 
     const version = this.args.version;
 
