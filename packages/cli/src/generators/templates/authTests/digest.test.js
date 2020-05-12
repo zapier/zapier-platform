@@ -11,8 +11,8 @@ describe('digest auth', () => {
     const bundle = {
       authData: {
         username: 'myuser',
-        password: 'mypass'
-      }
+        password: 'mypass',
+      },
     };
 
     const response = await appTester(App.authentication.test, bundle);
@@ -27,8 +27,8 @@ describe('digest auth', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: 'badpwd'
-      }
+        password: 'badpwd',
+      },
     };
 
     try {

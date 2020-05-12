@@ -4,16 +4,16 @@ const getSessionKey = (z, bundle) => {
     url: 'https://example.com/api/accounts/login.json',
     body: {
       username: bundle.authData.username,
-      password: bundle.authData.password
-    }
+      password: bundle.authData.password,
+    },
   });
 
-  return promise.then(response => {
+  return promise.then((response) => {
     if (response.status === 401) {
       throw new Error('The username/password you supplied is invalid');
     }
     return {
-      sessionKey: response.json.sessionKey
+      sessionKey: response.json.sessionKey,
     };
   });
 };
@@ -22,21 +22,21 @@ const authentication = {
   type: 'session',
   // "test" could also be a function
   test: {
-    url: 'https://example.com/api/accounts/me.json'
+    url: 'https://example.com/api/accounts/me.json',
   },
   fields: [
     {
       key: 'username',
       type: 'string',
       required: true,
-      helpText: 'Your login username.'
+      helpText: 'Your login username.',
     },
     {
       key: 'password',
       type: 'string',
       required: true,
-      helpText: 'Your login password.'
-    }
+      helpText: 'Your login password.',
+    },
     // For Session Auth we store `sessionKey` automatically in `bundle.authData`
     // for future use. If you need to save/use something that the user shouldn't
     // need to type/choose, add a "computed" field, like:
@@ -44,8 +44,8 @@ const authentication = {
     // And remember to return it in sessionConfig.perform
   ],
   sessionConfig: {
-    perform: getSessionKey
-  }
+    perform: getSessionKey,
+  },
 };
 
 const includeSessionKeyHeader = (request, z, bundle) => {
@@ -56,19 +56,9 @@ const includeSessionKeyHeader = (request, z, bundle) => {
   return request;
 };
 
-const sessionRefreshIf401 = (response, z, bundle) => {
-  if (bundle.authData.sessionKey) {
-    if (response.status === 401) {
-      throw new z.errors.RefreshAuthError(); // ask for a refresh & retry
-    }
-  }
-  return response;
-};
-
 const App = {
   // ...
   authentication: authentication,
   beforeRequest: [includeSessionKeyHeader],
-  afterResponse: [sessionRefreshIf401]
   // ...
 };

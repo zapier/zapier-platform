@@ -4,14 +4,18 @@ const { buildFlags } = require('../buildFlags');
 const {
   currentAnalyticsMode,
   modes,
-  setAnalyticsMode
+  setAnalyticsMode,
 } = require('../../utils/analytics');
 const colors = require('colors/safe');
 
 class AnalyticsCommand extends BaseCommand {
   async perform() {
     const currentMode = await currentAnalyticsMode();
-    this.log(`The current analytics mode is ${colors.cyan(currentMode)}.`);
+    this.log(
+      `The current analytics mode is ${colors.cyan(
+        currentMode
+      )}. Analytics may be skipped anyway if you've got DISABLE_ZAPIER_ANALYTICS set to a truthy value.`
+    );
 
     if (this.flags.mode) {
       this.log(`\nSetting analytics mode to ${colors.cyan(this.flags.mode)}.`);
@@ -32,9 +36,9 @@ AnalyticsCommand.flags = buildFlags({
       char: 'm',
       options: Object.keys(modes),
       description:
-        'Choose how much information to share. Anonymous mode drops the OS type and Zapier user id, but keeps command info. Identifying information is used only for debugging purposes.'
-    })
-  }
+        'Choose how much information to share. Anonymous mode drops the OS type and Zapier user id, but keeps command info. Identifying information is used only for debugging purposes.',
+    }),
+  },
 });
 AnalyticsCommand.examples = ['zapier analytics --mode enabled'];
 AnalyticsCommand.description = `Show the status of the analytics that are collected. Also used to change what is collected.`;

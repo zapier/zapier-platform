@@ -10,8 +10,8 @@ describe('basic auth', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: 'secret'
-      }
+        password: 'secret',
+      },
     };
 
     const response = await appTester(App.authentication.test, bundle);
@@ -26,8 +26,8 @@ describe('basic auth', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: 'badpwd'
-      }
+        password: 'badpwd',
+      },
     };
 
     try {

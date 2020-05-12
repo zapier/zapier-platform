@@ -9,8 +9,8 @@ describe('custom auth', () => {
   it('passes authentication and returns json', async () => {
     const bundle = {
       authData: {
-        apiKey: 'secret'
-      }
+        apiKey: 'secret',
+      },
     };
 
     const response = await appTester(App.authentication.test, bundle);
@@ -20,8 +20,8 @@ describe('custom auth', () => {
   it('fails on bad auth', async () => {
     const bundle = {
       authData: {
-        apiKey: 'bad'
-      }
+        apiKey: 'bad',
+      },
     };
 
     try {

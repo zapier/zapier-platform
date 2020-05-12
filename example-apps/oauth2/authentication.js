@@ -7,29 +7,18 @@ const getAccessToken = (z, bundle) => {
       code: bundle.inputData.code,
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
-      grant_type: 'authorization_code'
+      grant_type: 'authorization_code',
     },
     headers: {
-      'content-type': 'application/x-www-form-urlencoded'
-    }
+      'content-type': 'application/x-www-form-urlencoded',
+    },
   });
 
   // Needs to return at minimum, `access_token`, and if your app also does refresh, then `refresh_token` too
-  return promise.then(response => {
-    if (response.status !== 200) {
-      throw new z.errors.Error(
-        'Unable to fetch access token: ' + response.content,
-        'GetAccessTokenError',
-        response.status
-      );
-    }
-
-    const result = response.json;
-    return {
-      access_token: result.access_token,
-      refresh_token: result.refresh_token
-    };
-  });
+  return promise.then((response) => ({
+    access_token: response.json.access_token,
+    refresh_token: response.json.refresh_token,
+  }));
 };
 
 const refreshAccessToken = (z, bundle) => {
@@ -39,29 +28,18 @@ const refreshAccessToken = (z, bundle) => {
       refresh_token: bundle.authData.refresh_token,
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
-      grant_type: 'refresh_token'
+      grant_type: 'refresh_token',
     },
     headers: {
-      'content-type': 'application/x-www-form-urlencoded'
-    }
+      'content-type': 'application/x-www-form-urlencoded',
+    },
   });
 
   // Needs to return `access_token`. If the refresh token stays constant, can skip it. If it changes, can
   // return it here to update the user's auth on Zapier.
-  return promise.then(response => {
-    if (response.status !== 200) {
-      throw new z.errors.Error(
-        'Unable to fetch access token: ' + response.content,
-        'RefreshAccessTokenError',
-        response.status
-      );
-    }
-
-    const result = response.json;
-    return {
-      access_token: result.access_token
-    };
-  });
+  return promise.then((response) => ({
+    access_token: response.json.access_token,
+  }));
 };
 
 const testAuth = (z /*, bundle */) => {
@@ -69,21 +47,12 @@ const testAuth = (z /*, bundle */) => {
   // every user will have access to, such as an account or profile endpoint like /me.
   const promise = z.request({
     method: 'GET',
-    url: `${process.env.BASE_URL}/me`
+    url: `${process.env.BASE_URL}/me`,
   });
 
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
-  return promise.then(response => {
-    if (response.status === 401) {
-      throw new z.errors.Error(
-        'The access token you supplied is not valid',
-        'AuthenticationError',
-        response.status
-      );
-    }
-    return response.json;
-  });
+  return promise.then((response) => response.json);
 };
 
 module.exports = {
@@ -98,8 +67,8 @@ module.exports = {
         client_id: '{{process.env.CLIENT_ID}}',
         state: '{{bundle.inputData.state}}',
         redirect_uri: '{{bundle.inputData.redirect_uri}}',
-        response_type: 'code'
-      }
+        response_type: 'code',
+      },
     },
     // Step 2 of the OAuth flow; Exchange a code for an access token.
     // This could also use the request shorthand.
@@ -108,7 +77,7 @@ module.exports = {
     // this method to tell Zapier how to refresh it.
     refreshAccessToken: refreshAccessToken,
     // If you want Zapier to automatically invoke `refreshAccessToken` on a 401 response, set to true
-    autoRefresh: true
+    autoRefresh: true,
     // If there is a specific scope you want to limit your Zapier app to, you can define it here.
     // Will get passed along to the authorizeUrl
     // scope: 'read,write'
@@ -117,5 +86,5 @@ module.exports = {
   // method after the OAuth flow is complete to ensure everything is setup properly.
   test: testAuth,
   // assuming "username" is a key returned from the test
-  connectionLabel: '{{username}}'
+  connectionLabel: '{{username}}',
 };

@@ -15,10 +15,9 @@ const getRequestToken = async (z, bundle) => {
       oauth_consumer_secret: process.env.CLIENT_SECRET,
       oauth_signature_method: 'HMAC-SHA1',
       oauth_callback: bundle.inputData.redirect_uri,
-      oauth_version: '1.0' // Twitter says this should be 1.0
-    }
+      oauth_version: '1.0', // Twitter says this should be 1.0
+    },
   });
-  response.throwForStatus();
   return querystring.parse(response.content);
 };
 
@@ -31,10 +30,9 @@ const getAccessToken = async (z, bundle) => {
       oauth_consumer_secret: process.env.CLIENT_SECRET,
       oauth_token: bundle.inputData.oauth_token,
       oauth_token_secret: bundle.inputData.oauth_token_secret,
-      oauth_verifier: bundle.inputData.oauth_verifier
-    }
+      oauth_verifier: bundle.inputData.oauth_verifier,
+    },
   });
-  response.throwForStatus();
   return querystring.parse(response.content);
 };
 
@@ -50,14 +48,14 @@ const config = {
     authorizeUrl: {
       url: AUTHORIZE_URL,
       params: {
-        oauth_token: '{{bundle.inputData.oauth_token}}'
-      }
-    }
+        oauth_token: '{{bundle.inputData.oauth_token}}',
+      },
+    },
   },
   test: {
-    url: 'https://api.twitter.com/1.1/account/settings.json'
+    url: 'https://api.twitter.com/1.1/account/settings.json',
   },
-  connectionLabel: '{{screen_name}}'
+  connectionLabel: '{{screen_name}}',
 };
 
 // A middleware that is run before z.request() actually makes the request. Here we're
@@ -75,7 +73,7 @@ const includeAccessToken = (req, z, bundle) => {
       oauth_consumer_key: process.env.CLIENT_ID,
       oauth_consumer_secret: process.env.CLIENT_SECRET,
       oauth_token: bundle.authData.oauth_token,
-      oauth_token_secret: bundle.authData.oauth_token_secret
+      oauth_token_secret: bundle.authData.oauth_token_secret,
     });
   }
   return req;
@@ -83,5 +81,5 @@ const includeAccessToken = (req, z, bundle) => {
 
 module.exports = {
   config,
-  includeAccessToken
+  includeAccessToken,
 };

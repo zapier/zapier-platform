@@ -10,12 +10,12 @@ const currentAnalyticsMode = async () => {
   return mode || ANALYTICS_MODES.enabled;
 };
 
-const setAnalyticsMode = newMode => {
+const setAnalyticsMode = (newMode) => {
   // the CLI validates that newMode is a valid option
   return writeUserConfig({ [ANALYTICS_KEY]: newMode });
 };
 
-const shouldSkipAnalytics = mode =>
+const shouldSkipAnalytics = (mode) =>
   IS_TESTING ||
   process.env.DISABLE_ZAPIER_ANALYTICS ||
   mode === ANALYTICS_MODES.disabled;
@@ -37,19 +37,21 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     numArgs: args.length,
     flags: {
       ...flags,
-      ...(command === 'help' ? { helpCommand: args[0] } : {}) // include the beginning of args so we know what they want help on
+      ...(command === 'help' ? { helpCommand: args[0] } : {}), // include the beginning of args so we know what they want help on
     },
     cliVersion: pkg.version,
-    os: shouldRecordAnonymously ? undefined : process.platform
+    os: shouldRecordAnonymously ? undefined : process.platform,
   };
 
-  debug('sending', analyticsBody);
+  // provide a little more visibility about whether we're getting customuserId
+  // it's actually controlled via the `skipDeployKey` below
+  debug('sending', { ...analyticsBody, sendUserId: !shouldRecordAnonymously });
   return callAPI(
     '/analytics',
     {
       method: 'POST',
       body: analyticsBody,
-      skipDeployKey: shouldRecordAnonymously
+      skipDeployKey: shouldRecordAnonymously,
     },
     true,
     false
@@ -63,5 +65,5 @@ module.exports = {
   recordAnalytics,
   shouldSkipAnalytics,
   modes: ANALYTICS_MODES,
-  setAnalyticsMode
+  setAnalyticsMode,
 };

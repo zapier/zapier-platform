@@ -2,12 +2,16 @@
 
 const errors = require('../../errors');
 
-const throwForStatus = resp => {
-  if (resp.status > 300) {
-    throw new errors.ResponseError(resp);
+const throwForStatus = (response) => {
+  if (
+    !response.skipThrowForStatus &&
+    response.status >= 400 &&
+    response.status < 600
+  ) {
+    throw new errors.ResponseError(response);
   }
 
-  return resp;
+  return response;
 };
 
 module.exports = throwForStatus;

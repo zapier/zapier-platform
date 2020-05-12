@@ -1,8 +1,6 @@
 'use strict';
 
 const errors = require('../src/errors');
-const createAppRequestClient = require('../src/tools/create-app-request-client');
-const createInput = require('../src/tools/create-input');
 
 describe('errors', () => {
   it('should name errors', () => {
@@ -27,11 +25,16 @@ describe('errors', () => {
 
   describe('ResponseError', () => {
     it('should stringify arguments', async () => {
-      const testLogger = () => Promise.resolve({});
-      const input = createInput({}, {}, testLogger);
-      const request = createAppRequestClient(input);
-
-      const response = await request({ url: 'https://httpbin.org/status/400' });
+      const response = {
+        status: 400,
+        headers: {
+          get: () => 'text/html; charset=utf-8',
+        },
+        content: '',
+        request: {
+          url: 'https://httpbin.org/status/400',
+        },
+      };
       const error = new errors.ResponseError(response);
 
       error.should.instanceOf(errors.ResponseError);

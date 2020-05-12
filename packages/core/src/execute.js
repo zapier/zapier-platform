@@ -9,7 +9,6 @@ const createJSONtool = require('./tools/create-json-tool');
 const ensureArray = require('./tools/ensure-array');
 const injectInput = require('./http-middlewares/before/inject-input');
 const prepareRequest = require('./http-middlewares/before/prepare-request');
-const throwForStatus = require('./http-middlewares/after/throw-for-status');
 const ZapierPromise = require('./tools/promise');
 const { FORM_TYPE } = require('./tools/http');
 
@@ -17,25 +16,22 @@ const constants = require('./constants');
 
 const executeHttpRequest = (input, options) => {
   options = _.extend({}, options, constants.REQUEST_OBJECT_SHORTHAND_OPTIONS);
-  return input.z
-    .request(options)
-    .then(throwForStatus)
-    .then(resp => {
-      if (resp.headers.get('content-type') === FORM_TYPE) {
-        return querystring.parse(resp.content);
-      }
-      return createJSONtool().parse(resp.content);
-    });
+  return input.z.request(options).then((resp) => {
+    if (resp.headers.get('content-type') === FORM_TYPE) {
+      return querystring.parse(resp.content);
+    }
+    return createJSONtool().parse(resp.content);
+  });
 };
 
 const executeInputOutputFields = (inputOutputFields, input) => {
   inputOutputFields = ensureArray(inputOutputFields);
 
   return ZapierPromise.all(
-    inputOutputFields.map(
-      field => (_.isFunction(field) ? field(input.z, input.bundle) : field)
+    inputOutputFields.map((field) =>
+      _.isFunction(field) ? field(input.z, input.bundle) : field
     )
-  ).then(fields => _.flatten(fields));
+  ).then((fields) => _.flatten(fields));
 };
 
 const executeCallbackMethod = (z, bundle, method) => {
@@ -52,10 +48,10 @@ const executeCallbackMethod = (z, bundle, method) => {
   });
 };
 
-const isInputOutputFields = methodName =>
+const isInputOutputFields = (methodName) =>
   methodName.match(/\.(inputFields|outputFields)$/);
 
-const isRenderOnly = methodName =>
+const isRenderOnly = (methodName) =>
   _.indexOf(constants.RENDER_ONLY_METHODS, methodName) >= 0;
 
 const execute = (app, input) => {

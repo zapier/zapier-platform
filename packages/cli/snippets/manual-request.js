@@ -1,15 +1,13 @@
 const listExample = (z, bundle) => {
   const customHttpOptions = {
     headers: {
-      'my-header': 'from zapier'
-    }
+      'my-header': 'from zapier',
+    },
   };
 
   return z
     .request('https://example.com/api/v2/recipes.json', customHttpOptions)
-    .then(response => {
-      response.throwForStatus();
-
+    .then((response) => {
       const recipes = response.json;
       // do any custom processing of recipes here...
 
@@ -24,8 +22,8 @@ const App = {
       // ...
       operation: {
         // ...
-        perform: listExample
-      }
-    }
-  }
+        perform: listExample,
+      },
+    },
+  },
 };

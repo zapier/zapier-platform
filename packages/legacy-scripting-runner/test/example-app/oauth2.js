@@ -28,12 +28,16 @@ const beforeRequestSource = `
   return z.legacyScripting.beforeRequest(request, z, bundle);
 `;
 
+const afterResponseSource = `
+  return z.legacyScripting.afterResponse(response, z, bundle);
+`;
+
 module.exports = {
   legacy: {
     authentication: {
       placement: 'header',
-      mapping: {}
-    }
+      mapping: {},
+    },
   },
   authentication: {
     type: 'oauth2',
@@ -45,26 +49,26 @@ module.exports = {
         key: 'something_custom',
         type: 'string',
         required: true,
-        computed: true
-      }
+        computed: true,
+      },
     ],
     oauth2Config: {
       authorizeUrl: {
-        source: getAuthorizeUrlSource
+        source: getAuthorizeUrlSource,
       },
       getAccessToken: {
-        source: getAccessTokenSource
+        source: getAccessTokenSource,
       },
       refreshAccessToken: {
-        source: refreshAccessTokenSource
+        source: refreshAccessTokenSource,
       },
-      autoRefresh: true
-    }
+      autoRefresh: true,
+    },
   },
   beforeRequest: [
-    { source: beforeRequestSource, args: ['request', 'z', 'bundle'] }
-  ]
-
-  // We don't need afterResponse to refresh auth as core appends one
-  // automatically when autoRefresh is true
+    { source: beforeRequestSource, args: ['request', 'z', 'bundle'] },
+  ],
+  afterResponse: [
+    { source: afterResponseSource, args: ['response', 'z', 'bundle'] },
+  ],
 };

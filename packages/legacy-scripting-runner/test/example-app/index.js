@@ -880,159 +880,162 @@ const contactTriggerFull = {
   key: 'contact_full',
   noun: 'Contact',
   display: {
-    label: 'New Contact with Full Scripting'
+    label: 'New Contact with Full Scripting',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_full');"
+      source:
+        "return z.legacyScripting.run(bundle, 'trigger', 'contact_full');",
     },
     outputFields: [
       {
         key: 'id',
         label: 'ID',
-        type: 'integer'
+        type: 'integer',
       },
       {
         key: 'name',
         label: 'Name',
-        type: 'string'
+        type: 'string',
       },
       {
         source:
-          "return z.legacyScripting.run(bundle, 'trigger.output', 'contact_full');"
-      }
-    ]
-  }
+          "return z.legacyScripting.run(bundle, 'trigger.output', 'contact_full');",
+      },
+    ],
+  },
 };
 
 const contactTriggerPre = {
   key: 'contact_pre',
   noun: 'Contact',
   display: {
-    label: 'New Contact with Pre Scripting'
+    label: 'New Contact with Pre Scripting',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_pre');"
-    }
-  }
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_pre');",
+    },
+  },
 };
 
 const contactTriggerPost = {
   key: 'contact_post',
   noun: 'Contact',
   display: {
-    label: 'New Contact with Post Scripting'
+    label: 'New Contact with Post Scripting',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_post');"
-    }
-  }
+      source:
+        "return z.legacyScripting.run(bundle, 'trigger', 'contact_post');",
+    },
+  },
 };
 
 const contactTriggerPrePost = {
   key: 'contact_pre_post',
   noun: 'Contact',
   display: {
-    label: 'New Contact with Pre & Post Scripting'
+    label: 'New Contact with Pre & Post Scripting',
   },
   operation: {
     perform: {
       source:
-        "return z.legacyScripting.run(bundle, 'trigger', 'contact_pre_post');"
-    }
-  }
+        "return z.legacyScripting.run(bundle, 'trigger', 'contact_pre_post');",
+    },
+  },
 };
 
 const contactHookScriptingless = {
   key: 'contact_hook_scriptingless',
   noun: 'Contact',
   display: {
-    label: 'Contact Hook without Scripting'
+    label: 'Contact Hook without Scripting',
   },
   operation: {
     perform: {
       source:
-        "return z.legacyScripting.run(bundle, 'trigger.hook', 'contact_hook_scriptingless');"
-    }
-  }
+        "return z.legacyScripting.run(bundle, 'trigger.hook', 'contact_hook_scriptingless');",
+    },
+  },
 };
 
 const contactHookScripting = {
   key: 'contact_hook_scripting',
   noun: 'Contact',
   display: {
-    label: 'Contact Hook with KEY_catch_hook Scripting'
+    label: 'Contact Hook with KEY_catch_hook Scripting',
   },
   operation: {
     perform: {
       source:
-        "return z.legacyScripting.run(bundle, 'trigger.hook', 'contact_hook_scripting');"
+        "return z.legacyScripting.run(bundle, 'trigger.hook', 'contact_hook_scripting');",
     },
     performSubscribe: {
       source:
-        "return z.legacyScripting.run(bundle, 'trigger.hook.subscribe', 'contact_hook_scripting');"
+        "return z.legacyScripting.run(bundle, 'trigger.hook.subscribe', 'contact_hook_scripting');",
     },
     performUnsubscribe: {
       source:
-        "return z.legacyScripting.run(bundle, 'trigger.hook.unsubscribe', 'contact_hook_scripting');"
-    }
-  }
+        "return z.legacyScripting.run(bundle, 'trigger.hook.unsubscribe', 'contact_hook_scripting');",
+    },
+  },
 };
 
 const TestTrigger = {
   key: 'test',
   display: {
-    label: 'Test Auth'
+    label: 'Test Auth',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'test');"
-    }
-  }
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'test');",
+    },
+  },
 };
 
 const MovieTrigger = {
   key: 'movie',
   display: {
-    label: 'New Movie'
+    label: 'New Movie',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'movie');"
-    }
-  }
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'movie');",
+    },
+  },
 };
 
 const RecipeTrigger = {
   key: 'recipe',
   display: {
-    label: 'New Recipe'
+    label: 'New Recipe',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'recipe');"
-    }
-  }
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'recipe');",
+    },
+  },
 };
 
 const MovieCreate = {
   key: 'movie',
   noun: 'Movie',
   display: {
-    label: 'Create a Movie'
+    label: 'Create a Movie',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'create', 'movie');"
+      source: "return z.legacyScripting.run(bundle, 'create', 'movie');",
     },
     inputFields: [
       { key: 'title', label: 'Title', type: 'string' },
       { key: 'genre', label: 'Genre', type: 'string' },
       {
-        source: "return z.legacyScripting.run(bundle, 'create.input', 'movie');"
-      }
+        source:
+          "return z.legacyScripting.run(bundle, 'create.input', 'movie');",
+      },
     ],
     outputFields: [
       { key: 'id', label: 'ID', type: 'integer' },
@@ -1040,94 +1043,95 @@ const MovieCreate = {
       { key: 'genre', label: 'Genre', type: 'string' },
       {
         source:
-          "return z.legacyScripting.run(bundle, 'create.output', 'movie');"
-      }
-    ]
-  }
+          "return z.legacyScripting.run(bundle, 'create.output', 'movie');",
+      },
+    ],
+  },
 };
 
 const FileUpload = {
   key: 'file',
   noun: 'File',
   display: {
-    label: 'Upload a File'
+    label: 'Upload a File',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'create', 'file');"
+      source: "return z.legacyScripting.run(bundle, 'create', 'file');",
     },
     inputFields: [
       { key: 'filename', label: 'Filename', type: 'string' },
-      { key: 'file', label: 'File', type: 'file' }
+      { key: 'file', label: 'File', type: 'file' },
     ],
-    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }]
-  }
+    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }],
+  },
 };
 
 const FileUpload2 = {
   key: 'file2',
   noun: 'File',
   display: {
-    label: 'Upload a File 2'
+    label: 'Upload a File 2',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'create', 'file2');"
+      source: "return z.legacyScripting.run(bundle, 'create', 'file2');",
     },
     inputFields: [
       { key: 'id', label: 'ID', type: 'string' },
       { key: 'name', label: 'Name', type: 'string' },
-      { key: 'file_1', label: 'File', type: 'file' }
+      { key: 'file_1', label: 'File', type: 'file' },
     ],
-    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }]
-  }
+    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }],
+  },
 };
 
 const RecipeCreate = {
   key: 'recipe',
   noun: 'Recipe',
   display: {
-    label: 'Create a Recipe'
+    label: 'Create a Recipe',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'create', 'recipe');"
+      source: "return z.legacyScripting.run(bundle, 'create', 'recipe');",
     },
     inputFields: [
       { key: 'name', label: 'Name', type: 'string' },
       { key: 'directions', label: 'Directions', type: 'string' },
       {
         source:
-          "return z.legacyScripting.run(bundle, 'create.input', 'recipe');"
-      }
+          "return z.legacyScripting.run(bundle, 'create.input', 'recipe');",
+      },
     ],
     outputFields: [
       { key: 'id', label: 'ID', type: 'integer' },
       { key: 'name', label: 'Name', type: 'string' },
-      { key: 'directions', label: 'directions', type: 'string' }
-    ]
-  }
+      { key: 'directions', label: 'directions', type: 'string' },
+    ],
+  },
 };
 
 const MovieSearch = {
   key: 'movie',
   noun: 'Movie',
   display: {
-    label: 'Find a Movie'
+    label: 'Find a Movie',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'search', 'movie');"
+      source: "return z.legacyScripting.run(bundle, 'search', 'movie');",
     },
     performGet: {
       source:
-        "return z.legacyScripting.run(bundle, 'search.resource', 'movie');"
+        "return z.legacyScripting.run(bundle, 'search.resource', 'movie');",
     },
     inputFields: [
       { key: 'query', label: 'Query', type: 'string' },
       {
-        source: "return z.legacyScripting.run(bundle, 'search.input', 'movie');"
-      }
+        source:
+          "return z.legacyScripting.run(bundle, 'search.input', 'movie');",
+      },
     ],
     outputFields: [
       { key: 'id', label: 'ID', type: 'integer' },
@@ -1135,11 +1139,19 @@ const MovieSearch = {
       { key: 'genre', label: 'Genre', type: 'string' },
       {
         source:
-          "return z.legacyScripting.run(bundle, 'search.output', 'movie');"
-      }
-    ]
-  }
+          "return z.legacyScripting.run(bundle, 'search.output', 'movie');",
+      },
+    ],
+  },
 };
+
+// const beforeRequestSource = `
+//   return z.legacyScripting.beforeRequest(request, z, bundle);
+// `;
+
+const afterResponseSource = `
+  return z.legacyScripting.afterResponse(response, z, bundle);
+`;
 
 const App = {
   title: 'Example App',
@@ -1152,25 +1164,38 @@ const App = {
     [contactHookScripting.key]: contactHookScripting,
     [TestTrigger.key]: TestTrigger,
     [MovieTrigger.key]: MovieTrigger,
-    [RecipeTrigger.key]: RecipeTrigger
+    [RecipeTrigger.key]: RecipeTrigger,
   },
   creates: {
     [MovieCreate.key]: MovieCreate,
     [RecipeCreate.key]: RecipeCreate,
     [FileUpload.key]: FileUpload,
-    [FileUpload2.key]: FileUpload2
+    [FileUpload2.key]: FileUpload2,
   },
   searches: {
-    [MovieSearch.key]: MovieSearch
+    [MovieSearch.key]: MovieSearch,
   },
   hydrators: {
     legacyMethodHydrator: {
-      source: "return z.legacyScripting.run(bundle, 'hydrate.method');"
+      source: "return z.legacyScripting.run(bundle, 'hydrate.method');",
     },
     legacyFileHydrator: {
-      source: "return z.legacyScripting.run(bundle, 'hydrate.file');"
-    }
+      source: "return z.legacyScripting.run(bundle, 'hydrate.file');",
+    },
   },
+  // This breaks `applyBeforeMiddleware` which it looks like gets the original definition without `findSourceRequireFunctions` applied?!
+  // beforeRequest: [
+  //   {
+  //     source: beforeRequestSource,
+  //     args: ['request', 'z', 'bundle']
+  //   }
+  // ],
+  afterResponse: [
+    {
+      source: afterResponseSource,
+      args: ['response', 'z', 'bundle'],
+    },
+  ],
   legacy: {
     scriptingSource: legacyScriptingSource,
 
@@ -1184,8 +1209,8 @@ const App = {
 
         // Incomplete URLs on purpose to test pre_oauthv2_token
         accessTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/access-`,
-        refreshTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/refresh-`
-      }
+        refreshTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/refresh-`,
+      },
     },
 
     triggers: {
@@ -1194,36 +1219,36 @@ const App = {
           // The URL misses an 's' at the end of the resource names. That is,
           // 'output-field' where it should be 'output-fields'. Done purposely for
           // scripting to fix it.
-          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`
-        }
+          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`,
+        },
       },
       contact_post: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}/users`
-        }
+          url: `${AUTH_JSON_SERVER_URL}/users`,
+        },
       },
       contact_hook_scripting: {
         operation: {
           event: 'contact.created',
-          hookType: 'rest'
-        }
+          hookType: 'rest',
+        },
       },
       test: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}/me`
-        }
+          url: `${AUTH_JSON_SERVER_URL}/me`,
+        },
       },
       movie: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}/movies`
-        }
+          url: `${AUTH_JSON_SERVER_URL}/movies`,
+        },
       },
       recipe: {
         operation: {
           url: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
-          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`
-        }
-      }
+          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
+        },
+      },
     },
 
     creates: {
@@ -1235,25 +1260,25 @@ const App = {
           url: `${AUTH_JSON_SERVER_URL}/movie`,
           inputFieldsUrl: `${AUTH_JSON_SERVER_URL}/input-field`,
           outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`,
-          fieldsExcludedFromBody: ['title']
-        }
+          fieldsExcludedFromBody: ['title'],
+        },
       },
       recipe: {
         operation: {
           url: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
-          inputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`
-        }
+          inputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
+        },
       },
       file: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}/upload`
-        }
+          url: `${AUTH_JSON_SERVER_URL}/upload`,
+        },
       },
       file2: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}/upload`
-        }
-      }
+          url: `${AUTH_JSON_SERVER_URL}/upload`,
+        },
+      },
     },
 
     searches: {
@@ -1265,11 +1290,11 @@ const App = {
           url: `${AUTH_JSON_SERVER_URL}/movie?q={{bundle.inputData.query}}`,
           resourceUrl: `${AUTH_JSON_SERVER_URL}/movie/{{bundle.inputData.id}}`,
           inputFieldsUrl: `${AUTH_JSON_SERVER_URL}/input-field`,
-          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`
-        }
-      }
-    }
-  }
+          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`,
+        },
+      },
+    },
+  },
 };
 
 module.exports = App;

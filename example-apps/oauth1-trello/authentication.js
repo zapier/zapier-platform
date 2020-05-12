@@ -14,10 +14,9 @@ const getRequestToken = async (z, bundle) => {
       oauth_consumer_key: process.env.CLIENT_ID,
       oauth_consumer_secret: process.env.CLIENT_SECRET,
       oauth_signature_method: 'HMAC-SHA1',
-      oauth_callback: bundle.inputData.redirect_uri
-    }
+      oauth_callback: bundle.inputData.redirect_uri,
+    },
   });
-  response.throwForStatus();
   return querystring.parse(response.content);
 };
 
@@ -30,10 +29,9 @@ const getAccessToken = async (z, bundle) => {
       oauth_consumer_secret: process.env.CLIENT_SECRET,
       oauth_token: bundle.inputData.oauth_token,
       oauth_token_secret: bundle.inputData.oauth_token_secret,
-      oauth_verifier: bundle.inputData.oauth_verifier
-    }
+      oauth_verifier: bundle.inputData.oauth_verifier,
+    },
   });
-  response.throwForStatus();
   return querystring.parse(response.content);
 };
 
@@ -50,14 +48,14 @@ const config = {
       url: AUTHORIZE_URL,
       params: {
         oauth_token: '{{bundle.inputData.oauth_token}}',
-        name: 'Zapier/Trello OAuth1 Test'
-      }
-    }
+        name: 'Zapier/Trello OAuth1 Test',
+      },
+    },
   },
   test: {
-    url: 'https://api.trello.com/1/members/me/'
+    url: 'https://api.trello.com/1/members/me/',
   },
-  connectionLabel: '{{username}}'
+  connectionLabel: '{{username}}',
 };
 
 // A middleware that is run before z.request() actually makes the request. Here we're
@@ -75,7 +73,7 @@ const includeAccessToken = (req, z, bundle) => {
       oauth_consumer_key: process.env.CLIENT_ID,
       oauth_consumer_secret: process.env.CLIENT_SECRET,
       oauth_token: bundle.authData.oauth_token,
-      oauth_token_secret: bundle.authData.oauth_token_secret
+      oauth_token_secret: bundle.authData.oauth_token_secret,
     });
   }
   return req;
@@ -83,5 +81,5 @@ const includeAccessToken = (req, z, bundle) => {
 
 module.exports = {
   config,
-  includeAccessToken
+  includeAccessToken,
 };
