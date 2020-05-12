@@ -6,6 +6,9 @@ const path = require('path');
 const fetch = require('node-fetch');
 const FormData = require('form-data');
 
+// Download the HTTP URL to a local temporary file, and make a readable stream
+// from it. This works on core v10 and below. For a cleaner implementation that
+// only works on core v10, see uploadFile_v10.js.
 const makeDownloadStream = async (url) => {
   // Create a temp file to store the downloaded file
   const filename = randomBytes(16).toString('hex');
@@ -29,17 +32,6 @@ const makeDownloadStream = async (url) => {
       .on('error', reject);
   });
 };
-
-// The following commented code is actually better - getting a stream directly
-// from http. But this only works on core 10+. core 9.x and below have a bug
-// with how we log http responses.
-//
-// const http = require('https'); // require('http') if your URL is not https
-//
-// const makeDownloadStream = (url) =>
-//   new Promise((resolve, reject) => {
-//     http.request(url, resolve).on('error', reject).end();
-//   });
 
 const perform = async (z, bundle) => {
   const form = new FormData();
@@ -66,11 +58,11 @@ const perform = async (z, bundle) => {
 };
 
 module.exports = {
-  key: 'uploadFile',
+  key: 'uploadFile_v9',
   noun: 'File',
   display: {
     label: 'Upload File',
-    description: 'Uploads a file.',
+    description: 'Uploads a file. Works on zapier-platform-core v10, v9, and below.',
   },
   operation: {
     inputFields: [
