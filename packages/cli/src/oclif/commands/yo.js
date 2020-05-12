@@ -18,7 +18,7 @@ class InitCommand extends BaseCommand {
     env.run('zapier:integration', { path, template }, () => {
       this.log();
       this.log(`A new integration has been created in directory "${path}".`);
-      this.log(`Find out more instructions in "${join(path, 'README.md')}".`);
+      this.log(`Read all about it in "${join(path, 'README.md')}".`);
     });
   }
 }

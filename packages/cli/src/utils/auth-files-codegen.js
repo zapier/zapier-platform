@@ -227,11 +227,9 @@ const getAccessTokenFunc = () => {
     bodyProps: [
       objProperty('code', 'bundle.inputData.code'),
       comment(
-        `Extra data can be pulled from the querystring. For instance:\n${comment(
-          objProperty(
-            'accountDomain',
-            'bundle.cleanedRequest.querystring.accountDomain'
-          )
+        `Extra data can be pulled from the querystring. For instance:\n${objProperty(
+          'accountDomain',
+          'bundle.cleanedRequest.querystring.accountDomain'
         )}`
       )
     ],

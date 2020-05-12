@@ -88,10 +88,64 @@ const ifStatement = (condition, ...results) => `
     }
 `;
 
-const comment = (text, leadingNewlines = 0) => {
-  // TODO: fancy length chunking here since prettier doesn't work on comments
-  return `${'\n'.repeat(leadingNewlines)}// ${text}`;
-};
+class CommentFormatter {
+  constructor(comment) {
+    this.words = comment.split(' ');
+    this.currentLine = this.generateNewLine();
+    this.lines = [];
+    this.lineLimit = 80;
+    this.splitComment();
+  }
+
+  generateNewLine() {
+    return {
+      words: [],
+      sumWordsLength: 0
+    };
+  }
+
+  get currentLineLength() {
+    return this.currentLine.sumWordsLength + this.currentLine.words.length;
+  }
+
+  resetLine() {
+    this.lines.push(this.currentLine);
+    this.currentLine = this.generateNewLine();
+  }
+
+  addWordToLine(word) {
+    this.currentLine.words.push(word);
+    this.currentLine.sumWordsLength += word.length;
+  }
+
+  splitComment() {
+    this.words.forEach(word => {
+      if (word.includes('\n')) {
+        const [endOfCurrent, firstOfNext] = word.split('\n');
+        this.addWordToLine(endOfCurrent);
+        this.resetLine();
+        this.addWordToLine(firstOfNext);
+        return;
+      }
+
+      // extra 1 because that's the space this word will "cost"
+      if (this.currentLineLength + word.length + 1 > this.lineLimit) {
+        // too long, start a new line
+        this.resetLine();
+      }
+      this.addWordToLine(word);
+    });
+    // add the final (incomplete) line to the result
+    this.resetLine();
+  }
+
+  toString() {
+    return this.lines.map(line => `// ${line.words.join(' ')}`).join('\n');
+  }
+}
+
+const comment = (text, leadingNewlines = 0) =>
+  `${'\n'.repeat(leadingNewlines)}${new CommentFormatter(text)}`;
 
 const assignmentStatement = (variable, result) =>
   `
