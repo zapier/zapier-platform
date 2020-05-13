@@ -2,7 +2,7 @@ const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 const { bold, grey } = require('colors/safe');
 const {
-  getLinkedApp,
+  getWritableApp,
   getLinkedAppConfig,
   getVersionInfo
 } = require('../../utils/api');
@@ -67,7 +67,7 @@ class DescribeCommand extends BaseCommand {
   async perform() {
     this.startSpinner('Fetching integration info');
     const [app, appConfig, version, definition] = await Promise.all([
-      getLinkedApp().catch(() => null),
+      getWritableApp().catch(() => null),
       getLinkedAppConfig().catch(() => null),
       getVersionInfo().catch(() => null),
       localAppCommand({ command: 'definition' })

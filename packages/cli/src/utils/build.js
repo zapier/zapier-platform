@@ -33,7 +33,7 @@ const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
 
 const {
   getLinkedAppConfig,
-  checkCredentials,
+  getWritableApp,
   upload: _uploadFunc,
   validateApp
 } = require('./api');
@@ -439,15 +439,17 @@ const buildAndOrUpload = async (
     throw new Error('must either build or upload');
   }
 
-  startSpinner('Checking authentication');
-  await checkCredentials();
-  endSpinner();
+  // we should able to build without any auth, but if we're uploading, we should fail early
+  let app;
+  if (upload) {
+    app = await getWritableApp();
+  }
 
   if (build) {
     await _buildFunc(buildOpts);
   }
   if (upload) {
-    await _uploadFunc();
+    await _uploadFunc(app);
   }
 };
 

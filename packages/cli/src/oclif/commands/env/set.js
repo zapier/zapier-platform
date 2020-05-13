@@ -3,7 +3,7 @@ const { omit } = require('lodash');
 
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
-const { callAPI, getLinkedApp } = require('../../../utils/api');
+const { callAPI } = require('../../../utils/api');
 
 const successMessage = version =>
   `Successfully wrote the following to the environment of version ${cyan(
@@ -36,7 +36,7 @@ class SetEnvCommand extends BaseCommand {
       return result;
     }, {});
 
-    const app = await getLinkedApp();
+    const app = await this.getWritableApp();
 
     const url = `/apps/${app.id}/versions/${version}/multi-environment`;
 

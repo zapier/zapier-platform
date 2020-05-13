@@ -1,3 +1,5 @@
+'use strict';
+
 const _ = require('lodash');
 const colors = require('colors/safe');
 const debug = require('debug')('zapier:api');
@@ -27,7 +29,10 @@ const readCredentials = (explodeIfMissing = true) => {
     });
   } else {
     return Promise.resolve(
-      readFile(constants.AUTH_LOCATION, 'Please run `zapier login`.')
+      readFile(
+        constants.AUTH_LOCATION,
+        `Please run \`${colors.cyan('zapier login')}\`.`
+      )
         .then(buf => {
           return JSON.parse(buf.toString());
         })
@@ -197,50 +202,73 @@ const writeLinkedAppConfig = async (app, appDir) => {
   return writeFile(file, prettyJSONstringify(updatedConfig));
 };
 
+const checkCredentials = () => callAPI('/check');
+
 /**
- * gets app details from API
+ * get app info from server and provide specifc error messages if a user doesn't have write permissions for that app
  */
-const getLinkedApp = async appDir => {
-  try {
-    const app = await getLinkedAppConfig(appDir);
-    if (!app) {
-      return {};
-    }
-    return callAPI('/apps/' + app.id);
-  } catch (e) {
-    if (constants.IS_TESTING) {
-      console.error(e);
-    }
+const getWritableApp = async () => {
+  const linkedAppConfig = await getLinkedAppConfig(undefined, false);
+  if (!linkedAppConfig.id) {
     throw new Error(
-      `Unable to complete that operation. Either:
-* your auth file is stale (run \`${colors.cyan('zapier login')}\`)
-* your ${
-        constants.CURRENT_APP_FILE
-      } points to an app you can't access (run \`${colors.cyan(
-        'zapier link'
-      )}\` to refresh the link to an existing app or \`${colors.cyan(
+      `This project hasn't yet been associated with an existing Zapier integration.\n\nIf it's a brand new integration, run \`${colors.cyan(
         'zapier register'
-      )}\` to create a new app).`
+      )}\`.\n\nIf this project already exists in your Zapier account, run \`${colors.cyan(
+        'zapier link'
+      )}\` instead.`
     );
+  }
+
+  try {
+    return await callAPI(`/apps/${linkedAppConfig.id}`, undefined, true);
+  } catch (errOrRejectedResponse) {
+    if (errOrRejectedResponse instanceof Error) {
+      // this is likely a missing auth file or an actual unexpected error
+      throw errOrRejectedResponse;
+    }
+
+    if (errOrRejectedResponse.status === 401) {
+      throw new Error(
+        `Your credentials are present, but invalid${
+          process.env.ZAPIER_BASE_ENDPOINT ? ' in this environment' : ''
+        }. Please run \`${colors.cyan('zapier login')}\` to resolve.`
+      );
+    } else if (errOrRejectedResponse.status === 404) {
+      // if this fails, we know the issue is they can't see this app
+      const message = `You don't have access to integration ID ${
+        linkedAppConfig.id
+      } (or it doesn't exist${
+        process.env.ZAPIER_BASE_ENDPOINT ? ' in this environment.' : ''
+      }). Try running \`${colors.cyan('zapier link')}\` to correct that.${
+        process.env.ZAPIER_BASE_ENDPOINT
+          ? `\n\nFor local dev: make sure you've run  \`${colors.cyan(
+              'zapier login'
+            )}\` and \`${colors.cyan(
+              'zapier register'
+            )}\` while providing ZAPIER_BASE_ENDPOINT.`
+          : ''
+      }`;
+      throw new Error(message);
+    }
+    // some other API error
+    throw new Error(errOrRejectedResponse.errText);
   }
 };
 
 // Loads the linked app version from the API
 const getVersionInfo = () => {
   return Promise.all([
-    getLinkedApp(),
+    getWritableApp(),
     localAppCommand({ command: 'definition' })
   ]).then(([app, definition]) => {
     return callAPI(`/apps/${app.id}/versions/${definition.version}`);
   });
 };
 
-const checkCredentials = () => callAPI('/check');
-
 const listApps = async () => {
   let linkedApp;
   try {
-    linkedApp = await getLinkedApp();
+    linkedApp = await getWritableApp();
   } catch (e) {
     // no worries
   }
@@ -263,8 +291,7 @@ const listEndpoint = async (endpoint, keyOverride) =>
 
 // takes {endpoint: string, keyOverride?: string}[]
 const listEndpointMulti = async (...calls) => {
-  await checkCredentials();
-  const app = await getLinkedApp();
+  const app = await getWritableApp();
   let output = { app };
 
   for (const { endpoint, keyOverride } of calls) {
@@ -318,7 +345,7 @@ const validateApp = async definition => {
 
   // otherwise, we have a "full" app. This could still fail (if their token is
   // present but bad, or they've lost access to that app), but should probably be fine.
-  const linkedApp = await getLinkedApp(); // this fails in CI
+  const linkedApp = await getWritableApp();
   return callAPI('/check', {
     method: 'POST',
     body: {
@@ -329,7 +356,7 @@ const validateApp = async definition => {
   });
 };
 
-const upload = async () => {
+const upload = async app => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
   const appDir = process.cwd();
@@ -343,7 +370,6 @@ const upload = async () => {
     );
   }
 
-  const app = await getLinkedApp(appDir);
   const zip = new AdmZip(fullZipPath);
   const definitionJson = zip.readAsText('definition.json');
   if (!definitionJson) {
@@ -373,8 +399,8 @@ module.exports = {
   callAPI,
   checkCredentials,
   createCredentials,
-  getLinkedApp,
   getLinkedAppConfig,
+  getWritableApp,
   getVersionInfo,
   listApps,
   listEndpoint,
@@ -386,6 +412,6 @@ module.exports = {
   listVersions,
   readCredentials,
   upload,
-  writeLinkedAppConfig,
-  validateApp
+  validateApp,
+  writeLinkedAppConfig
 };
