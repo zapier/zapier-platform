@@ -390,7 +390,7 @@ describe('request client', () => {
       },
     });
     response.status.should.eql(200);
-    response.json.args.should.deepEqual({});
+    response.data.args.should.deepEqual({});
   });
 
   it('should allow GET with body', async () => {
@@ -405,7 +405,7 @@ describe('request client', () => {
       allowGetBody: true,
     });
     response.status.should.eql(200);
-    response.json.args.should.deepEqual({ name: 'Darth Vader' });
+    response.data.args.should.deepEqual({ name: 'Darth Vader' });
   });
 
   describe('adds query params', () => {
@@ -421,9 +421,9 @@ describe('request client', () => {
       }).then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
-        response.json.args.something.should.eql('');
-        response.json.args.really.should.eql('');
-        response.json.args.cool.should.eql('true');
+        response.data.args.something.should.eql('');
+        response.data.args.really.should.eql('');
+        response.data.args.cool.should.eql('true');
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
@@ -448,9 +448,9 @@ describe('request client', () => {
       }).then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
-        response.json.args.something.should.eql('');
-        response.json.args.really.should.eql('');
-        response.json.args.cool.should.eql('true');
+        response.data.args.something.should.eql('');
+        response.data.args.really.should.eql('');
+        response.data.args.cool.should.eql('true');
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
@@ -491,16 +491,16 @@ describe('request client', () => {
       }).then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
-        should(response.json.args.something).eql(undefined);
-        should(response.json.args.foo).eql(undefined);
-        should(response.json.args.bar).eql(undefined);
-        should(response.json.args.empty).eql(undefined);
-        should(response.json.args.really).eql(undefined);
-        response.json.args.cool.should.eql('false');
-        response.json.args.zzz.should.eql('[]');
-        response.json.args.yyy.should.eql('{}');
-        response.json.args.qqq.should.eql(' ');
-        response.json.args.name.should.eql('zapier');
+        should(response.data.args.something).eql(undefined);
+        should(response.data.args.foo).eql(undefined);
+        should(response.data.args.bar).eql(undefined);
+        should(response.data.args.empty).eql(undefined);
+        should(response.data.args.really).eql(undefined);
+        response.data.args.cool.should.eql('false');
+        response.data.args.zzz.should.eql('[]');
+        response.data.args.yyy.should.eql('{}');
+        response.data.args.qqq.should.eql(' ');
+        response.data.args.name.should.eql('zapier');
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
@@ -524,8 +524,8 @@ describe('request client', () => {
       }).then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
-        should(response.json.args.something).eql(undefined);
-        should(response.json.args.cool).eql(undefined);
+        should(response.data.args.something).eql(undefined);
+        should(response.data.args.cool).eql(undefined);
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
@@ -555,7 +555,7 @@ describe('request client', () => {
           zapId: '{{bundle.meta.zap.id}}',
         },
       }).then((response) => {
-        const { hookUrl, zapId } = JSON.parse(response.json.data);
+        const { hookUrl, zapId } = JSON.parse(response.data.data);
 
         hookUrl.should.eql(targetUrl);
         zapId.should.eql(987);
@@ -578,7 +578,7 @@ describe('request client', () => {
       }).then((response) => {
         const { url } = JSON.parse(response.content);
 
-        response.json.args.id.should.eql('123');
+        response.data.args.id.should.eql('123');
         url.should.eql('https://httpbin.org/delete?id=123');
       });
     });
@@ -608,7 +608,7 @@ describe('request client', () => {
           arr: '{{bundle.inputData.arr}}',
         },
       }).then((response) => {
-        const { json } = response.json;
+        const { json } = response.data;
 
         should(json.empty).eql(undefined);
         json.number.should.eql(123);
@@ -645,8 +645,7 @@ describe('request client', () => {
           arr: [1, 2, 3],
         },
       }).then((response) => {
-        const { json } = response.json;
-
+        const { json } = response.data;
         should(json.empty).eql(undefined);
         json.number.should.eql(123);
         json.bool.should.eql(true);
@@ -676,7 +675,7 @@ describe('request client', () => {
           body: true,
         },
       }).then((response) => {
-        const { json } = response.json;
+        const { json } = response.data;
 
         should(json.empty).eql(undefined);
         json.name.should.eql('Burgundy');
@@ -694,7 +693,7 @@ describe('request client', () => {
           value: 'exists',
         },
       }).then((response) => {
-        const { json } = response.json;
+        const { json } = response.data;
 
         should(json.empty).eql('');
         should(json.partial).eql('text ');
@@ -725,7 +724,7 @@ describe('request client', () => {
           Authorization: 'Bearer {{bundle.authData.access_token}}',
         },
       }).then((response) => {
-        const { json, headers } = response.json;
+        const { json, headers } = response.data;
 
         json.message.should.eql('We just got #123');
         headers.Authorization.should.eql('Bearer Let me in');
@@ -775,7 +774,7 @@ describe('request client', () => {
           city: '{{bundle.inputData.address.city}}',
         },
       }).then((response) => {
-        const { json } = response.json;
+        const { json } = response.data;
 
         json.streetAddress.should.eql('123 Zapier Way');
         json.city.should.eql('El Mundo');
@@ -809,7 +808,7 @@ describe('request client', () => {
           Authorization: 'Bearer {{bundle.authData.access_token}}',
         },
       }).then((response) => {
-        const { headers } = response.json;
+        const { headers } = response.data;
         const { url } = JSON.parse(response.content);
         url.should.eql('https://httpbin.org/get?limit=20&id=123');
         headers.Authorization.should.eql('Bearer Let me in');
@@ -851,7 +850,7 @@ describe('request client', () => {
         },
       });
 
-      response.json.json.should.deepEqual({
+      response.data.json.should.deepEqual({
         arr: 'arr: 1,2,3,red,blue',
         obj: 'obj: id=456,name=John',
         str: 'str: hello',

@@ -129,7 +129,7 @@ const RequestFunc = {
         return z
           .request({ url: '{{process.env.BASE_URL}}/get' })
           .then((resp) => {
-            const result = resp.json;
+            const result = resp.data;
             result.id = 123;
             return [result];
           });
@@ -149,7 +149,7 @@ const RequestSugar = {
     operation: {
       perform: (z /* , bundle */) => {
         return z.request('https://httpbin.org/get').then((resp) => {
-          return resp.json;
+          return resp.data;
         });
       },
     },
@@ -414,7 +414,7 @@ const ExecuteRequestAsFunc = {
       perform: (z, bundle) => {
         const req = _.defaults({}, bundle.inputData.options);
         return z.request(req).then((resp) => {
-          return bundle.inputData.returnValue || resp.json;
+          return bundle.inputData.returnValue || resp.data;
         });
       },
       inputFields: [
@@ -441,10 +441,27 @@ const ExecuteRequestAsShorthand = {
         {
           key: 'url',
           default: 'https://httpbin.org/status/403',
-        },
-      ],
-    },
+        }
+      ]
+    }
   },
+  create: {
+    display: {
+      label: 'Configurable Request (Shorthand)',
+      description: 'Used for one-offs in the tests.',
+    },
+    operation: {
+      perform: {
+        url: '{{bundle.inputData.url}}',
+      },
+      inputFields: [
+        {
+          key: 'url',
+          default: 'https://httpbin.org/status/403',
+        }
+      ]
+    }
+  }
 };
 const EnvironmentVariable = {
   key: 'env',

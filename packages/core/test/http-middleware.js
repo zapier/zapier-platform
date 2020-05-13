@@ -529,3 +529,151 @@ describe('http logResponse after middleware', () => {
     });
   });
 });
+
+describe('http prepareResponse', () => {
+  it('should set the expected properties', async () => {
+    const request = prepareRequest({
+      raw: false,
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                foo: 'bar'
+              }
+            }
+          },
+          app: {}
+        }
+      }
+    });
+
+    const data = { foo: 'bar' };
+    const content = JSON.stringify(data);
+    const status = 200;
+    const response = await prepareResponse({
+      status,
+      input: request,
+      headers: {
+        get: () => 'application/json'
+      },
+      text: () => Promise.resolve(content)
+    });
+    should(response.status).equal(status);
+    should(response.content).equal(content);
+    should(response.data).match(data);
+    should(response.data).match(data); // DEPRECATED
+    should(response.request).equal(request);
+    should(response.skipThrowForStatus).equal(request.skipThrowForStatus);
+    should(response.headers).equal(response.headers);
+    should(response.getHeader(), 'application/json');
+    should(response.throwForStatus).be.a.Function();
+  });
+  it('should set the expected properties when raw:true', async () => {
+    const request = prepareRequest({
+      raw: true,
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                foo: 'bar'
+              }
+            }
+          },
+          app: {}
+        }
+      }
+    });
+
+    const content = JSON.stringify({ foo: 'bar' });
+    const status = 200;
+    const response = await prepareResponse({
+      status,
+      input: request,
+      headers: {
+        get: () => 'application/json'
+      },
+      text: () => Promise.resolve(content)
+    });
+    should(response.status).equal(status);
+    should.throws(
+      () => response.content,
+      Error,
+      /You passed {raw: true} in request()/
+    );
+    should(response.data).be.Undefined();
+    should(response.data).be.Undefined(); // DEPRECATED
+    should(response.request).equal(request);
+    should(response.skipThrowForStatus).equal(request.skipThrowForStatus);
+    should(response.headers).equal(response.headers);
+    should(response.getHeader(), 'application/json');
+    should(response.throwForStatus).be.a.Function();
+  });
+  it('should default to parsing response.content as JSON', async () => {
+    const request = prepareRequest({
+      raw: false,
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                foo: 'bar'
+              }
+            }
+          },
+          app: {}
+        }
+      }
+    });
+
+    const data = { foo: 'bar' };
+    const content = JSON.stringify(data);
+    const status = 200;
+    const response = await prepareResponse({
+      status,
+      input: request,
+      headers: {
+        get: () => 'something/else'
+      },
+      text: () => Promise.resolve(content)
+    });
+    should(response.content).equal(content);
+    should(response.data).match(data);
+    should(response.data).match(data); // DEPRECATED
+    should(response.getHeader(), 'something/else');
+  });
+  it('should be able to parse response.content when application/x-www-form-urlencoded', async () => {
+    const request = prepareRequest({
+      raw: false,
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                foo: 'bar'
+              }
+            }
+          },
+          app: {}
+        }
+      }
+    });
+
+    const data = { foo: 'bar' };
+    const content = 'foo=bar';
+    const status = 200;
+    const response = await prepareResponse({
+      status,
+      input: request,
+      headers: {
+        get: () => 'application/x-www-form-urlencoded'
+      },
+      text: () => Promise.resolve(content)
+    });
+    should(response.content).equal(content);
+    should(response.data).match(data);
+    should(response.data).be.Undefined(); // DEPRECATED and not forwards compatible
+    should(response.getHeader(), 'application/x-www-form-urlencoded');
+  });
+});
