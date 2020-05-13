@@ -11,11 +11,11 @@ const listRecipes = (z, bundle) => {
   // you need to complete. You can also register middleware to control this.
   const requestOptions = {
     url: 'https://auth-json-server.zapier-staging.com/recipes',
-    params: params
+    params: params,
   };
 
   // You may return a promise or a normal data structure from any perform method.
-  return z.request(requestOptions).then(response => response.json);
+  return z.request(requestOptions).then((response) => response.data);
 };
 
 // We recommend writing your triggers separate like this and rolling them
@@ -28,7 +28,7 @@ module.exports = {
   noun: 'Recipe',
   display: {
     label: 'New Recipe',
-    description: 'Triggers when a new recipe is added.'
+    description: 'Triggers when a new recipe is added.',
   },
 
   // `operation` is where the business logic goes.
@@ -39,8 +39,8 @@ module.exports = {
       {
         key: 'style',
         type: 'string',
-        helpText: 'Which styles of cuisine this should trigger on.'
-      }
+        helpText: 'Which styles of cuisine this should trigger on.',
+      },
     ],
 
     perform: listRecipes,
@@ -54,7 +54,7 @@ module.exports = {
       name: 'Best Spagetti Ever',
       authorId: 1,
       directions: '1. Boil Noodles\n2.Serve with sauce',
-      style: 'italian'
+      style: 'italian',
     },
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -71,7 +71,7 @@ module.exports = {
       { key: 'name', label: 'Name' },
       { key: 'directions', label: 'Directions' },
       { key: 'authorId', label: 'Author ID' },
-      { key: 'style', label: 'Style' }
-    ]
-  }
+      { key: 'style', label: 'Style' },
+    ],
+  },
 };

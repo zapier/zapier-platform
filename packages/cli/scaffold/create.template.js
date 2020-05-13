@@ -10,7 +10,7 @@ const perform = async (z, bundle) => {
     }
   });
   // this should return a single object
-  return response.json;
+  return response.data;
 };
 
 module.exports = {

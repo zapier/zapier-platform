@@ -539,13 +539,13 @@ describe('http prepareResponse', () => {
           event: {
             bundle: {
               inputData: {
-                foo: 'bar'
-              }
-            }
+                foo: 'bar',
+              },
+            },
           },
-          app: {}
-        }
-      }
+          app: {},
+        },
+      },
     });
 
     const data = { foo: 'bar' };
@@ -555,14 +555,14 @@ describe('http prepareResponse', () => {
       status,
       input: request,
       headers: {
-        get: () => 'application/json'
+        get: () => 'application/json',
       },
-      text: () => Promise.resolve(content)
+      text: () => Promise.resolve(content),
     });
     should(response.status).equal(status);
     should(response.content).equal(content);
     should(response.data).match(data);
-    should(response.data).match(data); // DEPRECATED
+    should(response.json).match(data); // DEPRECATED
     should(response.request).equal(request);
     should(response.skipThrowForStatus).equal(request.skipThrowForStatus);
     should(response.headers).equal(response.headers);
@@ -577,13 +577,13 @@ describe('http prepareResponse', () => {
           event: {
             bundle: {
               inputData: {
-                foo: 'bar'
-              }
-            }
+                foo: 'bar',
+              },
+            },
           },
-          app: {}
-        }
-      }
+          app: {},
+        },
+      },
     });
 
     const content = JSON.stringify({ foo: 'bar' });
@@ -592,9 +592,9 @@ describe('http prepareResponse', () => {
       status,
       input: request,
       headers: {
-        get: () => 'application/json'
+        get: () => 'application/json',
       },
-      text: () => Promise.resolve(content)
+      text: () => Promise.resolve(content),
     });
     should(response.status).equal(status);
     should.throws(
@@ -603,7 +603,7 @@ describe('http prepareResponse', () => {
       /You passed {raw: true} in request()/
     );
     should(response.data).be.Undefined();
-    should(response.data).be.Undefined(); // DEPRECATED
+    should(response.json).be.Undefined(); // DEPRECATED
     should(response.request).equal(request);
     should(response.skipThrowForStatus).equal(request.skipThrowForStatus);
     should(response.headers).equal(response.headers);
@@ -618,13 +618,13 @@ describe('http prepareResponse', () => {
           event: {
             bundle: {
               inputData: {
-                foo: 'bar'
-              }
-            }
+                foo: 'bar',
+              },
+            },
           },
-          app: {}
-        }
-      }
+          app: {},
+        },
+      },
     });
 
     const data = { foo: 'bar' };
@@ -634,13 +634,13 @@ describe('http prepareResponse', () => {
       status,
       input: request,
       headers: {
-        get: () => 'something/else'
+        get: () => 'something/else',
       },
-      text: () => Promise.resolve(content)
+      text: () => Promise.resolve(content),
     });
     should(response.content).equal(content);
     should(response.data).match(data);
-    should(response.data).match(data); // DEPRECATED
+    should(response.json).match(data); // DEPRECATED
     should(response.getHeader(), 'something/else');
   });
   it('should be able to parse response.content when application/x-www-form-urlencoded', async () => {
@@ -651,13 +651,13 @@ describe('http prepareResponse', () => {
           event: {
             bundle: {
               inputData: {
-                foo: 'bar'
-              }
-            }
+                foo: 'bar',
+              },
+            },
           },
-          app: {}
-        }
-      }
+          app: {},
+        },
+      },
     });
 
     const data = { foo: 'bar' };
@@ -667,13 +667,13 @@ describe('http prepareResponse', () => {
       status,
       input: request,
       headers: {
-        get: () => 'application/x-www-form-urlencoded'
+        get: () => 'application/x-www-form-urlencoded',
       },
-      text: () => Promise.resolve(content)
+      text: () => Promise.resolve(content),
     });
     should(response.content).equal(content);
     should(response.data).match(data);
-    should(response.data).be.Undefined(); // DEPRECATED and not forwards compatible
+    should(response.json).be.Undefined(); // DEPRECATED and not forwards compatible
     should(response.getHeader(), 'application/x-www-form-urlencoded');
   });
 });

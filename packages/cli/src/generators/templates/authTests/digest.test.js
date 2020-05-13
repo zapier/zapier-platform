@@ -18,8 +18,8 @@ describe('digest auth', () => {
     const response = await appTester(App.authentication.test, bundle);
 
     expect(response.status).toBe(200);
-    expect(response.json.authenticated).toBe(true);
-    expect(response.json.user).toBe('myuser');
+    expect(response.data.authenticated).toBe(true);
+    expect(response.data.user).toBe('myuser');
   });
 
   it('fails on bad auth', async () => {

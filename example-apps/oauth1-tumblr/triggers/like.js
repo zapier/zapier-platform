@@ -1,7 +1,7 @@
 const perform = async (z, bundle) => {
   const url = 'https://api.tumblr.com/v2/user/likes';
   const response = await z.request(url);
-  const result = response.json;
+  const result = response.data;
   return result.response.liked_posts || [];
 };
 
@@ -11,7 +11,7 @@ module.exports = {
 
   display: {
     label: 'New Like',
-    description: 'Triggers when you like a post.'
+    description: 'Triggers when you like a post.',
   },
 
   operation: {
@@ -29,7 +29,7 @@ module.exports = {
       tags: ['tumblrize', 'milky dog', 'mini comic'],
       note_count: 14,
       title: 'Milky Dog',
-      body: '<p>Example body.</p>'
-    }
-  }
+      body: '<p>Example body.</p>',
+    },
+  },
 };

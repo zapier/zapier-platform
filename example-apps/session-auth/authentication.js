@@ -17,7 +17,7 @@ const getSessionKey = (z, bundle) => {
   });
 
   return promise.then((response) => ({
-    sessionKey: response.json.sessionKey || 'secret',
+    sessionKey: response.data.sessionKey || 'secret',
   }));
 };
 

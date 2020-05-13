@@ -787,7 +787,7 @@ const subscribeHook = (z, bundle) => {
     },
   };
 
-  return z.request(options).then((response) => response.json);
+  return z.request(options).then((response) => response.data);
 };
 
 module.exports = {
@@ -1048,7 +1048,9 @@ The response object returned by `z.request([url], options)` supports the followi
 
 * `status`: The response status code, i.e. `200`, `404`, etc.
 * `content`: The response content as a String. For Buffer, try `options.raw = true`.
-* `json`: The response content as an object (or `undefined`). If `options.raw = true` - is a promise.
+* `data`: The response content as an object if the content is JSON or ` application/x-www-form-urlencoded` (`undefined` otherwise).
+* `json`: The response content as an object if the content is JSON (`undefined` otherwise). Deprecated: Use `data` instead.
+* `json()`: Get the response content as an object, if `options.raw = true` and content is JSON (returns a promise).
 * `body`: A stream available only if you provide `options.raw = true`.
 * `headers`: Response headers object. The header keys are all lower case.
 * `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
@@ -1066,14 +1068,16 @@ z.request({
   response.getHeader('content-type');
   response.request; // original request options
   response.throwForStatus();
-  // if options.raw === false (default)...
-  response.json; // identical to:
-  JSON.parse(response.content);
-  // if options.raw === true...
-  response.buffer().then(buf => buf.toString());
-  response.text().then(content => content);
-  response.json().then(json => json);
-  response.body.pipe(otherStream);
+  if (options.raw === false) { // (default)
+    response.data; // same as...
+    JSON.parse(response.content); // or...
+    querystring.parse(response.content);
+  } else {
+    response.buffer().then(buf => buf.toString());
+    response.text().then(content => content);
+    response.json().then(json => json);
+    response.body.pipe(otherStream);
+  }
 });
 ```
 
@@ -1550,6 +1554,8 @@ Not natively, but it can! Users have reported that the following `npm` modules a
 * [xml2js](https://github.com/Leonidas-from-XIV/node-xml2js)
 * [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser)
 
+For [shorthand requests](shorthand-http-requests), use an `afterResponse` [middleware](using-http-middleware) that sets `response.data` to the parsed XML:
+
 ```js
 [insert-file:./snippets/xml.js]
 ```
@@ -1607,7 +1613,7 @@ Paging is a lot like a regular trigger except the range of items returned is dyn
       offset: 100 * bundle.meta.page
     }
   });
-  return promise.then((response) => response.json);
+  return promise.then((response) => response.data);
 };
 ```
 
@@ -1636,7 +1642,7 @@ For deduplication to work, we need to be able to identify and use a unique field
 
 ```js
 // ...
-let items = response.json.items;
+let items = response.data.items;
 items.forEach(item => {
   item.id = item.contactId;
 })

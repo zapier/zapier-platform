@@ -1,5 +1,3 @@
-const querystring = require('querystring');
-
 const _ = require('lodash');
 
 const REQUEST_TOKEN_URL = 'https://trello.com/1/OAuthGetRequestToken';
@@ -17,7 +15,7 @@ const getRequestToken = async (z, bundle) => {
       oauth_callback: bundle.inputData.redirect_uri,
     },
   });
-  return querystring.parse(response.content);
+  return response.data;
 };
 
 const getAccessToken = async (z, bundle) => {
@@ -32,7 +30,7 @@ const getAccessToken = async (z, bundle) => {
       oauth_verifier: bundle.inputData.oauth_verifier,
     },
   });
-  return querystring.parse(response.content);
+  return response.data;
 };
 
 const config = {

@@ -1,5 +1,3 @@
-const querystring = require('querystring');
-
 const _ = require('lodash');
 
 const REQUEST_TOKEN_URL = 'https://api.twitter.com/oauth/request_token';
@@ -18,7 +16,7 @@ const getRequestToken = async (z, bundle) => {
       oauth_version: '1.0', // Twitter says this should be 1.0
     },
   });
-  return querystring.parse(response.content);
+  return response.data;
 };
 
 const getAccessToken = async (z, bundle) => {
@@ -33,7 +31,7 @@ const getAccessToken = async (z, bundle) => {
       oauth_verifier: bundle.inputData.oauth_verifier,
     },
   });
-  return querystring.parse(response.content);
+  return response.data;
 };
 
 const config = {

@@ -10,16 +10,21 @@ const handleErrors = (response, z) => {
   }
 
   // Throw an error that `throwForStatus` wouldn't throw (correctly) for.
-  else if (response.status === 200 && response.json.success === false) {
-    throw new z.errors.Error(response.json.message, response.json.code);
+  else if (response.status === 200 && response.data.success === false) {
+    throw new z.errors.Error(response.data.message, response.data.code);
   }
+};
 
+const parseXML = (response, z, bundle) => {
+  // Parse content that is not JSON
+  // eslint-disable-next-line no-undef
+  response.data = xml.parse(response.content);
   return response;
 };
 
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [handleErrors],
+  afterResponse: [parseXML, handleErrors],
   // ...
 };

@@ -6,7 +6,7 @@ const perform = async (z, bundle) => {
       name: bundle.inputData.name,
     },
   });
-  return response.json;
+  return response.data;
 };
 
 module.exports = {

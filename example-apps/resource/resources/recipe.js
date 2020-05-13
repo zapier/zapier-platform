@@ -3,9 +3,9 @@ const _sharedBaseUrl = 'https://auth-json-server.zapier-staging.com';
 const getRecipe = (z, bundle) => {
   return z
     .request({
-      url: `${_sharedBaseUrl}/recipes/${bundle.inputData.id}`
+      url: `${_sharedBaseUrl}/recipes/${bundle.inputData.id}`,
     })
-    .then(response => response.json);
+    .then((response) => response.data);
 };
 
 const listRecipes = (z, bundle) => {
@@ -13,10 +13,10 @@ const listRecipes = (z, bundle) => {
     .request({
       url: _sharedBaseUrl + '/recipes',
       params: {
-        style: bundle.inputData.style
-      }
+        style: bundle.inputData.style,
+      },
     })
-    .then(response => response.json);
+    .then((response) => response.data);
 };
 
 const createRecipe = (z, bundle) => {
@@ -26,14 +26,14 @@ const createRecipe = (z, bundle) => {
     body: {
       name: bundle.inputData.name,
       directions: bundle.inputData.directions,
-      authorId: bundle.inputData.authorId
+      authorId: bundle.inputData.authorId,
     },
     headers: {
-      'content-type': 'application/json'
-    }
+      'content-type': 'application/json',
+    },
   };
 
-  return z.request(requestOptions).then(response => response.json);
+  return z.request(requestOptions).then((response) => response.data);
 };
 
 const searchRecipe = (z, bundle) => {
@@ -41,11 +41,11 @@ const searchRecipe = (z, bundle) => {
     .request({
       url: _sharedBaseUrl + '/recipes',
       params: {
-        nameSearch: bundle.inputData.name
-      }
+        nameSearch: bundle.inputData.name,
+      },
     })
-    .then(response => {
-      const matchingRecipes = response.json;
+    .then((response) => {
+      const matchingRecipes = response.data;
 
       // Only return the first matching recipe
       if (matchingRecipes && matchingRecipes.length) {
@@ -62,7 +62,7 @@ const sample = {
   name: 'Best Spagetti Ever',
   authorId: 1,
   directions: '1. Boil Noodles\n2.Serve with sauce',
-  style: 'italian'
+  style: 'italian',
 };
 
 // This file exports a Recipe resource. The definition below contains all of the keys available,
@@ -76,31 +76,31 @@ module.exports = {
   get: {
     display: {
       label: 'Get Recipe',
-      description: 'Gets a recipe.'
+      description: 'Gets a recipe.',
     },
     operation: {
       inputFields: [{ key: 'id', required: true }],
       perform: getRecipe,
-      sample: sample
-    }
+      sample: sample,
+    },
   },
   // The list method on this resource becomes a Trigger on the app. Zapier will use polling to watch for new records
   list: {
     display: {
       label: 'New Recipe',
-      description: 'Trigger when a new recipe is added.'
+      description: 'Trigger when a new recipe is added.',
     },
     operation: {
       inputFields: [
         {
           key: 'style',
           type: 'string',
-          helpText: 'Explain what style of cuisine this is.'
-        }
+          helpText: 'Explain what style of cuisine this is.',
+        },
       ],
       perform: listRecipes,
-      sample: sample
-    }
+      sample: sample,
+    },
   },
   // If your app supports webhooks, you can define a hook method instead of a list method.
   // Zapier will turn this into a webhook Trigger on the app.
@@ -112,7 +112,7 @@ module.exports = {
   create: {
     display: {
       label: 'Create Recipe',
-      description: 'Creates a new recipe.'
+      description: 'Creates a new recipe.',
     },
     operation: {
       inputFields: [
@@ -121,36 +121,36 @@ module.exports = {
           key: 'directions',
           required: true,
           type: 'text',
-          helpText: 'Explain how should one make the recipe, step by step.'
+          helpText: 'Explain how should one make the recipe, step by step.',
         },
         {
           key: 'authorId',
           required: true,
           type: 'integer',
-          label: 'Author ID'
+          label: 'Author ID',
         },
         {
           key: 'style',
           required: false,
           type: 'string',
-          helpText: 'Explain what style of cuisine this is.'
-        }
+          helpText: 'Explain what style of cuisine this is.',
+        },
       ],
       perform: createRecipe,
-      sample: sample
-    }
+      sample: sample,
+    },
   },
   // The search method on this resource becomes a Search on this app
   search: {
     display: {
       label: 'Find Recipe',
-      description: 'Finds an existing recipe by name.'
+      description: 'Finds an existing recipe by name.',
     },
     operation: {
       inputFields: [{ key: 'name', required: true, type: 'string' }],
       perform: searchRecipe,
-      sample: sample
-    }
+      sample: sample,
+    },
   },
 
   // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
@@ -168,6 +168,6 @@ module.exports = {
     { key: 'name', label: 'Name' },
     { key: 'directions', label: 'Directions' },
     { key: 'authorId', label: 'Author ID' },
-    { key: 'style', label: 'Style' }
-  ]
+    { key: 'style', label: 'Style' },
+  ],
 };

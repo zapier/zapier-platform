@@ -6,7 +6,6 @@ const should = require('should');
 
 const build = require('../../utils/build');
 const { copyDir } = require('../../utils/files');
-const { getPackageLatestVersion } = require('../../utils/npm');
 const { PLATFORM_PACKAGE } = require('../../constants');
 const { runCommand, getNewTempDirPath } = require('../_helpers');
 
@@ -21,17 +20,24 @@ describe('build (runs slowly)', () => {
     );
 
     // When releasing, the core version the example apps points can be still
-    // non-existent. Let's make sure  it points to the latest one available on
-    // npm.
-    const packageJsonPath = path.join(tmpDir, 'package.json');
-    const packageJson = JSON.parse(
-      fs.readFileSync(packageJsonPath, { encoding: 'utf8' })
+    // non-existent. Let's make sure it points to the local one.
+    const coreDir = path.resolve(__dirname, '../../../../core');
+    const corePackageJsonPath = path.join(coreDir, 'package.json');
+    const corePackageJson = JSON.parse(
+      fs.readFileSync(corePackageJsonPath, { encoding: 'utf8' })
     );
-    packageJson.dependencies[PLATFORM_PACKAGE] = await getPackageLatestVersion(
-      PLATFORM_PACKAGE
+    await runCommand('npm', ['pack'], { cwd: coreDir });
+    const coreVersion = corePackageJson.version;
+    const coreTarball = `${PLATFORM_PACKAGE}-${coreVersion}.tgz`;
+    const appPackageJsonPath = path.join(tmpDir, 'package.json');
+    const appPackageJson = JSON.parse(
+      fs.readFileSync(appPackageJsonPath, { encoding: 'utf8' })
     );
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
-
+    appPackageJson.dependencies[PLATFORM_PACKAGE] = path.resolve(
+      coreDir,
+      coreTarball
+    );
+    fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
     await runCommand('npm', ['i'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
@@ -41,13 +47,13 @@ describe('build (runs slowly)', () => {
   });
 
   it('should list only required files', () => {
-    return build.requiredFiles(tmpDir, [entryPoint]).then(smartPaths => {
+    return build.requiredFiles(tmpDir, [entryPoint]).then((smartPaths) => {
       // check that only the required lodash files are grabbed
       smartPaths.should.containEql('index.js');
       smartPaths.should.containEql('lib/index.js');
       smartPaths.should.containEql('lib/resources/recipe.js');
 
-      smartPaths.filter(p => p.endsWith('.ts')).length.should.equal(0);
+      smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
       smartPaths.should.not.containEql('tsconfig.json');
 
       smartPaths.length.should.be.within(200, 300);
@@ -55,7 +61,7 @@ describe('build (runs slowly)', () => {
   });
 
   it('should list all the files', () => {
-    return build.listFiles(tmpDir).then(dumbPaths => {
+    return build.listFiles(tmpDir).then((dumbPaths) => {
       // check that way more than the required package files are grabbed
       dumbPaths.should.containEql('index.js');
       dumbPaths.should.containEql('lib/index.js');
@@ -77,8 +83,8 @@ describe('build (runs slowly)', () => {
       '.env',
       '.environment',
       '.git/HEAD',
-      'build/the-build.zip'
-    ].forEach(file => {
+      'build/the-build.zip',
+    ].forEach((file) => {
       const fileDir = file.split(path.sep);
       fileDir.pop();
       if (fileDir.length > 0) {
@@ -87,7 +93,7 @@ describe('build (runs slowly)', () => {
       fs.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
     });
 
-    return build.listFiles(tmpProjectDir).then(dumbPaths => {
+    return build.listFiles(tmpProjectDir).then((dumbPaths) => {
       dumbPaths.should.containEql('safe.js');
       dumbPaths.should.not.containEql('.env');
       dumbPaths.should.not.containEql('build/the-build.zip');
@@ -116,7 +122,7 @@ describe('build (runs slowly)', () => {
     return build
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(2);
 
         const indexFile = files.find(
@@ -157,7 +163,7 @@ describe('build (runs slowly)', () => {
     return build
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(2);
 
         const indexFile = files.find(
@@ -202,7 +208,7 @@ describe('build (runs slowly)', () => {
     return build
       .makeSourceZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(4);
 
         const indexFile = files.find(
@@ -261,7 +267,7 @@ describe('build (runs slowly)', () => {
     return build
       .makeSourceZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(4);
 
         const indexFile = files.find(

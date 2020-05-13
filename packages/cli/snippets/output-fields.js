@@ -1,7 +1,7 @@
 const recipeOutputFields = (z, bundle) => {
   const response = z.request('https://example.com/api/v2/fields.json');
   // json is like [{"key":"field_1","label":"Label for Custom Field"}]
-  return response.then(res => res.json);
+  return response.then((res) => res.data);
 };
 
 const App = {
@@ -16,65 +16,65 @@ const App = {
           title: 'Pancake',
           author: {
             id: 1,
-            name: 'Amy'
+            name: 'Amy',
           },
           ingredients: [
             {
               name: 'Egg',
-              amount: 1
+              amount: 1,
             },
             {
               name: 'Milk',
               amount: 60,
-              unit: 'g'
+              unit: 'g',
             },
             {
               name: 'Flour',
               amount: 30,
-              unit: 'g'
-            }
-          ]
+              unit: 'g',
+            },
+          ],
         },
         // an array of objects is the simplest way
         outputFields: [
           {
             key: 'id',
             label: 'Recipe ID',
-            type: 'integer'
+            type: 'integer',
           },
           {
             key: 'title',
             label: 'Recipe Title',
-            type: 'string'
+            type: 'string',
           },
           {
             key: 'author__id',
             label: 'Author User ID',
-            type: 'integer'
+            type: 'integer',
           },
           {
             key: 'author__name',
             label: 'Author Name',
-            type: 'string'
+            type: 'string',
           },
           {
             key: 'ingredients[]name',
             label: 'Ingredient Name',
-            type: 'string'
+            type: 'string',
           },
           {
             key: 'ingredients[]amount',
             label: 'Ingredient Amount',
-            type: 'number'
+            type: 'number',
           },
           {
             key: 'ingredients[]unit',
             label: 'Ingredient Unit',
-            type: 'string'
+            type: 'string',
           },
-          recipeOutputFields // provide a function inline - we'll merge the results!
-        ]
-      }
-    }
-  }
+          recipeOutputFields, // provide a function inline - we'll merge the results!
+        ],
+      },
+    },
+  },
 };

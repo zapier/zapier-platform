@@ -4,7 +4,7 @@ const generateID = require('../utils').generateID;
 const fetchList = (z, bundle) => {
   const request = {
     url: 'https://swapi.co/api/species/',
-    params: {}
+    params: {},
   };
 
   // this API returns things in "pages" of results
@@ -12,9 +12,9 @@ const fetchList = (z, bundle) => {
     request.params.page = 1 + bundle.meta.page;
   }
 
-  return z.request(request).then(response => {
-    const speciesArray = response.json.results;
-    speciesArray.forEach(species => {
+  return z.request(request).then((response) => {
+    const speciesArray = response.data.results;
+    speciesArray.forEach((species) => {
       // copy the "url" field into an "id" field
       species.id = generateID(species.url);
     });
@@ -29,7 +29,7 @@ module.exports = {
     label: 'List of Species',
     description:
       'This is a hidden trigger, and is used in a Dynamic Dropdown within this app',
-    hidden: true
+    hidden: true,
   },
 
   operation: {
@@ -37,6 +37,6 @@ module.exports = {
     perform: fetchList,
     // the folowing is a "hint" to the Zap Editor that this trigger returns data "in pages", and
     //   that the UI should display an option to "load next page" to the human.
-    canPaginate: true
-  }
+    canPaginate: true,
+  },
 };

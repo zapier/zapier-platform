@@ -21,16 +21,16 @@ const uploadFile = (z, bundle) => {
     .request({
       url: 'https://1i94uigjze.execute-api.us-east-1.amazonaws.com/api/upload',
       method: 'POST',
-      body: formData
+      body: formData,
     })
-    .then(response => {
-      const file = response.json;
+    .then((response) => {
+      const file = response.data;
 
       // Make it possible to use the actual uploaded (or online converted)
       // file in a subsequent action. No need to download it now, so again
       // dehydrating like in ../triggers/newFile.js
       file.file = z.dehydrateFile(hydrators.downloadFile, {
-        fileId: file.id
+        fileId: file.id,
       });
 
       return file;
@@ -42,7 +42,7 @@ module.exports = {
   noun: 'File',
   display: {
     label: 'Upload File',
-    description: 'Uploads a file.'
+    description: 'Uploads a file.',
   },
   operation: {
     inputFields: [
@@ -51,23 +51,23 @@ module.exports = {
         required: false,
         type: 'string',
         label: 'Name',
-        helpText: 'If not defined, the Filename will be copied here.'
+        helpText: 'If not defined, the Filename will be copied here.',
       },
       { key: 'filename', required: true, type: 'string', label: 'Filename' },
-      { key: 'file', required: true, type: 'file', label: 'File' }
+      { key: 'file', required: true, type: 'file', label: 'File' },
     ],
     perform: uploadFile,
     sample: {
       id: 1,
       name: 'Example PDF',
       file: 'SAMPLE FILE',
-      filename: 'example.pdf'
+      filename: 'example.pdf',
     },
     outputFields: [
       { key: 'id', type: 'integer', label: 'ID' },
       { key: 'name', type: 'string', label: 'Name' },
       { key: 'filename', type: 'string', label: 'Filename' },
-      { key: 'file', type: 'file', label: 'File' }
-    ]
-  }
+      { key: 'file', type: 'file', label: 'File' },
+    ],
+  },
 };

@@ -13,7 +13,7 @@ const perform = async (z, bundle) => {
   }
 
   const response = await z.request(request);
-  const speciesArray = response.json.results;
+  const speciesArray = response.data.results;
   return speciesArray.map((species) => {
     species.id = extractID(species.url);
     return species;

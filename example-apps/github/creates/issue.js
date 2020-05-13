@@ -6,10 +6,10 @@ const createIssue = (z, bundle) => {
     url: `https://api.github.com/repos/${bundle.inputData.repo}/issues`,
     body: {
       title: bundle.inputData.title,
-      body: bundle.inputData.body
-    }
+      body: bundle.inputData.body,
+    },
   });
-  return responsePromise.then(response => response.json);
+  return responsePromise.then((response) => response.data);
 };
 
 module.exports = {
@@ -18,7 +18,7 @@ module.exports = {
 
   display: {
     label: 'Create Issue',
-    description: 'Creates a issue.'
+    description: 'Creates a issue.',
   },
 
   operation: {
@@ -27,12 +27,12 @@ module.exports = {
         key: 'repo',
         label: 'Repo',
         required: true,
-        dynamic: 'repo.full_name.full_name'
+        dynamic: 'repo.full_name.full_name',
       },
       { key: 'title', label: 'Title', required: true },
-      { key: 'body', label: 'Body', required: false }
+      { key: 'body', label: 'Body', required: false },
     ],
     perform: createIssue,
-    sample: sample
-  }
+    sample: sample,
+  },
 };

@@ -3,18 +3,18 @@ const subscribeHook = async (z, bundle) => {
   // the rest of the data can be anything you want, such an event type or other configuration data
   const data = {
     url: bundle.targetUrl,
-    style: bundle.inputData.style
+    style: bundle.inputData.style,
   };
 
   const options = {
     url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
     method: 'POST',
-    body: data
+    body: data,
   };
 
   // data returned from this object will be available in `performUnsubscribe` as `bundle.subscribeData`
   const response = await z.request(options);
-  return response.json;
+  return response.data;
 };
 
 const unsubscribeHook = async (z, bundle) => {
@@ -23,12 +23,12 @@ const unsubscribeHook = async (z, bundle) => {
 
   const options = {
     url: `https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks/${hookId}`,
-    method: 'DELETE'
+    method: 'DELETE',
   };
 
   // You may return a promise or a normal data structure from any perform method.
   const response = await z.request(options);
-  return response.json;
+  return response.data;
 };
 
 // this function runs when a hook is recieved on a live zap (or if testing with a hook)
@@ -41,7 +41,7 @@ const getRecipe = (z, bundle) => {
     directions: bundle.cleanedRequest.directions,
     style: bundle.cleanedRequest.style,
     authorId: bundle.cleanedRequest.authorId,
-    createdAt: bundle.cleanedRequest.createdAt
+    createdAt: bundle.cleanedRequest.createdAt,
   };
 
   // trigger methods must return arrays
@@ -54,13 +54,13 @@ const getFallbackRealRecipe = async (z, bundle) => {
   const options = {
     url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes/',
     params: {
-      style: bundle.inputData.style
-    }
+      style: bundle.inputData.style,
+    },
   };
 
   const response = await z.request(options);
 
-  return response.json;
+  return response.data;
 };
 
 module.exports = {
@@ -71,7 +71,7 @@ module.exports = {
   noun: 'Recipe',
   display: {
     label: 'New Recipe',
-    description: 'Trigger when a new recipe is added.'
+    description: 'Trigger when a new recipe is added.',
   },
 
   // `operation` is where the business logic goes.
@@ -82,8 +82,8 @@ module.exports = {
       {
         key: 'style',
         type: 'string',
-        helpText: 'Which styles of cuisine this should trigger on.'
-      }
+        helpText: 'Which styles of cuisine this should trigger on.',
+      },
     ],
 
     type: 'hook',
@@ -103,7 +103,7 @@ module.exports = {
       name: 'Best Spagetti Ever',
       authorId: 1,
       directions: '1. Boil Noodles\n2.Serve with sauce',
-      style: 'italian'
+      style: 'italian',
     },
 
     // If the item can have fields with custom names (such as a spreadsheet or form app might)
@@ -118,7 +118,7 @@ module.exports = {
       { key: 'name', label: 'Name' },
       { key: 'directions', label: 'Directions' },
       { key: 'authorId', label: 'Author ID' },
-      { key: 'style', label: 'Style' }
-    ]
-  }
+      { key: 'style', label: 'Style' },
+    ],
+  },
 };

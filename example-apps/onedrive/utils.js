@@ -12,7 +12,7 @@ const parseResponse = (z, type, response) => {
   let results = []
 
   if (response.status >= 200 && response.status < 300) {
-    results = response.json
+    results = response.data
 
     // OneDrive puts the contents of lists inside .value property
     if (!_.isArray(results) && _.isArray(results.value)) {
@@ -57,7 +57,7 @@ const extractParentsFromPath = (path) => {
       id: (i + 1) * -1,
       name: name === '' ? '/' : name,
       _path: parts.join('/') + (name === '' ? name : `/${name}`),
-      folder: {}
+      folder: {},
     }
 
     results.push(result)
@@ -102,7 +102,7 @@ const getFileDetailsFromRequest = (url) =>
       filename: '',
       size: 0,
       content: '',
-      contentType: ''
+      contentType: '',
     }
 
     fetch(url)
@@ -135,5 +135,5 @@ module.exports = {
   extractParentsFromPath,
   cleanupPaths,
   getFileDetailsFromRequest,
-  getStringByteSize
+  getStringByteSize,
 }

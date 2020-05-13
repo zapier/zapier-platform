@@ -4,7 +4,7 @@ const perform = async (z: ZObject, bundle: Bundle) => {
   const response = await z.request(
     'https://auth-json-server.zapier-staging.com/movies'
   );
-  return response.json;
+  return response.data;
 };
 
 export default {

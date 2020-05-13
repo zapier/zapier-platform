@@ -567,7 +567,7 @@ const getSessionKey = (z, bundle) => {
       throw new Error('The username/password you supplied is invalid');
     }
     return {
-      sessionKey: response.json.sessionKey,
+      sessionKey: response.data.sessionKey,
     };
   });
 };
@@ -1059,7 +1059,7 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 const recipeFields = (z, bundle) => {
   const response = z.request('https://example.com/api/v2/fields.json');
   // json is is [{"key":"field_1"},{"key":"field_2"}]
-  return response.then(res => res.json);
+  return response.then((res) => res.data);
 };
 
 const App = {
@@ -1074,19 +1074,19 @@ const App = {
             key: 'title',
             required: true,
             label: 'Title of Recipe',
-            helpText: 'Name your recipe!'
+            helpText: 'Name your recipe!',
           },
           {
             key: 'style',
             required: true,
-            choices: { mexican: 'Mexican', italian: 'Italian' }
+            choices: { mexican: 'Mexican', italian: 'Italian' },
           },
-          recipeFields // provide a function inline - we'll merge the results!
+          recipeFields, // provide a function inline - we'll merge the results!
         ],
-        perform: () => {}
-      }
-    }
-  }
+        perform: () => {},
+      },
+    },
+  },
 };
 
 ```
@@ -1265,10 +1265,10 @@ perform: () => {
   return z
     .request('https://example.com/api/v2/projects.json', {
       params: {
-        spreadsheet_id: bundle.inputData.spreadsheet_id
-      }
+        spreadsheet_id: bundle.inputData.spreadsheet_id,
+      },
     })
-    .then(response => response.json);
+    .then((response) => response.data);
 };
 
 ```
@@ -1488,7 +1488,7 @@ To define an Output Field for a nested field use `{{parent}}__{{key}}`. For chil
 const recipeOutputFields = (z, bundle) => {
   const response = z.request('https://example.com/api/v2/fields.json');
   // json is like [{"key":"field_1","label":"Label for Custom Field"}]
-  return response.then(res => res.json);
+  return response.then((res) => res.data);
 };
 
 const App = {
@@ -1503,67 +1503,67 @@ const App = {
           title: 'Pancake',
           author: {
             id: 1,
-            name: 'Amy'
+            name: 'Amy',
           },
           ingredients: [
             {
               name: 'Egg',
-              amount: 1
+              amount: 1,
             },
             {
               name: 'Milk',
               amount: 60,
-              unit: 'g'
+              unit: 'g',
             },
             {
               name: 'Flour',
               amount: 30,
-              unit: 'g'
-            }
-          ]
+              unit: 'g',
+            },
+          ],
         },
         // an array of objects is the simplest way
         outputFields: [
           {
             key: 'id',
             label: 'Recipe ID',
-            type: 'integer'
+            type: 'integer',
           },
           {
             key: 'title',
             label: 'Recipe Title',
-            type: 'string'
+            type: 'string',
           },
           {
             key: 'author__id',
             label: 'Author User ID',
-            type: 'integer'
+            type: 'integer',
           },
           {
             key: 'author__name',
             label: 'Author Name',
-            type: 'string'
+            type: 'string',
           },
           {
             key: 'ingredients[]name',
             label: 'Ingredient Name',
-            type: 'string'
+            type: 'string',
           },
           {
             key: 'ingredients[]amount',
             label: 'Ingredient Amount',
-            type: 'number'
+            type: 'number',
           },
           {
             key: 'ingredients[]unit',
             label: 'Ingredient Unit',
-            type: 'string'
+            type: 'string',
           },
-          recipeOutputFields // provide a function inline - we'll merge the results!
-        ]
-      }
-    }
-  }
+          recipeOutputFields, // provide a function inline - we'll merge the results!
+        ],
+      },
+    },
+  },
 };
 
 ```
@@ -1691,7 +1691,7 @@ const subscribeHook = (z, bundle) => {
     },
   };
 
-  return z.request(options).then((response) => response.json);
+  return z.request(options).then((response) => response.data);
 };
 
 module.exports = {
@@ -1824,14 +1824,14 @@ For example, you can access the `process.env` in your perform functions and in t
 const listExample = (z, bundle) => {
   const httpOptions = {
     headers: {
-      'my-header': process.env.MY_SECRET_VALUE
-    }
+      'my-header': process.env.MY_SECRET_VALUE,
+    },
   };
   const response = z.request(
     'https://example.com/api/v2/recipes.json',
     httpOptions
   );
-  return response.then(res => res.json);
+  return response.then((res) => res.data);
 };
 
 const App = {
@@ -1841,10 +1841,10 @@ const App = {
       noun: '{{process.env.MY_NOUN}}',
       operation: {
         // ...
-        perform: listExample
-      }
-    }
-  }
+        perform: listExample,
+      },
+    },
+  },
 };
 
 ```
@@ -1923,7 +1923,7 @@ const listExample = (z, bundle) => {
   return z
     .request('https://example.com/api/v2/recipes.json', customHttpOptions)
     .then((response) => {
-      const recipes = response.json;
+      const recipes = response.data;
       // do any custom processing of recipes here...
 
       return recipes;
@@ -2013,17 +2013,22 @@ const handleErrors = (response, z) => {
   }
 
   // Throw an error that `throwForStatus` wouldn't throw (correctly) for.
-  else if (response.status === 200 && response.json.success === false) {
-    throw new z.errors.Error(response.json.message, response.json.code);
+  else if (response.status === 200 && response.data.success === false) {
+    throw new z.errors.Error(response.data.message, response.data.code);
   }
+};
 
+const parseXML = (response, z, bundle) => {
+  // Parse content that is not JSON
+  // eslint-disable-next-line no-undef
+  response.data = xml.parse(response.content);
   return response;
 };
 
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [handleErrors],
+  afterResponse: [parseXML, handleErrors],
   // ...
 };
 
@@ -2089,7 +2094,9 @@ The response object returned by `z.request([url], options)` supports the followi
 
 * `status`: The response status code, i.e. `200`, `404`, etc.
 * `content`: The response content as a String. For Buffer, try `options.raw = true`.
-* `json`: The response content as an object (or `undefined`). If `options.raw = true` - is a promise.
+* `data`: The response content as an object if the content is JSON or ` application/x-www-form-urlencoded` (`undefined` otherwise).
+* `json`: The response content as an object if the content is JSON (`undefined` otherwise). Deprecated: Use `data` instead.
+* `json()`: Get the response content as an object, if `options.raw = true` and content is JSON (returns a promise).
 * `body`: A stream available only if you provide `options.raw = true`.
 * `headers`: Response headers object. The header keys are all lower case.
 * `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
@@ -2107,14 +2114,16 @@ z.request({
   response.getHeader('content-type');
   response.request; // original request options
   response.throwForStatus();
-  // if options.raw === false (default)...
-  response.json; // identical to:
-  JSON.parse(response.content);
-  // if options.raw === true...
-  response.buffer().then(buf => buf.toString());
-  response.text().then(content => content);
-  response.json().then(json => json);
-  response.body.pipe(otherStream);
+  if (options.raw === false) { // (default)
+    response.data; // same as...
+    JSON.parse(response.content); // or...
+    querystring.parse(response.content);
+  } else {
+    response.buffer().then(buf => buf.toString());
+    response.text().then(content => content);
+    response.json().then(json => json);
+    response.body.pipe(otherStream);
+  }
 });
 ```
 
@@ -2140,19 +2149,19 @@ Here is an example that pulls in extra data for a movie:
 ```js
 const getExtraDataFunction = (z, bundle) => {
   const url = `https://example.com/movies/${bundle.inputData.id}.json`;
-  return z.request(url).then(res => res.json);
+  return z.request(url).then((res) => res.data);
 };
 
 const movieList = (z, bundle) => {
   return z
     .request('https://example.com/movies.json')
-    .then(res => res.json)
-    .then(results => {
-      return results.map(result => {
+    .then((res) => res.data)
+    .then((results) => {
+      return results.map((result) => {
         // so maybe /movies.json is thin content but
         // /movies/:id.json has more details we want...
         result.moreData = z.dehydrate(getExtraDataFunction, {
-          id: result.id
+          id: result.id,
         });
         return result;
       });
@@ -2166,7 +2175,7 @@ const App = {
   // don't forget to register hydrators here!
   // it can be imported from any module
   hydrators: {
-    getExtraData: getExtraDataFunction
+    getExtraData: getExtraDataFunction,
   },
 
   triggers: {
@@ -2174,13 +2183,13 @@ const App = {
       noun: 'Movie',
       display: {
         label: 'New Movie',
-        description: 'Triggers when a new Movie is added.'
+        description: 'Triggers when a new Movie is added.',
       },
       operation: {
-        perform: movieList
-      }
-    }
-  }
+        perform: movieList,
+      },
+    },
+  },
 };
 
 module.exports = App;
@@ -2235,7 +2244,7 @@ const stashPDFfunction = (z, bundle) => {
   // use standard auth to request the file
   const filePromise = z.request({
     url: bundle.inputData.downloadUrl,
-    raw: true
+    raw: true,
   });
   // and swap it for a stashed URL
   return z.stashFile(filePromise);
@@ -2244,13 +2253,13 @@ const stashPDFfunction = (z, bundle) => {
 const pdfList = (z, bundle) => {
   return z
     .request('https://example.com/pdfs.json')
-    .then(res => res.json)
-    .then(results => {
-      return results.map(result => {
+    .then((res) => res.data)
+    .then((results) => {
+      return results.map((result) => {
         // lazily convert a secret_download_url to a stashed url
         // zapier won't do this until we need it
         result.file = z.dehydrateFile(stashPDFfunction, {
-          downloadUrl: result.secret_download_url
+          downloadUrl: result.secret_download_url,
         });
         delete result.secret_download_url;
         return result;
@@ -2263,7 +2272,7 @@ const App = {
   platformVersion: require('zapier-platform-core').version,
 
   hydrators: {
-    stashPDF: stashPDFfunction
+    stashPDF: stashPDFfunction,
   },
 
   triggers: {
@@ -2271,13 +2280,13 @@ const App = {
       noun: 'PDF',
       display: {
         label: 'New PDF',
-        description: 'Triggers when a new PDF is added.'
+        description: 'Triggers when a new PDF is added.',
       },
       operation: {
-        perform: pdfList
-      }
-    }
-  }
+        perform: pdfList,
+      },
+    },
+  },
 };
 
 module.exports = App;
@@ -2789,6 +2798,8 @@ Not natively, but it can! Users have reported that the following `npm` modules a
 * [xml2js](https://github.com/Leonidas-from-XIV/node-xml2js)
 * [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser)
 
+For [shorthand requests](shorthand-http-requests), use an `afterResponse` [middleware](using-http-middleware) that sets `response.data` to the parsed XML:
+
 ```js
 const xml = require('pixl-xml');
 
@@ -2796,10 +2807,10 @@ const App = {
   // ...
   afterResponse: [
     (response, z, bundle) => {
-      response.xml = xml.parse(response.content);
+      response.data = xml.parse(response.content);
       return response;
-    }
-  ]
+    },
+  ],
   // ...
 };
 
@@ -2816,8 +2827,8 @@ const makeCall = (z, start, limit) => {
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       _start: start,
-      _limit: limit
-    }
+      _limit: limit,
+    },
   });
 };
 
@@ -2836,9 +2847,9 @@ const performPaging = (z, bundle) => {
     i += 1;
   }
 
-  return Promise.all(promises).then(res => {
+  return Promise.all(promises).then((res) => {
     // res is an array of responses
-    const results = res.map(r => r.json); // array of arrays of js objects
+    const results = res.map((r) => r.data); // array of arrays of js objects
     return Array.prototype.concat.apply([], results); // flatten array
   });
 };
@@ -2849,13 +2860,13 @@ module.exports = {
 
   display: {
     label: 'Get Paging',
-    description: 'Triggers on a new paging.'
+    description: 'Triggers on a new paging.',
   },
 
   operation: {
     inputFields: [],
-    perform: performPaging
-  }
+    perform: performPaging,
+  },
 };
 
 ```
@@ -2876,11 +2887,11 @@ const asyncExample = async (z, bundle) => {
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       _start: start,
-      _limit: limit
-    }
+      _limit: limit,
+    },
   });
 
-  let results = response.json;
+  let results = response.data;
 
   // keep paging until the last item was created over two hours ago
   // then we know we almost certainly haven't missed anything and can let
@@ -2893,11 +2904,11 @@ const asyncExample = async (z, bundle) => {
       url: 'https://jsonplaceholder.typicode.com/posts',
       params: {
         _start: start,
-        _limit: limit
-      }
+        _limit: limit,
+      },
     });
 
-    results = results.concat(response.json);
+    results = results.concat(response.data);
   }
 
   return results;
@@ -2944,7 +2955,7 @@ Paging is a lot like a regular trigger except the range of items returned is dyn
       offset: 100 * bundle.meta.page
     }
   });
-  return promise.then((response) => response.json);
+  return promise.then((response) => response.data);
 };
 ```
 
@@ -3025,7 +3036,7 @@ For deduplication to work, we need to be able to identify and use a unique field
 
 ```js
 // ...
-let items = response.json.items;
+let items = response.data.items;
 items.forEach(item => {
   item.id = item.contactId;
 })

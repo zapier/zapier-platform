@@ -4,8 +4,8 @@ const makeCall = (z, start, limit) => {
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       _start: start,
-      _limit: limit
-    }
+      _limit: limit,
+    },
   });
 };
 
@@ -24,9 +24,9 @@ const performPaging = (z, bundle) => {
     i += 1;
   }
 
-  return Promise.all(promises).then(res => {
+  return Promise.all(promises).then((res) => {
     // res is an array of responses
-    const results = res.map(r => r.json); // array of arrays of js objects
+    const results = res.map((r) => r.data); // array of arrays of js objects
     return Array.prototype.concat.apply([], results); // flatten array
   });
 };
@@ -37,11 +37,11 @@ module.exports = {
 
   display: {
     label: 'Get Paging',
-    description: 'Triggers on a new paging.'
+    description: 'Triggers on a new paging.',
   },
 
   operation: {
     inputFields: [],
-    perform: performPaging
-  }
+    perform: performPaging,
+  },
 };

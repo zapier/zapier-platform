@@ -1,14 +1,14 @@
 const listExample = (z, bundle) => {
   const httpOptions = {
     headers: {
-      'my-header': process.env.MY_SECRET_VALUE
-    }
+      'my-header': process.env.MY_SECRET_VALUE,
+    },
   };
   const response = z.request(
     'https://example.com/api/v2/recipes.json',
     httpOptions
   );
-  return response.then(res => res.json);
+  return response.then((res) => res.data);
 };
 
 const App = {
@@ -18,8 +18,8 @@ const App = {
       noun: '{{process.env.MY_NOUN}}',
       operation: {
         // ...
-        perform: listExample
-      }
-    }
-  }
+        perform: listExample,
+      },
+    },
+  },
 };

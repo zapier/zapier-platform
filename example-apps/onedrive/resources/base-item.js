@@ -113,7 +113,7 @@ const handleCreateWithSession = (
       },
     })
     .then((response) => {
-      const uploadUrl = response.json.uploadUrl
+      const uploadUrl = response.data.uploadUrl
 
       // This should work fine for files up to 60MB (https://dev.onedrive.com/items/upload_large_files.htm#upload-fragments)
 

@@ -112,7 +112,7 @@ describe('oauth2 app', () => {
     };
 
     const response = await appTester(App.authentication.test, bundle);
-    expect(response.json).toHaveProperty('username');
-    expect(response.json.username).toBe('Bret');
+    expect(response.data).toHaveProperty('username');
+    expect(response.data.username).toBe('Bret');
   });
 });
