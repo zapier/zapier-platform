@@ -6,9 +6,13 @@ before_install:
   - pip install --user awscli
 install:
   - yarn install
+stages:
+  - name: "Test"
+  - name: "Deploy"
+    if: tag IS present AND env(TRAVIS_NODE_VERSION) IS "10.16.3"
 jobs:
   include:
-    - stage: "Tests"
+    - stage: "Test"
       name: "cli: unit tests"
       script: "yarn workspace zapier-platform-cli test"
     - name: "cli: smoke tests"
