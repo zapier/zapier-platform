@@ -37,7 +37,7 @@ module.exports = {
   key: 'uploadFile_v10',
   noun: 'File',
   display: {
-    label: 'Upload File',
+    label: 'Upload File v10',
     description: 'Uploads a file. Only works on zapier-platform-core v10+.',
   },
   operation: {
