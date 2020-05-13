@@ -3,7 +3,7 @@ const test = async (z /*, bundle */) => {
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
   const response = await z.request({
-    url: 'https://auth-json-server.zapier-staging.com/me'
+    url: 'https://auth-json-server.zapier-staging.com/me',
   });
   return response;
 };
@@ -15,7 +15,7 @@ const Authentication = {
   // method whenver a user connects their account for the first time.
   test,
   // assuming "username" is a key returned from the test
-  connectionLabel: '{{username}}'
+  connectionLabel: '{{username}}',
 };
 
 export default Authentication;

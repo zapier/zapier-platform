@@ -5,8 +5,9 @@ const path = require('path');
 require('should');
 
 const { getPackageLatestVersion, getPackageSize } = require('../utils/npm');
-const { makeTempDir } = require('../utils/files');
+const { ensureDir, makeTempDir } = require('../utils/files');
 const { runCommand } = require('../tests/_helpers');
+const { PLATFORM_PACKAGE } = require('../constants');
 
 const REGEX_VERSION = /\d+\.\d+\.\d+/;
 
@@ -41,8 +42,27 @@ const npmPack = () => {
 
 const npmInstall = (packagePath, workdir) => {
   runCommand('npm', ['install', '--production', packagePath], {
-    cwd: workdir
+    cwd: workdir,
   });
+};
+
+const yarnInstall = (coreZipPath, workdir) => {
+  // When releasing a new core version, example apps would have bumped their
+  // core before the new core version is published to npm. So we need to patch
+  // example app's package.json to use local core temporarily to avoid `npm
+  // install` error.
+  const packageJsonPath = path.join(workdir, 'package.json');
+  const origPackageJsonText = fs.readFileSync(packageJsonPath);
+  const packageJson = JSON.parse(origPackageJsonText);
+  packageJson.dependencies[PLATFORM_PACKAGE] = `file:${coreZipPath}`;
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
+
+  try {
+    runCommand('yarn', [], { cwd: workdir });
+  } finally {
+    fs.writeFileSync(packageJsonPath, origPackageJsonText);
+  }
 };
 
 describe('smoke tests - setup will take some time', () => {
@@ -51,11 +71,12 @@ describe('smoke tests - setup will take some time', () => {
     package: {
       filename: null,
       version: null,
-      path: null
+      path: null,
+      corePath: null,
     },
     workdir: null,
     cliBin: null,
-    hasRC: false
+    hasRC: false,
   };
 
   before(() => {
@@ -64,6 +85,7 @@ describe('smoke tests - setup will take some time', () => {
     context.package.filename = npmPack();
     context.package.version = context.package.filename.match(REGEX_VERSION)[0];
     context.package.path = path.join(process.cwd(), context.package.filename);
+    context.package.corePath = path.join(process.cwd(), '..', 'core');
 
     context.workdir = makeTempDir();
 
@@ -82,7 +104,7 @@ describe('smoke tests - setup will take some time', () => {
     fs.removeSync(context.workdir);
   });
 
-  it('package size should not change much', async function() {
+  it('package size should not change much', async function () {
     const packageName = 'zapier-platform-cli';
     const latestVersion = await getPackageLatestVersion(packageName);
     const baselineSize = await getPackageSize(packageName, latestVersion);
@@ -103,9 +125,9 @@ describe('smoke tests - setup will take some time', () => {
       .should.be.true();
   });
 
-  it('zapier init', () => {
-    runCommand(context.cliBin, ['init', 'awesome-app'], {
-      cwd: context.workdir
+  it('zapier init -t minimal', () => {
+    runCommand(context.cliBin, ['init', 'awesome-app', '-t', 'minimal'], {
+      cwd: context.workdir,
     });
 
     const newAppDir = path.join(context.workdir, 'awesome-app');
@@ -117,28 +139,9 @@ describe('smoke tests - setup will take some time', () => {
     fs.existsSync(appPackageJson).should.be.true();
   });
 
-  it('zapier init --template=babel', () => {
-    runCommand(context.cliBin, ['init', 'babel-app', '--template=babel'], {
-      cwd: context.workdir
-    });
-
-    const newAppDir = path.join(context.workdir, 'babel-app');
-    fs.existsSync(newAppDir).should.be.true();
-
-    const appIndexJs = path.join(newAppDir, 'index.js');
-    const appPackageJson = path.join(newAppDir, 'package.json');
-    fs.existsSync(appIndexJs).should.be.true();
-    fs.existsSync(appPackageJson).should.be.true();
-
-    const pkg = JSON.parse(
-      fs.readFileSync(appPackageJson, { encoding: 'utf8' })
-    );
-    pkg.name.should.containEql('babel');
-  });
-
   it('zapier scaffold trigger neat', () => {
-    runCommand(context.cliBin, ['init', 'scaffold-town'], {
-      cwd: context.workdir
+    runCommand(context.cliBin, ['init', 'scaffold-town', '-t', 'minimal'], {
+      cwd: context.workdir,
     });
 
     const newAppDir = path.join(context.workdir, 'scaffold-town');
@@ -146,7 +149,7 @@ describe('smoke tests - setup will take some time', () => {
 
     // npm install was already run, so it'll run the validaion function
     runCommand(context.cliBin, ['scaffold', 'trigger', 'neat'], {
-      cwd: newAppDir
+      cwd: newAppDir,
     });
 
     const appIndexJs = path.join(newAppDir, 'index.js');
@@ -163,18 +166,59 @@ describe('smoke tests - setup will take some time', () => {
     const pkg = JSON.parse(
       fs.readFileSync(appPackageJson, { encoding: 'utf8' })
     );
-    pkg.name.should.containEql('minimal');
+    pkg.name.should.containEql('scaffold-town');
   });
 
-  it('zapier integrations', function() {
+  it('zapier integrations', function () {
     if (!context.hasRC) {
       this.skip();
     }
     const stdout = runCommand(context.cliBin, [
       'integrations',
-      '--format=json'
+      '--format=json',
     ]);
     const result = JSON.parse(stdout);
     result.should.be.Array();
+  });
+
+  describe('zapier init w/ templates (runs very slowly)', () => {
+    const testableTemplates = [
+      'basic-auth',
+      'custom-auth',
+      'digest-auth',
+      // 'oauth1-trello',
+      'oauth2',
+      'session-auth',
+
+      'dynamic-dropdown',
+      'files',
+      'minimal',
+      'search-or-create',
+      'typescript',
+    ];
+
+    const subfolder = 'template-tests';
+    let subfolderPath;
+    before(async () => {
+      subfolderPath = path.join(context.workdir, subfolder);
+      await ensureDir(subfolderPath);
+    });
+
+    testableTemplates.forEach((template) => {
+      it(`${template} should test out of the box`, () => {
+        runCommand(context.cliBin, ['init', template, '-t', template], {
+          cwd: subfolderPath,
+          input: 'a', // tells `yo` to replace the auth file
+        });
+
+        const appDir = path.join(subfolderPath, template);
+        yarnInstall(context.package.corePath, appDir);
+
+        // should not throw an error
+        runCommand(context.cliBin, ['test', '--skip-validate'], {
+          cwd: appDir,
+        });
+      });
+    });
   });
 });

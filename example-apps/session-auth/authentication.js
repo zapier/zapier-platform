@@ -3,7 +3,7 @@ const testAuth = (z /*, bundle */) =>
   // every user will have access to, such as an account or profile endpoint like /me.
   // In this example, we'll hit httpbin, which validates the Authorization Header against the arguments passed in the URL path
   z.request({
-    url: 'https://auth-json-server.zapier-staging.com/me'
+    url: 'https://auth-json-server.zapier-staging.com/me',
   });
 
 const getSessionKey = (z, bundle) => {
@@ -12,12 +12,12 @@ const getSessionKey = (z, bundle) => {
     url: 'https://httpbin.zapier-tooling.com/post',
     body: {
       username: bundle.authData.username,
-      password: bundle.authData.password
-    }
+      password: bundle.authData.password,
+    },
   });
 
-  return promise.then(response => ({
-    sessionKey: response.json.sessionKey || 'secret'
+  return promise.then((response) => ({
+    sessionKey: response.json.sessionKey || 'secret',
   }));
 };
 
@@ -27,15 +27,15 @@ module.exports = {
   // they connect their account.
   fields: [
     { key: 'username', label: 'Username', required: true, type: 'string' },
-    { key: 'password', label: 'Password', required: true, type: 'password' }
+    { key: 'password', label: 'Password', required: true, type: 'password' },
   ],
   // The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this
   // method whenver a user connects their account for the first time.
   test: testAuth,
   // The method that will exchange the fields provided by the user for session credentials.
   sessionConfig: {
-    perform: getSessionKey
+    perform: getSessionKey,
   },
   // assuming "username" is a key returned from the test
-  connectionLabel: '{{username}}'
+  connectionLabel: '{{username}}',
 };

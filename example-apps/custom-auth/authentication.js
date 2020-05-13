@@ -6,7 +6,7 @@ const testAuth = (z /*, bundle */) =>
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
   z.request({
-    url: 'https://auth-json-server.zapier-staging.com/me'
+    url: 'https://auth-json-server.zapier-staging.com/me',
   });
 
 module.exports = {
@@ -20,5 +20,5 @@ module.exports = {
   // assuming "username" is a key in the json returned from testAuth
   connectionLabel: (z, bundle) => {
     return bundle.inputData.username;
-  }
+  },
 };

@@ -1,5 +1,4 @@
-/* globals describe, it, before */
-require('should');
+/* globals describe, it, expect, beforeAll */
 
 const zapier = require('zapier-platform-core');
 
@@ -20,7 +19,7 @@ process.env.CLIENT_ID = process.env.CLIENT_ID || '1234';
 process.env.CLIENT_SECRET = process.env.CLIENT_SECRET || 'asdf';
 
 describe('oauth2 app', () => {
-  before(() => {
+  beforeAll(() => {
     // It's a good idea to store your Client ID and Secret in the environment rather than in code.
     if (!(process.env.CLIENT_ID && process.env.CLIENT_SECRET)) {
       throw new Error(
@@ -47,8 +46,8 @@ describe('oauth2 app', () => {
       bundle
     );
 
-    authorizeUrl.should.eql(
-      'https://auth-json-server.zapier-staging.com/oauth/authorize?client_id=1234&state=4444&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code'
+    expect(authorizeUrl).toBe(
+      'https://auth-json-server.zapier-staging.com/oauth/authorize?client_id=1234&state=4444&redirect_uri=https%3A%2F%2Fzapier.com%2F&response_type=code'
     );
   });
 
@@ -79,8 +78,8 @@ describe('oauth2 app', () => {
       bundle
     );
 
-    result.access_token.should.eql('a_token');
-    result.refresh_token.should.eql('a_refresh_token');
+    expect(result.access_token).toBe('a_token');
+    expect(result.refresh_token).toBe('a_refresh_token');
   });
 
   it('can refresh the access token', async () => {
@@ -101,7 +100,7 @@ describe('oauth2 app', () => {
       App.authentication.oauth2Config.refreshAccessToken,
       bundle
     );
-    result.access_token.should.eql('a_new_token');
+    expect(result.access_token).toBe('a_new_token');
   });
 
   it('includes the access token in future requests', async () => {
@@ -113,7 +112,7 @@ describe('oauth2 app', () => {
     };
 
     const response = await appTester(App.authentication.test, bundle);
-    response.json.should.have.property('username');
-    response.json.username.should.eql('Bret');
+    expect(response.json).toHaveProperty('username');
+    expect(response.json.username).toBe('Bret');
   });
 });

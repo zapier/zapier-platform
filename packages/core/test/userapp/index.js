@@ -11,14 +11,14 @@ const List = {
   list: {
     display: {
       description: 'Trigger on new thing in list.',
-      label: 'List'
+      label: 'List',
     },
     operation: {
       perform: (z, bundle) => {
         return helpers.noop([{ id: 1234 }, { id: 5678 }]);
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 const Contact = {
@@ -27,40 +27,40 @@ const Contact = {
   list: {
     display: {
       label: 'New Contact',
-      description: 'Trigger on new contacts.'
+      description: 'Trigger on new contacts.',
     },
     operation: {
       perform: {
-        url: '{{process.env.BASE_URL}}/get'
+        url: '{{process.env.BASE_URL}}/get',
       },
       inputFields: [
         {
           key: 'list_id',
           type: 'integer',
           dynamic: List.key,
-          required: false
-        }
+          required: false,
+        },
       ],
       outputFields: [
         {
           key: 'list_id',
           type: 'integer',
           dynamic: List.key,
-          required: false
-        }
-      ] // or function
-    }
+          required: false,
+        },
+      ], // or function
+    },
   },
   create: {
     display: {
       label: 'Create Contact',
-      description: 'Create a contact.'
+      description: 'Create a contact.',
     },
     operation: {
-      perform: () => {}
-    }
+      perform: () => {},
+    },
   },
-  outputFields: [{ key: 'id', type: 'string' }, () => {}] // or function
+  outputFields: [{ key: 'id', type: 'string' }, () => {}], // or function
 };
 
 const ContactError = {
@@ -69,14 +69,14 @@ const ContactError = {
   list: {
     display: {
       label: 'New Contact With Error!',
-      description: 'Trigger on new contacts, but return an error in response.'
+      description: 'Trigger on new contacts, but return an error in response.',
     },
     operation: {
       perform: {
-        url: '{{process.env.BASE_URL}}/get?error=serverDown'
-      }
-    }
-  }
+        url: '{{process.env.BASE_URL}}/get?error=serverDown',
+      },
+    },
+  },
 };
 
 const ContactSource = {
@@ -86,14 +86,14 @@ const ContactSource = {
     display: {
       label: 'New Contact With Source!',
       description:
-        'Trigger on new contacts, but return a response via fake JS source.'
+        'Trigger on new contacts, but return a response via fake JS source.',
     },
     operation: {
       perform: {
-        source: 'return [{ id: 1234 }];'
-      }
-    }
-  }
+        source: 'return [{ id: 1234 }];',
+      },
+    },
+  },
 };
 
 const LoggingFunc = {
@@ -102,7 +102,7 @@ const LoggingFunc = {
   list: {
     display: {
       label: 'New Logging Func',
-      description: 'Just works on sync function.'
+      description: 'Just works on sync function.',
     },
     operation: {
       perform: (z /* , bundle */) => {
@@ -111,9 +111,9 @@ const LoggingFunc = {
         z.console.error('something bad happened');
         z.console.trace(new Error('sky is falling'));
         return [{ id: 1234 }];
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 const RequestFunc = {
@@ -122,18 +122,20 @@ const RequestFunc = {
   list: {
     display: {
       label: 'New Request Func',
-      description: 'Makes an http request via z.request.'
+      description: 'Makes an http request via z.request.',
     },
     operation: {
       perform: (z /* , bundle */) => {
-        return z.request({ url: '{{process.env.BASE_URL}}/get' }).then(resp => {
-          const result = resp.json;
-          result.id = 123;
-          return [result];
-        });
-      }
-    }
-  }
+        return z
+          .request({ url: '{{process.env.BASE_URL}}/get' })
+          .then((resp) => {
+            const result = resp.json;
+            result.id = 123;
+            return [result];
+          });
+      },
+    },
+  },
 };
 
 const RequestSugar = {
@@ -142,16 +144,16 @@ const RequestSugar = {
   list: {
     display: {
       label: 'New Request Func',
-      description: 'Makes an http request via z.request with single url param.'
+      description: 'Makes an http request via z.request with single url param.',
     },
     operation: {
       perform: (z /* , bundle */) => {
-        return z.request('https://httpbin.org/get').then(resp => {
+        return z.request('https://httpbin.org/get').then((resp) => {
           return resp.json;
         });
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 const WorkingFunc = {
@@ -160,14 +162,14 @@ const WorkingFunc = {
   list: {
     display: {
       label: 'New Working Func',
-      description: 'Just works on sync function.'
+      description: 'Just works on sync function.',
     },
     operation: {
       perform: (/* z, bundle */) => {
         return [{ id: 1234 }];
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 const WorkingFuncAsync = {
@@ -176,14 +178,14 @@ const WorkingFuncAsync = {
   list: {
     display: {
       label: 'New Working Async Func',
-      description: 'Just works on an async function.'
+      description: 'Just works on an async function.',
     },
     operation: {
       perform: (z, bundle, cb) => {
         return cb(null, [{ id: 2345 }]);
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 const WorkingFuncPromise = {
@@ -192,14 +194,14 @@ const WorkingFuncPromise = {
   list: {
     display: {
       label: 'New Working Promise',
-      description: 'Just works on an promise.'
+      description: 'Just works on an promise.',
     },
     operation: {
       perform: () => {
         return Promise.resolve([{ id: 3456 }]);
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 const FailerHttp = {
@@ -208,14 +210,14 @@ const FailerHttp = {
   list: {
     display: {
       label: 'New Failer',
-      description: 'Just fails on HTTP.'
+      description: 'Just fails on HTTP.',
     },
     operation: {
       perform: {
-        url: 'https://httpbin.org/status/403'
-      }
-    }
-  }
+        url: 'https://httpbin.org/status/403',
+      },
+    },
+  },
 };
 
 const FailerFunc = {
@@ -224,14 +226,14 @@ const FailerFunc = {
   list: {
     display: {
       label: 'New Failer Func',
-      description: 'Just fails on sync function.'
+      description: 'Just fails on sync function.',
     },
     operation: {
       perform: (/* z, bundle */) => {
         throw new Error('Failer on sync function!');
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 const FailerFuncAsync = {
@@ -240,7 +242,7 @@ const FailerFuncAsync = {
   list: {
     display: {
       label: 'New Failer Func Async',
-      description: 'Just fails on async function.'
+      description: 'Just fails on async function.',
     },
     operation: {
       /* eslint no-unused-vars: 0 */
@@ -248,9 +250,9 @@ const FailerFuncAsync = {
         setTimeout(() => {
           throw new Error('Failer on async function!');
         }, 0);
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 const FailerFuncPromise = {
@@ -259,14 +261,14 @@ const FailerFuncPromise = {
   list: {
     display: {
       label: 'New Failer Promise',
-      description: 'Just fails on an promise.'
+      description: 'Just fails on an promise.',
     },
     operation: {
       perform: () => {
         return Promise.reject(new Error('Failer on promise function!'));
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 const StaticInputFields = {
@@ -275,14 +277,14 @@ const StaticInputFields = {
   list: {
     display: {
       label: 'Static Input Fields',
-      description: 'has static input fields'
+      description: 'has static input fields',
     },
     operation: {
       inputFields: [{ key: 'key 1' }, { key: 'key 2' }, { key: 'key 3' }],
       outputFields: [{ key: 'key 1' }, { key: 'key 2' }, { key: 'key 3' }],
-      perform: () => {}
-    }
-  }
+      perform: () => {},
+    },
+  },
 };
 
 const DynamicSyncInputFields = {
@@ -291,26 +293,26 @@ const DynamicSyncInputFields = {
   list: {
     display: {
       label: 'Dynamic Sync Fields',
-      description: 'sync function input fields'
+      description: 'sync function input fields',
     },
     operation: {
       inputFields: [
         (z, bundle) => [
           { key: bundle.key1 },
           { key: bundle.key2 },
-          { key: bundle.key3 }
-        ]
+          { key: bundle.key3 },
+        ],
       ],
       outputFields: [
         (z, bundle) => [
           { key: bundle.key1 },
           { key: bundle.key2 },
-          { key: bundle.key3 }
-        ]
+          { key: bundle.key3 },
+        ],
       ],
-      perform: () => {}
-    }
-  }
+      perform: () => {},
+    },
+  },
 };
 
 const DynamicAsyncInputFields = {
@@ -319,30 +321,30 @@ const DynamicAsyncInputFields = {
   list: {
     display: {
       label: 'Dynamic Async Fields',
-      description: 'input fields are a promise'
+      description: 'input fields are a promise',
     },
     operation: {
       inputFields: [
-        function(z, bundle) {
+        function (z, bundle) {
           return Promise.resolve([
             { key: 'key 1' },
             { key: 'key 2' },
-            { key: 'key 3' }
+            { key: 'key 3' },
           ]);
-        }
+        },
       ],
       outputFields: [
-        function(z, bundle) {
+        function (z, bundle) {
           return Promise.resolve([
             { key: 'key 1' },
             { key: 'key 2' },
-            { key: 'key 3' }
+            { key: 'key 3' },
           ]);
-        }
+        },
       ],
-      perform: () => {}
-    }
-  }
+      perform: () => {},
+    },
+  },
 };
 
 const MixedInputFields = {
@@ -352,22 +354,22 @@ const MixedInputFields = {
     display: {
       label: 'Mixed Input Fields',
       description:
-        'input fields are static, a sync function, and an async promise'
+        'input fields are static, a sync function, and an async promise',
     },
     operation: {
       inputFields: [
         { key: 'key 1' },
         (z, bundle) => Promise.resolve({ key: bundle.key2 }),
-        (z, bundle) => Promise.resolve({ key: 'key 3' })
+        (z, bundle) => Promise.resolve({ key: 'key 3' }),
       ],
       outputFields: [
         { key: 'key 1' },
         (z, bundle) => Promise.resolve({ key: bundle.key2 }),
-        (z, bundle) => Promise.resolve({ key: 'key 3' })
+        (z, bundle) => Promise.resolve({ key: 'key 3' }),
       ],
-      perform: () => {}
-    }
-  }
+      perform: () => {},
+    },
+  },
 };
 
 const HonkerDonker = {
@@ -376,28 +378,28 @@ const HonkerDonker = {
   get: {
     display: {
       label: 'Get a big honking object',
-      description: 'This will be dehydrated by list'
+      description: 'This will be dehydrated by list',
     },
     operation: {
-      perform: (z, bundle) => `honker donker number ${bundle.honkerId}`
-    }
+      perform: (z, bundle) => `honker donker number ${bundle.honkerId}`,
+    },
   },
   list: {
     display: {
       label: 'Trigger on New Thing in List',
-      description: 'Will include dehydrated data'
+      description: 'Will include dehydrated data',
     },
     operation: {
       perform: (z, bundle) => {
         const honkerIds = [1, 2, 3];
-        return honkerIds.map(id => {
+        return honkerIds.map((id) => {
           return z.dehydrate(HonkerDonker.get.operation.perform, {
-            honkerId: id
+            honkerId: id,
           });
         });
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 const ExecuteRequestAsFunc = {
@@ -406,21 +408,21 @@ const ExecuteRequestAsFunc = {
   list: {
     display: {
       label: 'Configurable Request (Func)',
-      description: 'Used for one-offs in the tests.'
+      description: 'Used for one-offs in the tests.',
     },
     operation: {
       perform: (z, bundle) => {
         const req = _.defaults({}, bundle.inputData.options);
-        return z.request(req).then(resp => {
+        return z.request(req).then((resp) => {
           return bundle.inputData.returnValue || resp.json;
         });
       },
       inputFields: [
         { key: 'options', dict: true },
-        { key: 'returnValue', list: true }
-      ]
-    }
-  }
+        { key: 'returnValue', list: true },
+      ],
+    },
+  },
 };
 
 const ExecuteRequestAsShorthand = {
@@ -429,20 +431,20 @@ const ExecuteRequestAsShorthand = {
   list: {
     display: {
       label: 'Configurable Request (Shorthand)',
-      description: 'Used for one-offs in the tests.'
+      description: 'Used for one-offs in the tests.',
     },
     operation: {
       perform: {
-        url: '{{bundle.inputData.url}}'
+        url: '{{bundle.inputData.url}}',
       },
       inputFields: [
         {
           key: 'url',
-          default: 'https://httpbin.org/status/403'
-        }
-      ]
-    }
-  }
+          default: 'https://httpbin.org/status/403',
+        },
+      ],
+    },
+  },
 };
 const EnvironmentVariable = {
   key: 'env',
@@ -450,7 +452,7 @@ const EnvironmentVariable = {
   list: {
     display: {
       label: 'New Environment Variable',
-      description: 'Trigger on new environment variables.'
+      description: 'Trigger on new environment variables.',
     },
     operation: {
       perform: (z, bundle) => {
@@ -461,9 +463,9 @@ const EnvironmentVariable = {
           }
         });
         return results;
-      }
-    }
-  }
+      },
+    },
+  },
 };
 const ExecuteCallbackRequest = {
   key: 'executeCallbackRequest',
@@ -471,10 +473,10 @@ const ExecuteCallbackRequest = {
   list: {
     display: {
       label: 'Callback Usage in a perform',
-      description: 'Used for one-offs in the tests.'
+      description: 'Used for one-offs in the tests.',
     },
     operation: {
-      perform: z => {
+      perform: (z) => {
         // we need to access the callback url
         const callbackUrl = z.generateCallbackUrl();
         return { callbackUrl };
@@ -482,11 +484,11 @@ const ExecuteCallbackRequest = {
       inputFields: [
         {
           key: 'test',
-          default: 'Manual Value'
-        }
-      ]
-    }
-  }
+          default: 'Manual Value',
+        },
+      ],
+    },
+  },
 };
 
 // custom HTTP middlewares /////
@@ -526,13 +528,13 @@ const App = {
     [ExecuteRequestAsFunc.key]: ExecuteRequestAsFunc,
     [ExecuteRequestAsShorthand.key]: ExecuteRequestAsShorthand,
     [ExecuteCallbackRequest.key]: ExecuteCallbackRequest,
-    [EnvironmentVariable.key]: EnvironmentVariable
+    [EnvironmentVariable.key]: EnvironmentVariable,
   },
   hydrators: {
-    getBigStuff: () => {}
+    getBigStuff: () => {},
   },
   version: '1.0.0',
-  platformVersion: '7.2.0'
+  platformVersion: '7.2.0',
 };
 
 module.exports = App;

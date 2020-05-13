@@ -26,12 +26,12 @@ const createAppRequestClient = (input, options) => {
 
   options = _.defaults({}, options, {
     skipDefaultMiddle: true,
-    extraArgs: []
+    extraArgs: [],
   });
 
   const httpBefores = [
     createInjectInputMiddleware(input),
-    prepareRequest
+    prepareRequest,
   ].concat(ensureArray(app.beforeRequest));
 
   if (app.authentication) {
@@ -55,7 +55,7 @@ const createAppRequestClient = (input, options) => {
     prepareResponse,
     logResponse,
     ...ensureArray(app.afterResponse),
-    throwForStatus
+    throwForStatus,
   ];
 
   return createRequestClient(httpBefores, httpAfters, options);

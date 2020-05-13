@@ -20,6 +20,6 @@ const handleErrors = (response, z) => {
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [handleErrors]
+  afterResponse: [handleErrors],
   // ...
 };

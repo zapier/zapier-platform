@@ -13,11 +13,11 @@ describe('digest auth app', () => {
     const bundle = {
       authData: {
         username: 'myuser',
-        password: 'mypass'
-      }
+        password: 'mypass',
+      },
     };
 
-    return appTester(App.authentication.test, bundle).then(response => {
+    return appTester(App.authentication.test, bundle).then((response) => {
       response.status.should.eql(200);
       response.json.authenticated.should.be.true();
       response.json.user.should.eql('myuser');
@@ -29,8 +29,8 @@ describe('digest auth app', () => {
     const bundle = {
       authData: {
         username: 'myuser',
-        password: 'badpwd'
-      }
+        password: 'badpwd',
+      },
     };
 
     return appTester(App.authentication.test, bundle).should.be.rejected();

@@ -1,5 +1,4 @@
-/* globals describe, it */
-require('should');
+/* globals describe, it, expect */
 
 const zapier = require('zapier-platform-core');
 
@@ -20,7 +19,7 @@ describe('session auth app', () => {
       bundle
     );
 
-    newAuthData.sessionKey.should.eql('secret');
+    expect(newAuthData.sessionKey).toBe('secret');
   });
 
   it('has auth details added to every request', async () => {
@@ -32,7 +31,7 @@ describe('session auth app', () => {
 
     const response = await appTester(App.authentication.test, bundle);
 
-    response.status.should.eql(200);
-    response.request.headers['X-API-Key'].should.eql('secret');
+    expect(response.status).toBe(200);
+    expect(response.request.headers['X-API-Key']).toBe('secret');
   });
 });

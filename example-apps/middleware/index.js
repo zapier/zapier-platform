@@ -9,7 +9,7 @@ const movie = require('./triggers/movie');
 const addSortingParams = (request /*, z */) => {
   request.params = _.extend({}, request.params, {
     _sort: 'id',
-    _order: 'desc'
+    _order: 'desc',
   });
   return request;
 };
@@ -38,12 +38,12 @@ const App = {
 
   beforeRequest: [
     // add our before middlewares
-    addSortingParams
+    addSortingParams,
   ],
 
   afterResponse: [
     // add our after middlewares
-    handleErrors
+    handleErrors,
   ],
 
   resources: {},
@@ -51,14 +51,14 @@ const App = {
   // If you want your trigger to show up, you better include it here!
   triggers: {
     [recipe.key]: recipe,
-    [movie.key]: movie
+    [movie.key]: movie,
   },
 
   // If you want your searches to show up, you better include it here!
   searches: {},
 
   // If you want your creates to show up, you better include it here!
-  creates: {}
+  creates: {},
 };
 
 // Finally, export the app.

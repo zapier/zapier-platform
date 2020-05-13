@@ -16,7 +16,7 @@ const { BASE_ITEM_URL } = require('../constants')
 
 const getItem = (itemType, z, bundle) => {
   const options = {
-    url: `${BASE_ITEM_URL}/me/drive/items/${bundle.inputData.id}`
+    url: `${BASE_ITEM_URL}/me/drive/items/${bundle.inputData.id}`,
   }
   return z
     .request(options)
@@ -25,7 +25,7 @@ const getItem = (itemType, z, bundle) => {
     .then((item) => {
       if (item.file) {
         item.fileContents = z.dehydrate(hydrators.getFileContents, {
-          id: item.id
+          id: item.id,
         })
       }
 
@@ -42,7 +42,7 @@ const listItems = (itemType, z, bundle) => {
   }
 
   const options = {
-    url: `${BASE_ITEM_URL}/me/drive/root${folder}/children`
+    url: `${BASE_ITEM_URL}/me/drive/root${folder}/children`,
   }
 
   return z
@@ -53,7 +53,7 @@ const listItems = (itemType, z, bundle) => {
       items.forEach((item) => {
         if (item.file) {
           item.fileContents = z.dehydrate(hydrators.getFileContents, {
-            id: item.id
+            id: item.id,
           })
         }
       })
@@ -73,7 +73,7 @@ const searchItem = (itemType, z, bundle) => {
   const options = {
     url: `${BASE_ITEM_URL}/me/drive/root${folder}/search(q='${encodeURIComponent(
       bundle.inputData.name
-    )}')`
+    )}')`,
   }
 
   return z
@@ -105,12 +105,12 @@ const handleCreateWithSession = (
       method: 'POST',
       body: {
         item: {
-          '@microsoft.graph.conflictBehavior': 'rename'
-        }
+          '@microsoft.graph.conflictBehavior': 'rename',
+        },
       },
       headers: {
-        'content-type': 'application/json'
-      }
+        'content-type': 'application/json',
+      },
     })
     .then((response) => {
       const uploadUrl = response.json.uploadUrl
@@ -130,15 +130,15 @@ const handleCreateWithSession = (
         headers: {
           'content-type': fileContentType,
           'content-length': fileSize,
-          'content-range': `bytes 0-${fileSize - 1}/${fileSize}`
-        }
+          'content-range': `bytes 0-${fileSize - 1}/${fileSize}`,
+        },
       })
     })
     .then((response) => response.text())
     .then((content) => {
       const resourceId = z.JSON.parse(content).id
       bundle.inputData = {
-        id: resourceId
+        id: resourceId,
       }
 
       return _.partial(getItem, 'file')(z, bundle)
@@ -150,5 +150,5 @@ module.exports = {
   getItem,
   listItems,
   searchItem,
-  handleCreateWithSession
+  handleCreateWithSession,
 }

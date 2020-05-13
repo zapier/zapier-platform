@@ -20,7 +20,7 @@ const renderTemplate = (templateString, context) => {
   return _.template(templateString, options)(finalContext);
 };
 
-const createBeforeRequest = app => {
+const createBeforeRequest = (app) => {
   const authType = _.get(app, 'authentication.type');
   const authMapping = _.get(app, 'legacy.authentication.mapping');
   const placement = _.get(app, 'legacy.authentication.placement') || 'header';
@@ -53,7 +53,7 @@ const createBeforeRequest = app => {
     return req;
   };
 
-  const getGrantType = req => {
+  const getGrantType = (req) => {
     const grantType = _.get(req, 'params.grant_type');
     if (grantType) {
       return grantType;
@@ -176,18 +176,18 @@ const createBeforeRequest = app => {
     beforeRequest = {
       header: sessionAuthInHeader,
       querystring: sessionAuthInQuerystring,
-      both: sessionAuthInBoth
+      both: sessionAuthInBoth,
     }[placement];
   } else if (authType === 'oauth2') {
     beforeRequest = {
       header: oauth2InHeader,
       querystring: oauth2InQuerystring,
-      both: oauth2InBoth
+      both: oauth2InBoth,
     }[placement];
   } else if (authType === 'custom') {
     beforeRequest = {
       header: apiKeyInHeader,
-      querystring: apiKeyInQuerystring
+      querystring: apiKeyInQuerystring,
     }[placement];
   } else if (authType === 'basic' || authType === 'digest') {
     beforeRequest = basicDigestAuth;
@@ -196,12 +196,12 @@ const createBeforeRequest = app => {
   }
 
   if (!beforeRequest) {
-    beforeRequest = req => req;
+    beforeRequest = (req) => req;
   }
   return beforeRequest;
 };
 
-const createAfterResponse = app => {
+const createAfterResponse = (app) => {
   const authType = _.get(app, 'authentication.type');
   const autoRefresh = _.get(app, 'authentication.oauth2Config.autoRefresh');
 
@@ -219,7 +219,7 @@ const createAfterResponse = app => {
   }
 
   if (!afterResponse) {
-    afterResponse = response => response;
+    afterResponse = (response) => response;
   }
   return afterResponse;
 };
@@ -227,5 +227,5 @@ const createAfterResponse = app => {
 module.exports = {
   createBeforeRequest,
   createAfterResponse,
-  renderTemplate
+  renderTemplate,
 };

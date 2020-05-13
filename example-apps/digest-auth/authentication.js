@@ -6,7 +6,7 @@ const test = (z /*, bundle */) =>
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
   z.request({
-    url: 'https://httpbin.org/digest-auth/auth/myuser/mypass'
+    url: 'https://httpbin.org/digest-auth/auth/myuser/mypass',
   });
 
 module.exports = {
@@ -16,5 +16,5 @@ module.exports = {
   // method whenver a user connects their account for the first time.
   test: test,
   // assuming "username" is a key returned from the test
-  connectionLabel: '{{username}}'
+  connectionLabel: '{{username}}',
 };

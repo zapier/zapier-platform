@@ -1,5 +1,4 @@
-/* globals describe, it */
-require('should');
+/* globals describe, it, expect */
 
 const zapier = require('zapier-platform-core');
 
@@ -11,27 +10,35 @@ describe('digest auth', () => {
     // Try changing the values of username or password to see how the test method behaves
     const bundle = {
       authData: {
-        username: 'user',
-        password: 'secret'
-      }
+        username: 'myuser',
+        password: 'mypass',
+      },
     };
 
     const response = await appTester(App.authentication.test, bundle);
 
-    response.status.should.eql(200);
-    response.json.authenticated.should.be.true();
-    response.json.user.should.eql('myuser');
+    expect(response.status).toBe(200);
+    expect(response.json.authenticated).toBe(true);
+    expect(response.json.user).toBe('myuser');
   });
 
-  it('fails on bad auth', () => {
+  it('fails on bad auth', async () => {
     // Try changing the values of username or password to see how the test method behaves
     const bundle = {
       authData: {
         username: 'user',
-        password: 'badpwd'
-      }
+        password: 'badpwd',
+      },
     };
 
-    return appTester(App.authentication.test, bundle).should.be.rejected();
+    try {
+      await appTester(App.authentication.test, bundle);
+    } catch (err) {
+      expect(err.message).toContain(
+        'The username and/or password you supplied is incorrect'
+      );
+      return;
+    }
+    throw new Error('appTester should have thrown');
   });
 });

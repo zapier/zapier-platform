@@ -15,7 +15,7 @@ const HYDRATE_DIRECTIVE_HOIST = '$HOIST$';
 
 const RENDER_ONLY_METHODS = [
   'authentication.oauth2Config.authorizeUrl',
-  'authentication.oauth1Config.authorizeUrl'
+  'authentication.oauth1Config.authorizeUrl',
 ];
 
 const REQUEST_OBJECT_SHORTHAND_OPTIONS = { isShorthand: true, replace: true };
@@ -31,7 +31,7 @@ const SENSITIVE_KEYS = [
   'password',
   'secret',
   'signature',
-  'token'
+  'token',
 ];
 
 const SAFE_LOG_KEYS = [
@@ -51,11 +51,11 @@ const SAFE_LOG_KEYS = [
   'request_type',
   'response_status_code',
   'selected_api',
-  'timestamp'
+  'timestamp',
 ];
 const STATUSES = {
   CALLBACK: 'CALLBACK',
-  SUCCESS: 'SUCCESS'
+  SUCCESS: 'SUCCESS',
 };
 
 const packageJson = require('../package.json');
@@ -76,5 +76,5 @@ module.exports = {
   RESPONSE_SIZE_LIMIT,
   SAFE_LOG_KEYS,
   SENSITIVE_KEYS,
-  STATUSES
+  STATUSES,
 };

@@ -825,7 +825,7 @@ mkdir zapier-example
 <span class="hljs-built_in">cd</span> zapier-example
 
 <span class="hljs-comment"># create the needed files from a template</span>
-zapier init . --template=trigger
+zapier init . --template minimal
 
 <span class="hljs-comment"># install all the libraries needed for your app</span>
 npm install
@@ -836,7 +836,7 @@ npm install
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>If you&apos;d like to manage your <strong>local App</strong>, use these commands:</p><ul>
-<li><code>zapier init . --template=resource</code> - initialize/start a local app project (<a href="https://github.com/zapier/zapier-platform/wiki/Example-Apps">see templates here</a>)</li>
+<li><code>zapier init myapp</code> - initialize/start a local app project</li>
 <li><code>zapier convert 1234 .</code> - initialize/start from an existing app (alpha)</li>
 <li><code>zapier scaffold resource Contact</code> - auto-injects a new resource, trigger, etc.</li>
 <li><code>zapier test</code> - run the same tests as <code>npm test</code></li>
@@ -1312,16 +1312,16 @@ zapier convert 1234 my-app 1.0.1
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/login.json&apos;</span>,
     <span class="hljs-attr">body</span>: {
       <span class="hljs-attr">username</span>: bundle.authData.username,
-      <span class="hljs-attr">password</span>: bundle.authData.password
-    }
+      <span class="hljs-attr">password</span>: bundle.authData.password,
+    },
   });
 
-  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
     <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">401</span>) {
       <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&apos;The username/password you supplied is invalid&apos;</span>);
     }
     <span class="hljs-keyword">return</span> {
-      <span class="hljs-attr">sessionKey</span>: response.json.sessionKey
+      <span class="hljs-attr">sessionKey</span>: response.json.sessionKey,
     };
   });
 };
@@ -1330,21 +1330,21 @@ zapier convert 1234 my-app 1.0.1
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;session&apos;</span>,
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
   <span class="hljs-attr">test</span>: {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>,
   },
   <span class="hljs-attr">fields</span>: [
     {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;username&apos;</span>,
       <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
       <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
-      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Your login username.&apos;</span>
+      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Your login username.&apos;</span>,
     },
     {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;password&apos;</span>,
       <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
       <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
-      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Your login password.&apos;</span>
-    }
+      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Your login password.&apos;</span>,
+    },
     <span class="hljs-comment">// For Session Auth we store `sessionKey` automatically in `bundle.authData`</span>
     <span class="hljs-comment">// for future use. If you need to save/use something that the user shouldn&apos;t</span>
     <span class="hljs-comment">// need to type/choose, add a &quot;computed&quot; field, like:</span>
@@ -1352,8 +1352,8 @@ zapier convert 1234 my-app 1.0.1
     <span class="hljs-comment">// And remember to return it in sessionConfig.perform</span>
   ],
   <span class="hljs-attr">sessionConfig</span>: {
-    <span class="hljs-attr">perform</span>: getSessionKey
-  }
+    <span class="hljs-attr">perform</span>: getSessionKey,
+  },
 };
 
 <span class="hljs-keyword">const</span> includeSessionKeyHeader = <span class="hljs-function">(<span class="hljs-params">request, z, bundle</span>) =&gt;</span> {
@@ -1367,7 +1367,7 @@ zapier convert 1234 my-app 1.0.1
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">authentication</span>: authentication,
-  <span class="hljs-attr">beforeRequest</span>: [includeSessionKeyHeader]
+  <span class="hljs-attr">beforeRequest</span>: [includeSessionKeyHeader],
   <span class="hljs-comment">// ...</span>
 };
 
@@ -3309,13 +3309,13 @@ zapier env 1.0.0
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> listExample = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> customHttpOptions = {
     <span class="hljs-attr">headers</span>: {
-      <span class="hljs-string">&apos;my-header&apos;</span>: <span class="hljs-string">&apos;from zapier&apos;</span>
-    }
+      <span class="hljs-string">&apos;my-header&apos;</span>: <span class="hljs-string">&apos;from zapier&apos;</span>,
+    },
   };
 
   <span class="hljs-keyword">return</span> z
     .request(<span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>, customHttpOptions)
-    .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+    .then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
       <span class="hljs-keyword">const</span> recipes = response.json;
       <span class="hljs-comment">// do any custom processing of recipes here...</span>
 
@@ -3330,10 +3330,10 @@ zapier env 1.0.0
       <span class="hljs-comment">// ...</span>
       <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// ...</span>
-        <span class="hljs-attr">perform</span>: listExample
-      }
-    }
-  }
+        <span class="hljs-attr">perform</span>: listExample,
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -3445,7 +3445,7 @@ zapier env 1.0.0
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">beforeRequest</span>: [addHeader],
-  <span class="hljs-attr">afterResponse</span>: [handleErrors]
+  <span class="hljs-attr">afterResponse</span>: [handleErrors],
   <span class="hljs-comment">// ...</span>
 };
 

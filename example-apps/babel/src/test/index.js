@@ -11,8 +11,8 @@ describe('My Test', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: 'secret'
-      }
+        password: 'secret',
+      },
     };
 
     const response = await appTester(App.authentication.test, bundle);
@@ -24,8 +24,8 @@ describe('My Test', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: 'boom'
-      }
+        password: 'boom',
+      },
     };
 
     return appTester(App.authentication.test, bundle).should.be.rejected();

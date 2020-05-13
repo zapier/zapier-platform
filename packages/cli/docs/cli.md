@@ -220,28 +220,6 @@ History includes all the changes made over the lifetime of your integration. Thi
 * `-d, --debug` | Show extra debugging output.
 
 
-## init
-
-> Initialize a new Zapier integration. Optionally uses a template.
-
-**Usage**: `zapier init PATH`
-
-After running this, you'll have a new example integration in your directory. If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
-
-This doesn't register or deploy the integration with Zapier - try the `zapier register` and `zapier push` commands for that!
-
-**Arguments**
-* (required) `path` | Where to create the new integration. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation
-
-**Flags**
-* `-t, --template` | The template to start your integration with. One of `[minimal | trigger | search | create | basic-auth | custom-auth | digest-auth | oauth2 | oauth1-trello | oauth1-tumblr | oauth1-twitter | session-auth | dynamic-dropdown | files | middleware | resource | rest-hooks | search-or-create | babel | typescript | github | onedrive]`. Defaults to `minimal`.
-* `-d, --debug` | Show extra debugging output.
-
-**Examples**
-* `zapier init ./some/path`
-* `zapier init . --template typescript`
-
-
 ## integrations
 
 > List integrations you have admin access to.

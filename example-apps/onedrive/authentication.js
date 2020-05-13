@@ -11,7 +11,7 @@ const getAuthorizeURL = (z, bundle) => {
   const urlParts = [
     `client_id=${process.env.CLIENT_ID}`,
     `redirect_uri=${encodeURIComponent(bundle.inputData.redirect_uri)}`,
-    'response_type=code'
+    'response_type=code',
   ]
 
   if (bundle.inputData.accountType === 'business') {
@@ -32,7 +32,7 @@ const getAccessToken = (z, bundle) => {
     code: bundle.inputData.code,
     client_id: process.env.CLIENT_ID,
     client_secret: process.env.CLIENT_SECRET,
-    grant_type: 'authorization_code'
+    grant_type: 'authorization_code',
   }
 
   if (bundle.inputData.accountType === 'business') {
@@ -45,14 +45,14 @@ const getAccessToken = (z, bundle) => {
     method: 'POST',
     body,
     headers: {
-      'content-type': 'application/x-www-form-urlencoded'
-    }
+      'content-type': 'application/x-www-form-urlencoded',
+    },
   })
 
   return promise.then((response) => ({
     access_token: response.json.access_token,
     refresh_token: response.json.refresh_token,
-    id_token: response.json.id_token
+    id_token: response.json.id_token,
   }))
 }
 
@@ -63,7 +63,7 @@ const refreshAccessToken = (z, bundle) => {
     refresh_token: bundle.authData.refresh_token,
     client_id: process.env.CLIENT_ID,
     client_secret: process.env.CLIENT_SECRET,
-    grant_type: 'refresh_token'
+    grant_type: 'refresh_token',
   }
 
   if (bundle.authData.accountType === 'business') {
@@ -76,14 +76,14 @@ const refreshAccessToken = (z, bundle) => {
     method: 'POST',
     body,
     headers: {
-      'content-type': 'application/x-www-form-urlencoded'
-    }
+      'content-type': 'application/x-www-form-urlencoded',
+    },
   })
 
   return promise.then((response) => ({
     access_token: response.json.access_token,
     refresh_token: response.json.refresh_token,
-    id_token: response.json.id_token
+    id_token: response.json.id_token,
   }))
 }
 
@@ -93,7 +93,7 @@ const refreshAccessToken = (z, bundle) => {
 // the token and not because the user didn't happen to have a recently created record.
 const testAuth = (z) => {
   const promise = z.request({
-    url: 'https://graph.microsoft.com/v1.0/me'
+    url: 'https://graph.microsoft.com/v1.0/me',
   })
 
   return promise.then((response) => response.json)
@@ -109,7 +109,7 @@ module.exports = {
     // Set so Zapier automatically checks for 401s and calls refreshAccessToken
     autoRefresh: true,
     // offline_access is necessary for the refresh_token
-    scope: 'User.Read Files.ReadWrite.All offline_access'
+    scope: 'User.Read Files.ReadWrite.All offline_access',
   },
   test: testAuth,
   fields: [
@@ -118,10 +118,10 @@ module.exports = {
       label: 'Account Type',
       choices: {
         personal: 'Personal - live.com/outlook.com',
-        business: 'Business - Work or School'
+        business: 'Business - Work or School',
       },
       default: 'personal',
-      required: true
-    }
-  ]
+      required: true,
+    },
+  ],
 }

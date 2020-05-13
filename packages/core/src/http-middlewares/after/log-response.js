@@ -35,7 +35,7 @@ const prepareRequestLog = (req, resp) => {
     request_via_client: true,
     response_status_code: resp.status,
     response_headers: resp.headers,
-    response_content: responseBody
+    response_content: responseBody,
   };
 
   if (req._requestStart) {
@@ -44,22 +44,19 @@ const prepareRequestLog = (req, resp) => {
 
   if (req.url && req.url.indexOf('?') !== -1) {
     data.request_url = req.url.split('?')[0];
-    data.request_params = req.url
-      .split('?')
-      .slice(1)
-      .join('?');
+    data.request_params = req.url.split('?').slice(1).join('?');
   }
 
   return {
     message: `${data.response_status_code} ${data.request_method} ${data.request_url}`,
-    data: data
+    data: data,
   };
 };
 
 /*
    Log a response and it's original request to our logger.
 */
-const logResponse = resp => {
+const logResponse = (resp) => {
   const logger = resp.request.input._zapier.logger;
   const logs = prepareRequestLog(resp.request, resp);
 

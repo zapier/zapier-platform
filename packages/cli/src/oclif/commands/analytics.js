@@ -4,7 +4,7 @@ const { buildFlags } = require('../buildFlags');
 const {
   currentAnalyticsMode,
   modes,
-  setAnalyticsMode
+  setAnalyticsMode,
 } = require('../../utils/analytics');
 const colors = require('colors/safe');
 
@@ -36,9 +36,9 @@ AnalyticsCommand.flags = buildFlags({
       char: 'm',
       options: Object.keys(modes),
       description:
-        'Choose how much information to share. Anonymous mode drops the OS type and Zapier user id, but keeps command info. Identifying information is used only for debugging purposes.'
-    })
-  }
+        'Choose how much information to share. Anonymous mode drops the OS type and Zapier user id, but keeps command info. Identifying information is used only for debugging purposes.',
+    }),
+  },
 });
 AnalyticsCommand.examples = ['zapier analytics --mode enabled'];
 AnalyticsCommand.description = `Show the status of the analytics that are collected. Also used to change what is collected.`;

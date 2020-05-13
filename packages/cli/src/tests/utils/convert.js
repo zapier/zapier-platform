@@ -12,21 +12,21 @@ const legacyAppDefinition = {
   beforeRequest: [
     {
       args: ['request', 'z', 'bundle'],
-      source: 'return request;'
-    }
+      source: 'return request;',
+    },
   ],
   afterResponse: [
     {
       args: ['response', 'z', 'bundle'],
-      source: 'return response;'
-    }
+      source: 'return response;',
+    },
   ],
   authentication: {
     type: 'custom',
     test: {
-      source: "return 'test';"
+      source: "return 'test';",
     },
-    fields: [{ key: 'api_key', required: true, type: 'string' }]
+    fields: [{ key: 'api_key', required: true, type: 'string' }],
   },
   triggers: {
     movie: {
@@ -35,11 +35,11 @@ const legacyAppDefinition = {
       display: {},
       operation: {
         perform: {
-          source: "return 'test';"
-        }
-      }
-    }
-  }
+          source: "return 'test';",
+        },
+      },
+    },
+  },
 };
 
 const visualAppDefinition = {
@@ -50,17 +50,17 @@ const visualAppDefinition = {
         perform: {
           body: {
             name: '{{bundle.inputData.name}}',
-            public: '{{bundle.inputData.public}}'
+            public: '{{bundle.inputData.public}}',
           },
           url: 'https://api.wistia.com/v1/projects.json',
           removeMissingValuesFrom: {},
           headers: {
             'Content-Type': 'application/json',
             Authorization: 'Bearer {{bundle.authData.access_token}}',
-            Accept: 'application/json'
+            Accept: 'application/json',
           },
           params: {},
-          method: 'POST'
+          method: 'POST',
         },
         inputFields: [
           {
@@ -69,7 +69,7 @@ const visualAppDefinition = {
             label: 'Project Name',
             key: 'name',
             type: 'string',
-            altersDynamicFields: false
+            altersDynamicFields: false,
           },
           {
             required: false,
@@ -77,15 +77,15 @@ const visualAppDefinition = {
             label: 'Public?',
             key: 'public',
             type: 'boolean',
-            altersDynamicFields: false
+            altersDynamicFields: false,
           },
           {
             source:
-              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.json;\n\n    // modify your api response to return an array of Field objects\n    // see https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n"
+              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.json;\n\n    // modify your api response to return an array of Field objects\n    // see https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n",
           },
           {
             source:
-              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.json;\n\n    // modify your api response to return an array of Field objects\n    // see https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n"
+              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.json;\n\n    // modify your api response to return an array of Field objects\n    // see https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n",
           },
           {
             required: false,
@@ -97,7 +97,7 @@ const visualAppDefinition = {
                 label: 'q',
                 key: 'q',
                 type: 'string',
-                altersDynamicFields: false
+                altersDynamicFields: false,
               },
               {
                 required: false,
@@ -105,23 +105,23 @@ const visualAppDefinition = {
                 label: 'w',
                 key: 'w',
                 type: 'string',
-                altersDynamicFields: false
-              }
+                altersDynamicFields: false,
+              },
             ],
             key: 'tickets',
-            label: 'things'
-          }
-        ]
+            label: 'things',
+          },
+        ],
       },
       noun: 'Project',
       display: {
         hidden: false,
         important: true,
         description: 'asdfasda asdf asd fasd f',
-        label: 'Create a New Project'
+        label: 'Create a New Project',
       },
-      key: 'create_project'
-    }
+      key: 'create_project',
+    },
   },
   authentication: {
     test: {
@@ -129,10 +129,10 @@ const visualAppDefinition = {
       url: 'https://api.wistia.com/v1/account.json',
       removeMissingValuesFrom: {},
       headers: {
-        Authorization: 'Bearer {{bundle.authData.access_token}}'
+        Authorization: 'Bearer {{bundle.authData.access_token}}',
       },
       params: {},
-      method: 'GET'
+      method: 'GET',
     },
     oauth2Config: {
       authorizeUrl: {
@@ -142,20 +142,20 @@ const visualAppDefinition = {
           state: '{{bundle.inputData.state}}',
           redirect_uri: '{{bundle.inputData.redirect_uri}}',
           response_type: 'code',
-          client_id: '{{process.env.CLIENT_ID}}'
+          client_id: '{{process.env.CLIENT_ID}}',
         },
-        method: 'GET'
+        method: 'GET',
       },
       refreshAccessToken: {
         body: {
           grant_type: 'refresh_token',
-          refresh_token: '{{bundle.authData.refresh_token}}'
+          refresh_token: '{{bundle.authData.refresh_token}}',
         },
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
-          accept: 'application/json'
+          accept: 'application/json',
         },
-        method: 'POST'
+        method: 'POST',
       },
       getAccessToken: {
         body: {
@@ -163,20 +163,20 @@ const visualAppDefinition = {
           client_secret: '{{process.env.CLIENT_SECRET}}',
           code: '{{bundle.inputData.code}}',
           client_id: '{{process.env.CLIENT_ID}}',
-          grant_type: 'authorization_code'
+          grant_type: 'authorization_code',
         },
         url: 'https://api.wistia.com/oauth/token',
         removeMissingValuesFrom: {},
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
-          accept: 'application/json'
+          accept: 'application/json',
         },
         params: {},
-        method: 'POST'
-      }
+        method: 'POST',
+      },
     },
     type: 'oauth2',
-    connectionLabel: '{{name}}'
+    connectionLabel: '{{name}}',
   },
   version: '1.0.1',
   triggers: {
@@ -188,11 +188,11 @@ const visualAppDefinition = {
           removeMissingValuesFrom: {},
           headers: {
             Authorization: 'Bearer {{bundle.authData.access_token}}',
-            Accept: 'application/json'
+            Accept: 'application/json',
           },
           params: { sort_direction: '0', sort_by: 'created' },
-          method: 'GET'
-        }
+          method: 'GET',
+        },
       },
       noun: 'Project',
       display: {
@@ -200,35 +200,35 @@ const visualAppDefinition = {
         hidden: false,
         important: true,
         description: 'Triggers on a new project created',
-        label: 'New Project'
+        label: 'New Project',
       },
-      key: 'project'
+      key: 'project',
     },
     codemode: {
       operation: {
         perform: {
           source:
-            "const options = {\n  url: 'https://jsonplaceholder.typicode.com/posts',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n    '_limit': '3'\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.json;\n\n    // You can do any parsing you need for results here before returning them\n\n    return results;\n  });"
-        }
+            "const options = {\n  url: 'https://jsonplaceholder.typicode.com/posts',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n    '_limit': '3'\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.json;\n\n    // You can do any parsing you need for results here before returning them\n\n    return results;\n  });",
+        },
       },
       noun: 'Code',
       display: {
         hidden: false,
         important: true,
         description: "just runs some code, let's go",
-        label: 'New Code Trigger'
+        label: 'New Code Trigger',
       },
-      key: 'codemode'
-    }
-  }
+      key: 'codemode',
+    },
+  },
 };
 
 const legacyApp = {
   general: {
     title: 'My Name Is',
     description: 'Just an example app.',
-    app_id: 888
-  }
+    app_id: 888,
+  },
 };
 
 const visualApp = {
@@ -241,17 +241,17 @@ const visualApp = {
   stats: {
     Auth: {
       Accounts: { Paused: 1, Live: 0, Total: 1 },
-      Users: { Paused: 0, Live: 0, Total: 0 }
+      Users: { Paused: 0, Live: 0, Total: 0 },
     },
     Trigger: {
       'New Code Trigger': { Paused: 0, Live: 0, Total: 0 },
-      'New Project': { Paused: 0, Live: 0, Total: 0 }
+      'New Project': { Paused: 0, Live: 0, Total: 0 },
     },
     Action: {
-      'Create a New Project': { Paused: 0, Live: 0, Total: 0 }
+      'Create a New Project': { Paused: 0, Live: 0, Total: 0 },
     },
     Search: {},
-    App: { Totals: { Paused: 1, Live: 0, Total: 1 } }
+    App: { Totals: { Paused: 1, Live: 0, Total: 1 } },
   },
   title: 'My WIstia app',
   public_ish: false,
@@ -272,7 +272,7 @@ const visualApp = {
   latest_version: '1.0.1',
   core_versions: ['8.0.1', '8.0.1'],
   service_id: null,
-  is_beta: null
+  is_beta: null,
 };
 
 const setupTempWorkingDir = () => {
@@ -290,7 +290,7 @@ describe('convert', () => {
 
   beforeEach(() => {
     tempAppDir = setupTempWorkingDir();
-    readTempFile = fpath =>
+    readTempFile = (fpath) =>
       fs.readFileSync(path.join(tempAppDir, fpath), 'utf-8');
   });
 
@@ -308,8 +308,8 @@ describe('convert', () => {
         'package.json',
         'index.js',
         'triggers/movie.js',
-        'test/triggers/movie.js'
-      ].forEach(filename => {
+        'test/triggers/movie.js',
+      ].forEach((filename) => {
         const filepath = path.join(tempAppDir, filename);
         fs.existsSync(filepath).should.be.true(`failed to create ${filename}`);
       });
@@ -331,8 +331,8 @@ describe('convert', () => {
         'test/triggers/codemode.js',
         'test/triggers/project.js',
         'test/creates/create_project.js',
-        'authentication.js'
-      ].forEach(filename => {
+        'authentication.js',
+      ].forEach((filename) => {
         const filepath = path.join(tempAppDir, filename);
         fs.existsSync(filepath).should.be.true(`failed to create ${filename}`);
       });

@@ -21,7 +21,7 @@ const App = {
   // If you want your trigger to show up, you better include it here!
   triggers: {
     [repoTrigger.key]: repoTrigger,
-    [issueTrigger.key]: issueTrigger
+    [issueTrigger.key]: issueTrigger,
   },
 
   // If you want your searches to show up, you better include it here!
@@ -29,8 +29,8 @@ const App = {
 
   // If you want your creates to show up, you better include it here!
   creates: {
-    [issueCreate.key]: issueCreate
-  }
+    [issueCreate.key]: issueCreate,
+  },
 };
 
 // Finally, export the app.

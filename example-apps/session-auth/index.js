@@ -31,11 +31,11 @@ const App = {
       noun: 'Recipe',
       display: {
         label: 'New Recipe',
-        description: 'Trigger when a new recipe is added.'
+        description: 'Trigger when a new recipe is added.',
       },
       operation: {
         inputFields: [{ key: 'style', type: 'string' }],
-        perform: function() {
+        perform: function () {
           return [{ id: 1, name: 'A food!' }];
         },
 
@@ -48,7 +48,7 @@ const App = {
           name: 'Best Spagetti Ever',
           authorId: 1,
           directions: '1. Boil Noodles\n2.Serve with sauce',
-          style: 'italian'
+          style: 'italian',
         },
 
         // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -61,17 +61,17 @@ const App = {
           { key: 'name', label: 'Name' },
           { key: 'directions', label: 'Directions' },
           { key: 'authorId', label: 'Author ID' },
-          { key: 'style', label: 'Style' }
-        ]
-      }
-    }
+          { key: 'style', label: 'Style' },
+        ],
+      },
+    },
   },
 
   // If you want your searches to show up, you better include it here!
   searches: {},
 
   // If you want your creates to show up, you better include it here!
-  creates: {}
+  creates: {},
 };
 
 // Finally, export the app.
