@@ -825,7 +825,7 @@ mkdir zapier-example
 <span class="hljs-built_in">cd</span> zapier-example
 
 <span class="hljs-comment"># create the needed files from a template</span>
-zapier init . --template=trigger
+zapier init . --template minimal
 
 <span class="hljs-comment"># install all the libraries needed for your app</span>
 npm install
@@ -836,7 +836,7 @@ npm install
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>If you&apos;d like to manage your <strong>local App</strong>, use these commands:</p><ul>
-<li><code>zapier init . --template=resource</code> - initialize/start a local app project (<a href="https://github.com/zapier/zapier-platform/wiki/Example-Apps">see templates here</a>)</li>
+<li><code>zapier init myapp</code> - initialize/start a local app project</li>
 <li><code>zapier convert 1234 .</code> - initialize/start from an existing app (alpha)</li>
 <li><code>zapier scaffold resource Contact</code> - auto-injects a new resource, trigger, etc.</li>
 <li><code>zapier test</code> - run the same tests as <code>npm test</code></li>

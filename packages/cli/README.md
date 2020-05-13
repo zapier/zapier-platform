@@ -250,7 +250,7 @@ mkdir zapier-example
 cd zapier-example
 
 # create the needed files from a template
-zapier init . --template=trigger
+zapier init . --template minimal
 
 # install all the libraries needed for your app
 npm install
@@ -258,7 +258,7 @@ npm install
 
 If you'd like to manage your **local App**, use these commands:
 
-* `zapier init . --template=resource` - initialize/start a local app project ([see templates here](https://github.com/zapier/zapier-platform/wiki/Example-Apps))
+* `zapier init myapp` - initialize/start a local app project
 * `zapier convert 1234 .` - initialize/start from an existing app (alpha)
 * `zapier scaffold resource Contact` - auto-injects a new resource, trigger, etc.
 * `zapier test` - run the same tests as `npm test`
