@@ -2,7 +2,7 @@ const { cyan } = require('colors/safe');
 
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
-const { callAPI, getLinkedApp } = require('../../../utils/api');
+const { callAPI } = require('../../../utils/api');
 
 const successMessage = version =>
   `Successfully unset the following keys in the environment of version ${cyan(
@@ -33,7 +33,7 @@ class UnsetEnvCommand extends BaseCommand {
       return result;
     }, {});
 
-    const app = await getLinkedApp();
+    const app = await this.getWritableApp();
 
     const url = `/apps/${app.id}/versions/${version}/multi-environment`;
 

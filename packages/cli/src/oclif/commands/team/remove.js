@@ -3,7 +3,7 @@ const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
 const {
   callAPI,
-  getLinkedApp,
+  getWritableApp,
   listEndpointMulti
 } = require('../../../utils/api');
 const { BASE_ENDPOINT } = require('../../../constants');
@@ -53,7 +53,7 @@ class TeamRemoveCommand extends ZapierBaseCommand {
     const roleIsAdmin = role === 'admin';
 
     this.startSpinner('Removing Team Member');
-    const { id: appId } = await getLinkedApp();
+    const { id: appId } = await getWritableApp();
     const url = roleIsAdmin
       ? `/apps/${appId}/collaborators/${invitationId}`
       : `${BASE_ENDPOINT}/api/platform/v3/integrations/${appId}/subscribers/${invitationId}`;

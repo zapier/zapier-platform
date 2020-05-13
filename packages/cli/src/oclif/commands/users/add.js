@@ -2,7 +2,7 @@ const ZapierBaseCommand = require('../../ZapierBaseCommand');
 const { flags } = require('@oclif/command');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
-const { callAPI, getLinkedApp } = require('../../../utils/api');
+const { callAPI } = require('../../../utils/api');
 
 class UsersAddCommand extends ZapierBaseCommand {
   async perform() {
@@ -19,8 +19,8 @@ class UsersAddCommand extends ZapierBaseCommand {
       return;
     }
 
+    const { id } = await this.getWritableApp();
     this.startSpinner('Inviting user');
-    const { id } = await getLinkedApp();
     const url = `/apps/${id}/invitees/${this.args.email}${
       this.args.version ? `/${this.args.version}` : ''
     }`;

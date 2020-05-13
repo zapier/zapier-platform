@@ -1,12 +1,11 @@
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
-const { getLinkedApp, callAPI } = require('../../../utils/api');
+const { callAPI } = require('../../../utils/api');
 
 class DeleteAppCommand extends BaseCommand {
   async perform() {
-    this.startSpinner('Loading App');
-    const { id, title } = await getLinkedApp();
-    this.stopSpinner();
+    const { id, title } = await this.getWritableApp();
+
     this.startSpinner(`Deleting "${title}"`);
     await callAPI(`/apps/${id}`, {
       method: 'DELETE'

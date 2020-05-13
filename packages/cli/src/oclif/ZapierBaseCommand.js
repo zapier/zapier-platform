@@ -7,6 +7,8 @@ const { startSpinner, endSpinner, formatStyles } = require('../utils/display');
 const { isValidAppInstall } = require('../utils/misc');
 const { recordAnalytics } = require('../utils/analytics');
 
+const { getWritableApp } = require('../utils/api');
+
 const inquirer = require('inquirer');
 
 const DATA_FORMATS = ['json', 'raw'];
@@ -86,6 +88,13 @@ class ZapierBaseCommand extends Command {
         `${version} is an invalid version str. Try something like \`1.2.3\``
       );
     }
+  }
+
+  async getWritableApp() {
+    this.startSpinner('Checking authentication & permissions');
+    const app = await getWritableApp();
+    this.stopSpinner();
+    return app;
   }
 
   // UTILS
