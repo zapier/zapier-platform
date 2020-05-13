@@ -25,7 +25,7 @@
     "example-apps/*"
   ],
   "scripts": {
-    "lint": "lerna run --stream --ignore zapier-platform-example-app-* lint",
+    "lint": "lerna run --ignore zapier-platform-example-app-* lint",
     "lint-examples": "eslint examples",
     "validate": "lerna run --ignore zapier-platform-example-app-* validate",
     "bump": "./scripts/bump.js"
