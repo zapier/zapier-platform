@@ -15,7 +15,7 @@ module.exports = {
   'env:set': require('./commands/env/set'),
   'env:unset': require('./commands/env/unset'),
   history: require('./commands/history'),
-  init: require('./commands/init'),
+  // init: require('./commands/init'),
   integrations: require('./commands/integrations'),
   link: require('./commands/link'),
   login: require('./commands/login'),
@@ -39,5 +39,4 @@ module.exports = {
   'users:remove': require('./commands/users/remove'),
   validate: require('./commands/validate'),
   versions: require('./commands/versions'),
-  yo: require('./commands/yo') // TODO: replace `init` command once it's done
 };

@@ -125,8 +125,8 @@ describe('smoke tests - setup will take some time', () => {
       .should.be.true();
   });
 
-  it('zapier init', () => {
-    runCommand(context.cliBin, ['init', 'awesome-app'], {
+  it('zapier init -t minimal', () => {
+    runCommand(context.cliBin, ['init', 'awesome-app', '-t', 'minimal'], {
       cwd: context.workdir,
     });
 
@@ -139,27 +139,8 @@ describe('smoke tests - setup will take some time', () => {
     fs.existsSync(appPackageJson).should.be.true();
   });
 
-  it('zapier init --template=babel', () => {
-    runCommand(context.cliBin, ['init', 'babel-app', '--template=babel'], {
-      cwd: context.workdir,
-    });
-
-    const newAppDir = path.join(context.workdir, 'babel-app');
-    fs.existsSync(newAppDir).should.be.true();
-
-    const appIndexJs = path.join(newAppDir, 'index.js');
-    const appPackageJson = path.join(newAppDir, 'package.json');
-    fs.existsSync(appIndexJs).should.be.true();
-    fs.existsSync(appPackageJson).should.be.true();
-
-    const pkg = JSON.parse(
-      fs.readFileSync(appPackageJson, { encoding: 'utf8' })
-    );
-    pkg.name.should.containEql('babel');
-  });
-
   it('zapier scaffold trigger neat', () => {
-    runCommand(context.cliBin, ['init', 'scaffold-town'], {
+    runCommand(context.cliBin, ['init', 'scaffold-town', '-t', 'minimal'], {
       cwd: context.workdir,
     });
 
@@ -185,7 +166,7 @@ describe('smoke tests - setup will take some time', () => {
     const pkg = JSON.parse(
       fs.readFileSync(appPackageJson, { encoding: 'utf8' })
     );
-    pkg.name.should.containEql('minimal');
+    pkg.name.should.containEql('scaffold-town');
   });
 
   it('zapier integrations', function () {
@@ -225,7 +206,7 @@ describe('smoke tests - setup will take some time', () => {
 
     testableTemplates.forEach((template) => {
       it(`${template} should test out of the box`, () => {
-        runCommand(context.cliBin, ['yo', template, '-t', template], {
+        runCommand(context.cliBin, ['init', template, '-t', template], {
           cwd: subfolderPath,
           input: 'a', // tells `yo` to replace the auth file
         });
