@@ -1,3 +1,8 @@
+# 3.7.1
+
+- :bug: Allow `post_read_resource` to return an array ([#219](https://github.com/zapier/zapier-platform/pull/219))
+- :gear: Upgrade dependencies ([#218](https://github.com/zapier/zapier-platform/pull/218))
+
 ## 3.7.0
 
 - :tada: More complete bundle logs ([#213](https://github.com/zapier/zapier-platform/pull/213))
