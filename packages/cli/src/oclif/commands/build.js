@@ -4,7 +4,7 @@ const { flags } = require('@oclif/command');
 const {
   BUILD_PATH,
   SOURCE_PATH,
-  CURRENT_APP_FILE
+  CURRENT_APP_FILE,
 } = require('../../constants');
 
 const { buildAndOrUpload } = require('../../utils/build');
@@ -15,7 +15,7 @@ class BuildCommand extends BaseCommand {
       { build: true },
       {
         skipNpmInstall: this.flags['skip-npm-install'],
-        disableDependencyDetection: this.flags['disable-dependency-detection']
+        disableDependencyDetection: this.flags['disable-dependency-detection'],
       }
     );
 
@@ -28,14 +28,14 @@ class BuildCommand extends BaseCommand {
 BuildCommand.flags = buildFlags({
   commandFlags: {
     'disable-dependency-detection': flags.boolean({
-      description: `Disable "smart" file inclusion. By default, Zapier only includes files that are required by \`index.js\`. If you (or your dependencies) require files dynamically (such as with \`require(someVar)\`), then you may see "Cannot find module" errors. Disabling this may make your \`build.zip\` too large. If that's the case, try using the \`includeInBuild\` option in your \`${CURRENT_APP_FILE}\`. See the docs about \`includeInBuild\` for more info.`
+      description: `Disable "smart" file inclusion. By default, Zapier only includes files that are required by \`index.js\`. If you (or your dependencies) require files dynamically (such as with \`require(someVar)\`), then you may see "Cannot find module" errors. Disabling this may make your \`build.zip\` too large. If that's the case, try using the \`includeInBuild\` option in your \`${CURRENT_APP_FILE}\`. See the docs about \`includeInBuild\` for more info.`,
     }),
     'skip-npm-install': flags.boolean({
       description:
         'Skips installing a fresh copy of npm dependencies on build. Helpful for using `yarn` or local copies of dependencies.',
-      hidden: true
-    })
-  }
+      hidden: true,
+    }),
+  },
 });
 BuildCommand.description = `Build a pushable zip from the current directory.
 

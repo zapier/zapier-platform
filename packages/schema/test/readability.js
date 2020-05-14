@@ -10,7 +10,7 @@ describe('readability', () => {
   it('should have decent messages for anyOf mismatches', () => {
     const results = AuthenticationSchema.validate({
       type: 'oauth2',
-      test: 'whateverfake!'
+      test: 'whateverfake!',
     });
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql('instance is not of a type(s) object');
@@ -23,12 +23,12 @@ describe('readability', () => {
       noun: 'Recipe',
       display: {
         label: '',
-        description: 'Creates a new recipe.'
+        description: 'Creates a new recipe.',
       },
       operation: {
         perform: '$func$2$f$',
-        sample: { id: 1 }
-      }
+        sample: { id: 1 },
+      },
     });
     results.errors.should.have.length(1);
     should(results.errors[0].property.endsWith('instance')).be.false();
@@ -43,13 +43,13 @@ describe('readability', () => {
       noun: 'Recipe',
       display: {
         label: 'Create Recipe',
-        description: 'Creates a new recipe.'
+        description: 'Creates a new recipe.',
       },
       operation: {
         perform: '$func$2$f$',
         sample: { id: 1 },
-        inputFields: [123]
-      }
+        inputFields: [123],
+      },
     });
     results.errors.should.have.length(1);
     should(results.errors[0].property.endsWith('instance')).be.false();
@@ -62,13 +62,13 @@ describe('readability', () => {
       noun: 'Recipe',
       display: {
         label: 'Create Recipe',
-        description: 'Creates a new recipe.'
+        description: 'Creates a new recipe.',
       },
       operation: {
         perform: '$func$2$f$',
         sample: { id: 1 },
-        inputFields: [0]
-      }
+        inputFields: [0],
+      },
     });
     results.errors.should.have.length(1);
     should(results.errors[0].property.endsWith('instance')).be.false();
@@ -81,13 +81,13 @@ describe('readability', () => {
       noun: 'Recipe',
       display: {
         label: 'Create Recipe',
-        description: 'Creates a new recipe.'
+        description: 'Creates a new recipe.',
       },
       operation: {
         perform: '$func$2$f$',
         sample: { id: 1 },
-        inputFields: [{ key: 'field', type: 'string', default: '' }]
-      }
+        inputFields: [{ key: 'field', type: 'string', default: '' }],
+      },
     });
     results.errors.should.have.length(1);
     should(results.errors[0].property.endsWith('instance')).be.false();
@@ -103,15 +103,15 @@ describe('readability', () => {
       noun: 'Recipe',
       display: {
         label: 'Create Recipe',
-        description: 'Creates a new recipe.'
+        description: 'Creates a new recipe.',
       },
       operation: {
         perform: {
           url: 'https://example.com',
-          body: 123
+          body: 123,
         },
-        sample: { id: 1 }
-      }
+        sample: { id: 1 },
+      },
     });
     results.errors.should.have.length(1);
     results.errors[0].property.should.eql('instance.operation.perform.body');
@@ -128,7 +128,7 @@ describe('readability', () => {
       noun: 'Recipe',
       display: {
         label: 'Create Recipe',
-        description: 'Creates a new recipe.'
+        description: 'Creates a new recipe.',
       },
       operation: {
         perform: '$func$2$f$',
@@ -137,10 +137,10 @@ describe('readability', () => {
           {
             key: 'adsf',
             // schema says these should be strings
-            choices: [1, 2, 3]
-          }
-        ]
-      }
+            choices: [1, 2, 3],
+          },
+        ],
+      },
     });
     results.errors.should.have.length(1);
     results.errors[0].property.should.eql(

@@ -13,19 +13,19 @@ class ValidateCommand extends BaseCommand {
 
     const errors = await localAppCommand({ command: 'validate' });
 
-    const newErrors = errors.map(error => ({
+    const newErrors = errors.map((error) => ({
       ...error,
       property: error.property.replace(/^instance/, 'App'),
-      docLinks: (error.docLinks || []).join('\n')
+      docLinks: (error.docLinks || []).join('\n'),
     }));
     this.logTable({
       rows: newErrors,
       headers: [
         ['Property', 'property'],
         ['Message', 'message'],
-        ['Links', 'docLinks']
+        ['Links', 'docLinks'],
       ],
-      emptyMessage: 'No structural errors found during validation routine.'
+      emptyMessage: 'No structural errors found during validation routine.',
     });
 
     if (newErrors.length) {
@@ -52,7 +52,7 @@ class ValidateCommand extends BaseCommand {
       this.startSpinner('Running integration checks');
 
       const rawDefinition = await localAppCommand({
-        command: 'definition'
+        command: 'definition',
       });
 
       checkResult = await validateApp(rawDefinition);
@@ -76,9 +76,9 @@ class ValidateCommand extends BaseCommand {
         ['Category', 'category'],
         ['Method', 'method'],
         ['Description', 'description'],
-        ['Link', 'link']
+        ['Link', 'link'],
       ],
-      emptyMessage: 'Integration checks passed, no issues found.'
+      emptyMessage: 'Integration checks passed, no issues found.',
     });
 
     const errorDisplay = checkResult.errors.display_label;
@@ -90,19 +90,19 @@ class ValidateCommand extends BaseCommand {
         [
           `- ${colors.bold(errorDisplay)}`,
           'Issues that will prevent your integration from functioning ' +
-            'properly. They block you from pushing.'
+            'properly. They block you from pushing.',
         ],
         [
           `- ${colors.bold(warningDisplay)}`,
           'To-dos that must be addressed before your integration can be ' +
             'included in the App Directory. They block you from promoting and ' +
-            'publishing.'
+            'publishing.',
         ],
         [
           `- ${colors.bold(suggestionDisplay)}`,
           'Issues and recommendations that need human reviews by Zapier before ' +
-            "publishing your integration. They don't block."
-        ]
+            "publishing your integration. They don't block.",
+        ],
       ]);
     }
     this.log();
@@ -112,18 +112,18 @@ class ValidateCommand extends BaseCommand {
 ValidateCommand.flags = buildFlags({
   commandFlags: {
     'without-style': flags.boolean({
-      description: 'Forgo pinging the Zapier server to run further checks.'
-    })
+      description: 'Forgo pinging the Zapier server to run further checks.',
+    }),
   },
   opts: {
-    format: true
-  }
+    format: true,
+  },
 });
 
 ValidateCommand.examples = [
   'zapier validate',
   'zapier validate --without-style',
-  'zapier validate --format json'
+  'zapier validate --format json',
 ];
 ValidateCommand.description = `Validate your integration.
 

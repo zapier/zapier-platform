@@ -441,9 +441,9 @@ const ExecuteRequestAsShorthand = {
         {
           key: 'url',
           default: 'https://httpbin.org/status/403',
-        }
-      ]
-    }
+        },
+      ],
+    },
   },
   create: {
     display: {
@@ -458,10 +458,10 @@ const ExecuteRequestAsShorthand = {
         {
           key: 'url',
           default: 'https://httpbin.org/status/403',
-        }
-      ]
-    }
-  }
+        },
+      ],
+    },
+  },
 };
 const EnvironmentVariable = {
   key: 'env',

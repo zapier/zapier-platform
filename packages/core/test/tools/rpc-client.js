@@ -9,7 +9,7 @@ describe('rpc client', () => {
   it('should handle a ping', () => {
     mocky.mockRpcCall('pong');
 
-    return rpc('ping').then(result => {
+    return rpc('ping').then((result) => {
       result.should.eql('pong');
     });
   });
@@ -21,7 +21,7 @@ describe('rpc client', () => {
       .then(() => {
         throw new Error('this should have exploded');
       })
-      .catch(err => {
+      .catch((err) => {
         err.message.should.eql('this is an expected explosion');
       });
   });
@@ -29,43 +29,43 @@ describe('rpc client', () => {
   it('should fetch a definition_override', () => {
     const fakeDefinition = {
       platformVersion: '1.0.0',
-      version: '1.0.0'
+      version: '1.0.0',
     };
 
     mocky.mockRpcCall(fakeDefinition);
 
-    return rpc('get_definition_override').then(result => {
+    return rpc('get_definition_override').then((result) => {
       result.should.eql(fakeDefinition);
     });
   });
 
-  it('should set a cursor key', done => {
+  it('should set a cursor key', (done) => {
     mocky.mockRpcCall(null);
 
     rpc('set_cursor', 'blah')
-      .then(res => {
+      .then((res) => {
         should(res).eql(null);
         done();
       })
       .catch(done);
   });
 
-  it('should get a cursor key', done => {
+  it('should get a cursor key', (done) => {
     mocky.mockRpcCall('abc');
 
     rpc('get_cursor')
-      .then(res => {
+      .then((res) => {
         should(res).eql('abc');
         done();
       })
       .catch(done);
   });
 
-  it('should get a missing cursor key', done => {
+  it('should get a missing cursor key', (done) => {
     mocky.mockRpcCall(null);
 
     rpc('get_cursor')
-      .then(res => {
+      .then((res) => {
         should(res).eql(null);
         done();
       })

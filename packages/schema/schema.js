@@ -9,5 +9,5 @@ const validateAppDefinition = AppSchema.validate;
 module.exports = {
   AppSchema,
   validateAppDefinition,
-  exportSchema: () => exportSchema(AppSchema)
+  exportSchema: () => exportSchema(AppSchema),
 };

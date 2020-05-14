@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const jsonschema = require('jsonschema');
 
-const validateSearchOrCreateKeys = definition => {
+const validateSearchOrCreateKeys = (definition) => {
   if (!definition.searchOrCreates) {
     return [];
   }

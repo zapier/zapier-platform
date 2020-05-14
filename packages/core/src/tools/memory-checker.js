@@ -5,7 +5,7 @@ const constants = require('../constants');
 const zid = Math.round(Math.random() * Math.pow(10, 15)).toString(16);
 let zrun = 0;
 
-const checkMemory = event => {
+const checkMemory = (event) => {
   event = event || {};
 
   zrun += 1;

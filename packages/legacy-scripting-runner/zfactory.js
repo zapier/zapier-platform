@@ -5,7 +5,7 @@ const deasync = require('deasync');
 const request = require('request');
 
 // Converts WB `bundle.request` format to something `request` can use
-const convertBundleRequest = bundleOrBundleRequest => {
+const convertBundleRequest = (bundleOrBundleRequest) => {
   bundleOrBundleRequest = _.extend({}, bundleOrBundleRequest);
 
   // LEGACY: allow for the whole bundle to mistakingly be sent over
@@ -22,7 +22,7 @@ const convertBundleRequest = bundleOrBundleRequest => {
   ) {
     auth = {
       user: bundleRequest.auth[0],
-      password: bundleRequest.auth[1]
+      password: bundleRequest.auth[1],
     };
   }
 
@@ -36,7 +36,7 @@ const convertBundleRequest = bundleOrBundleRequest => {
   return bundleRequest;
 };
 
-const parseBody = body => {
+const parseBody = (body) => {
   if (body) {
     if (typeof body === 'string' || body.writeInt32BE) {
       return String(body);
@@ -49,12 +49,12 @@ const parseBody = body => {
 };
 
 // Converts `request`'s response into a simplified object
-const convertResponse = response => {
+const convertResponse = (response) => {
   if (response) {
     return {
       status_code: response.statusCode,
       headers: _.extend({}, response.headers),
-      content: parseBody(response.body)
+      content: parseBody(response.body),
     };
   }
 
@@ -70,7 +70,7 @@ const zfactory = (zcli, app) => {
     return require(moduleName);
   };
 
-  const jsonParse = str => {
+  const jsonParse = (str) => {
     try {
       return JSON.parse(str);
     } catch (err) {
@@ -84,7 +84,7 @@ const zfactory = (zcli, app) => {
     }
   };
 
-  const jsonStringify = obj => {
+  const jsonStringify = (obj) => {
     try {
       return JSON.stringify(obj);
     } catch (err) {
@@ -124,7 +124,7 @@ const zfactory = (zcli, app) => {
     return hasher.digest(encoding);
   };
 
-  const snipify = string => {
+  const snipify = (string) => {
     const SALT = process.env.SECRET_SALT || 'doesntmatterreally';
     if (!_.isString(string)) {
       return null;
@@ -140,7 +140,7 @@ const zfactory = (zcli, app) => {
   const dehydrate = (method, bundle) => {
     return zcli.dehydrate(app.hydrators.legacyMethodHydrator, {
       method,
-      bundle
+      bundle,
     });
   };
 
@@ -148,7 +148,7 @@ const zfactory = (zcli, app) => {
     return zcli.dehydrateFile(app.hydrators.legacyFileHydrator, {
       url,
       request: requestOptions,
-      meta
+      meta,
     });
   };
 
@@ -156,14 +156,14 @@ const zfactory = (zcli, app) => {
     AWS,
     JSON: {
       parse: jsonParse,
-      stringify: jsonStringify
+      stringify: jsonStringify,
     },
     request: requestMethod,
     hash,
     hmac,
     snipify,
     dehydrate,
-    dehydrateFile
+    dehydrateFile,
   };
 };
 

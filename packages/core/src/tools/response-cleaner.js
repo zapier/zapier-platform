@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const dataTools = require('./data');
 
-const responseCleaner = response => {
+const responseCleaner = (response) => {
   response.request = _.pick(
     response.request,
     'method',

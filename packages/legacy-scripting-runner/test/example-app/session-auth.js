@@ -24,11 +24,11 @@ module.exports = {
   legacy: {
     authentication: {
       mapping: {
-        'X-Api-Key': '{{key1}}{{key2}}'
+        'X-Api-Key': '{{key1}}{{key2}}',
       },
-      placement: 'header'
+      placement: 'header',
     },
-    testTrigger: 'contact_full'
+    testTrigger: 'contact_full',
   },
   authentication: {
     type: 'session',
@@ -38,24 +38,24 @@ module.exports = {
         key: 'username',
         label: 'Username',
         type: 'string',
-        required: true
+        required: true,
       },
       {
         key: 'password',
         label: 'Password',
         type: 'password',
-        required: true
-      }
+        required: true,
+      },
     ],
     sessionConfig: {
-      perform: { source: getSessionKeySource }
+      perform: { source: getSessionKeySource },
     },
-    connectionLabel: { source: getConnectionLabelSource }
+    connectionLabel: { source: getConnectionLabelSource },
   },
   beforeRequest: [
-    { source: beforeRequestSource, args: ['request', 'z', 'bundle'] }
+    { source: beforeRequestSource, args: ['request', 'z', 'bundle'] },
   ],
   afterResponse: [
-    { source: afterResponseSource, args: ['response', 'z', 'bundle'] }
-  ]
+    { source: afterResponseSource, args: ['response', 'z', 'bundle'] },
+  ],
 };

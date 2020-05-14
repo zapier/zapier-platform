@@ -14,7 +14,7 @@ describe('mutuallyExclusiveFields', () => {
           noun: 'Foo',
           display: {
             label: 'Create Foo',
-            description: 'Creates a...'
+            description: 'Creates a...',
           },
           operation: {
             perform: '$func$2$f$',
@@ -26,14 +26,14 @@ describe('mutuallyExclusiveFields', () => {
                 children: [
                   {
                     key: 'product',
-                    type: 'string'
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      }
+                    type: 'string',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);
@@ -50,7 +50,7 @@ describe('mutuallyExclusiveFields', () => {
           noun: 'Foo',
           display: {
             label: 'Create Foo',
-            description: 'Creates a...'
+            description: 'Creates a...',
           },
           operation: {
             perform: '$func$2$f$',
@@ -61,15 +61,15 @@ describe('mutuallyExclusiveFields', () => {
                 key: 'line_items',
                 children: [
                   {
-                    key: 'product'
-                  }
+                    key: 'product',
+                  },
                 ],
-                list: true
-              }
-            ]
-          }
-        }
-      }
+                list: true,
+              },
+            ],
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);
@@ -89,7 +89,7 @@ describe('mutuallyExclusiveFields', () => {
           noun: 'Foo',
           display: {
             label: 'Create Foo',
-            description: 'Creates a...'
+            description: 'Creates a...',
           },
           operation: {
             perform: '$func$2$f$',
@@ -100,15 +100,15 @@ describe('mutuallyExclusiveFields', () => {
                 key: 'line_items',
                 children: [
                   {
-                    key: 'product'
-                  }
+                    key: 'product',
+                  },
                 ],
-                list: false
-              }
-            ]
-          }
-        }
-      }
+                list: false,
+              },
+            ],
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);
@@ -125,7 +125,7 @@ describe('mutuallyExclusiveFields', () => {
           noun: 'Foo',
           display: {
             label: 'Create Foo',
-            description: 'Creates a...'
+            description: 'Creates a...',
           },
           operation: {
             perform: '$func$2$f$',
@@ -135,12 +135,12 @@ describe('mutuallyExclusiveFields', () => {
               {
                 key: 'line_items',
                 dict: true,
-                list: true
-              }
-            ]
-          }
-        }
-      }
+                list: true,
+              },
+            ],
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);
@@ -160,7 +160,7 @@ describe('mutuallyExclusiveFields', () => {
           noun: 'Foo',
           display: {
             label: 'Create Foo',
-            description: 'Creates a...'
+            description: 'Creates a...',
           },
           operation: {
             perform: '$func$2$f$',
@@ -170,16 +170,16 @@ describe('mutuallyExclusiveFields', () => {
                 key: 'orderId',
                 type: 'number',
                 dynamic: 'foo.id.number',
-                dict: true
+                dict: true,
               },
               {
                 key: 'line_items',
-                list: true
-              }
-            ]
-          }
-        }
-      }
+                list: true,
+              },
+            ],
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);
@@ -199,7 +199,7 @@ describe('mutuallyExclusiveFields', () => {
           noun: 'Foo',
           display: {
             label: 'Create Foo',
-            description: 'Creates a...'
+            description: 'Creates a...',
           },
           operation: {
             perform: '$func$2$f$',
@@ -209,16 +209,16 @@ describe('mutuallyExclusiveFields', () => {
                 key: 'orderId',
                 type: 'number',
                 dynamic: 'foo.id.number',
-                dict: false
+                dict: false,
               },
               {
                 key: 'line_items',
-                list: true
-              }
-            ]
-          }
-        }
-      }
+                list: true,
+              },
+            ],
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);
@@ -235,7 +235,7 @@ describe('mutuallyExclusiveFields', () => {
           noun: 'Foo',
           display: {
             label: 'Create Foo',
-            description: 'Creates a...'
+            description: 'Creates a...',
           },
           operation: {
             perform: '$func$2$f$',
@@ -247,17 +247,17 @@ describe('mutuallyExclusiveFields', () => {
                 dynamic: 'foo.id.number',
                 choices: {
                   uno: 1,
-                  dos: 2
-                }
+                  dos: 2,
+                },
               },
               {
                 key: 'line_items',
-                list: true
-              }
-            ]
-          }
-        }
-      }
+                list: true,
+              },
+            ],
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);

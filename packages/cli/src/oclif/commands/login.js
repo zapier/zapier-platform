@@ -8,12 +8,12 @@ const {
   AUTH_LOCATION,
   AUTH_LOCATION_RAW,
   AUTH_KEY,
-  BASE_ENDPOINT
+  BASE_ENDPOINT,
 } = require('../../constants');
 const {
   readCredentials,
   checkCredentials,
-  createCredentials
+  createCredentials,
 } = require('../../utils/api');
 const { writeFile } = require('../../utils/files');
 const { prettyJSONstringify } = require('../../utils/display');
@@ -21,13 +21,13 @@ const { isSamlEmail } = require('../../utils/credentials');
 
 const DEPLOY_KEY_DASH_URL = `${BASE_ENDPOINT}/developer/partner-settings/deploy-keys/`;
 
-const isValidTotpCode = i => {
+const isValidTotpCode = (i) => {
   const num = parseInt(i, 10);
   return Number.isInteger(num) && i.length === 6
     ? true
     : 'Must be a 6 digit number';
 };
-const isValidDeployKey = k =>
+const isValidDeployKey = (k) =>
   k.length === 32
     ? true
     : `Must be a 32-character code copied from from ${DEPLOY_KEY_DASH_URL}`;
@@ -46,7 +46,7 @@ class LoginCommand extends BaseCommand {
       `To generate a deploy key, go to ${DEPLOY_KEY_DASH_URL} and create/copy a key, then paste the result below.`
     );
     return this.prompt('Paste your Deploy Key here:', {
-      validate: isValidDeployKey
+      validate: isValidDeployKey,
     });
   }
 
@@ -57,7 +57,7 @@ class LoginCommand extends BaseCommand {
         .catch(() => false),
       checkCredentials()
         .then(() => true)
-        .catch(() => false)
+        .catch(() => false),
     ];
     const [credentialsPresent, credentialsGood] = await Promise.all(checks);
 
@@ -125,7 +125,7 @@ class LoginCommand extends BaseCommand {
     await writeFile(
       AUTH_LOCATION,
       prettyJSONstringify({
-        [AUTH_KEY]: deployKey
+        [AUTH_KEY]: deployKey,
       })
     );
 
@@ -140,9 +140,9 @@ LoginCommand.flags = buildFlags({
     sso: flags.boolean({
       char: 's',
       description:
-        "Use this flag if you log into Zapier a Single Sign-On (SSO) button and don't have a Zapier password."
-    })
-  }
+        "Use this flag if you log into Zapier a Single Sign-On (SSO) button and don't have a Zapier password.",
+    }),
+  },
 });
 LoginCommand.description = `Configure your \`${AUTH_LOCATION_RAW}\` with a deploy key.`;
 LoginCommand.skipValidInstallCheck = true;

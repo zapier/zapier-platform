@@ -21,8 +21,8 @@ const shouldPaginate = (appRaw, method) => {
 };
 
 // Convert a app handler to promise for convenience.
-const promisifyHandler = handler => {
-  return event => {
+const promisifyHandler = (handler) => {
+  return (event) => {
     return new ZapierPromise((resolve, reject) => {
       handler(event, {}, (err, resp) => {
         if (err) {
@@ -56,7 +56,7 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       command: 'execute',
       method,
       bundle,
-      storeKey
+      storeKey,
     };
 
     if (process.env.LOG_TO_STDOUT) {
@@ -66,7 +66,7 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       event.detailedLogToStdout = true;
     }
 
-    return createHandlerPromise(event).then(resp => resp.results);
+    return createHandlerPromise(event).then((resp) => resp.results);
   };
 };
 

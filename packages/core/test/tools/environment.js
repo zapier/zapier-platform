@@ -13,7 +13,7 @@ describe('read env', () => {
     mock({
       '.environment': 'CITY="boulder"\nNAME="david"\n',
       '.env': 'PIZZA="Blackjack"\n',
-      secrets: 'SECRET=very_secret_thing'
+      secrets: 'SECRET=very_secret_thing',
     });
 
     tools.env.inject();
@@ -24,7 +24,7 @@ describe('read env', () => {
   // this is temporary in v6, removed for v7
   it('should read .environment if .env is missing', () => {
     mock({
-      '.environment': 'CITY="boulder"\nNAME="david"\n'
+      '.environment': 'CITY="boulder"\nNAME="david"\n',
     });
 
     tools.env.inject();
@@ -36,7 +36,7 @@ describe('read env', () => {
     mock({
       '.environment': 'CITY="boulder"\nNAME="david"\n',
       '.env': 'PIZZA="Blackjack"\n',
-      secrets: 'SECRET=very_secret_thing'
+      secrets: 'SECRET=very_secret_thing',
     });
 
     tools.env.inject('secrets');

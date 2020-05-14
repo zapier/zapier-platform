@@ -16,7 +16,7 @@ const gitIgnore = require('parse-gitignore');
 const semver = require('semver');
 
 const {
-  constants: { Z_BEST_COMPRESSION }
+  constants: { Z_BEST_COMPRESSION },
 } = require('zlib');
 
 const constants = require('../constants');
@@ -26,7 +26,7 @@ const {
   readFile,
   copyDir,
   ensureDir,
-  removeDir
+  removeDir,
 } = require('./files');
 
 const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
@@ -35,7 +35,7 @@ const {
   getLinkedAppConfig,
   getWritableApp,
   upload: _uploadFunc,
-  validateApp
+  validateApp,
 } = require('./api');
 
 const { runCommand, isWindows } = require('./misc');
@@ -70,11 +70,11 @@ const requiredFiles = (cwd, entryPoints) => {
       process: undefined,
       global: undefined,
       'Buffer.isBuffer': undefined,
-      Buffer: undefined
+      Buffer: undefined,
     },
     ignoreMissing: true,
     debug: false,
-    standalone: undefined
+    standalone: undefined,
   };
   const b = browserify(argv);
 
@@ -98,9 +98,9 @@ const requiredFiles = (cwd, entryPoints) => {
   });
 };
 
-const listFiles = dir => {
-  const isBlacklisted = filePath => {
-    return constants.BLACKLISTED_PATHS.find(excluded => {
+const listFiles = (dir) => {
+  const isBlacklisted = (filePath) => {
+    return constants.BLACKLISTED_PATHS.find((excluded) => {
       return filePath.search(excluded) === 0;
     });
   };
@@ -109,7 +109,7 @@ const listFiles = dir => {
     const paths = [];
     const cwd = dir + path.sep;
     klaw(dir, { preserveSymlinks: true })
-      .on('data', item => {
+      .on('data', (item) => {
         const strippedPath = stripPath(cwd, item.path);
         if (!item.stats.isDirectory() && !isBlacklisted(strippedPath)) {
           paths.push(strippedPath);
@@ -146,7 +146,7 @@ const respectGitIgnore = (dir, paths) => {
 const forceIncludeDumbPath = (appConfig, filePath) => {
   let matchesConfigInclude = false;
   const configIncludePaths = _.get(appConfig, 'includeInBuild', []);
-  _.each(configIncludePaths, includePath => {
+  _.each(configIncludePaths, (includePath) => {
     if (filePath.match(RegExp(includePath, 'i'))) {
       matchesConfigInclude = true;
       return false;
@@ -174,22 +174,22 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
   return new Promise((resolve, reject) => {
     const output = fs.createWriteStream(zipPath);
     const zip = archiver('zip', {
-      zlib: { level: Z_BEST_COMPRESSION }
+      zlib: { level: Z_BEST_COMPRESSION },
     });
 
     // listen for all archive data to be written
-    output.on('close', function() {
+    output.on('close', function () {
       resolve();
     });
 
-    zip.on('error', function(err) {
+    zip.on('error', function (err) {
       reject(err);
     });
 
     // pipe archive data to the file
     zip.pipe(output);
 
-    paths.forEach(function(filePath) {
+    paths.forEach(function (filePath) {
       var basePath = path.dirname(filePath);
       if (basePath === '.') {
         basePath = undefined;
@@ -205,7 +205,7 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
 const makeZip = async (dir, zipPath, disableDependencyDetection) => {
   const entryPoints = [
     path.resolve(dir, 'zapierwrapper.js'),
-    path.resolve(dir, 'index.js')
+    path.resolve(dir, 'index.js'),
   ];
 
   let paths;
@@ -213,7 +213,7 @@ const makeZip = async (dir, zipPath, disableDependencyDetection) => {
   const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
     requiredFiles(dir, entryPoints),
-    getLinkedAppConfig(dir).catch(() => ({}))
+    getLinkedAppConfig(dir).catch(() => ({})),
   ]);
 
   if (disableDependencyDetection) {
@@ -225,7 +225,7 @@ const makeZip = async (dir, zipPath, disableDependencyDetection) => {
     finalPaths = _.uniq(finalPaths);
     finalPaths.sort();
     debug('\nZip files:');
-    finalPaths.forEach(filePath => debug(`  ${filePath}`));
+    finalPaths.forEach((filePath) => debug(`  ${filePath}`));
     debug('');
     paths = finalPaths;
   }
@@ -238,7 +238,7 @@ const makeSourceZip = async (dir, zipPath) => {
   const finalPaths = respectGitIgnore(dir, paths);
   finalPaths.sort();
   debug('\nSource Zip files:');
-  finalPaths.forEach(filePath => debug(`  ${filePath}`));
+  finalPaths.forEach((filePath) => debug(`  ${filePath}`));
   debug();
   await writeZipFromPaths(dir, zipPath, finalPaths);
 };
@@ -248,7 +248,7 @@ const makeSourceZip = async (dir, zipPath) => {
 const _appCommandZapierWrapper = (dir, event) => {
   const app = require(`${dir}/zapierwrapper.js`);
   event = Object.assign({}, event, {
-    calledFromCli: true
+    calledFromCli: true,
   });
   return new Promise((resolve, reject) => {
     app.handler(event, {}, (err, resp) => {
@@ -272,7 +272,7 @@ const maybeNotifyAboutOutdated = () => {
   if (requiredVersion) {
     const notifier = updateNotifier({
       pkg: { name: constants.PLATFORM_PACKAGE, version: requiredVersion },
-      updateCheckInterval: constants.UPDATE_NOTIFICATION_INTERVAL
+      updateCheckInterval: constants.UPDATE_NOTIFICATION_INTERVAL,
     });
 
     if (notifier.update && notifier.update.latest !== requiredVersion) {
@@ -283,7 +283,7 @@ const maybeNotifyAboutOutdated = () => {
           'package.json'
         )} (${colors.grey(notifier.update.current)} → ${colors.green(
           notifier.update.latest
-        )}) and then running ${colors.red('zapier test')}.`
+        )}) and then running ${colors.red('zapier test')}.`,
       });
     }
   }
@@ -291,7 +291,7 @@ const maybeNotifyAboutOutdated = () => {
 
 const _buildFunc = async ({
   skipNpmInstall = false,
-  disableDependencyDetection = false
+  disableDependencyDetection = false,
 } = {}) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
@@ -311,7 +311,7 @@ const _buildFunc = async ({
 
   startSpinner('Copying project to temp directory');
   await copyDir(wdir, tmpDir, {
-    filter: skipNpmInstall ? dir => !dir.includes('.zip') : undefined
+    filter: skipNpmInstall ? (dir) => !dir.includes('.zip') : undefined,
   });
 
   let output = {};
@@ -319,7 +319,7 @@ const _buildFunc = async ({
     endSpinner();
     startSpinner('Installing project dependencies');
     output = await runCommand('npm', ['install', '--production'], {
-      cwd: tmpDir
+      cwd: tmpDir,
     });
   }
 
@@ -354,9 +354,11 @@ const _buildFunc = async ({
   endSpinner();
 
   startSpinner('Building app definition.json');
-  const rawDefinition = (await _appCommandZapierWrapper(tmpDir, {
-    command: 'definition'
-  })).results;
+  const rawDefinition = (
+    await _appCommandZapierWrapper(tmpDir, {
+      command: 'definition',
+    })
+  ).results;
 
   const fileWriteError = await writeFile(
     path.join(tmpDir, 'definition.json'),
@@ -373,7 +375,7 @@ const _buildFunc = async ({
 
   startSpinner('Validating project');
   const validateResponse = await _appCommandZapierWrapper(tmpDir, {
-    command: 'validate'
+    command: 'validate',
   });
 
   const validationErrors = validateResponse.results;
@@ -458,5 +460,5 @@ module.exports = {
   makeZip,
   makeSourceZip,
   listFiles,
-  requiredFiles
+  requiredFiles,
 };

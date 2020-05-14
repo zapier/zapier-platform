@@ -11,7 +11,7 @@ module.exports = makeSchema({
   properties: {
     authData: { type: 'object' },
     inputData: { type: 'object' },
-    inputDataRaw: { type: 'object' }
+    inputDataRaw: { type: 'object' },
   },
-  additionalProperties: false
+  additionalProperties: false,
 });

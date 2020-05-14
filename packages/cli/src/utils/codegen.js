@@ -3,10 +3,10 @@
 /**
  * can call this multiple times safely
  */
-const strLiteral = input =>
+const strLiteral = (input) =>
   !(input.startsWith("'") || input.startsWith('"')) ? `"${input}"` : input;
 
-const interpLiteral = input => '`' + input + '`';
+const interpLiteral = (input) => '`' + input + '`';
 
 const block = (...statements) => statements.join('\n');
 
@@ -19,11 +19,11 @@ const obj = (...properties) =>
       // if we don't join this with new lines, then prettier will minimize its height where possible
       // i was doing some trickery with ending comments with : to group things, but that wasn't working well
       // could probably do it if we took the block holistically and spaced things after the fact, but that's overkill for now.
-      .map(p => (p.startsWith('/') ? `\n\n${p}\n` : p + ','))
+      .map((p) => (p.startsWith('/') ? `\n\n${p}\n` : p + ','))
       .join('')}}
   `.trim();
 
-const exportStatement = obj => `
+const exportStatement = (obj) => `
 module.exports = ${obj}`;
 
 /**
@@ -63,9 +63,9 @@ const zRequest = (url, ...requestOptions) => `
 `;
 
 // trim here is important because ASI adds a semi after a lonely return
-const returnStatement = statement => `return ${statement.trim()}`;
+const returnStatement = (statement) => `return ${statement.trim()}`;
 
-const awaitStatement = statement => `await ${statement.trim()}`;
+const awaitStatement = (statement) => `await ${statement.trim()}`;
 
 const arr = (...elements) => `[${elements.join(', ')}]`;
 
@@ -100,7 +100,7 @@ class CommentFormatter {
   generateNewLine() {
     return {
       words: [],
-      sumWordsLength: 0
+      sumWordsLength: 0,
     };
   }
 
@@ -119,7 +119,7 @@ class CommentFormatter {
   }
 
   splitComment() {
-    this.words.forEach(word => {
+    this.words.forEach((word) => {
       if (word.includes('\n')) {
         const [endOfCurrent, firstOfNext] = word.split('\n');
         this.addWordToLine(endOfCurrent);
@@ -140,7 +140,7 @@ class CommentFormatter {
   }
 
   toString() {
-    return this.lines.map(line => `// ${line.words.join(' ')}`).join('\n');
+    return this.lines.map((line) => `// ${line.words.join(' ')}`).join('\n');
   }
 }
 
@@ -180,5 +180,5 @@ module.exports = {
   throwSessionRefresh,
   variableAssignmentDeclaration,
   zRequest,
-  zResponseErr
+  zResponseErr,
 };

@@ -22,7 +22,7 @@ const BLACKLISTED_PATHS = [
   '.git',
   '.env',
   '.environment',
-  'build'
+  'build',
 ];
 const NODE_VERSION = versionStore[versionStore.length - 1].nodeVersion;
 const LAMBDA_VERSION = `v${NODE_VERSION}`;
@@ -31,7 +31,7 @@ const ANALYTICS_KEY = 'analyticsMode';
 const ANALYTICS_MODES = {
   enabled: 'enabled',
   anonymous: 'anonymous',
-  disabled: 'disabled'
+  disabled: 'disabled',
 };
 
 const packageJson = require('../package.json');
@@ -81,5 +81,5 @@ module.exports = {
   PLATFORM_PACKAGE,
   SOURCE_PATH,
   STARTER_REPO,
-  UPDATE_NOTIFICATION_INTERVAL
+  UPDATE_NOTIFICATION_INTERVAL,
 };

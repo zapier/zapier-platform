@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
-  value: true
+  value: true,
 });
 
 var _authentication = require('./authentication');
@@ -26,7 +26,7 @@ function _interopRequireWildcard(obj) {
 var authentication = _interopRequireWildcard(_authentication);
 
 exports.default = {
-  authentication
+  authentication,
 };
 
 module.exports = exports['default']; // eslint-disable-line

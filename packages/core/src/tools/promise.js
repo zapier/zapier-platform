@@ -4,7 +4,7 @@ const ZapierPromise = require('bluebird').getNewLibraryCopy();
 
 if (!process.env.DISABLE_LONG_STACK_TRACES) {
   ZapierPromise.config({
-    longStackTraces: true
+    longStackTraces: true,
   });
 }
 
@@ -13,7 +13,7 @@ const enrichErrorMessage = (err, frameStack) => {
   if (frameStack.length === 0) {
     return;
   }
-  const details = frameStack.map(f => `  ${f}`).join('\n');
+  const details = frameStack.map((f) => `  ${f}`).join('\n');
   try {
     err.message = `${err.message}\nWhat happened:\n${details}\n  ${err.message}`;
   } catch (e) {
@@ -29,7 +29,7 @@ const contextifyOnce = (err, attachErrorTrace, frameStack) => {
 
   Object.defineProperty(err, 'isContextified', {
     value: true,
-    enumerable: false
+    enumerable: false,
   });
 
   // Preserve original stack. Bluebird defines a dynamic 'err.stack' property
@@ -39,7 +39,7 @@ const contextifyOnce = (err, attachErrorTrace, frameStack) => {
   Object.defineProperty(err, 'stack', {
     value: err.stack,
     enumerable: false,
-    writable: false
+    writable: false,
   });
 
   attachErrorTrace = attachErrorTrace || enrichErrorMessage;
@@ -48,7 +48,7 @@ const contextifyOnce = (err, attachErrorTrace, frameStack) => {
 };
 
 // eslint-disable-next-line camelcase
-const find_boundTo = promise => {
+const find_boundTo = (promise) => {
   if (promise._boundTo) {
     return promise._boundTo;
   } else if (promise._promise0) {
@@ -61,7 +61,7 @@ const find_boundTo = promise => {
 // Bluebird already does some fancy footwork here - so let's just hijack it... kinda!
 // See longStackTracesAttachExtraTrace in Bluebird's src/debuggability.js for more.
 const _attachExtraTrace = ZapierPromise.prototype._attachExtraTrace;
-ZapierPromise.prototype._attachExtraTrace = function(error, ignoreSelf) {
+ZapierPromise.prototype._attachExtraTrace = function (error, ignoreSelf) {
   const _boundTo = find_boundTo(this);
   if (_boundTo && _boundTo.isContext && _boundTo.attachErrorTraceOnce) {
     _boundTo.attachErrorTraceOnce(error);
@@ -70,9 +70,9 @@ ZapierPromise.prototype._attachExtraTrace = function(error, ignoreSelf) {
 };
 
 // Expose a this.pushStack() in promises, and always wrap an error from a promise chain.
-ZapierPromise.makeContext = function(attachErrorTrace) {
+ZapierPromise.makeContext = function (attachErrorTrace) {
   const frameStack = [];
-  const attachErrorTraceOnce = err =>
+  const attachErrorTraceOnce = (err) =>
     contextifyOnce(err, attachErrorTrace, frameStack);
   return {
     isContext: true,
@@ -80,7 +80,7 @@ ZapierPromise.makeContext = function(attachErrorTrace) {
     addContext(msg) {
       frameStack.push(msg);
     },
-    attachErrorTraceOnce: attachErrorTraceOnce
+    attachErrorTraceOnce: attachErrorTraceOnce,
   };
 };
 

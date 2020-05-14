@@ -13,10 +13,10 @@ module.exports = makeSchema(
       '^[a-zA-Z]+[a-zA-Z0-9_]*$': {
         description:
           'Any unique key can be used and its values will be validated against the TriggerSchema.',
-        $ref: TriggerSchema.id
-      }
+        $ref: TriggerSchema.id,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [TriggerSchema]
 );

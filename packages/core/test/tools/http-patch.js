@@ -19,7 +19,7 @@ describe.skip('create-lambda-handler', () => {
     it('should be ablet opt out of patch', async () => {
       const appTester = createAppTester({
         ...appDefinition,
-        flags: { skipHttpPatch: true }
+        flags: { skipHttpPatch: true },
       });
       await appTester(appDefinition.resources.list.list.operation.perform);
       const http = require('http'); // core modules are never cached

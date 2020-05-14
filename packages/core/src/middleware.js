@@ -43,10 +43,10 @@ const ZapierPromise = require('./tools/promise');
 const applyMiddleware = (befores, afters, app, options) => {
   options = _.defaults({}, options, {
     skipEnvelope: false,
-    extraArgs: []
+    extraArgs: [],
   });
 
-  const ensureEnvelope = maybeEnvelope => {
+  const ensureEnvelope = (maybeEnvelope) => {
     if (!options.skipEnvelope) {
       // they returned just the results; put them back in the envelope
       return envelope.ensureOutputEnvelope(maybeEnvelope);
@@ -54,13 +54,13 @@ const applyMiddleware = (befores, afters, app, options) => {
     return maybeEnvelope;
   };
 
-  return input => {
+  return (input) => {
     const context = ZapierPromise.makeContext();
-    const resolve = val => ZapierPromise.resolve(val).bind(context);
+    const resolve = (val) => ZapierPromise.resolve(val).bind(context);
 
-    const beforeMiddleware = beforeInput => {
+    const beforeMiddleware = (beforeInput) => {
       return befores.reduce((collector, func) => {
-        return collector.then(newInput => {
+        return collector.then((newInput) => {
           newInput._addContext = context.addContext;
           const args = [newInput].concat(options.extraArgs);
           const result = func.apply(undefined, args);
@@ -72,9 +72,9 @@ const applyMiddleware = (befores, afters, app, options) => {
       }, resolve(beforeInput));
     };
 
-    const afterMiddleware = output => {
+    const afterMiddleware = (output) => {
       return afters.reduce((collector, func) => {
-        return collector.then(newOutput => {
+        return collector.then((newOutput) => {
           newOutput._addContext = context.addContext;
           const args = [newOutput].concat(options.extraArgs);
           const maybePromise = func.apply(undefined, args);
@@ -86,10 +86,10 @@ const applyMiddleware = (befores, afters, app, options) => {
       }, resolve(output));
     };
 
-    const promise = beforeMiddleware(input).then(newInput => {
+    const promise = beforeMiddleware(input).then((newInput) => {
       return resolve(app(newInput))
         .then(ensureEnvelope)
-        .then(output => {
+        .then((output) => {
           output.input = newInput;
           return afterMiddleware(output);
         });

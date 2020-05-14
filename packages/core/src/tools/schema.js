@@ -7,16 +7,16 @@ const dataTools = require('./data');
 const schemaTools = require('./schema-tools');
 const zapierSchema = require('zapier-platform-schema');
 
-const isVisible = action => !_.get(action, ['display', 'hidden']);
+const isVisible = (action) => !_.get(action, ['display', 'hidden']);
 
 // Take a resource with methods like list/hook and turn it into triggers, etc.
-const convertResourceDos = appRaw => {
+const convertResourceDos = (appRaw) => {
   const triggers = {};
-    const searches = {};
-    const creates = {};
-    const searchOrCreates = {};
+  const searches = {};
+  const creates = {};
+  const searchOrCreates = {};
 
-  _.each(appRaw.resources, resource => {
+  _.each(appRaw.resources, (resource) => {
     let search, create, trigger;
 
     if (resource.hook && resource.hook.operation) {
@@ -59,10 +59,10 @@ const convertResourceDos = appRaw => {
         key: `${search.key}`, // For now this is a Zapier editor limitation (has to match search)
         display: {
           label: `Find or Create ${resource.noun}`,
-          description: _.get(search, ['display', 'description'], '')
+          description: _.get(search, ['display', 'description'], ''),
         },
         search: search.key,
-        create: create.key
+        create: create.key,
       };
       searchOrCreates[searchOrCreate.key] = searchOrCreate;
     }
@@ -101,7 +101,7 @@ const copyPropertiesFromResource = (type, action, appRaw) => {
   return action;
 };
 
-const compileApp = appRaw => {
+const compileApp = (appRaw) => {
   appRaw = dataTools.deepCopy(appRaw);
   appRaw = schemaTools.findSourceRequireFunctions(appRaw);
   const extras = convertResourceDos(appRaw);
@@ -109,21 +109,21 @@ const compileApp = appRaw => {
   const actions = ['triggers', 'searches', 'creates', 'searchOrCreates'];
   let problemKeys = [];
 
-  actions.forEach(a => {
+  actions.forEach((a) => {
     const collisions = _.intersection(
       Object.keys(extras[a] || {}),
       Object.keys(appRaw[a] || {})
     );
     if (collisions.length) {
-      problemKeys = problemKeys.concat(collisions.map(k => `${a}.${k}`));
+      problemKeys = problemKeys.concat(collisions.map((k) => `${a}.${k}`));
     }
   });
 
   if (problemKeys.length) {
     const message = [
       'The following key(s) conflict with those created by a resource:\n',
-      problemKeys.map(k => `* ${k}`).join('\n'),
-      '\n\nRename the key(s) in the standalone object(s) to resolve'
+      problemKeys.map((k) => `* ${k}`).join('\n'),
+      '\n\nRename the key(s) in the standalone object(s) to resolve',
     ].join('');
 
     throw new Error(message);
@@ -138,7 +138,7 @@ const compileApp = appRaw => {
     appRaw.searchOrCreates || {}
   );
 
-  _.each(appRaw.triggers, trigger => {
+  _.each(appRaw.triggers, (trigger) => {
     appRaw.triggers[trigger.key] = copyPropertiesFromResource(
       'trigger',
       trigger,
@@ -146,7 +146,7 @@ const compileApp = appRaw => {
     );
   });
 
-  _.each(appRaw.searches, search => {
+  _.each(appRaw.searches, (search) => {
     appRaw.searches[search.key] = copyPropertiesFromResource(
       'search',
       search,
@@ -154,7 +154,7 @@ const compileApp = appRaw => {
     );
   });
 
-  _.each(appRaw.creates, create => {
+  _.each(appRaw.creates, (create) => {
     appRaw.creates[create.key] = copyPropertiesFromResource(
       'create',
       create,
@@ -165,18 +165,18 @@ const compileApp = appRaw => {
   return appRaw;
 };
 
-const serializeApp = compiledApp => {
+const serializeApp = (compiledApp) => {
   const cleanedApp = cleaner.recurseCleanFuncs(compiledApp);
   return dataTools.jsonCopy(cleanedApp);
 };
 
-const validateApp = compiledApp => {
+const validateApp = (compiledApp) => {
   const cleanedApp = cleaner.recurseCleanFuncs(compiledApp);
   const results = zapierSchema.validateAppDefinition(cleanedApp);
   return dataTools.jsonCopy(results.errors);
 };
 
-const prepareApp = appRaw => {
+const prepareApp = (appRaw) => {
   const compiledApp = compileApp(appRaw);
   return dataTools.deepFreeze(compiledApp);
 };
@@ -185,5 +185,5 @@ module.exports = {
   compileApp,
   validateApp,
   serializeApp,
-  prepareApp
+  prepareApp,
 };

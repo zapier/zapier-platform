@@ -6,9 +6,9 @@ const CALLBACK_URL = 'https://example.com/callback';
 const input = {
   _zapier: {
     event: {
-      callback_url: CALLBACK_URL
-    }
-  }
+      callback_url: CALLBACK_URL,
+    },
+  },
 };
 describe('callbackwrapper', () => {
   let wrapper;
@@ -32,7 +32,7 @@ describe('callbackwrapper', () => {
 });
 describe('callbackStatusCatcher', () => {
   const output = {
-    input
+    input,
   };
   describe('when functions finish with an accessed callback', () => {
     let result;

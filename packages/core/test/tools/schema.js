@@ -15,15 +15,15 @@ describe('schema', () => {
             hook: {},
             list: {},
             search: {},
-            create: {}
-          }
-        }
+            create: {},
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.should.containEql({
         triggers: {},
         creates: {},
-        searches: {}
+        searches: {},
       });
     });
 
@@ -32,8 +32,8 @@ describe('schema', () => {
         operation: {
           perform: () => {
             return {};
-          }
-        }
+          },
+        },
       };
 
       const appRaw = {
@@ -47,14 +47,14 @@ describe('schema', () => {
             create: dummyMethod,
             outputFields: [
               { key: 'id', type: 'integer' },
-              { key: 'name', type: 'string' }
+              { key: 'name', type: 'string' },
             ],
             sample: {
               id: 123,
-              name: 'John Doe'
-            }
-          }
-        }
+              name: 'John Doe',
+            },
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fooList.operation.outputFields.should.have.length(2);
@@ -82,25 +82,25 @@ describe('schema', () => {
       const dummySearch = {
         display: {
           label: 'Find a Foo',
-          description: 'Finds a Foo.'
+          description: 'Finds a Foo.',
         },
         operation: {
           perform: () => {
             return {};
-          }
-        }
+          },
+        },
       };
 
       const dummyCreate = {
         display: {
           label: 'Create a Foo',
-          description: 'Creates a Foo.'
+          description: 'Creates a Foo.',
         },
         operation: {
           perform: () => {
             return {};
-          }
-        }
+          },
+        },
       };
 
       const appRaw = {
@@ -112,14 +112,14 @@ describe('schema', () => {
             create: dummyCreate,
             outputFields: [
               { key: 'id', type: 'integer' },
-              { key: 'name', type: 'string' }
+              { key: 'name', type: 'string' },
             ],
             sample: {
               id: 123,
-              name: 'John Doe'
-            }
-          }
-        }
+              name: 'John Doe',
+            },
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searchOrCreates.should.have.keys('fooSearch');
@@ -127,10 +127,10 @@ describe('schema', () => {
         key: 'fooSearch',
         display: {
           label: 'Find or Create Foo',
-          description: 'Finds a Foo.'
+          description: 'Finds a Foo.',
         },
         search: 'fooSearch',
-        create: 'fooCreate'
+        create: 'fooCreate',
       });
     });
 
@@ -138,26 +138,26 @@ describe('schema', () => {
       const dummySearch = {
         display: {
           label: 'Find a Foo',
-          description: 'Finds a Foo.'
+          description: 'Finds a Foo.',
         },
         operation: {
           perform: () => {
             return {};
-          }
-        }
+          },
+        },
       };
 
       const dummyCreate = {
         display: {
           label: 'Create a Foo',
           description: 'Creates a Foo.',
-          hidden: true
+          hidden: true,
         },
         operation: {
           perform: () => {
             return {};
-          }
-        }
+          },
+        },
       };
 
       const appRaw = {
@@ -169,14 +169,14 @@ describe('schema', () => {
             create: dummyCreate,
             outputFields: [
               { key: 'id', type: 'integer' },
-              { key: 'name', type: 'string' }
+              { key: 'name', type: 'string' },
             ],
             sample: {
               id: 123,
-              name: 'John Doe'
-            }
-          }
-        }
+              name: 'John Doe',
+            },
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searchOrCreates.should.deepEqual({});
@@ -190,20 +190,20 @@ describe('schema', () => {
             noun: 'Foo',
             hook: {
               display: {},
-              operation: {}
+              operation: {},
             },
             list: {
               display: {},
               operation: {
-                perform: { url: 'https://local.dev/items' }
-              }
-            }
-          }
-        }
+                perform: { url: 'https://local.dev/items' },
+              },
+            },
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fooHook.operation.should.containEql({
-        performList: { url: 'https://local.dev/items' }
+        performList: { url: 'https://local.dev/items' },
       });
     });
 
@@ -216,21 +216,21 @@ describe('schema', () => {
             hook: {
               display: {},
               operation: {
-                performList: { url: 'https://local.dev/items-for-hook' }
-              }
+                performList: { url: 'https://local.dev/items-for-hook' },
+              },
             },
             list: {
               display: {},
               operation: {
-                perform: { url: 'https://local.dev/items' }
-              }
-            }
-          }
-        }
+                perform: { url: 'https://local.dev/items' },
+              },
+            },
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fooHook.operation.should.containEql({
-        performList: { url: 'https://local.dev/items-for-hook' }
+        performList: { url: 'https://local.dev/items-for-hook' },
       });
     });
 
@@ -244,20 +244,20 @@ describe('schema', () => {
               display: {},
               operation: {
                 perform: {
-                  url: 'https://local.dev/items/{{bundle.inputData.id}}'
-                }
-              }
+                  url: 'https://local.dev/items/{{bundle.inputData.id}}',
+                },
+              },
             },
             search: {
               display: {},
-              operation: {}
-            }
-          }
-        }
+              operation: {},
+            },
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searches.fooSearch.operation.should.containEql({
-        performGet: { url: 'https://local.dev/items/{{bundle.inputData.id}}' }
+        performGet: { url: 'https://local.dev/items/{{bundle.inputData.id}}' },
       });
     });
 
@@ -271,27 +271,27 @@ describe('schema', () => {
               display: {},
               operation: {
                 perform: {
-                  url: 'https://local.dev/items/{{bundle.inputData.id}}'
-                }
-              }
+                  url: 'https://local.dev/items/{{bundle.inputData.id}}',
+                },
+              },
             },
             search: {
               display: {},
               operation: {
                 performGet: {
                   url:
-                    'https://local.dev/items-for-search/{{bundle.inputData.id}}'
-                }
-              }
-            }
-          }
-        }
+                    'https://local.dev/items-for-search/{{bundle.inputData.id}}',
+                },
+              },
+            },
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searches.fooSearch.operation.should.containEql({
         performGet: {
-          url: 'https://local.dev/items-for-search/{{bundle.inputData.id}}'
-        }
+          url: 'https://local.dev/items-for-search/{{bundle.inputData.id}}',
+        },
       });
     });
   });
@@ -304,10 +304,10 @@ describe('schema', () => {
             list: {
               display: {},
               operation: {
-                perform: { url: 'https://local.dev/items' }
-              }
-            }
-          }
+                perform: { url: 'https://local.dev/items' },
+              },
+            },
+          },
         },
         triggers: {
           fastFoo: {
@@ -316,14 +316,14 @@ describe('schema', () => {
             display: {},
             operation: {
               resource: 'foo',
-              type: 'hook'
-            }
-          }
-        }
+              type: 'hook',
+            },
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.triggers.fastFoo.operation.should.containEql({
-        performList: { url: 'https://local.dev/items' }
+        performList: { url: 'https://local.dev/items' },
       });
     });
 
@@ -337,29 +337,29 @@ describe('schema', () => {
               display: {},
               operation: {
                 perform: {
-                  url: 'https://local.dev/items/{{bundle.inputData.id}}'
-                }
-              }
+                  url: 'https://local.dev/items/{{bundle.inputData.id}}',
+                },
+              },
             },
             outputFields: [{ key: 'id' }, { key: 'name' }],
             sample: {
               id: 123,
-              name: 'John Doe'
-            }
-          }
+              name: 'John Doe',
+            },
+          },
         },
         searches: {
           findFoo: {
             display: {},
             operation: {
-              resource: 'foo'
-            }
-          }
-        }
+              resource: 'foo',
+            },
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.searches.findFoo.operation.should.containEql({
-        performGet: { url: 'https://local.dev/items/{{bundle.inputData.id}}' }
+        performGet: { url: 'https://local.dev/items/{{bundle.inputData.id}}' },
       });
       compiledApp.searches.findFoo.operation.outputFields.should.have.length(2);
       compiledApp.searches.findFoo.operation.sample.should.have.keys(
@@ -378,29 +378,29 @@ describe('schema', () => {
               display: {},
               operation: {
                 perform: {
-                  url: 'https://local.dev/items/{{bundle.inputData.id}}'
-                }
-              }
+                  url: 'https://local.dev/items/{{bundle.inputData.id}}',
+                },
+              },
             },
             outputFields: [{ key: 'id' }, { key: 'name' }],
             sample: {
               id: 123,
-              name: 'John Doe'
-            }
-          }
+              name: 'John Doe',
+            },
+          },
         },
         creates: {
           makeFoo: {
             display: {},
             operation: {
-              resource: 'foo'
-            }
-          }
-        }
+              resource: 'foo',
+            },
+          },
+        },
       };
       const compiledApp = schema.compileApp(appRaw);
       compiledApp.creates.makeFoo.operation.should.containEql({
-        performGet: { url: 'https://local.dev/items/{{bundle.inputData.id}}' }
+        performGet: { url: 'https://local.dev/items/{{bundle.inputData.id}}' },
       });
       compiledApp.creates.makeFoo.operation.outputFields.should.have.length(2);
       compiledApp.creates.makeFoo.operation.sample.should.have.keys(
@@ -416,17 +416,17 @@ describe('schema', () => {
             key: 'foo',
             list: {
               operation: {},
-              display: {}
-            }
-          }
+              display: {},
+            },
+          },
         },
         triggers: {
           fooList: {
             key: 'fooList',
             operation: {},
-            display: {}
-          }
-        }
+            display: {},
+          },
+        },
       };
 
       const buildFunc = () => schema.compileApp(appRaw);

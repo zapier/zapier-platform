@@ -4,7 +4,7 @@ const fetch = require('./fetch');
 const requestSugar = require('./request-sugar');
 const { PACKAGE_NAME, PACKAGE_VERSION } = require('../constants');
 
-const parseResponse = async resp => {
+const parseResponse = async (resp) => {
   const contentType = resp.headers.get('Content-Type') || '';
 
   if (contentType.match(/^application\/json/)) {
@@ -21,12 +21,12 @@ const parseResponse = async resp => {
 };
 
 // Return our INTERNAL convenient flavor of resp. No middleware!
-const request = async options => {
+const request = async (options) => {
   const { url: fetchUrl, ...fetchOptions } = options;
 
   fetchOptions.headers = {
     'user-agent': `${PACKAGE_NAME}/${PACKAGE_VERSION}`,
-    ...(fetchOptions.headers || {})
+    ...(fetchOptions.headers || {}),
   };
 
   const resp = await fetch(fetchUrl, fetchOptions);

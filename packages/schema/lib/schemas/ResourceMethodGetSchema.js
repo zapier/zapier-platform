@@ -16,55 +16,55 @@ module.exports = makeSchema(
       {
         display: {
           label: 'Get Tag by ID',
-          description: 'Grab a specific Tag by ID.'
+          description: 'Grab a specific Tag by ID.',
         },
         operation: {
           perform: {
-            url: '$func$0$f$'
+            url: '$func$0$f$',
           },
           sample: {
             id: 385,
-            name: 'proactive enable ROI'
-          }
-        }
+            name: 'proactive enable ROI',
+          },
+        },
       },
       {
         display: {
           label: 'Get Tag by ID',
           description: 'Grab a specific Tag by ID.',
-          hidden: true
+          hidden: true,
         },
         operation: {
           perform: {
-            url: '$func$0$f$'
-          }
-        }
-      }
+            url: '$func$0$f$',
+          },
+        },
+      },
     ],
     antiExamples: [
       {
         display: {
           label: 'Get Tag by ID',
-          description: 'Grab a specific Tag by ID.'
+          description: 'Grab a specific Tag by ID.',
         },
         operation: {
           perform: {
-            url: '$func$0$f$'
-          }
-        }
-      }
+            url: '$func$0$f$',
+          },
+        },
+      },
     ],
     properties: {
       display: {
         description: 'Define how this get method will be exposed in the UI.',
-        $ref: BasicDisplaySchema.id
+        $ref: BasicDisplaySchema.id,
       },
       operation: {
         description: 'Define how this get method will work.',
-        $ref: BasicOperationSchema.id
-      }
+        $ref: BasicOperationSchema.id,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [BasicDisplaySchema, BasicOperationSchema]
 );

@@ -9,21 +9,21 @@ const oauth = require('oauth-sign');
 
 const { getContentType, FORM_TYPE } = require('../../tools/http');
 
-const stripQueryFromUrl = url => {
+const stripQueryFromUrl = (url) => {
   const u = new urllib.URL(url);
   return `${u.protocol}//${u.host}${u.pathname}`;
 };
 
-const collectAuthParams = req => {
+const collectAuthParams = (req) => {
   const params = _.omit(req.auth, [
     'oauth_consumer_secret',
-    'oauth_token_secret'
+    'oauth_token_secret',
   ]);
   _.defaults(params, {
     oauth_version: '1.0A',
     oauth_signature_method: 'HMAC-SHA1',
     oauth_nonce: crypto.randomBytes(20).toString('hex'),
-    oauth_timestamp: Math.floor(Date.now() / 1000)
+    oauth_timestamp: Math.floor(Date.now() / 1000),
   });
   return params;
 };
@@ -64,7 +64,7 @@ const collectParamsForBaseString = (req, authParams) => {
   return params;
 };
 
-const buildAuthorizationHeader = params => {
+const buildAuthorizationHeader = (params) => {
   const paramList = _.map(
     params,
     (v, k) => `${oauth.rfc3986(k)}="${oauth.rfc3986(v)}"`
@@ -72,7 +72,7 @@ const buildAuthorizationHeader = params => {
   return `OAuth ${paramList.join(',')}`;
 };
 
-const oauth1SignRequest = req => {
+const oauth1SignRequest = (req) => {
   if (!_.isEmpty(req.auth)) {
     const signMethod = req.auth.oauth_signature_method || 'HMAC-SHA1';
     const authParams = collectAuthParams(req);

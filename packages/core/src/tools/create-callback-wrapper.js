@@ -9,7 +9,7 @@ const _ = require('lodash');
 // calling this inner function will also mark the task as a CALLBACK status on return which will
 // effectively pause the Zap
 
-const createCallbackHigherOrderFunction = input => {
+const createCallbackHigherOrderFunction = (input) => {
   const callbackUrl = _.get(input, '_zapier.event.callback_url');
   return () => {
     _.set(input, '_zapier.event.callbackUsed', true);

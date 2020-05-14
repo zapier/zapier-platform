@@ -9,7 +9,7 @@ class AppError extends Error {
       JSON.stringify({
         message,
         code,
-        status
+        status,
       })
     );
     this.name = 'AppError';
@@ -23,12 +23,12 @@ class ResponseError extends Error {
       JSON.stringify({
         status: response.status,
         headers: {
-          'content-type': response.headers.get('content-type')
+          'content-type': response.headers.get('content-type'),
         },
         content: response.content,
         request: {
-          url: response.request.url
-        }
+          url: response.request.url,
+        },
       })
     );
     this.name = 'ResponseError';
@@ -37,8 +37,8 @@ class ResponseError extends Error {
 }
 
 // Make some of the errors we'll use!
-const createError = name => {
-  const NewError = function(message = '') {
+const createError = (name) => {
+  const NewError = function (message = '') {
     this.name = name;
     this.message = message;
     Error.call(this);
@@ -57,7 +57,7 @@ const names = [
   'NotImplementedError',
   'RefreshAuthError',
   'RequireModuleError',
-  'StopRequestError'
+  'StopRequestError',
 ];
 
 const exceptions = _.reduce(
@@ -68,7 +68,7 @@ const exceptions = _.reduce(
   },
   {
     Error: AppError,
-    ResponseError
+    ResponseError,
   }
 );
 
@@ -89,5 +89,5 @@ const handleError = (...args) => {
 
 module.exports = {
   ...exceptions,
-  handleError
+  handleError,
 };

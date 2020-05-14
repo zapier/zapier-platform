@@ -14,16 +14,16 @@ module.exports = makeSchema(
     oneOf: [
       {
         type: 'object',
-        minProperties: 1
+        minProperties: 1,
       },
       {
         type: 'array',
         minItems: 1,
         items: {
-          oneOf: [{ type: 'string' }, { $ref: FieldChoiceWithLabelSchema.id }]
-        }
-      }
-    ]
+          oneOf: [{ type: 'string' }, { $ref: FieldChoiceWithLabelSchema.id }],
+        },
+      },
+    ],
   },
   [FieldChoiceWithLabelSchema]
 );

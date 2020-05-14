@@ -11,7 +11,7 @@ const { flags } = require('@oclif/command');
 
 class ConvertCommand extends BaseCommand {
   generateCreateFunc(isVisual, appId, version) {
-    return async tempAppDir => {
+    return async (tempAppDir) => {
       if (isVisual) {
         // has info about the app, such as title
         // has a CLI version of the actual app implementation
@@ -20,7 +20,7 @@ class ConvertCommand extends BaseCommand {
         try {
           const [appInfo, versionInfo] = await Promise.all([
             callAPI(`/apps/${appId}`, undefined, true),
-            callAPI(`/apps/${appId}/versions/${version}`, undefined, true)
+            callAPI(`/apps/${appId}/versions/${version}`, undefined, true),
           ]);
 
           if (!versionInfo.definition_override) {
@@ -55,7 +55,7 @@ class ConvertCommand extends BaseCommand {
           const [legacyApp, appDefinition] = await Promise.all([
             // these have weird call signatures because we're not calling the platform api
             callAPI(null, { url: legacyDumpUrl }, true),
-            callAPI(null, { url: cliDumpUrl }, true)
+            callAPI(null, { url: cliDumpUrl }, true),
           ]);
           // The JSON dump of the app doesn't have app ID, let's add it here
           legacyApp.general.app_id = appId;
@@ -101,23 +101,23 @@ ConvertCommand.args = [
     name: 'integrationId',
     required: true,
     description: `To get the integration/app ID, go to "${BASE_ENDPOINT}/app/developer", click on an integration, and copy the number directly after "/app/" in the URL.`,
-    parse: input => Number(input)
+    parse: (input) => Number(input),
   },
   {
     name: 'path',
     required: true,
     description:
-      'Relative to your current path - IE: `.` for current directory.'
-  }
+      'Relative to your current path - IE: `.` for current directory.',
+  },
 ];
 ConvertCommand.flags = buildFlags({
   commandFlags: {
     version: flags.string({
       char: 'v',
       description:
-        'Convert a specific version. Required when converting a Visual Builder integration.'
-    })
-  }
+        'Convert a specific version. Required when converting a Visual Builder integration.',
+    }),
+  },
 });
 ConvertCommand.description = `Convert a Legacy Web Builder app or Visual Builder integration to a CLI integration.
 

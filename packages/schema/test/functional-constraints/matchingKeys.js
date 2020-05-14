@@ -15,7 +15,7 @@ describe('matchingKeys', () => {
           noun: 'Foo',
           display: {
             label: 'Create Foo',
-            description: 'Creates a...'
+            description: 'Creates a...',
           },
           operation: {
             perform: '$func$2$f$',
@@ -27,14 +27,14 @@ describe('matchingKeys', () => {
                 children: [
                   {
                     key: 'product',
-                    type: 'string'
-                  }
-                ]
-              }
-            ]
-          }
-        }
-      }
+                    type: 'string',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);

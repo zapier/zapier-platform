@@ -13,10 +13,10 @@ module.exports = makeSchema(
       '^[a-zA-Z]+[a-zA-Z0-9_]*$': {
         description:
           'Any unique key can be used and its values will be validated against the ResourceSchema.',
-        $ref: ResourceSchema.id
-      }
+        $ref: ResourceSchema.id,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [ResourceSchema]
 );

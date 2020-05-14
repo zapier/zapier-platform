@@ -1,5 +1,5 @@
 module.exports = {
-  noop: s => {
+  noop: (s) => {
     return s;
-  }
+  },
 };

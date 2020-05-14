@@ -15,9 +15,9 @@ class HistoryCommand extends BaseCommand {
         ['What', 'action'],
         ['Message', 'message'],
         ['Who', 'customuser'],
-        ['Timestamp', 'date']
+        ['Timestamp', 'date'],
       ],
-      emptyMessage: 'No historical actions found'
+      emptyMessage: 'No historical actions found',
     });
   }
 }

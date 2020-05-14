@@ -13,15 +13,15 @@ module.exports = makeSchema({
       description: 'Gets a new thing for you.',
       directions: 'This is how you use the thing.',
       hidden: false,
-      important: true
-    }
+      important: true,
+    },
   ],
   antiExamples: [
     {
       label: 'New Thing',
       description: 'Gets a new thing for you.',
-      important: 1
-    }
+      important: 1,
+    },
   ],
   properties: {
     label: {
@@ -33,9 +33,9 @@ module.exports = makeSchema({
       docAnnotation: {
         required: {
           type: 'replace',
-          value: '**yes** (with exceptions, see description)'
-        }
-      }
+          value: '**yes** (with exceptions, see description)',
+        },
+      },
     },
     description: {
       description:
@@ -46,26 +46,26 @@ module.exports = makeSchema({
       docAnnotation: {
         required: {
           type: 'replace',
-          value: '**yes** (with exceptions, see description)'
-        }
-      }
+          value: '**yes** (with exceptions, see description)',
+        },
+      },
     },
     directions: {
       description:
         'A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application. Only evaluated for static webhooks.',
       type: 'string',
       minLength: 12,
-      maxLength: 1000
+      maxLength: 1000,
     },
     important: {
       description:
         'Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.',
-      type: 'boolean'
+      type: 'boolean',
     },
     hidden: {
       description: 'Should this operation be unselectable by users?',
-      type: 'boolean'
-    }
+      type: 'boolean',
+    },
   },
-  additionalProperties: false
+  additionalProperties: false,
 });

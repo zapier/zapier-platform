@@ -7,8 +7,8 @@ const request = require('request');
 
 const markFileFieldsInBundle = (bundle, inputFields) => {
   const fileFieldKeys = inputFields
-    .filter(field => field.type === 'file')
-    .map(field => field.key);
+    .filter((field) => field.type === 'file')
+    .map((field) => field.key);
 
   if (fileFieldKeys.length > 0) {
     // Add it to bundle so that functions that don't have access to app
@@ -17,7 +17,7 @@ const markFileFieldsInBundle = (bundle, inputFields) => {
   }
 };
 
-const hasFileFields = bundle => {
+const hasFileFields = (bundle) => {
   return bundle._fileFieldKeys && bundle._fileFieldKeys.length > 0;
 };
 
@@ -28,7 +28,7 @@ const isFileField = (fieldKey, bundle) => {
   return bundle._fileFieldKeys.indexOf(fieldKey) >= 0;
 };
 
-const isUrl = str => {
+const isUrl = (str) => {
   try {
     const parsed = new urllib.URL(str);
     return (
@@ -40,10 +40,10 @@ const isUrl = str => {
   }
 };
 
-const extractFilenameFromContent = content =>
+const extractFilenameFromContent = (content) =>
   content.substr(0, 12).replace('.txt', '') + ' ... .txt';
 
-const extractFilenameFromContentDisposition = value => {
+const extractFilenameFromContentDisposition = (value) => {
   let filename = '';
 
   // Follows RFC 6266
@@ -55,7 +55,7 @@ const extractFilenameFromContentDisposition = value => {
     /filename\s*=\s*"([^"]+)"/gi,
 
     // Example: 'Attachment; filename=example.html'
-    /filename\s*=\s*([^ ]+)/gi
+    /filename\s*=\s*([^ ]+)/gi,
   ];
 
   for (const pattern of patterns) {
@@ -73,7 +73,7 @@ const extractFilenameFromContentDisposition = value => {
   return filename;
 };
 
-const extractFilenameFromUrl = url => {
+const extractFilenameFromUrl = (url) => {
   const pathname = new urllib.URL(url).pathname;
   if (pathname) {
     const parts = pathname.split('/');
@@ -82,7 +82,7 @@ const extractFilenameFromUrl = url => {
   return '';
 };
 
-const downloadFile = url =>
+const downloadFile = (url) =>
   new Promise((resolve, reject) => {
     request({ url, encoding: null }, (err, response, body) => {
       if (err) {
@@ -99,7 +99,7 @@ const downloadFile = url =>
 
       const file = {
         meta: { filename, contentType },
-        content: body
+        content: body,
       };
       resolve(file);
     });
@@ -109,7 +109,7 @@ const ContentBackedLazyFile = (content, fileMeta) => {
   const meta = async () => {
     return {
       filename: fileMeta.filename || extractFilenameFromContent(content),
-      contentType: fileMeta.contentType || 'text/plain'
+      contentType: fileMeta.contentType || 'text/plain',
     };
   };
 
@@ -126,7 +126,7 @@ const UrlBackedLazyFile = (url, fileMeta) => {
   const hasCompleteMeta = fileMeta.filename && fileMeta.contentType;
 
   let cachedFile;
-  const downloadFileWithCache = async fileUrl => {
+  const downloadFileWithCache = async (fileUrl) => {
     // Cache file so when we call LazyFile.meta or LazyFile.readStream, we
     // don't need to send an HTTP request again
     if (cachedFile) {
@@ -168,5 +168,5 @@ module.exports = {
   markFileFieldsInBundle,
   hasFileFields,
   isFileField,
-  LazyFile
+  LazyFile,
 };

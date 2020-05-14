@@ -112,5 +112,5 @@ module.exports = {
 module.exports = {
   sampleExportVarIndex,
   sampleExportObjectIndex,
-  sampleLegacyAppIndex
+  sampleLegacyAppIndex,
 };

@@ -16,7 +16,7 @@ const walkSchemas = (InitSchema, callback) => {
   const recurse = (Schema, parents) => {
     parents = parents || [];
     callback(Schema, parents);
-    Schema.dependencies.map(childSchema => {
+    Schema.dependencies.map((childSchema) => {
       const newParents = parents.concat([InitSchema]);
       recurse(childSchema, newParents);
     });
@@ -24,23 +24,23 @@ const walkSchemas = (InitSchema, callback) => {
   recurse(InitSchema);
 };
 
-const collectSchemas = InitSchema => {
+const collectSchemas = (InitSchema) => {
   const schemas = {};
-  walkSchemas(InitSchema, Schema => {
+  walkSchemas(InitSchema, (Schema) => {
     schemas[Schema.id] = Schema;
   });
   return schemas;
 };
 
 const BREAK_LENGTH = 96;
-const prepQuote = val => val.replace('`', '');
+const prepQuote = (val) => val.replace('`', '');
 const quote = (val, triple, indent = '') =>
   // either ``` with optional indentation or `
   triple && val.length > BREAK_LENGTH
     ? '```\n' +
       val
         .match(/[^\r\n]+/g)
-        .map(line => indent + line)
+        .map((line) => indent + line)
         .join('\n') +
       '\n' +
       indent +
@@ -49,7 +49,7 @@ const quote = (val, triple, indent = '') =>
 const quoteOrNa = (val, triple = false, indent = '') =>
   val ? quote(val, triple, indent) : '_n/a_';
 
-const formatExample = example => {
+const formatExample = (example) => {
   const ex = _.isPlainObject(example) ? _.omit(example, SKIP_KEY) : example;
   return `* ${quoteOrNa(
     util.inspect(ex, { depth: null, breakLength: BREAK_LENGTH }),
@@ -59,7 +59,7 @@ const formatExample = example => {
 };
 
 // Generate a display of the type (or link to a $ref).
-const typeOrLink = schema => {
+const typeOrLink = (schema) => {
   if (schema.type === 'array' && schema.items) {
     return `${quoteOrNa(schema.type)}[${typeOrLink(schema.items)}]`;
   }
@@ -82,7 +82,7 @@ const typeOrLink = schema => {
 };
 
 // Properly quote and display examples.
-const makeExampleSection = Schema => {
+const makeExampleSection = (Schema) => {
   const examples = Schema.schema.examples || [];
   if (!examples.length) {
     return '';
@@ -95,7 +95,7 @@ ${examples.map(formatExample).join('\n')}
 };
 
 // Properly quote and display anti-examples.
-const makeAntiExampleSection = Schema => {
+const makeAntiExampleSection = (Schema) => {
   const examples = Schema.schema.antiExamples || [];
   if (!examples.length) {
     return '';
@@ -122,13 +122,13 @@ const processProperty = (key, property, propIsRequired) => {
       throw new Error(`unrecognized docAnnotation type: ${annotation.type}`);
     }
   }
-  return `${quoteOrNa(key)} | ${isRequired} | ${typeOrLink(
-    property
-  )} | ${property.description || NO_DESCRIPTION}`;
+  return `${quoteOrNa(key)} | ${isRequired} | ${typeOrLink(property)} | ${
+    property.description || NO_DESCRIPTION
+  }`;
 };
 
 // Enumerate the properties as a table.
-const makePropertiesSection = Schema => {
+const makePropertiesSection = (Schema) => {
   const properties =
     Schema.schema.properties || Schema.schema.patternProperties || {};
   if (!Object.keys(properties).length) {
@@ -141,7 +141,7 @@ const makePropertiesSection = Schema => {
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 ${Object.keys(properties)
-  .map(key => {
+  .map((key) => {
     const property = properties[key];
     return processProperty(key, property, required.includes(key));
   })
@@ -150,7 +150,7 @@ ${Object.keys(properties)
 };
 
 // Given a "root" schema, create some markdown.
-const makeMarkdownSection = Schema => {
+const makeMarkdownSection = (Schema) => {
   return `\
 ## ${Schema.id}
 
@@ -171,7 +171,7 @@ ${makePropertiesSection(Schema)}
 };
 
 // Generate the final markdown.
-const buildDocs = InitSchema => {
+const buildDocs = (InitSchema) => {
   const schemas = collectSchemas(InitSchema);
   const markdownSections = _.chain(schemas)
     .values()

@@ -7,18 +7,18 @@ const { callAPI } = require('../../utils/api');
 const { flattenCheckResult } = require('../../utils/display');
 const { getVersionChangelog } = require('../../utils/changelog');
 
-const serializeErrors = errors => {
+const serializeErrors = (errors) => {
   const opener = 'Promotion failed for the following reasons:\n\n';
   if (typeof errors[0] === 'string') {
     // errors is an array of strings
-    return opener + errors.map(e => `* ${e}`).join('\n');
+    return opener + errors.map((e) => `* ${e}`).join('\n');
   }
 
   const issues = flattenCheckResult({ errors: errors });
   return (
     opener +
     issues
-      .map(i => `* ${i.method}: ${i.description}\n ${colors.gray(i.link)}`)
+      .map((i) => `* ${i.method}: ${i.description}\n ${colors.gray(i.link)}`)
       .join('\n')
   );
 };
@@ -73,7 +73,7 @@ class PromoteCommand extends BaseCommand {
         url,
         {
           method: 'PUT',
-          body
+          body,
         },
         true
       );
@@ -120,8 +120,8 @@ PromoteCommand.args = [
   {
     name: 'version',
     required: true,
-    description: 'The version you want promote.'
-  }
+    description: 'The version you want promote.',
+  },
 ];
 
 PromoteCommand.examples = ['zapier promote 1.0.0'];

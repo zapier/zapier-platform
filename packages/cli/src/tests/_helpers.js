@@ -7,7 +7,7 @@ const { randomBytes } = require('crypto');
 const runCommand = (cmd, args, opts = {}) => {
   const { stdout, stderr, status } = spawnSync(cmd, args, {
     encoding: 'utf8',
-    ...opts
+    ...opts,
   });
   if (status) {
     throw new Error(stderr || stdout);

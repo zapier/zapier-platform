@@ -9,7 +9,7 @@ module.exports = makeSchema(
     id: '/FieldsSchema',
     description: 'An array or collection of fields.',
     type: 'array',
-    items: { $ref: FieldSchema.id }
+    items: { $ref: FieldSchema.id },
   },
   [FieldSchema]
 );

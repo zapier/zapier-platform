@@ -29,14 +29,14 @@ BasicHookOperationSchema.properties = {
     docAnnotation: {
       required: {
         type: 'replace',
-        value: '**yes** (with exceptions, see description)'
-      }
-    }
+        value: '**yes** (with exceptions, see description)',
+      },
+    },
   },
   resource: BasicHookOperationSchema.properties.resource,
   perform: {
     description: 'A function that processes the inbound webhook request.',
-    $ref: FunctionSchema.id
+    $ref: FunctionSchema.id,
   },
   performList: {
     description:
@@ -46,9 +46,9 @@ BasicHookOperationSchema.properties = {
     docAnnotation: {
       required: {
         type: 'replace',
-        value: '**yes** (with exceptions, see description)'
-      }
-    }
+        value: '**yes** (with exceptions, see description)',
+      },
+    },
   },
   performSubscribe: {
     description:
@@ -58,9 +58,9 @@ BasicHookOperationSchema.properties = {
     docAnnotation: {
       required: {
         type: 'replace',
-        value: '**yes** (with exceptions, see description)'
-      }
-    }
+        value: '**yes** (with exceptions, see description)',
+      },
+    },
   },
   performUnsubscribe: {
     description:
@@ -70,13 +70,13 @@ BasicHookOperationSchema.properties = {
     docAnnotation: {
       required: {
         type: 'replace',
-        value: '**yes** (with exceptions, see description)'
-      }
-    }
+        value: '**yes** (with exceptions, see description)',
+      },
+    },
   },
   inputFields: BasicHookOperationSchema.properties.inputFields,
   outputFields: BasicHookOperationSchema.properties.outputFields,
-  sample: BasicHookOperationSchema.properties.sample
+  sample: BasicHookOperationSchema.properties.sample,
 };
 
 module.exports = makeSchema(

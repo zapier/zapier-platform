@@ -16,18 +16,18 @@ const triggerIsObject = {
       return []; // trigger-is-array check will catch if not array
     }
 
-    const nonObjectResult = _.find(results, result => {
+    const nonObjectResult = _.find(results, (result) => {
       return !_.isPlainObject(result);
     });
 
     if (nonObjectResult !== undefined) {
       const repr = simpleTruncate(JSON.stringify(nonObjectResult), 50);
       return [
-        `Got a non-object result in the array, expected only objects (${repr})`
+        `Got a non-object result in the array, expected only objects (${repr})`,
       ];
     }
     return [];
-  }
+  },
 };
 
 module.exports = triggerIsObject;

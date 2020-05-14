@@ -8,11 +8,11 @@ marked.setOptions({
     tab: 2,
     width: stdtermwidth - 2,
     reflowText: true,
-    codespan: chalk.underline.bold
-  })
+    codespan: chalk.underline.bold,
+  }),
 });
 
-module.exports = options => {
+module.exports = (options) => {
   const cmdId = options.id === 'help' ? options.argv[0] : options.id;
   const cmd = options.config.findCommand(cmdId);
   if (cmd) {

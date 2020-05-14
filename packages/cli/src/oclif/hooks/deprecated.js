@@ -2,11 +2,11 @@
 
 // deprecated => recommended
 const deprecatedCommands = {
-  apps: 'integrations'
+  apps: 'integrations',
 };
 
 // can't be fat arrow because it inherits `this` from commands
-module.exports = function(options) {
+module.exports = function (options) {
   if (deprecatedCommands[options.id]) {
     this.warn(
       `The \`${options.id}\` command is deprecated. Use the \`${

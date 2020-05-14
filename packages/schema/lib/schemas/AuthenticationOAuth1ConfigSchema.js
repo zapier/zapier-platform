@@ -16,19 +16,22 @@ module.exports = makeSchema(
       getRequestToken: {
         description:
           'Define where Zapier will acquire a request token which is used for the rest of the three legged authentication process.',
-        oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
+        oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
       },
       authorizeUrl: {
         description:
           'Define where Zapier will redirect the user to authorize our app. Typically, you should append an `oauth_token` querystring parameter to the request.',
-        oneOf: [{ $ref: RedirectRequestSchema.id }, { $ref: FunctionSchema.id }]
+        oneOf: [
+          { $ref: RedirectRequestSchema.id },
+          { $ref: FunctionSchema.id },
+        ],
       },
       getAccessToken: {
         description: 'Define how Zapier fetches an access token from the API',
-        oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
-      }
+        oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [FunctionSchema, RedirectRequestSchema, RequestSchema]
 );

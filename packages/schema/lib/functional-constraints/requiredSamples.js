@@ -7,7 +7,7 @@ const jsonschema = require('jsonschema');
 const RESOURCE_ID = '/ResourceSchema';
 const RESOURCE_METHODS = ['get', 'hook', 'list', 'search', 'create'];
 
-const check = definition => {
+const check = (definition) => {
   if (!definition.operation || _.get(definition, 'display.hidden')) {
     return null;
   }
@@ -26,13 +26,13 @@ module.exports = (definition, mainSchema) => {
   let definitions = [];
 
   if (mainSchema.id === RESOURCE_ID) {
-    definitions = RESOURCE_METHODS.map(method => definition[method]).filter(
+    definitions = RESOURCE_METHODS.map((method) => definition[method]).filter(
       Boolean
     );
 
     // allow method definitions to inherit the sample
     if (definition.sample) {
-      definitions.forEach(methodDefinition => {
+      definitions.forEach((methodDefinition) => {
         if (methodDefinition.operation && !methodDefinition.operation.sample) {
           methodDefinition.operation.sample = definition.sample;
         }
@@ -45,7 +45,7 @@ module.exports = (definition, mainSchema) => {
           'expected at least one resource operation',
           definition,
           definition.id
-        )
+        ),
       ];
     }
   } else {

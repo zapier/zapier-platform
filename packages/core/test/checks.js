@@ -95,11 +95,11 @@ describe('checkOutput', () => {
           event: {
             method: 'triggers.key.operation.perform',
             command: 'execute',
-            bundle: {}
-          }
-        }
+            bundle: {},
+          },
+        },
       },
-      results: [{ text: 'An item without id' }]
+      results: [{ text: 'An item without id' }],
     };
 
     (() => {
@@ -115,12 +115,12 @@ describe('checkOutput', () => {
             method: 'triggers.key.operation.perform',
             command: 'execute',
             bundle: {
-              skipChecks: ['triggerHasId']
-            }
-          }
-        }
+              skipChecks: ['triggerHasId'],
+            },
+          },
+        },
       },
-      results: [{ text: 'An item without id' }]
+      results: [{ text: 'An item without id' }],
     };
 
     const newOutput = checkOutput(output);

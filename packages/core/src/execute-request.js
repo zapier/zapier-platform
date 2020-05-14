@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 const responseCleaner = require('./tools/response-cleaner');
 
-const executeRequest = input => {
+const executeRequest = (input) => {
   const bundle = input._zapier.event.bundle || {};
   const options = _.extend({}, bundle.request || {});
   if (!options.url) {

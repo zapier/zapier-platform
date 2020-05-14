@@ -3,7 +3,7 @@ const jsonschema = require('jsonschema');
 
 const actionTypes = ['triggers', 'searches', 'creates'];
 
-const labelWhenVisible = definition => {
+const labelWhenVisible = (definition) => {
   const errors = [];
 
   for (const actionType of actionTypes) {

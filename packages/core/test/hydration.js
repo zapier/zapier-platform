@@ -11,11 +11,11 @@ const input = {
     app: {
       some: {
         path: {
-          to: funcToFind
-        }
-      }
-    }
-  }
+          to: funcToFind,
+        },
+      },
+    },
+  },
 };
 
 const dehydrate = createDehydrator(input);

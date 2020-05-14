@@ -25,12 +25,12 @@ describe('api', () => {
   describe('linkedAppConfigs', () => {
     beforeEach(() => {
       mock({
-        [CURRENT_APP_FILE]: '{ "id": 2864, "key": "App2864", "extra": 5 }'
+        [CURRENT_APP_FILE]: '{ "id": 2864, "key": "App2864", "extra": 5 }',
       });
     });
 
     it('should read a config', () => {
-      return api.getLinkedAppConfig().then(config => {
+      return api.getLinkedAppConfig().then((config) => {
         config.id.should.equal(2864);
       });
     });
@@ -39,7 +39,7 @@ describe('api', () => {
       return api
         .writeLinkedAppConfig({ id: 1, key: 'App1' })
         .then(api.getLinkedAppConfig)
-        .then(config => {
+        .then((config) => {
           config.id.should.equal(1);
           config.extra.should.equal(5);
         });
@@ -50,7 +50,7 @@ describe('api', () => {
       return api
         .writeLinkedAppConfig({ id: 1, key: 'App1' })
         .then(api.getLinkedAppConfig)
-        .then(config => {
+        .then((config) => {
           config.id.should.equal(1);
           should.not.exist(config.extra);
         });
@@ -69,13 +69,13 @@ describe('api', () => {
     beforeEach(() => {
       process.env.ZAPIER_DEPLOY_KEY = answer;
       mock({
-        [CURRENT_APP_FILE]: '{ "id": 2864, "key": "App2864", "extra": 5 }'
+        [CURRENT_APP_FILE]: '{ "id": 2864, "key": "App2864", "extra": 5 }',
       });
     });
 
     it('should read from and endpoint', async () => {
       const reqheaders = {
-        'X-Deploy-Key': answer
+        'X-Deploy-Key': answer,
       };
 
       nock('https://zapier.com', { reqheaders })
@@ -89,7 +89,7 @@ describe('api', () => {
           versions: ['2.0.2'],
           all_versions: ['1.0.0', '2.0.0', '2.0.1', '2.0.2'],
           latest_version: '2.0.2',
-          core_versions: ['8.0.1']
+          core_versions: ['8.0.1'],
         })
         .get('/api/platform/cli/apps/2864/versions')
         .reply(200, {
@@ -97,8 +97,8 @@ describe('api', () => {
             { id: 116873 },
             { id: 110884 },
             { id: 11028649 },
-            { id: 40878 }
-          ]
+            { id: 40878 },
+          ],
         });
 
       const res = await api.listEndpoint('versions');

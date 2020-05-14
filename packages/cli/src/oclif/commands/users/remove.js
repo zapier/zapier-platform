@@ -31,16 +31,16 @@ UsersRemoveCommand.args = [
   {
     name: 'email',
     description: 'The user to be removed.',
-    required: true
-  }
+    required: true,
+  },
 ];
 UsersRemoveCommand.flags = buildFlags({
   commandFlags: {
     force: flags.boolean({
       char: 'f',
-      description: 'Skips confirmation. Useful for running programatically.'
-    })
-  }
+      description: 'Skips confirmation. Useful for running programatically.',
+    }),
+  },
 });
 UsersRemoveCommand.description = `Remove a user from all versions of your integration.
 

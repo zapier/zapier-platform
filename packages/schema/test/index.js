@@ -7,7 +7,7 @@ const testUtils = require('./utils');
 
 const appDefinition = require('../examples/definition.json');
 
-const copy = o => JSON.parse(JSON.stringify(o));
+const copy = (o) => JSON.parse(JSON.stringify(o));
 
 const NUM_SCHEMAS = 48; // changes regularly as we expand
 
@@ -36,7 +36,7 @@ describe('app', () => {
       results.errors.length.should.eql(2); // invalid name and top-level key doesn't match trigger key
     });
 
-    it('should run and pass functional constraints', function() {
+    it('should run and pass functional constraints', function () {
       const definition = {
         version: '1.0.0',
         platformVersion: '1.0.0',
@@ -46,13 +46,13 @@ describe('app', () => {
             noun: 'Foo',
             display: {
               label: 'Find Foo',
-              description: 'Find a foo...'
+              description: 'Find a foo...',
             },
             operation: {
               perform: '$func$2$f$',
-              sample: { id: 1 }
-            }
-          }
+              sample: { id: 1 },
+            },
+          },
         },
         creates: {
           fooCreate: {
@@ -60,31 +60,31 @@ describe('app', () => {
             noun: 'Foo',
             display: {
               label: 'Create Foo',
-              description: 'Creates a...'
+              description: 'Creates a...',
             },
             operation: {
               perform: '$func$2$f$',
-              sample: { id: 1 }
-            }
-          }
+              sample: { id: 1 },
+            },
+          },
         },
         searchOrCreates: {
           fooSearchOrCreate: {
             key: 'fooSearch',
             display: {
               label: 'Find or Create a...',
-              description: 'Something Something'
+              description: 'Something Something',
             },
             search: 'fooSearch',
-            create: 'fooCreate'
-          }
-        }
+            create: 'fooCreate',
+          },
+        },
       };
       const results = schema.validateAppDefinition(definition);
       results.errors.should.have.length(0);
     });
 
-    it('should run functional constraints with errors', function() {
+    it('should run functional constraints with errors', function () {
       const definition = {
         version: '1.0.0',
         platformVersion: '1.0.0',
@@ -94,13 +94,13 @@ describe('app', () => {
             noun: 'Foo',
             display: {
               label: 'Find Foo',
-              description: 'Find a foo...'
+              description: 'Find a foo...',
             },
             operation: {
               perform: '$func$2$f$',
-              sample: { id: 1 }
-            }
-          }
+              sample: { id: 1 },
+            },
+          },
         },
         creates: {
           fooCreate: {
@@ -108,25 +108,25 @@ describe('app', () => {
             noun: 'Foo',
             display: {
               label: 'Create Foo',
-              description: 'Creates a...'
+              description: 'Creates a...',
             },
             operation: {
               perform: '$func$2$f$',
-              sample: { id: 1 }
-            }
-          }
+              sample: { id: 1 },
+            },
+          },
         },
         searchOrCreates: {
           fooSearchOrCreate: {
             key: 'fooSearchOrCreate',
             display: {
               label: 'Find or Create a...',
-              description: 'Something Something'
+              description: 'Something Something',
             },
             search: 'fooBad',
-            create: 'fooBad'
-          }
-        }
+            create: 'fooBad',
+          },
+        },
       };
       const results = schema.validateAppDefinition(definition);
       results.errors.should.have.length(3);
@@ -146,16 +146,16 @@ describe('app', () => {
       appCopy.authentication = {
         type: 'custom',
         test: {
-          url: 'https://example.com'
+          url: 'https://example.com',
         },
         fields: [
           {
             key: 'subdomain',
             type: 'string',
             required: true,
-            inputFormat: 'https://{{input}}.example.com'
-          }
-        ]
+            inputFormat: 'https://{{input}}.example.com',
+          },
+        ],
       };
       const results = schema.validateAppDefinition(appCopy);
       // this line ensures we're getting a ValidatorResult class, not just an object that looks like one
@@ -168,16 +168,16 @@ describe('app', () => {
       appCopy.authentication = {
         type: 'custom',
         test: {
-          url: 'https://example.com'
+          url: 'https://example.com',
         },
         fields: [
           {
             key: 'subdomain',
             type: 'string',
             required: true,
-            inputFormat: 'https://{{input}.example.com'
-          }
-        ]
+            inputFormat: 'https://{{input}.example.com',
+          },
+        ],
       };
       const results = schema.validateAppDefinition(appCopy);
       results.errors.length.should.eql(1);
@@ -194,9 +194,9 @@ describe('app', () => {
         subscribeUrl: 'https://example.com',
         triggers: {
           contact: {
-            url: 'https://example.com'
-          }
-        }
+            url: 'https://example.com',
+          },
+        },
       };
       const results = schema.validateAppDefinition(appCopy);
       results.errors.should.eql([]);
@@ -213,7 +213,7 @@ describe('app', () => {
 
 describe('auto test', () => {
   const _exportedSchema = schema.exportSchema();
-  Object.keys(_exportedSchema.schemas).map(id => {
+  Object.keys(_exportedSchema.schemas).map((id) => {
     testUtils.testInlineSchemaExamples(id);
   });
 });

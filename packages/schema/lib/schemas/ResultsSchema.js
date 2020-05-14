@@ -9,6 +9,6 @@ module.exports = makeSchema({
   items: {
     type: 'object',
     // TODO: require id, ID, Id property?
-    minProperties: 1
-  }
+    minProperties: 1,
+  },
 });

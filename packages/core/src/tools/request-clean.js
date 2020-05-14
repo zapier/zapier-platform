@@ -7,7 +7,7 @@ const DROP_DIRECTIVE = '$$DROP$$';
 
 // Drop falsy values so they don't overwrite during the merge
 // since objects are case-sensitive but HTTP headers aren't.
-const requestClean = request => {
+const requestClean = (request) => {
   if (!request) {
     return {};
   }
@@ -27,12 +27,7 @@ const requestClean = request => {
     request.params = _.merge(
       {},
       request.params || {},
-      querystring.parse(
-        request.url
-          .split('?')
-          .slice(1)
-          .join('?')
-      )
+      querystring.parse(request.url.split('?').slice(1).join('?'))
     );
     request.url = request.url.split('?')[0];
   }

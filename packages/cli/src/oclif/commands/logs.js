@@ -10,34 +10,34 @@ const { listLogs } = require('../../utils/api');
 const commandFlags = {
   version: flags.string({
     char: 'v',
-    description: 'Filter logs to the specified version.'
+    description: 'Filter logs to the specified version.',
   }),
   status: flags.string({
     char: 's',
     description: 'Filter logs to only see errors or successes',
     options: ['any', 'success', 'error'],
-    default: 'any' // this doesn't really need to be a status
+    default: 'any', // this doesn't really need to be a status
   }),
   type: flags.string({
     char: 't',
     description: 'See logs of the specified type',
     options: ['console', 'bundle', 'http'],
-    default: 'console'
+    default: 'console',
   }),
   detailed: flags.boolean({
     // no char since it conflicts with --debug
-    description: 'See extra info, like request/response body and headers.'
+    description: 'See extra info, like request/response body and headers.',
   }),
   user: flags.string({
     char: 'u',
     description: 'Only show logs for this user. Defaults to your account.',
-    default: 'me'
+    default: 'me',
   }),
   limit: flags.integer({
     description:
       'Cap the number of logs returned. Max is 50 (also the default)',
-    default: 50
-  })
+    default: 50,
+  }),
 };
 
 class LogsCommand extends BaseCommand {
@@ -59,7 +59,7 @@ class LogsCommand extends BaseCommand {
         ['Version', 'app_cli_version'],
         ['Step ID', 'step'],
         // ['ID', 'id'],
-        ['Timestamp', 'timestamp']
+        ['Timestamp', 'timestamp'],
       ];
 
       if (this.flags.detailed) {
@@ -67,7 +67,7 @@ class LogsCommand extends BaseCommand {
           ['Request Headers', 'request_headers'],
           ['Request Body', 'request_data'],
           ['Response Headers', 'response_headers'],
-          ['Response Body', 'response_content']
+          ['Response Body', 'response_content'],
         ]);
       }
     } else if (this.flags.type === 'bundle') {
@@ -77,7 +77,7 @@ class LogsCommand extends BaseCommand {
         ['Output', 'output'],
         ['Version', 'app_cli_version'],
         // ['ID', 'id'],
-        ['Timestamp', 'timestamp']
+        ['Timestamp', 'timestamp'],
       ];
     } else {
       headers = [
@@ -85,7 +85,7 @@ class LogsCommand extends BaseCommand {
         ['Version', 'app_cli_version'],
         ['Step', 'step'],
         // ['ID', 'id'],
-        ['Timestamp', 'timestamp']
+        ['Timestamp', 'timestamp'],
       ];
     }
 
@@ -93,7 +93,7 @@ class LogsCommand extends BaseCommand {
       rows: logs.reverse(), // oldest logs first
       headers,
       emptyMessage:
-        'No logs found. Try adding some `z.request()`, `z.console.log()` and doing a `zapier push`!\n'
+        'No logs found. Try adding some `z.request()`, `z.console.log()` and doing a `zapier push`!\n',
     });
 
     if (hasLogs) {
@@ -112,7 +112,7 @@ class LogsCommand extends BaseCommand {
 
 LogsCommand.flags = buildFlags({
   commandFlags,
-  opts: { format: true }
+  opts: { format: true },
 });
 LogsCommand.description = `Print recent logs.
 

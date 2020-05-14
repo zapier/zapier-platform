@@ -10,9 +10,9 @@ module.exports = makeSchema({
   oneOf: [
     {
       type: 'array',
-      items: { $ref: FunctionSchema.id }
+      items: { $ref: FunctionSchema.id },
     },
-    { $ref: FunctionSchema.id }
+    { $ref: FunctionSchema.id },
   ],
-  additionalProperties: false
+  additionalProperties: false,
 });

@@ -27,24 +27,24 @@ describe('changelog utils', () => {
     });
 
     it('should find changelog for 1.0.0', () =>
-      changelog.getVersionChangelog('1.0.0', appDir).then(log => {
+      changelog.getVersionChangelog('1.0.0', appDir).then((log) => {
         log.should.eql('* Removing beta "label".\n* Minor docs fixes.');
       }));
 
     it('should not find changelog for 2.3.0', () =>
-      changelog.getVersionChangelog('2.3.0', appDir).then(log => {
+      changelog.getVersionChangelog('2.3.0', appDir).then((log) => {
         log.should.eql('');
       }));
 
     it('should not fail when there is no changelog file', () =>
       changelog
         .getVersionChangelog('1.0.0', './unexistent-directory')
-        .then(log => {
+        .then((log) => {
           log.should.eql('');
         }));
 
     it('should not fail when versions follow "different" formatting', () =>
-      changelog.getVersionChangelog('2.0.0', appDir).then(log => {
+      changelog.getVersionChangelog('2.0.0', appDir).then((log) => {
         log.should.eql('* Fix some bugs.\n* Major docs fixes.');
       }));
   });
