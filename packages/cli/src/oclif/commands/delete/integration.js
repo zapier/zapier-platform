@@ -8,7 +8,7 @@ class DeleteAppCommand extends BaseCommand {
 
     this.startSpinner(`Deleting "${title}"`);
     await callAPI(`/apps/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     });
     this.stopSpinner();
   }

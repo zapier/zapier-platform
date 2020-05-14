@@ -5,7 +5,7 @@ const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
 const { callAPI } = require('../../../utils/api');
 
-const successMessage = version =>
+const successMessage = (version) =>
   `Successfully wrote the following to the environment of version ${cyan(
     version
   )}:`;
@@ -15,7 +15,7 @@ class SetEnvCommand extends BaseCommand {
     const { version } = this.args;
     this.throwForInvalidVersion(version);
     // args should be [ '1.0.0', 'qer=123', 'qwer=123' ]
-    const valuesToSet = this.argv.slice(1).filter(kv => !kv.startsWith('-'));
+    const valuesToSet = this.argv.slice(1).filter((kv) => !kv.startsWith('-'));
 
     if (!valuesToSet.length) {
       this.error(
@@ -23,7 +23,7 @@ class SetEnvCommand extends BaseCommand {
       );
     }
 
-    if (!valuesToSet.every(kv => kv.includes('='))) {
+    if (!valuesToSet.every((kv) => kv.includes('='))) {
       this.error('Every key-value pair must be in the format `SOME_KEY=1234`');
     }
 
@@ -46,7 +46,7 @@ class SetEnvCommand extends BaseCommand {
         url,
         {
           body: payload,
-          method: 'POST'
+          method: 'POST',
         },
         true
       );
@@ -73,13 +73,13 @@ SetEnvCommand.args = [
     name: 'version',
     description:
       'The version to set the environment for. Values are copied forward when a new version is created, but this command will only ever affect the specified version.',
-    required: true
+    required: true,
   },
   {
     name: 'key-value pairs...',
     description:
-      'The key-value pairs to set. Keys are case-insensitive. Each pair should be space separated and pairs should be separated by an `=`. For example: `A=123 B=456`'
-  }
+      'The key-value pairs to set. Keys are case-insensitive. Each pair should be space separated and pairs should be separated by an `=`. For example: `A=123 B=456`',
+  },
 ];
 SetEnvCommand.flags = buildFlags();
 SetEnvCommand.description = `Set environment variables for a version.`;

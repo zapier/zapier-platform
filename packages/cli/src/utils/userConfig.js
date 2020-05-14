@@ -11,11 +11,11 @@ const readUserConfig = async () => {
   }
 };
 
-const writeUserConfig = async newSettings => {
+const writeUserConfig = async (newSettings) => {
   const currentSettings = await readUserConfig();
   const finalSettings = {
     ...currentSettings,
-    ...newSettings
+    ...newSettings,
   };
   // TODO: this blows out symlinks, but it always has
   // use fs.readPath to get to the actual location
@@ -24,5 +24,5 @@ const writeUserConfig = async newSettings => {
 
 module.exports = {
   readUserConfig,
-  writeUserConfig
+  writeUserConfig,
 };

@@ -12,9 +12,9 @@ const isVisible = action => !_.get(action, ['display', 'hidden']);
 // Take a resource with methods like list/hook and turn it into triggers, etc.
 const convertResourceDos = appRaw => {
   const triggers = {};
-    const searches = {};
-    const creates = {};
-    const searchOrCreates = {};
+  const searches = {};
+  const creates = {};
+  const searchOrCreates = {};
 
   _.each(appRaw.resources, resource => {
     let search, create, trigger;

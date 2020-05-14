@@ -28,12 +28,12 @@ describe('errors', () => {
       const response = {
         status: 400,
         headers: {
-          get: () => 'text/html; charset=utf-8',
+          get: () => 'text/html; charset=utf-8'
         },
         content: '',
         request: {
-          url: 'https://httpbin.org/status/400',
-        },
+          url: 'https://httpbin.org/status/400'
+        }
       };
       const error = new errors.ResponseError(response);
 

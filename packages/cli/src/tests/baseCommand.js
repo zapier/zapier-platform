@@ -6,8 +6,14 @@ const should = require('should');
 const { stdout } = require('stdout-stderr');
 
 const MESSAGE = 'Here is a very cool message';
-const ROWS = [{ id: 123, title: 'hello' }, { id: 456, title: 'world' }];
-const ROW_HEADERS = [['Contact ID', 'id'], ['Neat Title', 'title']];
+const ROWS = [
+  { id: 123, title: 'hello' },
+  { id: 456, title: 'world' },
+];
+const ROW_HEADERS = [
+  ['Contact ID', 'id'],
+  ['Neat Title', 'title'],
+];
 
 class TestBaseCommand extends BaseCommand {
   throwForInvalidAppInstall() {}
@@ -30,9 +36,9 @@ TestSampleCommand.flags = buildFlags({
   opts: { format: true },
   commandFlags: {
     skipTable: flags.boolean({
-      char: 's'
-    })
-  }
+      char: 's',
+    }),
+  },
 });
 
 // logs and doesn't populate the `format` flag

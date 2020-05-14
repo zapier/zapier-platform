@@ -7,16 +7,16 @@ const { splitFileFromPath } = require('./string');
 const { createRootRequire, addKeyToPropertyOnApp } = require('./ast');
 const { snakeCase } = require('./misc');
 
-const plural = type => (type === 'search' ? `${type}es` : `${type}s`);
+const plural = (type) => (type === 'search' ? `${type}es` : `${type}s`);
 
-const getTemplatePath = actionType =>
+const getTemplatePath = (actionType) =>
   path.join(__dirname, '..', '..', 'scaffold', `${actionType}.template.js`);
 
 // useful for making sure we don't conflict with other, similarly named things
 const variablePrefixes = {
   trigger: 'get',
   search: 'find',
-  create: 'create'
+  create: 'create',
 };
 
 const getVariableName = (action, noun) =>
@@ -34,12 +34,12 @@ const createTemplateContext = (action, noun, includeComments) => {
     KEY: snakeCase(noun), // "cool_contact", the action key
     NOUN: noun
       .split(' ')
-      .map(s => _.capitalize(s))
+      .map((s) => _.capitalize(s))
       .join(' '), // "Cool Contact", the noun
     LOWER_NOUN: noun.toLowerCase(), // "cool contact", for use in comments
     // resources need an extra line for tests to "just run"
     MAYBE_RESOURCE: action === 'resource' ? 'list.' : '',
-    INCLUDE_INTRO_COMMENTS: includeComments
+    INCLUDE_INTRO_COMMENTS: includeComments,
   };
 };
 
@@ -64,7 +64,7 @@ const writeTemplateFile = async (
         `  2. Delete ${filename} from ${location}`,
         `  3. Run ${colors.italic('scaffold')} with ${colors.bold(
           '--force'
-        )} to overwrite the current ${filename}`
+        )} to overwrite the current ${filename}`,
       ].join('\n')
     );
   }
@@ -116,5 +116,5 @@ module.exports = {
   plural,
   updateEntryFile,
   isValidEntryFileUpdate,
-  writeTemplateFile
+  writeTemplateFile,
 };

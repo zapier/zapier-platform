@@ -17,10 +17,10 @@ class VersionCommand extends BaseCommand {
         ['Users', 'user_count'],
         ['Deployment', 'deployment'],
         ['Deprecation Date', 'deprecation_date'],
-        ['Timestamp', 'date']
+        ['Timestamp', 'date'],
       ],
       emptyMessage:
-        'No versions to show. Try adding one with the `zapier push` command'
+        'No versions to show. Try adding one with the `zapier push` command',
     });
   }
 }

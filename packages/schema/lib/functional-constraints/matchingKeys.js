@@ -17,9 +17,7 @@ const matchingKeys = definition => {
       if (action.key !== key) {
         errors.push(
           new jsonschema.ValidationError(
-            `must have a matching top-level key (found "${key}" and "${
-              action.key
-            }")`,
+            `must have a matching top-level key (found "${key}" and "${action.key}")`,
             action,
             `/${_.capitalize(actionType)}Schema`,
             `instance.${key}.key`,

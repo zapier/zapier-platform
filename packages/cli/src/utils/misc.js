@@ -11,13 +11,13 @@ const semver = require('semver');
 const {
   PLATFORM_PACKAGE,
   PACKAGE_VERSION,
-  LAMBDA_VERSION
+  LAMBDA_VERSION,
 } = require('../constants');
 
 const { fileExistsSync } = require('./files');
 
-const camelCase = str => _.capitalize(_.camelCase(str));
-const snakeCase = str => _.snakeCase(str);
+const camelCase = (str) => _.capitalize(_.camelCase(str));
+const snakeCase = (str) => _.snakeCase(str);
 
 const isWindows = () => {
   return os.platform().match(/^win/i);
@@ -47,7 +47,7 @@ const runCommand = (command, args, options) => {
 
     let stdout = '';
     if (result.stdout) {
-      result.stdout.on('data', data => {
+      result.stdout.on('data', (data) => {
         const str = data.toString();
         stdout += str;
         debug(colors.green(str));
@@ -56,7 +56,7 @@ const runCommand = (command, args, options) => {
 
     let stderr = '';
     if (result.stderr) {
-      result.stderr.on('data', data => {
+      result.stderr.on('data', (data) => {
         const str = data.toString();
         stderr += str;
         debug(colors.red(str));
@@ -65,7 +65,7 @@ const runCommand = (command, args, options) => {
 
     result.on('error', reject);
 
-    result.on('close', code => {
+    result.on('close', (code) => {
       if (code !== 0) {
         reject(new Error(stderr));
       }
@@ -88,13 +88,13 @@ const isValidAppInstall = () => {
         valid: false,
         reason: `Your app doesn't depend on ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
           `npm install -E ${PLATFORM_PACKAGE}`
-        )}\` to resolve`
+        )}\` to resolve`,
       };
     } else if (!semver.valid(coreVersion)) {
       // semver.valid only matches single versions
       return {
         valid: false,
-        reason: `Your app must depend on an exact version of ${PLATFORM_PACKAGE}. Instead of "${coreVersion}", specify an exact version (such as "${PACKAGE_VERSION}")`
+        reason: `Your app must depend on an exact version of ${PLATFORM_PACKAGE}. Instead of "${coreVersion}", specify an exact version (such as "${PACKAGE_VERSION}")`,
       };
     }
   } catch (err) {
@@ -108,14 +108,14 @@ const isValidAppInstall = () => {
       valid: false,
       reason: `Looks like you're missing a local installation of ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
         'npm install'
-      )}\` to resolve`
+      )}\` to resolve`,
     };
   }
 
   return { valid: true };
 };
 
-const npmInstall = appDir => {
+const npmInstall = (appDir) => {
   return runCommand('npm', ['install'], { cwd: appDir });
 };
 
@@ -125,21 +125,22 @@ const npmInstall = appDir => {
   stop returns truthy. Action is always run at least once.
  */
 const promiseDoWhile = (action, stop) => {
-  const loop = () => action().then(result => (stop(result) ? result : loop()));
+  const loop = () =>
+    action().then((result) => (stop(result) ? result : loop()));
   return loop();
 };
 
 /* Return full path to entry point file as specified in package.json (ie "index.js") */
-const entryPoint = dir => {
+const entryPoint = (dir) => {
   dir = dir || process.cwd();
   const packageJson = require(path.resolve(dir, 'package.json'));
   return fse.realpathSync(path.resolve(dir, packageJson.main));
 };
 
-const printVersionInfo = context => {
+const printVersionInfo = (context) => {
   const versions = [
     `zapier-platform-cli/${PACKAGE_VERSION}`,
-    `node/${process.version}`
+    `node/${process.version}`,
   ];
 
   if (fileExistsSync(path.resolve('./package.json'))) {
@@ -204,5 +205,5 @@ module.exports = {
   printVersionInfo,
   promiseDoWhile,
   runCommand,
-  snakeCase
+  snakeCase,
 };

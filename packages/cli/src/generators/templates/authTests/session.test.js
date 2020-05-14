@@ -10,8 +10,8 @@ describe('session auth app', () => {
     const bundle = {
       authData: {
         username: 'bryan',
-        password: 'hunter2'
-      }
+        password: 'hunter2',
+      },
     };
 
     const newAuthData = await appTester(
@@ -25,8 +25,8 @@ describe('session auth app', () => {
   it('has auth details added to every request', async () => {
     const bundle = {
       authData: {
-        sessionKey: 'secret'
-      }
+        sessionKey: 'secret',
+      },
     };
 
     const response = await appTester(App.authentication.test, bundle);

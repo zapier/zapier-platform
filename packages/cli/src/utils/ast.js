@@ -6,16 +6,16 @@ const j = require('jscodeshift');
 // can't use j.identifier(name) because it has extra properties and we have to have no extras to find nodes
 // we can use them when creating nodes though!
 const typeHelpers = {
-  identifier: name => ({ type: 'Identifier', name }),
-  callExpression: name => ({
+  identifier: (name) => ({ type: 'Identifier', name }),
+  callExpression: (name) => ({
     type: 'CallExpression',
-    callee: { name }
+    callee: { name },
   }),
   memberExpression: (object, property) => ({
     type: 'MemberExpression',
     object,
-    property
-  })
+    property,
+  }),
 };
 
 /**
@@ -34,16 +34,16 @@ const createRootRequire = (codeStr, varName, path) => {
     // searching for VariableDeclaration, like `const x = require('y')`
     // skips over `require` statements not saved to variables, since that's (probably) not a common case
     .find(j.VariableDeclaration, {
-      declarations: [{ init: typeHelpers.callExpression('require') }]
+      declarations: [{ init: typeHelpers.callExpression('require') }],
     })
     // filters for top-level require statements by filtering only for statements whose parents are type Program, the root
-    .filter(path => j.Program.check(path.parent.value));
+    .filter((path) => j.Program.check(path.parent.value));
 
   const newRequireStatement = j.variableDeclaration('const', [
     j.variableDeclarator(
       j.identifier(varName),
       j.callExpression(j.identifier('require'), [j.literal(path)])
-    )
+    ),
   ]);
 
   if (reqStatements.length) {
@@ -70,7 +70,7 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
     kind: 'init',
     key: j.memberExpression(j.identifier(varName), j.identifier('key')),
     value: j.identifier(varName),
-    computed: true
+    computed: true,
   });
 
   // we start by looking for what's on the right side of a `module.exports` call
@@ -78,7 +78,7 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
     left: typeHelpers.memberExpression(
       typeHelpers.identifier('module'),
       typeHelpers.identifier('exports')
-    )
+    ),
   });
 
   if (!exportAssignment.length) {
@@ -92,7 +92,7 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
   if (objToModify.type === 'Identifier') {
     // variable, need to find that
     const exportedVarDeclaration = root.find(j.VariableDeclaration, {
-      declarations: [{ id: typeHelpers.identifier(objToModify.name) }]
+      declarations: [{ id: typeHelpers.identifier(objToModify.name) }],
     });
     if (
       !exportedVarDeclaration.length ||
@@ -112,7 +112,7 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
 
   // check if this object already has the property at the top level
   const existingProp = objToModify.properties.find(
-    props => props.key.name === property
+    (props) => props.key.name === property
   );
   if (existingProp) {
     // `triggers: myTriggers` means we shouldn't bother

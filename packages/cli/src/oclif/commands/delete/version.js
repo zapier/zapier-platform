@@ -11,7 +11,7 @@ class DeleteVersionCommand extends BaseCommand {
 
     this.startSpinner(`Deleting version ${version} of app "${title}"`);
     await callAPI(`/apps/${id}/versions/${version}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     });
     this.stopSpinner();
   }
@@ -21,8 +21,8 @@ DeleteVersionCommand.args = [
   {
     name: 'version',
     required: true,
-    description: `Specify the version to delete. It must have no users or Zaps.`
-  }
+    description: `Specify the version to delete. It must have no users or Zaps.`,
+  },
 ];
 DeleteVersionCommand.flags = buildFlags();
 DeleteVersionCommand.description = `Delete a specific version of your integration.

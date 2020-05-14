@@ -25,7 +25,7 @@ const { localAppCommand } = require('./local');
 const readCredentials = (explodeIfMissing = true) => {
   if (process.env.ZAPIER_DEPLOY_KEY) {
     return Promise.resolve({
-      [constants.AUTH_KEY]: process.env.ZAPIER_DEPLOY_KEY
+      [constants.AUTH_KEY]: process.env.ZAPIER_DEPLOY_KEY,
     });
   } else {
     return Promise.resolve(
@@ -33,10 +33,10 @@ const readCredentials = (explodeIfMissing = true) => {
         constants.AUTH_LOCATION,
         `Please run \`${colors.cyan('zapier login')}\`.`
       )
-        .then(buf => {
+        .then((buf) => {
           return JSON.parse(buf.toString());
         })
-        .catch(err => {
+        .catch((err) => {
           if (explodeIfMissing) {
             throw err;
           } else {
@@ -70,26 +70,26 @@ const callAPI = (
       Accept: 'application/json',
       'Content-Type': 'application/json; charset=utf-8',
       'User-Agent': `${constants.PACKAGE_NAME}/${constants.PACKAGE_VERSION}`,
-      'X-Requested-With': 'XMLHttpRequest'
-    }
+      'X-Requested-With': 'XMLHttpRequest',
+    },
   };
   return Promise.resolve(requestOptions)
-    .then(_requestOptions => {
+    .then((_requestOptions) => {
       // requestOptions === _requestOptions side step for linting
       if (options.skipDeployKey) {
         return _requestOptions;
       } else {
-        return readCredentials(credentialsRequired).then(credentials => {
+        return readCredentials(credentialsRequired).then((credentials) => {
           _requestOptions.headers['X-Deploy-Key'] =
             credentials[constants.AUTH_KEY];
           return _requestOptions;
         });
       }
     })
-    .then(_requestOptions => {
+    .then((_requestOptions) => {
       return fetch(_requestOptions.url, _requestOptions);
     })
-    .then(res => {
+    .then((res) => {
       return Promise.all([res, res.text()]);
     })
     .then(([res, text]) => {
@@ -152,8 +152,8 @@ const createCredentials = (username, password, totpCode) => {
       body: {
         username,
         password,
-        totp_code: totpCode
-      }
+        totp_code: totpCode,
+      },
     },
     // if totp is empty, we want a raw request so we can supress an error. If it's here, we want it to be "non-raw"
     !totpCode
@@ -259,7 +259,7 @@ const getWritableApp = async () => {
 const getVersionInfo = () => {
   return Promise.all([
     getWritableApp(),
-    localAppCommand({ command: 'definition' })
+    localAppCommand({ command: 'definition' }),
   ]).then(([app, definition]) => {
     return callAPI(`/apps/${app.id}/versions/${definition.version}`);
   });
@@ -277,11 +277,11 @@ const listApps = async () => {
 
   return {
     app: linkedApp,
-    apps: apps.objects.map(app => {
+    apps: apps.objects.map((app) => {
       app.linked =
         linkedApp && app.id === linkedApp.id ? colors.green('✔') : '';
       return app;
-    })
+    }),
   };
 };
 
@@ -305,7 +305,7 @@ const listEndpointMulti = async (...calls) => {
 
     const results = await callAPI(route, {
       // if a full url comes out of the function, we have to use that
-      url: route.startsWith('http') ? route : undefined
+      url: route.startsWith('http') ? route : undefined,
     });
 
     const { objects, ...theRest } = results;
@@ -320,17 +320,17 @@ const listHistory = () => listEndpoint('history');
 
 const listInvitees = () => listEndpoint('invitees');
 
-const listLogs = opts => {
+const listLogs = (opts) => {
   return listEndpoint(`logs?${qs.stringify(_.omit(opts, 'debug'))}`, 'logs');
 };
 
-const listEnv = version =>
+const listEnv = (version) =>
   listEndpoint(`versions/${version}/environment`, 'env');
 
 // the goal of this is to call `/check` with as much info as possible
 // if the app is registered and auth is available, then we can send app id
 // otherwise, we should just send the definition and get back checks about that
-const validateApp = async definition => {
+const validateApp = async (definition) => {
   // if either of these are missing, do the simple definition check
   if (
     _.isEmpty(await readCredentials(false)) ||
@@ -339,7 +339,7 @@ const validateApp = async definition => {
     return callAPI('/check', {
       skipDeployKey: true,
       method: 'POST',
-      body: { app_definition: definition }
+      body: { app_definition: definition },
     });
   }
 
@@ -351,12 +351,12 @@ const validateApp = async definition => {
     body: {
       app_id: linkedApp.id,
       version: definition.version,
-      app_definition: definition
-    }
+      app_definition: definition,
+    },
   });
 };
 
-const upload = async app => {
+const upload = async (app) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
   const appDir = process.cwd();
@@ -388,8 +388,8 @@ const upload = async app => {
     method: 'PUT',
     body: {
       zip_file: buffer,
-      source_zip_file: sourceBuffer
-    }
+      source_zip_file: sourceBuffer,
+    },
   });
 
   endSpinner();
@@ -413,5 +413,5 @@ module.exports = {
   readCredentials,
   upload,
   validateApp,
-  writeLinkedAppConfig
+  writeLinkedAppConfig,
 };

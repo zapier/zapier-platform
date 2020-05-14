@@ -6,12 +6,12 @@ const FormData = require('form-data');
 const flatten = require('flat');
 
 const {
-  recurseReplaceBank,
+  recurseReplaceBank
 } = require('zapier-platform-core/src/tools/cleaner');
 
 const { flattenPaths } = require('zapier-platform-core/src/tools/data');
 
-const createInternalRequestClient = (input) => {
+const createInternalRequestClient = input => {
   const addQueryParams = require('zapier-platform-core/src/http-middlewares/before/add-query-params');
   const createInjectInputMiddleware = require('zapier-platform-core/src/http-middlewares/before/inject-input');
   const createRequestClient = require('zapier-platform-core/src/tools/create-request-client');
@@ -21,12 +21,12 @@ const createInternalRequestClient = (input) => {
   const prepareResponse = require('zapier-platform-core/src/http-middlewares/after/prepare-response');
 
   const options = {
-    skipDefaultMiddle: true,
+    skipDefaultMiddle: true
   };
   const httpBefores = [
     createInjectInputMiddleware(input),
     prepareRequest,
-    addQueryParams,
+    addQueryParams
   ];
 
   const verifySSL = _.get(input, '_zapier.event.verifySSL');
@@ -43,12 +43,12 @@ const {
   markFileFieldsInBundle,
   hasFileFields,
   isFileField,
-  LazyFile,
+  LazyFile
 } = require('./file');
 const {
   createBeforeRequest,
   createAfterResponse,
-  renderTemplate,
+  renderTemplate
 } = require('./middleware-factory');
 
 const FIELD_TYPE_CONVERT_MAP = {
@@ -62,13 +62,13 @@ const FIELD_TYPE_CONVERT_MAP = {
   int: 'integer',
   password: 'password',
   text: 'text',
-  unicode: 'string',
+  unicode: 'string'
 };
 
-const cleanCustomFields = (fields) => {
+const cleanCustomFields = fields => {
   return fields
-    .filter((field) => _.isPlainObject(field) && field.key)
-    .map((field) => {
+    .filter(field => _.isPlainObject(field) && field.key)
+    .map(field => {
       if (field.type === 'dict') {
         // For CLI, we set field.dict to true to represet a dict field instead
         // of setting field.type to 'dict'
@@ -100,8 +100,8 @@ const makeMultipartBody = async (data, lazyFilesObject) => {
   const fileFieldKeys = Object.keys(lazyFilesObject);
   const lazyFiles = Object.values(lazyFilesObject);
 
-  const fileMetas = await Promise.all(lazyFiles.map((f) => f.meta()));
-  const fileStreams = await Promise.all(lazyFiles.map((f) => f.readStream()));
+  const fileMetas = await Promise.all(lazyFiles.map(f => f.meta()));
+  const fileStreams = await Promise.all(lazyFiles.map(f => f.readStream()));
 
   _.zip(fileFieldKeys, fileMetas, fileStreams).forEach(
     ([k, meta, fileStream]) => {
@@ -213,7 +213,7 @@ const parseFinalResult = async (result, event) => {
   return result;
 };
 
-const serializeValueForCurlies = (value) => {
+const serializeValueForCurlies = value => {
   if (typeof value === 'boolean') {
     return value ? 'True' : 'False';
   } else if (Array.isArray(value)) {
@@ -225,7 +225,7 @@ const serializeValueForCurlies = (value) => {
   return value;
 };
 
-const createCurliesBank = (bundle) => {
+const createCurliesBank = bundle => {
   const bank = {
     // This is for new curlies syntax, such as '{{bundle.inputData.var}}' and
     // '{{bundle.authData.var}}'
@@ -235,12 +235,12 @@ const createCurliesBank = (bundle) => {
     // {{var}}. The order matters.
     ...bundle.inputData,
     ...bundle.subscribeData,
-    ...bundle.authData,
+    ...bundle.authData
   };
   const flattenedBank = flattenPaths(bank, {
     perseve: {
-      'bundle.inputData': true,
-    },
+      'bundle.inputData': true
+    }
   });
   return Object.entries(flattenedBank).reduce((coll, [key, value]) => {
     coll[`{{${key}}}`] = serializeValueForCurlies(value);
@@ -253,7 +253,7 @@ const replaceCurliesInRequest = (request, bundle) => {
   return recurseReplaceBank(request, bank);
 };
 
-const cleanHeaders = (headers) => {
+const cleanHeaders = headers => {
   const newHeaders = {};
   const badChars = /[\r\n\t]/g;
   _.each(headers, (v, k) => {
@@ -278,12 +278,12 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
     StopRequestException,
     ExpiredAuthException,
     RefreshTokenException,
-    InvalidSessionException,
+    InvalidSessionException
   } = require('./exceptions');
 
   const underscore = require('underscore');
   underscore.templateSettings = {
-    interpolate: /\{\{(.+?)\}\}/g,
+    interpolate: /\{\{(.+?)\}\}/g
   };
 
   return new Function( // eslint-disable-line no-new-func
@@ -331,12 +331,12 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
 const applyBeforeMiddleware = (befores, request, z, bundle) => {
   befores = befores || [];
   return befores.reduce(
-    (prev, cur) => prev.then((req) => cur(req, z, bundle)),
+    (prev, cur) => prev.then(req => cur(req, z, bundle)),
     Promise.resolve(request)
   );
 };
 
-const createEventNameToMethodMapping = (key) => {
+const createEventNameToMethodMapping = key => {
   return {
     //
     // Auth
@@ -394,7 +394,7 @@ const createEventNameToMethodMapping = (key) => {
     //
     // Hydration
     //
-    'hydrate.method': key,
+    'hydrate.method': key
   };
 };
 
@@ -409,7 +409,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   // Does string replacement ala WB, using bundle and a potential result object
   const replaceVars = (templateString, bundle, result) => {
     const options = {
-      interpolate: /{{([\s\S]+?)}}/g,
+      interpolate: /{{([\s\S]+?)}}/g
     };
     const values = { ...bundle.authData, ...bundle.inputData, ...result };
     return _.template(templateString, options)(values);
@@ -462,7 +462,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   /**
     flattens trigger data for wb v1 apps
   */
-  const flattenTriggerData = (data) => {
+  const flattenTriggerData = data => {
     for (const i in data) {
       for (const j in data[i]) {
         if (Array.isArray(data[i][j])) {
@@ -480,7 +480,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   /**
     see handle_legacy_params in the python backend
   */
-  const handleLegacyParams = (data) => {
+  const handleLegacyParams = data => {
     if (!_.isPlainObject(data)) {
       return data;
     }
@@ -502,7 +502,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   /**
     see textify_list in the python backend
   */
-  const textifyList = (data) => {
+  const textifyList = data => {
     if (!Array.isArray(data)) {
       return data;
     }
@@ -573,7 +573,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       logger(`Errored calling legacy scripting ${methodName}`, {
         log_type: 'bundle',
         input: convertedBundle,
-        error_message: err.stack,
+        error_message: err.stack
       });
       throw err;
     }
@@ -581,7 +581,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     logger(`Called legacy scripting ${methodName}`, {
       log_type: 'bundle',
       input: convertedBundle,
-      output: result,
+      output: result
     });
 
     return parseFinalResult(result, event);
@@ -618,7 +618,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       resetRequestForFullMethod: false,
       defaultToResponse: false,
 
-      ...options,
+      ...options
     };
 
     if (bundle.request) {
@@ -722,13 +722,13 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       method: 'POST',
       url,
       auth: authParams,
-      skipThrowForStatus: true,
+      skipThrowForStatus: true
     });
     response.throwForStatus();
     return querystring.parse(response.content);
   };
 
-  const runOAuth1GetRequestToken = (bundle) => {
+  const runOAuth1GetRequestToken = bundle => {
     const url = _.get(
       app,
       'legacy.authentication.oauth1Config.requestTokenUrl'
@@ -745,11 +745,11 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       oauth_consumer_key: consumerKey,
       oauth_consumer_secret: consumerSecret,
       oauth_signature_method: 'HMAC-SHA1',
-      oauth_callback: bundle.inputData.redirect_uri,
+      oauth_callback: bundle.inputData.redirect_uri
     });
   };
 
-  const runOAuth1AuthorizeUrl = (bundle) => {
+  const runOAuth1AuthorizeUrl = bundle => {
     let url = _.get(app, 'legacy.authentication.oauth1Config.authorizeUrl');
     if (!url) {
       return '';
@@ -765,7 +765,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return urlObj.href;
   };
 
-  const runOAuth1GetAccessToken = (bundle) => {
+  const runOAuth1GetAccessToken = bundle => {
     const url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
 
     const templateContext = { ...bundle.authData, ...bundle.inputData };
@@ -780,11 +780,11 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       oauth_consumer_secret: consumerSecret,
       oauth_token: bundle.inputData.oauth_token,
       oauth_token_secret: bundle.inputData.oauth_token_secret,
-      oauth_verifier: bundle.inputData.oauth_verifier,
+      oauth_verifier: bundle.inputData.oauth_verifier
     });
   };
 
-  const runOAuth2AuthorizeUrl = (bundle) => {
+  const runOAuth2AuthorizeUrl = bundle => {
     let url = _.get(app, 'legacy.authentication.oauth2Config.authorizeUrl');
     if (!url) {
       return '';
@@ -810,7 +810,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return urlObj.href;
   };
 
-  const runOAuth2GetAccessToken = (bundle) => {
+  const runOAuth2GetAccessToken = bundle => {
     const url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
 
     let request = bundle.request;
@@ -863,7 +863,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     });
   };
 
-  const runOAuth2RefreshAccessToken = (bundle) => {
+  const runOAuth2RefreshAccessToken = bundle => {
     const url = _.get(
       app,
       'legacy.authentication.oauth2Config.refreshTokenUrl'
@@ -901,7 +901,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     });
   };
 
-  const isTestingAuth = (bundle) => {
+  const isTestingAuth = bundle => {
     // For core < 8.0.0
     if (
       _.get(bundle, 'meta.test_poll') === true &&
@@ -953,7 +953,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const promise = Zap[methodName]
       ? runEvent({ key, name: 'trigger.hook' }, zcli, bundle)
       : Promise.resolve(bundle.cleanedRequest);
-    return promise.then((result) => {
+    return promise.then(result => {
       if (!Array.isArray(result)) {
         result = [result];
       }
@@ -982,15 +982,15 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const shouldRunPrePostHook =
       hookType === 'notification' &&
       cleanedArray &&
-      cleanedArray.every((x) => x.resource_url);
+      cleanedArray.every(x => x.resource_url);
 
     if (shouldRunPrePostHook) {
-      const promises = cleanedArray.map((obj) => {
+      const promises = cleanedArray.map(obj => {
         const bund = _.cloneDeep(bundle);
         bund.request.url = obj.resource_url;
         return runPrePostHook(bund, key);
       });
-      return Promise.all(promises).then((obj) => {
+      return Promise.all(promises).then(obj => {
         obj = _.flatten(obj);
         if (needsFlattenedData) {
           obj = flattenTriggerData(obj);
@@ -1204,12 +1204,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return runCustomFields(bundle, key, 'search.output', url);
   };
 
-  const runHydrateMethod = (bundle) => {
+  const runHydrateMethod = bundle => {
     const methodName = bundle.inputData.method;
     return runEvent({ name: 'hydrate.method', key: methodName }, zcli, bundle);
   };
 
-  const runHydrateFile = (bundle) => {
+  const runHydrateFile = bundle => {
     const meta = bundle.inputData.meta || {};
     const requestOptions = bundle.inputData.request || {};
 
@@ -1236,10 +1236,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       url: '',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json; charset=utf-8'
       },
       params: {},
-      body: {},
+      body: {}
     };
 
     if (key) {
@@ -1317,7 +1317,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     beforeRequest,
     run,
     runEvent,
-    replaceVars,
+    replaceVars
   };
 };
 

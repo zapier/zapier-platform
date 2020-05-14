@@ -9,8 +9,15 @@ describe('display', () => {
       try {
         process.stdout.columns = 50;
         const table = makeTable(
-          [{ id: 123, title: 'hello' }, { id: 456, title: 'world' }],
-          [['ID', 'id'], ['Title', 'title'], ['Missing', 'missing']]
+          [
+            { id: 123, title: 'hello' },
+            { id: 456, title: 'world' },
+          ],
+          [
+            ['ID', 'id'],
+            ['Title', 'title'],
+            ['Missing', 'missing'],
+          ]
         );
 
         // Verify presence
@@ -39,8 +46,15 @@ describe('display', () => {
       try {
         process.stdout.columns = 15;
         const table = makeTable(
-          [{ id: 123, title: 'hello' }, { id: 456, title: 'world' }],
-          [['ID', 'id'], ['Title', 'title'], ['Missing', 'missing']]
+          [
+            { id: 123, title: 'hello' },
+            { id: 456, title: 'world' },
+          ],
+          [
+            ['ID', 'id'],
+            ['Title', 'title'],
+            ['Missing', 'missing'],
+          ]
         );
 
         // Verify presence

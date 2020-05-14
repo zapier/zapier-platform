@@ -11,8 +11,11 @@ class GetEnvCommand extends BaseCommand {
 
     this.logTable({
       rows: env,
-      headers: [['Key', 'key'], ['Value', 'value']],
-      emptyMessage: `Version ${version} has no environment values set`
+      headers: [
+        ['Key', 'key'],
+        ['Value', 'value'],
+      ],
+      emptyMessage: `Version ${version} has no environment values set`,
     });
 
     this.log('Set new values with `zapier env:set`');
@@ -23,8 +26,8 @@ GetEnvCommand.args = [
   {
     name: 'version',
     description: 'The version to get the environment for.',
-    required: true
-  }
+    required: true,
+  },
 ];
 GetEnvCommand.flags = buildFlags({ opts: { format: true } });
 GetEnvCommand.description = `Get environment variables for a version.`;

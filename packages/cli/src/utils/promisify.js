@@ -40,7 +40,7 @@ const promisifyAll = (object, context) => {
   are dynamic properties not reachable in an each loop.
  */
 const promisifySome = (object, methods) => {
-  _.each(methods, name => {
+  _.each(methods, (name) => {
     if (!name.match(/Sync$/)) {
       object[`${name}Async`] = promisify(object[name], object);
     }
@@ -51,5 +51,5 @@ const promisifySome = (object, methods) => {
 module.exports = {
   promisify,
   promisifyAll,
-  promisifySome
+  promisifySome,
 };

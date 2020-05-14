@@ -4,11 +4,11 @@ const { buildFlags } = require('../../buildFlags');
 const {
   callAPI,
   getWritableApp,
-  listEndpointMulti
+  listEndpointMulti,
 } = require('../../../utils/api');
 const { BASE_ENDPOINT } = require('../../../constants');
 
-const roleName = role => (role === 'collaborator' ? 'admin' : 'subscriber');
+const roleName = (role) => (role === 'collaborator' ? 'admin' : 'subscriber');
 
 class TeamRemoveCommand extends ZapierBaseCommand {
   async perform() {
@@ -16,9 +16,9 @@ class TeamRemoveCommand extends ZapierBaseCommand {
     const { admins, subscribers } = await listEndpointMulti(
       { endpoint: 'collaborators', keyOverride: 'admins' },
       {
-        endpoint: app =>
+        endpoint: (app) =>
           `${BASE_ENDPOINT}/api/platform/v3/integrations/${app.id}/subscribers`,
-        keyOverride: 'subscribers'
+        keyOverride: 'subscribers',
       }
     );
 
@@ -27,7 +27,7 @@ class TeamRemoveCommand extends ZapierBaseCommand {
         status,
         value: { id, email, role: roleName(role) },
         name: `${email} (${roleName(role)})`,
-        short: email
+        short: email,
       })
     );
 
@@ -61,7 +61,7 @@ class TeamRemoveCommand extends ZapierBaseCommand {
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,
       method: 'DELETE',
-      body: { email: this.args.email }
+      body: { email: this.args.email },
     });
 
     this.stopSpinner();

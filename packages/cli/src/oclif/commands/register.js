@@ -28,13 +28,13 @@ RegisterCommand.args = [
   {
     name: 'title',
     description:
-      "Your integrations's public title. Asked interactively if not present."
-  }
+      "Your integrations's public title. Asked interactively if not present.",
+  },
 ];
 RegisterCommand.flags = buildFlags();
 RegisterCommand.examples = [
   'zapier register',
-  'zapier register "My Cool Integration"'
+  'zapier register "My Cool Integration"',
 ];
 RegisterCommand.description = `Register a new integration in your account.
 

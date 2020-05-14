@@ -2,7 +2,7 @@
 
 const errors = require('../../errors');
 
-const throwForStatus = (response) => {
+const throwForStatus = response => {
   if (
     !response.skipThrowForStatus &&
     response.status >= 400 &&

@@ -37,7 +37,7 @@ class TeamAddCommand extends ZapierBaseCommand {
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,
       method: 'POST',
-      body: { email: this.args.email, message }
+      body: { email: this.args.email, message },
     });
     this.stopSpinner();
   }
@@ -48,20 +48,20 @@ TeamAddCommand.args = [
     name: 'email',
     description:
       "The user to be invited. If they don't have a Zapier account, they'll be prompted to create one.",
-    required: true
+    required: true,
   },
   {
     name: 'role',
     description:
       'The level the invited team member should be at. Admins can edit everything and get email updates. Subscribers only get email updates.',
     options: ['admin', 'subscriber'],
-    required: true
+    required: true,
   },
   {
     name: 'message',
     description:
-      'A message sent in the email to your team member, if you need to provide context. Wrap the message in quotes to ensure spaces get saved.'
-  }
+      'A message sent in the email to your team member, if you need to provide context. Wrap the message in quotes to ensure spaces get saved.',
+  },
 ];
 TeamAddCommand.flags = buildFlags();
 TeamAddCommand.description = `Add a team member to your integration.
@@ -75,7 +75,7 @@ Team members can be freely added and removed.`;
 
 TeamAddCommand.examples = [
   'zapier team:add bruce@wayne.com admin',
-  'zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."'
+  'zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."',
 ];
 TeamAddCommand.aliases = ['team:invite'];
 
