@@ -799,6 +799,11 @@ const legacyScriptingSource = `
         return movie;
       },
 
+      movie_post_read_resource_array: function(bundle) {
+        // WB would take the first item if the result is an array
+        return [{rating: 'PG', year: 2020}];
+      },
+
       movie_read_resource_disabled: function(bundle) {
         bundle.request.url = bundle.request.url.replace('/movie/', '/movies/');
         var response = z.request(bundle.request);
