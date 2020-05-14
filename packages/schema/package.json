@@ -27,13 +27,13 @@
     "validate": "yarn test && yarn lint && yarn smoke-test"
   },
   "dependencies": {
-    "jsonschema": "1.2.6",
+    "jsonschema": "1.2.2",
     "lodash": "4.17.15"
   },
   "devDependencies": {
-    "fs-extra": "9.0.0",
+    "fs-extra": "^9.0.0",
     "istanbul": "0.4.5",
-    "markdown-toc": "1.2.0",
-    "node-fetch": "2.6.0"
+    "markdown-toc": "^1",
+    "node-fetch": "^2"
   }
 }

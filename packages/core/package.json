@@ -50,9 +50,9 @@
   },
   "devDependencies": {
     "adm-zip": "0.4.14",
-    "aws-sdk": "2.676.0",
-    "fs-extra": "9.0.0",
-    "mock-fs": "4.12.0"
+    "aws-sdk": "^2",
+    "fs-extra": "^9",
+    "mock-fs": "^4"
   },
   "optionalDependencies": {
     "@types/node": "^10"

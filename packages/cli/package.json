@@ -72,12 +72,12 @@
     "yeoman-generator": "4.10.1"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "1.22.2",
+    "@oclif/dev-cli": "^1",
     "decompress": "4.2.1",
     "litdoc": "1.5.6",
-    "markdown-toc": "1.2.0",
-    "mock-fs": "4.12.0",
-    "nock": "12.0.3",
+    "markdown-toc": "^1",
+    "mock-fs": "^4",
+    "nock": "^12",
     "stdout-stderr": "0.1.13",
     "yamljs": "0.3.0"
   },
