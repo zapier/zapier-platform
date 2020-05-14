@@ -9,7 +9,7 @@ install:
 stages:
   - name: "Test"
   - name: "Deploy"
-    if: tag IS present AND env(TRAVIS_NODE_VERSION) = "10"
+    if: tag IS present
 jobs:
   include:
     - stage: "Test"
