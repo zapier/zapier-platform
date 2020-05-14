@@ -38,9 +38,9 @@
   },
   "engineStrict": true,
   "dependencies": {
-    "bluebird": "3.5.5",
+    "bluebird": "3.7.2",
     "content-disposition": "0.5.3",
-    "dotenv": "8.1.0",
+    "dotenv": "8.2.0",
     "form-data": "2.5.0",
     "lodash": "4.17.15",
     "node-fetch": "2.6.0",
@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "adm-zip": "0.4.13",
-    "aws-sdk": "2.238.1",
+    "aws-sdk": "2.676.0",
     "fs-extra": "8.1.0",
     "mock-fs": "4.10.1"
   },

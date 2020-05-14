@@ -27,7 +27,7 @@
     "validate": "yarn test && yarn lint && yarn smoke-test"
   },
   "dependencies": {
-    "jsonschema": "1.2.2",
+    "jsonschema": "1.2.6",
     "lodash": "4.17.15"
   },
   "devDependencies": {

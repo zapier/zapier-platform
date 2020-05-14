@@ -2,3 +2,4 @@
 packages/cli/snippets/dynamic-dropdowns-*.js
 packages/cli/scaffold/*.js
 packages/cli/src/generators/templates/**/*.template.js
+.yarn
