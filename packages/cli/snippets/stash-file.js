@@ -2,7 +2,7 @@ const stashPDFfunction = (z, bundle) => {
   // use standard auth to request the file
   const filePromise = z.request({
     url: bundle.inputData.downloadUrl,
-    raw: true
+    raw: true,
   });
   // and swap it for a stashed URL
   return z.stashFile(filePromise);
@@ -11,13 +11,13 @@ const stashPDFfunction = (z, bundle) => {
 const pdfList = (z, bundle) => {
   return z
     .request('https://example.com/pdfs.json')
-    .then(res => res.json)
-    .then(results => {
-      return results.map(result => {
+    .then((res) => res.data)
+    .then((results) => {
+      return results.map((result) => {
         // lazily convert a secret_download_url to a stashed url
         // zapier won't do this until we need it
         result.file = z.dehydrateFile(stashPDFfunction, {
-          downloadUrl: result.secret_download_url
+          downloadUrl: result.secret_download_url,
         });
         delete result.secret_download_url;
         return result;
@@ -30,7 +30,7 @@ const App = {
   platformVersion: require('zapier-platform-core').version,
 
   hydrators: {
-    stashPDF: stashPDFfunction
+    stashPDF: stashPDFfunction,
   },
 
   triggers: {
@@ -38,13 +38,13 @@ const App = {
       noun: 'PDF',
       display: {
         label: 'New PDF',
-        description: 'Triggers when a new PDF is added.'
+        description: 'Triggers when a new PDF is added.',
       },
       operation: {
-        perform: pdfList
-      }
-    }
-  }
+        perform: pdfList,
+      },
+    },
+  },
 };
 
 module.exports = App;

@@ -8,7 +8,7 @@ module.exports = {
   noun: 'Recipe',
   display: {
     label: 'Create Recipe',
-    description: 'Creates a new recipe.'
+    description: 'Creates a new recipe.',
   },
 
   // `operation` is where the business logic goes.
@@ -19,15 +19,15 @@ module.exports = {
         key: 'directions',
         required: true,
         type: 'text',
-        helpText: 'Explain how should one make the recipe, step by step.'
+        helpText: 'Explain how should one make the recipe, step by step.',
       },
       { key: 'authorId', required: true, type: 'integer', label: 'Author ID' },
       {
         key: 'style',
         required: false,
         type: 'string',
-        helpText: 'Explain what style of cuisine this is.'
-      }
+        helpText: 'Explain what style of cuisine this is.',
+      },
     ],
     perform: (z, bundle) => {
       const promise = z.request({
@@ -37,7 +37,7 @@ module.exports = {
           name: bundle.inputData.name,
           directions: bundle.inputData.directions,
           authorId: bundle.inputData.authorId,
-          style: bundle.inputData.style
+          style: bundle.inputData.style,
         },
         headers: {
           'content-type': 'application/json',
@@ -45,11 +45,11 @@ module.exports = {
           // This is NOT how you normally do authentication. This is just to demo how to write a create here.
           // Refer to this doc to set up authentication:
           // https://zapier.github.io/zapier-platform-cli/#authentication
-          'X-API-Key': 'secret'
-        }
+          'X-API-Key': 'secret',
+        },
       });
 
-      return promise.then(response => response.json);
+      return promise.then((response) => response.data);
     },
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
@@ -61,7 +61,7 @@ module.exports = {
       name: 'Best Spagetti Ever',
       authorId: 1,
       directions: '1. Boil Noodles\n2.Serve with sauce',
-      style: 'italian'
+      style: 'italian',
     },
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -74,7 +74,7 @@ module.exports = {
       { key: 'name', label: 'Name' },
       { key: 'directions', label: 'Directions' },
       { key: 'authorId', label: 'Author ID' },
-      { key: 'style', label: 'Style' }
-    ]
-  }
+      { key: 'style', label: 'Style' },
+    ],
+  },
 };

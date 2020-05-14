@@ -20,7 +20,7 @@ const {
   throwSessionRefresh,
   variableAssignmentDeclaration,
   zRequest,
-  zResponseErr
+  zResponseErr,
 } = require('./codegen');
 
 const standardArgs = ['z', 'bundle'];
@@ -31,7 +31,7 @@ const afterMiddlewareArgs = [RESPONSE_VAR, ...standardArgs];
 const getOauthAccessTokenFuncName = 'getAccessToken';
 const refreshOath2AccessTokenFuncName = 'refreshAccessToken';
 
-const authJsonUrl = path =>
+const authJsonUrl = (path) =>
   `https://auth-json-server.zapier-staging.com/${path}`;
 
 const authFileExport = (
@@ -43,7 +43,7 @@ const authFileExport = (
     extraConfigProps = [],
     connectionLabel = strLiteral('{{json.username}}'),
     test = objProperty('test'),
-    authFields = []
+    authFields = [],
   } = {}
 ) => {
   return exportStatement(
@@ -63,7 +63,7 @@ const authFileExport = (
           ),
           test,
           comment(
-            `This template string can access all the data returned from the auth test. If you return the test object, you'll access the returned data with a label like \`{{json.X}}\`. If you return \`response.json\` from your test, then your label can be \`{{X}}\`. This can also be a function that returns a label. That function has the standard args \`(${standardArgs.join(
+            `This template string can access all the data returned from the auth test. If you return the test object, you'll access the returned data with a label like \`{{json.X}}\`. If you return \`response.data\` from your test, then your label can be \`{{X}}\`. This can also be a function that returns a label. That function has the standard args \`(${standardArgs.join(
               ', '
             )})\` and data returned from the test can be accessed in \`bundle.inputData.X\`.`
           ),
@@ -140,7 +140,7 @@ const afterMiddlewareFunc = (funcName, ...statements) =>
     functionDeclaration(funcName, { args: afterMiddlewareArgs }, ...statements)
   );
 
-const includeBearerFunc = funcName =>
+const includeBearerFunc = (funcName) =>
   beforeMiddlewareFunc(
     funcName,
     ifStatement(
@@ -194,17 +194,17 @@ const oauth2TokenExchangeFunc = (
       objProperty('client_id', 'process.env.CLIENT_ID'),
       objProperty('client_secret', 'process.env.CLIENT_SECRET'),
       objProperty('grant_type', strLiteral(grantType)),
-      ...bodyProps
+      ...bodyProps,
     ],
     "'Unable to fetch access token: ' + response.content",
     [
-      objProperty('access_token', 'response.json.access_token'),
-      objProperty('refresh_token', 'response.json.refresh_token')
+      objProperty('access_token', 'response.data.access_token'),
+      objProperty('refresh_token', 'response.data.refresh_token'),
     ],
     {
       returnComments: [
         comment('This function should return `access_token`.'),
-        ...returnComments
+        ...returnComments,
       ],
       requestProps: [
         objProperty(
@@ -215,8 +215,8 @@ const oauth2TokenExchangeFunc = (
               strLiteral('application/x-www-form-urlencoded')
             )
           )
-        )
-      ]
+        ),
+      ],
     }
   );
 };
@@ -231,14 +231,14 @@ const getAccessTokenFunc = () => {
           'accountDomain',
           'bundle.cleanedRequest.querystring.accountDomain'
         )}`
-      )
+      ),
     ],
     grantType: 'authorization_code',
     returnComments: [
       comment(
         'If your app does an app refresh, then `refresh_token` should be returned here as well'
-      )
-    ]
+      ),
+    ],
   });
 };
 
@@ -251,8 +251,8 @@ const refreshTokenFunc = () => {
       comment('If the refresh token stays constant, no need to return it.'),
       comment(
         'If the refresh token does change, return it here to update the stored value in Zapier'
-      )
-    ]
+      ),
+    ],
   });
 };
 
@@ -307,8 +307,8 @@ const oauth2AuthFile = () => {
               objProperty(refreshOath2AccessTokenFuncName),
               objProperty('autoRefresh', 'true')
             )
-          )
-        ]
+          ),
+        ],
       }
     )
   );
@@ -344,8 +344,8 @@ const customAuthFile = () => {
             objProperty('key', strLiteral('apiKey')),
             objProperty('label', strLiteral('API Key')),
             objProperty('required', 'true')
-          )
-        ]
+          ),
+        ],
       }
     )
   );
@@ -380,14 +380,14 @@ const sessionAuthFile = () => {
       'https://httpbin.zapier-tooling.com/post',
       [
         objProperty('username', 'bundle.authData.username'),
-        objProperty('password', 'bundle.authData.password')
+        objProperty('password', 'bundle.authData.password'),
       ],
       'The username/password you supplied is invalid',
       [
         comment(
           'FIXME: The `|| "secret"` below is just for demo purposes, you should remove it.'
         ),
-        objProperty('sessionKey', 'response.json.sessionKey || "secret"')
+        objProperty('sessionKey', 'response.data.sessionKey || "secret"'),
       ]
     ),
     beforeMiddlewareFunc(
@@ -427,14 +427,14 @@ const sessionAuthFile = () => {
             objProperty('required', 'true'),
             comment('this lets the user enter maksed data'),
             objProperty('type', strLiteral('password'))
-          )
+          ),
         ],
         extraConfigProps: [
           objProperty(
             'sessionConfig',
             obj(objProperty('perform', getSessionKeyName))
-          )
-        ]
+          ),
+        ],
       }
     )
   );
@@ -560,9 +560,9 @@ const oauth1AuthFile = () => {
               strLiteral('https://api.trello.com/1/members/me/')
             )
           )
-        )
+        ),
       ],
-      connectionLabel: strLiteral('{{username}}')
+      connectionLabel: strLiteral('{{username}}'),
     })
   );
 };
@@ -573,5 +573,5 @@ module.exports = {
   digest: digestAuthFile,
   oauth1: oauth1AuthFile,
   oauth2: oauth2AuthFile,
-  session: sessionAuthFile
+  session: sessionAuthFile,
 };

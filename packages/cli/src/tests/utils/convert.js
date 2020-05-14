@@ -81,11 +81,11 @@ const visualAppDefinition = {
           },
           {
             source:
-              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.json;\n\n    // modify your api response to return an array of Field objects\n    // see https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n",
+              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.data;\n\n    // modify your api response to return an array of Field objects\n    // see https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n",
           },
           {
             source:
-              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.json;\n\n    // modify your api response to return an array of Field objects\n    // see https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n",
+              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.data;\n\n    // modify your api response to return an array of Field objects\n    // see https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n",
           },
           {
             required: false,
@@ -208,7 +208,7 @@ const visualAppDefinition = {
       operation: {
         perform: {
           source:
-            "const options = {\n  url: 'https://jsonplaceholder.typicode.com/posts',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n    '_limit': '3'\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.json;\n\n    // You can do any parsing you need for results here before returning them\n\n    return results;\n  });",
+            "const options = {\n  url: 'https://jsonplaceholder.typicode.com/posts',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n    '_limit': '3'\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.data;\n\n    // You can do any parsing you need for results here before returning them\n\n    return results;\n  });",
         },
       },
       noun: 'Code',

@@ -4,9 +4,9 @@ const App = {
   // ...
   afterResponse: [
     (response, z, bundle) => {
-      response.xml = xml.parse(response.content);
+      response.data = xml.parse(response.content);
       return response;
-    }
-  ]
+    },
+  ],
   // ...
 };

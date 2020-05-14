@@ -6,7 +6,7 @@ const perform = async (z, bundle) => {
   // example we're going to omit that part. Thus, this trigger only "see" the
   // people in their first page of results.
   const response = await z.request({ url: 'https://swapi.dev/api/people/' });
-  let peopleArray = response.json.results;
+  let peopleArray = response.data.results;
 
   if (bundle.inputData.species_id) {
     // The Zap's setup has requested a specific species of person. Since the

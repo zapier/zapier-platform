@@ -1,18 +1,18 @@
 const getExtraDataFunction = (z, bundle) => {
   const url = `https://example.com/movies/${bundle.inputData.id}.json`;
-  return z.request(url).then(res => res.json);
+  return z.request(url).then((res) => res.data);
 };
 
 const movieList = (z, bundle) => {
   return z
     .request('https://example.com/movies.json')
-    .then(res => res.json)
-    .then(results => {
-      return results.map(result => {
+    .then((res) => res.data)
+    .then((results) => {
+      return results.map((result) => {
         // so maybe /movies.json is thin content but
         // /movies/:id.json has more details we want...
         result.moreData = z.dehydrate(getExtraDataFunction, {
-          id: result.id
+          id: result.id,
         });
         return result;
       });
@@ -26,7 +26,7 @@ const App = {
   // don't forget to register hydrators here!
   // it can be imported from any module
   hydrators: {
-    getExtraData: getExtraDataFunction
+    getExtraData: getExtraDataFunction,
   },
 
   triggers: {
@@ -34,13 +34,13 @@ const App = {
       noun: 'Movie',
       display: {
         label: 'New Movie',
-        description: 'Triggers when a new Movie is added.'
+        description: 'Triggers when a new Movie is added.',
       },
       operation: {
-        perform: movieList
-      }
-    }
-  }
+        perform: movieList,
+      },
+    },
+  },
 };
 
 module.exports = App;

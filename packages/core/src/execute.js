@@ -1,26 +1,24 @@
 'use strict';
 
-const querystring = require('querystring');
-
 const _ = require('lodash');
 
 const addQueryParams = require('./http-middlewares/before/add-query-params');
-const createJSONtool = require('./tools/create-json-tool');
 const ensureArray = require('./tools/ensure-array');
 const injectInput = require('./http-middlewares/before/inject-input');
 const prepareRequest = require('./http-middlewares/before/prepare-request');
 const ZapierPromise = require('./tools/promise');
-const { FORM_TYPE } = require('./tools/http');
 
 const constants = require('./constants');
 
 const executeHttpRequest = (input, options) => {
   options = _.extend({}, options, constants.REQUEST_OBJECT_SHORTHAND_OPTIONS);
-  return input.z.request(options).then((resp) => {
-    if (resp.headers.get('content-type') === FORM_TYPE) {
-      return querystring.parse(resp.content);
+  return input.z.request(options).then((response) => {
+    if (response.data === undefined) {
+      throw new Error(
+        'Response needs to be JSON, form-urlencoded or parsed in middleware.'
+      );
     }
-    return createJSONtool().parse(resp.content);
+    return response.data;
   });
 };
 

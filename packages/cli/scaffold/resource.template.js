@@ -6,7 +6,7 @@ const performList = async (z, bundle) => {
       order_by: 'id desc'
     }
   });
-  return response.json
+  return response.data
 };
 
 // find a particular <%= LOWER_NOUN %> by name (or other search criteria)
@@ -17,7 +17,7 @@ const performSearch = async (z, bundle) => {
       name: bundle.inputData.name
     }
   });
-  return response.json
+  return response.data
 };
 
 // creates a new <%= LOWER_NOUN %>
@@ -29,7 +29,7 @@ const performCreate = async (z, bundle) => {
       name: bundle.inputData.name // json by default
     }
   });
-  return response.json
+  return response.data
 };
 
 module.exports = {

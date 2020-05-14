@@ -4,10 +4,10 @@ const createRecipe = (z, bundle) => {
     method: 'POST',
     url: 'https://jsonplaceholder.typicode.com/posts',
     body: {
-      name: bundle.inputData.name
-    }
+      name: bundle.inputData.name,
+    },
   });
-  return responsePromise.then(response => response.json);
+  return responsePromise.then((response) => response.data);
 };
 
 module.exports = {
@@ -16,21 +16,24 @@ module.exports = {
 
   display: {
     label: 'Create Recipe',
-    description: 'Creates a recipe.'
+    description: 'Creates a recipe.',
   },
 
   operation: {
     inputFields: [
       { key: 'name', required: true },
-      { key: 'favorite', required: true }
+      { key: 'favorite', required: true },
     ],
     perform: createRecipe,
 
     sample: {
       id: 1,
-      name: 'Test'
+      name: 'Test',
     },
 
-    outputFields: [{ key: 'id', label: 'ID' }, { key: 'name', label: 'Name' }]
-  }
+    outputFields: [
+      { key: 'id', label: 'ID' },
+      { key: 'name', label: 'Name' },
+    ],
+  },
 };

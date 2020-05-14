@@ -1321,7 +1321,7 @@ zapier convert 1234 my-app 1.0.1
       <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&apos;The username/password you supplied is invalid&apos;</span>);
     }
     <span class="hljs-keyword">return</span> {
-      <span class="hljs-attr">sessionKey</span>: response.json.sessionKey,
+      <span class="hljs-attr">sessionKey</span>: response.data.sessionKey,
     };
   });
 };
@@ -1972,7 +1972,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeFields = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> response = z.request(<span class="hljs-string">&apos;https://example.com/api/v2/fields.json&apos;</span>);
   <span class="hljs-comment">// json is is [{&quot;key&quot;:&quot;field_1&quot;},{&quot;key&quot;:&quot;field_2&quot;}]</span>
-  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json);
+  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data);
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -1987,19 +1987,19 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
             <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title of Recipe&apos;</span>,
-            <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Name your recipe!&apos;</span>
+            <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Name your recipe!&apos;</span>,
           },
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;style&apos;</span>,
             <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
-            <span class="hljs-attr">choices</span>: { <span class="hljs-attr">mexican</span>: <span class="hljs-string">&apos;Mexican&apos;</span>, <span class="hljs-attr">italian</span>: <span class="hljs-string">&apos;Italian&apos;</span> }
+            <span class="hljs-attr">choices</span>: { <span class="hljs-attr">mexican</span>: <span class="hljs-string">&apos;Mexican&apos;</span>, <span class="hljs-attr">italian</span>: <span class="hljs-string">&apos;Italian&apos;</span> },
           },
-          recipeFields <span class="hljs-comment">// provide a function inline - we&apos;ll merge the results!</span>
+          recipeFields, <span class="hljs-comment">// provide a function inline - we&apos;ll merge the results!</span>
         ],
-        <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {}
-      }
-    }
-  }
+        <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {},
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -2208,10 +2208,10 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <span class="hljs-keyword">return</span> z
     .request(<span class="hljs-string">&apos;https://example.com/api/v2/projects.json&apos;</span>, {
       <span class="hljs-attr">params</span>: {
-        <span class="hljs-attr">spreadsheet_id</span>: bundle.inputData.spreadsheet_id
-      }
+        <span class="hljs-attr">spreadsheet_id</span>: bundle.inputData.spreadsheet_id,
+      },
     })
-    .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> response.json);
+    .then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.data);
 };
 
 </code></pre>
@@ -2489,7 +2489,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeOutputFields = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> response = z.request(<span class="hljs-string">&apos;https://example.com/api/v2/fields.json&apos;</span>);
   <span class="hljs-comment">// json is like [{&quot;key&quot;:&quot;field_1&quot;,&quot;label&quot;:&quot;Label for Custom Field&quot;}]</span>
-  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json);
+  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data);
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -2504,67 +2504,67 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
           <span class="hljs-attr">title</span>: <span class="hljs-string">&apos;Pancake&apos;</span>,
           <span class="hljs-attr">author</span>: {
             <span class="hljs-attr">id</span>: <span class="hljs-number">1</span>,
-            <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Amy&apos;</span>
+            <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Amy&apos;</span>,
           },
           <span class="hljs-attr">ingredients</span>: [
             {
               <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Egg&apos;</span>,
-              <span class="hljs-attr">amount</span>: <span class="hljs-number">1</span>
+              <span class="hljs-attr">amount</span>: <span class="hljs-number">1</span>,
             },
             {
               <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Milk&apos;</span>,
               <span class="hljs-attr">amount</span>: <span class="hljs-number">60</span>,
-              <span class="hljs-attr">unit</span>: <span class="hljs-string">&apos;g&apos;</span>
+              <span class="hljs-attr">unit</span>: <span class="hljs-string">&apos;g&apos;</span>,
             },
             {
               <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Flour&apos;</span>,
               <span class="hljs-attr">amount</span>: <span class="hljs-number">30</span>,
-              <span class="hljs-attr">unit</span>: <span class="hljs-string">&apos;g&apos;</span>
-            }
-          ]
+              <span class="hljs-attr">unit</span>: <span class="hljs-string">&apos;g&apos;</span>,
+            },
+          ],
         },
         <span class="hljs-comment">// an array of objects is the simplest way</span>
         <span class="hljs-attr">outputFields</span>: [
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;id&apos;</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Recipe ID&apos;</span>,
-            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;integer&apos;</span>
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;integer&apos;</span>,
           },
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Recipe Title&apos;</span>,
-            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
           },
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;author__id&apos;</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Author User ID&apos;</span>,
-            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;integer&apos;</span>
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;integer&apos;</span>,
           },
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;author__name&apos;</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Author Name&apos;</span>,
-            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
           },
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;ingredients[]name&apos;</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Ingredient Name&apos;</span>,
-            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
           },
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;ingredients[]amount&apos;</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Ingredient Amount&apos;</span>,
-            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;number&apos;</span>
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;number&apos;</span>,
           },
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;ingredients[]unit&apos;</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Ingredient Unit&apos;</span>,
-            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>
+            <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
           },
-          recipeOutputFields <span class="hljs-comment">// provide a function inline - we&apos;ll merge the results!</span>
-        ]
-      }
-    }
-  }
+          recipeOutputFields, <span class="hljs-comment">// provide a function inline - we&apos;ll merge the results!</span>
+        ],
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -2939,7 +2939,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     },
   };
 
-  <span class="hljs-keyword">return</span> z.request(options).then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json);
+  <span class="hljs-keyword">return</span> z.request(options).then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.data);
 };
 
 <span class="hljs-built_in">module</span>.exports = {
@@ -3174,14 +3174,14 @@ zapier env 1.0.0
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> listExample = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> httpOptions = {
     <span class="hljs-attr">headers</span>: {
-      <span class="hljs-string">&apos;my-header&apos;</span>: process.env.MY_SECRET_VALUE
-    }
+      <span class="hljs-string">&apos;my-header&apos;</span>: process.env.MY_SECRET_VALUE,
+    },
   };
   <span class="hljs-keyword">const</span> response = z.request(
     <span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>,
     httpOptions
   );
-  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json);
+  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data);
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -3191,10 +3191,10 @@ zapier env 1.0.0
       <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;{{process.env.MY_NOUN}}&apos;</span>,
       <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// ...</span>
-        <span class="hljs-attr">perform</span>: listExample
-      }
-    }
-  }
+        <span class="hljs-attr">perform</span>: listExample,
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -3316,7 +3316,7 @@ zapier env 1.0.0
   <span class="hljs-keyword">return</span> z
     .request(<span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>, customHttpOptions)
     .then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
-      <span class="hljs-keyword">const</span> recipes = response.json;
+      <span class="hljs-keyword">const</span> recipes = response.data;
       <span class="hljs-comment">// do any custom processing of recipes here...</span>
 
       <span class="hljs-keyword">return</span> recipes;
@@ -3435,17 +3435,22 @@ zapier env 1.0.0
   }
 
   <span class="hljs-comment">// Throw an error that `throwForStatus` wouldn&apos;t throw (correctly) for.</span>
-  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">200</span> &amp;&amp; response.json.success === <span class="hljs-literal">false</span>) {
-    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> z.errors.Error(response.json.message, response.json.code);
+  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">200</span> &amp;&amp; response.data.success === <span class="hljs-literal">false</span>) {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> z.errors.Error(response.data.message, response.data.code);
   }
+};
 
+<span class="hljs-keyword">const</span> parseXML = <span class="hljs-function">(<span class="hljs-params">response, z, bundle</span>) =&gt;</span> {
+  <span class="hljs-comment">// Parse content that is not JSON</span>
+  <span class="hljs-comment">// eslint-disable-next-line no-undef</span>
+  response.data = xml.parse(response.content);
   <span class="hljs-keyword">return</span> response;
 };
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">beforeRequest</span>: [addHeader],
-  <span class="hljs-attr">afterResponse</span>: [handleErrors],
+  <span class="hljs-attr">afterResponse</span>: [parseXML, handleErrors],
   <span class="hljs-comment">// ...</span>
 };
 
@@ -3547,7 +3552,9 @@ zapier env 1.0.0
       <p>The response object returned by <code>z.request([url], options)</code> supports the following fields and methods:</p><ul>
 <li><code>status</code>: The response status code, i.e. <code>200</code>, <code>404</code>, etc.</li>
 <li><code>content</code>: The response content as a String. For Buffer, try <code>options.raw = true</code>.</li>
-<li><code>json</code>: The response content as an object (or <code>undefined</code>). If <code>options.raw = true</code> - is a promise.</li>
+<li><code>data</code>: The response content as an object if the content is JSON or <code>application/x-www-form-urlencoded</code> (<code>undefined</code> otherwise).</li>
+<li><code>json</code>: The response content as an object if the content is JSON (<code>undefined</code> otherwise). Deprecated: Use <code>data</code> instead.</li>
+<li><code>json()</code>: Get the response content as an object, if <code>options.raw = true</code> and content is JSON (returns a promise).</li>
 <li><code>body</code>: A stream available only if you provide <code>options.raw = true</code>.</li>
 <li><code>headers</code>: Response headers object. The header keys are all lower case.</li>
 <li><code>getHeader(key)</code>: Retrieve response header, case insensitive: <code>response.getHeader(&apos;My-Header&apos;)</code></li>
@@ -3566,14 +3573,16 @@ zapier env 1.0.0
   response.getHeader(<span class="hljs-string">&apos;content-type&apos;</span>);
   response.request; <span class="hljs-comment">// original request options</span>
   response.throwForStatus();
-  <span class="hljs-comment">// if options.raw === false (default)...</span>
-  response.json; <span class="hljs-comment">// identical to:</span>
-  <span class="hljs-built_in">JSON</span>.parse(response.content);
-  <span class="hljs-comment">// if options.raw === true...</span>
-  response.buffer().then(<span class="hljs-function"><span class="hljs-params">buf</span> =&gt;</span> buf.toString());
-  response.text().then(<span class="hljs-function"><span class="hljs-params">content</span> =&gt;</span> content);
-  response.json().then(<span class="hljs-function"><span class="hljs-params">json</span> =&gt;</span> json);
-  response.body.pipe(otherStream);
+  <span class="hljs-keyword">if</span> (options.raw === <span class="hljs-literal">false</span>) { <span class="hljs-comment">// (default)</span>
+    response.data; <span class="hljs-comment">// same as...</span>
+    <span class="hljs-built_in">JSON</span>.parse(response.content); <span class="hljs-comment">// or...</span>
+    querystring.parse(response.content);
+  } <span class="hljs-keyword">else</span> {
+    response.buffer().then(<span class="hljs-function"><span class="hljs-params">buf</span> =&gt;</span> buf.toString());
+    response.text().then(<span class="hljs-function"><span class="hljs-params">content</span> =&gt;</span> content);
+    response.json().then(<span class="hljs-function"><span class="hljs-params">json</span> =&gt;</span> json);
+    response.body.pipe(otherStream);
+  }
 });
 </code></pre>
     </div>
@@ -3605,19 +3614,19 @@ zapier env 1.0.0
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> getExtraDataFunction = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">const</span> url = <span class="hljs-string">`https://example.com/movies/<span class="hljs-subst">${bundle.inputData.id}</span>.json`</span>;
-  <span class="hljs-keyword">return</span> z.request(url).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json);
+  <span class="hljs-keyword">return</span> z.request(url).then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data);
 };
 
 <span class="hljs-keyword">const</span> movieList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">return</span> z
     .request(<span class="hljs-string">&apos;https://example.com/movies.json&apos;</span>)
-    .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json)
-    .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
-      <span class="hljs-keyword">return</span> results.map(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
+    .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data)
+    .then(<span class="hljs-function">(<span class="hljs-params">results</span>) =&gt;</span> {
+      <span class="hljs-keyword">return</span> results.map(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
         <span class="hljs-comment">// so maybe /movies.json is thin content but</span>
         <span class="hljs-comment">// /movies/:id.json has more details we want...</span>
         result.moreData = z.dehydrate(getExtraDataFunction, {
-          <span class="hljs-attr">id</span>: result.id
+          <span class="hljs-attr">id</span>: result.id,
         });
         <span class="hljs-keyword">return</span> result;
       });
@@ -3631,7 +3640,7 @@ zapier env 1.0.0
   <span class="hljs-comment">// don&apos;t forget to register hydrators here!</span>
   <span class="hljs-comment">// it can be imported from any module</span>
   <span class="hljs-attr">hydrators</span>: {
-    <span class="hljs-attr">getExtraData</span>: getExtraDataFunction
+    <span class="hljs-attr">getExtraData</span>: getExtraDataFunction,
   },
 
   <span class="hljs-attr">triggers</span>: {
@@ -3639,13 +3648,13 @@ zapier env 1.0.0
       <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Movie&apos;</span>,
       <span class="hljs-attr">display</span>: {
         <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Movie&apos;</span>,
-        <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new Movie is added.&apos;</span>
+        <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new Movie is added.&apos;</span>,
       },
       <span class="hljs-attr">operation</span>: {
-        <span class="hljs-attr">perform</span>: movieList
-      }
-    }
-  }
+        <span class="hljs-attr">perform</span>: movieList,
+      },
+    },
+  },
 };
 
 <span class="hljs-built_in">module</span>.exports = App;
@@ -3731,7 +3740,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
   <span class="hljs-comment">// use standard auth to request the file</span>
   <span class="hljs-keyword">const</span> filePromise = z.request({
     <span class="hljs-attr">url</span>: bundle.inputData.downloadUrl,
-    <span class="hljs-attr">raw</span>: <span class="hljs-literal">true</span>
+    <span class="hljs-attr">raw</span>: <span class="hljs-literal">true</span>,
   });
   <span class="hljs-comment">// and swap it for a stashed URL</span>
   <span class="hljs-keyword">return</span> z.stashFile(filePromise);
@@ -3740,13 +3749,13 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 <span class="hljs-keyword">const</span> pdfList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
   <span class="hljs-keyword">return</span> z
     .request(<span class="hljs-string">&apos;https://example.com/pdfs.json&apos;</span>)
-    .then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> res.json)
-    .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
-      <span class="hljs-keyword">return</span> results.map(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
+    .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data)
+    .then(<span class="hljs-function">(<span class="hljs-params">results</span>) =&gt;</span> {
+      <span class="hljs-keyword">return</span> results.map(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
         <span class="hljs-comment">// lazily convert a secret_download_url to a stashed url</span>
         <span class="hljs-comment">// zapier won&apos;t do this until we need it</span>
         result.file = z.dehydrateFile(stashPDFfunction, {
-          <span class="hljs-attr">downloadUrl</span>: result.secret_download_url
+          <span class="hljs-attr">downloadUrl</span>: result.secret_download_url,
         });
         <span class="hljs-keyword">delete</span> result.secret_download_url;
         <span class="hljs-keyword">return</span> result;
@@ -3759,7 +3768,7 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
   <span class="hljs-attr">platformVersion</span>: <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>).version,
 
   <span class="hljs-attr">hydrators</span>: {
-    <span class="hljs-attr">stashPDF</span>: stashPDFfunction
+    <span class="hljs-attr">stashPDF</span>: stashPDFfunction,
   },
 
   <span class="hljs-attr">triggers</span>: {
@@ -3767,13 +3776,13 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
       <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;PDF&apos;</span>,
       <span class="hljs-attr">display</span>: {
         <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New PDF&apos;</span>,
-        <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new PDF is added.&apos;</span>
+        <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new PDF is added.&apos;</span>,
       },
       <span class="hljs-attr">operation</span>: {
-        <span class="hljs-attr">perform</span>: pdfList
-      }
-    }
-  }
+        <span class="hljs-attr">perform</span>: pdfList,
+      },
+    },
+  },
 };
 
 <span class="hljs-built_in">module</span>.exports = App;
@@ -4647,7 +4656,7 @@ npm run zapier-push
 <li><a href="https://github.com/jhuckaby/pixl-xml">pixl-xml</a></li>
 <li><a href="https://github.com/Leonidas-from-XIV/node-xml2js">xml2js</a></li>
 <li><a href="https://github.com/NaturalIntelligence/fast-xml-parser">fast-xml-parser</a></li>
-</ul>
+</ul><p>For <a href="shorthand-http-requests">shorthand requests</a>, use an <code>afterResponse</code> <a href="using-http-middleware">middleware</a> that sets <code>response.data</code> to the parsed XML:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> xml = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;pixl-xml&apos;</span>);
@@ -4656,10 +4665,10 @@ npm run zapier-push
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">afterResponse</span>: [
     <span class="hljs-function">(<span class="hljs-params">response, z, bundle</span>) =&gt;</span> {
-      response.xml = xml.parse(response.content);
+      response.data = xml.parse(response.content);
       <span class="hljs-keyword">return</span> response;
-    }
-  ]
+    },
+  ],
   <span class="hljs-comment">// ...</span>
 };
 
@@ -4687,8 +4696,8 @@ npm run zapier-push
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://jsonplaceholder.typicode.com/posts&apos;</span>,
     <span class="hljs-attr">params</span>: {
       <span class="hljs-attr">_start</span>: start,
-      <span class="hljs-attr">_limit</span>: limit
-    }
+      <span class="hljs-attr">_limit</span>: limit,
+    },
   });
 };
 
@@ -4707,9 +4716,9 @@ npm run zapier-push
     i += <span class="hljs-number">1</span>;
   }
 
-  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.all(promises).then(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.all(promises).then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
     <span class="hljs-comment">// res is an array of responses</span>
-    <span class="hljs-keyword">const</span> results = res.map(<span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span> r.json); <span class="hljs-comment">// array of arrays of js objects</span>
+    <span class="hljs-keyword">const</span> results = res.map(<span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> r.data); <span class="hljs-comment">// array of arrays of js objects</span>
     <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.prototype.concat.apply([], results); <span class="hljs-comment">// flatten array</span>
   });
 };
@@ -4720,13 +4729,13 @@ npm run zapier-push
 
   <span class="hljs-attr">display</span>: {
     <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Get Paging&apos;</span>,
-    <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers on a new paging.&apos;</span>
+    <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers on a new paging.&apos;</span>,
   },
 
   <span class="hljs-attr">operation</span>: {
     <span class="hljs-attr">inputFields</span>: [],
-    <span class="hljs-attr">perform</span>: performPaging
-  }
+    <span class="hljs-attr">perform</span>: performPaging,
+  },
 };
 
 </code></pre>
@@ -4751,11 +4760,11 @@ npm run zapier-push
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://jsonplaceholder.typicode.com/posts&apos;</span>,
     <span class="hljs-attr">params</span>: {
       <span class="hljs-attr">_start</span>: start,
-      <span class="hljs-attr">_limit</span>: limit
-    }
+      <span class="hljs-attr">_limit</span>: limit,
+    },
   });
 
-  <span class="hljs-keyword">let</span> results = response.json;
+  <span class="hljs-keyword">let</span> results = response.data;
 
   <span class="hljs-comment">// keep paging until the last item was created over two hours ago</span>
   <span class="hljs-comment">// then we know we almost certainly haven&apos;t missed anything and can let</span>
@@ -4768,11 +4777,11 @@ npm run zapier-push
       <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://jsonplaceholder.typicode.com/posts&apos;</span>,
       <span class="hljs-attr">params</span>: {
         <span class="hljs-attr">_start</span>: start,
-        <span class="hljs-attr">_limit</span>: limit
-      }
+        <span class="hljs-attr">_limit</span>: limit,
+      },
     });
 
-    results = results.concat(response.json);
+    results = results.concat(response.data);
   }
 
   <span class="hljs-keyword">return</span> results;
@@ -4827,7 +4836,7 @@ npm run zapier-push
       <span class="hljs-attr">offset</span>: <span class="hljs-number">100</span> * bundle.meta.page
     }
   });
-  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.json);
+  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.data);
 };
 </code></pre>
     </div>
@@ -4937,7 +4946,7 @@ npm run zapier-push
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-comment">// ...</span>
-<span class="hljs-keyword">let</span> items = response.json.items;
+<span class="hljs-keyword">let</span> items = response.data.items;
 items.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
   item.id = item.contactId;
 })

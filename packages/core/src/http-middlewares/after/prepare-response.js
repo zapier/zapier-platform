@@ -1,8 +1,10 @@
 'use strict';
 
 const _ = require('lodash');
+const querystring = require('querystring');
 const throwForStatus = require('./throw-for-status');
 const { replaceHeaders } = require('./middleware-utils');
+const { FORM_TYPE } = require('../../tools/http');
 
 const prepareRawResponse = (resp, request) => {
   // TODO: if !2xx should we go ahead and get response.content for them?
@@ -29,20 +31,23 @@ const prepareContentResponse = (resp, request) => {
   // TODO: does it make sense to not trim the signature? more equivalence to raw...
   return resp.text().then((content) => {
     // trim down the response signature a ton for simplicity
-    let json;
-    try {
-      json = JSON.parse(content);
-    } catch (err) {
-      json = undefined;
-    }
     const preppedResp = {
       status: resp.status,
-      json: json,
+      json: undefined,
+      data: undefined,
       content: content,
       request: request,
       skipThrowForStatus: request.skipThrowForStatus,
     };
     const outResp = _.extend(preppedResp, replaceHeaders(resp));
+    try {
+      if (outResp.headers.get('content-type') === FORM_TYPE) {
+        outResp.data = querystring.parse(content);
+      } else {
+        outResp.data = JSON.parse(content);
+        outResp.json = JSON.parse(content); // DEPRECATED (not using reference to isolate)
+      }
+    } catch (_e) {}
     outResp.throwForStatus = () => throwForStatus(outResp) && undefined;
     return outResp;
   });

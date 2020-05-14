@@ -3,10 +3,10 @@ const searchRecipe = (z, bundle) => {
   const responsePromise = z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
-      name: bundle.inputData.name
-    }
+      name: bundle.inputData.name,
+    },
   });
-  return responsePromise.then(response => response.json);
+  return responsePromise.then((response) => response.data);
 };
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
 
   display: {
     label: 'Find a Recipe',
-    description: 'Finds a recipe.'
+    description: 'Finds a recipe.',
   },
 
   operation: {
@@ -23,16 +23,19 @@ module.exports = {
       {
         key: 'name',
         required: true,
-        helpText: 'Find the Recipe with this name.'
-      }
+        helpText: 'Find the Recipe with this name.',
+      },
     ],
     perform: searchRecipe,
 
     sample: {
       id: 1,
-      name: 'Test'
+      name: 'Test',
     },
 
-    outputFields: [{ key: 'id', label: 'ID' }, { key: 'name', label: 'Name' }]
-  }
+    outputFields: [
+      { key: 'id', label: 'ID' },
+      { key: 'name', label: 'Name' },
+    ],
+  },
 };

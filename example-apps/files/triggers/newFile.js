@@ -10,15 +10,15 @@ const listFiles = (z, bundle) => {
   // You may return a promise or a normal data structure from any perform method.
   return z
     .request({
-      url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/files'
+      url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/files',
     })
-    .then(response => {
-      const files = response.json;
+    .then((response) => {
+      const files = response.data;
 
       // Make it possible to get the actual file contents if necessary (no need to make the request now)
-      return files.map(file => {
+      return files.map((file) => {
         file.file = z.dehydrateFile(hydrators.downloadFile, {
-          fileId: file.id
+          fileId: file.id,
         });
 
         return file;
@@ -36,7 +36,7 @@ module.exports = {
   noun: 'File',
   display: {
     label: 'New File',
-    description: 'Trigger when a new file is added.'
+    description: 'Trigger when a new file is added.',
   },
 
   // `operation` is where the business logic goes.
@@ -47,14 +47,14 @@ module.exports = {
       id: 1,
       name: 'Example PDF',
       file: 'SAMPLE FILE',
-      filename: 'example.pdf'
+      filename: 'example.pdf',
     },
 
     outputFields: [
       { key: 'id', type: 'integer', label: 'ID' },
       { key: 'name', type: 'string', label: 'Name' },
       { key: 'filename', type: 'string', label: 'Filename' },
-      { key: 'file', type: 'file', label: 'File' }
-    ]
-  }
+      { key: 'file', type: 'file', label: 'File' },
+    ],
+  },
 };

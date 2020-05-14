@@ -30,7 +30,7 @@ const perform = async (z, bundle) => {
     },
   });
 
-  return response.json;
+  return response.data;
 };
 
 module.exports = {

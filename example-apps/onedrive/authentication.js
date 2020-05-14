@@ -50,9 +50,9 @@ const getAccessToken = (z, bundle) => {
   })
 
   return promise.then((response) => ({
-    access_token: response.json.access_token,
-    refresh_token: response.json.refresh_token,
-    id_token: response.json.id_token,
+    access_token: response.data.access_token,
+    refresh_token: response.data.refresh_token,
+    id_token: response.data.id_token,
   }))
 }
 
@@ -81,9 +81,9 @@ const refreshAccessToken = (z, bundle) => {
   })
 
   return promise.then((response) => ({
-    access_token: response.json.access_token,
-    refresh_token: response.json.refresh_token,
-    id_token: response.json.id_token,
+    access_token: response.data.access_token,
+    refresh_token: response.data.refresh_token,
+    id_token: response.data.id_token,
   }))
 }
 
@@ -96,7 +96,7 @@ const testAuth = (z) => {
     url: 'https://graph.microsoft.com/v1.0/me',
   })
 
-  return promise.then((response) => response.json)
+  return promise.then((response) => response.data)
 }
 
 module.exports = {

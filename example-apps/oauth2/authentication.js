@@ -16,8 +16,8 @@ const getAccessToken = (z, bundle) => {
 
   // Needs to return at minimum, `access_token`, and if your app also does refresh, then `refresh_token` too
   return promise.then((response) => ({
-    access_token: response.json.access_token,
-    refresh_token: response.json.refresh_token,
+    access_token: response.data.access_token,
+    refresh_token: response.data.refresh_token,
   }));
 };
 
@@ -38,7 +38,7 @@ const refreshAccessToken = (z, bundle) => {
   // Needs to return `access_token`. If the refresh token stays constant, can skip it. If it changes, can
   // return it here to update the user's auth on Zapier.
   return promise.then((response) => ({
-    access_token: response.json.access_token,
+    access_token: response.data.access_token,
   }));
 };
 
@@ -52,7 +52,7 @@ const testAuth = (z /*, bundle */) => {
 
   // This method can return any truthy value to indicate the credentials are valid.
   // Raise an error to show
-  return promise.then((response) => response.json);
+  return promise.then((response) => response.data);
 };
 
 module.exports = {

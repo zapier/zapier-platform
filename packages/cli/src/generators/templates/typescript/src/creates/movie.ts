@@ -14,7 +14,7 @@ const perform = async (
       year: bundle.inputData.year,
     },
   });
-  return response.json;
+  return response.data;
 };
 
 export default {
