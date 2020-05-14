@@ -24,8 +24,8 @@ module.exports = {
   legacy: {
     authentication: {
       mapping: { 'X-Api-Key': '{{api_key}}' },
-      placement: 'header'
-    }
+      placement: 'header',
+    },
   },
 
   authentication: {
@@ -36,17 +36,17 @@ module.exports = {
         key: 'api_key',
         label: 'API Key',
         type: 'string',
-        required: true
-      }
-    ]
+        required: true,
+      },
+    ],
   },
   beforeRequest: [
     {
       source: beforeRequestSource,
-      args: ['request', 'z', 'bundle']
-    }
+      args: ['request', 'z', 'bundle'],
+    },
   ],
   afterResponse: [
-    { source: afterResponseSource, args: ['response', 'z', 'bundle'] }
-  ]
+    { source: afterResponseSource, args: ['response', 'z', 'bundle'] },
+  ],
 };

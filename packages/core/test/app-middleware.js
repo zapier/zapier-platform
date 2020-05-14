@@ -9,20 +9,20 @@ describe('app middleware', () => {
   const createTestInput = (method, appDefinition) => {
     const event = {
       bundle: {},
-      method
+      method,
     };
 
     return createInput(appDefinition, event);
   };
 
-  it('should support before middleware', done => {
+  it('should support before middleware', (done) => {
     const appDefinition = dataTools.deepCopy(exampleAppDefinition);
     appDefinition.beforeApp = [
-      input => {
+      (input) => {
         // Swap up context to point to a real method
         input._zapier.event.method = 'resources.list.list.operation.perform';
         return input;
-      }
+      },
     ];
     const app = createApp(appDefinition);
 
@@ -34,20 +34,20 @@ describe('app middleware', () => {
     );
 
     app(input)
-      .then(output => {
+      .then((output) => {
         output.results.should.eql([{ id: 1234 }, { id: 5678 }]);
         done();
       })
       .catch(done);
   });
 
-  it('should support after middleware', done => {
+  it('should support after middleware', (done) => {
     const appDefinition = dataTools.deepCopy(exampleAppDefinition);
     appDefinition.afterApp = [
-      output => {
+      (output) => {
         output.results = [{ id: 'something new' }];
         return output;
-      }
+      },
     ];
     const app = createApp(appDefinition);
 
@@ -59,7 +59,7 @@ describe('app middleware', () => {
     );
 
     app(input)
-      .then(output => {
+      .then((output) => {
         output.results.should.eql([{ id: 'something new' }]);
         done();
       })

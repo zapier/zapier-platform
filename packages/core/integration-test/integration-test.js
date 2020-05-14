@@ -14,15 +14,15 @@ const mocky = require('../test/tools/mocky');
 
 const lambda = new AWS.Lambda({
   apiVersion: '2015-03-31',
-  region: 'us-east-1'
+  region: 'us-east-1',
 });
 
-const runLambda = event => {
+const runLambda = (event) => {
   return new Promise((resolve, reject) => {
     const params = {
       FunctionName: 'integration-test-cli',
       Payload: JSON.stringify(event),
-      LogType: 'Tail'
+      LogType: 'Tail',
     };
 
     lambda.invoke(params, (err, data) => {
@@ -45,7 +45,7 @@ const runLambda = event => {
 };
 runLambda.testName = 'runLambda';
 
-const runLocally = event => {
+const runLocally = (event) => {
   return new Promise((resolve, reject) => {
     const handler = createLambdaHandler(
       path.resolve(__dirname, '../test/userapp')
@@ -61,13 +61,13 @@ const runLocally = event => {
 };
 runLocally.testName = 'runLocally';
 
-const doTest = runner => {
+const doTest = (runner) => {
   describe(`${runner.testName} integration tests`, () => {
     afterEach(() => {
       // Clear cache files
       const tmpdir = os.tmpdir();
       const cacheFilenames = ['cli-override.json', 'cli-hash.txt'];
-      cacheFilenames.forEach(filename => {
+      cacheFilenames.forEach((filename) => {
         const filepath = path.join(tmpdir, filename);
         if (fs.existsSync(filepath)) {
           fs.unlinkSync(filepath);
@@ -84,10 +84,10 @@ const doTest = runner => {
         method: 'resources.list.list.operation.perform',
         bundle: {
           'param a': 'say, can u see me?',
-          'param b': 'oh, can u see me too?'
-        }
+          'param b': 'oh, can u see me too?',
+        },
       };
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         should.exist(response.results);
         response.results.should.eql([{ id: 1234 }, { id: 5678 }]);
       });
@@ -95,18 +95,18 @@ const doTest = runner => {
 
     it('should validate an app', () => {
       const event = {
-        command: 'validate'
+        command: 'validate',
       };
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         should.exist(response.results);
       });
     });
 
     it('should provide the definition for an app', () => {
       const event = {
-        command: 'definition'
+        command: 'definition',
       };
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         should.exist(response.results);
       });
     });
@@ -116,10 +116,10 @@ const doTest = runner => {
         command: 'execute',
         method: 'resources.loggingfunc.list.operation.perform',
         logExtra: {
-          app_cli_id: 666
-        }
+          app_cli_id: 666,
+        },
       };
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         should.exist(response.results);
       });
     });
@@ -136,14 +136,14 @@ const doTest = runner => {
               list: {
                 display: {},
                 operation: {
-                  perform: { source: 'return [{id: 45678}]' }
-                }
-              }
-            }
-          }
-        }
+                  perform: { source: 'return [{id: 45678}]' },
+                },
+              },
+            },
+          },
+        },
       };
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         response.results.should.deepEqual([{ id: 45678 }]);
       });
     });
@@ -157,11 +157,11 @@ const doTest = runner => {
             list: {
               display: {},
               operation: {
-                perform: { source: 'return [{id: 45678}]' }
-              }
-            }
-          }
-        }
+                perform: { source: 'return [{id: 45678}]' },
+              },
+            },
+          },
+        },
       };
 
       mocky.mockRpcCall(definition);
@@ -176,10 +176,10 @@ const doTest = runner => {
         method: 'triggers.fooList.operation.perform',
         appRawOverride: definitionHash,
         rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
-        token: 'fake'
+        token: 'fake',
       };
 
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         response.results.length.should.eql(1);
         response.results[0].id.should.eql(45678);
       });
@@ -193,10 +193,10 @@ const doTest = runner => {
             noun: 'Foo',
             operation: {
               perform: { source: 'return [{id: 12345}]' },
-              inputFields: [{ key: 'name', type: 'string' }]
-            }
-          }
-        }
+              inputFields: [{ key: 'name', type: 'string' }],
+            },
+          },
+        },
       };
 
       mocky.mockRpcCall(definition);
@@ -208,11 +208,11 @@ const doTest = runner => {
             operation: {
               inputFields: [{ key: 'message', type: 'string' }],
               sample: {
-                id: 678
-              }
-            }
-          }
-        }
+                id: 678,
+              },
+            },
+          },
+        },
       };
 
       const definitionHash = crypto
@@ -225,13 +225,13 @@ const doTest = runner => {
         method: 'creates.foo.operation.inputFields',
         appRawOverride: [definitionHash, definitionExtension],
         rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
-        token: 'fake'
+        token: 'fake',
       };
 
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         response.results.should.eql([
           { key: 'name', type: 'string' },
-          { key: 'message', type: 'string' }
+          { key: 'message', type: 'string' },
         ]);
       });
     });
@@ -246,12 +246,12 @@ const doTest = runner => {
               perform: {
                 url: 'https://httpbin.org/get',
                 params: {
-                  id: 54321
-                }
-              }
-            }
-          }
-        }
+                  id: 54321,
+                },
+              },
+            },
+          },
+        },
       };
 
       mocky.mockRpcCall(definition);
@@ -261,10 +261,10 @@ const doTest = runner => {
           foo: {
             noun: 'Foobar',
             operation: {
-              perform: { source: 'return [{id: 12345}]' }
-            }
-          }
-        }
+              perform: { source: 'return [{id: 12345}]' },
+            },
+          },
+        },
       };
 
       const definitionHash = crypto
@@ -277,10 +277,10 @@ const doTest = runner => {
         method: 'triggers.foo.operation.perform',
         appRawOverride: [definitionHash, definitionExtension],
         rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
-        token: 'fake'
+        token: 'fake',
       };
 
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         response.results.should.eql([{ id: 12345 }]);
       });
     });
@@ -292,10 +292,10 @@ const doTest = runner => {
             key: 'foo',
             noun: 'Foo',
             operation: {
-              perform: { source: 'return [{id: 12345}]' }
-            }
-          }
-        }
+              perform: { source: 'return [{id: 12345}]' },
+            },
+          },
+        },
       };
 
       mocky.mockRpcCall(definition);
@@ -309,12 +309,12 @@ const doTest = runner => {
                 method: 'POST',
                 url: 'https://httpbin.org/post',
                 params: {
-                  id: 54321
-                }
-              }
-            }
-          }
-        }
+                  id: 54321,
+                },
+              },
+            },
+          },
+        },
       };
 
       const definitionHash = crypto
@@ -327,14 +327,14 @@ const doTest = runner => {
         method: 'creates.foo.operation.perform',
         appRawOverride: [definitionHash, definitionExtension],
         rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
-        token: 'fake'
+        token: 'fake',
       };
 
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         response.results.should.containEql({
           args: {
-            id: '54321'
-          }
+            id: '54321',
+          },
         });
       });
     });
@@ -346,10 +346,10 @@ const doTest = runner => {
             key: 'foo',
             noun: 'Foo',
             operation: {
-              perform: '$func$2$f$'
-            }
-          }
-        }
+              perform: '$func$2$f$',
+            },
+          },
+        },
       };
 
       mocky.mockRpcCall(definition);
@@ -359,10 +359,10 @@ const doTest = runner => {
           foo: {
             noun: 'Foobar',
             operation: {
-              perform: { source: 'return [{id: 12345}]' }
-            }
-          }
-        }
+              perform: { source: 'return [{id: 12345}]' },
+            },
+          },
+        },
       };
 
       const definitionHash = crypto
@@ -375,14 +375,14 @@ const doTest = runner => {
         method: 'searches.foo.operation.perform',
         appRawOverride: [definitionHash, definitionExtension],
         rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
-        token: 'fake'
+        token: 'fake',
       };
 
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         response.results.should.eql([
           {
-            id: 12345
-          }
+            id: 12345,
+          },
         ]);
       });
     });
@@ -395,10 +395,10 @@ const doTest = runner => {
             noun: 'Foo',
             operation: {
               type: 'hook',
-              performList: { source: 'return [{id: 54321}]' }
-            }
-          }
-        }
+              performList: { source: 'return [{id: 54321}]' },
+            },
+          },
+        },
       };
 
       mocky.mockRpcCall(definition);
@@ -407,10 +407,10 @@ const doTest = runner => {
         triggers: {
           test: {
             operation: {
-              perform: { source: 'return [{id: 12345}]' }
-            }
-          }
-        }
+              perform: { source: 'return [{id: 12345}]' },
+            },
+          },
+        },
       };
 
       const definitionHash = crypto
@@ -423,14 +423,14 @@ const doTest = runner => {
         method: 'triggers.test.operation.perform',
         appRawOverride: [definitionHash, definitionExtension],
         rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
-        token: 'fake'
+        token: 'fake',
       };
 
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         response.results.should.eql([
           {
-            id: 12345
-          }
+            id: 12345,
+          },
         ]);
       });
     });
@@ -442,10 +442,10 @@ const doTest = runner => {
             key: 'test',
             noun: 'Foo',
             operation: {
-              perform: { source: 'return [{id: 54321}]' }
-            }
-          }
-        }
+              perform: { source: 'return [{id: 54321}]' },
+            },
+          },
+        },
       };
 
       mocky.mockRpcCall(definition);
@@ -456,10 +456,10 @@ const doTest = runner => {
             key: 'perform',
             noun: 'Foo',
             operation: {
-              perform: { source: 'return [{id: 12345}]' }
-            }
-          }
-        }
+              perform: { source: 'return [{id: 12345}]' },
+            },
+          },
+        },
       };
 
       const definitionHash = crypto
@@ -472,14 +472,14 @@ const doTest = runner => {
         method: 'triggers.perform.operation.perform',
         appRawOverride: [definitionHash, definitionExtension],
         rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
-        token: 'fake'
+        token: 'fake',
       };
 
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         response.results.should.eql([
           {
-            id: 12345
-          }
+            id: 12345,
+          },
         ]);
       });
     });
@@ -489,28 +489,28 @@ const doTest = runner => {
         beforeRequest: [
           {
             source: "request.headers['X-Foo'] = 'it worked!'; return request",
-            args: ['request', 'z', 'bundle']
-          }
+            args: ['request', 'z', 'bundle'],
+          },
         ],
         creates: {
           foo: {
             operation: {
               perform: {
                 method: 'POST',
-                url: 'https://httpbin.org/post'
-              }
-            }
-          }
-        }
+                url: 'https://httpbin.org/post',
+              },
+            },
+          },
+        },
       };
 
       const event = {
         command: 'execute',
         method: 'creates.foo.operation.perform',
-        appRawOverride: definition
+        appRawOverride: definition,
       };
 
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         response.results.headers['X-Foo'].should.eql('it worked!');
       });
     });
@@ -520,10 +520,10 @@ const doTest = runner => {
         command: 'execute',
         method: 'resources.requestfunc.list.operation.perform',
         logExtra: {
-          app_cli_id: 666
-        }
+          app_cli_id: 666,
+        },
       };
-      return runner(event).then(response => {
+      return runner(event).then((response) => {
         should.exist(response.results);
       });
     });
@@ -531,12 +531,12 @@ const doTest = runner => {
     it('should not leave leftover env vars', () => {
       const event = {
         environment: {
-          _ZAPIER_ONE_TIME_SECRET: 'foo'
+          _ZAPIER_ONE_TIME_SECRET: 'foo',
         },
-        method: 'resources.env.list.operation.perform'
+        method: 'resources.env.list.operation.perform',
       };
       return runner(event)
-        .then(response => {
+        .then((response) => {
           response.results.length.should.eql(1);
           response.results[0].key.should.eql('_ZAPIER_ONE_TIME_SECRET');
           response.results[0].value.should.eql('foo');
@@ -544,7 +544,7 @@ const doTest = runner => {
           delete event.environment;
           return runner(event);
         })
-        .then(response => {
+        .then((response) => {
           response.results.length.should.eql(0);
         });
     });
@@ -554,13 +554,13 @@ const doTest = runner => {
         it(`should catch errors from ${method}`, () => {
           const event = {
             command: 'execute',
-            method
+            method,
           };
           return runner(event)
             .then(() => {
               should(true).eql(false, 'Expected an error!');
             })
-            .catch(err => {
+            .catch((err) => {
               should.exist(err);
               err.message.should.startWith(errorMessage);
             });
@@ -597,5 +597,5 @@ if (process.argv.indexOf('integration-test') > 0) {
 module.exports = {
   runLambda,
   runLocally,
-  doTest
+  doTest,
 };

@@ -2,7 +2,7 @@
 
 const https = require('https');
 
-const disableSSLCertCheck = req => {
+const disableSSLCertCheck = (req) => {
   if (req.agent) {
     req.agent.options.rejectUnauthorized = false;
   } else if (req.url.startsWith('https://')) {

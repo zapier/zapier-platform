@@ -11,6 +11,6 @@ module.exports = makeSchema({
   additionalProperties: false,
   required: ['require'],
   properties: {
-    require: { type: 'string' }
-  }
+    require: { type: 'string' },
+  },
 });

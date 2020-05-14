@@ -20,7 +20,7 @@ const createDehydrator = (input, type = 'method') => {
       type,
       method: resolveMethodPath(app, func),
       // inputData vs. bundle is a legacy oddity
-      bundle: _.omit(inputData, 'environment') // don't leak the environment
+      bundle: _.omit(inputData, 'environment'), // don't leak the environment
     });
   };
 };

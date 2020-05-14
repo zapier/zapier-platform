@@ -8,5 +8,5 @@ module.exports = makeSchema({
     'Config for Digest Authentication. No extra properties are required to setup Digest Auth, so you can leave this empty if your app uses Digets Auth.',
   type: 'object',
   properties: {},
-  additionalProperties: false
+  additionalProperties: false,
 });

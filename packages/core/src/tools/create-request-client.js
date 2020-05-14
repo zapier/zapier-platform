@@ -17,7 +17,7 @@ const createRequestClient = (befores, afters, options) => {
   options = _.defaults({}, options, {
     skipDefaultMiddle: false,
     skipEnvelope: true,
-    extraArgs: []
+    extraArgs: [],
   });
 
   const httpBefores = [];

@@ -34,8 +34,8 @@ const createInput = (app, event, logger, logBuffer, rpc) => {
       // Logger function that returns a promise
       logger,
 
-      logBuffer
-    }
+      logBuffer,
+    },
   };
 };
 

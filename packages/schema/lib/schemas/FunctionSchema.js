@@ -14,18 +14,18 @@ module.exports = makeSchema(
       '$func$0$f$',
       '$func$2$t$',
       { source: 'return 1 + 2' },
-      { require: 'some/path/to/file.js' }
+      { require: 'some/path/to/file.js' },
     ],
     antiExamples: [
       'funcy',
       { source: '1 + 2' },
-      { source: '1 + 2', require: 'some/path/to/file.js' }
+      { source: '1 + 2', require: 'some/path/to/file.js' },
     ],
     oneOf: [
       { type: 'string', pattern: '^\\$func\\$\\d+\\$[tf]\\$$' },
       { $ref: FunctionRequireSchema.id },
-      { $ref: FunctionSourceSchema.id }
-    ]
+      { $ref: FunctionSourceSchema.id },
+    ],
   },
   [FunctionRequireSchema, FunctionSourceSchema]
 );

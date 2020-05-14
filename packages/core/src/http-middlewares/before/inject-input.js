@@ -8,8 +8,8 @@ const _ = require('lodash');
 
    Useful for HTTP middlewares that need stuff from the app or event.
  */
-const injectInput = input => {
-  return req => _.extend({}, req, { input });
+const injectInput = (input) => {
+  return (req) => _.extend({}, req, { input });
 };
 
 module.exports = injectInput;

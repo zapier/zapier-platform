@@ -4,9 +4,9 @@ const should = require('should');
 const request = require('../src/tools/request-client-internal');
 
 describe('http requests', () => {
-  it('should make GET requests', done => {
+  it('should make GET requests', (done) => {
     request({ url: 'https://httpbin.org/get' })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         should.exist(response.content);
         // httpbin capitalizes the response header name
@@ -20,9 +20,9 @@ describe('http requests', () => {
       .catch(done);
   });
 
-  it('should make GET with url sugar param', done => {
+  it('should make GET with url sugar param', (done) => {
     request('https://httpbin.org/get')
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         should.exist(response.content);
         response.content.url.should.eql('https://httpbin.org/get');
@@ -31,10 +31,10 @@ describe('http requests', () => {
       .catch(done);
   });
 
-  it('should make GET with url sugar param and options', done => {
+  it('should make GET with url sugar param and options', (done) => {
     const options = { headers: { A: 'B', 'user-agent': 'cool thing' } };
     request('https://httpbin.org/get', options)
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         should.exist(response.content);
         response.content.url.should.eql('https://httpbin.org/get');
@@ -46,13 +46,13 @@ describe('http requests', () => {
       .catch(done);
   });
 
-  it('should make POST requests', done => {
+  it('should make POST requests', (done) => {
     request({
       url: 'https://httpbin.org/post',
       method: 'POST',
-      body: 'test'
+      body: 'test',
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         response.content.data.should.eql('test');
         done();

@@ -4,7 +4,7 @@
 
 // Extracted from assets/app/common/memoize.js. Author @shauser.
 
-var _slicedToArray = (function() {
+var _slicedToArray = (function () {
   function sliceIterator(arr, i) {
     var _arr = [];
     var _n = true;
@@ -31,7 +31,7 @@ var _slicedToArray = (function() {
     }
     return _arr;
   }
-  return function(arr, i) {
+  return function (arr, i) {
     if (Array.isArray(arr)) {
       return arr;
     } else if (Symbol.iterator in Object(arr)) {
@@ -140,7 +140,7 @@ var valueKey = {};
 // Looks up the memoized value in the `WeakMap` tree
 // based on `args`, returning `undefined` if it's not found.
 var getMemoizedValue = function getMemoizedValue(args) {
-  var valueMap = args.reduce(function(map, arg) {
+  var valueMap = args.reduce(function (map, arg) {
     // `map` should *always* be a `WeakMap` or `undefined` at this point.
     // It's `undefined` if the value hasn't been memoized yet.
     if (!(map && map.get)) {
@@ -166,7 +166,7 @@ var getMemoizedValue = function getMemoizedValue(args) {
 var memoizeValue = function memoizeValue(args, valueToMemoize) {
   return (
     args
-      .reduce(function(map, arg, idx) {
+      .reduce(function (map, arg, idx) {
         // Get or create an object for `arg` depending
         // on if it's a primitive value because `WeakMap`
         // necessitates objects for keys.
@@ -200,7 +200,7 @@ var memoizeValue = function memoizeValue(args, valueToMemoize) {
 // with a key of `b`, which will point to a `WeakMap` with a key
 // of `c`, which will point to the result of `fn`.
 var memoize = function memoize(fn) {
-  return function() {
+  return function () {
     for (
       var _len = arguments.length, args = Array(_len), _key = 0;
       _key < _len;

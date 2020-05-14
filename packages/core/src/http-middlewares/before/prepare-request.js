@@ -7,19 +7,19 @@ const querystring = require('querystring');
 const {
   createBundleBank,
   normalizeEmptyBodyFields,
-  recurseReplaceBank
+  recurseReplaceBank,
 } = require('../../tools/cleaner');
 const requestMerge = require('../../tools/request-merge');
 const {
   getContentType,
   FORM_TYPE,
-  JSON_TYPE_UTF8
+  JSON_TYPE_UTF8,
 } = require('../../tools/http');
 
-const isStream = obj => obj instanceof stream.Stream;
-const isPromise = obj => obj && typeof obj.then === 'function';
+const isStream = (obj) => obj instanceof stream.Stream;
+const isPromise = (obj) => obj && typeof obj.then === 'function';
 
-const sugarBody = req => {
+const sugarBody = (req) => {
   // move into the body as raw, set headers for coerce, merge to work
 
   req.headers = req.headers || {};
@@ -40,7 +40,7 @@ const sugarBody = req => {
 };
 
 // Be careful not to JSONify a stream or buffer, stuff like that
-const coerceBody = req => {
+const coerceBody = (req) => {
   const contentType = getContentType(req.headers || {});
 
   // No need for body on get
@@ -74,9 +74,9 @@ const coerceBody = req => {
 };
 
 // Wrap up the request in a promise - if needed.
-const finalRequest = req => {
+const finalRequest = (req) => {
   if (isPromise(req.body)) {
-    return req.body.then(reqBodyRes => {
+    return req.body.then((reqBodyRes) => {
       if (
         reqBodyRes &&
         reqBodyRes.body &&
@@ -102,7 +102,7 @@ const finalRequest = req => {
   }
 };
 
-const prepareRequest = function(req) {
+const prepareRequest = function (req) {
   const input = req.input || {};
 
   // We will want to use _.defaultsDeep if one of these nested values ever defaults to true.
@@ -110,11 +110,11 @@ const prepareRequest = function(req) {
     merge: true,
     removeMissingValuesFrom: {
       params: false,
-      body: false
+      body: false,
     },
     replace: true, // always replace curlies
     skipThrowForStatus: false,
-    _addContext: () => {}
+    _addContext: () => {},
   });
 
   req = sugarBody(req);

@@ -16,48 +16,48 @@ module.exports = makeSchema(
       {
         display: {
           label: 'Create Tag',
-          description: 'Create a new Tag in your account.'
+          description: 'Create a new Tag in your account.',
         },
         operation: {
           perform: '$func$2$f$',
           sample: {
-            id: 1
-          }
-        }
+            id: 1,
+          },
+        },
       },
       {
         display: {
           label: 'Create Tag',
           description: 'Create a new Tag in your account.',
-          hidden: true
+          hidden: true,
         },
         operation: {
-          perform: '$func$2$f$'
-        }
-      }
+          perform: '$func$2$f$',
+        },
+      },
     ],
     antiExamples: [
       {
         display: {
           label: 'Create Tag',
-          description: 'Create a new Tag in your account.'
+          description: 'Create a new Tag in your account.',
         },
         operation: {
-          perform: '$func$2$f$'
-        }
-      }
+          perform: '$func$2$f$',
+        },
+      },
     ],
     properties: {
       display: {
         description: 'Define how this create method will be exposed in the UI.',
-        $ref: BasicDisplaySchema.id
+        $ref: BasicDisplaySchema.id,
       },
       operation: {
         description: 'Define how this create method will work.',
-        $ref: BasicActionOperationSchema.id
-      }
+        $ref: BasicActionOperationSchema.id,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [BasicDisplaySchema, BasicActionOperationSchema]
 );

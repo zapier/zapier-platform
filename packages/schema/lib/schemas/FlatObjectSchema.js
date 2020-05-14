@@ -12,7 +12,7 @@ module.exports = makeSchema({
     { a: 'a', b: 'b', c: 'c' },
     { a: true, b: true, c: false },
     { a: 'a', b: 2, c: 3.1, d: true, e: false },
-    { 123: 'hello' }
+    { 123: 'hello' },
   ],
   antiExamples: [
     { a: {}, b: 2 },
@@ -21,7 +21,7 @@ module.exports = makeSchema({
     { a: [1, 2, 3], b: 2 },
     { '': 1 },
     { ' ': 1 },
-    { '     ': 1 }
+    { '     ': 1 },
   ],
   patternProperties: {
     '[^\\s]+': {
@@ -32,9 +32,9 @@ module.exports = makeSchema({
         { type: 'string' },
         { type: 'integer' },
         { type: 'number' },
-        { type: 'boolean' }
-      ]
-    }
+        { type: 'boolean' },
+      ],
+    },
   },
-  additionalProperties: false
+  additionalProperties: false,
 });

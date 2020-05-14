@@ -19,7 +19,7 @@ const TEST_APPS = [
   // 'resource',
   // 'search',
   // 'session-auth',
-  'trigger'
+  'trigger',
 ];
 
 const setupZapierRC = () => {
@@ -38,7 +38,7 @@ const setupZapierRC = () => {
   return hasRC;
 };
 
-const setupZapierAppRC = workdir => {
+const setupZapierAppRC = (workdir) => {
   let hasAppRC = false;
   if (process.env.TEST_APP_ID && process.env.TEST_APP_KEY) {
     const rcPath = path.join(workdir, '.zapierapprc');
@@ -47,7 +47,7 @@ const setupZapierAppRC = workdir => {
         rcPath,
         JSON.stringify({
           id: parseInt(process.env.TEST_APP_ID),
-          key: process.env.TEST_APP_KEY
+          key: process.env.TEST_APP_KEY,
         })
       );
       hasAppRC = true;
@@ -58,7 +58,7 @@ const setupZapierAppRC = workdir => {
 
 const getSchemaDir = () => path.resolve(path.dirname(process.cwd()), 'schema');
 
-const npmPackSchema = schemaDir => {
+const npmPackSchema = (schemaDir) => {
   const proc = spawnSync('npm', ['pack'], { encoding: 'utf8', cwd: schemaDir });
   const lines = proc.stdout.split('\n');
   let filename;
@@ -72,11 +72,11 @@ const npmPackSchema = schemaDir => {
   return filename;
 };
 
-const npmPackCore = schemaPackagePath => {
+const npmPackCore = (schemaPackagePath) => {
   // Patch core's package.json to use schema from local
   const packageJsonPath = path.join(process.cwd(), 'package.json');
   const originalPackageJsonText = fs.readFileSync(packageJsonPath, {
-    encoding: 'utf8'
+    encoding: 'utf8',
   });
   const packageJson = JSON.parse(originalPackageJsonText);
   packageJson.dependencies[
@@ -116,13 +116,13 @@ const setupTempWorkingDir = () => {
   return workdir;
 };
 
-const copyTestApps = workdir => {
+const copyTestApps = (workdir) => {
   const repoRoot = path.dirname(path.dirname(path.dirname(__dirname)));
-  TEST_APPS.forEach(appName => {
+  TEST_APPS.forEach((appName) => {
     const srcAppDir = path.join(repoRoot, 'example-apps', appName);
     const destAppDir = path.join(workdir, appName);
     fs.copySync(srcAppDir, destAppDir, {
-      filter: (src, dest) => !src.includes('node_modules/')
+      filter: (src, dest) => !src.includes('node_modules/'),
     });
   });
 };
@@ -142,11 +142,11 @@ const npmInstalls = (coreZipPath, workdir) => {
   try {
     spawnSync('npm', ['install'], {
       encoding: 'utf8',
-      cwd: workdir
+      cwd: workdir,
     });
     spawnSync('npm', ['install', '--no-save', 'zapier-platform-cli'], {
       encoding: 'utf8',
-      cwd: workdir
+      cwd: workdir,
     });
   } finally {
     fs.writeFileSync(packageJsonPath, origPackageJsonText);
@@ -158,17 +158,17 @@ describe('smoke tests - setup will take some time', () => {
     // Global context that will be available for all test cases in this test suite
     corePackage: {
       filename: null,
-      path: null
+      path: null,
     },
     schemaPackage: {
       filename: null,
-      path: null
+      path: null,
     },
     workRepoDir: null,
     workAppDir: null,
     cliBin: null,
     hasRC: false,
-    hasAppRC: false
+    hasAppRC: false,
   };
 
   before(async () => {
@@ -198,7 +198,7 @@ describe('smoke tests - setup will take some time', () => {
     fs.removeSync(context.workRepoDir);
   });
 
-  it('package size should not change much', async function() {
+  it('package size should not change much', async function () {
     const baseUrl = 'https://registry.npmjs.org/zapier-platform-core';
     let res = await fetch(baseUrl);
     const packageInfo = await res.json();
@@ -207,7 +207,7 @@ describe('smoke tests - setup will take some time', () => {
     res = await fetch(
       `${baseUrl}/-/zapier-platform-core-${latestVersion}.tgz`,
       {
-        method: 'HEAD'
+        method: 'HEAD',
       }
     );
     const baselineSize = res.headers.get('content-length');
@@ -217,7 +217,7 @@ describe('smoke tests - setup will take some time', () => {
     this.test.title += ` (${baselineSize} -> ${newSize} bytes)`;
   });
 
-  TEST_APPS.forEach(appName => {
+  TEST_APPS.forEach((appName) => {
     describe(appName, () => {
       before(async () => {
         context.workAppDir = path.join(context.workRepoDir, appName);
@@ -239,8 +239,8 @@ describe('smoke tests - setup will take some time', () => {
           cwd: context.workAppDir,
           env: {
             PATH: process.env.PATH,
-            DISABLE_ZAPIER_ANALYTICS: 1
-          }
+            DISABLE_ZAPIER_ANALYTICS: 1,
+          },
         });
         if (proc.status !== 0) {
           console.log(proc.stdout);
@@ -249,7 +249,7 @@ describe('smoke tests - setup will take some time', () => {
         proc.status.should.eql(0);
       });
 
-      it('zapier build', function() {
+      it('zapier build', function () {
         if (!context.hasAppRC) {
           this.skip();
           return;
@@ -263,8 +263,8 @@ describe('smoke tests - setup will take some time', () => {
             cwd: context.workAppDir,
             env: {
               PATH: process.env.PATH,
-              DISABLE_ZAPIER_ANALYTICS: 1
-            }
+              DISABLE_ZAPIER_ANALYTICS: 1,
+            },
           }
         );
         if (proc.status !== 0) {

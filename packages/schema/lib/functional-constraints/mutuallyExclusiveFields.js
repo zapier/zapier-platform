@@ -9,7 +9,7 @@ const jsonschema = require('jsonschema');
 
 const {
   INCOMPATIBLE_FIELD_SCHEMA_KEYS,
-  FIELD_SCHEMA_BOOLEANS
+  FIELD_SCHEMA_BOOLEANS,
 } = require('../constants');
 
 const verifyIncompatibilities = (inputFields, path) => {
@@ -45,19 +45,19 @@ const verifyIncompatibilities = (inputFields, path) => {
   return errors;
 };
 
-const mutuallyExclusiveFields = definition => {
+const mutuallyExclusiveFields = (definition) => {
   let errors = [];
 
-  _.each(['triggers', 'searches', 'creates'], typeOf => {
+  _.each(['triggers', 'searches', 'creates'], (typeOf) => {
     if (definition[typeOf]) {
-      _.each(definition[typeOf], actionDef => {
+      _.each(definition[typeOf], (actionDef) => {
         if (actionDef.operation && actionDef.operation.inputFields) {
           errors = [
             ...errors,
             ...verifyIncompatibilities(
               actionDef.operation.inputFields,
               `${typeOf}.${actionDef.key}`
-            )
+            ),
           ];
         }
       });

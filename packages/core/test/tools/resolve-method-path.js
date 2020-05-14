@@ -18,8 +18,8 @@ describe('resolve-method-path', () => {
     test: () => {},
     oauth2Config: {
       authorizeUrl: { method: 'GET', url: 'https://example.com' },
-      getAccessToken: () => {}
-    }
+      getAccessToken: () => {},
+    },
   };
 
   it('should resolve a request method object with a url', () => {

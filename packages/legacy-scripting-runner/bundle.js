@@ -6,7 +6,7 @@ const { isFileField, hasFileFields, LazyFile } = require('./file');
 const MAX_KEY_PARTS = 6;
 
 // Replace '{{bundle.inputData.abc}}' with '{{abc}}'
-const undoCurlyReplacement = str =>
+const undoCurlyReplacement = (str) =>
   str ? str.replace(/{{\s*bundle\.[^.]+\.([^}\s]+)\s*}}/g, '{{$1}}') : str;
 
 // Unflatten from {key__child: value} to {key: {child: value}}
@@ -17,7 +17,7 @@ const unflattenObject = (data, separator = '__') => {
 
   const keys = Object.keys(data);
 
-  _.each(keys, key => {
+  _.each(keys, (key) => {
     if (
       key.includes(separator) &&
       !key.startsWith(separator) &&
@@ -45,13 +45,13 @@ const unflattenObject = (data, separator = '__') => {
   return data;
 };
 
-const convertToQueryString = object => {
+const convertToQueryString = (object) => {
   if (!object) {
     return '';
   }
 
   const objectKeys = Object.keys(object);
-  const queryStringItems = _.map(objectKeys, key => `${key}=${object[key]}`);
+  const queryStringItems = _.map(objectKeys, (key) => `${key}=${object[key]}`);
 
   return queryStringItems.join('&');
 };
@@ -72,7 +72,7 @@ const addAuthData = (event, bundle, convertedBundle) => {
   if (event.name.startsWith('auth.oauth2')) {
     convertedBundle.oauth_data = {
       client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET
+      client_secret: process.env.CLIENT_SECRET,
     };
     convertedBundle.load = _.get(bundle, 'request.body', {});
   }
@@ -146,17 +146,17 @@ const addRequestData = async (event, z, bundle, convertedBundle) => {
       if (hasFileFields(bundle)) {
         // Exclude file fields from request.data
         data = Object.keys(body)
-          .filter(k => !isFileField(k, bundle))
+          .filter((k) => !isFileField(k, bundle))
           .reduce((result, k) => {
             result[k] = body[k];
             return result;
           }, {});
 
-        const fileFieldKeys = Object.keys(body).filter(k =>
+        const fileFieldKeys = Object.keys(body).filter((k) =>
           isFileField(k, bundle)
         );
         const fileMetas = await Promise.all(
-          fileFieldKeys.map(k => LazyFile(body[k]).meta())
+          fileFieldKeys.map((k) => LazyFile(body[k]).meta())
         );
 
         files = _.zip(fileFieldKeys, fileMetas)
@@ -190,7 +190,7 @@ const addResponse = (event, bundle, convertedBundle) => {
     convertedBundle.response.status_code = convertedBundle.response.status;
     if (convertedBundle.response.request) {
       convertedBundle.response.request = {
-        ...convertedBundle.response.request
+        ...convertedBundle.response.request,
       };
       // `request.input` contains the entire app definition, which is big and
       // unnecessary for legacy scripting
@@ -199,7 +199,7 @@ const addResponse = (event, bundle, convertedBundle) => {
   }
 };
 
-const convertBundleMeta = meta => {
+const convertBundleMeta = (meta) => {
   if (_.isEmpty(meta)) {
     return {};
   }
@@ -217,7 +217,7 @@ const convertBundleMeta = meta => {
     first_poll:
       meta.first_poll === undefined ? meta.isPopulatingDedupe : meta.first_poll,
     limit: meta.limit,
-    page: meta.page
+    page: meta.page,
   };
   newMeta.standard_poll = !newMeta.test_poll;
   return newMeta;
@@ -243,7 +243,7 @@ const bundleConverter = async (bundle, event, z) => {
   // From inputData, remove keys that are in fieldsExcludedFromBody
   const excludedFieldKeys = bundle._fieldsExcludedFromBody || [];
   const filteredInputData = Object.keys(bundle.inputData || {})
-    .filter(key => !excludedFieldKeys.includes(key))
+    .filter((key) => !excludedFieldKeys.includes(key))
     .reduce((fields, key) => {
       return { [key]: bundle.inputData[key], ...fields };
     }, {});
@@ -259,14 +259,14 @@ const bundleConverter = async (bundle, event, z) => {
       method: requestMethod,
       url: undoCurlyReplacement(_.get(bundle, 'request.url', '')),
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       params: {},
-      data: !requestMethod || requestMethod === 'GET' ? null : ''
+      data: !requestMethod || requestMethod === 'GET' ? null : '',
     },
     auth_fields: _.get(bundle, 'authData', {}),
     meta,
-    zap
+    zap,
   };
 
   if (bundle._legacyUrl) {
@@ -286,5 +286,5 @@ const bundleConverter = async (bundle, event, z) => {
 
 module.exports = {
   bundleConverter,
-  unflattenObject
+  unflattenObject,
 };

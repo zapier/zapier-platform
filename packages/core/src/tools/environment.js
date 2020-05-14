@@ -12,7 +12,7 @@ const ENV_VARS_TO_CLEAN = ['_ZAPIER_ONE_TIME_SECRET'];
 
 // Copy bundle environment into process.env, and vice versa,
 // for convenience and compatibility with native environment vars.
-const applyEnvironment = event => {
+const applyEnvironment = (event) => {
   event = ensurePath(event, 'bundle');
   _.extend(process.env, event.environment || {});
 };
@@ -32,16 +32,16 @@ const cleanEnvironment = () => {
 
   // Lambda may reuse container, which leaves leftovers in process.env. Let's clean
   // up Zapier specific stuff here.
-  ENV_VARS_TO_CLEAN.forEach(name => {
+  ENV_VARS_TO_CLEAN.forEach((name) => {
     delete process.env[name];
   });
 };
 
-const localFilepath = filename => {
+const localFilepath = (filename) => {
   return path.join(process.cwd(), filename || '');
 };
 
-const injectEnvironmentFile = filename => {
+const injectEnvironmentFile = (filename) => {
   if (filename) {
     filename = localFilepath(filename);
   }
@@ -55,7 +55,7 @@ const injectEnvironmentFile = filename => {
         [
           '\nWARNING: `.environment` files will no longer be read by default in the next major version.',
           'Either rename your file to `.env` or explicitly call this function with a filename:',
-          '\n    zapier.tools.env.inject(".environment");\n\n'
+          '\n    zapier.tools.env.inject(".environment");\n\n',
         ].join('\n')
       );
     }
@@ -65,5 +65,5 @@ const injectEnvironmentFile = filename => {
 module.exports = {
   applyEnvironment,
   cleanEnvironment,
-  injectEnvironmentFile
+  injectEnvironmentFile,
 };

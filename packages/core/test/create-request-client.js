@@ -14,10 +14,10 @@ describe('request client', () => {
   const testLogger = () => Promise.resolve({});
   const input = createInput({}, {}, testLogger);
 
-  it('should include a user-agent header', done => {
+  it('should include a user-agent header', (done) => {
     const request = createAppRequestClient(input);
     request({ url: 'https://httpbin.org/get' })
-      .then(responseBefore => {
+      .then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         response.request.headers['user-agent'].should.eql('Zapier');
@@ -30,15 +30,15 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should allow overriding the user-agent header', done => {
+  it('should allow overriding the user-agent header', (done) => {
     const request = createAppRequestClient(input);
     request({
       url: 'https://httpbin.org/get',
       headers: {
-        'User-Agent': 'Zapier!'
-      }
+        'User-Agent': 'Zapier!',
+      },
     })
-      .then(responseBefore => {
+      .then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         should(response.request.headers['user-agent']).eql(undefined);
@@ -52,10 +52,10 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should have json serializable response', done => {
+  it('should have json serializable response', (done) => {
     const request = createAppRequestClient(input);
     request({ url: 'https://httpbin.org/get' })
-      .then(responseBefore => {
+      .then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         response.headers['content-type'].should.eql('application/json');
@@ -68,10 +68,10 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should wrap a request entirely', done => {
+  it('should wrap a request entirely', (done) => {
     const request = createAppRequestClient(input);
     request({ url: 'https://httpbin.org/get' })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
         body.url.should.eql('https://httpbin.org/get');
@@ -80,15 +80,15 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support promise bodies', done => {
+  it('should support promise bodies', (done) => {
     const payload = { hello: 'world is nice' };
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
       url: 'https://httpbin.org/post',
-      body: Promise.resolve(payload)
+      body: Promise.resolve(payload),
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         response.request.body.should.eql(JSON.stringify(payload));
         const body = JSON.parse(response.content);
@@ -98,7 +98,7 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming another request', done => {
+  it('should support streaming another request', (done) => {
     const fileUrl =
       'https://s3.amazonaws.com/zapier-downloads/just-a-few-lines.txt';
     const fileExpectedContent =
@@ -107,9 +107,9 @@ describe('request client', () => {
     request({
       method: 'POST',
       url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
-      body: request({ url: fileUrl, raw: true })
+      body: request({ url: fileUrl, raw: true }),
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
         body.postData.text.should.eql(fileExpectedContent);
@@ -118,14 +118,14 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should handle a buffer upload fine', done => {
+  it('should handle a buffer upload fine', (done) => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
       url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
-      body: Buffer.from('hello world this is a cat (=^..^=)')
+      body: Buffer.from('hello world this is a cat (=^..^=)'),
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
         body.postData.text.should.eql('hello world this is a cat (=^..^=)');
@@ -134,14 +134,14 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should handle a stream upload fine', done => {
+  it('should handle a stream upload fine', (done) => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
       url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
-      body: fs.createReadStream(path.join(__dirname, 'test.txt'))
+      body: fs.createReadStream(path.join(__dirname, 'test.txt')),
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
         body.postData.text.should.eql('hello world this is a cat (=^..^=)');
@@ -150,10 +150,10 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support single url param', done => {
+  it('should support single url param', (done) => {
     const request = createAppRequestClient(input);
     request('https://httpbin.org/get')
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
         body.url.should.eql('https://httpbin.org/get');
@@ -162,10 +162,10 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support url param with options', done => {
+  it('should support url param with options', (done) => {
     const request = createAppRequestClient(input);
     request('https://httpbin.org/get', { headers: { A: 'B' } })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
         body.url.should.eql('https://httpbin.org/get');
@@ -175,10 +175,10 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support bytes', done => {
+  it('should support bytes', (done) => {
     const request = createAppRequestClient(input);
     request('https://httpbin.org/bytes/1024')
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         // it tries to decode the bytes /shrug
         response.content.length.should.belowOrEqual(1024);
@@ -187,10 +187,10 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support bytes raw', done => {
+  it('should support bytes raw', (done) => {
     const request = createAppRequestClient(input);
     request('https://httpbin.org/bytes/1024', { raw: true })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         should(response.buffer).be.type('function');
         should(response.text).be.type('function');
@@ -200,10 +200,10 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming bytes', done => {
+  it('should support streaming bytes', (done) => {
     const request = createAppRequestClient(input);
     request('https://httpbin.org/stream-bytes/1024')
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         // it tries to decode the bytes /shrug
         response.content.length.should.belowOrEqual(1024);
@@ -212,12 +212,12 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming bytes raw', done => {
+  it('should support streaming bytes raw', (done) => {
     const request = createAppRequestClient(input);
     request('https://httpbin.org/stream-bytes/1024', {
-      raw: true
+      raw: true,
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         should(response.buffer).be.type('function');
         should(response.text).be.type('function');
@@ -227,38 +227,38 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming bytes raw as buffer', done => {
+  it('should support streaming bytes raw as buffer', (done) => {
     const request = createAppRequestClient(input);
     request('https://httpbin.org/stream-bytes/1024', {
-      raw: true
+      raw: true,
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         return response.buffer();
       })
-      .then(buffer => {
+      .then((buffer) => {
         buffer.length.should.eql(1024);
         done();
       })
       .catch(done);
   });
 
-  it('should run any beforeRequest functions', done => {
+  it('should run any beforeRequest functions', (done) => {
     const inputWithBeforeMiddleware = createInput(
       {
         beforeRequest: [
-          request => {
+          (request) => {
             request.headers['X-Testing-True'] = 'Yes';
             return request;
-          }
-        ]
+          },
+        ],
       },
       {},
       testLogger
     );
     const request = createAppRequestClient(inputWithBeforeMiddleware);
     request({ url: 'https://httpbin.org/get' })
-      .then(responseBefore => {
+      .then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         response.request.headers['X-Testing-True'].should.eql('Yes');
@@ -274,7 +274,7 @@ describe('request client', () => {
   it('should default to run throwForStatus', () => {
     const request = createAppRequestClient(input);
     return request({
-      url: 'https://httpbin.org/status/400'
+      url: 'https://httpbin.org/status/400',
     }).should.be.rejectedWith(errors.ResponseError);
   });
 
@@ -282,7 +282,7 @@ describe('request client', () => {
     const request = createAppRequestClient(input);
     const response = await request({
       url: 'https://httpbin.org/status/400',
-      skipThrowForStatus: true
+      skipThrowForStatus: true,
     });
     response.status.should.eql(400);
   });
@@ -291,11 +291,11 @@ describe('request client', () => {
     const inputWithAfterMiddleware = createInput(
       {
         afterResponse: [
-          response => {
+          (response) => {
             response.skipThrowForStatus = true;
             return response;
-          }
-        ]
+          },
+        ],
       },
       {},
       testLogger
@@ -305,20 +305,20 @@ describe('request client', () => {
     response.status.should.eql(400);
   });
 
-  it('should parse form type request body', done => {
+  it('should parse form type request body', (done) => {
     const request = createAppRequestClient(input);
     request({
       url: 'https://httpbin.org/post',
       method: 'POST',
       headers: {
-        'content-type': 'application/x-www-form-urlencoded'
+        'content-type': 'application/x-www-form-urlencoded',
       },
       body: {
         name: 'Something Else',
-        directions: '!!No Way José'
-      }
+        directions: '!!No Way José',
+      },
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         response.request.body.should.eql(
           'name=Something+Else&directions=!!No+Way+Jos%C3%A9'
@@ -331,17 +331,17 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should not parse form type request body when string', done => {
+  it('should not parse form type request body when string', (done) => {
     const request = createAppRequestClient(input);
     request({
       url: 'https://httpbin.org/post',
       method: 'POST',
       headers: {
-        'content-type': 'application/x-www-form-urlencoded'
+        'content-type': 'application/x-www-form-urlencoded',
       },
-      body: 'name=Something Else&directions=!!No Way José'
+      body: 'name=Something Else&directions=!!No Way José',
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         response.request.body.should.eql(
           'name=Something Else&directions=!!No Way José'
@@ -357,7 +357,7 @@ describe('request client', () => {
   it('should block self-signed SSL certificate', () => {
     const request = createAppRequestClient(input);
     return request('https://self-signed.badssl.com').should.be.rejectedWith({
-      name: 'FetchError'
+      name: 'FetchError',
     });
   });
 
@@ -365,7 +365,7 @@ describe('request client', () => {
     const newInput = _.cloneDeep(input);
     newInput._zapier.event.verifySSL = false;
     const request = createAppRequestClient(newInput);
-    return request('https://self-signed.badssl.com').then(response => {
+    return request('https://self-signed.badssl.com').then((response) => {
       response.status.should.eql(200);
     });
   });
@@ -374,7 +374,7 @@ describe('request client', () => {
     const newInput = _.cloneDeep(input);
     newInput._zapier.event.verifySSL = false;
     const request = createAppRequestClient(newInput);
-    return request('https://httpbin.org/get').then(response => {
+    return request('https://httpbin.org/get').then((response) => {
       response.status.should.eql(200);
     });
   });
@@ -386,8 +386,8 @@ describe('request client', () => {
       method: 'GET',
       url: 'https://postman-echo.com/get',
       body: {
-        name: 'Darth Vader'
-      }
+        name: 'Darth Vader',
+      },
     });
     response.status.should.eql(200);
     response.data.args.should.deepEqual({});
@@ -400,9 +400,9 @@ describe('request client', () => {
       method: 'GET',
       url: 'https://postman-echo.com/get',
       body: {
-        name: 'Darth Vader'
+        name: 'Darth Vader',
       },
-      allowGetBody: true
+      allowGetBody: true,
     });
     response.status.should.eql(200);
     response.data.args.should.deepEqual({ name: 'Darth Vader' });
@@ -416,9 +416,9 @@ describe('request client', () => {
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
-          cool: 'true'
-        }
-      }).then(responseBefore => {
+          cool: 'true',
+        },
+      }).then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         response.data.args.something.should.eql('');
@@ -440,12 +440,12 @@ describe('request client', () => {
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
-          cool: 'true'
+          cool: 'true',
         },
         removeMissingValuesFrom: {
-          params: false
-        }
-      }).then(responseBefore => {
+          params: false,
+        },
+      }).then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         response.data.args.something.should.eql('');
@@ -464,9 +464,9 @@ describe('request client', () => {
       const event = {
         bundle: {
           inputData: {
-            name: 'zapier'
-          }
-        }
+            name: 'zapier',
+          },
+        },
       };
       const request = createAppRequestClient(
         createInput({}, event, testLogger)
@@ -483,12 +483,12 @@ describe('request client', () => {
           bar: undefined,
           zzz: '[]',
           yyy: '{}',
-          qqq: ' '
+          qqq: ' ',
         },
         removeMissingValuesFrom: {
-          params: true
-        }
-      }).then(responseBefore => {
+          params: true,
+        },
+      }).then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         should(response.data.args.something).eql(undefined);
@@ -516,12 +516,12 @@ describe('request client', () => {
         url: 'https://httpbin.org/get',
         params: {
           something: '',
-          cool: ''
+          cool: '',
         },
         removeMissingValuesFrom: {
-          params: true
-        }
-      }).then(responseBefore => {
+          params: true,
+        },
+      }).then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         should(response.data.args.something).eql(undefined);
@@ -541,9 +541,9 @@ describe('request client', () => {
         bundle: {
           targetUrl,
           meta: {
-            zap: { id: 987 }
-          }
-        }
+            zap: { id: 987 },
+          },
+        },
       };
       const subscribeInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(subscribeInput);
@@ -552,9 +552,9 @@ describe('request client', () => {
         method: 'POST',
         body: {
           hookUrl: '{{bundle.targetUrl}}',
-          zapId: '{{bundle.meta.zap.id}}'
-        }
-      }).then(response => {
+          zapId: '{{bundle.meta.zap.id}}',
+        },
+      }).then((response) => {
         const { hookUrl, zapId } = JSON.parse(response.data.data);
 
         hookUrl.should.eql(targetUrl);
@@ -565,7 +565,7 @@ describe('request client', () => {
     it('should resolve bundle tokens in performUnubscribe', () => {
       const subscribeData = { id: 123 };
       const event = {
-        bundle: { subscribeData }
+        bundle: { subscribeData },
       };
       const subscribeInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(subscribeInput);
@@ -573,9 +573,9 @@ describe('request client', () => {
         url: 'https://httpbin.org/delete',
         method: 'DELETE',
         params: {
-          id: '{{bundle.subscribeData.id}}'
-        }
-      }).then(response => {
+          id: '{{bundle.subscribeData.id}}',
+        },
+      }).then((response) => {
         const { url } = JSON.parse(response.content);
 
         response.data.args.id.should.eql('123');
@@ -592,9 +592,9 @@ describe('request client', () => {
             number: 123,
             bool: true,
             float: 123.456,
-            arr: [1, 2, 3]
-          }
-        }
+            arr: [1, 2, 3],
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
@@ -605,9 +605,9 @@ describe('request client', () => {
           number: '{{bundle.inputData.number}}',
           bool: '{{bundle.inputData.bool}}',
           float: '{{bundle.inputData.float}}',
-          arr: '{{bundle.inputData.arr}}'
-        }
-      }).then(response => {
+          arr: '{{bundle.inputData.arr}}',
+        },
+      }).then((response) => {
         const { json } = response.data;
 
         should(json.empty).eql(undefined);
@@ -629,9 +629,9 @@ describe('request client', () => {
             bool: true,
             float: 123.456,
             arr: [1, 2, 3],
-            nested: { very: 'cool' }
-          }
-        }
+            nested: { very: 'cool' },
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
@@ -642,9 +642,9 @@ describe('request client', () => {
           number: 123,
           bool: true,
           float: 123.456,
-          arr: [1, 2, 3]
-        }
-      }).then(response => {
+          arr: [1, 2, 3],
+        },
+      }).then((response) => {
         const { json } = response.data;
         should(json.empty).eql(undefined);
         json.number.should.eql(123);
@@ -658,9 +658,9 @@ describe('request client', () => {
       const event = {
         bundle: {
           inputData: {
-            name: 'Burgundy'
-          }
-        }
+            name: 'Burgundy',
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
@@ -669,12 +669,12 @@ describe('request client', () => {
         method: 'POST',
         body: {
           name: '{{bundle.inputData.name}}',
-          empty: '{{bundle.inputData.empty}}'
+          empty: '{{bundle.inputData.empty}}',
         },
         removeMissingValuesFrom: {
-          body: true
-        }
-      }).then(response => {
+          body: true,
+        },
+      }).then((response) => {
         const { json } = response.data;
 
         should(json.empty).eql(undefined);
@@ -690,9 +690,9 @@ describe('request client', () => {
         body: {
           empty: '{{bundle.inputData.empty}}',
           partial: 'text {{bundle.inputData.partial}}',
-          value: 'exists'
-        }
-      }).then(response => {
+          value: 'exists',
+        },
+      }).then((response) => {
         const { json } = response.data;
 
         should(json.empty).eql('');
@@ -705,12 +705,12 @@ describe('request client', () => {
       const event = {
         bundle: {
           inputData: {
-            resourceId: 123
+            resourceId: 123,
           },
           authData: {
-            access_token: 'Let me in'
-          }
-        }
+            access_token: 'Let me in',
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
@@ -718,12 +718,12 @@ describe('request client', () => {
         url: 'https://httpbin.org/post',
         method: 'POST',
         body: {
-          message: 'We just got #{{bundle.inputData.resourceId}}'
+          message: 'We just got #{{bundle.inputData.resourceId}}',
         },
         headers: {
-          Authorization: 'Bearer {{bundle.authData.access_token}}'
-        }
-      }).then(response => {
+          Authorization: 'Bearer {{bundle.authData.access_token}}',
+        },
+      }).then((response) => {
         const { json, headers } = response.data;
 
         json.message.should.eql('We just got #123');
@@ -735,9 +735,9 @@ describe('request client', () => {
       const event = {
         bundle: {
           inputData: {
-            badData: [1, 2, 3]
-          }
-        }
+            badData: [1, 2, 3],
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
@@ -745,8 +745,8 @@ describe('request client', () => {
         url: 'https://httpbin.org/post',
         method: 'POST',
         body: {
-          message: 'No arrays, thank you: {{bundle.inputData.badData}}'
-        }
+          message: 'No arrays, thank you: {{bundle.inputData.badData}}',
+        },
       }).should.be.rejectedWith(
         'Cannot reliably interpolate objects or arrays into a string. ' +
           'Variable `bundle.inputData.badData` is an Array:\n"1,2,3"'
@@ -759,10 +759,10 @@ describe('request client', () => {
           inputData: {
             address: {
               street: '123 Zapier Way',
-              city: 'El Mundo'
-            }
-          }
-        }
+              city: 'El Mundo',
+            },
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
@@ -771,9 +771,9 @@ describe('request client', () => {
         method: 'POST',
         body: {
           streetAddress: '{{bundle.inputData.address.street}}',
-          city: '{{bundle.inputData.address.city}}'
-        }
-      }).then(response => {
+          city: '{{bundle.inputData.address.city}}',
+        },
+      }).then((response) => {
         const { json } = response.data;
 
         json.streetAddress.should.eql('123 Zapier Way');
@@ -785,15 +785,15 @@ describe('request client', () => {
       const event = {
         bundle: {
           inputData: {
-            resourceId: 123
+            resourceId: 123,
           },
           authData: {
-            access_token: 'Let me in'
+            access_token: 'Let me in',
           },
           meta: {
-            limit: 20
-          }
-        }
+            limit: 20,
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
@@ -802,12 +802,12 @@ describe('request client', () => {
         method: 'GET',
         params: {
           limit: '{{bundle.meta.limit}}',
-          id: '{{bundle.inputData.resourceId}}'
+          id: '{{bundle.inputData.resourceId}}',
         },
         headers: {
-          Authorization: 'Bearer {{bundle.authData.access_token}}'
-        }
-      }).then(response => {
+          Authorization: 'Bearer {{bundle.authData.access_token}}',
+        },
+      }).then((response) => {
         const { headers } = response.data;
         const { url } = JSON.parse(response.content);
         url.should.eql('https://httpbin.org/get?limit=20&id=123');
@@ -822,11 +822,11 @@ describe('request client', () => {
             arr: [1, 2, 3, 'red', 'blue'],
             obj: {
               id: '456',
-              name: 'John'
+              name: 'John',
             },
-            str: 'hello'
-          }
-        }
+            str: 'hello',
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
@@ -836,9 +836,9 @@ describe('request client', () => {
         body: {
           arr: 'arr: {{bundle.inputData.arr}}',
           obj: 'obj: {{bundle.inputData.obj}}',
-          str: 'str: {{bundle.inputData.str}}'
+          str: 'str: {{bundle.inputData.str}}',
         },
-        serializeValueForCurlies: value => {
+        serializeValueForCurlies: (value) => {
           if (Array.isArray(value)) {
             return value.join(',');
           } else if (_.isPlainObject(value)) {
@@ -847,13 +847,13 @@ describe('request client', () => {
               .join(',');
           }
           return value;
-        }
+        },
       });
 
       response.data.json.should.deepEqual({
         arr: 'arr: 1,2,3,red,blue',
         obj: 'obj: id=456,name=John',
-        str: 'str: hello'
+        str: 'str: hello',
       });
     });
   });

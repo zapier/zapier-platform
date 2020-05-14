@@ -8,7 +8,7 @@ const contentDisposition = require('content-disposition');
 const request = require('./request-client-internal');
 const ZapierPromise = require('./promise');
 
-const isPromise = obj => obj && typeof obj.then === 'function';
+const isPromise = (obj) => obj && typeof obj.then === 'function';
 
 const UPLOAD_MAX_SIZE = 1000 * 1000 * 150; // 150mb, in zapier backend too
 
@@ -45,7 +45,7 @@ const uploader = (
   form.append('file', bufferStringStream, {
     contentType,
     knownLength,
-    filename
+    filename,
   });
 
   // Try to catch the missing length early, before upload to S3 fails.
@@ -59,8 +59,8 @@ const uploader = (
   return request({
     url: signedPostData.url,
     method: 'POST',
-    body: form
-  }).then(res => {
+    body: form,
+  }).then((res) => {
     if (res.status === 204) {
       return `${signedPostData.url}${signedPostData.fields.key}`;
     }
@@ -76,7 +76,7 @@ const uploader = (
 };
 
 // Designed to be some user provided function/api.
-const createFileStasher = input => {
+const createFileStasher = (input) => {
   const rpc = _.get(input, '_zapier.rpc');
 
   return (bufferStringStream, knownLength, filename, contentType) => {
@@ -102,12 +102,12 @@ const createFileStasher = input => {
     const fileContentType = contentType || DEFAULT_CONTENT_TYPE;
 
     return rpc('get_presigned_upload_post_data', fileContentType).then(
-      result => {
+      (result) => {
         if (isPromise(bufferStringStream)) {
-          return bufferStringStream.then(maybeResponse => {
+          return bufferStringStream.then((maybeResponse) => {
             const isStreamed = _.get(maybeResponse, 'request.raw', false);
 
-            const parseFinalResponse = response => {
+            const parseFinalResponse = (response) => {
               let newBufferStringStream = response;
               if (_.isString(response)) {
                 newBufferStringStream = response;
@@ -151,7 +151,7 @@ const createFileStasher = input => {
             };
 
             if (isStreamed) {
-              return maybeResponse.buffer().then(buffer => {
+              return maybeResponse.buffer().then((buffer) => {
                 maybeResponse.dataBuffer = buffer;
                 return parseFinalResponse(maybeResponse);
               });

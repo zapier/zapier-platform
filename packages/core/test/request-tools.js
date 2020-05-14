@@ -15,12 +15,12 @@ describe('request tools', () => {
       params: {
         'api-key': 'dcba',
         hello: 'world',
-        cat: 'mouse'
+        cat: 'mouse',
       },
       headers: {
         'user-agent': 'Zapier',
-        'ApI-kEy': 'abcd'
-      }
+        'ApI-kEy': 'abcd',
+      },
     };
     request.should.eql(expected);
   });
@@ -35,8 +35,8 @@ describe('request tools', () => {
       url: 'https://example.com',
       params: {},
       headers: {
-        'user-agent': 'Zapier'
-      }
+        'user-agent': 'Zapier',
+      },
     };
     request.should.eql(expected);
   });
@@ -52,15 +52,15 @@ describe('request tools', () => {
       params: {},
       headers: {
         'user-agent': 'Zapier',
-        'api-Key': 'efgh'
-      }
+        'api-Key': 'efgh',
+      },
     };
     request.should.eql(expected);
 
     request = requestMerge(
       {
         url: 'https://example.com',
-        headers: { 'api-key': 'abcd', Token: '123', 'User-Agent': 'Zapier' }
+        headers: { 'api-key': 'abcd', Token: '123', 'User-Agent': 'Zapier' },
       },
       { headers: { 'api-key': 'efgh', tOken: '754' } }
     );
@@ -71,8 +71,8 @@ describe('request tools', () => {
       headers: {
         'User-Agent': 'Zapier',
         'api-key': 'efgh',
-        tOken: '754'
-      }
+        tOken: '754',
+      },
     };
     request.should.eql(expected);
   });

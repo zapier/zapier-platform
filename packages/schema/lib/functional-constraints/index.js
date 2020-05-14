@@ -16,7 +16,7 @@ const checks = [
   require('./mutuallyExclusiveFields'),
   require('./requiredSamples'),
   require('./matchingKeys'),
-  require('./labelWhenVisible')
+  require('./labelWhenVisible'),
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {
@@ -30,5 +30,5 @@ const runFunctionalConstraints = (definition, mainSchema) => {
 };
 
 module.exports = {
-  run: runFunctionalConstraints
+  run: runFunctionalConstraints,
 };

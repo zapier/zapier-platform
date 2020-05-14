@@ -16,22 +16,22 @@ module.exports = makeSchema(
       key: {
         description:
           'A key to uniquely identify this search-or-create. Must match the search key.',
-        $ref: KeySchema.id
+        $ref: KeySchema.id,
       },
       display: {
         description: 'Configures the UI for this search-or-create.',
-        $ref: BasicDisplaySchema.id
+        $ref: BasicDisplaySchema.id,
       },
       search: {
         description: 'The key of the search that powers this search-or-create',
-        $ref: KeySchema.id
+        $ref: KeySchema.id,
       },
       create: {
         description: 'The key of the create that powers this search-or-create',
-        $ref: KeySchema.id
-      }
+        $ref: KeySchema.id,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [BasicDisplaySchema, KeySchema]
 );

@@ -12,7 +12,7 @@ const makeFunction = (source, args = []) => {
   }
 };
 
-const requireOrLazyError = path => {
+const requireOrLazyError = (path) => {
   try {
     const func = require(path);
     if (typeof func === 'function') {
@@ -26,8 +26,8 @@ const requireOrLazyError = path => {
   }
 };
 
-const findSourceRequireFunctions = appRaw => {
-  const replacer = obj => {
+const findSourceRequireFunctions = (appRaw) => {
+  const replacer = (obj) => {
     if (obj && typeof obj === 'object') {
       const numKeys = Object.keys(obj).length;
       if (numKeys === 1 || numKeys === 2) {
@@ -48,5 +48,5 @@ const findSourceRequireFunctions = appRaw => {
 module.exports = {
   makeFunction,
   requireOrLazyError,
-  findSourceRequireFunctions
+  findSourceRequireFunctions,
 };

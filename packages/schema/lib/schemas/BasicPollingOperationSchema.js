@@ -21,17 +21,17 @@ BasicPollingOperationSchema.properties = {
       'Clarify how this operation works (polling == pull or hook == push).',
     type: 'string',
     default: 'polling',
-    enum: ['polling'] // notification?
+    enum: ['polling'], // notification?
   },
   resource: BasicPollingOperationSchema.properties.resource,
   perform: BasicPollingOperationSchema.properties.perform,
   canPaginate: {
     description: 'Does this endpoint support a page offset?',
-    type: 'boolean'
+    type: 'boolean',
   },
   inputFields: BasicPollingOperationSchema.properties.inputFields,
   outputFields: BasicPollingOperationSchema.properties.outputFields,
-  sample: BasicPollingOperationSchema.properties.sample
+  sample: BasicPollingOperationSchema.properties.sample,
 };
 
 module.exports = makeSchema(

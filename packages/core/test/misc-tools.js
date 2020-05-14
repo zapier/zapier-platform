@@ -13,10 +13,10 @@ describe('Tools', () => {
       e: undefined,
       a: {
         b: {
-          c: 123
-        }
+          c: 123,
+        },
       },
-      other: 'stuff'
+      other: 'stuff',
       // earlyEnd: 123
     };
 
@@ -38,11 +38,11 @@ describe('Tools', () => {
         b: [
           undefined,
           {
-            c: 123
-          }
-        ]
+            c: 123,
+          },
+        ],
       },
-      other: 'stuff'
+      other: 'stuff',
       // earlyEnd: 123
     };
 
@@ -71,7 +71,7 @@ describe('Tools', () => {
         value: Buffer.from('Something'),
         length: 7,
         suffix: ' [...]',
-        expected: 'S [...]'
+        expected: 'S [...]',
       },
       { value: 'Something', length: 0, suffix: '...', expected: '...' },
       { value: 'Something', length: 8, suffix: '...', expected: 'Somet...' },
@@ -81,17 +81,17 @@ describe('Tools', () => {
         value: 'Somèt°˜ı¡•ﬁ⁄',
         length: 9,
         suffix: '...',
-        expected: 'Somèt°...'
+        expected: 'Somèt°...',
       },
       {
         value: 'Somèt°˜ı¡•ﬁ⁄',
         length: 12,
         suffix: '...',
-        expected: 'Somèt°˜ı¡•ﬁ⁄'
-      }
+        expected: 'Somèt°˜ı¡•ﬁ⁄',
+      },
     ];
 
-    tests.forEach(test => {
+    tests.forEach((test) => {
       should(
         dataTools.simpleTruncate(test.value, test.length, test.suffix)
       ).eql(test.expected);
@@ -141,13 +141,13 @@ describe('Tools', () => {
         funcArity: (a, b, c) => {
           return c;
         },
-        funcArityArgs: function(a, b) {
+        funcArityArgs: function (a, b) {
           a = arguments;
           return b;
         },
         nested: {
-          thing: 1234
-        }
+          thing: 1234,
+        },
       });
       output.cheese = 'cat';
       should(output.cheese).eql(undefined);
@@ -164,13 +164,13 @@ describe('Tools', () => {
           b: 1,
           c: 2,
           d: {
-            e: 3
+            e: 3,
           },
-          f: null
+          f: null,
         },
         g: [4],
         h: 5,
-        i: undefined
+        i: undefined,
       });
 
       output.should.eql({
@@ -180,7 +180,7 @@ describe('Tools', () => {
         'a.f': null,
         g: [4],
         h: 5,
-        i: undefined
+        i: undefined,
       });
     });
 
@@ -193,14 +193,14 @@ describe('Tools', () => {
             d: {
               e: 3,
               z: {
-                y: 'because'
-              }
+                y: 'because',
+              },
             },
-            f: null
+            f: null,
           },
           g: [4],
           h: 5,
-          i: undefined
+          i: undefined,
         },
         { preserve: { 'a.d': true } }
       );
@@ -214,7 +214,7 @@ describe('Tools', () => {
         'a.f': null,
         g: [4],
         h: 5,
-        i: undefined
+        i: undefined,
       });
     });
   });
@@ -226,11 +226,11 @@ describe('Tools', () => {
         another: {
           secret_key: '5678',
           deep: {
-            secret: 'abcd'
-          }
+            secret: 'abcd',
+          },
         },
         name: 'dont_care',
-        id: 88
+        id: 88,
       };
       const matcher = (key, value) => {
         if (typeof value === 'string') {
@@ -254,13 +254,13 @@ describe('Tools', () => {
         funcArity: (a, b, c) => {
           return c;
         },
-        funcArityArgs: function(a, b) {
+        funcArityArgs: function (a, b) {
           a = arguments;
           return b;
         },
         funcNested: {
-          deeper: () => {}
-        }
+          deeper: () => {},
+        },
       });
       var expected = {
         hello: 'world',
@@ -270,7 +270,7 @@ describe('Tools', () => {
         func: '$func$0$f$',
         funcArity: '$func$3$f$',
         funcArityArgs: '$func$2$t$',
-        funcNested: { deeper: '$func$0$f$' }
+        funcNested: { deeper: '$func$0$f$' },
       };
       output.should.eql(expected);
     });
@@ -300,16 +300,16 @@ describe('Tools', () => {
       var template = {
         multi: '{{somekey}} {{somekey}} hi!',
         thing: '{{somekey}} hi!',
-        arr: ['{{somekey}} hi!']
+        arr: ['{{somekey}} hi!'],
       };
       var bank = {
-        '{{somekey}}': 'lolz'
+        '{{somekey}}': 'lolz',
       };
       var out = cleaner.recurseReplaceBank(template, bank);
       out.should.eql({
         multi: 'lolz lolz hi!',
         thing: 'lolz hi!',
-        arr: ['lolz hi!']
+        arr: ['lolz hi!'],
       });
     });
   });
@@ -323,21 +323,21 @@ describe('Tools', () => {
     it('should allow single options param', () => {
       const options = requestSugar.createRequestOptions({
         url: 'https://foo.com',
-        headers: { a: 'b' }
+        headers: { a: 'b' },
       });
       options.should.eql({
         url: 'https://foo.com',
-        headers: { a: 'b' }
+        headers: { a: 'b' },
       });
     });
 
     it('should should allow url param and options param', () => {
       const options = requestSugar.createRequestOptions('https://foo.com', {
-        headers: { a: 'b' }
+        headers: { a: 'b' },
       });
       options.should.eql({
         url: 'https://foo.com',
-        headers: { a: 'b' }
+        headers: { a: 'b' },
       });
     });
   });

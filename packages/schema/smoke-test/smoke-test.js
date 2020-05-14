@@ -34,7 +34,7 @@ const setupTempWorkingDir = () => {
 const npmInstall = (packagePath, workdir) => {
   spawnSync('npm', ['install', packagePath], {
     encoding: 'utf8',
-    cwd: workdir
+    cwd: workdir,
   });
 };
 
@@ -49,13 +49,13 @@ describe('smoke tests - setup will take some time', () => {
     // Global context that will be available for all test cases in this test suite
     package: {
       filename: null,
-      path: null
+      path: null,
     },
     workdir: null,
     testScripts: {
       validate: null,
-      export: null
-    }
+      export: null,
+    },
   };
 
   before(() => {
@@ -79,7 +79,7 @@ describe('smoke tests - setup will take some time', () => {
     fs.removeSync(context.workdir);
   });
 
-  it('package size should not change much', async function() {
+  it('package size should not change much', async function () {
     const baseUrl = 'https://registry.npmjs.org/zapier-platform-schema';
     let res = await fetch(baseUrl);
     const packageInfo = await res.json();
@@ -88,7 +88,7 @@ describe('smoke tests - setup will take some time', () => {
     res = await fetch(
       `${baseUrl}/-/zapier-platform-schema-${latestVersion}.tgz`,
       {
-        method: 'HEAD'
+        method: 'HEAD',
       }
     );
     const baselineSize = res.headers.get('content-length');
@@ -101,7 +101,7 @@ describe('smoke tests - setup will take some time', () => {
   it('should to able to validate app definitions', () => {
     const proc = spawnSync(context.testScripts.validate, {
       encoding: 'utf8',
-      cwd: context.workdir
+      cwd: context.workdir,
     });
     const results = JSON.parse(proc.stdout);
     results.length.should.eql(2);
@@ -125,7 +125,7 @@ describe('smoke tests - setup will take some time', () => {
 
     const proc = spawnSync(context.testScripts.export, {
       encoding: 'utf8',
-      cwd: context.workdir
+      cwd: context.workdir,
     });
     const expectedSchema = JSON.parse(proc.stdout);
 

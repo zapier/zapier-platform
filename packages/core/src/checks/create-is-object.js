@@ -15,13 +15,13 @@ const createIsObject = {
     if (!_.isPlainObject(results)) {
       const repr = simpleTruncate(JSON.stringify(results), 50);
       return [
-        `Got a non-object result, expected an object from create (${repr})`
+        `Got a non-object result, expected an object from create (${repr})`,
       ];
     }
 
     // assumes a single object not array is legit
     return [];
-  }
+  },
 };
 
 module.exports = createIsObject;

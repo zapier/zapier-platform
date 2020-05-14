@@ -24,7 +24,7 @@ const createRequestOptions = (url, options) => {
   const options = { url: 'https://foo.com', headers: {A: 'B} };
   request(options);
 */
-const addUrlOrOptions = requestFn => {
+const addUrlOrOptions = (requestFn) => {
   return (url, options) => {
     return requestFn(createRequestOptions(url, options));
   };
@@ -32,5 +32,5 @@ const addUrlOrOptions = requestFn => {
 
 module.exports = {
   createRequestOptions,
-  addUrlOrOptions
+  addUrlOrOptions,
 };

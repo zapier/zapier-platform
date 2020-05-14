@@ -15,7 +15,7 @@ const triggerHasId = {
     return isTrigger(method) && !bundle.cleanedRequest;
   },
   run: (method, results) => {
-    const missingIdResult = _.find(results, result => {
+    const missingIdResult = _.find(results, (result) => {
       return !result || _.isUndefined(result.id) || _.isNull(result.id);
     });
 
@@ -24,7 +24,7 @@ const triggerHasId = {
       return [`Got a result missing the "id" property (${repr})`];
     }
     return [];
-  }
+  },
 };
 
 module.exports = triggerHasId;

@@ -5,7 +5,7 @@ const jsonschema = require('jsonschema');
 
 const actionTypes = ['triggers', 'searches', 'creates'];
 
-const matchingKeys = definition => {
+const matchingKeys = (definition) => {
   const errors = [];
 
   // verifies that x.key === x

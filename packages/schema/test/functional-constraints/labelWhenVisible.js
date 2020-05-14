@@ -11,13 +11,13 @@ describe('labelWhenVisible', () => {
           key: 'foo',
           noun: 'Foo',
           display: {
-            hidden: true
+            hidden: true,
           },
           operation: {
-            perform: '$func$2$f$'
-          }
-        }
-      }
+            perform: '$func$2$f$',
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);
@@ -33,13 +33,13 @@ describe('labelWhenVisible', () => {
           key: 'foo',
           noun: 'Foo',
           display: {
-            hidden: false
+            hidden: false,
           },
           operation: {
-            perform: '$func$2$f$'
-          }
-        }
-      }
+            perform: '$func$2$f$',
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);
@@ -58,13 +58,13 @@ describe('labelWhenVisible', () => {
           key: 'foo',
           noun: 'Foo',
           display: {
-            label: 'nea'
+            label: 'nea',
           },
           operation: {
-            perform: '$func$2$f$'
-          }
-        }
-      }
+            perform: '$func$2$f$',
+          },
+        },
+      },
     };
 
     const results = schema.validateAppDefinition(definition);

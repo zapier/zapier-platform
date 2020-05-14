@@ -11,25 +11,25 @@ const prepareRawResponse = (resp, request) => {
   // retain the response signature for raw control
   const extendedResp = {
     request: request,
-    skipThrowForStatus: request.skipThrowForStatus
+    skipThrowForStatus: request.skipThrowForStatus,
   };
   const outResp = _.extend(resp, extendedResp, replaceHeaders(resp));
   outResp.throwForStatus = () => throwForStatus(outResp) && undefined;
   Object.defineProperty(outResp, 'content', {
-    get: function() {
+    get: function () {
       throw new Error(
         'You passed {raw: true} in request() - the response.content property is not ' +
           'available! Try response.body.pipe() for streaming, response.buffer() for a ' +
           'buffer, or response.text() for string.'
       );
-    }
+    },
   });
   return outResp;
 };
 
 const prepareContentResponse = (resp, request) => {
   // TODO: does it make sense to not trim the signature? more equivalence to raw...
-  return resp.text().then(content => {
+  return resp.text().then((content) => {
     // trim down the response signature a ton for simplicity
     const preppedResp = {
       status: resp.status,
@@ -37,7 +37,7 @@ const prepareContentResponse = (resp, request) => {
       data: undefined,
       content: content,
       request: request,
-      skipThrowForStatus: request.skipThrowForStatus
+      skipThrowForStatus: request.skipThrowForStatus,
     };
     const outResp = _.extend(preppedResp, replaceHeaders(resp));
     try {
@@ -54,7 +54,7 @@ const prepareContentResponse = (resp, request) => {
 };
 
 // Provide a standardized plain JS responseObj for common consumption, or raw response for streaming.
-const prepareResponse = resp => {
+const prepareResponse = (resp) => {
   const request = resp.input;
   delete resp.input;
 

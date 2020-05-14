@@ -17,7 +17,7 @@ const exampleChecker = {
       return [];
     }
     return [];
-  }
+  },
 };
 
 module.exports = exampleChecker;

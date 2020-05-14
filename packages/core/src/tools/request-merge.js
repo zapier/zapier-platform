@@ -20,14 +20,14 @@ const caseInsensitiveMerge = (requestOne, requestTwo, requestThree) => {
   const requestTwoHeaders = requestTwo.headers || {};
   const requestOneHeaders = requestOne.headers || {};
 
-  [requestTwoHeaders, requestOneHeaders].forEach(requestHeaders => {
+  [requestTwoHeaders, requestOneHeaders].forEach((requestHeaders) => {
     const existingKeys = Object.keys(mergedRequestHeaders);
     const requestKeys = Object.keys(requestHeaders);
 
-    requestKeys.forEach(checkingKey => {
+    requestKeys.forEach((checkingKey) => {
       const foundKeyIndex = _.findIndex(
         existingKeys,
-        key => key.toLowerCase() === checkingKey.toLowerCase()
+        (key) => key.toLowerCase() === checkingKey.toLowerCase()
       );
 
       if (foundKeyIndex === -1) {
@@ -37,7 +37,7 @@ const caseInsensitiveMerge = (requestOne, requestTwo, requestThree) => {
   });
 
   // Remove "to drop" keys after all merging happened (instead of dropping and then getting it re-added)
-  Object.keys(mergedRequestHeaders).forEach(key => {
+  Object.keys(mergedRequestHeaders).forEach((key) => {
     if (mergedRequestHeaders[key] === requestClean.DROP_DIRECTIVE) {
       delete mergedRequestHeaders[key];
     }
@@ -54,8 +54,8 @@ const requestMerge = (requestOne, requestTwo) => {
     method: 'GET',
     params: {},
     headers: {
-      'user-agent': 'Zapier'
-    }
+      'user-agent': 'Zapier',
+    },
   };
 
   const request = caseInsensitiveMerge(baseRequest, requestOne, requestTwo);

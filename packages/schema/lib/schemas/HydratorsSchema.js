@@ -12,8 +12,8 @@ module.exports = makeSchema({
     '^[a-zA-Z]+[a-zA-Z0-9]*$': {
       description:
         "Any unique key can be used in `z.hydrate('uniqueKeyHere')`.",
-      $ref: FunctionSchema.id
-    }
+      $ref: FunctionSchema.id,
+    },
   },
-  additionalProperties: false
+  additionalProperties: false,
 });

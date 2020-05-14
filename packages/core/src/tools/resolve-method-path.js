@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const dataTools = require('./data');
 
-const isRequestMethod = needle =>
+const isRequestMethod = (needle) =>
   typeof needle === 'object' && typeof needle.url === 'string';
 
 /*

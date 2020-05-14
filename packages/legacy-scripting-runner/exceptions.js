@@ -9,7 +9,7 @@ class AppError extends Error {
       JSON.stringify({
         message,
         code,
-        status
+        status,
       })
     );
     this.name = 'AppError';
@@ -18,8 +18,8 @@ class AppError extends Error {
 }
 
 // Make some of the errors we'll use!
-const createError = name => {
-  const NewError = function(message) {
+const createError = (name) => {
+  const NewError = function (message) {
     this.name = name;
     this.message = message || '';
     Error.call(this);
@@ -34,7 +34,7 @@ const names = [
   'StopRequestError',
   'ExpiredAuthError',
   'RefreshAuthError',
-  'DehydrateError'
+  'DehydrateError',
 ];
 
 const cliErrors = _.reduce(
@@ -44,7 +44,7 @@ const cliErrors = _.reduce(
     return error;
   },
   {
-    Error: AppError
+    Error: AppError,
   }
 );
 
@@ -55,7 +55,7 @@ const exceptions = {
   ExpiredAuthException: cliErrors.ExpiredAuthError,
   RefreshTokenException: cliErrors.RefreshAuthError,
   InvalidSessionException: cliErrors.RefreshAuthError, // In CLI, RefreshAuthError works the same for both OAuth and Session
-  DehydrateException: cliErrors.DehydrateError
+  DehydrateException: cliErrors.DehydrateError,
 };
 
 module.exports = exceptions;

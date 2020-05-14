@@ -3,12 +3,12 @@
 const _ = require('lodash');
 const packageJson = require('../../package.json');
 
-const exportSchema = InitSchema => {
+const exportSchema = (InitSchema) => {
   const exportedSchema = {
     version: packageJson.version,
-    schemas: {}
+    schemas: {},
   };
-  const addAndRecurse = Schema => {
+  const addAndRecurse = (Schema) => {
     exportedSchema.schemas[Schema.id.replace('/', '')] = _.omit(
       Schema.schema,
       'examples',

@@ -13,7 +13,7 @@ const triggerHasUniqueIds = {
   run: (method, results) => {
     const idCount = {};
     let doubleId;
-    _.forEach(results, result => {
+    _.forEach(results, (result) => {
       const count = (idCount[result.id] = (idCount[result.id] || 0) + 1);
       if (count > 1) {
         doubleId = result.id;
@@ -26,7 +26,7 @@ const triggerHasUniqueIds = {
       return [`Got a two or more results with the id of "${doubleId}"`];
     }
     return [];
-  }
+  },
 };
 
 module.exports = triggerHasUniqueIds;

@@ -18,13 +18,13 @@ const makeLinks = (error, makerFunc) => {
   ) {
     // no way to know what the subschema was, so don't create links for it
     return error.argument
-      .map(s => (s.includes('subschema') ? '' : makerFunc(s)))
+      .map((s) => (s.includes('subschema') ? '' : makerFunc(s)))
       .filter(Boolean);
   }
   return [];
 };
 
-const removeFirstAndLastChar = s => s.slice(1, -1);
+const removeFirstAndLastChar = (s) => s.slice(1, -1);
 // always return a string
 const makePath = (path, newSegment) =>
   (path ? [path, newSegment].join('.') : newSegment) || '';
@@ -65,7 +65,7 @@ const processBaseError = (err, path) => {
 const cleanError = (validationError, path, validator, definition) => {
   if (ambiguousTypes.includes(validationError.name)) {
     // flatObjectSchema requires each property to be a type. instead of recursing down, it's more valuable to say "hey, it's not of these types"
-    if (validationError.argument.every(s => s.includes('subschema'))) {
+    if (validationError.argument.every((s) => s.includes('subschema'))) {
       return processBaseError(validationError, path);
     }
 
@@ -100,7 +100,7 @@ const cleanError = (validationError, path, validator, definition) => {
 
       const res = validator.validate(validationError.instance, nextSchema);
 
-      return res.errors.map(e =>
+      return res.errors.map((e) =>
         cleanError(
           e,
           makePath(path, validationError.property),
@@ -124,26 +124,26 @@ const cleanError = (validationError, path, validator, definition) => {
 const makeValidator = (mainSchema, subSchemas) => {
   const schemas = [mainSchema].concat(subSchemas || []);
   const v = new jsonschema.Validator();
-  schemas.forEach(Schema => {
+  schemas.forEach((Schema) => {
     v.addSchema(Schema, Schema.id);
   });
   return {
-    validate: definition => {
+    validate: (definition) => {
       const results = v.validate(definition, mainSchema);
       const allErrors = results.errors.concat(
         functionalConstraints.run(definition, mainSchema)
       );
       const cleanedErrors = flattenDeep(
-        allErrors.map(e => cleanError(e, '', v, definition))
+        allErrors.map((e) => cleanError(e, '', v, definition))
       );
 
-      results.errors = cleanedErrors.map(error => {
+      results.errors = cleanedErrors.map((error) => {
         error.codeLinks = makeLinks(error, links.makeCodeLink);
         error.docLinks = makeLinks(error, links.makeDocLink);
         return error;
       });
       return results;
-    }
+    },
   };
 };
 

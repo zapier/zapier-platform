@@ -22,7 +22,7 @@ const collectErrors = (inputFields, path) => {
       } else {
         const hasDeeplyNestedChildren = _.some(
           inputField.children,
-          child => child.children
+          (child) => child.children
         );
 
         if (hasDeeplyNestedChildren) {
@@ -44,12 +44,12 @@ const collectErrors = (inputFields, path) => {
   return errors;
 };
 
-const validateFieldNesting = definition => {
+const validateFieldNesting = (definition) => {
   let errors = [];
 
-  _.each(['triggers', 'searches', 'creates'], typeOf => {
+  _.each(['triggers', 'searches', 'creates'], (typeOf) => {
     if (definition[typeOf]) {
-      _.each(definition[typeOf], actionDef => {
+      _.each(definition[typeOf], (actionDef) => {
         if (actionDef.operation && actionDef.operation.inputFields) {
           errors = errors.concat(
             collectErrors(

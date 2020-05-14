@@ -17,7 +17,7 @@ const searchIsArray = {
       return [`Results must be an array, got: ${typeof results}, (${repr})`];
     }
     return [];
-  }
+  },
 };
 
 module.exports = searchIsArray;
