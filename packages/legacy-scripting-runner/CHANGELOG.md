@@ -1,4 +1,4 @@
-# 3.7.1
+## 3.7.1
 
 - :bug: Allow `post_read_resource` to return an array ([#219](https://github.com/zapier/zapier-platform/pull/219))
 - :gear: Upgrade dependencies ([#218](https://github.com/zapier/zapier-platform/pull/218))
