@@ -1190,7 +1190,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'search.resource.pre',
       'search.resource.post',
       'search.resource',
-      { parseResponseForPostMethod: true }
+      { parseResponseForPostMethod: true, ensureType: 'object-first' }
     );
   };
 
