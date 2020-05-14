@@ -26,7 +26,7 @@
     "local-integration-test": "mocha -t 10000 integration-test --local",
     "lambda-integration-test": "mocha -t 10000 integration-test --lambda",
     "smoke-test": "mocha -t 120000 smoke-test",
-    "lint": "eslint src test --fix",
+    "lint": "eslint src test",
     "build-integration-test": "bin/build.sh local.bundle.zip",
     "upload-integration-test": "bin/upload-lambda.js local.bundle.zip",
     "deploy-integration-test": "yarn build-integration-test && yarn upload-integration-test",

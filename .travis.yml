@@ -1,22 +1,45 @@
 language: node_js
 node_js:
-  - '10.16.3' # lambda version as of 2019-11-21
+  - "10"
 before_install:
   - npm install -g yarn
   - pip install --user awscli
 install:
   - yarn install
-script:
-  - yarn validate
+stages:
+  - name: "Test"
+  - name: "Deploy"
+    if: tag IS present AND env(TRAVIS_NODE_VERSION) IS "10"
+jobs:
+  include:
+    - stage: "Test"
+      name: "lint"
+      script: "yarn lint"
+    - name: "cli: unit tests"
+      script: "yarn workspace zapier-platform-cli test"
+    - name: "cli: smoke tests"
+      script: "yarn workspace zapier-platform-cli smoke-test"
+    - name: "core: unit tests"
+      script: "yarn workspace zapier-platform-core test"
+    - name: "core: smoke tests"
+      script: "yarn workspace zapier-platform-core smoke-test"
+    - name: "schema: unit tests"
+      script: "yarn workspace zapier-platform-schema test"
+    - name: "schema: smoke tests"
+      script: "yarn workspace zapier-platform-schema smoke-test"
+    - name: "legacy-scripting-runner: integration tests"
+      script: "yarn workspace zapier-platform-legacy-scripting-runner test"
+    - stage: "Deploy"
+      script: skip
+      deploy:
+        provider: script
+        script: ./scripts/publish.sh
+        on:
+          tags: true,
+          node: "10"
+        skip_cleanup: true
 notifications:
   email: false
-deploy:
-  provider: script
-  script: ./scripts/publish.sh
-  on:
-    tags: true
-    node: '10.16.3'
-  skip_cleanup: true
 env:
   global:
     - PATH: PATH=$HOME/.local/bin:$PATH
