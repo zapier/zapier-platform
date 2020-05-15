@@ -401,10 +401,14 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p align="center">
   <a href="https://www.npmjs.com/package/zapier-platform-cli"><img src="https://img.shields.io/npm/v/zapier-platform-cli.svg" alt="npm version"></a>
-</p><p>Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.</p><p>You may find these docs duplicate or outdated across the Zapier site. Reading from these docs directly from GitHub makes sure the contents are up-to-date:</p><ul>
-<li>CLI Docs: <a href="https://zapier.github.io/zapier-platform/">https://zapier.github.io/zapier-platform/</a></li>
-<li>CLI Reference: <a href="https://zapier.github.io/zapier-platform/cli">https://zapier.github.io/zapier-platform/cli</a></li>
-<li>Schema Docs: <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md">https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md</a></li>
+</p><p>Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.</p><p>You may find docs duplicate or outdated across the Zapier site. The most up-to-date contents are always available on GitHub:</p><ul>
+<li><a href="https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md">CLI Docs</a></li>
+<li><a href="https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md">CLI Reference</a></li>
+<li><a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md">Schema Docs</a></li>
+</ul><p>This doc decribes the latest CLI version <strong>9.4.0</strong>, as of this writing. If you&apos;re using an older version of the CLI, you may want to check out these historical releases:</p><ul>
+<li>CLI Docs: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md">9.4.0</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md">8.4.2</a></li>
+<li>CLI Reference: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md">9.4.0</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md">8.4.2</a></li>
+<li>Schema Docs: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.4.0/packages/schema/docs/build/schema.md">9.4.0</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@8.4.2/packages/schema/docs/build/schema.md">8.4.2</a></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -586,7 +590,9 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>If you&apos;re new to Zapier Platform CLI, we strongly recommend you to walk through the <a href="https://zapier.com/developer/start">Tutorial</a> for a more thorough introduction.</p>
+      <blockquote>
+<p>If you&apos;re new to Zapier Platform CLI, we strongly recommend you to walk through the <a href="https://zapier.com/developer/start">Tutorial</a> for a more thorough introduction.</p>
+</blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -836,7 +842,7 @@ npm install
       <p>In your app&apos;s folder, you should see this general recommended structure. The <code>index.js</code> is Zapier&apos;s entry point to your app. Zapier expects you to export an <code>App</code> definition there.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-plain">$ tree .
+      <pre><code>$ tree .
 .
 &#x251C;&#x2500;&#x2500; README.md
 &#x251C;&#x2500;&#x2500; index.js
@@ -4958,7 +4964,7 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>zapier-platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <code>9.4.0</code>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://www.npmjs.com/package/zapier-platform-core?activeTab=versions">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
+      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>zapier-platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <strong>9.4.0</strong>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://www.npmjs.com/package/zapier-platform-core?activeTab=versions">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

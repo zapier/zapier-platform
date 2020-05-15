@@ -12,11 +12,17 @@
 
 Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.
 
-You may find these docs duplicate or outdated across the Zapier site. Reading from these docs directly from GitHub makes sure the contents are up-to-date:
+You may find docs duplicate or outdated across the Zapier site. The most up-to-date contents are always available on GitHub:
 
-- CLI Docs: https://zapier.github.io/zapier-platform/
-- CLI Reference: https://zapier.github.io/zapier-platform/cli
-- Schema Docs: https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md
+- [CLI Docs](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md)
+- [CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
+- [Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
+
+This doc decribes the latest CLI version **PACKAGE_VERSION**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+
+- CLI Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
+- CLI Reference: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
+- Schema Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.4.0/packages/schema/docs/build/schema.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@8.4.2/packages/schema/docs/build/schema.md)
 
 ## Table of Contents
 
@@ -26,7 +32,7 @@ You may find these docs duplicate or outdated across the Zapier site. Reading fr
 
 ## Getting Started
 
-If you're new to Zapier Platform CLI, we strongly recommend you to walk through the [Tutorial](https://zapier.com/developer/start) for a more thorough introduction.
+> If you're new to Zapier Platform CLI, we strongly recommend you to walk through the [Tutorial](https://zapier.com/developer/start) for a more thorough introduction.
 
 ### What is an App?
 
@@ -157,7 +163,7 @@ If you'd like to manage your **local App**, use these commands:
 
 In your app's folder, you should see this general recommended structure. The `index.js` is Zapier's entry point to your app. Zapier expects you to export an `App` definition there.
 
-```plain
+```
 $ tree .
 .
 ├── README.md
@@ -1699,7 +1705,7 @@ The Zapier platform and its tools are under active development. While you don't 
 Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is `PACKAGE_VERSION`. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is **PACKAGE_VERSION**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 
