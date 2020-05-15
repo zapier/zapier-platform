@@ -41,7 +41,7 @@
     "@oclif/config": "1.15.1",
     "@oclif/plugin-autocomplete": "0.2.0",
     "@oclif/plugin-help": "3.0.0",
-    "@oclif/plugin-not-found": "1.2.3",
+    "@oclif/plugin-not-found": "1.2.4",
     "adm-zip": "0.4.14",
     "archiver": "4.0.1",
     "browserify": "16.5.1",
