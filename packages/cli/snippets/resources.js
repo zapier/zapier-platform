@@ -9,5 +9,5 @@ const Recipe = {
   },
   create: {
     // ...
-  }
+  },
 };

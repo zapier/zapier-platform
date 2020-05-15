@@ -8,21 +8,17 @@ const stashPDFfunction = (z, bundle) => {
   return z.stashFile(filePromise);
 };
 
-const pdfList = (z, bundle) => {
-  return z
-    .request('https://example.com/pdfs.json')
-    .then((res) => res.data)
-    .then((results) => {
-      return results.map((result) => {
-        // lazily convert a secret_download_url to a stashed url
-        // zapier won't do this until we need it
-        result.file = z.dehydrateFile(stashPDFfunction, {
-          downloadUrl: result.secret_download_url,
-        });
-        delete result.secret_download_url;
-        return result;
-      });
+const pdfList = async (z, bundle) => {
+  const response = await z.request('https://example.com/pdfs.json');
+  return response.data.map((pdf) => {
+    // Lazily convert a secret_download_url to a stashed url
+    // zapier won't do this until we need it
+    pdf.file = z.dehydrateFile(stashPDFfunction, {
+      downloadUrl: pdf.secret_download_url,
     });
+    delete pdf.secret_download_url;
+    return pdf;
+  });
 };
 
 const App = {

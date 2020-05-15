@@ -3,22 +3,22 @@ const authentication = {
   // "test" could also be a function
   test: {
     url:
-      'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json'
+      'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
   },
   fields: [
     {
       key: 'subdomain',
       type: 'string',
       required: true,
-      helpText: 'Found in your browsers address bar after logging in.'
+      helpText: 'Found in your browsers address bar after logging in.',
     },
     {
       key: 'api_key',
       type: 'string',
       required: true,
-      helpText: 'Found on your settings page.'
-    }
-  ]
+      helpText: 'Found on your settings page.',
+    },
+  ],
 };
 
 const addApiKeyToHeader = (request, z, bundle) => {
@@ -33,6 +33,6 @@ const addApiKeyToHeader = (request, z, bundle) => {
 const App = {
   // ...
   authentication: authentication,
-  beforeRequest: [addApiKeyToHeader]
+  beforeRequest: [addApiKeyToHeader],
   // ...
 };

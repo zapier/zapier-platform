@@ -347,14 +347,12 @@ a code {
 <li><a href="#mocking-requests">Mocking Requests</a></li>
 <li><a href="#running-unit-tests">Running Unit Tests</a></li>
 <li><a href="#testing--environment-variables">Testing &amp; Environment Variables</a></li>
-<li><a href="#viewing-http-logs-in-unit-tests">Viewing HTTP Logs in Unit Tests</a></li>
 <li><a href="#testing-in-your-ci">Testing in Your CI</a></li>
 </ul>
 </li>
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
 <li><a href="#building-native-packages-with-docker">Building Native Packages with Docker</a></li>
 <li><a href="#using-transpilers">Using Transpilers</a></li>
-<li><a href="#example-apps">Example Apps</a></li>
 <li><a href="#faqs">FAQs</a><ul>
 <li><a href="#why-doesnt-zapier-support-newer-versions-of-nodejs">Why doesn&#39;t Zapier support newer versions of Node.js?</a></li>
 <li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
@@ -365,7 +363,7 @@ a code {
 <li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&#39;s the deal with pagination? When is it used and how does it work?</a></li>
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
 <li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&#39;t provide an explicit <code>id</code> field?</a></li>
-<li><a href="#node-6-no-longer-supported">Node 6 No Longer Supported</a></li>
+<li><a href="#node-x-no-longer-supported">Node X No Longer Supported</a></li>
 <li><a href="#what-analytics-are-collected">What Analytics are Collected?</a></li>
 <li><a href="#whats-the-difference-between-an-app-and-an-integration">What&#39;s the Difference Between an &quot;App&quot; and an &quot;Integration&quot;?</a></li>
 </ul>
@@ -373,11 +371,6 @@ a code {
 <li><a href="#command-line-tab-completion">Command Line Tab Completion</a></li>
 <li><a href="#the-zapier-platform-packages">The Zapier Platform Packages</a><ul>
 <li><a href="#updating">Updating</a></li>
-</ul>
-</li>
-<li><a href="#development-of-the-cli">Development of the CLI</a><ul>
-<li><a href="#commands">Commands</a></li>
-<li><a href="#publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</a></li>
 </ul>
 </li>
 <li><a href="#get-help">Get Help!</a></li>
@@ -407,11 +400,12 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p align="center">
-  <!-- this isn't live yet? or won't be until I push -->
-  <!-- <a href="https://travis-ci.org/zapier/zapier-platform-cli"><img src="https://img.shields.io/travis/zapier/zapier-platform-cli/master.svg" alt="Travis"></a> -->
   <a href="https://www.npmjs.com/package/zapier-platform-cli"><img src="https://img.shields.io/npm/v/zapier-platform-cli.svg" alt="npm version"></a>
-  <!--possible downloads badge too, once that's good-->
-</p><p>Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.</p><p><a href="https://zapier.github.io/zapier-platform/">These docs are available here</a>, the <a href="https://zapier.github.io/zapier-platform/cli">CLI docs are available here</a>, and you can <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md">view all the schema definitions here</a>.</p>
+</p><p>Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.</p><p>You may find these docs duplicate or outdated across the Zapier site. Reading from these docs directly from GitHub makes sure the contents are up-to-date:</p><ul>
+<li>CLI Docs: <a href="https://zapier.github.io/zapier-platform/">https://zapier.github.io/zapier-platform/</a></li>
+<li>CLI Reference: <a href="https://zapier.github.io/zapier-platform/cli">https://zapier.github.io/zapier-platform/cli</a></li>
+<li>Schema Docs: <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md">https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md</a></li>
+</ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -547,14 +541,12 @@ a code {
 <li><a href="#mocking-requests">Mocking Requests</a></li>
 <li><a href="#running-unit-tests">Running Unit Tests</a></li>
 <li><a href="#testing--environment-variables">Testing &amp; Environment Variables</a></li>
-<li><a href="#viewing-http-logs-in-unit-tests">Viewing HTTP Logs in Unit Tests</a></li>
 <li><a href="#testing-in-your-ci">Testing in Your CI</a></li>
 </ul>
 </li>
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
 <li><a href="#building-native-packages-with-docker">Building Native Packages with Docker</a></li>
 <li><a href="#using-transpilers">Using Transpilers</a></li>
-<li><a href="#example-apps">Example Apps</a></li>
 <li><a href="#faqs">FAQs</a><ul>
 <li><a href="#why-doesnt-zapier-support-newer-versions-of-nodejs">Why doesn&apos;t Zapier support newer versions of Node.js?</a></li>
 <li><a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">How do I manually set the Node.js version to run my app with?</a></li>
@@ -565,7 +557,7 @@ a code {
 <li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&apos;s the deal with pagination? When is it used and how does it work?</a></li>
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
 <li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&apos;t provide an explicit <code>id</code> field?</a></li>
-<li><a href="#node-6-no-longer-supported">Node 6 No Longer Supported</a></li>
+<li><a href="#node-x-no-longer-supported">Node X No Longer Supported</a></li>
 <li><a href="#what-analytics-are-collected">What Analytics are Collected?</a></li>
 <li><a href="#whats-the-difference-between-an-app-and-an-integration">What&apos;s the Difference Between an &quot;App&quot; and an &quot;Integration&quot;?</a></li>
 </ul>
@@ -573,11 +565,6 @@ a code {
 <li><a href="#command-line-tab-completion">Command Line Tab Completion</a></li>
 <li><a href="#the-zapier-platform-packages">The Zapier Platform Packages</a><ul>
 <li><a href="#updating">Updating</a></li>
-</ul>
-</li>
-<li><a href="#development-of-the-cli">Development of the CLI</a><ul>
-<li><a href="#commands">Commands</a></li>
-<li><a href="#publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</a></li>
 </ul>
 </li>
 <li><a href="#get-help">Get Help!</a></li>
@@ -599,9 +586,7 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <blockquote>
-<p>If you&apos;re new to Zapier Platform CLI, we strongly recommend you to walk through the <a href="https://zapier.com/developer/start">Tutorial</a> for a more thorough introduction.</p>
-</blockquote>
+      <p>If you&apos;re new to Zapier Platform CLI, we strongly recommend you to walk through the <a href="https://zapier.com/developer/start">Tutorial</a> for a more thorough introduction.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -624,8 +609,7 @@ a code {
 </blockquote><p>A CLI App is an implementation of your app&apos;s API. You build a Node.js application
 that exports a single object (<a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#appschema">JSON Schema</a>) and upload it to Zapier.
 Zapier introspects that definition to find out what your app is capable of and
-what options to present end users in the Zap Editor.</p><p>For those not familiar with Zapier terminology, here is how concepts in the CLI
-map to the end user experience:</p><ul>
+what options to present end users in the Zap Editor.</p><p>For those not familiar with Zapier terminology, here is how concepts in the CLI map to the end user experience:</p><ul>
 <li><a href="#authentication">Authentication</a>, (usually) which lets us know what credentials to ask users
 for. This is used during the &quot;Connect Accounts&quot; section of the Zap Editor.</li>
 <li><a href="#triggerssearchescreates">Triggers</a>, which read data <em>from</em> your API. These have their own section in the Zap Editor.</li>
@@ -671,7 +655,9 @@ and returns the relevant data, which gets fed back into Zapier.</p>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The Zapier Platform includes two ways to build integrations: a CLI to build integrations in your local development environment and deploy them from the command line, and a UI to create integrations with a visual builder from your browser. Both use the same Zapier platform, so pick the one that fits your team&apos;s needs best, as the difference is in how you develop the integration.</p><p>Zapier Platform CLI is designed to be used by development teams who collaborate with version control and CI, and can be used to build more advanced integrations with custom coding for every part of your API calls and response parsing.</p><p><a href="https://zapier.com/app/developer/">Zapier Platform UI</a> is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It&apos;s the quickest way to start using the Zapier platform&#x2014;and you can manage your CLI apps&apos; core details from its online UI as well. Coming soon, you will be able to convert Zapier Platform UI integrations to CLI to start development in your browser then finish out the core features in your local development environment.</p><p><em>&#x2192; Learn more in our <a href="https://platform.zapier.com/docs/vs">Zapier Platform UI vs CLI</a> post.</em></p>
+      <p>The Zapier Platform includes two ways to build integrations: a CLI to build integrations in your local development environment and deploy them from the command line, and a UI to create integrations with a visual builder from your browser. Both use the same Zapier platform, so pick the one that fits your team&apos;s needs best, as the difference is in how you develop the integration.</p><p>Zapier Platform CLI is designed to be used by development teams who collaborate with version control and CI, and can be used to build more advanced integrations with custom coding for every part of your API calls and response parsing.</p><p><a href="https://zapier.com/app/developer/">Zapier Platform UI</a> is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It&apos;s the quickest way to start using the Zapier platform&#x2014;and you can manage your CLI apps&apos; core details from its online UI as well. Coming soon, you will be able to convert Zapier Platform UI integrations to CLI to start development in your browser then finish out the core features in your local development environment.</p><blockquote>
+<p>Learn more in our <a href="https://platform.zapier.com/docs/vs">Zapier Platform UI vs CLI</a> post.</p>
+</blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -803,7 +789,7 @@ zapier push
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Tip: check the <a href="#quick-setup-guide">Quick Setup</a> if this is your first time using the platform!</p>
+<p>Tip: Check the <a href="#quick-setup-guide">Quick Setup</a> if this is your first time using the platform!</p>
 </blockquote><p>Creating an App can be done entirely locally and they are fairly simple Node.js apps using the standard Node environment and should be completely testable. However, a local app stays local until you <code>zapier register</code>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -908,7 +894,7 @@ npm install
   <span class="hljs-comment">// See &quot;Triggers/Searches/Creates&quot; section below</span>
   <span class="hljs-attr">triggers</span>: {},
   <span class="hljs-attr">searches</span>: {},
-  <span class="hljs-attr">creates</span>: {}
+  <span class="hljs-attr">creates</span>: {},
 };
 
 <span class="hljs-built_in">module</span>.exports = App;
@@ -920,7 +906,7 @@ npm install
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Tip: you can use higher order functions to create any part of your App definition!</p>
+<p>Tip: You can use higher order functions to create any part of your App definition!</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -954,14 +940,14 @@ zapier apps
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note: this doesn&apos;t put your app in the editor - see the docs on pushing an App Version to do that!</p>
+<p>Note: This doesn&apos;t put your app in the editor - see the docs on pushing an App Version to do that!</p>
 </blockquote><p>If you&apos;d like to manage your <strong>App</strong>, use these commands:</p><ul>
-<li><code>zapier apps</code> - list the apps in Zapier you can administer</li>
-<li><code>zapier register &quot;Name&quot;</code> - creates a new app in Zapier</li>
+<li><code>zapier integrations</code> - list the apps in Zapier you can administer</li>
+<li><code>zapier register &quot;App Title&quot;</code> - creates a new app in Zapier</li>
 <li><code>zapier link</code> - lists and links a selected app in Zapier to your current folder</li>
 <li><code>zapier history</code> - print the history of your app</li>
-<li><code>zapier collaborate [user@example.com]</code> - add admins to your app who can push</li>
-<li><code>zapier invite [user@example.com] [1.0.0]</code> - add users to try your app version 1.0.0 before promotion</li>
+<li><code>zapier team:add user@example.com admin</code> - add an admin to help maintain/develop your app</li>
+<li><code>zapier users:add user@example.com 1.0.0</code> - invite a user try your app version 1.0.0</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -997,11 +983,11 @@ zapier versions
       <p>If you&apos;d like to manage your <strong>Version</strong>, use these commands:</p><ul>
 <li><code>zapier versions</code> - list the versions for the current directory&apos;s app</li>
 <li><code>zapier push</code> - push the current version of current directory&apos;s app &amp; version (read from <code>package.json</code>)</li>
-<li><code>zapier promote [1.0.0]</code> - mark a version as the &quot;production&quot; version</li>
-<li><code>zapier migrate [1.0.0] [1.0.1] [100%]</code> - move users between versions, regardless of deployment status</li>
-<li><code>zapier deprecate [1.0.0] [YYYY-MM-DD]</code> - mark a version as deprecated, but let users continue to use it (we&apos;ll email them)</li>
-<li><code>zapier env 1.0.0 [KEY] [value]</code> - set an environment variable to some value</li>
-<li><code>zapier delete version [1.0.0]</code> - delete a version entirely. This is mostly for clearing out old test apps you used personally. It will fail if there are any users. You probably want <code>deprecate</code> instead.</li>
+<li><code>zapier promote 1.0.0</code> - mark a version as the &quot;production&quot; version</li>
+<li><code>zapier migrate 1.0.0 1.0.1 [100%]</code> - move users between versions, regardless of deployment status</li>
+<li><code>zapier deprecate 1.0.0 2020-06-01</code> - mark a version as deprecated, but let users continue to use it (we&apos;ll email them)</li>
+<li><code>zapier env:set 1.0.0 KEY=VALUE</code> - set an environment variable to some value</li>
+<li><code>zapier delete:version 1.0.0</code> - delete a version entirely. This is mostly for clearing out old test apps you used personally. It will fail if there are any users. You probably want <code>deprecate</code> instead.</li>
 </ul><blockquote>
 <p>Note: To see the changes that were just pushed reflected in the browser, you have to manually refresh the browser each time you push.</p>
 </blockquote>
@@ -1054,7 +1040,7 @@ zapier collaborate user@example.com
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can also invite anyone on the internet to your app by observing the URL at the bottom of <code>zapier invite</code>, it should look something like <code>https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/</code>. You can put this in your help docs, post it to Twitter, add it to your email campaign, etc. Note this will invite users to every app version.</p>
+      <p>You can also invite anyone on the internet to your app by using the links from <code>zapier users:links</code>. The link should look something like <code>https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/</code>. You can put this in your help docs, post it to Twitter, add it to your email campaign, etc. You can choose an invite link specific to an app version or for the entire app (i.e. all app versions).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1082,7 +1068,7 @@ zapier promote 1.0.1
 zapier migrate 1.0.0 1.0.1
 
 <span class="hljs-comment"># OR - mark the old version as deprecated</span>
-zapier deprecate 1.0.0 2017-01-01
+zapier deprecate 1.0.0 2020-06-01
 </code></pre>
     </div>
   </div>
@@ -1111,13 +1097,13 @@ zapier convert 1234 my-app
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Your CLI app will be created and you can continue working on it.</p><blockquote>
-<p>Note - there is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.</p>
+<p>Note: There is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.</p>
 </blockquote><p>Introduced in v8.2.0, you are able to convert new integrations built in Zapier Platform UI to CLI.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-sh"><span class="hljs-comment"># the --version flag is what denotes this command is interacting with a Visual Builder app</span>
-<span class="hljs-comment"># zapier convert &lt;APP_ID&gt; &lt;PATH&gt; --version=&lt;APP_VERSION&gt;</span>
-zapier convert 1234 my-app 1.0.1
+      <pre><code class="lang-bash"><span class="hljs-comment"># the --version flag is what denotes this command is interacting with a Visual Builder app</span>
+<span class="hljs-comment"># zapier convert &lt;APP_ID&gt; --version &lt;APP_VERSION&gt; &lt;PATH&gt;</span>
+zapier convert 1234 --version 1.0.1 my-app
 </code></pre>
     </div>
   </div>
@@ -1154,9 +1140,9 @@ zapier convert 1234 my-app 1.0.1
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Useful if your app requires two pieces of information to authentication: <code>username</code> and <code>password</code> which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).</p><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth</a> for a working example app for basic auth.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth</a> for a working example app for basic auth.</p>
 </blockquote><blockquote>
-<p>Note: if you do the common API Key pattern like <code>Authorization: Basic APIKEYHERE:x</code> you should look at the &quot;Custom&quot; authentication method instead.</p>
+<p>Note: If you do the common API Key pattern like <code>Authorization: Basic APIKEYHERE:x</code> you should look at the &quot;Custom&quot; authentication method instead.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1164,15 +1150,15 @@ zapier convert 1234 my-app 1.0.1
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;basic&apos;</span>,
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
   <span class="hljs-attr">test</span>: {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>,
   },
-  <span class="hljs-attr">connectionLabel</span>: <span class="hljs-string">&apos;{{bundle.authData.username}}&apos;</span> <span class="hljs-comment">// Can also be a function, check digest auth below for an example</span>
+  <span class="hljs-attr">connectionLabel</span>: <span class="hljs-string">&apos;{{username}}&apos;</span>, <span class="hljs-comment">// Can also be a function, check digest auth below for an example</span>
   <span class="hljs-comment">// you can provide additional fields, but we&apos;ll provide `username`/`password` automatically</span>
 };
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  <span class="hljs-attr">authentication</span>: authentication
+  <span class="hljs-attr">authentication</span>: authentication,
   <span class="hljs-comment">// ...</span>
 };
 
@@ -1192,25 +1178,31 @@ zapier convert 1234 my-app 1.0.1
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p><em>New in v7.4.0.</em></p><p>The setup and user experience of Digest Auth is identical to Basic Auth. Users will provide Zapier their username and password and Zapier will handle all the nonce and quality of protection details automatically.</p><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth</a> for a working example app for digest auth.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth</a> for a working example app for digest auth.</p>
 </blockquote><blockquote>
 <p>Limitation: Currently, MD5-sess and SHA are not implemented. Only the MD5 algorithm is supported. In addition, server nonces are not reused. That means for every <code>z.request</code> call, Zapier will sends an additional request beforehand to get the server nonce.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> authentication = {
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> getConnectionLabel = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+  <span class="hljs-comment">// bundle.inputData will contain what the &quot;test&quot; URL (or function) returns</span>
+  <span class="hljs-keyword">return</span> bundle.inputData.username;
+};
+
+<span class="hljs-keyword">const</span> authentication = {
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;digest&apos;</span>,
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
   <span class="hljs-attr">test</span>: {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/me.json&apos;</span>,
   },
-  <span class="hljs-attr">connectionLabel</span>: <span class="hljs-string">&apos;{{bundle.authData.username}}&apos;</span> <span class="hljs-comment">// Can also be a function, check digest auth below for an example</span>
+  <span class="hljs-attr">connectionLabel</span>: getConnectionLabel,
+
   <span class="hljs-comment">// you can provide additional fields, but we&apos;ll provide `username`/`password` automatically</span>
 };
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  <span class="hljs-attr">authentication</span>: authentication
+  <span class="hljs-attr">authentication</span>: authentication,
   <span class="hljs-comment">// ...</span>
 };
 
@@ -1230,7 +1222,7 @@ zapier convert 1234 my-app 1.0.1
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>This is what most &quot;API Key&quot; driven apps should default to using. You&apos;ll likely provide some custom <code>beforeRequest</code> middleware or a <code>requestTemplate</code> to complete the authentication by adding/computing needed headers.</p><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth</a> for a working example app for custom auth.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth</a> for a working example app for custom auth.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1239,22 +1231,22 @@ zapier convert 1234 my-app 1.0.1
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
   <span class="hljs-attr">test</span>: {
     <span class="hljs-attr">url</span>:
-      <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>
+      <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>,
   },
   <span class="hljs-attr">fields</span>: [
     {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>,
       <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
       <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
-      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Found in your browsers address bar after logging in.&apos;</span>
+      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Found in your browsers address bar after logging in.&apos;</span>,
     },
     {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;api_key&apos;</span>,
       <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
       <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
-      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Found on your settings page.&apos;</span>
-    }
-  ]
+      <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Found on your settings page.&apos;</span>,
+    },
+  ],
 };
 
 <span class="hljs-keyword">const</span> addApiKeyToHeader = <span class="hljs-function">(<span class="hljs-params">request, z, bundle</span>) =&gt;</span> {
@@ -1269,7 +1261,7 @@ zapier convert 1234 my-app 1.0.1
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">authentication</span>: authentication,
-  <span class="hljs-attr">beforeRequest</span>: [addApiKeyToHeader]
+  <span class="hljs-attr">beforeRequest</span>: [addApiKeyToHeader],
   <span class="hljs-comment">// ...</span>
 };
 
@@ -1289,12 +1281,12 @@ zapier convert 1234 my-app 1.0.1
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Probably the most &quot;powerful&quot; mechanism for authentication - it gives you the ability to exchange some user provided data for some authentication data (IE: username &amp; password for a session key).</p><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth</a> for a working example app for session auth.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth</a> for a working example app for session auth.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> getSessionKey = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> promise = z.request({
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> getSessionKey = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
     <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/accounts/login.json&apos;</span>,
     <span class="hljs-attr">body</span>: {
@@ -1303,14 +1295,11 @@ zapier convert 1234 my-app 1.0.1
     },
   });
 
-  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
-    <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">401</span>) {
-      <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&apos;The username/password you supplied is invalid&apos;</span>);
-    }
-    <span class="hljs-keyword">return</span> {
-      <span class="hljs-attr">sessionKey</span>: response.data.sessionKey,
-    };
-  });
+  <span class="hljs-comment">// Call response.throwForStatus() if you&apos;re using a core version &lt; 10</span>
+
+  <span class="hljs-keyword">return</span> {
+    <span class="hljs-attr">sessionKey</span>: response.data.sessionKey,
+  };
 };
 
 <span class="hljs-keyword">const</span> authentication = {
@@ -1365,7 +1354,7 @@ zapier convert 1234 my-app 1.0.1
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note - For Session auth, <code>authentication.sessionConfig.perform</code> will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty the first time the Zap runs.</p>
+<p>Note: For Session auth, <code>authentication.sessionConfig.perform</code> will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty the first time the Zap runs.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1385,7 +1374,7 @@ zapier convert 1234 my-app 1.0.1
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p><em>New in <code>v7.5.0</code>.</em></p><p>Zapier&apos;s OAuth1 implementation matches <a href="https://developer.twitter.com/en/docs/basics/authentication/overview">Twitter&apos;s</a> and <a href="https://developers.trello.com/page/authorization">Trello&apos;s</a> implementation of the 3-legged OAuth flow.</p><blockquote>
-<p>Example Apps: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-trello">oauth1-trello</a>, <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-tumblr">oauth1-tumblr</a>, and <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-twitter">oauth1-twitter</a> for working example apps with OAuth1.</p>
+<p>Example Apps: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-trello">oauth1-trello</a>, <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-tumblr">oauth1-tumblr</a>, and <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-twitter">oauth1-twitter</a> for working example apps with OAuth1.</p>
 </blockquote><p>The flow works like this:</p><ol>
 <li>Zapier makes a call to your API requesting a &quot;request token&quot; (also known as &quot;temporary credentials&quot;)</li>
 <li>Zapier sends the user to the authorization URL, defined by your app, along with the request token</li>
@@ -1429,14 +1418,14 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
         <span class="hljs-comment">// &apos;HMAC-SHA1&apos; is used by default if not specified.</span>
         <span class="hljs-comment">// &apos;HMAC-SHA256&apos;, &apos;RSA-SHA1&apos;, &apos;PLAINTEXT&apos; are also supported.</span>
         <span class="hljs-attr">oauth_signature_method</span>: <span class="hljs-string">&apos;HMAC-SHA1&apos;</span>,
-        <span class="hljs-attr">oauth_callback</span>: <span class="hljs-string">&apos;{{bundle.inputData.redirect_uri}}&apos;</span>
-      }
+        <span class="hljs-attr">oauth_callback</span>: <span class="hljs-string">&apos;{{bundle.inputData.redirect_uri}}&apos;</span>,
+      },
     },
     <span class="hljs-attr">authorizeUrl</span>: {
       <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/authorize&apos;</span>,
       <span class="hljs-attr">params</span>: {
-        <span class="hljs-attr">oauth_token</span>: <span class="hljs-string">&apos;{{bundle.inputData.oauth_token}}&apos;</span>
-      }
+        <span class="hljs-attr">oauth_token</span>: <span class="hljs-string">&apos;{{bundle.inputData.oauth_token}}&apos;</span>,
+      },
     },
     <span class="hljs-attr">getAccessToken</span>: {
       <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/access-token&apos;</span>,
@@ -1446,22 +1435,22 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
         <span class="hljs-attr">oauth_consumer_secret</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_SECRET}}&apos;</span>,
         <span class="hljs-attr">oauth_token</span>: <span class="hljs-string">&apos;{{bundle.inputData.oauth_token}}&apos;</span>,
         <span class="hljs-attr">oauth_token_secret</span>: <span class="hljs-string">&apos;{{bundle.inputData.oauth_token_secret}}&apos;</span>,
-        <span class="hljs-attr">oauth_verifier</span>: <span class="hljs-string">&apos;{{bundle.inputData.oauth_verifier}}&apos;</span>
-      }
-    }
+        <span class="hljs-attr">oauth_verifier</span>: <span class="hljs-string">&apos;{{bundle.inputData.oauth_verifier}}&apos;</span>,
+      },
+    },
   },
   <span class="hljs-attr">test</span>: {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/me&apos;</span>
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/me&apos;</span>,
   },
   <span class="hljs-comment">// If you need any fields upfront, put them here</span>
   <span class="hljs-attr">fields</span>: [
-    { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> }
+    { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> },
     <span class="hljs-comment">// For OAuth1 we store `oauth_token` and `oauth_token_secret` automatically</span>
     <span class="hljs-comment">// in `bundle.authData` for future use. If you need to save/use something</span>
     <span class="hljs-comment">// that the user shouldn&apos;t need to type/choose, add a &quot;computed&quot; field, like:</span>
     <span class="hljs-comment">// {key: &apos;user_id&apos;: type: &apos;string&apos;, required: false, computed: true}</span>
     <span class="hljs-comment">// And remember to return it in oauth1Config.getAccessToken</span>
-  ]
+  ],
 };
 
 <span class="hljs-comment">// A middleware that is run before z.request() actually makes the request. Here we&apos;re</span>
@@ -1479,7 +1468,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
       <span class="hljs-attr">oauth_consumer_key</span>: process.env.CLIENT_ID,
       <span class="hljs-attr">oauth_consumer_secret</span>: process.env.CLIENT_SECRET,
       <span class="hljs-attr">oauth_token</span>: bundle.authData.oauth_token,
-      <span class="hljs-attr">oauth_token_secret</span>: bundle.authData.oauth_token_secret
+      <span class="hljs-attr">oauth_token_secret</span>: bundle.authData.oauth_token_secret,
     });
   }
   <span class="hljs-keyword">return</span> req;
@@ -1488,7 +1477,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">authentication</span>: authentication,
-  <span class="hljs-attr">beforeRequest</span>: [includeAccessToken]
+  <span class="hljs-attr">beforeRequest</span>: [includeAccessToken],
   <span class="hljs-comment">// ...</span>
 };
 
@@ -1501,7 +1490,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note - For OAuth1, <code>authentication.oauth1Config.getRequestToken</code>, <code>authentication.oauth1Config.authorizeUrl</code>, and <code>authentication.oauth1Config.getAccessToken</code> will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty when the user hasn&apos;t connected their account on your service to Zapier. Also note that <code>authentication.oauth1Config.getAccessToken</code> has access to the users return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string).</p>
+<p>Note: For OAuth1, <code>authentication.oauth1Config.getRequestToken</code>, <code>authentication.oauth1Config.authorizeUrl</code>, and <code>authentication.oauth1Config.getAccessToken</code> will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty when the user hasn&apos;t connected their account on your service to Zapier. Also note that <code>authentication.oauth1Config.getAccessToken</code> has access to the users return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string).</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1521,7 +1510,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Zapier&apos;s OAuth2 implementation is based on the <code>authorization_code</code> flow, similar to <a href="https://developer.github.com/v3/oauth/">GitHub</a> and <a href="https://developers.facebook.com/docs/authentication/server-side/">Facebook</a>.</p><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2">https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2</a> for a working example app for OAuth2.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2">https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2</a> for a working example app for OAuth2.</p>
 </blockquote><p>It looks like this:</p><ol>
 <li>Zapier sends the user to the authorization URL defined by your app</li>
 <li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png" alt></li>
@@ -1550,7 +1539,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;oauth2&apos;</span>,
   <span class="hljs-attr">test</span>: {
     <span class="hljs-attr">url</span>:
-      <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>
+      <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>,
   },
   <span class="hljs-comment">// you can provide additional fields for inclusion in authData</span>
   <span class="hljs-attr">oauth2Config</span>: {
@@ -1563,8 +1552,8 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
         <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
         <span class="hljs-attr">state</span>: <span class="hljs-string">&apos;{{bundle.inputData.state}}&apos;</span>,
         <span class="hljs-attr">redirect_uri</span>: <span class="hljs-string">&apos;{{bundle.inputData.redirect_uri}}&apos;</span>,
-        <span class="hljs-attr">response_type</span>: <span class="hljs-string">&apos;code&apos;</span>
-      }
+        <span class="hljs-attr">response_type</span>: <span class="hljs-string">&apos;code&apos;</span>,
+      },
     },
     <span class="hljs-comment">// Zapier expects a response providing {access_token: &apos;abcd&apos;}</span>
     <span class="hljs-comment">// &quot;getAccessToken&quot; could also be a function returning an object</span>
@@ -1577,23 +1566,23 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
         <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
         <span class="hljs-attr">client_secret</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_SECRET}}&apos;</span>,
         <span class="hljs-attr">redirect_uri</span>: <span class="hljs-string">&apos;{{bundle.inputData.redirect_uri}}&apos;</span>,
-        <span class="hljs-attr">grant_type</span>: <span class="hljs-string">&apos;authorization_code&apos;</span>
+        <span class="hljs-attr">grant_type</span>: <span class="hljs-string">&apos;authorization_code&apos;</span>,
       },
       <span class="hljs-attr">headers</span>: {
-        <span class="hljs-string">&apos;Content-Type&apos;</span>: <span class="hljs-string">&apos;application/x-www-form-urlencoded&apos;</span>
-      }
+        <span class="hljs-string">&apos;Content-Type&apos;</span>: <span class="hljs-string">&apos;application/x-www-form-urlencoded&apos;</span>,
+      },
     },
-    <span class="hljs-attr">scope</span>: <span class="hljs-string">&apos;read,write&apos;</span>
+    <span class="hljs-attr">scope</span>: <span class="hljs-string">&apos;read,write&apos;</span>,
   },
   <span class="hljs-comment">// If you need any fields upfront, put them here</span>
   <span class="hljs-attr">fields</span>: [
-    { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> }
+    { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> },
     <span class="hljs-comment">// For OAuth2 we store `access_token` and `refresh_token` automatically</span>
     <span class="hljs-comment">// in `bundle.authData` for future use. If you need to save/use something</span>
     <span class="hljs-comment">// that the user shouldn&apos;t need to type/choose, add a &quot;computed&quot; field, like:</span>
     <span class="hljs-comment">// {key: &apos;user_id&apos;: type: &apos;string&apos;, required: false, computed: true}</span>
     <span class="hljs-comment">// And remember to return it in oauth2Config.getAccessToken/refreshAccessToken</span>
-  ]
+  ],
 };
 
 <span class="hljs-keyword">const</span> addBearerHeader = <span class="hljs-function">(<span class="hljs-params">request, z, bundle</span>) =&gt;</span> {
@@ -1606,7 +1595,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">authentication</span>: authentication,
-  <span class="hljs-attr">beforeRequest</span>: [addBearerHeader]
+  <span class="hljs-attr">beforeRequest</span>: [addBearerHeader],
   <span class="hljs-comment">// ...</span>
 };
 
@@ -1619,7 +1608,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note - For OAuth2, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code>  will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty when the user hasn&apos;t connected their account on your service to Zapier. Also note that <code>authentication.oauth2Config.getAccessToken</code> has access to the users return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string).</p>
+<p>Note: For OAuth2, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code>  will have the provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code> because <code>bundle.authData</code> will only have &quot;previously existing&quot; values, which will be empty when the user hasn&apos;t connected their account on your service to Zapier. Also note that <code>authentication.oauth2Config.getAccessToken</code> has access to the users return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string).</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1654,7 +1643,7 @@ read, and search operations on that resource.</p>
   },
   <span class="hljs-attr">create</span>: {
     <span class="hljs-comment">// ...</span>
-  }
+  },
 };
 
 </code></pre>
@@ -1693,7 +1682,7 @@ read, and search operations on that resource.</p>
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>A resource has a few basic properties. The first is the <code>key</code>, which allows Zapier to identify the resource on our backend.
 The second is the <code>noun</code>, the user-friendly name of the resource that is presented to users throughout the Zapier UI.</p><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/resource">https://github.com/zapier/zapier-platform/tree/master/example-apps/resource</a> for a working example app using resources.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/resource">https://github.com/zapier/zapier-platform/tree/master/example-apps/resource</a> for a working example app using resources.</p>
 </blockquote><p>After those, there is a set of optional properties that tell Zapier what methods can be performed on the resource.
 The complete list of available methods can be found in the <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#resourceschema">Resource Schema Docs</a>.
 For now, let&apos;s focus on two:</p><ul>
@@ -1702,22 +1691,20 @@ For now, let&apos;s focus on two:</p><ul>
 </ul><p>Here is a complete example of what the list method might look like</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> listRecipesRequest = {
-  <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/recipes&apos;</span>
-};
-
-<span class="hljs-keyword">const</span> Recipe = {
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> Recipe = {
   <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;recipe&apos;</span>,
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">list</span>: {
     <span class="hljs-attr">display</span>: {
       <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Recipe&apos;</span>,
-      <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new recipe is added.&apos;</span>
+      <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new recipe is added.&apos;</span>,
     },
     <span class="hljs-attr">operation</span>: {
-      <span class="hljs-attr">perform</span>: listRecipesRequest
-    }
-  }
+      <span class="hljs-attr">perform</span>: {
+        <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/recipes&apos;</span>,
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -1729,16 +1716,7 @@ For now, let&apos;s focus on two:</p><ul>
       <p>The method is made up of two properties, a <code>display</code> and an <code>operation</code>. The <code>display</code> property (<a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#basicdisplayschema">schema</a>) holds the info needed to present the method as an available Trigger in the Zapier Editor. The <code>operation</code> (<a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#resourceschema">schema</a>) provides the implementation to make the API call.</p><p>Adding a create method looks very similar.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> createRecipeRequest = {
-  <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/recipes&apos;</span>,
-  <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
-  <span class="hljs-attr">body</span>: {
-    <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Baked Falafel&apos;</span>,
-    <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;mediterranean&apos;</span>
-  }
-};
-
-<span class="hljs-keyword">const</span> Recipe = {
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> Recipe = {
   <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;recipe&apos;</span>,
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">list</span>: {
@@ -1747,12 +1725,19 @@ For now, let&apos;s focus on two:</p><ul>
   <span class="hljs-attr">create</span>: {
     <span class="hljs-attr">display</span>: {
       <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Add Recipe&apos;</span>,
-      <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Adds a new recipe to our cookbook.&apos;</span>
+      <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Adds a new recipe to our cookbook.&apos;</span>,
     },
     <span class="hljs-attr">operation</span>: {
-      <span class="hljs-attr">perform</span>: createRecipeRequest
-    }
-  }
+      <span class="hljs-attr">perform</span>: {
+        <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
+        <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/recipes&apos;</span>,
+        <span class="hljs-attr">body</span>: {
+          <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Baked Falafel&apos;</span>,
+          <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;mediterranean&apos;</span>,
+        },
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -1785,11 +1770,7 @@ data into Zapier (i.e. watch for new recipes). Searches locate individual record
 new records in your system (add a recipe to the catalog).</p><p>The definition for each of these follows the same structure. Here is an example of a trigger:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeListRequest = {
-  <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/recipes&apos;</span>
-};
-
-<span class="hljs-keyword">const</span> App = {
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">triggers</span>: {
     <span class="hljs-attr">new_recipe</span>: {
@@ -1798,17 +1779,19 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <span class="hljs-comment">// `display` controls the presentation in the Zapier Editor</span>
       <span class="hljs-attr">display</span>: {
         <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Recipe&apos;</span>,
-        <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new recipe is added.&apos;</span>
+        <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new recipe is added.&apos;</span>,
       },
       <span class="hljs-comment">// `operation` implements the API call used to fetch the data</span>
       <span class="hljs-attr">operation</span>: {
-        <span class="hljs-attr">perform</span>: recipeListRequest
-      }
+        <span class="hljs-attr">perform</span>: {
+          <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/recipes&apos;</span>,
+        },
+      },
     },
     <span class="hljs-attr">another_trigger</span>: {
       <span class="hljs-comment">// Another trigger definition...</span>
-    }
-  }
+    },
+  },
 };
 
 </code></pre>
@@ -1819,13 +1802,13 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>You can find more details on the definition for each by looking at the <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#triggerschema">Trigger Schema</a>,
 <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#searchschema">Search Schema</a>, and <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#createschema">Create Schema</a>.</p><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/trigger">https://github.com/zapier/zapier-platform/tree/master/example-apps/trigger</a> for a working example app using triggers.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/trigger">https://github.com/zapier/zapier-platform/tree/master/example-apps/trigger</a> for a working example app using triggers.</p>
 </blockquote><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/rest-hooks">https://github.com/zapier/zapier-platform/tree/master/example-apps/rest-hooks</a> for a working example app using REST hook triggers.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/rest-hooks">https://github.com/zapier/zapier-platform/tree/master/example-apps/rest-hooks</a> for a working example app using REST hook triggers.</p>
 </blockquote><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/search">https://github.com/zapier/zapier-platform/tree/master/example-apps/search</a> for a working example app using searches.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/search">https://github.com/zapier/zapier-platform/tree/master/example-apps/search</a> for a working example app using searches.</p>
 </blockquote><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/create">https://github.com/zapier/zapier-platform/tree/master/example-apps/create</a> for a working example app using creates.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/create">https://github.com/zapier/zapier-platform/tree/master/example-apps/create</a> for a working example app using creates.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1911,18 +1894,18 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
             <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title of Recipe&apos;</span>,
-            <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Name your recipe!&apos;</span>
+            <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;Name your recipe!&apos;</span>,
           },
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;style&apos;</span>,
             <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
-            <span class="hljs-attr">choices</span>: { <span class="hljs-attr">mexican</span>: <span class="hljs-string">&apos;Mexican&apos;</span>, <span class="hljs-attr">italian</span>: <span class="hljs-string">&apos;Italian&apos;</span> }
-          }
+            <span class="hljs-attr">choices</span>: { <span class="hljs-attr">mexican</span>: <span class="hljs-string">&apos;Mexican&apos;</span>, <span class="hljs-attr">italian</span>: <span class="hljs-string">&apos;Italian&apos;</span> },
+          },
         ],
-        <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {}
-      }
-    }
-  }
+        <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {},
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -1956,10 +1939,11 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeFields = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> response = z.request(<span class="hljs-string">&apos;https://example.com/api/v2/fields.json&apos;</span>);
-  <span class="hljs-comment">// json is is [{&quot;key&quot;:&quot;field_1&quot;},{&quot;key&quot;:&quot;field_2&quot;}]</span>
-  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data);
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeFields = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(<span class="hljs-string">&apos;https://example.com/api/v2/fields.json&apos;</span>);
+
+  <span class="hljs-comment">// Should return an array like [{&quot;key&quot;:&quot;field_1&quot;},{&quot;key&quot;:&quot;field_2&quot;}]</span>
+  <span class="hljs-keyword">return</span> response.data;
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -2003,7 +1987,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Dessert&apos;</span>,
   <span class="hljs-attr">display</span>: {
     <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Order Dessert&apos;</span>,
-    <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Orders a dessert.&apos;</span>
+    <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Orders a dessert.&apos;</span>,
   },
   <span class="hljs-attr">operation</span>: {
     <span class="hljs-attr">inputFields</span>: [
@@ -2011,19 +1995,19 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;type&apos;</span>,
         <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
         <span class="hljs-attr">choices</span>: { <span class="hljs-number">1</span>: <span class="hljs-string">&apos;cake&apos;</span>, <span class="hljs-number">2</span>: <span class="hljs-string">&apos;ice cream&apos;</span>, <span class="hljs-number">3</span>: <span class="hljs-string">&apos;cookie&apos;</span> },
-        <span class="hljs-attr">altersDynamicFields</span>: <span class="hljs-literal">true</span>
+        <span class="hljs-attr">altersDynamicFields</span>: <span class="hljs-literal">true</span>,
       },
-      <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">z, bundle</span>) </span>{
+      <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">z, bundle</span>) </span>{
         <span class="hljs-keyword">if</span> (bundle.inputData.type === <span class="hljs-string">&apos;2&apos;</span>) {
           <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;with_sprinkles&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;boolean&apos;</span> }];
         }
         <span class="hljs-keyword">return</span> [];
-      }
+      },
     ],
-    <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">z, bundle</span>) </span>{
+    <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">z, bundle</span>) </span>{
       <span class="hljs-comment">/* ... */</span>
-    }
-  }
+    },
+  },
 };
 
 </code></pre>
@@ -2121,9 +2105,9 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         <span class="hljs-attr">operation</span>: {
           <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
             <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span> }];
-          } <span class="hljs-comment">// called for project_id dropdown</span>
-        }
-      }
+          }, <span class="hljs-comment">// called for project_id dropdown</span>
+        },
+      },
     },
     <span class="hljs-attr">issue</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
@@ -2136,19 +2120,19 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>,
               <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
               <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>,
-              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>
+              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>,
             }, <span class="hljs-comment">// calls project.list</span>
             {
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
               <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
               <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>,
-              <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>
-            }
-          ]
-        }
-      }
-    }
-  }
+              <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>,
+            },
+          ],
+        },
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -2170,16 +2154,16 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <span class="hljs-attr">display</span>: {
         <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;New Project&apos;</span>,
         <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Triggers when a new project is added.&apos;</span>,
-        <span class="hljs-attr">hidden</span>: <span class="hljs-literal">true</span>
+        <span class="hljs-attr">hidden</span>: <span class="hljs-literal">true</span>,
       },
       <span class="hljs-attr">operation</span>: {
-        <span class="hljs-attr">perform</span>: projectListRequest
-      }
+        <span class="hljs-attr">perform</span>: projectListRequest,
+      },
     },
     <span class="hljs-attr">another_trigger</span>: {
       <span class="hljs-comment">// Another trigger definition...</span>
-    }
-  }
+    },
+  },
 };
 
 </code></pre>
@@ -2191,14 +2175,13 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <p>You can have multiple dynamic dropdowns in a single Trigger or Action. And a dynamic dropdown can depend on the value chosen in another dynamic dropdown when making it&apos;s API call. Such as a Spreadsheet and Worksheet dynamic dropdown in a trigger or action. This means you must make sure that the key of the first dynamic dropdown is the same as referenced in the trigger powering the second.</p><p>Let&apos;s say you have a Worksheet trigger with a <code>perform</code> method similar to this.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js">perform: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-  <span class="hljs-keyword">return</span> z
-    .request(<span class="hljs-string">&apos;https://example.com/api/v2/projects.json&apos;</span>, {
-      <span class="hljs-attr">params</span>: {
-        <span class="hljs-attr">spreadsheet_id</span>: bundle.inputData.spreadsheet_id,
-      },
-    })
-    .then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.data);
+      <pre><code class="lang-js">perform: <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(<span class="hljs-string">&apos;https://example.com/api/v2/projects.json&apos;</span>, {
+    <span class="hljs-attr">params</span>: {
+      <span class="hljs-attr">spreadsheet_id</span>: bundle.inputData.spreadsheet_id,
+    },
+  });
+  <span class="hljs-keyword">return</span> response.data;
 };
 
 </code></pre>
@@ -2225,19 +2208,19 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;spreadsheet_id&apos;</span>,
               <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
               <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Spreadsheet&apos;</span>,
-              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;spreadsheet.id.name&apos;</span>
+              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;spreadsheet.id.name&apos;</span>,
             },
             {
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;worksheet_id&apos;</span>,
               <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
               <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Worksheet&apos;</span>,
-              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;worksheet.id.name&apos;</span>
-            }
-          ]
-        }
-      }
-    }
-  }
+              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;worksheet.id.name&apos;</span>,
+            },
+          ],
+        },
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -2265,9 +2248,9 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
             } <span class="hljs-keyword">else</span> {
               <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span> }];
             }
-          }
-        }
-      }
+          },
+        },
+      },
     },
     <span class="hljs-attr">issue</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
@@ -2280,19 +2263,19 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;project_id&apos;</span>,
               <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
               <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>,
-              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>
+              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>,
             }, <span class="hljs-comment">// calls project.list</span>
             {
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
               <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
               <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>,
-              <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>
-            }
-          ]
-        }
-      }
-    }
-  }
+              <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>,
+            },
+          ],
+        },
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -2324,9 +2307,9 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         <span class="hljs-attr">operation</span>: {
           <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
             <span class="hljs-keyword">return</span> [{ <span class="hljs-attr">id</span>: <span class="hljs-number">123</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Project 1&apos;</span> }];
-          } <span class="hljs-comment">// called for project_id</span>
-        }
-      }
+          }, <span class="hljs-comment">// called for project_id</span>
+        },
+      },
     },
     <span class="hljs-attr">issue</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;issue&apos;</span>,
@@ -2340,19 +2323,19 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
               <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
               <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Project&apos;</span>,
               <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;projectList.id.name&apos;</span>,
-              <span class="hljs-attr">search</span>: <span class="hljs-string">&apos;projectSearch.id&apos;</span>
+              <span class="hljs-attr">search</span>: <span class="hljs-string">&apos;projectSearch.id&apos;</span>,
             }, <span class="hljs-comment">// calls project.search (requires a trigger in the &quot;dynamic&quot; property)</span>
             {
               <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
               <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
               <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Title&apos;</span>,
-              <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>
-            }
-          ]
-        }
-      }
-    }
-  }
+              <span class="hljs-attr">helpText</span>: <span class="hljs-string">&apos;What is the name of the issue?&apos;</span>,
+            },
+          ],
+        },
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -2414,24 +2397,24 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;lineItemId&apos;</span>,
             <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;integer&apos;</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Line Item ID&apos;</span>,
-            <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
           },
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;name&apos;</span>,
             <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
             <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Name&apos;</span>,
-            <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>
+            <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
           },
           {
             <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;description&apos;</span>,
             <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
-            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Description&apos;</span>
-          }
-        ]
-      }
-    ]
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Description&apos;</span>,
+          },
+        ],
+      },
+    ],
     <span class="hljs-comment">// ...</span>
-  }
+  },
 };
 
 </code></pre>
@@ -2473,10 +2456,11 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <p>To define an Output Field for a nested field use <code>{{parent}}__{{key}}</code>. For children (line item) fields use <code>{{parent}}[]{{key}}</code>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeOutputFields = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> response = z.request(<span class="hljs-string">&apos;https://example.com/api/v2/fields.json&apos;</span>);
-  <span class="hljs-comment">// json is like [{&quot;key&quot;:&quot;field_1&quot;,&quot;label&quot;:&quot;Label for Custom Field&quot;}]</span>
-  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data);
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeOutputFields = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(<span class="hljs-string">&apos;https://example.com/api/v2/fields.json&apos;</span>);
+
+  <span class="hljs-comment">// Should return an array like [{&quot;key&quot;:&quot;field_1&quot;,&quot;label&quot;:&quot;Label for Custom Field&quot;}]</span>
+  <span class="hljs-keyword">return</span> response.data;
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -2911,7 +2895,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Before version <code>8.0.0</code>, the information in <code>bundle.meta</code> was different. See <a href="https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta">the old docs</a> for the previous values and <a href="https://github.com/zapier/zapier-platform/wiki/bundle.meta-changes">the wiki</a> for a mapping of old values to new.</p>
+<p>Before v8.0.0, the information in <code>bundle.meta</code> was different. See <a href="https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta">the old docs</a> for the previous values and <a href="https://github.com/zapier/zapier-platform/wiki/bundle.meta-changes">the wiki</a> for a mapping of old values to new.</p>
 </blockquote><p>There&apos;s also <code>bundle.meta.zap.id</code>, which is only available in the <code>performSubscribe</code> and <code>performUnsubscribe</code> methods.</p><p>The user&apos;s Zap ID is available during the <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#basichookoperationschema">subscribe and unsubscribe</a> methods.</p><p>For example - you could do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -3158,17 +3142,17 @@ zapier env 1.0.0
       <p>Within your app, you can access the environment via the standard <code>process.env</code> - any values set via local <code>export</code> or <code>zapier env</code> will be there.</p><p>For example, you can access the <code>process.env</code> in your perform functions and in templates:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> listExample = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> listExample = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-keyword">const</span> httpOptions = {
     <span class="hljs-attr">headers</span>: {
       <span class="hljs-string">&apos;my-header&apos;</span>: process.env.MY_SECRET_VALUE,
     },
   };
-  <span class="hljs-keyword">const</span> response = z.request(
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(
     <span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>,
     httpOptions
   );
-  <span class="hljs-keyword">return</span> response.then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data);
+  <span class="hljs-keyword">return</span> response.data;
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -3249,8 +3233,8 @@ zapier env 1.0.0
   <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/v2/api/recipes.json&apos;</span>,
   <span class="hljs-attr">params</span>: {
     <span class="hljs-attr">sort_by</span>: <span class="hljs-string">&apos;id&apos;</span>,
-    <span class="hljs-attr">sort_order</span>: <span class="hljs-string">&apos;DESC&apos;</span>
-  }
+    <span class="hljs-attr">sort_order</span>: <span class="hljs-string">&apos;DESC&apos;</span>,
+  },
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -3260,10 +3244,10 @@ zapier env 1.0.0
       <span class="hljs-comment">// ...</span>
       <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// ...</span>
-        <span class="hljs-attr">perform</span>: triggerShorthandRequest
-      }
-    }
-  }
+        <span class="hljs-attr">perform</span>: triggerShorthandRequest,
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -3293,21 +3277,18 @@ zapier env 1.0.0
       <p>When you need to do custom processing of the response, or need to process non-JSON responses, you can make manual HTTP requests. This approach does not perform any magic - no status code checking, no automatic JSON parsing. Use this method when you need more control. Manual requests do perform lazy <code>{{curly}}</code> replacement.</p><p>To make a manual HTTP request, use the <code>request</code> method of the <code>z</code> object:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> listExample = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> listExample = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-keyword">const</span> customHttpOptions = {
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>,
     <span class="hljs-attr">headers</span>: {
       <span class="hljs-string">&apos;my-header&apos;</span>: <span class="hljs-string">&apos;from zapier&apos;</span>,
     },
   };
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(customHttpOptions);
 
-  <span class="hljs-keyword">return</span> z
-    .request(<span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>, customHttpOptions)
-    .then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
-      <span class="hljs-keyword">const</span> recipes = response.data;
-      <span class="hljs-comment">// do any custom processing of recipes here...</span>
-
-      <span class="hljs-keyword">return</span> recipes;
-    });
+  <span class="hljs-keyword">const</span> recipes = response.data;
+  <span class="hljs-comment">// You can do any custom processing of recipes here...</span>
+  <span class="hljs-keyword">return</span> recipes;
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -3348,35 +3329,34 @@ zapier env 1.0.0
       <span class="hljs-comment">// ...</span>
       <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// ...</span>
-        <span class="hljs-attr">perform</span>: <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+        <span class="hljs-attr">perform</span>: <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
           <span class="hljs-keyword">const</span> recipe = {
             <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Baked Falafel&apos;</span>,
             <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;mediterranean&apos;</span>,
-            <span class="hljs-attr">directions</span>: <span class="hljs-string">&apos;Get some dough....&apos;</span>
+            <span class="hljs-attr">directions</span>: <span class="hljs-string">&apos;Get some dough....&apos;</span>,
           };
 
           <span class="hljs-keyword">const</span> options = {
             <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
-            <span class="hljs-attr">body</span>: <span class="hljs-built_in">JSON</span>.stringify(recipe)
+            <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>,
+            <span class="hljs-attr">body</span>: <span class="hljs-built_in">JSON</span>.stringify(recipe),
           };
+          <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(options);
 
-          <span class="hljs-keyword">return</span> z
-            .request(<span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>, options)
-            .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
-              <span class="hljs-comment">// throw and try to extract message from standard error responses</span>
-              response.throwForStatus();
-              <span class="hljs-keyword">if</span> (response.status !== <span class="hljs-number">201</span>) {
-                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> z.errors.Error(
-                  <span class="hljs-string">`Unexpected status code <span class="hljs-subst">${response.status}</span>`</span>,
-                  <span class="hljs-string">&apos;CreateRecipeError&apos;</span>,
-                  response.status
-                );
-              }
-            });
-        }
-      }
-    }
-  }
+          <span class="hljs-comment">// Throw and try to extract message from standard error responses</span>
+          <span class="hljs-keyword">if</span> (response.status !== <span class="hljs-number">201</span>) {
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> z.errors.Error(
+              <span class="hljs-string">`Unexpected status code <span class="hljs-subst">${response.status}</span>`</span>,
+              <span class="hljs-string">&apos;CreateRecipeError&apos;</span>,
+              response.status
+            );
+          }
+
+          <span class="hljs-keyword">return</span> response.data;
+        },
+      },
+    },
+  },
 };
 
 </code></pre>
@@ -3599,25 +3579,20 @@ zapier env 1.0.0
 </blockquote><p>Here is an example that pulls in extra data for a movie:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> getExtraDataFunction = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> getMovieDetails = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-keyword">const</span> url = <span class="hljs-string">`https://example.com/movies/<span class="hljs-subst">${bundle.inputData.id}</span>.json`</span>;
-  <span class="hljs-keyword">return</span> z.request(url).then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data);
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(url);
+  <span class="hljs-keyword">return</span> response.data;
 };
 
-<span class="hljs-keyword">const</span> movieList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  <span class="hljs-keyword">return</span> z
-    .request(<span class="hljs-string">&apos;https://example.com/movies.json&apos;</span>)
-    .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data)
-    .then(<span class="hljs-function">(<span class="hljs-params">results</span>) =&gt;</span> {
-      <span class="hljs-keyword">return</span> results.map(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
-        <span class="hljs-comment">// so maybe /movies.json is thin content but</span>
-        <span class="hljs-comment">// /movies/:id.json has more details we want...</span>
-        result.moreData = z.dehydrate(getExtraDataFunction, {
-          <span class="hljs-attr">id</span>: result.id,
-        });
-        <span class="hljs-keyword">return</span> result;
-      });
-    });
+<span class="hljs-keyword">const</span> movieList = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(<span class="hljs-string">&apos;https://example.com/movies.json&apos;</span>);
+  <span class="hljs-keyword">return</span> response.data.map(<span class="hljs-function">(<span class="hljs-params">movie</span>) =&gt;</span> {
+    <span class="hljs-comment">// so maybe /movies.json is thin content but /movies/:id.json has more</span>
+    <span class="hljs-comment">// details we want...</span>
+    movie.details = z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id });
+    <span class="hljs-keyword">return</span> movie;
+  });
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -3627,7 +3602,7 @@ zapier env 1.0.0
   <span class="hljs-comment">// don&apos;t forget to register hydrators here!</span>
   <span class="hljs-comment">// it can be imported from any module</span>
   <span class="hljs-attr">hydrators</span>: {
-    <span class="hljs-attr">getExtraData</span>: getExtraDataFunction,
+    <span class="hljs-attr">getMovieDetails</span>: getMovieDetails,
   },
 
   <span class="hljs-attr">triggers</span>: {
@@ -3733,21 +3708,17 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
   <span class="hljs-keyword">return</span> z.stashFile(filePromise);
 };
 
-<span class="hljs-keyword">const</span> pdfList = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  <span class="hljs-keyword">return</span> z
-    .request(<span class="hljs-string">&apos;https://example.com/pdfs.json&apos;</span>)
-    .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data)
-    .then(<span class="hljs-function">(<span class="hljs-params">results</span>) =&gt;</span> {
-      <span class="hljs-keyword">return</span> results.map(<span class="hljs-function">(<span class="hljs-params">result</span>) =&gt;</span> {
-        <span class="hljs-comment">// lazily convert a secret_download_url to a stashed url</span>
-        <span class="hljs-comment">// zapier won&apos;t do this until we need it</span>
-        result.file = z.dehydrateFile(stashPDFfunction, {
-          <span class="hljs-attr">downloadUrl</span>: result.secret_download_url,
-        });
-        <span class="hljs-keyword">delete</span> result.secret_download_url;
-        <span class="hljs-keyword">return</span> result;
-      });
+<span class="hljs-keyword">const</span> pdfList = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(<span class="hljs-string">&apos;https://example.com/pdfs.json&apos;</span>);
+  <span class="hljs-keyword">return</span> response.data.map(<span class="hljs-function">(<span class="hljs-params">pdf</span>) =&gt;</span> {
+    <span class="hljs-comment">// Lazily convert a secret_download_url to a stashed url</span>
+    <span class="hljs-comment">// zapier won&apos;t do this until we need it</span>
+    pdf.file = z.dehydrateFile(stashPDFfunction, {
+      <span class="hljs-attr">downloadUrl</span>: pdf.secret_download_url,
     });
+    <span class="hljs-keyword">delete</span> pdf.secret_download_url;
+    <span class="hljs-keyword">return</span> pdf;
+  });
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -4064,45 +4035,41 @@ You can run these tests in a CI tool like <a href="https://travis-ci.com/">Travi
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>We recommend using the <a href="https://mochajs.org/">Mocha</a> testing framework. After running
-<code>zapier init</code> you should find an example test to start from in the <code>test</code> directory.</p>
+      <p>Since v10, we recommend using the <a href="https://jestjs.io/">Jest</a> testing framework. After running <code>zapier init</code> you should find an example test to start from in the <code>test</code> directory.</p><blockquote>
+<p>Note: On v9, the recommendation was <a href="https://mochajs.org/">Mocha</a>. You can still use it if you prefer Mocha.</p>
+</blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-comment">// we use should assertions</span>
-<span class="hljs-keyword">const</span> should = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;should&apos;</span>);
+      <pre><code class="lang-js"><span class="hljs-comment">/* globals describe, expect, test */</span>
+
 <span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
 
-<span class="hljs-comment">// createAppTester() makes it easier to test your app. It takes your</span>
-<span class="hljs-comment">// raw app definition, and returns a function that will test you app.</span>
+<span class="hljs-comment">// createAppTester() makes it easier to test your app. It takes your raw app</span>
+<span class="hljs-comment">// definition, and returns a function that will test you app.</span>
 <span class="hljs-keyword">const</span> App = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../index&apos;</span>);
 <span class="hljs-keyword">const</span> appTester = zapier.createAppTester(App);
 
+<span class="hljs-comment">// Inject the vars from the .env file to process.env. Do this if you have a .env</span>
+<span class="hljs-comment">// file.</span>
+zapier.tools.env.inject();
+
 describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
-  describe(<span class="hljs-string">&apos;new recipe trigger&apos;</span>, () =&gt; {
-    it(<span class="hljs-string">&apos;should load recipes&apos;</span>, done =&gt; {
-      <span class="hljs-comment">// This is what Zapier will send to your app as input.</span>
-      <span class="hljs-comment">// It contains trigger options the user choice in their zap.</span>
-      <span class="hljs-keyword">const</span> bundle = {
-        <span class="hljs-attr">inputData</span>: {
-          <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;mediterranean&apos;</span>
-        }
-      };
+  test(<span class="hljs-string">&apos;load recipes&apos;</span>, <span class="hljs-keyword">async</span> () =&gt; {
+    <span class="hljs-keyword">const</span> bundle = {
+      <span class="hljs-attr">inputData</span>: {
+        <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;mediterranean&apos;</span>,
+      },
+    };
 
-      <span class="hljs-comment">// Pass appTester the path to the trigger you want to call,</span>
-      <span class="hljs-comment">// and the input bundle. appTester returns a promise for results.</span>
-      appTester(App.triggers.recipe.operation.perform, bundle)
-        .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
-          <span class="hljs-comment">// Make assertions</span>
+    <span class="hljs-keyword">const</span> results = <span class="hljs-keyword">await</span> appTester(
+      App.triggers.species.operation.perform,
+      bundle
+    );
+    expect(results.length).toBeGreaterThan(<span class="hljs-number">1</span>);
 
-          results.length.should.eql(<span class="hljs-number">10</span>);
-
-          <span class="hljs-keyword">const</span> firstRecipe = results[<span class="hljs-number">0</span>];
-          firstRecipe.name.should.eql(<span class="hljs-string">&apos;Baked Falafel&apos;</span>);
-
-          done();
-        })
-        .catch(done);
-    });
+    <span class="hljs-keyword">const</span> firstRecipe = results[<span class="hljs-number">0</span>];
+    expect(firstRecipe.id).toBe(<span class="hljs-number">1</span>);
+    expect(firstRecipe.name).toBe(<span class="hljs-string">&apos;Baked Falafel&apos;</span>);
   });
 });
 
@@ -4124,7 +4091,7 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
       <p>While testing, it&apos;s useful to test your code without actually hitting any external services. <a href="https://github.com/node-nock/nock">Nock</a> is a node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with <code>z.request</code> by setting up your <code>nock</code> before calling <code>appTester</code>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;should&apos;</span>);
+      <pre><code class="lang-js"><span class="hljs-comment">/* globals describe, expect, test */</span>
 
 <span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
 
@@ -4134,59 +4101,32 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
 <span class="hljs-keyword">const</span> nock = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;nock&apos;</span>);
 
 describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
-  describe(<span class="hljs-string">&apos;new recipe trigger&apos;</span>, () =&gt; {
-    it(<span class="hljs-string">&apos;should load recipes&apos;</span>, done =&gt; {
-      <span class="hljs-keyword">const</span> bundle = {
-        <span class="hljs-attr">inputData</span>: {
-          <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;mediterranean&apos;</span>
-        }
-      };
+  test(<span class="hljs-string">&apos;load recipes&apos;</span>, <span class="hljs-keyword">async</span> () =&gt; {
+    <span class="hljs-keyword">const</span> bundle = {
+      <span class="hljs-attr">inputData</span>: {
+        <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;mediterranean&apos;</span>,
+      },
+    };
 
-      <span class="hljs-comment">// mocks the next request that matches this url and querystring</span>
-      nock(<span class="hljs-string">&apos;https://57b20fb546b57d1100a3c405.mockapi.io/api&apos;</span>)
-        .get(<span class="hljs-string">&apos;/recipes&apos;</span>)
-        .query(bundle.inputData)
-        .reply(<span class="hljs-number">200</span>, [
-          { <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;name 1&apos;</span>, <span class="hljs-attr">directions</span>: <span class="hljs-string">&apos;directions 1&apos;</span>, <span class="hljs-attr">id</span>: <span class="hljs-number">1</span> },
-          { <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;name 2&apos;</span>, <span class="hljs-attr">directions</span>: <span class="hljs-string">&apos;directions 2&apos;</span>, <span class="hljs-attr">id</span>: <span class="hljs-number">2</span> }
-        ]);
+    <span class="hljs-comment">// mocks the next request that matches this url and querystring</span>
+    nock(<span class="hljs-string">&apos;https://example.com/api&apos;</span>)
+      .get(<span class="hljs-string">&apos;/recipes&apos;</span>)
+      .query(bundle.inputData)
+      .reply(<span class="hljs-number">200</span>, [
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;name 1&apos;</span>, <span class="hljs-attr">directions</span>: <span class="hljs-string">&apos;directions 1&apos;</span>, <span class="hljs-attr">id</span>: <span class="hljs-number">1</span> },
+        { <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;name 2&apos;</span>, <span class="hljs-attr">directions</span>: <span class="hljs-string">&apos;directions 2&apos;</span>, <span class="hljs-attr">id</span>: <span class="hljs-number">2</span> },
+      ]);
 
-      appTester(App.triggers.recipe.operation.perform, bundle)
-        .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
-          results.length.should.above(<span class="hljs-number">1</span>);
+    <span class="hljs-keyword">const</span> results = <span class="hljs-keyword">await</span> appTester(
+      App.triggers.recipe.operation.perform,
+      bundle
+    );
 
-          <span class="hljs-keyword">const</span> firstRecipe = results[<span class="hljs-number">0</span>];
-          firstRecipe.name.should.eql(<span class="hljs-string">&apos;name 1&apos;</span>);
-          firstRecipe.directions.should.eql(<span class="hljs-string">&apos;directions 1&apos;</span>);
+    expect(results.length).toBeGreaterThan(<span class="hljs-number">1</span>);
 
-          done();
-        })
-        .catch(done);
-    });
-
-    it(<span class="hljs-string">&apos;should load recipes without filters&apos;</span>, done =&gt; {
-      <span class="hljs-keyword">const</span> bundle = {};
-
-      <span class="hljs-comment">// each test needs its own mock</span>
-      nock(<span class="hljs-string">&apos;https://57b20fb546b57d1100a3c405.mockapi.io/api&apos;</span>)
-        .get(<span class="hljs-string">&apos;/recipes&apos;</span>)
-        .reply(<span class="hljs-number">200</span>, [
-          { <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;name 1&apos;</span>, <span class="hljs-attr">directions</span>: <span class="hljs-string">&apos;directions 1&apos;</span>, <span class="hljs-attr">id</span>: <span class="hljs-number">1</span> },
-          { <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;name 2&apos;</span>, <span class="hljs-attr">directions</span>: <span class="hljs-string">&apos;directions 2&apos;</span>, <span class="hljs-attr">id</span>: <span class="hljs-number">2</span> }
-        ]);
-
-      appTester(App.triggers.recipe.operation.perform, bundle)
-        .then(<span class="hljs-function"><span class="hljs-params">results</span> =&gt;</span> {
-          results.length.should.above(<span class="hljs-number">1</span>);
-
-          <span class="hljs-keyword">const</span> firstRecipe = results[<span class="hljs-number">0</span>];
-          firstRecipe.name.should.eql(<span class="hljs-string">&apos;name 1&apos;</span>);
-          firstRecipe.directions.should.eql(<span class="hljs-string">&apos;directions 1&apos;</span>);
-
-          done();
-        })
-        .catch(done);
-    });
+    <span class="hljs-keyword">const</span> firstRecipe = results[<span class="hljs-number">0</span>];
+    expect(firstRecipe.id).toBe(<span class="hljs-number">1</span>);
+    expect(firstRecipe.name).toBe(<span class="hljs-string">&apos;name 1&apos;</span>);
   });
 });
 
@@ -4225,7 +4165,7 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>You can also go direct with <code>npm test</code> or <code>node_modules/mocha/bin/mocha</code>.</p>
+<p>You can also go direct with <code>npm test</code> or <code>node_modules/.bin/jest</code>.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -4283,45 +4223,6 @@ zapier <span class="hljs-built_in">test</span>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="viewing-http-logs-in-unit-tests">Viewing HTTP Logs in Unit Tests</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>When running a unit test via <code>zapier test</code>, <code>z.console</code> statements and detailed HTTP logs print to <code>stdout</code>:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier <span class="hljs-built_in">test</span>
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Sometimes you don&apos;t want that much logging, for example in a CI test. To suppress the detailed HTTP logs do:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier <span class="hljs-built_in">test</span> --quiet
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To also suppress the HTTP summary logs do:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-bash">zapier <span class="hljs-built_in">test</span> --very-quiet
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h3 id="testing-in-your-ci">Testing in Your CI</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -4331,7 +4232,7 @@ zapier <span class="hljs-built_in">test</span>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Whether you use Travis, Circle, Jenkins, or anything else, we aim to make it painless to test in an automated environment.</p><p>Behind the scenes <code>zapier test</code> is doing a pretty standard <code>npm test</code> with <a href="https://www.npmjs.com/package/mocha">mocha</a> as the backend.</p><p>This makes it pretty straightforward to integrate into your testing interface. If you&apos;d like to test with <a href="https://travis-ci.com/">Travis CI</a> for example - the <code>.travis.yml</code> would look something like this:</p>
+      <p>Whether you use Travis, Circle, Jenkins, or anything else, we aim to make it painless to test in an automated environment.</p><p>Behind the scenes <code>zapier test</code> is doing a pretty standard <code>npm test</code>, which could be <a href="https://jestjs.io/">Jest</a> or <a href="https://mochajs.org/">Mocha</a>, based on your project setup.</p><p>This makes it pretty straightforward to integrate into your testing interface. If you&apos;d like to test with <a href="https://travis-ci.com/">Travis CI</a> for example - the <code>.travis.yml</code> would look something like this:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-yaml"><span class="hljs-attr">language:</span> <span class="hljs-string">node_js</span>
@@ -4345,7 +4246,7 @@ zapier <span class="hljs-built_in">test</span>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can substitute <code>zapier test</code> with <code>npm test</code>, or a direct call to <code>node_modules/mocha/bin/mocha</code>. Also, we generally recommend putting the environment variables into whatever configuration screen Jenkins or Travis provides!</p><p>As an alternative to reading the deploy key from root (the default location), you may set the <code>ZAPIER_DEPLOY_KEY</code> environment variable to run privileged commands without the human input needed for <code>zapier login</code>. We suggest encrypting your deploy key in whatever manner you CI provides (such as <a href="https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml">these instructions</a>, for Travis).</p>
+      <p>You can substitute <code>zapier test</code> with <code>npm test</code>, or a direct call to <code>node_modules/.bin/jest</code>. Also, we generally recommend putting the environment variables into whatever configuration screen Jenkins or Travis provides!</p><p>As an alternative to reading the deploy key from root (the default location), you may set the <code>ZAPIER_DEPLOY_KEY</code> environment variable to run privileged commands without the human input needed for <code>zapier login</code>. We suggest encrypting your deploy key in whatever manner you CI provides (such as <a href="https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml">these instructions</a>, for Travis).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4383,10 +4284,10 @@ zapier <span class="hljs-built_in">test</span>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>During the <code>zapier build</code> or <code>zapier push</code> step - we&apos;ll copy all your code to <code>/tmp</code> folder and do a fresh re-install of modules.</p><blockquote>
+      <p>During the <code>zapier build</code> or <code>zapier push</code> step - we&apos;ll copy all your code to a temporary folder and do a fresh re-install of modules.</p><blockquote>
 <p>Note: If your package isn&apos;t being pushed correctly (IE: you get &quot;Error: Cannot find module &apos;whatever&apos;&quot; in production), try adding the <code>--disable-dependency-detection</code> flag to <code>zapier push</code>.</p>
 </blockquote><blockquote>
-<p>Note 2: You can also try adding a &quot;includeInBuild&quot; array property (with paths to include, which will be evaluated to RegExp, with a case insensitive flag) to your <code>.zapierapprc</code> file, to make it look like:</p>
+<p>Note 2: You can also try adding a <code>includeInBuild</code> array property (with paths to include, which will be evaluated to RegExp, with a case insensitive flag) to your <code>.zapierapprc</code> file, to make it look like:</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -4406,7 +4307,7 @@ zapier <span class="hljs-built_in">test</span>
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Warning: do not use compiled libraries unless you run your build on the AWS AMI <code>ami-4fffc834</code>, or follow the Docker instructions below.</p>
+<p>Warning: Do not use compiled libraries unless you run your build on the AWS AMI <code>ami-4fffc834</code>, or follow the Docker instructions below.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -4475,7 +4376,7 @@ zapier <span class="hljs-built_in">test</span>
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note: watch out for your <code>package-lock.json</code> file, if it exists for local install it might incorrectly pin a native version.</p>
+<p>Note: Watch out for your <code>package-lock.json</code> file, if it exists for local install it might incorrectly pin a native version.</p>
 </blockquote><p>Now you should be able to run <code>docker-compose run pusher</code> and see the build and push successfully complete!</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -4537,26 +4438,8 @@ npm run zapier-push
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>There are a lot of details left out - check out the full example app for a working setup.</p><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/babel">https://github.com/zapier/zapier-platform/tree/master/example-apps/babel</a> for a working example app using Babel.</p>
+<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/babel">https://github.com/zapier/zapier-platform/tree/master/example-apps/babel</a> for a working example app using Babel.</p>
 </blockquote>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="example-apps">Example Apps</h2>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>See <a href="https://github.com/zapier/zapier-platform/wiki/Example-Apps">the wiki</a> for a full list of working examples (and installation instructions).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4652,6 +4535,7 @@ npm run zapier-push
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">afterResponse</span>: [
     <span class="hljs-function">(<span class="hljs-params">response, z, bundle</span>) =&gt;</span> {
+      response.throwForStatus();
       response.data = xml.parse(response.content);
       <span class="hljs-keyword">return</span> response;
     },
@@ -4689,25 +4573,21 @@ npm run zapier-push
 };
 
 <span class="hljs-comment">// triggers on paging with a certain tag</span>
-<span class="hljs-keyword">const</span> performPaging = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
-  <span class="hljs-keyword">const</span> limit = <span class="hljs-number">3</span>;
-  <span class="hljs-keyword">let</span> start = <span class="hljs-number">0</span>;
-
+<span class="hljs-keyword">const</span> performPaging = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-comment">// array of promises</span>
   <span class="hljs-keyword">const</span> promises = [];
 
-  <span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>;
-  <span class="hljs-keyword">while</span> (i &lt; <span class="hljs-number">5</span>) {
+  <span class="hljs-comment">// 5 requests with page size = 3</span>
+  <span class="hljs-keyword">let</span> start = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">const</span> limit = <span class="hljs-number">3</span>;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++) {
     promises.push(makeCall(z, start, limit));
     start += limit;
-    i += <span class="hljs-number">1</span>;
   }
 
-  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.all(promises).then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
-    <span class="hljs-comment">// res is an array of responses</span>
-    <span class="hljs-keyword">const</span> results = res.map(<span class="hljs-function">(<span class="hljs-params">r</span>) =&gt;</span> r.data); <span class="hljs-comment">// array of arrays of js objects</span>
-    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.prototype.concat.apply([], results); <span class="hljs-comment">// flatten array</span>
-  });
+  <span class="hljs-comment">// send requests concurrently</span>
+  <span class="hljs-keyword">const</span> responses = <span class="hljs-keyword">await</span> <span class="hljs-built_in">Promise</span>.all(promises);
+  <span class="hljs-keyword">return</span> responses.map(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> res.data);
 };
 
 <span class="hljs-built_in">module</span>.exports = {
@@ -4815,15 +4695,15 @@ npm run zapier-push
       <p>Paging is <strong>only used when a trigger is part of a dynamic dropdown</strong>. Depending on how many items exist and how many are returned in the first poll, it&apos;s possible that the resource the user is looking for isn&apos;t in the initial poll. If they hit the &quot;see more&quot; button, we&apos;ll increment the value of <code>bundle.meta.page</code> and poll again.</p><p>Paging is a lot like a regular trigger except the range of items returned is dynamic. The most common example of this is when you can pass a <code>offset</code> parameter:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js">(z, bundle) =&gt; {
-  <span class="hljs-keyword">const</span> promise = z.request({
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> perform = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/list.json&apos;</span>,
     <span class="hljs-attr">params</span>: {
       <span class="hljs-attr">limit</span>: <span class="hljs-number">100</span>,
       <span class="hljs-attr">offset</span>: <span class="hljs-number">100</span> * bundle.meta.page
     }
   });
-  <span class="hljs-keyword">return</span> promise.then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.data);
+  <span class="hljs-keyword">return</span> response.data;
 };
 </code></pre>
     </div>
@@ -4911,7 +4791,7 @@ npm run zapier-push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Each time a polling Zap runs, Zapier needs to decide which of the items in the response should trigger the zap. To do this, we compare the <code>id</code>s to all those we&apos;ve seen before, trigger on new objects, and update the list of seen <code>id</code>s. When a Zap is turned on, we initialize the list of seen <code>id</code>s with a single poll. When it&apos;s turned off, we clear that list. For this reason, it&apos;s important that calls to a polling endpoint always return the newest items.</p><p>For example, the initial poll returns objects 4, 5, and 6 (where a higher <code>id</code> is newer). If a later poll increases the limit and returns objects 1-6, then 1, 2, and 3 will be (incorrectly) treated like new objects.</p><p>There&apos;s a more in-depth explanation <a href="https://zapier.com/developer/documentation/v2/deduplication/">here</a>.</p>
+      <p>Each time a polling Zap runs, Zapier needs to decide which of the items in the response should trigger the zap. To do this, we compare the <code>id</code>s to all those we&apos;ve seen before, trigger on new objects, and update the list of seen <code>id</code>s. When a Zap is turned on, we initialize the list of seen <code>id</code>s with a single poll. When it&apos;s turned off, we clear that list. For this reason, it&apos;s important that calls to a polling endpoint always return the newest items.</p><p>For example, the initial poll returns objects 4, 5, and 6 (where a higher <code>id</code> is newer). If a later poll increases the limit and returns objects 1-6, then 1, 2, and 3 will be (incorrectly) treated like new objects.</p><p>There&apos;s a more in-depth explanation <a href="https://platform.zapier.com/legacy/dedupe">here</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4934,18 +4814,17 @@ npm run zapier-push
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-comment">// ...</span>
 <span class="hljs-keyword">let</span> items = response.data.items;
-items.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+<span class="hljs-keyword">return</span> items.map(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> {
   item.id = item.contactId;
-})
-
-<span class="hljs-keyword">return</span> items;
+  <span class="hljs-keyword">return</span> item;
+});
 </code></pre>
     </div>
   </div>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="node-6-no-longer-supported">Node 6 No Longer Supported</h3>
+      <h3 id="node-x-no-longer-supported">Node X No Longer Supported</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4957,15 +4836,15 @@ items.forEach(<span class="hljs-function"><span class="hljs-params">item</span> 
       <p>If you&apos;re seeing errors like the following:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code>InvalidParameterValueException An error occurred (InvalidParameterValueException) when calling the CreateFunction operation: The runtime parameter of nodejs6.10 is no longer supported for creating or updating AWS Lambda functions. We recommend you use the new runtime (nodejs8.10) while creating or updating functions.
+      <pre><code>InvalidParameterValueException An error occurred (InvalidParameterValueException) when calling the CreateFunction operation: The runtime parameter of nodejs6.10 is no longer supported for creating or updating AWS Lambda functions. We recommend you use the new runtime (nodejsX.Y) while creating or updating functions.
 </code></pre>
     </div>
   </div>
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>then you need to update your <code>zapier-platform-core</code> dependency to a non-deprecated version that uses a newer version of Node.js. Complete the following instructions as soon as possible:</p><ol>
-<li>Edit <code>package.json</code> to depend on a version of <code>zapier-platform-core</code> &gt;= <code>7.0.0</code>. (8.x is the latest) There&apos;s a list of all breaking changes (marked with an :exclamation:) in the <a href="https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md">changelog</a>.</li>
+      <p>... then you need to update your <code>zapier-platform-core</code> dependency to a non-deprecated version that uses a newer version of Node.js. Complete the following instructions as soon as possible:</p><ol>
+<li>Edit <code>package.json</code> to depend on the latest version of <code>zapier-platform-core</code>. There&apos;s a list of all breaking changes (marked with an :exclamation:) in the <a href="https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md">changelog</a>.</li>
 <li>Increment the <code>version</code> property in <code>package.json</code></li>
 <li>Ensure you&apos;re using version <code>v10</code> (or greater) of node locally (<code>node -v</code>). Use <a href="https://github.com/nvm-sh/nvm">nvm</a> to use a different one if need be.</li>
 <li>Run <code>rm -rf node_modules &amp;&amp; npm i</code> to get a fresh copy of everything</li>
@@ -4991,7 +4870,7 @@ items.forEach(<span class="hljs-function"><span class="hljs-params">item</span> 
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Starting with version <code>8.4.0</code>, Zapier collects information about each invocation of the CLI tool.</p><p>This data is collected purely to improve the CLI experience and will <strong>never</strong> be used for advertising or any non-product purpose. There are 3 collection modes that are set on a per-computer basis.</p><p><strong>Anonymous</strong></p><p>When you run a command with analytics in <code>anonymous</code> mode, the following data is sent to Zapier:</p><ul>
+      <p>Starting with v8.4.0, Zapier collects information about each invocation of the CLI tool.</p><p>This data is collected purely to improve the CLI experience and will <strong>never</strong> be used for advertising or any non-product purpose. There are 3 collection modes that are set on a per-computer basis.</p><p><strong>Anonymous</strong></p><p>When you run a command with analytics in <code>anonymous</code> mode, the following data is sent to Zapier:</p><ul>
 <li>which command you ran</li>
 <li>if that command is a known command</li>
 <li>how many arguments you supplied (but not the contents of the arguments)</li>
@@ -5036,7 +4915,7 @@ items.forEach(<span class="hljs-function"><span class="hljs-params">item</span> 
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Introduced in <code>9.1.0</code>, the <code>zapier autocomplete</code> command shows instructions for generating command line autocomplete.</p><p>Follow those instructions to enable completion for <code>zapier</code> commands and flags!</p>
+      <p>Introduced in v9.1.0, the <code>zapier autocomplete</code> command shows instructions for generating command line autocomplete.</p><p>Follow those instructions to enable completion for <code>zapier</code> commands and flags!</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -5079,74 +4958,7 @@ items.forEach(<span class="hljs-function"><span class="hljs-params">item</span> 
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <code>9.4.0</code>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://www.npmjs.com/package/zapier-platform-core?activeTab=versions">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="development-of-the-cli">Development of the CLI</h2>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>This section is only relevant if you&apos;re editing the <code>zapier-platform-cli</code> package itself.</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="commands">Commands</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <ul>
-<li><code>export ZAPIER_BASE_ENDPOINT=&apos;https://localhost:8001&apos;</code> if you&apos;re building against a local dev environment</li>
-<li><code>npm install</code> for getting started</li>
-<li><code>npm run build</code> for updating <code>./lib</code> from <code>./src</code></li>
-<li><code>npm run watch</code> for automatically building as you work</li>
-<li><code>npm test</code> for running tests (also runs <code>npm run build</code>)</li>
-<li><code>npm link</code> (while in this project&apos;s directory) and then use <code>zapier</code> command elsewhere</li>
-<li><code>npm run docs</code> for updating docs</li>
-<li><code>npm run gen-completions</code> for updating the auto complete scripts</li>
-</ul>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="publishing-of-the-cli-after-merging">Publishing of the CLI (after merging)</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <ul>
-<li><code>npm version [patch|minor|major]</code> will pull, test, update docs, increment version in package.json, push tags, and publish to npm</li>
-<li><code>npm run validate-templates</code> for validating the example apps</li>
-<li><code>npm run set-template-versions VERSION</code> for updating the platform-core version in the example app repos to <code>VERSION</code></li>
-</ul>
+      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never <em>have</em> to upgrade your app&apos;s <code>zapier-platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md">changelog</a> to see what new features and bux fixes are available.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <code>9.4.0</code>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://www.npmjs.com/package/zapier-platform-core?activeTab=versions">here</a> and run <code>npm install</code>.</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

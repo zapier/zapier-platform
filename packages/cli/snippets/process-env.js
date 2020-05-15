@@ -1,14 +1,14 @@
-const listExample = (z, bundle) => {
+const listExample = async (z, bundle) => {
   const httpOptions = {
     headers: {
       'my-header': process.env.MY_SECRET_VALUE,
     },
   };
-  const response = z.request(
+  const response = await z.request(
     'https://example.com/api/v2/recipes.json',
     httpOptions
   );
-  return response.then((res) => res.data);
+  return response.data;
 };
 
 const App = {

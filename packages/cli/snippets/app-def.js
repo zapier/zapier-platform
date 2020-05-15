@@ -20,7 +20,7 @@ const App = {
   // See "Triggers/Searches/Creates" section below
   triggers: {},
   searches: {},
-  creates: {}
+  creates: {},
 };
 
 module.exports = App;

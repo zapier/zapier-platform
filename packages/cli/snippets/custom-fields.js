@@ -1,7 +1,8 @@
-const recipeFields = (z, bundle) => {
-  const response = z.request('https://example.com/api/v2/fields.json');
-  // json is is [{"key":"field_1"},{"key":"field_2"}]
-  return response.then((res) => res.data);
+const recipeFields = async (z, bundle) => {
+  const response = await z.request('https://example.com/api/v2/fields.json');
+
+  // Should return an array like [{"key":"field_1"},{"key":"field_2"}]
+  return response.data;
 };
 
 const App = {
