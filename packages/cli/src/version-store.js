@@ -12,4 +12,5 @@ module.exports = [
   { nodeVersion: '8.10.0', npmVersion: '>=5.6.0' }, // 7.x
   { nodeVersion: '8.10.0', npmVersion: '>=5.6.0' }, // 8.x
   { nodeVersion: '10', npmVersion: '>=5.6.0' }, // 9.x; it's no longer a specific version
+  { nodeVersion: '12', npmVersion: '>=5.6.0' }, // 10.x
 ];
