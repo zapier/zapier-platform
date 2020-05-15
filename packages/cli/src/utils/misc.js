@@ -10,6 +10,7 @@ const semver = require('semver');
 
 const {
   PLATFORM_PACKAGE,
+  PACKAGE_NAME,
   PACKAGE_VERSION,
   LAMBDA_VERSION,
 } = require('../constants');
@@ -81,12 +82,20 @@ const isValidAppInstall = () => {
   let packageJson;
   try {
     packageJson = require(path.join(process.cwd(), 'package.json'));
+
+    if (_.get(packageJson, ['dependencies', PACKAGE_NAME])) {
+      return {
+        valid: false,
+        reason: `Your integration should not depend on ${PACKAGE_NAME}. Please remove it from the \`dependencies\` section of your \`package.json\`. If you want to include a local install, it should go in \`devDependencies.\``,
+      };
+    }
+
     const coreVersion = _.get(packageJson, ['dependencies', PLATFORM_PACKAGE]);
     // could check for a lot more, but this is probably enough: https://docs.npmjs.com/files/package.json#dependencies
     if (!coreVersion) {
       return {
         valid: false,
-        reason: `Your app doesn't depend on ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
+        reason: `Your integration doesn't depend on ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
           `npm install -E ${PLATFORM_PACKAGE}`
         )}\` to resolve`,
       };
@@ -94,7 +103,7 @@ const isValidAppInstall = () => {
       // semver.valid only matches single versions
       return {
         valid: false,
-        reason: `Your app must depend on an exact version of ${PLATFORM_PACKAGE}. Instead of "${coreVersion}", specify an exact version (such as "${PACKAGE_VERSION}")`,
+        reason: `Your integration must depend on an exact version of ${PLATFORM_PACKAGE}. Instead of "${coreVersion}", specify an exact version (such as "${PACKAGE_VERSION}")`,
       };
     }
   } catch (err) {

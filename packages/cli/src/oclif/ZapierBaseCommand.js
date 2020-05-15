@@ -70,7 +70,7 @@ class ZapierBaseCommand extends Command {
     this.error(`subclass the "perform" method in the "${this.id}" command`);
   }
 
-  // put ina method so we can disable it easily in tests
+  // put in a method so we can disable it easily in tests
   throwForInvalidAppInstall() {
     if (this._staticClassReference.skipValidInstallCheck) {
       return;
