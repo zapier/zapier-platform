@@ -1,5 +1,5 @@
-const getSessionKey = (z, bundle) => {
-  const promise = z.request({
+const getSessionKey = async (z, bundle) => {
+  const response = await z.request({
     method: 'POST',
     url: 'https://example.com/api/accounts/login.json',
     body: {
@@ -8,14 +8,11 @@ const getSessionKey = (z, bundle) => {
     },
   });
 
-  return promise.then((response) => {
-    if (response.status === 401) {
-      throw new Error('The username/password you supplied is invalid');
-    }
-    return {
-      sessionKey: response.data.sessionKey,
-    };
-  });
+  // Call response.throwForStatus() if you're using a core version < 10
+
+  return {
+    sessionKey: response.data.sessionKey,
+  };
 };
 
 const authentication = {

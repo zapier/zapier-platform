@@ -5,33 +5,32 @@ const App = {
       // ...
       operation: {
         // ...
-        perform: (z, bundle) => {
+        perform: async (z, bundle) => {
           const recipe = {
             name: 'Baked Falafel',
             style: 'mediterranean',
-            directions: 'Get some dough....'
+            directions: 'Get some dough....',
           };
 
           const options = {
             method: 'POST',
-            body: JSON.stringify(recipe)
+            url: 'https://example.com/api/v2/recipes.json',
+            body: JSON.stringify(recipe),
           };
+          const response = await z.request(options);
 
-          return z
-            .request('https://example.com/api/v2/recipes.json', options)
-            .then(response => {
-              // throw and try to extract message from standard error responses
-              response.throwForStatus();
-              if (response.status !== 201) {
-                throw new z.errors.Error(
-                  `Unexpected status code ${response.status}`,
-                  'CreateRecipeError',
-                  response.status
-                );
-              }
-            });
-        }
-      }
-    }
-  }
+          // Throw and try to extract message from standard error responses
+          if (response.status !== 201) {
+            throw new z.errors.Error(
+              `Unexpected status code ${response.status}`,
+              'CreateRecipeError',
+              response.status
+            );
+          }
+
+          return response.data;
+        },
+      },
+    },
+  },
 };
