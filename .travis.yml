@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "10"
+  - "12"
 before_install:
   - npm install -g yarn
   - pip install --user awscli
@@ -36,7 +36,7 @@ jobs:
         script: ./scripts/publish.sh
         on:
           tags: true,
-          node: "10"
+          node: "12"
         skip_cleanup: true
 notifications:
   email: false
