@@ -2,23 +2,36 @@
 
 Another major release! We have some great improvements in this version but also have breaking changes. Please review the following to see if you need to change anything to upgrade `zapier-platform-core` to v10.
 
-First, Zapier integrations that depend on the new Core v10 **will run using Node.js 12**. You can install Node 12 using `nvm`. Run unit tests on Node 12 if you haven't before. Assuming your code works on Node 12, go through the regular push, promote, migrate flow.
+(a) Zapier integrations that depend on the new Core v10 **will run using Node.js 12**. You can install Node 12 using `nvm`. Run unit tests on Node 12 if you haven't before. Assuming your code works on Node 12, go through the regular push, promote, migrate flow.
 
-Second, **`z.request` now always calls `response.throwForStatus`** via a middleware by default. You no longer need to call `response.throwForStatus` after `z.request`, the built-in middleware will do that for you. See [Error Response Handling](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#error-response-handling) for details.
+(b) **`z.request` now always calls `response.throwForStatus`** via a middleware by default. You no longer need to call `response.throwForStatus` after `z.request`, the built-in middleware will do that for you. See [Error Response Handling](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#error-response-handling) for details.
 
-Third, **`response.throwForStatus` now only throws an error if the status code is between 400 and 600 (inclusive)**. Before v10, it threw for status >= 300. So if your code rely on that old behavior, you should change your code to check `response.status` explicitly instead of using `response.throwForStatus`.
+(c) **`response.throwForStatus` now only throws an error if the status code is between 400 and 600 (inclusive)**. Before v10, it threw for status >= 300. So if your code rely on that old behavior, you should change your code to check `response.status` explicitly instead of using `response.throwForStatus`.
 
-Fourth, we now **parse JSON and form-encoded response body by default**. The parsed object is available as `response.data` (`response.json` will be still available for JSON body but less preferable). Before v10, we only parsed JSON for [manual requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#manual-http-requests); parsed JSON and form-encoded body for [shorthand requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#shorthand-http-requests). This change could be breaking if you have an `afterResponse` that modifies `response.content`, with the expectation for shorthand requests to pick up on that. In which case, you'll have to replace `response.content = JSON.stringify(parsedOrTransformed)` with `response.data = parsedOrTransformed`.
+(d) we now **parse JSON and form-encoded response body by default**. The parsed object is available as `response.data` (`response.json` will be still available for JSON body but less preferable). Before v10, we only parsed JSON for [manual requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#manual-http-requests); parsed JSON and form-encoded body for [shorthand requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#shorthand-http-requests). This change could be breaking if you have an `afterResponse` that modifies `response.content`, with the expectation for shorthand requests to pick up on that. In which case, you'll have to replace `response.content = JSON.stringify(parsedOrTransformed)` with `response.data = parsedOrTransformed`.
 
-Fifth, we rewrote the CLI `zapier init` command. The project templates are more up-to-date, with better coding practices. However, **we reduced the number of templates**. Try `zapier init --help` to see what are available.
+(e) we rewrote the CLI `zapier init` command. The project templates are more up-to-date, with better coding practices. However, **we've removed the following templates**:
 
-Finally, `zapier init` no longer uses the `minimal` template by default. If you don't specify a `--template`, the command will prompts you interactively. So if you're using `zapier init` in CI and expect to use `minimal` by default, you should change the command to `zapier init --template minimal`.
+* `babel`
+* `create`
+* `github`
+* `middleware`
+* `oauth1-tumblr`
+* `oauth1-twitter`
+* `onedrive`
+* `resource`
+* `rest-hooks`
+* `trigger`
 
-See below for a detailed changelog:
+For trigger/create/search, use `zapier scaffold` command instead. For `babel`, look at `typescript` template and replace the build step with the similar code from https://babeljs.io/setup#installation. For `oauth1`, we now only keep `oauth1-trello` for simplicity. If you ever need to look at the old templates, they're always available in the [example-apps](https://github.com/zapier/zapier-platform/tree/master/example-apps) directory in the repo.
+
+(f) `zapier init` no longer uses the `minimal` template by default. If you don't specify a `--template`, the command will prompt you interactively. So if you're using `zapier init` (without any arguments) in CI and expect it to use `minimal` by default, you should replace the command with `zapier init -t minimal`.
+
+See below for a detailed changelog (**:exclamation: denotes a breaking change**):
 
 ### cli
 
-* :exclamation: `init` command becomes more interative and comes with brand new project templates (#210)
+* :exclamation: We've improved and removed some templates from `init` command, see (e) above for a list of templates that were removed (#210)
 * :nail_care: `build` command no longer needs login (#216)
 * :nail_care: `promote` command becomes more receptive about the changelog format (#209)
 * :nail_care: Warn when you put `zapier-platform-cli` in your `dependencies` (#221)
