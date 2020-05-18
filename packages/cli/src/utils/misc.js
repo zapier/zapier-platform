@@ -11,7 +11,7 @@ const semver = require('semver');
 const {
   PLATFORM_PACKAGE,
   PACKAGE_VERSION,
-  LAMBDA_VERSION,
+  NODE_VERSION_CLI_REQUIRES,
 } = require('../constants');
 
 const { fileExistsSync } = require('./files');
@@ -75,7 +75,7 @@ const runCommand = (command, args, options) => {
 };
 
 const isValidNodeVersion = (version = process.version) =>
-  semver.satisfies(version, `>=${semver.coerce(LAMBDA_VERSION)}`);
+  semver.satisfies(version, NODE_VERSION_CLI_REQUIRES);
 
 const isValidAppInstall = () => {
   let packageJson;
