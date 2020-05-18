@@ -8,20 +8,9 @@ Another major release! We have some great improvements in this version but also 
 
 (c) **`response.throwForStatus` now only throws an error if the status code is between 400 and 600 (inclusive)**. Before v10, it threw for status >= 300. So if your code rely on that old behavior, you should change your code to check `response.status` explicitly instead of using `response.throwForStatus`.
 
-(d) we now **parse JSON and form-encoded response body by default**. The parsed object is available as `response.data` (`response.json` will be still available for JSON body but less preferable). Before v10, we only parsed JSON for [manual requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#manual-http-requests); parsed JSON and form-encoded body for [shorthand requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#shorthand-http-requests). This change could be breaking if you have an `afterResponse` that modifies `response.content`, with the expectation for shorthand requests to pick up on that. In which case, you'll have to replace `response.content = JSON.stringify(parsedOrTransformed)` with `response.data = parsedOrTransformed`.
+(d) We now **parse JSON and form-encoded response body by default**. The parsed object is available as `response.data` (`response.json` will be still available for JSON body but less preferable). Before v10, we only parsed JSON for [manual requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#manual-http-requests); parsed JSON and form-encoded body for [shorthand requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#shorthand-http-requests). This change could be breaking if you have an `afterResponse` that modifies `response.content`, with the expectation for shorthand requests to pick up on that. In which case, you'll have to replace `response.content = JSON.stringify(parsedOrTransformed)` with `response.data = parsedOrTransformed`.
 
-(e) we rewrote the CLI `zapier init` command. The project templates are more up-to-date, with better coding practices. However, **we've removed the following templates**:
-
-* `babel`
-* `create`
-* `github`
-* `middleware`
-* `oauth1-tumblr`
-* `oauth1-twitter`
-* `onedrive`
-* `resource`
-* `rest-hooks`
-* `trigger`
+(e) we rewrote the CLI `zapier init` command. The project templates are more up-to-date, with better coding practices. However, **we've removed the following templates**: `babel`, `create`, `github`, `middleware`, `oauth1-tumblr`, `oauth1-twitter`, `onedrive`, `resource`, `rest-hooks`, `trigger`.
 
 For trigger/create/search, use `zapier scaffold` command instead. For `babel`, look at `typescript` template and replace the build step with the similar code from https://babeljs.io/setup#installation. For `oauth1`, we now only keep `oauth1-trello` for simplicity. If you ever need to look at the old templates, they're always available in the [example-apps](https://github.com/zapier/zapier-platform/tree/master/example-apps) directory in the repo.
 
