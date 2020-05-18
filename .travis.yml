@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "10"
+  - "12"
 before_install:
   - npm install -g yarn
   - pip install --user awscli
@@ -15,20 +15,34 @@ jobs:
     - stage: "Test"
       name: "lint"
       script: "yarn lint"
-    - name: "cli: unit tests"
+      node_js: "12"
+    - name: "cli - unit tests - Node 10"
       script: "yarn workspace zapier-platform-cli test"
-    - name: "cli: smoke tests"
+      node_js: "10"
+    - name: "cli - smoke tests - Node 10"
       script: "yarn workspace zapier-platform-cli smoke-test"
-    - name: "core: unit tests"
+      node_js: "10"
+    - name: "cli - unit tests - Node 12"
+      script: "yarn workspace zapier-platform-cli test"
+      node_js: "12"
+    - name: "cli - smoke tests - Node 12"
+      script: "yarn workspace zapier-platform-cli smoke-test"
+      node_js: "12"
+    - name: "core - unit tests - Node 12"
       script: "yarn workspace zapier-platform-core test"
-    - name: "core: smoke tests"
+      node_js: "12"
+    - name: "core - smoke tests - Node 12"
       script: "yarn workspace zapier-platform-core smoke-test"
-    - name: "schema: unit tests"
+      node_js: "12"
+    - name: "schema - unit tests - Node 12"
       script: "yarn workspace zapier-platform-schema test"
-    - name: "schema: smoke tests"
+      node_js: "12"
+    - name: "schema - smoke tests - Node 12"
       script: "yarn workspace zapier-platform-schema smoke-test"
-    - name: "legacy-scripting-runner: integration tests"
+      node_js: "12"
+    - name: "legacy-scripting-runner - integration tests - Node 12"
       script: "yarn workspace zapier-platform-legacy-scripting-runner test"
+      node_js: "12"
     - stage: "Deploy"
       script: skip
       deploy:
@@ -36,7 +50,7 @@ jobs:
         script: ./scripts/publish.sh
         on:
           tags: true,
-          node: "10"
+          node: "12"
         skip_cleanup: true
 notifications:
   email: false
