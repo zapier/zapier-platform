@@ -2,7 +2,7 @@
 
 Another major release! We have some great improvements in this version but also have breaking changes. Please review the following to see if you need to change anything to upgrade `zapier-platform-core` to v10.
 
-(a) Zapier integrations that depend on the new Core v10 **will run using Node.js 12**. You can install Node 12 using `nvm`. Run unit tests on Node 12 if you haven't before. Assuming your code works on Node 12, go through the regular push, promote, migrate flow.
+(a) Zapier integrations that depend on the new Core v10 **will run using Node.js 12**. To upgrade, first you need install Node 12 if you haven't. You can install Node 12 using `nvm`. Second, update your `package.json` to depend on `zapier-platform-core@10.0.0`. Third, run `npm install`. Finally, you may want to run unit tests on Node 12 before you push your code to production for further testing.
 
 (b) **`z.request` now always calls `response.throwForStatus`** via a middleware by default. You no longer need to call `response.throwForStatus` after `z.request`, the built-in middleware will do that for you. See [Error Response Handling](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#error-response-handling) for details.
 
@@ -10,9 +10,7 @@ Another major release! We have some great improvements in this version but also 
 
 (d) We now **parse JSON and form-encoded response body by default**. The parsed object is available as `response.data` (`response.json` will be still available for JSON body but less preferable). Before v10, we only parsed JSON for [manual requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#manual-http-requests); parsed JSON and form-encoded body for [shorthand requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#shorthand-http-requests). This change could be breaking if you have an `afterResponse` that modifies `response.content`, with the expectation for shorthand requests to pick up on that. In which case, you'll have to replace `response.content = JSON.stringify(parsedOrTransformed)` with `response.data = parsedOrTransformed`.
 
-(e) we rewrote the CLI `zapier init` command. The project templates are more up-to-date, with better coding practices. However, **we've removed the following templates**: `babel`, `create`, `github`, `middleware`, `oauth1-tumblr`, `oauth1-twitter`, `onedrive`, `resource`, `rest-hooks`, `trigger`.
-
-For trigger/create/search, use `zapier scaffold` command instead. For `babel`, look at `typescript` template and replace the build step with the similar code from https://babeljs.io/setup#installation. For `oauth1`, we now only keep `oauth1-trello` for simplicity. If you ever need to look at the old templates, they're always available in the [example-apps](https://github.com/zapier/zapier-platform/tree/master/example-apps) directory in the repo.
+(e) we rewrote the CLI `zapier init` command. The project templates are more up-to-date, with better coding practices. However, **we've removed the following templates**: `babel`, `create`, `github`, `middleware`, `oauth1-tumblr`, `oauth1-twitter`, `onedrive`, `resource`, `rest-hooks`, `trigger`. For trigger/create/search, use `zapier scaffold` command instead. For `babel`, look at `typescript` template and replace the build step with the similar code from https://babeljs.io/setup#installation. For `oauth1`, we now only keep `oauth1-trello` for simplicity. If you ever need to look at the old templates, they're always available in the [example-apps](https://github.com/zapier/zapier-platform/tree/master/example-apps) directory in the repo.
 
 (f) `zapier init` no longer uses the `minimal` template by default. If you don't specify a `--template`, the command will prompt you interactively. So if you're using `zapier init` (without any arguments) in CI and expect it to use `minimal` by default, you should replace the command with `zapier init -t minimal`.
 
