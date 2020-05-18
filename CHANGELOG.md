@@ -2,7 +2,7 @@
 
 Another major release! We have some great improvements in this version but also have breaking changes. Please review the following to see if you need to change anything to upgrade `zapier-platform-core` to v10.
 
-First, Zapier integrations that depend on the new Core v10 **will run using Node.js 12**. You can install Node.js 12 using `nvm`.
+First, Zapier integrations that depend on the new Core v10 **will run using Node.js 12**. You can install Node 12 using `nvm`. Run unit tests on Node 12 if you haven't before. Assuming your code works on Node 12, go through the regular push, promote, migrate flow.
 
 Second, **`z.request` now always calls `response.throwForStatus`** via a middleware by default. You no longer need to call `response.throwForStatus` after `z.request`, the built-in middleware will do that for you. See [Error Response Handling](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#error-response-handling) for details.
 
@@ -28,6 +28,7 @@ See below for a detailed changelog:
 
 ## core
 
+* :exclamation: Integrations now run on Node.js 12!
 * :exclamation: `response.throwForStatus` now only throws for 400 <= status <= 600 (#192)
 * :exclamation: Introduce `response.data` with support for form-urlencoded and custom parsing (#211)
 * :bug: Don't log request body when it's streaming data (#214)
