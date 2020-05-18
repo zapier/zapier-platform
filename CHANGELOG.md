@@ -20,25 +20,26 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 
 ### cli
 
-* :exclamation: We've improved and removed some templates from `init` command, see (e) above for a list of templates that were removed (#210)
-* :nail_care: `build` command no longer needs login (#216)
-* :nail_care: `promote` command becomes more receptive about the changelog format (#209)
-* :nail_care: Warn when you put `zapier-platform-cli` in your `dependencies` (#221)
-* :hammer: Mass dependency update and linting (#218, #220)
-* :scroll: Update and clean up docs (#222)
-* :scroll: Add some clarity around what we're sending for analytics (#215)
+* :exclamation: We've improved and removed some templates from `init` command, see (e) above for a list of templates that were removed ([#206](https://github.com/zapier/zapier-platform/pull/206))
+* :nail_care: `build` command no longer needs login ([#216](https://github.com/zapier/zapier-platform/pull/216))
+* :nail_care: `promote` command becomes more receptive about the changelog format ([#209](https://github.com/zapier/zapier-platform/pull/209))
+* :nail_care: Warn when you put `zapier-platform-cli` in your `dependencies` ([#221](https://github.com/zapier/zapier-platform/pull/221))
+* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+* :scroll: Update and clean up docs ([#222](https://github.com/zapier/zapier-platform/pull/222))
+* :scroll: Add some clarity around what we're sending for analytics ([#215](https://github.com/zapier/zapier-platform/pull/215))
 
-## core
+### core
 
 * :exclamation: Integrations now run on Node.js 12!
-* :exclamation: `response.throwForStatus` now only throws for 400 <= status <= 600 (#192)
-* :exclamation: Introduce `response.data` with support for form-urlencoded and custom parsing (#211)
-* :bug: Don't log request body when it's streaming data (#214)
-* :hammer: Mass dependency update and linting (#218, #220)
+* :exclamation: `z.request` now always calls `response.throwForStatus` via a middleware by default ([#210](https://github.com/zapier/zapier-platform/pull/210))
+* :exclamation: `response.throwForStatus` now only throws for 400 <= status <= 600 ([#192](https://github.com/zapier/zapier-platform/pull/192))
+* :exclamation: Introduce `response.data` with support for form-urlencoded and custom parsing ([#211](https://github.com/zapier/zapier-platform/pull/211))
+* :bug: Don't log request body when it's streaming data ([#214](https://github.com/zapier/zapier-platform/pull/214))
+* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
 
-## schema
+### schema
 
-* :hammer: Mass dependency update and linting (#218, #220)
+* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
 
 ## 9.4.0
 
