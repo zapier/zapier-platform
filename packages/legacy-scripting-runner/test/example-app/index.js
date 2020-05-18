@@ -272,6 +272,11 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_GET_with_empty_body: function(bundle) {
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/echo';
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];

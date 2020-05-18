@@ -170,35 +170,56 @@ const createBeforeRequest = (app) => {
     return req;
   };
 
-  let beforeRequest;
+  let authBefore;
 
   if (authType === 'session') {
-    beforeRequest = {
+    authBefore = {
       header: sessionAuthInHeader,
       querystring: sessionAuthInQuerystring,
       both: sessionAuthInBoth,
     }[placement];
   } else if (authType === 'oauth2') {
-    beforeRequest = {
+    authBefore = {
       header: oauth2InHeader,
       querystring: oauth2InQuerystring,
       both: oauth2InBoth,
     }[placement];
   } else if (authType === 'custom') {
-    beforeRequest = {
+    authBefore = {
       header: apiKeyInHeader,
       querystring: apiKeyInQuerystring,
     }[placement];
   } else if (authType === 'basic' || authType === 'digest') {
-    beforeRequest = basicDigestAuth;
+    authBefore = basicDigestAuth;
   } else if (authType === 'oauth1') {
-    beforeRequest = oauth1;
+    authBefore = oauth1;
   }
 
-  if (!beforeRequest) {
-    beforeRequest = (req) => req;
+  if (!authBefore) {
+    authBefore = (req) => req;
   }
-  return beforeRequest;
+
+  const pruneEmptyBodyForGET = (req, z, bundle) => {
+    if (req.allowGetBody && req.method === 'GET') {
+      const contentType = req.headers['Content-Type'] || '';
+      try {
+        const parsedBody = contentType.includes('application/json')
+          ? JSON.parse(req.body)
+          : req.body;
+        if (_.isEmpty(parsedBody)) {
+          delete req.body;
+        }
+      } catch (err) {
+        // Ignore
+      }
+    }
+    return req;
+  };
+
+  return (req, z, bundle) => {
+    req = authBefore(req, z, bundle);
+    return pruneEmptyBodyForGET(req, z, bundle);
+  };
 };
 
 const createAfterResponse = (app) => {
