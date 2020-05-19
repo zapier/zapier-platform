@@ -382,30 +382,43 @@ describe('request client', () => {
   it('should delete GET body by default', async () => {
     const request = createAppRequestClient(input);
     const response = await request({
-      // Use postman-echo because httpbin doesn't echo GET body
       method: 'GET',
-      url: 'https://postman-echo.com/get',
+      url: 'https://auth-json-server.zapier-staging.com/echo',
       body: {
         name: 'Darth Vader',
       },
     });
     response.status.should.eql(200);
-    response.data.args.should.deepEqual({});
+    response.data.method.should.eql('GET');
+    should.not.exist(response.data.textBody);
   });
 
   it('should allow GET with body', async () => {
     const request = createAppRequestClient(input);
     const response = await request({
-      // Use postman-echo because httpbin doesn't echo GET body
       method: 'GET',
-      url: 'https://postman-echo.com/get',
+      url: 'https://auth-json-server.zapier-staging.com/echo',
       body: {
         name: 'Darth Vader',
       },
       allowGetBody: true,
     });
     response.status.should.eql(200);
-    response.data.args.should.deepEqual({ name: 'Darth Vader' });
+    response.data.method.should.eql('GET');
+    response.data.textBody.should.eql('{"name":"Darth Vader"}');
+  });
+
+  it('allowGetBody should not send empty body', async () => {
+    const request = createAppRequestClient(input);
+    const response = await request({
+      method: 'GET',
+      url: 'https://auth-json-server.zapier-staging.com/echo',
+      body: {},
+      allowGetBody: true,
+    });
+    response.status.should.eql(200);
+    response.data.method.should.eql('GET');
+    should.not.exist(response.data.textBody);
   });
 
   describe('adds query params', () => {
