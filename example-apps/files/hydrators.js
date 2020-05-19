@@ -1,17 +1,16 @@
-const hydrators = {
-  downloadFile: (z, bundle) => {
-    // use standard auth to request the file
+module.exports = {
+  downloadFile: async (z, bundle) => {
+    // Use standard auth to request the file
     const filePromise = z.request({
-      url: `https://wt-d9eeb64793d8836c8641adb2acda6ed3-0.run.webtask.io/download-file?id=${bundle.inputData.fileId}`,
-      raw: true
+      url: bundle.inputData.url,
+      raw: true,
     });
 
-    // and swap it for a stashed URL
-    return z.stashFile(filePromise).then(url => {
-      z.console.log(`Stashed URL = ${url}`);
-      return url;
-    });
-  }
+    // When `raw` is true, the result of z.request() can be passed to
+    // z.stashFile(). z.stashFile() will upload the file to a Zapier-owned S3
+    // bucket and return a promise of an S3 URL that allows Zapier to get the
+    // file without auth. If your file URL is permanently publicly available,
+    // you may skip z.stashFile() and return that URL directly here.
+    return z.stashFile(filePromise);
+  },
 };
-
-module.exports = hydrators;

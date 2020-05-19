@@ -1,90 +1,142 @@
-const getAccessToken = (z, bundle) => {
-  const promise = z.request(`${process.env.BASE_URL}/oauth/access-token`, {
+'use strict';
+
+const getAccessToken = async (z, bundle) => {
+  const response = await z.request({
+    url: 'https://auth-json-server.zapier-staging.com/oauth/access-token',
     method: 'POST',
     body: {
-      // extra data pulled from the users query string
-      accountDomain: bundle.cleanedRequest.querystring.accountDomain,
-      code: bundle.inputData.code,
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
       grant_type: 'authorization_code',
+      code: bundle.inputData.code,
+
+      // Extra data can be pulled from the querystring. For instance:
+      // 'accountDomain': bundle.cleanedRequest.querystring.accountDomain
     },
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded',
-    },
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
   });
 
-  // Needs to return at minimum, `access_token`, and if your app also does refresh, then `refresh_token` too
-  return promise.then((response) => ({
+  if (response.status !== 200) {
+    throw new z.errors.Error(
+      // This message is surfaced to the user
+      'Unable to fetch access token: ' + response.content,
+      'getAccessTokenError',
+      response.status
+    );
+  }
+
+  // This function should return `access_token`.
+  // If your app does an app refresh, then `refresh_token` should be returned here
+  // as well
+  return {
     access_token: response.data.access_token,
     refresh_token: response.data.refresh_token,
-  }));
+  };
 };
 
-const refreshAccessToken = (z, bundle) => {
-  const promise = z.request(`${process.env.BASE_URL}/oauth/refresh-token`, {
+const refreshAccessToken = async (z, bundle) => {
+  const response = await z.request({
+    url: 'https://auth-json-server.zapier-staging.com/oauth/refresh-token',
     method: 'POST',
     body: {
-      refresh_token: bundle.authData.refresh_token,
       client_id: process.env.CLIENT_ID,
       client_secret: process.env.CLIENT_SECRET,
       grant_type: 'refresh_token',
+      refresh_token: bundle.authData.refresh_token,
     },
-    headers: {
-      'content-type': 'application/x-www-form-urlencoded',
-    },
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
   });
 
-  // Needs to return `access_token`. If the refresh token stays constant, can skip it. If it changes, can
-  // return it here to update the user's auth on Zapier.
-  return promise.then((response) => ({
+  if (response.status !== 200) {
+    throw new z.errors.Error(
+      // This message is surfaced to the user
+      'Unable to fetch access token: ' + response.content,
+      'refreshAccessTokenError',
+      response.status
+    );
+  }
+
+  // This function should return `access_token`.
+  // If the refresh token stays constant, no need to return it.
+  // If the refresh token does change, return it here to update the stored value in
+  // Zapier
+  return {
     access_token: response.data.access_token,
-  }));
+    refresh_token: response.data.refresh_token,
+  };
 };
 
-const testAuth = (z /*, bundle */) => {
-  // Normally you want to make a request to an endpoint that is either specifically designed to test auth, or one that
-  // every user will have access to, such as an account or profile endpoint like /me.
-  const promise = z.request({
-    method: 'GET',
-    url: `${process.env.BASE_URL}/me`,
-  });
+// This function runs before every outbound request. You can have as many as you
+// need. They'll need to each be registered in your index.js file.
+const includeBearerToken = (request, z, bundle) => {
+  if (bundle.authData.access_token) {
+    request.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+  }
 
-  // This method can return any truthy value to indicate the credentials are valid.
-  // Raise an error to show
-  return promise.then((response) => response.data);
+  return request;
 };
+
+// This function runs after every outbound request. You can use it to check for
+// errors or modify the response. You can have as many as you need. They'll need
+// to each be registered in your index.js file.
+const handleBadResponses = (response, z, bundle) => {
+  if (response.status === 401) {
+    throw new z.errors.Error(
+      // This message is surfaced to the user
+      'The access token you supplied is incorrect',
+      'AuthenticationError',
+      response.status
+    );
+  }
+
+  return response;
+};
+
+// You want to make a request to an endpoint that is either specifically designed
+// to test auth, or one that every user will have access to. eg: `/me`.
+// By returning the entire request object, you have access to the request and
+// response data for testing purposes. Your connection label can access any data
+// from the returned response using the `json.` prefix. eg: `{{json.username}}`.
+const test = (z, bundle) =>
+  z.request({ url: 'https://auth-json-server.zapier-staging.com/me' });
 
 module.exports = {
-  type: 'oauth2',
-  oauth2Config: {
-    // Step 1 of the OAuth flow; specify where to send the user to authenticate with your API.
-    // Zapier generates the state and redirect_uri, you are responsible for providing the rest.
-    // Note: can also be a function that returns a string
-    authorizeUrl: {
-      url: `${process.env.BASE_URL}/oauth/authorize`,
-      params: {
-        client_id: '{{process.env.CLIENT_ID}}',
-        state: '{{bundle.inputData.state}}',
-        redirect_uri: '{{bundle.inputData.redirect_uri}}',
-        response_type: 'code',
+  config: {
+    // OAuth2 is a web authentication standard. There are a lot of configuration
+    // options that will fit most any situation.
+    type: 'oauth2',
+    oauth2Config: {
+      authorizeUrl: {
+        url: 'https://auth-json-server.zapier-staging.com/oauth/authorize',
+        params: {
+          client_id: '{{process.env.CLIENT_ID}}',
+          state: '{{bundle.inputData.state}}',
+          redirect_uri: '{{bundle.inputData.redirect_uri}}',
+          response_type: 'code',
+        },
       },
+      getAccessToken,
+      refreshAccessToken,
+      autoRefresh: true,
     },
-    // Step 2 of the OAuth flow; Exchange a code for an access token.
-    // This could also use the request shorthand.
-    getAccessToken: getAccessToken,
-    // (Optional) If the access token expires after a pre-defined amount of time, you can implement
-    // this method to tell Zapier how to refresh it.
-    refreshAccessToken: refreshAccessToken,
-    // If you want Zapier to automatically invoke `refreshAccessToken` on a 401 response, set to true
-    autoRefresh: true,
-    // If there is a specific scope you want to limit your Zapier app to, you can define it here.
-    // Will get passed along to the authorizeUrl
-    // scope: 'read,write'
+
+    // Define any input app's auth requires here. The user will be prompted to enter
+    // this info when they connect their account.
+    fields: [],
+
+    // The test method allows Zapier to verify that the credentials a user provides
+    // are valid. We'll execute this method whenver a user connects their account for
+    // the first time.
+    test,
+
+    // This template string can access all the data returned from the auth test. If
+    // you return the test object, you'll access the returned data with a label like
+    // `{{json.X}}`. If you return `response.data` from your test, then your label can
+    // be `{{X}}`. This can also be a function that returns a label. That function has
+    // the standard args `(z, bundle)` and data returned from the test can be accessed
+    // in `bundle.inputData.X`.
+    connectionLabel: '{{json.username}}',
   },
-  // The test method allows Zapier to verify that the access token is valid. We'll execute this
-  // method after the OAuth flow is complete to ensure everything is setup properly.
-  test: testAuth,
-  // assuming "username" is a key returned from the test
-  connectionLabel: '{{username}}',
+  befores: [includeBearerToken],
+  afters: [handleBadResponses],
 };

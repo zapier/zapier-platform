@@ -1,24 +1,16 @@
 {
-  "name": "zapier-platform-example-app-dynamic-dropdown",
+  "name": "dynamic-dropdown",
   "version": "1.0.0",
-  "description": "An example app for the Zapier platform.",
-  "repository": "zapier/zapier-platform-example-app-trigger",
-  "homepage": "https://zapier.com/",
-  "license": "BSD-3-Clause",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --recursive"
-  },
-  "engines": {
-    "node": ">=8.10.0",
-    "npm": ">=5.6.0"
+    "test": "jest --testTimeout 10000"
   },
   "dependencies": {
     "zapier-platform-core": "9.4.0"
   },
   "devDependencies": {
-    "mocha": "3.2.0",
-    "should": "11.2.1"
+    "jest": "^25.5.3"
   },
   "private": true
 }

@@ -1,33 +1,26 @@
-const { generateID } = require('../utils');
+const { extractID } = require('../utils');
 
-// fetches a list of records from the endpoint
-const fetchList = (z, bundle) => {
-  const request = {
-    url: 'https://swapi.co/api/people/',
-  };
+// Fetches a list of records from the endpoint
+const perform = async (z, bundle) => {
+  // Ideally, we should poll through all the pages of results, but in this
+  // example we're going to omit that part. Thus, this trigger only "see" the
+  // people in their first page of results.
+  const response = await z.request({ url: 'https://swapi.dev/api/people/' });
+  let peopleArray = response.data.results;
 
-  // ideally, we should poll through all the pages of results, but in this example
-  //   we're going to omit that part. Thus, this trigger only "see" the people
-  //   in their first page of results
-  return z.request(request).then((response) => {
-    let peopleArray = response.data.results;
-    if (bundle.inputData.species) {
-      // The Zap's setup has requested a specific species of person.
-      // Since the API/endpoint can't perform the filtering, we'll perform it
-      //   here, within the integration, and return the matching objects/records
-      //   back to Zapier.
-      peopleArray = peopleArray.filter((person) => {
-        const speciesID = generateID(person.species[0]);
-        return speciesID === String(bundle.inputData.species);
-      });
-    }
-
-    peopleArray.forEach((person) => {
-      // copy the "url" field into an "id" field
-      person.id = generateID(person.url);
+  if (bundle.inputData.species_id) {
+    // The Zap's setup has requested a specific species of person. Since the
+    // API/endpoint can't perform the filtering, we'll perform it here, within
+    // the integration, and return the matching objects/records back to Zapier.
+    peopleArray = peopleArray.filter((person) => {
+      const speciesID = extractID(person.species[0]);
+      return speciesID === bundle.inputData.species_id;
     });
+  }
 
-    return peopleArray;
+  return peopleArray.map((person) => {
+    person.id = extractID(person.url);
+    return person;
   });
 };
 
@@ -42,33 +35,14 @@ module.exports = {
   operation: {
     inputFields: [
       {
-        key: 'species',
-        type: 'string',
+        key: 'species_id',
+        type: 'integer',
         helpText: 'Species of person',
         dynamic: 'species.id.name',
         altersDynamicFields: true,
       },
-      (z, bundle) => {
-        if (!bundle.inputData.species) {
-          return [];
-        }
-        return [
-          {
-            key: 'foo1',
-            label: 'Favorite Number',
-            required: false,
-            type: 'number',
-          },
-          {
-            key: 'foo2',
-            label: 'Favorite Color',
-            required: false,
-            type: 'string',
-          },
-        ];
-      },
     ],
-    perform: fetchList,
+    perform,
     sample: {
       id: '1',
       name: 'Luke Skywalker',
