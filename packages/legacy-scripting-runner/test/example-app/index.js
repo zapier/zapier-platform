@@ -1155,9 +1155,9 @@ const MovieSearch = {
   },
 };
 
-// const beforeRequestSource = `
-//   return z.legacyScripting.beforeRequest(request, z, bundle);
-// `;
+const beforeRequestSource = `
+  return z.legacyScripting.beforeRequest(request, z, bundle);
+`;
 
 const afterResponseSource = `
   return z.legacyScripting.afterResponse(response, z, bundle);
@@ -1194,12 +1194,12 @@ const App = {
     },
   },
   // This breaks `applyBeforeMiddleware` which it looks like gets the original definition without `findSourceRequireFunctions` applied?!
-  // beforeRequest: [
-  //   {
-  //     source: beforeRequestSource,
-  //     args: ['request', 'z', 'bundle']
-  //   }
-  // ],
+  beforeRequest: [
+    {
+      source: beforeRequestSource,
+      args: ['request', 'z', 'bundle'],
+    },
+  ],
   afterResponse: [
     {
       source: afterResponseSource,

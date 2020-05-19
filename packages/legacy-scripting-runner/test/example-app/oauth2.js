@@ -24,14 +24,6 @@ const refreshAccessTokenSource = `
   return z.legacyScripting.run(bundle, 'auth.oauth2.refresh');
 `;
 
-const beforeRequestSource = `
-  return z.legacyScripting.beforeRequest(request, z, bundle);
-`;
-
-const afterResponseSource = `
-  return z.legacyScripting.afterResponse(response, z, bundle);
-`;
-
 module.exports = {
   legacy: {
     authentication: {
@@ -65,10 +57,4 @@ module.exports = {
       autoRefresh: true,
     },
   },
-  beforeRequest: [
-    { source: beforeRequestSource, args: ['request', 'z', 'bundle'] },
-  ],
-  afterResponse: [
-    { source: afterResponseSource, args: ['response', 'z', 'bundle'] },
-  ],
 };

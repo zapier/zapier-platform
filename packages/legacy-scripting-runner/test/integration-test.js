@@ -1216,9 +1216,11 @@ describe('Integration Test', () => {
 
   describe('hook trigger', () => {
     it('scriptingless', () => {
-      const app = createApp(appDefinition);
+      const appDef = _.cloneDeep(appDefinition);
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
       const input = createTestInput(
-        appDefinition,
+        compiledApp,
         'triggers.contact_hook_scriptingless.operation.perform'
       );
       input.bundle.cleanedRequest = {
@@ -1241,9 +1243,10 @@ describe('Integration Test', () => {
         'contact_hook_scripting_catch_hook_returning_object',
         'contact_hook_scripting_catch_hook'
       );
+      const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
       const input = createTestInput(
-        appDef,
+        compiledApp,
         'triggers.contact_hook_scripting.operation.perform'
       );
       input.bundle.cleanedRequest = {
@@ -1266,9 +1269,10 @@ describe('Integration Test', () => {
         'contact_hook_scripting_catch_hook_returning_array',
         'contact_hook_scripting_catch_hook'
       );
+      const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
       const input = createTestInput(
-        appDef,
+        compiledApp,
         'triggers.contact_hook_scripting.operation.perform'
       );
       input.bundle.cleanedRequest = [
@@ -1293,9 +1297,10 @@ describe('Integration Test', () => {
         'contact_hook_scripting_catch_hook_raw_request',
         'contact_hook_scripting_catch_hook'
       );
+      const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
       const input = createTestInput(
-        appDef,
+        compiledApp,
         'triggers.contact_hook_scripting.operation.perform'
       );
       input.bundle.rawRequest = {

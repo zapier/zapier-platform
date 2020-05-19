@@ -12,14 +12,6 @@ const testAuthSource = `
   });
 `;
 
-const beforeRequestSource = `
-  return z.legacyScripting.beforeRequest(request, z, bundle);
-`;
-
-const afterResponseSource = `
-  return z.legacyScripting.afterResponse(response, z, bundle);
-`;
-
 module.exports = {
   legacy: {
     authentication: {
@@ -40,13 +32,4 @@ module.exports = {
       },
     ],
   },
-  beforeRequest: [
-    {
-      source: beforeRequestSource,
-      args: ['request', 'z', 'bundle'],
-    },
-  ],
-  afterResponse: [
-    { source: afterResponseSource, args: ['response', 'z', 'bundle'] },
-  ],
 };
