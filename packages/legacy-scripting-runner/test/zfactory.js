@@ -26,7 +26,7 @@ describe('z', () => {
   it('z.request - sync', (done) => {
     const bundleRequest = {
       method: 'GET',
-      url: 'https://httpbin.org/get',
+      url: 'https://httpbin.zapier-tooling.com/get',
       params: {
         hello: 'world',
       },
@@ -53,7 +53,7 @@ describe('z', () => {
   it('z.request - async', (done) => {
     const bundleRequest = {
       method: 'POST',
-      url: 'https://httpbin.org/post',
+      url: 'https://httpbin.zapier-tooling.com/post',
       params: {
         hello: 'world',
       },

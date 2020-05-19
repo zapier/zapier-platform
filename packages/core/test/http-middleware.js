@@ -20,7 +20,7 @@ const oauth1SignRequest = require('../src/http-middlewares/before/oauth1-sign-re
 const { parseDictHeader } = require('../src/tools/http');
 
 describe('http requests', () => {
-  it('should support async before middleware', (done) => {
+  it('should support async before middleware', async () => {
     const addRequestHeader = (req) => {
       if (!req.headers) {
         req.headers = {};
@@ -36,18 +36,16 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' })
-      .then((response) => {
-        response.status.should.eql(200);
-        JSON.parse(response.content).headers.Customheader.should.eql(
-          'custom value'
-        );
-        done();
-      })
-      .catch(done);
+    const response = await wrappedRequest({
+      url: 'https://httpbin.zapier-tooling.com/get',
+    });
+    response.status.should.eql(200);
+    JSON.parse(response.content).headers.Customheader.should.deepEqual([
+      'custom value',
+    ]);
   });
 
-  it('should support sync before middleware', (done) => {
+  it('should support sync before middleware', async () => {
     const addRequestHeader = (req) => {
       if (!req.headers) {
         req.headers = {};
@@ -63,15 +61,13 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' })
-      .then((response) => {
-        response.status.should.eql(200);
-        JSON.parse(response.content).headers.Customheader.should.eql(
-          'custom value'
-        );
-        done();
-      })
-      .catch(done);
+    const response = await wrappedRequest({
+      url: 'https://httpbin.zapier-tooling.com/get',
+    });
+    response.status.should.eql(200);
+    JSON.parse(response.content).headers.Customheader.should.eql([
+      'custom value',
+    ]);
   });
 
   it('should throw error when middleware does not return object', (done) => {
@@ -89,10 +85,12 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' }).catch((err) => {
-      err.message.should.containEql('Middleware should return an object.');
-      done();
-    });
+    wrappedRequest({ url: 'https://httpbin.zapier-tooling.com/get' }).catch(
+      (err) => {
+        err.message.should.containEql('Middleware should return an object.');
+        done();
+      }
+    );
   });
 
   it('should support async after middleware', (done) => {
@@ -110,7 +108,7 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' })
+    wrappedRequest({ url: 'https://httpbin.zapier-tooling.com/get' })
       .then((response) => {
         response.status.should.eql(200);
         should.not.exist(response.results); // should not be 'enveloped'
@@ -135,7 +133,7 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' })
+    wrappedRequest({ url: 'https://httpbin.zapier-tooling.com/get' })
       .then((response) => {
         response.status.should.eql(200);
         JSON.parse(response.content).customKey.should.eql('custom value');
@@ -425,23 +423,24 @@ describe('http throwForStatus after middleware', () => {
     const request = createAppRequestClient(input);
 
     await request({
-      url: 'https://httpbin.org/status/400',
+      url: 'https://httpbin.zapier-tooling.com/status/400',
     }).should.be.rejectedWith(errors.ResponseError, {
       name: 'ResponseError',
       doNotContextify: true,
       message:
-        '{"status":400,"headers":{"content-type":"text/html; charset=utf-8"},"content":"","request":{"url":"https://httpbin.org/status/400"}}',
+        '{"status":400,"headers":{"content-type":null},"content":"","request":{"url":"https://httpbin.zapier-tooling.com/status/400"}}',
     });
   });
+
   it('does not throw for redirects (which we follow)', async () => {
     const testLogger = () => Promise.resolve({});
     const input = createInput({}, {}, testLogger);
     const request = createAppRequestClient(input);
 
     const response = await request({
-      url: 'https://httpbin.org/redirect-to',
+      url: 'https://httpbin.zapier-tooling.com/redirect-to',
       params: {
-        url: 'https://httpbin.org/status/200',
+        url: 'https://httpbin.zapier-tooling.com/status/200',
       },
     });
 
@@ -453,7 +452,7 @@ describe('http throwForStatus after middleware', () => {
     const request = createAppRequestClient(input);
 
     const response = await request({
-      url: 'https://httpbin.org/status/200',
+      url: 'https://httpbin.zapier-tooling.com/status/200',
     });
 
     response.status.should.equal(200);
@@ -464,7 +463,7 @@ describe('http throwForStatus after middleware', () => {
     const request = createAppRequestClient(input);
 
     const response = await request({
-      url: 'https://httpbin.org/status/600',
+      url: 'https://httpbin.zapier-tooling.com/status/600',
     });
 
     response.status.should.equal(600);

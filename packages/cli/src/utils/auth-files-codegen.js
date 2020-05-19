@@ -356,7 +356,9 @@ const digestAuthFile = () => {
   return file(
     // special digest auth
     authTestFunc(
-      strLiteral('https://httpbin.org/digest-auth/auth/myuser/mypass')
+      strLiteral(
+        'https://httpbin.zapier-tooling.com/digest-auth/auth/myuser/mypass'
+      )
     ),
     handleBadResponsesFunc(badFuncName),
     authFileExport(

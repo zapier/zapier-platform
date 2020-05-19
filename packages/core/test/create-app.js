@@ -103,99 +103,83 @@ describe('create-app', () => {
       .catch(done);
   });
 
-  it('should return data from live request call, applying HTTP before middleware', (done) => {
+  it('should return data from live request call, applying HTTP before middleware', async () => {
     const input = createTestInput('resources.contact.list.operation.perform');
+    const output = await app(input);
 
-    app(input)
-      .then((output) => {
-        // httpbin.org/get puts request headers in the response body (good for testing):
-        should.exist(output.results.headers);
+    should.exist(output.results.headers);
 
-        // verify that custom http before middleware was applied
-        output.results.headers['X-Hashy'].should.eql(
-          '1a3ba5251cb33ee7ade01af6a7b960b8'
-        );
-        output.results.headers['X-Author'].should.eql('One Cool Dev');
-
-        done();
-      })
-      .catch(done);
+    // verify that custom http before middleware was applied
+    output.results.headers['X-Hashy'].should.deepEqual([
+      '1a3ba5251cb33ee7ade01af6a7b960b8',
+    ]);
+    output.results.headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
-  it('should fail on a live request call', (done) => {
+  it('should fail on a live request call', async () => {
     const input = createTestInput(
       'resources.failerhttp.list.operation.perform'
     );
 
-    app(input)
-      .then(() => {
-        done('expected an error');
-      })
-      .catch((err) => {
-        should(err).instanceOf(errors.ResponseError);
-        err.name.should.eql('ResponseError');
-        const response = JSON.parse(err.message);
-        should(response.status).equal(403);
-        should(response.request.url).equal('https://httpbin.org/status/403');
-        should(response.headers['content-type']).equal(
-          'text/html; charset=utf-8'
-        );
-        should(response.content).equal('');
-        done();
-      })
-      .catch(done);
+    try {
+      await app(input);
+    } catch (err) {
+      should(err).instanceOf(errors.ResponseError);
+      err.name.should.eql('ResponseError');
+
+      const response = JSON.parse(err.message);
+      response.status.should.eql(403);
+      response.request.url.should.eql(
+        'https://httpbin.zapier-tooling.com/status/403'
+      );
+      return;
+    }
+
+    throw new Error('expected an error');
   });
 
-  it('should fail on a live request call (direct)', (done) => {
+  it('should fail on a live request call (direct)', async () => {
     const input = createTestInput('triggers.failerhttpList.operation.perform');
 
-    app(input)
-      .then(() => {
-        done('expected an error');
-      })
-      .catch((err) => {
-        should(err).instanceOf(errors.ResponseError);
-        err.name.should.eql('ResponseError');
-        const response = JSON.parse(err.message);
-        should(response.status).equal(403);
-        should(response.request.url).equal('https://httpbin.org/status/403');
-        should(response.headers['content-type']).equal(
-          'text/html; charset=utf-8'
-        );
-        should(response.content).equal('');
-        done();
-      })
-      .catch(done);
+    try {
+      await app(input);
+    } catch (err) {
+      should(err).instanceOf(errors.ResponseError);
+      err.name.should.eql('ResponseError');
+
+      const response = JSON.parse(err.message);
+      response.status.should.eql(403);
+      response.request.url.should.eql(
+        'https://httpbin.zapier-tooling.com/status/403'
+      );
+      return;
+    }
+
+    throw new Error('expected an error');
   });
 
-  it('should make call via z.request', (done) => {
+  it('should make call via z.request', async () => {
     const input = createTestInput('triggers.requestfuncList.operation.perform');
 
-    app(input)
-      .then((output) => {
-        output.results[0].headers['X-Hashy'].should.eql(
-          '1a3ba5251cb33ee7ade01af6a7b960b8'
-        );
-        output.results[0].headers['X-Author'].should.eql('One Cool Dev');
-        done();
-      })
-      .catch(done);
+    const output = await app(input);
+
+    output.results[0].headers['X-Hashy'].should.deepEqual([
+      '1a3ba5251cb33ee7ade01af6a7b960b8',
+    ]);
+    output.results[0].headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
-  it('should make call via z.request with sugar url param', (done) => {
+  it('should make call via z.request with sugar url param', async () => {
     const input = createTestInput(
       'triggers.requestsugarList.operation.perform'
     );
 
-    app(input)
-      .then((output) => {
-        output.results.headers['X-Hashy'].should.eql(
-          '1a3ba5251cb33ee7ade01af6a7b960b8'
-        );
-        output.results.headers['X-Author'].should.eql('One Cool Dev');
-        done();
-      })
-      .catch(done);
+    const output = await app(input);
+
+    output.results.headers['X-Hashy'].should.deepEqual([
+      '1a3ba5251cb33ee7ade01af6a7b960b8',
+    ]);
+    output.results.headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
   it('should fail on a sync function', (done) => {
@@ -271,18 +255,15 @@ describe('create-app', () => {
       });
   });
 
-  it('should return data from live request call (direct)', (done) => {
+  it('should return data from live request call (direct)', async () => {
     const input = createTestInput('triggers.contactList.operation.perform');
-    app(input)
-      .then((output) => {
-        output.results.url.should.eql('https://httpbin.org/get');
-        output.results.headers['X-Hashy'].should.eql(
-          '1a3ba5251cb33ee7ade01af6a7b960b8'
-        );
-        output.results.headers['X-Author'].should.eql('One Cool Dev');
-        done();
-      })
-      .catch(done);
+    const output = await app(input);
+
+    output.results.url.should.eql('https://httpbin.zapier-tooling.com/get');
+    output.results.headers['X-Hashy'].should.deepEqual([
+      '1a3ba5251cb33ee7ade01af6a7b960b8',
+    ]);
+    output.results.headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
   it('should return a rendered URL for OAuth2 authorizeURL', (done) => {
@@ -328,14 +309,16 @@ describe('create-app', () => {
       command: 'request',
       bundle: {
         request: {
-          url: 'https://httpbin.org/get',
+          url: 'https://httpbin.zapier-tooling.com/get',
         },
       },
     });
     app(input)
       .then((output) => {
         const response = output.results;
-        JSON.parse(response.content).url.should.eql('https://httpbin.org/get');
+        JSON.parse(response.content).url.should.eql(
+          'https://httpbin.zapier-tooling.com/get'
+        );
         done();
       })
       .catch(done);
@@ -359,7 +342,7 @@ describe('create-app', () => {
         command: 'execute',
         bundle: {
           inputData: {
-            url: 'https://httpbin.org/status/401',
+            url: 'https://httpbin.zapier-tooling.com/status/401',
           },
         },
         method: 'resources.executeRequestAsShorthand.list.operation.perform',
@@ -395,7 +378,7 @@ describe('create-app', () => {
         bundle: {
           inputData: {
             options: {
-              url: 'https://httpbin.org/status/401',
+              url: 'https://httpbin.zapier-tooling.com/status/401',
             },
           },
         },
@@ -430,7 +413,7 @@ describe('create-app', () => {
         bundle: {
           inputData: {
             options: {
-              url: 'https://httpbin.org/status/401',
+              url: 'https://httpbin.zapier-tooling.com/status/401',
             },
           },
         },
@@ -626,7 +609,7 @@ describe('create-app', () => {
         command: 'execute',
         bundle: {
           inputData: {
-            url: 'https://httpbin.org/get',
+            url: 'https://httpbin.zapier-tooling.com/get',
           },
         },
         method: 'resources.executeRequestAsShorthand.create.operation.perform',
@@ -640,7 +623,7 @@ describe('create-app', () => {
       const app = createApp(appDefinition);
 
       // httpbin doesn't actually have a form-urlencoded endpoint
-      nock('https://x-www-form-urlencoded.httpbin.org')
+      nock('https://x-www-form-urlencoded.httpbin.zapier-tooling.com')
         .get('/')
         .reply(200, 'foo=bar', {
           'content-type': 'application/x-www-form-urlencoded',
@@ -650,7 +633,7 @@ describe('create-app', () => {
         command: 'execute',
         bundle: {
           inputData: {
-            url: 'https://x-www-form-urlencoded.httpbin.org/',
+            url: 'https://x-www-form-urlencoded.httpbin.zapier-tooling.com/',
           },
         },
         method: 'resources.executeRequestAsShorthand.create.operation.perform',
@@ -667,7 +650,7 @@ describe('create-app', () => {
         command: 'execute',
         bundle: {
           inputData: {
-            url: 'https://httpbin.org/xml',
+            url: 'https://httpbin.zapier-tooling.com/xml',
           },
         },
         method: 'resources.executeRequestAsShorthand.create.operation.perform',

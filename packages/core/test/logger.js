@@ -10,28 +10,27 @@ const {
 
 describe('logger', () => {
   const options = {
-    endpoint: 'https://httpbin.org/post',
+    endpoint: 'https://httpbin.zapier-tooling.com/post',
     token: 'fake-token',
   };
 
   // httpbin/post echoes all the input body and headers in the response
 
-  it('should log to graylog', () => {
+  it('should log to graylog', async () => {
     const event = {};
     const logger = createlogger(event, options);
     const data = { key: 'val' };
 
-    return logger('test', data).then((response) => {
-      response.headers.get('content-type').should.eql('application/json');
-      response.status.should.eql(200);
-      response.content.json.should.eql({
-        token: options.token,
-        message: 'test',
-        data: {
-          log_type: 'console',
-          key: 'val',
-        },
-      });
+    const response = await logger('test', data);
+    response.headers.get('content-type').should.containEql('application/json');
+    response.status.should.eql(200);
+    response.content.json.should.eql({
+      token: options.token,
+      message: 'test',
+      data: {
+        log_type: 'console',
+        key: 'val',
+      },
     });
   });
 
