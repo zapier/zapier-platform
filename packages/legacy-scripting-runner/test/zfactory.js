@@ -23,7 +23,7 @@ describe('z', () => {
     done();
   });
 
-  it('z.request - sync', (done) => {
+  it('z.request - sync', () => {
     const bundleRequest = {
       method: 'GET',
       url: 'https://httpbin.zapier-tooling.com/get',
@@ -44,10 +44,8 @@ describe('z', () => {
 
     response.status_code.should.eql(200);
     const results = JSON.parse(response.content);
-    results.args.should.eql(bundleRequest.params);
-    results.headers.Accept.should.eql(bundleRequest.headers.Accept);
-
-    done();
+    results.args.should.deepEqual({ hello: ['world'] });
+    results.headers.Accept.should.deepEqual(['application/json']);
   });
 
   it('z.request - async', (done) => {
@@ -74,9 +72,9 @@ describe('z', () => {
 
       response.status_code.should.eql(200);
       const results = JSON.parse(response.content);
-      results.args.should.eql(bundleRequest.params);
+      results.args.should.eql({ hello: ['world'] });
       results.data.should.eql(bundleRequest.data);
-      results.headers.Accept.should.eql(bundleRequest.headers.Accept);
+      results.headers.Accept.should.deepEqual(['application/json']);
 
       done();
     });
