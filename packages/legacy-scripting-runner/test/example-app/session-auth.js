@@ -12,14 +12,6 @@ const getConnectionLabelSource = `
   return z.legacyScripting.run(bundle, 'auth.connectionLabel');
 `;
 
-const beforeRequestSource = `
-  return z.legacyScripting.beforeRequest(request, z, bundle);
-`;
-
-const afterResponseSource = `
-  return z.legacyScripting.afterResponse(response, z, bundle);
-`;
-
 module.exports = {
   legacy: {
     authentication: {
@@ -52,10 +44,4 @@ module.exports = {
     },
     connectionLabel: { source: getConnectionLabelSource },
   },
-  beforeRequest: [
-    { source: beforeRequestSource, args: ['request', 'z', 'bundle'] },
-  ],
-  afterResponse: [
-    { source: afterResponseSource, args: ['response', 'z', 'bundle'] },
-  ],
 };
