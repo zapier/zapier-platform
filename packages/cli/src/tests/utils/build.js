@@ -39,6 +39,9 @@ describe('build (runs slowly)', () => {
     );
     fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
     await runCommand('npm', ['i'], { cwd: tmpDir });
+    // TODO: This test depends on how "typescript" example is set up, which
+    // isn't good. Should refactor not to rely on that.
+    await runCommand('npm', ['run', 'build'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
@@ -51,7 +54,7 @@ describe('build (runs slowly)', () => {
       // check that only the required lodash files are grabbed
       smartPaths.should.containEql('index.js');
       smartPaths.should.containEql('lib/index.js');
-      smartPaths.should.containEql('lib/resources/recipe.js');
+      smartPaths.should.containEql('lib/triggers/movie.js');
 
       smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
       smartPaths.should.not.containEql('tsconfig.json');
@@ -65,13 +68,13 @@ describe('build (runs slowly)', () => {
       // check that way more than the required package files are grabbed
       dumbPaths.should.containEql('index.js');
       dumbPaths.should.containEql('lib/index.js');
-      dumbPaths.should.containEql('lib/resources/recipe.js');
+      dumbPaths.should.containEql('lib/triggers/movie.js');
 
       dumbPaths.should.containEql('src/index.ts');
-      dumbPaths.should.containEql('src/resources/recipe.ts');
+      dumbPaths.should.containEql('src/triggers/movie.ts');
       dumbPaths.should.containEql('tsconfig.json');
 
-      dumbPaths.length.should.be.within(1500, 2000);
+      dumbPaths.length.should.be.within(6000, 8000);
     });
   });
 

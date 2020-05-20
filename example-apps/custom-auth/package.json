@@ -1,25 +1,16 @@
 {
-  "name": "zapier-platform-example-app-custom-auth",
+  "name": "custom-auth",
   "version": "1.0.0",
-  "description": "An example app for the Zapier platform.",
-  "repository": "zapier/zapier-platform-example-app-custom-auth",
-  "homepage": "https://zapier.com/",
-  "author": "Bryan Helmig <bryan@zapier.com>",
-  "license": "BSD-3-Clause",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --recursive"
-  },
-  "engines": {
-    "node": ">=8.10.0",
-    "npm": ">=5.6.0"
+    "test": "jest --testTimeout 10000"
   },
   "dependencies": {
     "zapier-platform-core": "9.4.0"
   },
   "devDependencies": {
-    "mocha": "^5.2.0",
-    "should": "^13.2.0"
+    "jest": "^25.5.3"
   },
   "private": true
 }
