@@ -7,10 +7,10 @@ const should = require('should');
 const build = require('../../utils/build');
 const { copyDir } = require('../../utils/files');
 const { PLATFORM_PACKAGE } = require('../../constants');
-const { runCommand, getNewTempDirPath } = require('../_helpers');
+const { runCommand, getNewTempDirPath, npmPackCore } = require('../_helpers');
 
 describe('build (runs slowly)', () => {
-  let tmpDir, entryPoint;
+  let tmpDir, entryPoint, corePackage;
   before(async () => {
     // basically does what `zapier init` does
     tmpDir = getNewTempDirPath();
@@ -21,32 +21,24 @@ describe('build (runs slowly)', () => {
 
     // When releasing, the core version the example apps points can be still
     // non-existent. Let's make sure it points to the local one.
-    const coreDir = path.resolve(__dirname, '../../../../core');
-    const corePackageJsonPath = path.join(coreDir, 'package.json');
-    const corePackageJson = JSON.parse(
-      fs.readFileSync(corePackageJsonPath, { encoding: 'utf8' })
-    );
-    await runCommand('npm', ['pack'], { cwd: coreDir });
-    const coreVersion = corePackageJson.version;
-    const coreTarball = `${PLATFORM_PACKAGE}-${coreVersion}.tgz`;
+    corePackage = await npmPackCore();
     const appPackageJsonPath = path.join(tmpDir, 'package.json');
     const appPackageJson = JSON.parse(
       fs.readFileSync(appPackageJsonPath, { encoding: 'utf8' })
     );
-    appPackageJson.dependencies[PLATFORM_PACKAGE] = path.resolve(
-      coreDir,
-      coreTarball
-    );
+    appPackageJson.dependencies[PLATFORM_PACKAGE] = corePackage.path;
     fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
-    await runCommand('npm', ['i'], { cwd: tmpDir });
+
+    runCommand('npm', ['i'], { cwd: tmpDir });
     // TODO: This test depends on how "typescript" example is set up, which
     // isn't good. Should refactor not to rely on that.
-    await runCommand('npm', ['run', 'build'], { cwd: tmpDir });
+    runCommand('npm', ['run', 'build'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
   after(() => {
     fs.removeSync(tmpDir);
+    corePackage.cleanup();
   });
 
   it('should list only required files', () => {

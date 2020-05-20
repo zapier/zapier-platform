@@ -6,7 +6,7 @@ require('should');
 
 const { getPackageLatestVersion, getPackageSize } = require('../utils/npm');
 const { ensureDir, makeTempDir } = require('../utils/files');
-const { runCommand } = require('../tests/_helpers');
+const { runCommand, npmPackCore } = require('../tests/_helpers');
 const { PLATFORM_PACKAGE } = require('../constants');
 
 const REGEX_VERSION = /\d+\.\d+\.\d+/;
@@ -27,7 +27,7 @@ const setupZapierRC = () => {
   return hasRC;
 };
 
-const npmPack = () => {
+const npmPackCLI = () => {
   let filename;
   const lines = runCommand('npm', ['pack']).split('\n');
   for (let i = lines.length - 1; i >= 0; i--) {
@@ -72,7 +72,6 @@ describe('smoke tests - setup will take some time', () => {
       filename: null,
       version: null,
       path: null,
-      corePath: null,
     },
     workdir: null,
     cliBin: null,
@@ -82,10 +81,9 @@ describe('smoke tests - setup will take some time', () => {
   before(() => {
     context.hasRC = setupZapierRC();
 
-    context.package.filename = npmPack();
+    context.package.filename = npmPackCLI();
     context.package.version = context.package.filename.match(REGEX_VERSION)[0];
     context.package.path = path.join(process.cwd(), context.package.filename);
-    context.package.corePath = path.join(process.cwd(), '..', 'core');
 
     context.workdir = makeTempDir();
 
@@ -198,10 +196,16 @@ describe('smoke tests - setup will take some time', () => {
     ];
 
     const subfolder = 'template-tests';
-    let subfolderPath;
+    let subfolderPath, corePackage;
+
     before(async () => {
       subfolderPath = path.join(context.workdir, subfolder);
       await ensureDir(subfolderPath);
+      corePackage = await npmPackCore();
+    });
+
+    after(() => {
+      corePackage.cleanup();
     });
 
     testableTemplates.forEach((template) => {
@@ -212,7 +216,7 @@ describe('smoke tests - setup will take some time', () => {
         });
 
         const appDir = path.join(subfolderPath, template);
-        yarnInstall(context.package.corePath, appDir);
+        yarnInstall(corePackage.path, appDir);
 
         // should not throw an error
         runCommand(context.cliBin, ['test', '--skip-validate'], {
