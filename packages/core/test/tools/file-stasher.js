@@ -11,6 +11,7 @@ const mocky = require('./mocky');
 const createFileStasher = require('../../src/tools/create-file-stasher');
 const createAppRequestClient = require('../../src/tools/create-app-request-client');
 const createInput = require('../../src/tools/create-input');
+const { HTTPBIN_URL } = require('../constants');
 
 describe('file upload', () => {
   const testLogger = () => Promise.resolve({});
@@ -94,7 +95,7 @@ describe('file upload', () => {
     mocky.mockUpload();
 
     const request = createAppRequestClient(input);
-    const file = request('https://httpbin.org/stream-bytes/1024', {
+    const file = request(`${HTTPBIN_URL}/stream-bytes/1024`, {
       raw: true,
     });
     stashFile(file)
@@ -222,7 +223,7 @@ describe('file upload', () => {
 
     const request = createAppRequestClient(input);
     const file = request({
-      url: 'https://httpbin.org/response-headers',
+      url: `${HTTPBIN_URL}/response-headers`,
       params: {
         'Content-Disposition': 'inline; filename="an example.json"',
       },

@@ -18,9 +18,10 @@ const prepareResponse = require('../src/http-middlewares/after/prepare-response'
 const applyMiddleware = require('../src/middleware');
 const oauth1SignRequest = require('../src/http-middlewares/before/oauth1-sign-request');
 const { parseDictHeader } = require('../src/tools/http');
+const { HTTPBIN_URL } = require('./constants');
 
 describe('http requests', () => {
-  it('should support async before middleware', (done) => {
+  it('should support async before middleware', async () => {
     const addRequestHeader = (req) => {
       if (!req.headers) {
         req.headers = {};
@@ -36,18 +37,14 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' })
-      .then((response) => {
-        response.status.should.eql(200);
-        JSON.parse(response.content).headers.Customheader.should.eql(
-          'custom value'
-        );
-        done();
-      })
-      .catch(done);
+    const response = await wrappedRequest({ url: `${HTTPBIN_URL}/get` });
+    response.status.should.eql(200);
+    JSON.parse(response.content).headers.Customheader.should.deepEqual([
+      'custom value',
+    ]);
   });
 
-  it('should support sync before middleware', (done) => {
+  it('should support sync before middleware', async () => {
     const addRequestHeader = (req) => {
       if (!req.headers) {
         req.headers = {};
@@ -63,15 +60,13 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' })
-      .then((response) => {
-        response.status.should.eql(200);
-        JSON.parse(response.content).headers.Customheader.should.eql(
-          'custom value'
-        );
-        done();
-      })
-      .catch(done);
+    const response = await wrappedRequest({
+      url: `${HTTPBIN_URL}/get`,
+    });
+    response.status.should.eql(200);
+    JSON.parse(response.content).headers.Customheader.should.eql([
+      'custom value',
+    ]);
   });
 
   it('should throw error when middleware does not return object', (done) => {
@@ -89,7 +84,7 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' }).catch((err) => {
+    wrappedRequest({ url: `${HTTPBIN_URL}/get` }).catch((err) => {
       err.message.should.containEql('Middleware should return an object.');
       done();
     });
@@ -110,7 +105,7 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' })
+    wrappedRequest({ url: `${HTTPBIN_URL}/get` })
       .then((response) => {
         response.status.should.eql(200);
         should.not.exist(response.results); // should not be 'enveloped'
@@ -135,7 +130,7 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' })
+    wrappedRequest({ url: `${HTTPBIN_URL}/get` })
       .then((response) => {
         response.status.should.eql(200);
         JSON.parse(response.content).customKey.should.eql('custom value');
@@ -354,7 +349,7 @@ describe('http addBasicAuthHeader before middelware', () => {
 describe('http addDigestAuthHeader before middleware', () => {
   it('computes the Authorization header', async () => {
     const origReq = {
-      url: 'https://httpbin.zapier-tooling.com/digest-auth/auth/joe/mypass/MD5',
+      url: `${HTTPBIN_URL}/digest-auth/auth/joe/mypass/MD5`,
       headers: {},
     };
     const z = {};
@@ -425,23 +420,23 @@ describe('http throwForStatus after middleware', () => {
     const request = createAppRequestClient(input);
 
     await request({
-      url: 'https://httpbin.org/status/400',
+      url: `${HTTPBIN_URL}/status/400`,
     }).should.be.rejectedWith(errors.ResponseError, {
       name: 'ResponseError',
       doNotContextify: true,
-      message:
-        '{"status":400,"headers":{"content-type":"text/html; charset=utf-8"},"content":"","request":{"url":"https://httpbin.org/status/400"}}',
+      message: `{"status":400,"headers":{"content-type":null},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`,
     });
   });
+
   it('does not throw for redirects (which we follow)', async () => {
     const testLogger = () => Promise.resolve({});
     const input = createInput({}, {}, testLogger);
     const request = createAppRequestClient(input);
 
     const response = await request({
-      url: 'https://httpbin.org/redirect-to',
+      url: `${HTTPBIN_URL}/redirect-to`,
       params: {
-        url: 'https://httpbin.org/status/200',
+        url: `${HTTPBIN_URL}/status/200`,
       },
     });
 
@@ -453,7 +448,7 @@ describe('http throwForStatus after middleware', () => {
     const request = createAppRequestClient(input);
 
     const response = await request({
-      url: 'https://httpbin.org/status/200',
+      url: `${HTTPBIN_URL}/status/200`,
     });
 
     response.status.should.equal(200);
@@ -464,7 +459,7 @@ describe('http throwForStatus after middleware', () => {
     const request = createAppRequestClient(input);
 
     const response = await request({
-      url: 'https://httpbin.org/status/600',
+      url: `${HTTPBIN_URL}/status/600`,
     });
 
     response.status.should.equal(600);
@@ -481,7 +476,7 @@ describe('http logResponse after middleware', () => {
   const request = createAppRequestClient(input);
 
   it('post JSON data', async () => {
-    const url = 'https://httpbin.zapier-tooling.com/post';
+    const url = `${HTTPBIN_URL}/post`;
     await request({ method: 'POST', url, body: { foo: 'bar' } });
 
     logged.message.should.equal(`200 POST ${url}`);
@@ -503,7 +498,7 @@ describe('http logResponse after middleware', () => {
   });
 
   it('upload file in form data', async () => {
-    const url = 'https://httpbin.zapier-tooling.com/post';
+    const url = `${HTTPBIN_URL}/post`;
 
     const form = new FormData();
     form.append('filename', 'sample.txt');

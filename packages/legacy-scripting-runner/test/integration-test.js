@@ -2,7 +2,7 @@ const _ = require('lodash');
 const should = require('should');
 const nock = require('nock');
 
-const { AUTH_JSON_SERVER_URL } = require('./auth-json-server');
+const { AUTH_JSON_SERVER_URL, HTTPBIN_URL } = require('./constants');
 const apiKeyAuth = require('./example-app/api-key-auth');
 const appDefinition = require('./example-app');
 const oauth2Config = require('./example-app/oauth2');
@@ -429,8 +429,7 @@ describe('Integration Test', () => {
         'movie_post_poll_make_array',
         'recipe_post_poll'
       );
-      appDef.legacy.triggers.recipe.operation.url =
-        'https://httpbin.zapier-tooling.com/get?name={{name}}&active={{active}}';
+      appDef.legacy.triggers.recipe.operation.url = `${HTTPBIN_URL}/get?name={{name}}&active={{active}}`;
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
@@ -443,10 +442,7 @@ describe('Integration Test', () => {
       return _app(input).then((output) => {
         const echoed = output.results[0];
         should.deepEqual(echoed.args, { name: ['john'], active: ['False'] });
-        should.equal(
-          echoed.url,
-          'https://httpbin.zapier-tooling.com/get?name=john&active=False'
-        );
+        should.equal(echoed.url, `${HTTPBIN_URL}/get?name=john&active=False`);
       });
     });
 
@@ -780,8 +776,7 @@ describe('Integration Test', () => {
 
     it('KEY_pre_poll, array curlies', () => {
       const appDef = _.cloneDeep(appDefinition);
-      appDef.legacy.triggers.movie.operation.url =
-        'https://httpbin.zapier-tooling.com/get?things={{things}}';
+      appDef.legacy.triggers.movie.operation.url = `${HTTPBIN_URL}/get?things={{things}}`;
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
         'movie_post_poll'
@@ -812,7 +807,7 @@ describe('Integration Test', () => {
           things: ['eyedrops,cyclops,ipod'],
         });
         req.url.should.equal(
-          'https://httpbin.zapier-tooling.com/get?things=eyedrops%2Ccyclops%2Cipod'
+          `${HTTPBIN_URL}/get?things=eyedrops%2Ccyclops%2Cipod`
         );
       });
     });
@@ -1142,10 +1137,7 @@ describe('Integration Test', () => {
           const payload = JSON.parse(movie.trailer.split('|||')[1]);
           should.equal(payload.type, 'file');
           should.equal(payload.method, 'hydrators.legacyFileHydrator');
-          should.equal(
-            payload.bundle.url,
-            'https://auth-json-server.zapier-staging.com/movies'
-          );
+          should.equal(payload.bundle.url, `${AUTH_JSON_SERVER_URL}/movies`);
           should.equal(payload.bundle.request.params.id, movie.id);
           should.equal(payload.bundle.meta.name, `movie ${movie.id}.json`);
           should.equal(payload.bundle.meta.length, 1234);
@@ -2642,7 +2634,7 @@ describe('Integration Test', () => {
         // In reality, file will always be a "hydrate URL" that looks something
         // like https://zapier.com/engine/hydrate/1/abcd/, but in fact any
         // valid URL would work.
-        file: 'https://httpbin.zapier-tooling.com/image/png',
+        file: `${HTTPBIN_URL}/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2667,7 +2659,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'this is a pig.png',
-        file: 'https://httpbin.zapier-tooling.com/redirect-to?url=/image/png',
+        file: `${HTTPBIN_URL}/redirect-to?url=/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2696,7 +2688,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'this is a pig.png',
-        file: 'https://httpbin.zapier-tooling.com/image/png',
+        file: `${HTTPBIN_URL}/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2725,7 +2717,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'this is a wolf.jpg',
-        file: 'https://httpbin.zapier-tooling.com/image/jpeg',
+        file: `${HTTPBIN_URL}/image/jpeg`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2754,7 +2746,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png',
+        file: `${HTTPBIN_URL}/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2783,7 +2775,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png',
+        file: `${HTTPBIN_URL}/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2812,7 +2804,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png',
+        file: `${HTTPBIN_URL}/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2841,7 +2833,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png',
+        file: `${HTTPBIN_URL}/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2870,7 +2862,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png',
+        file: `${HTTPBIN_URL}/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2899,7 +2891,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png',
+        file: `${HTTPBIN_URL}/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2928,7 +2920,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png',
+        file: `${HTTPBIN_URL}/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -2956,7 +2948,7 @@ describe('Integration Test', () => {
       input.bundle.inputData = {
         id: 'whatever',
         name: 'a pig',
-        file_1: 'https://httpbin.zapier-tooling.com/image/png',
+        file_1: `${HTTPBIN_URL}/image/png`,
       };
       return app(input).then((output) => {
         const file = output.results.file;
@@ -3060,7 +3052,7 @@ describe('Integration Test', () => {
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
           // This endpoint echoes what we send to it, so we know if auth info was sent
-          url: 'https://httpbin.zapier-tooling.com/get',
+          url: `${HTTPBIN_URL}/get`,
         };
         return app(input).then((output) => {
           const {
@@ -3098,7 +3090,7 @@ describe('Integration Test', () => {
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
           // This endpoint echoes what we send to it, so we know if auth info was sent
-          url: 'https://httpbin.zapier-tooling.com/get',
+          url: `${HTTPBIN_URL}/get`,
           request: {
             params: { foo: 1, bar: 'hello' },
           },
@@ -3142,7 +3134,7 @@ describe('Integration Test', () => {
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
           // This endpoint echoes what we send to it, so we know if auth info was sent
-          url: 'https://httpbin.zapier-tooling.com/get',
+          url: `${HTTPBIN_URL}/get`,
           request: {
             params: { foo: 1, bar: 'hello' },
           },

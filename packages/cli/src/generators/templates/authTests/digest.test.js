@@ -18,7 +18,7 @@ describe('digest auth', () => {
     const response = await appTester(App.authentication.test, bundle);
 
     expect(response.status).toBe(200);
-    expect(response.data.authenticated).toBe(true);
+    expect(response.data.authorized).toBe(true);
     expect(response.data.user).toBe('myuser');
   });
 
