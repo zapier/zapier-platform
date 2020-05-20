@@ -49,9 +49,9 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 ### core
 
 * :nail_care: `z.request` now has an `allowGetBody` option that allows you to send a GET request with a body ([#195](https://github.com/zapier/zapier-platform/pull/195))
-* :gear: Include `User-Agent` header for internal calls ([#204](https://github.com/zapier/zapier-platform/pull/204))
 * :scroll: Update examples to demonstrate `z.errors.Error` ([#198](https://github.com/zapier/zapier-platform/pull/198))
 * :scroll: Encourage use of `response.json` rather than `z.JSON.parse(response.content)` ([#200](https://github.com/zapier/zapier-platform/pull/200))
+* :hammer: Include `User-Agent` header for internal calls ([#204](https://github.com/zapier/zapier-platform/pull/204))
 
 ### schema
 
