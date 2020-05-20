@@ -1,9 +1,12 @@
-// an example app!
+'use strict';
 
-process.env.BASE_URL = 'https://httpbin.zapier-tooling.com';
+// an example app!
 
 const _ = require('lodash');
 const helpers = require('./helpers');
+const { HTTPBIN_URL } = require('../constants');
+
+process.env.BASE_URL = HTTPBIN_URL;
 
 const List = {
   key: 'list',
@@ -148,11 +151,9 @@ const RequestSugar = {
     },
     operation: {
       perform: (z /* , bundle */) => {
-        return z
-          .request('https://httpbin.zapier-tooling.com/get')
-          .then((resp) => {
-            return resp.data;
-          });
+        return z.request(`${HTTPBIN_URL}/get`).then((resp) => {
+          return resp.data;
+        });
       },
     },
   },
@@ -216,7 +217,7 @@ const FailerHttp = {
     },
     operation: {
       perform: {
-        url: 'https://httpbin.zapier-tooling.com/status/403',
+        url: `${HTTPBIN_URL}/status/403`,
       },
     },
   },
@@ -442,7 +443,7 @@ const ExecuteRequestAsShorthand = {
       inputFields: [
         {
           key: 'url',
-          default: 'https://httpbin.zapier-tooling.com/status/403',
+          default: `${HTTPBIN_URL}/status/403`,
         },
       ],
     },
@@ -459,7 +460,7 @@ const ExecuteRequestAsShorthand = {
       inputFields: [
         {
           key: 'url',
-          default: 'https://httpbin.zapier-tooling.com/status/403',
+          default: `${HTTPBIN_URL}/status/403`,
         },
       ],
     },

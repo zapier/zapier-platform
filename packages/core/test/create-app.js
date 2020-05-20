@@ -7,6 +7,7 @@ const createInput = require('../src/tools/create-input');
 const dataTools = require('../src/tools/data');
 const errors = require('../src/errors');
 const appDefinition = require('./userapp');
+const { HTTPBIN_URL } = require('./constants');
 
 describe('create-app', () => {
   const testLogger = (/* message, data */) => {
@@ -129,9 +130,7 @@ describe('create-app', () => {
 
       const response = JSON.parse(err.message);
       response.status.should.eql(403);
-      response.request.url.should.eql(
-        'https://httpbin.zapier-tooling.com/status/403'
-      );
+      response.request.url.should.eql(`${HTTPBIN_URL}/status/403`);
       return;
     }
 
@@ -149,9 +148,7 @@ describe('create-app', () => {
 
       const response = JSON.parse(err.message);
       response.status.should.eql(403);
-      response.request.url.should.eql(
-        'https://httpbin.zapier-tooling.com/status/403'
-      );
+      response.request.url.should.eql(`${HTTPBIN_URL}/status/403`);
       return;
     }
 
@@ -259,7 +256,7 @@ describe('create-app', () => {
     const input = createTestInput('triggers.contactList.operation.perform');
     const output = await app(input);
 
-    output.results.url.should.eql('https://httpbin.zapier-tooling.com/get');
+    output.results.url.should.eql(`${HTTPBIN_URL}/get`);
     output.results.headers['X-Hashy'].should.deepEqual([
       '1a3ba5251cb33ee7ade01af6a7b960b8',
     ]);
@@ -309,16 +306,14 @@ describe('create-app', () => {
       command: 'request',
       bundle: {
         request: {
-          url: 'https://httpbin.zapier-tooling.com/get',
+          url: `${HTTPBIN_URL}/get`,
         },
       },
     });
     app(input)
       .then((output) => {
         const response = output.results;
-        JSON.parse(response.content).url.should.eql(
-          'https://httpbin.zapier-tooling.com/get'
-        );
+        JSON.parse(response.content).url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
@@ -342,7 +337,7 @@ describe('create-app', () => {
         command: 'execute',
         bundle: {
           inputData: {
-            url: 'https://httpbin.zapier-tooling.com/status/401',
+            url: `${HTTPBIN_URL}/status/401`,
           },
         },
         method: 'resources.executeRequestAsShorthand.list.operation.perform',
@@ -378,7 +373,7 @@ describe('create-app', () => {
         bundle: {
           inputData: {
             options: {
-              url: 'https://httpbin.zapier-tooling.com/status/401',
+              url: `${HTTPBIN_URL}/status/401`,
             },
           },
         },
@@ -413,7 +408,7 @@ describe('create-app', () => {
         bundle: {
           inputData: {
             options: {
-              url: 'https://httpbin.zapier-tooling.com/status/401',
+              url: `${HTTPBIN_URL}/status/401`,
             },
           },
         },
@@ -609,7 +604,7 @@ describe('create-app', () => {
         command: 'execute',
         bundle: {
           inputData: {
-            url: 'https://httpbin.zapier-tooling.com/get',
+            url: `${HTTPBIN_URL}/get`,
           },
         },
         method: 'resources.executeRequestAsShorthand.create.operation.perform',
@@ -623,7 +618,7 @@ describe('create-app', () => {
       const app = createApp(appDefinition);
 
       // httpbin doesn't actually have a form-urlencoded endpoint
-      nock('https://x-www-form-urlencoded.httpbin.zapier-tooling.com')
+      nock('https://x-www-form-urlencoded.example.com')
         .get('/')
         .reply(200, 'foo=bar', {
           'content-type': 'application/x-www-form-urlencoded',
@@ -633,7 +628,7 @@ describe('create-app', () => {
         command: 'execute',
         bundle: {
           inputData: {
-            url: 'https://x-www-form-urlencoded.httpbin.zapier-tooling.com/',
+            url: 'https://x-www-form-urlencoded.example.com/',
           },
         },
         method: 'resources.executeRequestAsShorthand.create.operation.perform',
@@ -650,7 +645,7 @@ describe('create-app', () => {
         command: 'execute',
         bundle: {
           inputData: {
-            url: 'https://httpbin.zapier-tooling.com/xml',
+            url: `${HTTPBIN_URL}/xml`,
           },
         },
         method: 'resources.executeRequestAsShorthand.create.operation.perform',

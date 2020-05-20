@@ -11,6 +11,7 @@ const should = require('should');
 
 const createLambdaHandler = require('../src/tools/create-lambda-handler');
 const mocky = require('../test/tools/mocky');
+const { HTTPBIN_URL } = require('../test/constants');
 
 const lambda = new AWS.Lambda({
   apiVersion: '2015-03-31',
@@ -244,7 +245,7 @@ const doTest = (runner) => {
             noun: 'Foo',
             operation: {
               perform: {
-                url: 'https://httpbin.zapier-tooling.com/get',
+                url: `${HTTPBIN_URL}/get`,
                 params: {
                   id: 54321,
                 },
@@ -307,7 +308,7 @@ const doTest = (runner) => {
             operation: {
               perform: {
                 method: 'POST',
-                url: 'https://httpbin.zapier-tooling.com/post',
+                url: `${HTTPBIN_URL}/post`,
                 params: {
                   id: 54321,
                 },
@@ -496,7 +497,7 @@ const doTest = (runner) => {
             operation: {
               perform: {
                 method: 'POST',
-                url: 'https://httpbin.zapier-tooling.com/post',
+                url: `${HTTPBIN_URL}/post`,
               },
             },
           },

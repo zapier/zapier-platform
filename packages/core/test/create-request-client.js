@@ -9,6 +9,7 @@ const should = require('should');
 const createAppRequestClient = require('../src/tools/create-app-request-client');
 const createInput = require('../src/tools/create-input');
 const errors = require('../src/errors');
+const { HTTPBIN_URL } = require('./constants');
 
 describe('request client', () => {
   const testLogger = () => Promise.resolve({});
@@ -16,7 +17,7 @@ describe('request client', () => {
 
   it('should include a user-agent header', (done) => {
     const request = createAppRequestClient(input);
-    request({ url: 'https://httpbin.zapier-tooling.com/get' })
+    request({ url: `${HTTPBIN_URL}/get` })
       .then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -24,7 +25,7 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.zapier-tooling.com/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
@@ -33,7 +34,7 @@ describe('request client', () => {
   it('should allow overriding the user-agent header', (done) => {
     const request = createAppRequestClient(input);
     request({
-      url: 'https://httpbin.zapier-tooling.com/get',
+      url: `${HTTPBIN_URL}/get`,
       headers: {
         'User-Agent': 'Zapier!',
       },
@@ -46,7 +47,7 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.zapier-tooling.com/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
@@ -55,7 +56,7 @@ describe('request client', () => {
   it('should have json serializable response', async () => {
     const request = createAppRequestClient(input);
     const responseBefore = await request({
-      url: 'https://httpbin.zapier-tooling.com/get',
+      url: `${HTTPBIN_URL}/get`,
     });
     const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -63,16 +64,16 @@ describe('request client', () => {
     response.status.should.eql(200);
 
     const body = JSON.parse(response.content);
-    body.url.should.eql('https://httpbin.zapier-tooling.com/get');
+    body.url.should.eql(`${HTTPBIN_URL}/get`);
   });
 
   it('should wrap a request entirely', (done) => {
     const request = createAppRequestClient(input);
-    request({ url: 'https://httpbin.zapier-tooling.com/get' })
+    request({ url: `${HTTPBIN_URL}/get` })
       .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.zapier-tooling.com/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
@@ -83,7 +84,7 @@ describe('request client', () => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
-      url: 'https://httpbin.zapier-tooling.com/post',
+      url: `${HTTPBIN_URL}/post`,
       body: Promise.resolve(payload),
     })
       .then((response) => {
@@ -150,11 +151,11 @@ describe('request client', () => {
 
   it('should support single url param', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.zapier-tooling.com/get')
+    request(`${HTTPBIN_URL}/get`)
       .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.zapier-tooling.com/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
@@ -162,19 +163,19 @@ describe('request client', () => {
 
   it('should support url param with options', async () => {
     const request = createAppRequestClient(input);
-    const response = await request('https://httpbin.zapier-tooling.com/get', {
+    const response = await request(`${HTTPBIN_URL}/get`, {
       headers: { A: 'B' },
     });
 
     response.status.should.eql(200);
     const body = JSON.parse(response.content);
-    body.url.should.eql('https://httpbin.zapier-tooling.com/get');
+    body.url.should.eql(`${HTTPBIN_URL}/get`);
     body.headers.A.should.deepEqual(['B']);
   });
 
   it('should support bytes', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.zapier-tooling.com/bytes/1024')
+    request(`${HTTPBIN_URL}/bytes/1024`)
       .then((response) => {
         response.status.should.eql(200);
         // it tries to decode the bytes /shrug
@@ -186,7 +187,7 @@ describe('request client', () => {
 
   it('should support bytes raw', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.zapier-tooling.com/bytes/1024', { raw: true })
+    request(`${HTTPBIN_URL}/bytes/1024`, { raw: true })
       .then((response) => {
         response.status.should.eql(200);
         should(response.buffer).be.type('function');
@@ -199,7 +200,7 @@ describe('request client', () => {
 
   it('should support streaming bytes', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.zapier-tooling.com/stream-bytes/1024')
+    request(`${HTTPBIN_URL}/stream-bytes/1024`)
       .then((response) => {
         response.status.should.eql(200);
         // it tries to decode the bytes /shrug
@@ -211,7 +212,7 @@ describe('request client', () => {
 
   it('should support streaming bytes raw', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.zapier-tooling.com/stream-bytes/1024', {
+    request(`${HTTPBIN_URL}/stream-bytes/1024`, {
       raw: true,
     })
       .then((response) => {
@@ -226,7 +227,7 @@ describe('request client', () => {
 
   it('should support streaming bytes raw as buffer', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.zapier-tooling.com/stream-bytes/1024', {
+    request(`${HTTPBIN_URL}/stream-bytes/1024`, {
       raw: true,
     })
       .then((response) => {
@@ -254,7 +255,7 @@ describe('request client', () => {
       testLogger
     );
     const request = createAppRequestClient(inputWithBeforeMiddleware);
-    request({ url: 'https://httpbin.zapier-tooling.com/get' })
+    request({ url: `${HTTPBIN_URL}/get` })
       .then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
@@ -262,7 +263,7 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.zapier-tooling.com/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
@@ -271,14 +272,14 @@ describe('request client', () => {
   it('should default to run throwForStatus', () => {
     const request = createAppRequestClient(input);
     return request({
-      url: 'https://httpbin.zapier-tooling.com/status/400',
+      url: `${HTTPBIN_URL}/status/400`,
     }).should.be.rejectedWith(errors.ResponseError);
   });
 
   it('should be able to skip throwForStatus via request', async () => {
     const request = createAppRequestClient(input);
     const response = await request({
-      url: 'https://httpbin.zapier-tooling.com/status/400',
+      url: `${HTTPBIN_URL}/status/400`,
       skipThrowForStatus: true,
     });
     response.status.should.eql(400);
@@ -299,7 +300,7 @@ describe('request client', () => {
     );
     const request = createAppRequestClient(inputWithAfterMiddleware);
     const response = await request({
-      url: 'https://httpbin.zapier-tooling.com/status/400',
+      url: `${HTTPBIN_URL}/status/400`,
     });
     response.status.should.eql(400);
   });
@@ -307,7 +308,7 @@ describe('request client', () => {
   it('should parse form type request body', async () => {
     const request = createAppRequestClient(input);
     const response = await request({
-      url: 'https://httpbin.zapier-tooling.com/post',
+      url: `${HTTPBIN_URL}/post`,
       method: 'POST',
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
@@ -330,7 +331,7 @@ describe('request client', () => {
   it('should not parse form type request body when string', async () => {
     const request = createAppRequestClient(input);
     const response = await request({
-      url: 'https://httpbin.zapier-tooling.com/post',
+      url: `${HTTPBIN_URL}/post`,
       method: 'POST',
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
@@ -367,11 +368,9 @@ describe('request client', () => {
     const newInput = _.cloneDeep(input);
     newInput._zapier.event.verifySSL = false;
     const request = createAppRequestClient(newInput);
-    return request('https://httpbin.zapier-tooling.com/get').then(
-      (response) => {
-        response.status.should.eql(200);
-      }
-    );
+    return request(`${HTTPBIN_URL}/get`).then((response) => {
+      response.status.should.eql(200);
+    });
   });
 
   it('should delete GET body by default', async () => {
@@ -407,7 +406,7 @@ describe('request client', () => {
     it('should replace remaining curly params with empty string by default', async () => {
       const request = createAppRequestClient(input);
       const responseBefore = await request({
-        url: 'https://httpbin.zapier-tooling.com/get',
+        url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
@@ -422,15 +421,13 @@ describe('request client', () => {
       response.status.should.eql(200);
 
       const body = JSON.parse(response.content);
-      body.url.should.eql(
-        'https://httpbin.zapier-tooling.com/get?something=&really=&cool=true'
-      );
+      body.url.should.eql(`${HTTPBIN_URL}/get?something=&really=&cool=true`);
     });
 
     it('should replace remaining curly params with empty string when set as false', async () => {
       const request = createAppRequestClient(input);
       const responseBefore = await request({
-        url: 'https://httpbin.zapier-tooling.com/get',
+        url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
@@ -448,9 +445,7 @@ describe('request client', () => {
       response.status.should.eql(200);
 
       const body = JSON.parse(response.content);
-      body.url.should.eql(
-        'https://httpbin.zapier-tooling.com/get?something=&really=&cool=true'
-      );
+      body.url.should.eql(`${HTTPBIN_URL}/get?something=&really=&cool=true`);
     });
 
     it('should omit empty params when set as true', async () => {
@@ -466,7 +461,7 @@ describe('request client', () => {
       );
 
       const responseBefore = await request({
-        url: 'https://httpbin.zapier-tooling.com/get',
+        url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
@@ -499,14 +494,14 @@ describe('request client', () => {
 
       const body = JSON.parse(response.content);
       body.url.should.eql(
-        'https://httpbin.zapier-tooling.com/get?cool=false&name=zapier&zzz=%5B%5D&yyy=%7B%7D&qqq=%20'
+        `${HTTPBIN_URL}/get?cool=false&name=zapier&zzz=%5B%5D&yyy=%7B%7D&qqq=%20`
       );
     });
 
     it('should not include ? if there are no params after cleaning', () => {
       const request = createAppRequestClient(input);
       return request({
-        url: 'https://httpbin.zapier-tooling.com/get',
+        url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
           cool: '',
@@ -522,7 +517,7 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.zapier-tooling.com/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
       });
     });
   });
@@ -541,7 +536,7 @@ describe('request client', () => {
       const subscribeInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(subscribeInput);
       const response = await request({
-        url: 'https://httpbin.zapier-tooling.com/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           hookUrl: '{{bundle.targetUrl}}',
@@ -562,7 +557,7 @@ describe('request client', () => {
       const subscribeInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(subscribeInput);
       return request({
-        url: 'https://httpbin.zapier-tooling.com/delete',
+        url: `${HTTPBIN_URL}/delete`,
         method: 'DELETE',
         params: {
           id: '{{bundle.subscribeData.id}}',
@@ -571,7 +566,7 @@ describe('request client', () => {
         const { url } = JSON.parse(response.content);
 
         response.data.args.id.should.deepEqual(['123']);
-        url.should.eql('https://httpbin.zapier-tooling.com/delete?id=123');
+        url.should.eql(`${HTTPBIN_URL}/delete?id=123`);
       });
     });
   });
@@ -591,7 +586,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'https://httpbin.zapier-tooling.com/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           number: '{{bundle.inputData.number}}',
@@ -628,7 +623,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'https://httpbin.zapier-tooling.com/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           number: 123,
@@ -657,7 +652,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'https://httpbin.zapier-tooling.com/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           name: '{{bundle.inputData.name}}',
@@ -677,7 +672,7 @@ describe('request client', () => {
     it('should replace curlies with an empty string by default', () => {
       const request = createAppRequestClient(input);
       return request({
-        url: 'https://httpbin.zapier-tooling.com/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           empty: '{{bundle.inputData.empty}}',
@@ -707,7 +702,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       const response = await request({
-        url: 'https://httpbin.zapier-tooling.com/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           message: 'We just got #{{bundle.inputData.resourceId}}',
@@ -733,7 +728,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'https://httpbin.zapier-tooling.com/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           message: 'No arrays, thank you: {{bundle.inputData.badData}}',
@@ -758,7 +753,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'https://httpbin.zapier-tooling.com/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           streetAddress: '{{bundle.inputData.address.street}}',
@@ -789,7 +784,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       const response = await request({
-        url: 'https://httpbin.zapier-tooling.com/get',
+        url: `${HTTPBIN_URL}/get`,
         method: 'GET',
         params: {
           limit: '{{bundle.meta.limit}}',
@@ -802,7 +797,7 @@ describe('request client', () => {
 
       const { headers } = response.data;
       const { url } = JSON.parse(response.content);
-      url.should.eql('https://httpbin.zapier-tooling.com/get?limit=20&id=123');
+      url.should.eql(`${HTTPBIN_URL}/get?limit=20&id=123`);
       headers.Authorization.should.deepEqual(['Bearer Let me in']);
     });
 
@@ -822,7 +817,7 @@ describe('request client', () => {
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       const response = await request({
-        url: 'https://httpbin.zapier-tooling.com/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           arr: 'arr: {{bundle.inputData.arr}}',

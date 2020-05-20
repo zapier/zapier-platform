@@ -7,10 +7,11 @@ const { Headers } = require('node-fetch');
 const {
   replaceHeaders,
 } = require('../src/http-middlewares/after/middleware-utils');
+const { HTTPBIN_URL } = require('./constants');
 
 describe('logger', () => {
   const options = {
-    endpoint: 'https://httpbin.zapier-tooling.com/post',
+    endpoint: `${HTTPBIN_URL}/post`,
     token: 'fake-token',
   };
 

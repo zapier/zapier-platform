@@ -1,4 +1,4 @@
-const { AUTH_JSON_SERVER_URL } = require('../auth-json-server');
+const { AUTH_JSON_SERVER_URL } = require('../constants');
 
 const testAuthSource = `
   const responsePromise = z.request({

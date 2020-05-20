@@ -1,6 +1,7 @@
 const should = require('should');
 
 const z = require('../zfactory')();
+const { HTTPBIN_URL } = require('./constants');
 
 describe('z', () => {
   it('z.hash', (done) => {
@@ -26,7 +27,7 @@ describe('z', () => {
   it('z.request - sync', () => {
     const bundleRequest = {
       method: 'GET',
-      url: 'https://httpbin.zapier-tooling.com/get',
+      url: `${HTTPBIN_URL}/get`,
       params: {
         hello: 'world',
       },
@@ -51,7 +52,7 @@ describe('z', () => {
   it('z.request - async', (done) => {
     const bundleRequest = {
       method: 'POST',
-      url: 'https://httpbin.zapier-tooling.com/post',
+      url: `${HTTPBIN_URL}/post`,
       params: {
         hello: 'world',
       },
