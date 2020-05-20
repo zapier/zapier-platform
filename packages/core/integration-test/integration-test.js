@@ -11,6 +11,7 @@ const should = require('should');
 
 const createLambdaHandler = require('../src/tools/create-lambda-handler');
 const mocky = require('../test/tools/mocky');
+const { HTTPBIN_URL } = require('../test/constants');
 
 const lambda = new AWS.Lambda({
   apiVersion: '2015-03-31',
@@ -244,7 +245,7 @@ const doTest = (runner) => {
             noun: 'Foo',
             operation: {
               perform: {
-                url: 'https://httpbin.org/get',
+                url: `${HTTPBIN_URL}/get`,
                 params: {
                   id: 54321,
                 },
@@ -285,7 +286,7 @@ const doTest = (runner) => {
       });
     });
 
-    it('should handle array of [appRawOverrideHash, appRawExtension] and override perform with source', () => {
+    it('should handle array of [appRawOverrideHash, appRawExtension] and override perform with source', async () => {
       const definition = {
         creates: {
           foo: {
@@ -307,7 +308,7 @@ const doTest = (runner) => {
             operation: {
               perform: {
                 method: 'POST',
-                url: 'https://httpbin.org/post',
+                url: `${HTTPBIN_URL}/post`,
                 params: {
                   id: 54321,
                 },
@@ -330,12 +331,11 @@ const doTest = (runner) => {
         token: 'fake',
       };
 
-      return runner(event).then((response) => {
-        response.results.should.containEql({
-          args: {
-            id: '54321',
-          },
-        });
+      const response = await runner(event);
+      response.results.should.containEql({
+        args: {
+          id: ['54321'],
+        },
       });
     });
 
@@ -484,7 +484,7 @@ const doTest = (runner) => {
       });
     });
 
-    it('should handle function source in beforeRequest', () => {
+    it('should handle function source in beforeRequest', async () => {
       const definition = {
         beforeRequest: [
           {
@@ -497,7 +497,7 @@ const doTest = (runner) => {
             operation: {
               perform: {
                 method: 'POST',
-                url: 'https://httpbin.org/post',
+                url: `${HTTPBIN_URL}/post`,
               },
             },
           },
@@ -510,9 +510,8 @@ const doTest = (runner) => {
         appRawOverride: definition,
       };
 
-      return runner(event).then((response) => {
-        response.results.headers['X-Foo'].should.eql('it worked!');
-      });
+      const response = await runner(event);
+      response.results.headers['X-Foo'].should.deepEqual(['it worked!']);
     });
 
     it('should log requests', () => {

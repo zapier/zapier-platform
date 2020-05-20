@@ -1,6 +1,7 @@
 'use strict';
 
 const errors = require('../src/errors');
+const { HTTPBIN_URL } = require('./constants');
 
 describe('errors', () => {
   it('should name errors', () => {
@@ -32,7 +33,7 @@ describe('errors', () => {
         },
         content: '',
         request: {
-          url: 'https://httpbin.org/status/400',
+          url: `${HTTPBIN_URL}/status/400`,
         },
       };
       const error = new errors.ResponseError(response);
@@ -40,7 +41,7 @@ describe('errors', () => {
       error.should.instanceOf(errors.ResponseError);
       error.name.should.eql('ResponseError');
       error.message.should.eql(
-        '{"status":400,"headers":{"content-type":"text/html; charset=utf-8"},"content":"","request":{"url":"https://httpbin.org/status/400"}}'
+        `{"status":400,"headers":{"content-type":"text/html; charset=utf-8"},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`
       );
     });
   });

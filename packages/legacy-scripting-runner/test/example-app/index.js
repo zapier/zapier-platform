@@ -1,4 +1,4 @@
-const { AUTH_JSON_SERVER_URL } = require('../auth-json-server');
+const { AUTH_JSON_SERVER_URL, HTTPBIN_URL } = require('../constants');
 
 const legacyScriptingSource = `
     var qs = require('querystring');
@@ -56,12 +56,12 @@ const legacyScriptingSource = `
       },
 
       pre_oauthv2_refresh_httpbin_form: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         return bundle.request;
       },
 
       pre_oauthv2_refresh_httpbin_json: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.headers['Content-Type'] = 'application/json';
         return bundle.request;
       },
@@ -78,7 +78,7 @@ const legacyScriptingSource = `
         bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
         return {
-          url: 'https://httpbin.zapier-tooling.com/post',
+          url: '${HTTPBIN_URL}/post',
           method: bundle.request.method,
           headers: bundle.request.headers,
           data: bundle.request.data
@@ -86,7 +86,7 @@ const legacyScriptingSource = `
       },
 
       pre_oauthv2_refresh_bundle_load: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = qs.stringify(bundle.load);
         bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
         return bundle.request;
@@ -194,7 +194,7 @@ const legacyScriptingSource = `
       movie_pre_poll_default_headers: function(bundle) {
         // Copy Accept and Content-Type to params so we know they're already
         // available in pre_poll
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.url = '${HTTPBIN_URL}/get';
         bundle.request.params.accept = bundle.request.headers.Accept;
         bundle.request.params.contentType = bundle.request.headers['Content-Type'];
         return bundle.request;
@@ -202,7 +202,7 @@ const legacyScriptingSource = `
 
       movie_pre_poll_dynamic_dropdown: function(bundle) {
         bundle.request.method = 'POST';
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
 
         // bundle.trigger_fields should be the values of the input fields of the
         // action/search/trigger that pulls the dynamic dropdown. Send it to
@@ -212,7 +212,7 @@ const legacyScriptingSource = `
       },
 
       movie_pre_poll_null_request_data: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.url = '${HTTPBIN_URL}/get';
         bundle.request.params.requestDataIsNull =
           bundle.request.data === null ? 'yes' : 'no';
         return bundle.request;
@@ -220,14 +220,14 @@ const legacyScriptingSource = `
 
       movie_pre_poll_bundle_meta: function(bundle) {
         bundle.request.method = 'POST';
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify(bundle.meta);
         return bundle.request;
       },
 
       movie_pre_poll_request_options: function(bundle) {
         bundle.request.method = 'POST';
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.headers.foo = '1234';
         bundle.request.params.bar = '5678';
         bundle.request.data = '{"aa":"bb"}';
@@ -236,13 +236,13 @@ const legacyScriptingSource = `
 
       movie_pre_poll_invalid_chars_in_headers: function(bundle) {
         bundle.request.headers['x-api-key'] = ' \\t\\n\\r H\\t E \\nY \\r\\n\\t ';
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.url = '${HTTPBIN_URL}/get';
         return bundle.request;
       },
 
       movie_pre_poll_number_header: function(bundle) {
         bundle.request.headers['x-api-key'] = Math.floor( Date.now() / 1000 )
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.url = '${HTTPBIN_URL}/get';
         return bundle.request;
       },
 
@@ -289,7 +289,7 @@ const legacyScriptingSource = `
       movie_poll_default_headers: function(bundle) {
         // Copy Accept and Content-Type to params so we know they're already
         // available in pre_poll
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.url = '${HTTPBIN_URL}/get';
         bundle.request.params.accept = bundle.request.headers.Accept;
         bundle.request.params.contentType = bundle.request.headers['Content-Type'];
 
@@ -472,7 +472,7 @@ const legacyScriptingSource = `
       movie_pre_write_unflatten: function(bundle) {
         // Make sure bundle.action_fields is unflatten, bundle.action_fields_full
         // isn't, and bundle.action_fields_raw still got curlies
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({
           action_fields: bundle.action_fields,
           action_fields_full: bundle.action_fields_full,
@@ -485,7 +485,7 @@ const legacyScriptingSource = `
       movie_pre_write_action_fields: function(bundle) {
         // Make sure bundle.action_fields is filtered, bundle.action_fields_full
         // isn't, and bundle.action_fields_raw still got curlies
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({
           action_fields: bundle.action_fields,
           action_fields_full: bundle.action_fields_full,
@@ -519,7 +519,7 @@ const legacyScriptingSource = `
       },
 
       movie_pre_write_intercept_error: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/status/418';
+        bundle.request.url = '${HTTPBIN_URL}/status/418';
         return bundle.request;
       },
 
@@ -533,7 +533,7 @@ const legacyScriptingSource = `
       movie_pre_write_default_headers: function(bundle) {
         // Copy Accept and Content-Type to request body so we know they're
         // already available in pre_write
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({
           accept: bundle.request.headers.Accept,
           contentType: bundle.request.headers['Content-Type']
@@ -561,12 +561,12 @@ const legacyScriptingSource = `
       },
 
       movie_pre_write_no_content: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/status/204';
+        bundle.request.url = '${HTTPBIN_URL}/status/204';
         return bundle.request;
       },
 
       movie_write_default_headers: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({
           accept: bundle.request.headers.Accept,
           contentType: bundle.request.headers['Content-Type']
@@ -716,7 +716,7 @@ const legacyScriptingSource = `
 
       // To be replaced with 'file_pre_write' at runtime
       file_pre_write_fully_replace_url: function(bundle) {
-        bundle.request.files.file = 'https://httpbin.zapier-tooling.com/image/jpeg';
+        bundle.request.files.file = '${HTTPBIN_URL}/image/jpeg';
         return bundle.request;
       },
 
@@ -728,21 +728,21 @@ const legacyScriptingSource = `
 
       file_pre_write_content_dispoistion_with_quotes: function(bundle) {
         bundle.request.files.file =
-          'https://httpbin.zapier-tooling.com/response-headers?' +
+          '${HTTPBIN_URL}/response-headers?' +
           'Content-Disposition=filename=%22an%20example.json%22';
         return bundle.request;
       },
 
       file_pre_write_content_dispoistion_no_quotes: function(bundle) {
         bundle.request.files.file =
-          'https://httpbin.zapier-tooling.com/response-headers?' +
+          '${HTTPBIN_URL}/response-headers?' +
           'Content-Disposition=filename=example.json';
         return bundle.request;
       },
 
       file_pre_write_content_dispoistion_non_ascii: function(bundle) {
         bundle.request.files.file =
-          'https://httpbin.zapier-tooling.com/response-headers?' +
+          '${HTTPBIN_URL}/response-headers?' +
           'Content-Disposition=filename*=UTF-8%27%27%25E4%25B8%25AD%25E6%2596%2587.json';
         return bundle.request;
       },
@@ -1209,9 +1209,8 @@ const App = {
   legacy: {
     scriptingSource: legacyScriptingSource,
 
-    subscribeUrl: 'https://httpbin.zapier-tooling.com/post',
-    unsubscribeUrl:
-      'https://httpbin.zapier-tooling.com/delete?sub_id={{subscription_id}}',
+    subscribeUrl: `${HTTPBIN_URL}/post`,
+    unsubscribeUrl: `${HTTPBIN_URL}/delete?sub_id={{subscription_id}}`,
 
     authentication: {
       oauth2Config: {
