@@ -8,11 +8,11 @@ Another major release! We have some great improvements in this version but also 
 
 (c) **`response.throwForStatus` now only throws an error if the status code is between 400 and 600 (inclusive)**. Before v10, it threw for status >= 300. So if your code rely on that old behavior, you should change your code to check `response.status` explicitly instead of using `response.throwForStatus`.
 
-(d) We now **parse JSON and form-encoded response body by default**. The parsed object is available as `response.data` (`response.json` will be still available for JSON body but less preferable). Before v10, we only parsed JSON for [manual requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#manual-http-requests); parsed JSON and form-encoded body for [shorthand requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#shorthand-http-requests). This change could be breaking if you have an `afterResponse` that modifies `response.content`, with the expectation for shorthand requests to pick up on that. In which case, you'll have to replace `response.content = JSON.stringify(parsedOrTransformed)` with `response.data = parsedOrTransformed`.
+(d) We now **parse JSON and form-encoded response body by default**. So no more `z.JSON.parse(response.content)`! The parsed object is available as `response.data` (`response.json` will be still available for JSON body but less preferable). Before v10, we only parsed JSON for [manual requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#manual-http-requests); parsed JSON and form-encoded body for [shorthand requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#shorthand-http-requests). This change could be breaking if you have an `afterResponse` that modifies `response.content`, with the expectation for shorthand requests to pick up on that. In which case, you'll have to replace `response.content = JSON.stringify(parsedOrTransformed)` with `response.data = parsedOrTransformed`.
 
-(e) we rewrote the CLI `zapier init` command. The project templates are more up-to-date, with better coding practices. However, **we've removed the following templates**: `babel`, `create`, `github`, `middleware`, `oauth1-tumblr`, `oauth1-twitter`, `onedrive`, `resource`, `rest-hooks`, `trigger`. For trigger/create/search, use `zapier scaffold` command instead. For `babel`, look at `typescript` template and replace the build step with the similar code from https://babeljs.io/setup#installation. For `oauth1`, we now only keep `oauth1-trello` for simplicity. If you ever need to look at the old templates, they're always available in the [example-apps](https://github.com/zapier/zapier-platform/tree/75dfc80905f8fad36efc0d76fdf35eebe083ba1e/example-apps) directory in the repo.
+(e) we rewrote the CLI `zapier init` command. The project templates are more up-to-date, with better coding practices. However, **we've removed the following templates**: `babel`, `create`, `github`, `middleware`, `oauth1-tumblr`, `oauth1-twitter`, `onedrive`, `resource`, `rest-hooks`, `trigger`. For trigger/create/search, use `zapier scaffold` command instead. For `babel`, look at `typescript` template and replace the build step with the similar code from https://babeljs.io/setup#installation. For `oauth1`, we now only keep `oauth1-trello` for simplicity. If you ever need to look at the old templates, they're always available in the [example-apps](https://github.com/zapier/zapier-platform/tree/60eaabd04571df30a3c33e4ab5ec4fe0312ad701/example-apps) directory in the repo.
 
-(f) `zapier init` no longer uses the `minimal` template by default. If you don't specify a `--template`, the command will prompt you interactively. So if you're using `zapier init` (without any arguments) in CI and expect it to use `minimal` by default, you should replace the command with `zapier init -t minimal`.
+(f) `zapier init` no longer uses the `minimal` template by default. If you don't specify `--template`, **`zapier init` will prompt you interactively**. So if you're using `zapier init` (without any arguments) in CI and expect it to use `minimal` by default, you should replace the command with `zapier init -t minimal`.
 
 See below for a detailed changelog (**:exclamation: denotes a breaking change**):
 
@@ -21,9 +21,10 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 * :exclamation: We've improved and removed some templates from `init` command, see (e) above for a list of templates that were removed ([#206](https://github.com/zapier/zapier-platform/pull/206))
 * :nail_care: `build` command no longer needs login ([#216](https://github.com/zapier/zapier-platform/pull/216))
 * :nail_care: `promote` command becomes more receptive about the changelog format ([#209](https://github.com/zapier/zapier-platform/pull/209))
-* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+* :nail_care: Regenerate [example apps](https://github.com/zapier/zapier-platform/tree/60eaabd04571df30a3c33e4ab5ec4fe0312ad701/example-apps) using the new `init` command ([#229](https://github.com/zapier/zapier-platform/pull/229))
 * :scroll: Update and clean up docs ([#222](https://github.com/zapier/zapier-platform/pull/222))
 * :scroll: Add some clarity around what we're sending for analytics ([#215](https://github.com/zapier/zapier-platform/pull/215))
+* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
 
 ### core
 
@@ -32,6 +33,7 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 * :exclamation: `response.throwForStatus` now only throws for 400 <= status <= 600 ([#192](https://github.com/zapier/zapier-platform/pull/192))
 * :exclamation: Introduce `response.data` with support for form-urlencoded and custom parsing ([#211](https://github.com/zapier/zapier-platform/pull/211))
 * :bug: Don't log request body when it's streaming data ([#214](https://github.com/zapier/zapier-platform/pull/214))
+* :bug: `z.request`'s `allowGetBody` option shouldn't send empty body ([#227](https://github.com/zapier/zapier-platform/pull/227))
 * :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
 
 ### schema
