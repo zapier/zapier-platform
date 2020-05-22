@@ -14,9 +14,9 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 
 You may find docs duplicate or outdated across the Zapier site. The most up-to-date contents are always available on GitHub:
 
-- [CLI Docs](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md)
-- [CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
-- [Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
+- [Latest CLI Docs](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md)
+- [Latest CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
+- [Latest Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
 
 This doc decribes the latest CLI version **PACKAGE_VERSION**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 

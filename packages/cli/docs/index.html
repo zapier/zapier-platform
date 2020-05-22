@@ -402,9 +402,9 @@ a code {
       <p align="center">
   <a href="https://www.npmjs.com/package/zapier-platform-cli"><img src="https://img.shields.io/npm/v/zapier-platform-cli.svg" alt="npm version"></a>
 </p><p>Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.</p><p>You may find docs duplicate or outdated across the Zapier site. The most up-to-date contents are always available on GitHub:</p><ul>
-<li><a href="https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md">CLI Docs</a></li>
-<li><a href="https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md">CLI Reference</a></li>
-<li><a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md">Schema Docs</a></li>
+<li><a href="https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md">Latest CLI Docs</a></li>
+<li><a href="https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md">Latest CLI Reference</a></li>
+<li><a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md">Latest Schema Docs</a></li>
 </ul><p>This doc decribes the latest CLI version <strong>10.0.0</strong>, as of this writing. If you&apos;re using an older version of the CLI, you may want to check out these historical releases:</p><ul>
 <li>CLI Docs: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md">9.4.0</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md">8.4.2</a></li>
 <li>CLI Reference: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md">9.4.0</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md">8.4.2</a></li>
@@ -3418,8 +3418,7 @@ zapier env 1.0.0
   <span class="hljs-comment">// Prevent `throwForStatus` from throwing for a certain status.</span>
   <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">456</span>) {
     response.skipThrowForStatus = <span class="hljs-literal">true</span>;
-  }
-  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">200</span> &amp;&amp; response.data.success === <span class="hljs-literal">false</span>) {
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">200</span> &amp;&amp; response.data.success === <span class="hljs-literal">false</span>) {
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> z.errors.Error(response.data.message, response.data.code);
   }
 };

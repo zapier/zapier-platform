@@ -16,9 +16,9 @@ Zapier is a platform for creating integrations and workflows. This CLI is your g
 
 You may find docs duplicate or outdated across the Zapier site. The most up-to-date contents are always available on GitHub:
 
-- [CLI Docs](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md)
-- [CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
-- [Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
+- [Latest CLI Docs](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md)
+- [Latest CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
+- [Latest Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
 
 This doc decribes the latest CLI version **10.0.0**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
@@ -2018,8 +2018,7 @@ const handleErrors = (response, z) => {
   // Prevent `throwForStatus` from throwing for a certain status.
   if (response.status === 456) {
     response.skipThrowForStatus = true;
-  }
-  else if (response.status === 200 && response.data.success === false) {
+  } else if (response.status === 200 && response.data.success === false) {
     throw new z.errors.Error(response.data.message, response.data.code);
   }
 };
