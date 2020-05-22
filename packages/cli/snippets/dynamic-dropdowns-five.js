@@ -4,5 +4,8 @@ perform: async (z, bundle) => {
       spreadsheet_id: bundle.inputData.spreadsheet_id,
     },
   });
-  return response.data;
+
+  // response.throwForStatus() if you're using core v9 or older
+
+  return response.data; // or response.json if you're using core v9 or older
 };
