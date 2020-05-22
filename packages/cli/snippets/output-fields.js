@@ -1,8 +1,10 @@
 const recipeOutputFields = async (z, bundle) => {
   const response = await z.request('https://example.com/api/v2/fields.json');
 
+  // response.throwForStatus() if you're using core v9 or older
+
   // Should return an array like [{"key":"field_1","label":"Label for Custom Field"}]
-  return response.data;
+  return response.data; // or response.json if you're on core v9 or older
 };
 
 const App = {

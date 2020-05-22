@@ -10,6 +10,10 @@ const stashPDFfunction = (z, bundle) => {
 
 const pdfList = async (z, bundle) => {
   const response = await z.request('https://example.com/pdfs.json');
+
+  // response.throwForStatus() if you're using core v9 or older
+
+  // response.json.map if you're using core v9 or older
   return response.data.map((pdf) => {
     // Lazily convert a secret_download_url to a stashed url
     // zapier won't do this until we need it
