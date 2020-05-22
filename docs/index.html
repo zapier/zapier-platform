@@ -1301,10 +1301,11 @@ zapier convert 1234 --version 1.0.1 my-app
     },
   });
 
-  <span class="hljs-comment">// Call response.throwForStatus() if you&apos;re using a core version &lt; 10</span>
+  <span class="hljs-comment">// response.throwForStatus() if you&apos;re using core v9 or older</span>
 
   <span class="hljs-keyword">return</span> {
     <span class="hljs-attr">sessionKey</span>: response.data.sessionKey,
+    <span class="hljs-comment">// or response.json.sessionKey if you&apos;re using core v9 and older</span>
   };
 };
 
@@ -1948,8 +1949,10 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeFields = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(<span class="hljs-string">&apos;https://example.com/api/v2/fields.json&apos;</span>);
 
+  <span class="hljs-comment">// Call reponse.throwForStatus() if you&apos;re using core v9 or older</span>
+
   <span class="hljs-comment">// Should return an array like [{&quot;key&quot;:&quot;field_1&quot;},{&quot;key&quot;:&quot;field_2&quot;}]</span>
-  <span class="hljs-keyword">return</span> response.data;
+  <span class="hljs-keyword">return</span> response.data; <span class="hljs-comment">// response.json if you&apos;re using core v9 or older</span>
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -2187,7 +2190,10 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <span class="hljs-attr">spreadsheet_id</span>: bundle.inputData.spreadsheet_id,
     },
   });
-  <span class="hljs-keyword">return</span> response.data;
+
+  <span class="hljs-comment">// response.throwForStatus() if you&apos;re using core v9 or older</span>
+
+  <span class="hljs-keyword">return</span> response.data; <span class="hljs-comment">// or response.json if you&apos;re using core v9 or older</span>
 };
 
 </code></pre>
@@ -2465,8 +2471,10 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> recipeOutputFields = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(<span class="hljs-string">&apos;https://example.com/api/v2/fields.json&apos;</span>);
 
+  <span class="hljs-comment">// response.throwForStatus() if you&apos;re using core v9 or older</span>
+
   <span class="hljs-comment">// Should return an array like [{&quot;key&quot;:&quot;field_1&quot;,&quot;label&quot;:&quot;Label for Custom Field&quot;}]</span>
-  <span class="hljs-keyword">return</span> response.data;
+  <span class="hljs-keyword">return</span> response.data; <span class="hljs-comment">// or response.json if you&apos;re on core v9 or older</span>
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -2706,10 +2714,10 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p><code>z.errors</code> is a collection error classes that you can throw in your code, like <code>throw new z.errors.HaltedError(&apos;...&apos;)</code>.</p><p>The available errors are:</p><ul>
-<li>(<em>New in v9.3.0</em>) Error - Stops the current operation, allowing for (auto) replay. Read more on <a href="#general-errors">General Errors</a></li>
-<li>HaltedError - Stops current operation, but will never turn off Zap. Read more on <a href="#halting-execution">Halting Execution</a></li>
-<li>ExpiredAuthError - Turns off Zap and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
-<li>RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+<li><code>Error</code> (<em>new in v9.3.0</em>) - Stops the current operation, allowing for (auto) replay. Read more on <a href="#general-errors">General Errors</a></li>
+<li><code>HaltedError</code> - Stops current operation, but will never turn off Zap. Read more on <a href="#halting-execution">Halting Execution</a></li>
+<li><code>ExpiredAuthError</code> - Turns off Zap and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+<li><code>RefreshAuthError</code> - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
 </ul><p>For more details on error handling in general, see <a href="#error-handling">here</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -2905,7 +2913,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </blockquote><p>There&apos;s also <code>bundle.meta.zap.id</code>, which is only available in the <code>performSubscribe</code> and <code>performUnsubscribe</code> methods.</p><p>The user&apos;s Zap ID is available during the <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#basichookoperationschema">subscribe and unsubscribe</a> methods.</p><p>For example - you could do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> subscribeHook = <span class="hljs-function">(<span class="hljs-params">z, bundle</span>) =&gt;</span> {
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> subscribeHook = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
 
   <span class="hljs-keyword">const</span> options = {
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks&apos;</span>,
@@ -2916,7 +2924,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     },
   };
 
-  <span class="hljs-keyword">return</span> z.request(options).then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> response.data);
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(options);
+  <span class="hljs-keyword">return</span> response.data; <span class="hljs-comment">// or response.json if you&apos;re using core v9 or older</span>
 };
 
 <span class="hljs-built_in">module</span>.exports = {
@@ -3158,7 +3167,10 @@ zapier env 1.0.0
     <span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>,
     httpOptions
   );
-  <span class="hljs-keyword">return</span> response.data;
+
+  <span class="hljs-comment">// response.throwForStatus() if you&apos;re using core v9 or older</span>
+
+  <span class="hljs-keyword">return</span> response.data; <span class="hljs-comment">// or response.json if you&apos;re using core v9 or older</span>
 };
 
 <span class="hljs-keyword">const</span> App = {
@@ -3292,7 +3304,7 @@ zapier env 1.0.0
   };
   <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(customHttpOptions);
 
-  <span class="hljs-keyword">const</span> recipes = response.data;
+  <span class="hljs-keyword">const</span> recipes = response.data; <span class="hljs-comment">// or response.json if you&apos;re using core v9 or older</span>
   <span class="hljs-comment">// You can do any custom processing of recipes here...</span>
   <span class="hljs-keyword">return</span> recipes;
 };
@@ -3358,7 +3370,7 @@ zapier env 1.0.0
             );
           }
 
-          <span class="hljs-keyword">return</span> response.data;
+          <span class="hljs-keyword">return</span> response.data; <span class="hljs-comment">// or response.json if you&apos;re using core v9 or older</span>
         },
       },
     },
@@ -3401,18 +3413,18 @@ zapier env 1.0.0
   <span class="hljs-keyword">return</span> request;
 };
 
+<span class="hljs-comment">// This example only works on core v10+!</span>
 <span class="hljs-keyword">const</span> handleErrors = <span class="hljs-function">(<span class="hljs-params">response, z</span>) =&gt;</span> {
   <span class="hljs-comment">// Prevent `throwForStatus` from throwing for a certain status.</span>
   <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">456</span>) {
     response.skipThrowForStatus = <span class="hljs-literal">true</span>;
   }
-
-  <span class="hljs-comment">// Throw an error that `throwForStatus` wouldn&apos;t throw (correctly) for.</span>
   <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">200</span> &amp;&amp; response.data.success === <span class="hljs-literal">false</span>) {
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> z.errors.Error(response.data.message, response.data.code);
   }
 };
 
+<span class="hljs-comment">// This example only works on core v10+!</span>
 <span class="hljs-keyword">const</span> parseXML = <span class="hljs-function">(<span class="hljs-params">response, z, bundle</span>) =&gt;</span> {
   <span class="hljs-comment">// Parse content that is not JSON</span>
   <span class="hljs-comment">// eslint-disable-next-line no-undef</span>
@@ -3484,11 +3496,11 @@ zapier env 1.0.0
 <li><code>agent</code>: Node.js <code>http.Agent</code> instance, allows custom proxy, certificate etc. Default is <code>null</code>.</li>
 <li><code>timeout</code>: request / response timeout in ms. Set to <code>0</code> to disable (OS limit still applies), timeout reset on <code>redirect</code>. Default is <code>0</code> (disabled).</li>
 <li><code>size</code>: maximum response body size in bytes. Set to <code>0</code> to disable. Default is <code>0</code> (disabled).</li>
-<li><code>skipThrowForStatus</code>: don&apos;t call <code>response.throwForStatus()</code> before resolving the request with <code>response</code>. See <a href="#http-response-object">HTTP Response Object</a>.</li>
+<li><code>skipThrowForStatus</code> (<em>new in v10.0.0</em>): don&apos;t call <code>response.throwForStatus()</code> before resolving the request with <code>response</code>. See <a href="#http-response-object">HTTP Response Object</a>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js">z.request({
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
   <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com&apos;</span>,
   <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
   <span class="hljs-attr">headers</span>: {
@@ -3525,38 +3537,48 @@ zapier env 1.0.0
       <p>The response object returned by <code>z.request([url], options)</code> supports the following fields and methods:</p><ul>
 <li><code>status</code>: The response status code, i.e. <code>200</code>, <code>404</code>, etc.</li>
 <li><code>content</code>: The response content as a String. For Buffer, try <code>options.raw = true</code>.</li>
-<li><code>data</code>: The response content as an object if the content is JSON or <code>application/x-www-form-urlencoded</code> (<code>undefined</code> otherwise).</li>
-<li><code>json</code>: The response content as an object if the content is JSON (<code>undefined</code> otherwise). Deprecated: Use <code>data</code> instead.</li>
+<li><code>data</code> (<em>new in v10.0.0</em>): The response content as an object if the content is JSON or <code>application/x-www-form-urlencoded</code> (<code>undefined</code> otherwise).</li>
+<li><code>json</code>: The response content as an object if the content is JSON (<code>undefined</code> otherwise). Deprecated since v10.0.0: Use <code>data</code> instead.</li>
 <li><code>json()</code>: Get the response content as an object, if <code>options.raw = true</code> and content is JSON (returns a promise).</li>
 <li><code>body</code>: A stream available only if you provide <code>options.raw = true</code>.</li>
 <li><code>headers</code>: Response headers object. The header keys are all lower case.</li>
 <li><code>getHeader(key)</code>: Retrieve response header, case insensitive: <code>response.getHeader(&apos;My-Header&apos;)</code></li>
-<li><code>skipThrowForStatus</code>: don&apos;t call <code>throwForStatus()</code> before resolving the request with this response.</li>
+<li><code>skipThrowForStatus</code> (<em>new in v10.0.0</em>): don&apos;t call <code>throwForStatus()</code> before resolving the request with this response.</li>
 <li><code>throwForStatus()</code>: Throw error if 400 &lt;= <code>status</code> &lt; 600.</li>
 <li><code>request</code>: The original request options object (see above).</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js">z.request({
-  <span class="hljs-comment">// ..</span>
-}).then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
-  <span class="hljs-comment">// a bunch of examples lines for cherry picking</span>
-  response.status;
-  response.headers[<span class="hljs-string">&apos;Content-Type&apos;</span>];
-  response.getHeader(<span class="hljs-string">&apos;content-type&apos;</span>);
-  response.request; <span class="hljs-comment">// original request options</span>
-  response.throwForStatus();
-  <span class="hljs-keyword">if</span> (options.raw === <span class="hljs-literal">false</span>) { <span class="hljs-comment">// (default)</span>
-    response.data; <span class="hljs-comment">// same as...</span>
-    <span class="hljs-built_in">JSON</span>.parse(response.content); <span class="hljs-comment">// or...</span>
-    querystring.parse(response.content);
-  } <span class="hljs-keyword">else</span> {
-    response.buffer().then(<span class="hljs-function"><span class="hljs-params">buf</span> =&gt;</span> buf.toString());
-    response.text().then(<span class="hljs-function"><span class="hljs-params">content</span> =&gt;</span> content);
-    response.json().then(<span class="hljs-function"><span class="hljs-params">json</span> =&gt;</span> json);
-    response.body.pipe(otherStream);
-  }
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
+  <span class="hljs-comment">// options</span>
 });
+
+<span class="hljs-comment">// A bunch of examples lines for cherry picking</span>
+response.status;
+response.headers[<span class="hljs-string">&apos;Content-Type&apos;</span>];
+response.getHeader(<span class="hljs-string">&apos;content-type&apos;</span>);
+response.request; <span class="hljs-comment">// original request options</span>
+response.throwForStatus();
+
+<span class="hljs-keyword">if</span> (options.raw === <span class="hljs-literal">false</span>) { <span class="hljs-comment">// (default)</span>
+  <span class="hljs-comment">// If you&apos;re core v10+</span>
+  response.data; <span class="hljs-comment">// same as...</span>
+  z.JSON.parse(response.content); <span class="hljs-comment">// or...</span>
+  querystring.parse(response.content);
+
+  <span class="hljs-comment">// If you&apos;re core v9 or older...</span>
+  response.json;  <span class="hljs-comment">// same as</span>
+  z.JSON.parse(response.content);
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-keyword">const</span> buf = <span class="hljs-keyword">await</span> response.buffer();
+  buf.toString();
+
+  <span class="hljs-keyword">const</span> text = <span class="hljs-keyword">await</span> response.text();
+
+  <span class="hljs-keyword">const</span> json = <span class="hljs-keyword">await</span> response.json();
+
+  response.body.pipe(otherStream);
+}
 </code></pre>
     </div>
   </div>
@@ -3588,11 +3610,17 @@ zapier env 1.0.0
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> getMovieDetails = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-keyword">const</span> url = <span class="hljs-string">`https://example.com/movies/<span class="hljs-subst">${bundle.inputData.id}</span>.json`</span>;
   <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(url);
-  <span class="hljs-keyword">return</span> response.data;
+
+  <span class="hljs-comment">// reponse.throwForStatus() if you&apos;re using core v9 or older</span>
+
+  <span class="hljs-keyword">return</span> response.data; <span class="hljs-comment">// or response.json if you&apos;re using core v9 or older</span>
 };
 
 <span class="hljs-keyword">const</span> movieList = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(<span class="hljs-string">&apos;https://example.com/movies.json&apos;</span>);
+
+  <span class="hljs-comment">// response.throwForStatus() if you&apos;re using core v9 or older</span>
+
   <span class="hljs-keyword">return</span> response.data.map(<span class="hljs-function">(<span class="hljs-params">movie</span>) =&gt;</span> {
     <span class="hljs-comment">// so maybe /movies.json is thin content but /movies/:id.json has more</span>
     <span class="hljs-comment">// details we want...</span>
@@ -3716,6 +3744,10 @@ z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename 
 
 <span class="hljs-keyword">const</span> pdfList = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(<span class="hljs-string">&apos;https://example.com/pdfs.json&apos;</span>);
+
+  <span class="hljs-comment">// response.throwForStatus() if you&apos;re using core v9 or older</span>
+
+  <span class="hljs-comment">// response.json.map if you&apos;re using core v9 or older</span>
   <span class="hljs-keyword">return</span> response.data.map(<span class="hljs-function">(<span class="hljs-params">pdf</span>) =&gt;</span> {
     <span class="hljs-comment">// Lazily convert a secret_download_url to a stashed url</span>
     <span class="hljs-comment">// zapier won&apos;t do this until we need it</span>
@@ -3921,7 +3953,7 @@ have incomprehensible messages for end users, or possibly go uncaught.</p><p>Zap
 <code>afterResponse</code> middleware (<a href="#using-http-middleware">docs</a>), which provides a hook for
 processing all responses from HTTP calls. Second is <code>response.throwForStatus()</code>
 (<a href="#http-response-object">docs</a>), which throws an error if the response status indicates
-an error (status &gt;= 400). We automatically call this method before returning the
+an error (status &gt;= 400). Since v10.0.0, we automatically call this method before returning the
 response, unless you set <code>skipThrowForStatus</code> on the request or response object. The
 last tool is the collection of errors in <code>z.errors</code> (<a href="#zerrors">docs</a>), which control
 the behavior of Zaps when various kinds of errors occur.</p>
@@ -4532,7 +4564,7 @@ npm run zapier-push
 <li><a href="https://github.com/jhuckaby/pixl-xml">pixl-xml</a></li>
 <li><a href="https://github.com/Leonidas-from-XIV/node-xml2js">xml2js</a></li>
 <li><a href="https://github.com/NaturalIntelligence/fast-xml-parser">fast-xml-parser</a></li>
-</ul><p>For <a href="shorthand-http-requests">shorthand requests</a>, use an <code>afterResponse</code> <a href="using-http-middleware">middleware</a> that sets <code>response.data</code> to the parsed XML:</p>
+</ul><p>Since core v10, it&apos;s possible for <a href="shorthand-http-requests">shorthand requests</a> to parse XML. Use an <code>afterResponse</code> <a href="using-http-middleware">middleware</a> that sets <code>response.data</code> to the parsed XML:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> xml = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;pixl-xml&apos;</span>);
@@ -4541,6 +4573,7 @@ npm run zapier-push
   <span class="hljs-comment">// ...</span>
   <span class="hljs-attr">afterResponse</span>: [
     <span class="hljs-function">(<span class="hljs-params">response, z, bundle</span>) =&gt;</span> {
+      <span class="hljs-comment">// Only works on core v10+!</span>
       response.throwForStatus();
       response.data = xml.parse(response.content);
       <span class="hljs-keyword">return</span> response;
@@ -4637,7 +4670,7 @@ npm run zapier-push
     },
   });
 
-  <span class="hljs-keyword">let</span> results = response.data;
+  <span class="hljs-keyword">let</span> results = response.data; <span class="hljs-comment">// response.json if you&apos;re using core v9 or older</span>
 
   <span class="hljs-comment">// keep paging until the last item was created over two hours ago</span>
   <span class="hljs-comment">// then we know we almost certainly haven&apos;t missed anything and can let</span>
@@ -4709,7 +4742,7 @@ npm run zapier-push
       <span class="hljs-attr">offset</span>: <span class="hljs-number">100</span> * bundle.meta.page
     }
   });
-  <span class="hljs-keyword">return</span> response.data;
+  <span class="hljs-keyword">return</span> response.data; <span class="hljs-comment">// or response.json you&apos;re using core v9 or older</span>
 };
 </code></pre>
     </div>
@@ -4819,7 +4852,7 @@ npm run zapier-push
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-comment">// ...</span>
-<span class="hljs-keyword">let</span> items = response.data.items;
+<span class="hljs-keyword">let</span> items = response.data.items; <span class="hljs-comment">// or response.json.items if you&apos;re using core v9 or older</span>
 <span class="hljs-keyword">return</span> items.map(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> {
   item.id = item.contactId;
   <span class="hljs-keyword">return</span> item;

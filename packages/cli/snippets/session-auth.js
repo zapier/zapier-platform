@@ -8,10 +8,11 @@ const getSessionKey = async (z, bundle) => {
     },
   });
 
-  // Call response.throwForStatus() if you're using a core version < 10
+  // response.throwForStatus() if you're using core v9 or older
 
   return {
     sessionKey: response.data.sessionKey,
+    // or response.json.sessionKey if you're using core v9 and older
   };
 };
 

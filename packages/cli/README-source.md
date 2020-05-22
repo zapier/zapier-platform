@@ -708,10 +708,10 @@ We provide several methods off of the `z` object, which is provided as the first
 
 The available errors are:
 
-* (*New in v9.3.0*) Error - Stops the current operation, allowing for (auto) replay. Read more on [General Errors](#general-errors)
-* HaltedError - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
-* ExpiredAuthError - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
-* RefreshAuthError - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
+* `Error` (_new in v9.3.0_) - Stops the current operation, allowing for (auto) replay. Read more on [General Errors](#general-errors)
+* `HaltedError` - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
+* `ExpiredAuthError` - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
+* `RefreshAuthError` - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
 
 For more details on error handling in general, see [here](#error-handling).
 
@@ -780,7 +780,7 @@ The user's Zap ID is available during the [subscribe and unsubscribe](https://gi
 For example - you could do:
 
 ```js
-const subscribeHook = (z, bundle) => {
+const subscribeHook = async (z, bundle) => {
 
   const options = {
     url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
@@ -791,7 +791,8 @@ const subscribeHook = (z, bundle) => {
     },
   };
 
-  return z.request(options).then((response) => response.data);
+  const response = await z.request(options);
+  return response.data; // or response.json if you're using core v9 or older
 };
 
 module.exports = {
@@ -1024,10 +1025,10 @@ Shorthand requests and manual `z.request([url], options)` calls support the foll
 * `agent`: Node.js `http.Agent` instance, allows custom proxy, certificate etc. Default is `null`.
 * `timeout`: request / response timeout in ms. Set to `0` to disable (OS limit still applies), timeout reset on `redirect`. Default is `0` (disabled).
 * `size`: maximum response body size in bytes. Set to `0` to disable. Default is `0` (disabled).
-* `skipThrowForStatus`: don't call `response.throwForStatus()` before resolving the request with `response`. See [HTTP Response Object](#http-response-object).
+* `skipThrowForStatus` (_new in v10.0.0_): don't call `response.throwForStatus()` before resolving the request with `response`. See [HTTP Response Object](#http-response-object).
 
 ```js
-z.request({
+const response = await z.request({
   url: 'https://example.com',
   method: 'POST',
   headers: {
@@ -1054,37 +1055,47 @@ The response object returned by `z.request([url], options)` supports the followi
 
 * `status`: The response status code, i.e. `200`, `404`, etc.
 * `content`: The response content as a String. For Buffer, try `options.raw = true`.
-* `data`: The response content as an object if the content is JSON or ` application/x-www-form-urlencoded` (`undefined` otherwise).
-* `json`: The response content as an object if the content is JSON (`undefined` otherwise). Deprecated: Use `data` instead.
+* `data` (_new in v10.0.0_): The response content as an object if the content is JSON or ` application/x-www-form-urlencoded` (`undefined` otherwise).
+* `json`: The response content as an object if the content is JSON (`undefined` otherwise). Deprecated since v10.0.0: Use `data` instead.
 * `json()`: Get the response content as an object, if `options.raw = true` and content is JSON (returns a promise).
 * `body`: A stream available only if you provide `options.raw = true`.
 * `headers`: Response headers object. The header keys are all lower case.
 * `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
-* `skipThrowForStatus`: don't call `throwForStatus()` before resolving the request with this response.
+* `skipThrowForStatus` (_new in v10.0.0_): don't call `throwForStatus()` before resolving the request with this response.
 * `throwForStatus()`: Throw error if 400 <= `status` < 600.
 * `request`: The original request options object (see above).
 
 ```js
-z.request({
-  // ..
-}).then((response) => {
-  // a bunch of examples lines for cherry picking
-  response.status;
-  response.headers['Content-Type'];
-  response.getHeader('content-type');
-  response.request; // original request options
-  response.throwForStatus();
-  if (options.raw === false) { // (default)
-    response.data; // same as...
-    JSON.parse(response.content); // or...
-    querystring.parse(response.content);
-  } else {
-    response.buffer().then(buf => buf.toString());
-    response.text().then(content => content);
-    response.json().then(json => json);
-    response.body.pipe(otherStream);
-  }
+const response = await z.request({
+  // options
 });
+
+// A bunch of examples lines for cherry picking
+response.status;
+response.headers['Content-Type'];
+response.getHeader('content-type');
+response.request; // original request options
+response.throwForStatus();
+
+if (options.raw === false) { // (default)
+  // If you're core v10+
+  response.data; // same as...
+  z.JSON.parse(response.content); // or...
+  querystring.parse(response.content);
+
+  // If you're core v9 or older...
+  response.json;  // same as
+  z.JSON.parse(response.content);
+} else {
+  const buf = await response.buffer();
+  buf.toString();
+
+  const text = await response.text();
+
+  const json = await response.json();
+
+  response.body.pipe(otherStream);
+}
 ```
 
 
@@ -1235,7 +1246,7 @@ Zapier provides a couple of tools to help with error handling. First is the
 `afterResponse` middleware ([docs](#using-http-middleware)), which provides a hook for
 processing all responses from HTTP calls. Second is `response.throwForStatus()`
 ([docs](#http-response-object)), which throws an error if the response status indicates
-an error (status >= 400). We automatically call this method before returning the
+an error (status >= 400). Since v10.0.0, we automatically call this method before returning the
 response, unless you set `skipThrowForStatus` on the request or response object. The
 last tool is the collection of errors in `z.errors` ([docs](#zerrors)), which control
 the behavior of Zaps when various kinds of errors occur.
@@ -1534,7 +1545,7 @@ Not natively, but it can! Users have reported that the following `npm` modules a
 * [xml2js](https://github.com/Leonidas-from-XIV/node-xml2js)
 * [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser)
 
-For [shorthand requests](shorthand-http-requests), use an `afterResponse` [middleware](using-http-middleware) that sets `response.data` to the parsed XML:
+Since core v10, it's possible for [shorthand requests](shorthand-http-requests) to parse XML. Use an `afterResponse` [middleware](using-http-middleware) that sets `response.data` to the parsed XML:
 
 ```js
 [insert-file:./snippets/xml.js]
@@ -1593,7 +1604,7 @@ const perform = async (z, bundle) => {
       offset: 100 * bundle.meta.page
     }
   });
-  return response.data;
+  return response.data; // or response.json you're using core v9 or older
 };
 ```
 
@@ -1622,7 +1633,7 @@ For deduplication to work, we need to be able to identify and use a unique field
 
 ```js
 // ...
-let items = response.data.items;
+let items = response.data.items; // or response.json.items if you're using core v9 or older
 return items.map((item) => {
   item.id = item.contactId;
   return item;

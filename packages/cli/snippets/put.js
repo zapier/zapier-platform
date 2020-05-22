@@ -28,7 +28,7 @@ const App = {
             );
           }
 
-          return response.data;
+          return response.data; // or response.json if you're using core v9 or older
         },
       },
     },

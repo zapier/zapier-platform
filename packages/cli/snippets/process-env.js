@@ -8,7 +8,10 @@ const listExample = async (z, bundle) => {
     'https://example.com/api/v2/recipes.json',
     httpOptions
   );
-  return response.data;
+
+  // response.throwForStatus() if you're using core v9 or older
+
+  return response.data; // or response.json if you're using core v9 or older
 };
 
 const App = {
