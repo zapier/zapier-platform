@@ -860,6 +860,30 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, non-ascii URL', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_non_ascii_url',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        const result = output.results[0];
+        should.equal(result.hello, '你好');
+      });
+    });
+
     it('KEY_post_poll, jQuery utils', () => {
       const input = createTestInput(
         compiledApp,
