@@ -1,7 +1,7 @@
 ## 3.7.3
 
 - :bug: Encode URL before sending a request ([#235](https://github.com/zapier/zapier-platform/pull/235))
-- :refactor: Refactor tests to use Zapier-hosted httpbin ([#228](https://github.com/zapier/zapier-platform/pull/228))
+- :hammer: Refactor tests to use Zapier-hosted httpbin ([#228](https://github.com/zapier/zapier-platform/pull/228))
 - :hammer: Fix tests where inline function source isn't compiled ([#226](https://github.com/zapier/zapier-platform/pull/226))
 
 ## 3.7.2
