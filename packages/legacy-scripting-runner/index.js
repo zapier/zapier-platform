@@ -1,9 +1,10 @@
-const { promisify } = require('util');
 const querystring = require('querystring');
+const { promisify } = require('util');
+const { URL } = require('url');
 
 const _ = require('lodash');
-const FormData = require('form-data');
 const flatten = require('flat');
+const FormData = require('form-data');
 
 const {
   recurseReplaceBank,
@@ -663,6 +664,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         await addFilesToRequestBodyFromBody(request, bundle);
       }
 
+      request.url = new URL(request.url).toString();
       request.headers = cleanHeaders(request.headers);
       request.allowGetBody = true;
       request.serializeValueForCurlies = serializeValueForCurlies;

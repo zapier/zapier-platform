@@ -277,6 +277,11 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_non_ascii_url: function(bundle) {
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/中文';
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];
