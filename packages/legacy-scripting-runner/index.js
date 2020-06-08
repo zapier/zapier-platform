@@ -664,7 +664,11 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         await addFilesToRequestBodyFromBody(request, bundle);
       }
 
-      request.url = new URL(request.url).toString();
+      // encode everything, but retain curlies - those are replaced in z.request
+      // important to maintain case here; new URL lowercases everything
+      request.url = encodeURI(request.url)
+        .replace(/%7B/g, '{')
+        .replace(/%7D/g, '}');
       request.headers = cleanHeaders(request.headers);
       request.allowGetBody = true;
       request.serializeValueForCurlies = serializeValueForCurlies;

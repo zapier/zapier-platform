@@ -884,6 +884,35 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, env in url', () => {
+      process.env.SECRET_HTTPBIN_URL = HTTPBIN_URL.slice(8); // remove the protocol
+
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_env_var',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+
+      delete process.env.MY_SECRET;
+
+      return _app(input).then((output) => {
+        const result = output.results[0];
+        should.equal(result.url, 'https://httpbin.zapier-tooling.com/get');
+      });
+    });
+
     it('KEY_post_poll, jQuery utils', () => {
       const input = createTestInput(
         compiledApp,
