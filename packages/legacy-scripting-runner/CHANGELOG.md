@@ -1,3 +1,7 @@
+## 3.7.4
+
+- :bug: Fix env vars in curlies not resolving properly ([#237](https://github.com/zapier/zapier-platform/pull/237))
+
 ## 3.7.3
 
 - :bug: Encode URL before sending a request ([#235](https://github.com/zapier/zapier-platform/pull/235))
