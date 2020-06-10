@@ -114,6 +114,11 @@ export interface RawHttpResponse extends BaseHttpResponse {
   body: NodeJS.ReadableStream;
 }
 
+type DehydrateFunc = <T>(
+  func: (z: ZObject, bundle: Bundle<T>) => any,
+  inputData: object
+) => string;
+
 export interface ZObject {
   request: {
     // most specific overloads go first
@@ -130,10 +135,8 @@ export interface ZObject {
 
   console: Console;
 
-  dehydrate: <T>(
-    func: (z: this, bundle: Bundle<T>) => any,
-    inputData: object
-  ) => string;
+  dehydrate: DehydrateFunc;
+  dehydrateFile: DehydrateFunc;
 
   cursor: {
     get: () => Promise<string>;
@@ -151,6 +154,7 @@ export interface ZObject {
       filename?: string,
       contentType?: string
     ): string;
+    (input: Promise<RawHttpResponse>): string;
     (input: Promise<string>): string;
   };
 
