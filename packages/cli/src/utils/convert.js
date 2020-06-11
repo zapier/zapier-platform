@@ -213,7 +213,7 @@ const renderAuthData = (appDefinition) => {
   const fieldKeys = getAuthFieldKeys(appDefinition);
   const lines = _.map(fieldKeys, (key) => {
     const upperKey = _.snakeCase(key).toUpperCase();
-    return `"${key}": process.env["${upperKey}"]`;
+    return `"${key}": process.env.${upperKey}`;
   });
   if (_.isEmpty(lines)) {
     return `{
