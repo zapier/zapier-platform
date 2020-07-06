@@ -41,8 +41,8 @@ InitCommand.args = [
   },
 ];
 InitCommand.examples = [
-  'zapier yo myapp',
-  'zapier yo ./path/myapp --template oauth2',
+  'zapier init myapp',
+  'zapier init ./path/myapp --template oauth2',
 ];
 InitCommand.description = `Initialize a new Zapier integration with a project template.
 
