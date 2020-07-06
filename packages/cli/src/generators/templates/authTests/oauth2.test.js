@@ -100,7 +100,7 @@ describe('oauth2 app', () => {
       App.authentication.oauth2Config.refreshAccessToken,
       bundle
     );
-    expect(result.access_token).toBe('a_new_token');
+    expect(result.access_token).toBe('a_token');
   });
 
   it('includes the access token in future requests', async () => {
