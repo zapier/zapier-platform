@@ -14,6 +14,7 @@ const VersionSchema = require('./VersionSchema');
 const MiddlewaresSchema = require('./MiddlewaresSchema');
 const HydratorsSchema = require('./HydratorsSchema');
 const AppFlagsSchema = require('./AppFlagsSchema');
+const FirehoseWebhookSchema = require('./FirehoseWebhookSchema');
 
 module.exports = makeSchema(
   {
@@ -101,6 +102,14 @@ module.exports = makeSchema(
         docAnnotation: {
           hide: true
         }
+      },
+      firehoseWebhooks: {
+        description:
+          '**INTERNAL USE ONLY**. Zapier uses this for internal webhook app configurations.',
+        $ref: FirehoseWebhookSchema.id,
+        docAnnotation: {
+          hide: true
+        }
       }
     },
     additionalProperties: false
@@ -117,6 +126,7 @@ module.exports = makeSchema(
     VersionSchema,
     MiddlewaresSchema,
     HydratorsSchema,
-    AppFlagsSchema
+    AppFlagsSchema,
+    FirehoseWebhookSchema
   ]
 );
