@@ -847,7 +847,7 @@ module.exports = {
 
 > `bundle.targetUrl` is only available in the `performSubscribe` and `performUnsubscribe` methods for webhooks.
 
-This the URL to which you should send hook data. It'll look something like `https://hooks.zapier.com/1234/abcd`. We provide it so you can make a POST request to your server.Your server should store this URL and use is as a destination when there's new data to report.
+This the URL to which you should send hook data. It'll look something like `https://hooks.zapier.com/1234/abcd`. We provide it so you can make a POST request to your server. Your server should store this URL and use is as a destination when there's new data to report.
 
 Read more in the [REST hook example](https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js).
 
@@ -1303,12 +1303,14 @@ Example: `throw new z.errors.ExpiredAuthError('Your message.');`
 
 For apps that use OAuth2 + refresh or Session Auth, the core injects a built-in
 `afterResponse` middleware that throws an error when the response status is 401.
-The error would signal Zapier to refresh the credentials and then repeat the
-failed operation. For some cases, such as your server doesn't use the 401 status
+The error will signal Zapier to refresh the credentials and then repeat the
+failed operation. For some cases, e.g, your server doesn't use the 401 status
 for auth refresh, you may have to throw the `RefreshAuthError` on your own,
 which will also signal Zapier to refresh the credentials.
 
 Example: `throw new z.errors.RefreshAuthError();`
+
+#### v10 Break Change: Auth Refresh
 
 A breaking change on v10+ is that the built-in `afterResponse` middleware the
 handles auth refresh is changed to happen AFTER your app's `afterResponse`. On

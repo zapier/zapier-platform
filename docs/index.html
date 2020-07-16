@@ -339,7 +339,10 @@ a code {
 <li><a href="#error-handling">Error Handling</a><ul>
 <li><a href="#general-errors">General Errors</a></li>
 <li><a href="#halting-execution">Halting Execution</a></li>
-<li><a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+<li><a href="#stale-authentication-credentials">Stale Authentication Credentials</a><ul>
+<li><a href="#v10-break-change-auth-refresh">v10 Break Change: Auth Refresh</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#testing">Testing</a><ul>
@@ -537,7 +540,10 @@ a code {
 <li><a href="#error-handling">Error Handling</a><ul>
 <li><a href="#general-errors">General Errors</a></li>
 <li><a href="#halting-execution">Halting Execution</a></li>
-<li><a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+<li><a href="#stale-authentication-credentials">Stale Authentication Credentials</a><ul>
+<li><a href="#v10-break-change-auth-refresh">v10 Break Change: Auth Refresh</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#testing">Testing</a><ul>
@@ -3011,7 +3017,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p><code>bundle.targetUrl</code> is only available in the <code>performSubscribe</code> and <code>performUnsubscribe</code> methods for webhooks.</p>
-</blockquote><p>This the URL to which you should send hook data. It&apos;ll look something like <code>https://hooks.zapier.com/1234/abcd</code>. We provide it so you can make a POST request to your server.Your server should store this URL and use is as a destination when there&apos;s new data to report.</p><p>Read more in the <a href="https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js">REST hook example</a>.</p>
+</blockquote><p>This the URL to which you should send hook data. It&apos;ll look something like <code>https://hooks.zapier.com/1234/abcd</code>. We provide it so you can make a POST request to your server. Your server should store this URL and use is as a destination when there&apos;s new data to report.</p><p>Read more in the <a href="https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js">REST hook example</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4035,10 +4041,28 @@ provides a mechanism to notify users of expired credentials. With the
 (to prevent more calls with expired credentials), and a predefined email is sent
 out informing the user to refresh the credentials.</p><p>Example: <code>throw new z.errors.ExpiredAuthError(&apos;Your message.&apos;);</code></p><p>For apps that use OAuth2 + refresh or Session Auth, the core injects a built-in
 <code>afterResponse</code> middleware that throws an error when the response status is 401.
-The error would signal Zapier to refresh the credentials and then repeat the
-failed operation. For some cases, such as your server doesn&apos;t use the 401 status
+The error will signal Zapier to refresh the credentials and then repeat the
+failed operation. For some cases, e.g, your server doesn&apos;t use the 401 status
 for auth refresh, you may have to throw the <code>RefreshAuthError</code> on your own,
-which will also signal Zapier to refresh the credentials.</p><p>Example: <code>throw new z.errors.RefreshAuthError();</code></p><p>A breaking change on v10+ is that the built-in <code>afterResponse</code> middleware the
+which will also signal Zapier to refresh the credentials.</p><p>Example: <code>throw new z.errors.RefreshAuthError();</code></p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h4 id="v10-break-change-auth-refresh">v10 Break Change: Auth Refresh</h4>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>A breaking change on v10+ is that the built-in <code>afterResponse</code> middleware the
 handles auth refresh is changed to happen AFTER your app&apos;s <code>afterResponse</code>. On
 v9 and older, it happens before your app&apos;s <code>afterResponse</code>. So it will break if
 your <code>afterReponse</code> does something like:</p>
