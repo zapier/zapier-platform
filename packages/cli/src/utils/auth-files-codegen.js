@@ -17,7 +17,6 @@ const {
   RESPONSE_VAR,
   returnStatement,
   strLiteral,
-  throwSessionRefresh,
   variableAssignmentDeclaration,
   zRequest,
   zResponseErr,
@@ -366,10 +365,8 @@ const digestAuthFile = () => {
 };
 
 const sessionAuthFile = () => {
-  const badFuncName = 'handleBadResponses';
   const getSessionKeyName = 'getSessionKey';
   const includeSessionKeyName = 'includeSessionKeyHeader';
-  const refreshSessionName = 'sessionRefreshIf401';
   return file(
     authTestFunc(),
     tokenExchangeFunc(
@@ -397,20 +394,12 @@ const sessionAuthFile = () => {
         )
       )
     ),
-    afterMiddlewareFunc(
-      refreshSessionName,
-      ifStatement(
-        'bundle.authData.sessionKey && response.status === 401',
-        throwSessionRefresh()
-      ),
-      returnStatement(RESPONSE_VAR)
-    ),
     authFileExport(
       'session',
       '"session" auth exchanges user data for a different session token (that may be periodically refreshed")',
       {
         beforeFuncNames: [includeSessionKeyName],
-        afterFuncNames: [refreshSessionName, badFuncName],
+        afterFuncNames: [],
         authFields: [
           obj(
             objProperty('key', strLiteral('username')),
