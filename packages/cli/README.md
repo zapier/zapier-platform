@@ -108,7 +108,7 @@ This doc decribes the latest CLI version **10.0.0**, as of this writing. If you'
   * [General Errors](#general-errors)
   * [Halting Execution](#halting-execution)
   * [Stale Authentication Credentials](#stale-authentication-credentials)
-    + [v10 Break Change: Auth Refresh](#v10-break-change-auth-refresh)
+    + [v10 Breaking Change: Auth Refresh](#v10-breaking-change-auth-refresh)
 - [Testing](#testing)
   * [Writing Unit Tests](#writing-unit-tests)
   * [Mocking Requests](#mocking-requests)
@@ -2453,7 +2453,7 @@ which will also signal Zapier to refresh the credentials.
 
 Example: `throw new z.errors.RefreshAuthError();`
 
-#### v10 Break Change: Auth Refresh
+#### v10 Breaking Change: Auth Refresh
 
 A breaking change on v10+ is that the built-in `afterResponse` middleware the
 handles auth refresh is changed to happen AFTER your app's `afterResponse`. On

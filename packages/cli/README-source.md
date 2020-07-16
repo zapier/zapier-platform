@@ -1310,7 +1310,7 @@ which will also signal Zapier to refresh the credentials.
 
 Example: `throw new z.errors.RefreshAuthError();`
 
-#### v10 Break Change: Auth Refresh
+#### v10 Breaking Change: Auth Refresh
 
 A breaking change on v10+ is that the built-in `afterResponse` middleware the
 handles auth refresh is changed to happen AFTER your app's `afterResponse`. On
