@@ -997,11 +997,11 @@ You can find more details on the definition for each by looking at the [Trigger 
 
 Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you're trying to pass the wrong type back. There's more info in each relevant `post_X` section of the [v2 docs](https://zapier.com/developer/documentation/v2/scripting/#available-methods). For reference, each expects:
 
-| Method | Return Type | Notes |
-| --- | --- | --- |
-| Trigger | Array | 0 or more objects that will be passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) |
-| Search | Array | 0 or more objects. If len > 0, put the best match first |
-| Action | Object | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject) |
+| Method  | Return Type | Notes                                                                                                                |
+|---------|-------------|----------------------------------------------------------------------------------------------------------------------|
+| Trigger | Array       | 0 or more objects that will be passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) |
+| Search  | Array       | 0 or more objects. If len > 0, put the best match first                                                              |
+| Action  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
 
 ## Input Fields
 
@@ -2443,12 +2443,58 @@ out informing the user to refresh the credentials.
 
 Example: `throw new z.errors.ExpiredAuthError('Your message.');`
 
-For apps that use OAuth2 + refresh or Session Auth, you can use the
-`RefreshAuthError`. This will signal Zapier to refresh the credentials and then
-repeat the failed operation.
+For apps that use OAuth2 + refresh or Session Auth, the core injects a built-in
+`afterResponse` middleware that throws an error when the response status is 401.
+The error would signal Zapier to refresh the credentials and then repeat the
+failed operation. For some cases, such as your server doesn't use the 401 status
+for auth refresh, you may have to throw the `RefreshAuthError` on your own,
+which will also signal Zapier to refresh the credentials.
 
 Example: `throw new z.errors.RefreshAuthError();`
 
+A breaking change on v10+ is that the built-in `afterResponse` middleware the
+handles auth refresh is changed to happen AFTER your app's `afterResponse`. On
+v9 and older, it happens before your app's `afterResponse`. So it will break if
+your `afterReponse` does something like:
+
+```js
+// Auth refresh will stop working on v10 this way!
+const yourAfterResponse = (resp) => {
+  if (resp.status !== 200) {
+    throw new Error('hi');
+  }
+  return resp;
+};
+```
+
+This is because on v10 the `throw new Error('hi')` line will take precedence
+over the built-in middleware that does auth refresh. One way to fix is to let
+the 401 response fall back to the built-in middleware that does the auth
+refresh:
+
+```js
+const yourAfterResponse = (resp) => {
+  if (resp.status !== 200 && resp.status !== 401) {
+    throw new Error('hi');
+  }
+  return resp;
+};
+```
+
+Another way to fix is to handle the 401 response yourself by throwing a
+`RefreshAuthError`:
+
+```js
+const yourAfterResponse = (resp) => {
+  if (resp.status === 401) {
+    throw new z.errors.RefreshAuthError();
+  }
+  if (resp.status !== 200) {
+    throw new Error('hi');
+  }
+  return resp;
+};
+```
 
 ## Testing
 

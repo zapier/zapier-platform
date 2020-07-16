@@ -157,7 +157,6 @@ const tokenExchangeFunc = (
   funcName,
   requestUrl,
   bodyProps,
-  errMessage,
   returnProps,
   { requestProps = [], returnComments = [] } = {}
 ) =>
@@ -175,9 +174,9 @@ const tokenExchangeFunc = (
         )
       )
     ),
-    ifStatement(
-      'response.status !== 200',
-      zResponseErr(strLiteral(errMessage), strLiteral(`${funcName}Error`))
+    comment(
+      "If you're using core v9.x or older, you should call response.throwForStatus() or verify response.status === 200 before you continue.",
+      1
     ),
     ...returnComments,
     returnStatement(obj(...returnProps))
@@ -196,14 +195,13 @@ const oauth2TokenExchangeFunc = (
       objProperty('grant_type', strLiteral(grantType)),
       ...bodyProps,
     ],
-    "'Unable to fetch access token: ' + response.content",
     [
       objProperty('access_token', 'response.data.access_token'),
       objProperty('refresh_token', 'response.data.refresh_token'),
     ],
     {
       returnComments: [
-        comment('This function should return `access_token`.'),
+        comment('This function should return `access_token`.', 1),
         ...returnComments,
       ],
       requestProps: [
@@ -258,19 +256,17 @@ const refreshTokenFunc = () => {
 
 const oauth2AuthFile = () => {
   const bearerFuncName = 'includeBearerToken';
-  const handleResponseFuncName = 'handleBadResponses';
   return file(
     getAccessTokenFunc(),
     refreshTokenFunc(),
     includeBearerFunc(bearerFuncName),
-    handleBadResponsesFunc(handleResponseFuncName, 'access token'),
     authTestFunc(),
     authFileExport(
       'oauth2',
       'OAuth2 is a web authentication standard. There are a lot of configuration options that will fit most any situation.',
       {
         beforeFuncNames: [bearerFuncName],
-        afterFuncNames: [handleResponseFuncName],
+        afterFuncNames: [],
         extraConfigProps: [
           objProperty(
             'oauth2Config',
@@ -376,7 +372,6 @@ const sessionAuthFile = () => {
   const refreshSessionName = 'sessionRefreshIf401';
   return file(
     authTestFunc(),
-    handleBadResponsesFunc(badFuncName, 'session key'),
     tokenExchangeFunc(
       getSessionKeyName,
       'https://httpbin.zapier-tooling.com/post',
@@ -384,7 +379,6 @@ const sessionAuthFile = () => {
         objProperty('username', 'bundle.authData.username'),
         objProperty('password', 'bundle.authData.password'),
       ],
-      'The username/password you supplied is invalid',
       [
         comment(
           'FIXME: The `|| "secret"` below is just for demo purposes, you should remove it.'
@@ -456,7 +450,7 @@ const oauth1TokenExchangeFunc = (funcName, url, ...authProperties) => {
             'auth',
             obj(
               objProperty('oauth_consumer_key', 'process.env.CLIENT_ID'),
-              objProperty('oauth_consumer_secret', 'process.env.CLIENT_ID'),
+              objProperty('oauth_consumer_secret', 'process.env.CLIENT_SECRET'),
               ...authProperties
             )
           )
