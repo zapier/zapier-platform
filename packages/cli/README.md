@@ -108,6 +108,7 @@ This doc decribes the latest CLI version **10.0.0**, as of this writing. If you'
   * [General Errors](#general-errors)
   * [Halting Execution](#halting-execution)
   * [Stale Authentication Credentials](#stale-authentication-credentials)
+    + [v10 Breaking Change: Auth Refresh](#v10-breaking-change-auth-refresh)
 - [Testing](#testing)
   * [Writing Unit Tests](#writing-unit-tests)
   * [Mocking Requests](#mocking-requests)
@@ -997,11 +998,11 @@ You can find more details on the definition for each by looking at the [Trigger 
 
 Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you're trying to pass the wrong type back. There's more info in each relevant `post_X` section of the [v2 docs](https://zapier.com/developer/documentation/v2/scripting/#available-methods). For reference, each expects:
 
-| Method | Return Type | Notes |
-| --- | --- | --- |
-| Trigger | Array | 0 or more objects that will be passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) |
-| Search | Array | 0 or more objects. If len > 0, put the best match first |
-| Action | Object | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject) |
+| Method  | Return Type | Notes                                                                                                                |
+|---------|-------------|----------------------------------------------------------------------------------------------------------------------|
+| Trigger | Array       | 0 or more objects that will be passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) |
+| Search  | Array       | 0 or more objects. If len > 0, put the best match first                                                              |
+| Action  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
 
 ## Input Fields
 
@@ -1752,7 +1753,7 @@ module.exports = {
 
 > `bundle.targetUrl` is only available in the `performSubscribe` and `performUnsubscribe` methods for webhooks.
 
-This the URL to which you should send hook data. It'll look something like `https://hooks.zapier.com/1234/abcd`. We provide it so you can make a POST request to your server.Your server should store this URL and use is as a destination when there's new data to report.
+This the URL to which you should send hook data. It'll look something like `https://hooks.zapier.com/1234/abcd`. We provide it so you can make a POST request to your server. Your server should store this URL and use is as a destination when there's new data to report.
 
 Read more in the [REST hook example](https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js).
 
@@ -2443,12 +2444,60 @@ out informing the user to refresh the credentials.
 
 Example: `throw new z.errors.ExpiredAuthError('Your message.');`
 
-For apps that use OAuth2 + refresh or Session Auth, you can use the
-`RefreshAuthError`. This will signal Zapier to refresh the credentials and then
-repeat the failed operation.
+For apps that use OAuth2 + refresh or Session Auth, the core injects a built-in
+`afterResponse` middleware that throws an error when the response status is 401.
+The error will signal Zapier to refresh the credentials and then repeat the
+failed operation. For some cases, e.g, your server doesn't use the 401 status
+for auth refresh, you may have to throw the `RefreshAuthError` on your own,
+which will also signal Zapier to refresh the credentials.
 
 Example: `throw new z.errors.RefreshAuthError();`
 
+#### v10 Breaking Change: Auth Refresh
+
+A breaking change on v10+ is that the built-in `afterResponse` middleware the
+handles auth refresh is changed to happen AFTER your app's `afterResponse`. On
+v9 and older, it happens before your app's `afterResponse`. So it will break if
+your `afterReponse` does something like:
+
+```js
+// Auth refresh will stop working on v10 this way!
+const yourAfterResponse = (resp) => {
+  if (resp.status !== 200) {
+    throw new Error('hi');
+  }
+  return resp;
+};
+```
+
+This is because on v10 the `throw new Error('hi')` line will take precedence
+over the built-in middleware that does auth refresh. One way to fix is to let
+the 401 response fall back to the built-in middleware that does the auth
+refresh:
+
+```js
+const yourAfterResponse = (resp) => {
+  if (resp.status !== 200 && resp.status !== 401) {
+    throw new Error('hi');
+  }
+  return resp;
+};
+```
+
+Another way to fix is to handle the 401 response yourself by throwing a
+`RefreshAuthError`:
+
+```js
+const yourAfterResponse = (resp) => {
+  if (resp.status === 401) {
+    throw new z.errors.RefreshAuthError();
+  }
+  if (resp.status !== 200) {
+    throw new Error('hi');
+  }
+  return resp;
+};
+```
 
 ## Testing
 

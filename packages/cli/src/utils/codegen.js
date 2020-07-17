@@ -79,9 +79,6 @@ const zResponseErr = (message, type = strLiteral('AuthenticationError')) =>
   )
 `.trim();
 
-const throwSessionRefresh = () =>
-  "throw new z.errors.RefreshAuthError('Session key needs refreshing.')";
-
 const ifStatement = (condition, ...results) => `
     if (${condition}) {
       ${block(...results)}
@@ -177,7 +174,6 @@ module.exports = {
   RESPONSE_VAR,
   returnStatement,
   strLiteral,
-  throwSessionRefresh,
   variableAssignmentDeclaration,
   zRequest,
   zResponseErr,
