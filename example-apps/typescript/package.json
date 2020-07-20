@@ -10,7 +10,7 @@
     "watch": "npm run clean && tsc --watch"
   },
   "dependencies": {
-    "zapier-platform-core": "10.0.0"
+    "zapier-platform-core": "10.0.1"
   },
   "devDependencies": {
     "jest": "^25.5.3",

@@ -20,7 +20,7 @@ You may find docs duplicate or outdated across the Zapier site. The most up-to-d
 - [Latest CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
 - [Latest Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
 
-This doc decribes the latest CLI version **10.0.0**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+This doc decribes the latest CLI version **10.0.1**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
 - CLI Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
 - CLI Reference: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
@@ -3125,7 +3125,7 @@ The Zapier platform and its tools are under active development. While you don't 
 Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is **10.0.0**. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is **10.0.1**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 
