@@ -2,23 +2,23 @@
 
 ### cli
 
-* :bug: `convert` command now doesn't crash over an auth field name with special chars (#241)
-* :bug: Fix missing `deasync` Node.js 10 binding (#244)
-* :bug: Fix broken `oauth1-trello` project template (#246)
-* :nail_care: Update `oauth2` and `session-auth` project templates to reflect v10's recommended way to handle auth refresh (#246)
-* :scroll: Fix missing `init` command in CLI reference (#243)
-* :hammer: Bump Lodash from 4.17.15 to 4.17.19 (#248)
+* :bug: `convert` command now doesn't crash over an auth field name with special chars ([241](https://github.com/zapier/zapier-platform/pull/241))
+* :bug: Fix missing `deasync` Node.js 10 binding ([244](https://github.com/zapier/zapier-platform/pull/244))
+* :bug: Fix broken `oauth1-trello` project template ([246](https://github.com/zapier/zapier-platform/pull/246))
+* :nail_care: Update `oauth2` and `session-auth` project templates to reflect v10's recommended way to handle auth refresh ([246](https://github.com/zapier/zapier-platform/pull/246))
+* :scroll: Fix missing `init` command in CLI reference ([243](https://github.com/zapier/zapier-platform/pull/243))
+* :hammer: Bump Lodash from 4.17.15 to 4.17.19 ([248](https://github.com/zapier/zapier-platform/pull/248))
 
 ### core
 
-* :bug: Allow resource list methods to use cursors (#247)
-* :nail_care: Improve types for `z.dehydrateFile` and `z.stashFile` (#240)
-* :scroll: Clarify v10 breaking change on auth refresh (#246)
-* :hammer: Bump Lodash from 4.17.15 to 4.17.19 (#248)
+* :bug: Allow resource list methods to use cursors ([247](https://github.com/zapier/zapier-platform/pull/247))
+* :nail_care: Improve types for `z.dehydrateFile` and `z.stashFile` ([240](https://github.com/zapier/zapier-platform/pull/240))
+* :scroll: Clarify v10 breaking change on auth refresh ([246](https://github.com/zapier/zapier-platform/pull/246))
+* :hammer: Bump Lodash from 4.17.15 to 4.17.19 ([248](https://github.com/zapier/zapier-platform/pull/248))
 
 ### schema
 
-* :hammer: Bump Lodash from 4.17.15 to 4.17.19 (#248)
+* :hammer: Bump Lodash from 4.17.15 to 4.17.19 ([248](https://github.com/zapier/zapier-platform/pull/248))
 
 ## 10.0.0
 
