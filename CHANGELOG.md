@@ -1,3 +1,25 @@
+## 10.0.1
+
+### cli
+
+* :bug: `convert` command now doesn't crash over an auth field name with special chars (#241)
+* :bug: Fix missing `deasync` Node.js 10 binding (#244)
+* :bug: Fix broken `oauth1-trello` project template (#246)
+* :nail_care: Update `oauth2` and `session-auth` project templates to reflect v10's recommended way to handle auth refresh (#246)
+* :scroll: Fix missing `init` command in CLI reference (#243)
+* :hammer: Bump Lodash from 4.17.15 to 4.17.19 (#248)
+
+### core
+
+* :bug: Allow resource list methods to use cursors (#247)
+* :nail_care: Improve types for `z.dehydrateFile` and `z.stashFile` (#240)
+* :scroll: Clarify v10 breaking change on auth refresh (#246)
+* :hammer: Bump Lodash from 4.17.15 to 4.17.19 (#248)
+
+### schema
+
+* :hammer: Bump Lodash from 4.17.15 to 4.17.19 (#248)
+
 ## 10.0.0
 
 Another major release! We have some great improvements in this version but also have breaking changes. Please review the following to see if you need to change anything to upgrade `zapier-platform-core` to v10.
