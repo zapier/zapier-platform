@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-schema",
-  "version": "9.1.0",
+  "version": "10.0.0",
   "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-schema",
   "homepage": "https://zapier.com/",
@@ -17,7 +17,7 @@
     "test": "mocha -t 10000 --recursive test",
     "smoke-test": "mocha -t 10000 --recursive smoke-test",
     "test:debug": "mocha -t 5-10000 --recursive --inspect-brk test",
-    "lint": "eslint lib --fix",
+    "lint": "eslint lib",
     "coverage": "istanbul cover _mocha -- --recursive",
     "export": "node bin/export.js && prettier --write exported-schema.json",
     "docs": "node bin/docs.js",
@@ -31,9 +31,9 @@
     "lodash": "4.17.15"
   },
   "devDependencies": {
-    "fs-extra": "8.1.0",
+    "fs-extra": "^9.0.0",
     "istanbul": "0.4.5",
-    "markdown-toc": "1.2.0",
-    "node-fetch": "2.6.0"
+    "markdown-toc": "^1",
+    "node-fetch": "^2"
   }
 }

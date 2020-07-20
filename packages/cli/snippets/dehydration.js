@@ -1,22 +1,23 @@
-const getExtraDataFunction = (z, bundle) => {
+const getMovieDetails = async (z, bundle) => {
   const url = `https://example.com/movies/${bundle.inputData.id}.json`;
-  return z.request(url).then(res => z.JSON.parse(res.content));
+  const response = await z.request(url);
+
+  // reponse.throwForStatus() if you're using core v9 or older
+
+  return response.data; // or response.json if you're using core v9 or older
 };
 
-const movieList = (z, bundle) => {
-  return z
-    .request('https://example.com/movies.json')
-    .then(res => z.JSON.parse(res.content))
-    .then(results => {
-      return results.map(result => {
-        // so maybe /movies.json is thin content but
-        // /movies/:id.json has more details we want...
-        result.moreData = z.dehydrate(getExtraDataFunction, {
-          id: result.id
-        });
-        return result;
-      });
-    });
+const movieList = async (z, bundle) => {
+  const response = await z.request('https://example.com/movies.json');
+
+  // response.throwForStatus() if you're using core v9 or older
+
+  return response.data.map((movie) => {
+    // so maybe /movies.json is thin content but /movies/:id.json has more
+    // details we want...
+    movie.details = z.dehydrate(getMovieDetails, { id: movie.id });
+    return movie;
+  });
 };
 
 const App = {
@@ -26,7 +27,7 @@ const App = {
   // don't forget to register hydrators here!
   // it can be imported from any module
   hydrators: {
-    getExtraData: getExtraDataFunction
+    getMovieDetails: getMovieDetails,
   },
 
   triggers: {
@@ -34,13 +35,13 @@ const App = {
       noun: 'Movie',
       display: {
         label: 'New Movie',
-        description: 'Triggers when a new Movie is added.'
+        description: 'Triggers when a new Movie is added.',
       },
       operation: {
-        perform: movieList
-      }
-    }
-  }
+        perform: movieList,
+      },
+    },
+  },
 };
 
 module.exports = App;

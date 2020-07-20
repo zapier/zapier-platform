@@ -1,20 +1,28 @@
 'use strict';
 
+const stream = require('stream');
+
 // Prepare a request/reponse to be logged to the backend.
 // Generally respects the "Zapier" request and resp object format.
 const prepareRequestLog = (req, resp) => {
   req = req || {};
   resp = resp || {};
 
-  let body;
+  let responseBody;
   if (!req.raw) {
     if (typeof resp.content !== 'string') {
-      body = JSON.stringify(resp.content);
+      responseBody = JSON.stringify(resp.content);
     } else {
-      body = resp.content;
+      responseBody = resp.content;
     }
   } else {
-    body = '<probably streaming data>';
+    responseBody = '<probably streaming data>';
+  }
+
+  let requestBody = req.body;
+  if (requestBody instanceof stream) {
+    // Avoid JSON.stringify form data or any streams
+    requestBody = '<streaming data>';
   }
 
   const data = {
@@ -23,11 +31,11 @@ const prepareRequestLog = (req, resp) => {
     request_url: req.url,
     request_method: req.method || 'GET',
     request_headers: req.headers,
-    request_data: req.body,
+    request_data: requestBody,
     request_via_client: true,
     response_status_code: resp.status,
     response_headers: resp.headers,
-    response_content: body
+    response_content: responseBody,
   };
 
   if (req._requestStart) {
@@ -36,24 +44,19 @@ const prepareRequestLog = (req, resp) => {
 
   if (req.url && req.url.indexOf('?') !== -1) {
     data.request_url = req.url.split('?')[0];
-    data.request_params = req.url
-      .split('?')
-      .slice(1)
-      .join('?');
+    data.request_params = req.url.split('?').slice(1).join('?');
   }
 
   return {
-    message: `${data.response_status_code} ${data.request_method} ${
-      data.request_url
-    }`,
-    data: data
+    message: `${data.response_status_code} ${data.request_method} ${data.request_url}`,
+    data: data,
   };
 };
 
 /*
    Log a response and it's original request to our logger.
 */
-const logResponse = resp => {
+const logResponse = (resp) => {
   const logger = resp.request.input._zapier.logger;
   const logs = prepareRequestLog(resp.request, resp);
 

@@ -6,7 +6,7 @@ this method creates the correct envelope responses if the app has used a callbac
 by signalling to Zapier that this app/method is returning a callback status the task will be placed
 in a waiting state until the callback is called.
 */
-const callbackStatusCatcher = output => {
+const callbackStatusCatcher = (output) => {
   const input = output.input || {};
 
   const callbackUsed = _.get(input, '_zapier.event.callbackUsed');

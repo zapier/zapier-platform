@@ -18,12 +18,12 @@ module.exports = makeSchema(
         noun: 'Recipe',
         display: {
           label: 'Find a Recipe',
-          description: 'Search for recipe by cuisine style.'
+          description: 'Search for recipe by cuisine style.',
         },
         operation: {
           perform: '$func$2$f$',
-          sample: { id: 1 }
-        }
+          sample: { id: 1 },
+        },
       },
       {
         key: 'recipe',
@@ -31,10 +31,10 @@ module.exports = makeSchema(
         display: {
           label: 'Find a Recipe',
           description: 'Search for recipe by cuisine style.',
-          hidden: true
+          hidden: true,
         },
-        operation: { perform: '$func$2$f$' }
-      }
+        operation: { perform: '$func$2$f$' },
+      },
     ],
     antiExamples: [
       'abc',
@@ -43,36 +43,36 @@ module.exports = makeSchema(
         noun: 'Recipe',
         display: {
           label: 'Find a Recipe',
-          description: 'Search for recipe by cuisine style.'
+          description: 'Search for recipe by cuisine style.',
         },
         operation: {
-          perform: '$func$2$f$'
+          perform: '$func$2$f$',
           // missing sample
-        }
-      }
+        },
+      },
     ],
     properties: {
       key: {
         description: 'A key to uniquely identify this search.',
-        $ref: KeySchema.id
+        $ref: KeySchema.id,
       },
       noun: {
         description:
           'A noun for this search that completes the sentence "finds a specific XXX".',
         type: 'string',
         minLength: 2,
-        maxLength: 255
+        maxLength: 255,
       },
       display: {
         description: 'Configures the UI for this search.',
-        $ref: BasicDisplaySchema.id
+        $ref: BasicDisplaySchema.id,
       },
       operation: {
         description: 'Powers the functionality for this search.',
-        $ref: BasicActionOperationSchema.id
-      }
+        $ref: BasicActionOperationSchema.id,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [BasicDisplaySchema, BasicActionOperationSchema, KeySchema]
 );

@@ -10,7 +10,7 @@ const semver = require('semver');
 
 const REPO_DIR = path.dirname(__dirname);
 
-const readJson = path => {
+const readJson = (path) => {
   return JSON.parse(fs.readFileSync(path, { encoding: 'utf8' }));
 };
 
@@ -23,7 +23,7 @@ const PACKAGE_ORIG_VERSIONS = [
   'cli',
   'core',
   'schema',
-  'legacy-scripting-runner'
+  'legacy-scripting-runner',
 ].reduce((result, packageName) => {
   const packageJsonPath = path.join(
     REPO_DIR,
@@ -51,7 +51,7 @@ const ensureMainPackageVersionsAreSame = () => {
 
 const confirmIfNotMasterBranch = async () => {
   const result = spawnSync('git', ['branch', '--show-current'], {
-    encoding: 'utf8'
+    encoding: 'utf8',
   });
   const branch = (result.stdout || '').trim();
   if (branch !== 'master') {
@@ -62,8 +62,8 @@ const confirmIfNotMasterBranch = async () => {
         message:
           'This was supposed to be run on master branch. ' +
           `You want to proceed with branch ${underline(branch)} anyway?`,
-        default: false
-      }
+        default: false,
+      },
     ]);
     if (!answer.continue) {
       throw new Error('Canceled.');
@@ -79,8 +79,8 @@ const ensureNoUncommittedChanges = () => {
   );
   const lines = result.stdout
     .split(/\r?\n/)
-    .map(line => line.trim())
-    .filter(line => line);
+    .map((line) => line.trim())
+    .filter((line) => line);
   if (lines.length > 0) {
     throw new Error(
       `${bold.underline('git status')} shows you have uncommitted changes. ` +
@@ -92,34 +92,32 @@ const ensureNoUncommittedChanges = () => {
 const promptPackagesToBump = async () => {
   const answer = await inquirer.prompt([
     {
-      type: 'checkbox',
+      type: 'list',
       message: 'What package(s) you want to bump?',
-      name: 'packages',
+      name: 'package',
       choices: [
         {
           name: `cli, core, schema (currently ${PACKAGE_ORIG_VERSIONS.cli})`,
-          value: 'cli, core, schema'
+          value: 'cli, core, schema',
         },
         {
-          name: `legacy-scripting-runner (currently ${
-            PACKAGE_ORIG_VERSIONS['legacy-scripting-runner']
-          })`,
-          value: 'legacy-scripting-runner'
-        }
-      ]
-    }
+          name: `legacy-scripting-runner (currently ${PACKAGE_ORIG_VERSIONS['legacy-scripting-runner']})`,
+          value: 'legacy-scripting-runner',
+        },
+      ],
+    },
   ]);
-  return answer.packages;
+  return [answer.package];
 };
 
-const promptVersionToBump = async packageName => {
+const promptVersionToBump = async (packageName) => {
   const currentVersion = PACKAGE_ORIG_VERSIONS[packageName];
 
-  const choices = ['patch', 'minor', 'major'].map(bumpType => {
+  const choices = ['patch', 'minor', 'major'].map((bumpType) => {
     const version = semver.inc(currentVersion, bumpType);
     return {
       name: `${version} (${bumpType})`,
-      value: version
+      value: version,
     };
   });
 
@@ -128,20 +126,20 @@ const promptVersionToBump = async packageName => {
       type: 'list',
       name: 'versionToBump',
       message: `Version to bump for ${underline(packageName)}?`,
-      choices
-    }
+      choices,
+    },
   ]);
   return answer.versionToBump;
 };
 
-const bumpMainPackagesForExampleApps = versionToBump => {
+const bumpMainPackagesForExampleApps = (versionToBump) => {
   const examplesDir = path.join(REPO_DIR, 'example-apps');
-  fs.readdirSync(examplesDir, { withFileTypes: true }).map(item => {
+  fs.readdirSync(examplesDir, { withFileTypes: true }).map((item) => {
     if (item.isDirectory()) {
       const packageJsonPath = path.join(examplesDir, item.name, 'package.json');
       const packageJson = readJson(packageJsonPath);
 
-      ['cli', 'core', 'schema'].map(packageName => {
+      ['cli', 'core', 'schema'].map((packageName) => {
         const packageFullName = `zapier-platform-${packageName}`;
         if (packageJson.dependencies) {
           const depVersion = packageJson.dependencies[packageFullName];
@@ -160,10 +158,10 @@ const bumpMainPackagesForExampleApps = versionToBump => {
 };
 
 // Main packages are cli, core, schema
-const bumpMainPackages = versionToBump => {
+const bumpMainPackages = (versionToBump) => {
   const PACKAGES = ['cli', 'core', 'schema'];
 
-  PACKAGES.map(packageName => {
+  PACKAGES.map((packageName) => {
     const packageJsonPath = path.join(
       REPO_DIR,
       'packages',
@@ -177,7 +175,7 @@ const bumpMainPackages = versionToBump => {
     );
     packageJson.version = versionToBump;
 
-    PACKAGES.map(depName => {
+    PACKAGES.map((depName) => {
       const depFullName = `zapier-platform-${depName}`;
       const depVersion = packageJson.dependencies[depFullName];
       if (depVersion) {
@@ -221,7 +219,7 @@ const gitAdd = () => {
     'git',
     ['add', 'packages/*/package.json', 'example-apps/*/package.json'],
     {
-      stdio: [0, 1, 2]
+      stdio: [0, 1, 2],
     }
   );
 
@@ -230,8 +228,8 @@ const gitAdd = () => {
   }
 };
 
-const buildCommitMessage = versionsToBump => {
-  const messageParts = Object.keys(versionsToBump).map(packageName => {
+const buildCommitMessage = (versionsToBump) => {
+  const messageParts = Object.keys(versionsToBump).map((packageName) => {
     const fromVersion = PACKAGE_ORIG_VERSIONS[packageName];
     const toVersion = versionsToBump[packageName];
     return `${packageName} ${fromVersion} -> ${toVersion}`;
@@ -239,9 +237,9 @@ const buildCommitMessage = versionsToBump => {
   return 'Bump ' + messageParts.join(', ');
 };
 
-const gitCommit = message => {
+const gitCommit = (message) => {
   const result = spawnSync('git', ['commit', '-m', message], {
-    stdio: [0, 1, 2]
+    stdio: [0, 1, 2],
   });
 
   if (result.status !== 0) {
@@ -249,7 +247,7 @@ const gitCommit = message => {
   }
 };
 
-const gitTag = versionsToBump => {
+const gitTag = (versionsToBump) => {
   const toVersions = Object.keys(versionsToBump).reduce(
     (result, packageName) => {
       const toVersion = versionsToBump[packageName];
@@ -263,12 +261,12 @@ const gitTag = versionsToBump => {
     {}
   );
 
-  Object.keys(toVersions).map(packageName => {
+  Object.keys(toVersions).map((packageName) => {
     const version = toVersions[packageName];
     const tag = `zapier-platform-${packageName}@${version}`;
 
     const result = spawnSync('git', ['tag', '-a', tag, '-m', tag], {
-      stdio: [0, 1, 2]
+      stdio: [0, 1, 2],
     });
 
     if (result.status !== 0) {
@@ -301,7 +299,7 @@ const main = async () => {
     versionsToBump[packageName] = await promptVersionToBump(packageName);
   }
 
-  Object.keys(versionsToBump).map(packageName => {
+  Object.keys(versionsToBump).map((packageName) => {
     bumpPackages(packageName, versionsToBump[packageName]);
   });
 
@@ -320,12 +318,14 @@ const main = async () => {
   }
 
   console.log(
-    `\nDone! Now you should ${bold.underline('git push origin master --tags')}.`
+    `\nDone! Review the change with ${bold.underline(
+      'git diff HEAD~1..HEAD'
+    )} then ${bold.underline('git push origin master --tags')}.`
   );
   return 0;
 };
 
-main().then(exitCode => {
+main().then((exitCode) => {
   if (exitCode) {
     process.exit(exitCode);
   }

@@ -8,8 +8,8 @@ const { genId } = require('./data');
 
 const FALLBACK_RPC = process.env.ZAPIER_BASE_ENDPOINT + '/platform/rpc/cli';
 
-const createRpcClient = event => {
-  return function(method) {
+const createRpcClient = (event) => {
+  return function (method) {
     const params = _.toArray(arguments);
     params.shift();
 
@@ -18,14 +18,14 @@ const createRpcClient = event => {
       id: id,
       storeKey: event.storeKey,
       method,
-      params
+      params,
     });
 
     const req = {
       method: 'POST',
       url: `${event.rpc_base || FALLBACK_RPC}`,
       body: body,
-      headers: {}
+      headers: {},
     };
 
     if (event.token) {
@@ -44,7 +44,7 @@ const createRpcClient = event => {
     }
 
     return request(req)
-      .then(res => {
+      .then((res) => {
         if (res.content) {
           if (res.content.id !== id) {
             throw new Error(
@@ -56,7 +56,7 @@ const createRpcClient = event => {
           throw new Error(`Got a ${res.status} when calling RPC`);
         }
       })
-      .then(content => {
+      .then((content) => {
         if (content.error) {
           throw new Error(content.error);
         }

@@ -1,17 +1,16 @@
-const should = require('should');
-
+const fs = require('fs-extra');
 const path = require('path');
+
+const decompress = require('decompress');
+const should = require('should');
 
 const build = require('../../utils/build');
 const { copyDir } = require('../../utils/files');
-const { runCommand, getNewTempDirPath } = require('../_helpers');
-
-const decompress = require('decompress');
-const fs = require('fs');
-const fse = require('fs-extra');
+const { PLATFORM_PACKAGE } = require('../../constants');
+const { runCommand, getNewTempDirPath, npmPackCore } = require('../_helpers');
 
 describe('build (runs slowly)', () => {
-  let tmpDir, entryPoint;
+  let tmpDir, entryPoint, corePackage;
   before(async () => {
     // basically does what `zapier init` does
     tmpDir = getNewTempDirPath();
@@ -19,20 +18,37 @@ describe('build (runs slowly)', () => {
       path.resolve(__dirname, '../../../../../example-apps/typescript'),
       tmpDir
     );
-    // tests depend on live npm install, which isn't great. Does make for a nice isolated test though!
-    // the typescript app builds on install
-    await runCommand('npm', ['i'], { cwd: tmpDir });
+
+    // When releasing, the core version the example apps points can be still
+    // non-existent. Let's make sure it points to the local one.
+    corePackage = await npmPackCore();
+    const appPackageJsonPath = path.join(tmpDir, 'package.json');
+    const appPackageJson = JSON.parse(
+      fs.readFileSync(appPackageJsonPath, { encoding: 'utf8' })
+    );
+    appPackageJson.dependencies[PLATFORM_PACKAGE] = corePackage.path;
+    fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
+
+    runCommand('npm', ['i'], { cwd: tmpDir });
+    // TODO: This test depends on how "typescript" example is set up, which
+    // isn't good. Should refactor not to rely on that.
+    runCommand('npm', ['run', 'build'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
+  after(() => {
+    fs.removeSync(tmpDir);
+    corePackage.cleanup();
+  });
+
   it('should list only required files', () => {
-    return build.requiredFiles(tmpDir, [entryPoint]).then(smartPaths => {
+    return build.requiredFiles(tmpDir, [entryPoint]).then((smartPaths) => {
       // check that only the required lodash files are grabbed
       smartPaths.should.containEql('index.js');
       smartPaths.should.containEql('lib/index.js');
-      smartPaths.should.containEql('lib/resources/recipe.js');
+      smartPaths.should.containEql('lib/triggers/movie.js');
 
-      smartPaths.filter(p => p.endsWith('.ts')).length.should.equal(0);
+      smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
       smartPaths.should.not.containEql('tsconfig.json');
 
       smartPaths.length.should.be.within(200, 300);
@@ -40,22 +56,18 @@ describe('build (runs slowly)', () => {
   });
 
   it('should list all the files', () => {
-    return build.listFiles(tmpDir).then(dumbPaths => {
+    return build.listFiles(tmpDir).then((dumbPaths) => {
       // check that way more than the required package files are grabbed
       dumbPaths.should.containEql('index.js');
       dumbPaths.should.containEql('lib/index.js');
-      dumbPaths.should.containEql('lib/resources/recipe.js');
+      dumbPaths.should.containEql('lib/triggers/movie.js');
 
       dumbPaths.should.containEql('src/index.ts');
-      dumbPaths.should.containEql('src/resources/recipe.ts');
+      dumbPaths.should.containEql('src/triggers/movie.ts');
       dumbPaths.should.containEql('tsconfig.json');
 
-      dumbPaths.length.should.be.within(1500, 2000);
+      dumbPaths.length.should.be.within(8000, 15000);
     });
-  });
-
-  after(() => {
-    fse.removeSync(tmpDir);
   });
 
   it('list should not include blacklisted files', () => {
@@ -66,17 +78,17 @@ describe('build (runs slowly)', () => {
       '.env',
       '.environment',
       '.git/HEAD',
-      'build/the-build.zip'
-    ].forEach(file => {
+      'build/the-build.zip',
+    ].forEach((file) => {
       const fileDir = file.split(path.sep);
       fileDir.pop();
       if (fileDir.length > 0) {
-        fse.ensureDirSync(path.join(tmpProjectDir, fileDir.join(path.sep)));
+        fs.ensureDirSync(path.join(tmpProjectDir, fileDir.join(path.sep)));
       }
-      fse.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
+      fs.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
     });
 
-    return build.listFiles(tmpProjectDir).then(dumbPaths => {
+    return build.listFiles(tmpProjectDir).then((dumbPaths) => {
       dumbPaths.should.containEql('safe.js');
       dumbPaths.should.not.containEql('.env');
       dumbPaths.should.not.containEql('build/the-build.zip');
@@ -91,21 +103,21 @@ describe('build (runs slowly)', () => {
     const tmpUnzipPath = getNewTempDirPath();
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
-    fse.outputFileSync(
+    fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
       "console.log('hello!')"
     );
-    fse.outputFileSync(tmpIndexPath, "console.log('hello!')");
+    fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
-    fse.outputFileSync(path.join(tmpProjectDir, '.zapierapprc'), '{}');
-    fse.ensureDirSync(path.dirname(tmpZipPath));
+    fs.outputFileSync(path.join(tmpProjectDir, '.zapierapprc'), '{}');
+    fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
 
     return build
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(2);
 
         const indexFile = files.find(
@@ -133,20 +145,20 @@ describe('build (runs slowly)', () => {
     const tmpUnzipPath = getNewTempDirPath();
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
-    fse.outputFileSync(
+    fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
       "console.log('hello!')"
     );
-    fse.outputFileSync(tmpIndexPath, "console.log('hello!')");
+    fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
-    fse.ensureDirSync(path.dirname(tmpZipPath));
+    fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
 
     return build
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(2);
 
         const indexFile = files.find(
@@ -176,22 +188,22 @@ describe('build (runs slowly)', () => {
     const tmpReadmePath = path.join(tmpProjectDir, 'README.md');
     const tmpZapierAppPath = path.join(tmpProjectDir, '.zapierapprc');
 
-    fse.outputFileSync(
+    fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
       "console.log('hello!')"
     );
-    fse.outputFileSync(tmpIndexPath, "console.log('hello!')");
-    fse.outputFileSync(tmpReadmePath, 'README');
+    fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
+    fs.outputFileSync(tmpReadmePath, 'README');
     fs.chmodSync(tmpIndexPath, 0o700);
-    fse.outputFileSync(tmpZapierAppPath, '{}');
-    fse.ensureDirSync(path.dirname(tmpZipPath));
+    fs.outputFileSync(tmpZapierAppPath, '{}');
+    fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
 
     return build
       .makeSourceZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(4);
 
         const indexFile = files.find(
@@ -231,26 +243,26 @@ describe('build (runs slowly)', () => {
     const tmpDSStorePath = path.join(tmpProjectDir, '.DS_Store');
     const tmpEnvironmentPath = path.join(tmpProjectDir, '.environment');
 
-    fse.outputFileSync(
+    fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
       "console.log('hello!')"
     );
-    fse.outputFileSync(tmpIndexPath, "console.log('hello!')");
+    fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
-    fse.outputFileSync(tmpReadmePath, 'README');
-    fse.outputFileSync(tmpZapierAppPath, '{}');
-    fse.outputFileSync(tmpGitIgnorePath, '.DS_Store\n*.log');
-    fse.outputFileSync(tmpTestLogPath, 'Something');
-    fse.outputFileSync(tmpDSStorePath, 'Something Else');
-    fse.outputFileSync(tmpEnvironmentPath, 'ZAPIER_TOKEN=YEAH');
-    fse.ensureDirSync(path.dirname(tmpZipPath));
+    fs.outputFileSync(tmpReadmePath, 'README');
+    fs.outputFileSync(tmpZapierAppPath, '{}');
+    fs.outputFileSync(tmpGitIgnorePath, '.DS_Store\n*.log');
+    fs.outputFileSync(tmpTestLogPath, 'Something');
+    fs.outputFileSync(tmpDSStorePath, 'Something Else');
+    fs.outputFileSync(tmpEnvironmentPath, 'ZAPIER_TOKEN=YEAH');
+    fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
 
     return build
       .makeSourceZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(4);
 
         const indexFile = files.find(

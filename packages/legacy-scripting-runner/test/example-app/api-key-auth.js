@@ -1,4 +1,4 @@
-const { AUTH_JSON_SERVER_URL } = require('../auth-json-server');
+const { AUTH_JSON_SERVER_URL } = require('../constants');
 
 const testAuthSource = `
   const responsePromise = z.request({
@@ -12,16 +12,12 @@ const testAuthSource = `
   });
 `;
 
-const beforeRequestSource = `
-  return z.legacyScripting.beforeRequest(request, z, bundle);
-`;
-
 module.exports = {
   legacy: {
     authentication: {
       mapping: { 'X-Api-Key': '{{api_key}}' },
-      placement: 'header'
-    }
+      placement: 'header',
+    },
   },
 
   authentication: {
@@ -32,14 +28,8 @@ module.exports = {
         key: 'api_key',
         label: 'API Key',
         type: 'string',
-        required: true
-      }
-    ]
+        required: true,
+      },
+    ],
   },
-  beforeRequest: [
-    {
-      source: beforeRequestSource,
-      args: ['request', 'z', 'bundle']
-    }
-  ]
 };

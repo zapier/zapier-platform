@@ -11,7 +11,7 @@ const {
   plural,
   updateEntryFile,
   isValidEntryFileUpdate,
-  writeTemplateFile
+  writeTemplateFile,
 } = require('../../utils/scaffold');
 const { splitFileFromPath } = require('../../utils/string');
 const { isValidAppInstall } = require('../../utils/misc');
@@ -41,7 +41,7 @@ class ScaffoldCommand extends BaseCommand {
       dest: newActionDir = getNewFileDirectory(actionType),
       testDest: newTestActionDir = getNewFileDirectory(actionType, true),
       entry = 'index.js',
-      force
+      force,
     } = this.flags;
 
     // this is possible, just extra work that's out of scope
@@ -137,7 +137,7 @@ class ScaffoldCommand extends BaseCommand {
               actionType
             )}" object in your exported integration definition.`,
             '',
-            `Also, please file an issue at ${ISSUES_URL} with the contents of your ${entryFilePath}.`
+            `Also, please file an issue at ${ISSUES_URL} with the contents of your ${entryFilePath}.`,
           ].join('\n')
         );
       }
@@ -156,14 +156,14 @@ ScaffoldCommand.args = [
     name: 'actionType',
     help: 'What type of step type are you creating?',
     required: true,
-    options: ['trigger', 'search', 'create', 'resource']
+    options: ['trigger', 'search', 'create', 'resource'],
   },
   {
     name: 'noun',
     help:
       'What sort of object this action acts on. For example, the name of the new thing to create',
-    required: true
-  }
+    required: true,
+  },
 ];
 
 ScaffoldCommand.flags = buildFlags({
@@ -171,38 +171,38 @@ ScaffoldCommand.flags = buildFlags({
     dest: flags.string({
       char: 'd',
       description:
-        "Specify the new file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `[triggers|searches|creates]/{noun}`."
+        "Specify the new file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `[triggers|searches|creates]/{noun}`.",
     }),
     'test-dest': flags.string({
       description:
-        "Specify the new test file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `test/[triggers|searches|creates]/{noun}`."
+        "Specify the new test file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `test/[triggers|searches|creates]/{noun}`.",
     }),
     entry: flags.string({
       char: 'e',
       description:
         "Supply the path to your integration's root (`index.js`). Only needed if your `index.js` is in a subfolder, like `src`.",
-      default: 'index.js'
+      default: 'index.js',
     }),
     force: flags.boolean({
       char: 'f',
       description:
         'Should we overwrite an exisiting trigger/search/create file?',
-      default: false
+      default: false,
     }),
     'no-help': flags.boolean({
       description:
         "When scaffolding, should we skip adding helpful intro comments? Useful if this isn't your first rodeo.",
-      default: false
-    })
+      default: false,
+    }),
     // TODO: typescript? jscodeshift supports it. We could tweak a template for it
-  }
+  },
 });
 
 ScaffoldCommand.examples = [
   'zapier scaffold trigger contact',
   'zapier scaffold search contact --dest=my_src/searches',
   'zapier scaffold create contact --entry=src/index.js',
-  'zapier scaffold resource contact --force'
+  'zapier scaffold resource contact --force',
 ];
 
 ScaffoldCommand.description = `Add a starting trigger, create, search, or resource to your integration.

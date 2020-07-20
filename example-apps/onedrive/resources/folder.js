@@ -39,13 +39,13 @@ const createFolder = (z, bundle) => {
       body: {
         name: bundle.inputData.name,
         folder: {}, // This tells OneDrive it's a folder (https://dev.onedrive.com/items/create.htm#example)
-        '@microsoft.graph.conflictBehavior': 'rename'
+        '@microsoft.graph.conflictBehavior': 'rename',
       },
       headers: {
-        'content-type': 'application/json'
-      }
+        'content-type': 'application/json',
+      },
     })
-    .then(_.partial(parseResponse, 'folder'))
+    .then(_.partial(parseResponse, z, 'folder'))
     .then(cleanupPaths)
     .catch(handleError)
 }
@@ -59,17 +59,17 @@ module.exports = {
   get: {
     display: {
       label: 'Get Folder',
-      description: 'Gets a folder.'
+      description: 'Gets a folder.',
     },
     operation: {
       inputFields: [
         {
           key: 'id',
-          required: true
-        }
+          required: true,
+        },
       ],
-      perform: getFolder
-    }
+      perform: getFolder,
+    },
   },
 
   // Will become a trigger on the app. Key will be `folderList`
@@ -77,7 +77,7 @@ module.exports = {
     display: {
       label: 'New Folder',
       description: 'Triggers when a new folder is added.',
-      important: true
+      important: true,
     },
     operation: {
       inputFields: [
@@ -90,11 +90,11 @@ module.exports = {
           // format of `<resource.key>List`, so that is what we use in all the dynamic dropdowns
           dynamic: 'folderList._path.name',
           helpText:
-            'Folder where to look for the folder. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.'
-        }
+            'Folder where to look for the folder. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.',
+        },
       ],
-      perform: listFolders
-    }
+      perform: listFolders,
+    },
   },
 
   // Will become a create on the app. Key will be `folderCreate`
@@ -102,7 +102,7 @@ module.exports = {
     display: {
       label: 'Create Folder',
       description: 'Creates a new folder.',
-      important: true
+      important: true,
     },
     operation: {
       inputFields: [
@@ -113,16 +113,16 @@ module.exports = {
           required: false,
           dynamic: 'folderList._path.name',
           helpText:
-            'Folder where to create the folder. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.'
+            'Folder where to create the folder. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.',
         },
         {
           key: 'name',
           required: true,
-          type: 'string'
-        }
+          type: 'string',
+        },
       ],
-      perform: createFolder
-    }
+      perform: createFolder,
+    },
   },
 
   // Will become a search on the app. Key will be `folderSearch`
@@ -130,7 +130,7 @@ module.exports = {
     display: {
       label: 'Find Folder',
       description: 'Finds a folder by name.',
-      important: true
+      important: true,
     },
     operation: {
       inputFields: [
@@ -141,16 +141,16 @@ module.exports = {
           required: false,
           dynamic: 'folderList._path.name',
           helpText:
-            'Folder where to look for the folder. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.'
+            'Folder where to look for the folder. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.',
         },
         {
           key: 'name',
           required: true,
-          type: 'string'
-        }
+          type: 'string',
+        },
       ],
-      perform: searchFolder
-    }
+      perform: searchFolder,
+    },
   },
 
   sample: {
@@ -160,7 +160,7 @@ module.exports = {
     _parent: '/Something',
     webUrl: 'https://example.com',
     createdDateTime: '2016-09-16T03:37:04.72Z',
-    lastModifiedDateTime: '2016-09-16T03:37:04.72Z'
+    lastModifiedDateTime: '2016-09-16T03:37:04.72Z',
   },
 
   outputFields: [
@@ -168,6 +168,6 @@ module.exports = {
     { key: 'name', label: 'Folder Name' },
     { key: '_path', label: 'Folder Path' },
     { key: '_parent', label: 'Parent Folder' },
-    { key: 'webUrl', label: 'URL' }
-  ]
+    { key: 'webUrl', label: 'URL' },
+  ],
 }

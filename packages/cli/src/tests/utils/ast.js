@@ -4,7 +4,7 @@ const { createRootRequire, addKeyToPropertyOnApp } = require('../../utils/ast');
 const {
   sampleExportVarIndex,
   sampleExportObjectIndex,
-  sampleLegacyAppIndex
+  sampleLegacyAppIndex,
 } = require('./astFixtures');
 
 /**
@@ -71,15 +71,15 @@ describe('ast', () => {
   describe('adding object properties', () => {
     Object.entries({
       variable: sampleExportVarIndex,
-      object: sampleExportObjectIndex
-    }).forEach(function([exportType, codeStr]) {
+      object: sampleExportObjectIndex,
+    }).forEach(function ([exportType, codeStr]) {
       describe(`${exportType} export`, () => {
         it('should add a property to an existing action type', () => {
           const result = addKeyToPropertyOnApp(codeStr, 'triggers', 'getThing');
           should(countOcurrances(result, 'triggers:')).eql(1);
           should(countOcurrances(result, 'searches:')).eql(0);
 
-          const codeByLine = result.split('\n').map(x => x.trim());
+          const codeByLine = result.split('\n').map((x) => x.trim());
           const firstIndex = codeByLine.indexOf('triggers: {');
           // assertions about what comes in the trigger property
           should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
@@ -99,7 +99,7 @@ describe('ast', () => {
           should(countOcurrances(result, 'triggers:')).eql(1);
           should(countOcurrances(result, 'searches:')).eql(1);
 
-          const codeByLine = result.split('\n').map(x => x.trim());
+          const codeByLine = result.split('\n').map((x) => x.trim());
           const firstIndex = codeByLine.indexOf('searches: {');
           // assertions about what comes in the trigger property
           should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
@@ -120,7 +120,7 @@ describe('ast', () => {
         should(countOcurrances(result, 'triggers:')).eql(2);
         should(countOcurrances(result, 'searches:')).eql(2);
 
-        const codeByLine = result.split('\n').map(x => x.trim());
+        const codeByLine = result.split('\n').map((x) => x.trim());
 
         // find the second occurance, the one that's not in the "legacy" property
         const operativeIndex = codeByLine.indexOf(
@@ -145,7 +145,7 @@ describe('ast', () => {
         );
         should(countOcurrances(result, 'searches:')).eql(2);
 
-        const codeByLine = result.split('\n').map(x => x.trim());
+        const codeByLine = result.split('\n').map((x) => x.trim());
         // find the second occurance, the one that's not in the "legacy" property
         const operativeIndex = codeByLine.indexOf('searches: {');
         should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
@@ -164,7 +164,7 @@ describe('ast', () => {
         should(countOcurrances(result, 'searches:')).eql(2);
         should(countOcurrances(result, 'resources:')).eql(1);
 
-        const codeByLine = result.split('\n').map(x => x.trim());
+        const codeByLine = result.split('\n').map((x) => x.trim());
         const firstIndex = codeByLine.indexOf('resources: {');
         // assertions about what comes in the trigger property
         should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
@@ -180,23 +180,23 @@ describe('ast', () => {
       {
         title: "error when there's no export",
         input: `const app = { very: 'cool', triggers: { key: 'cool' } }`,
-        error: 'Nothing is exported'
+        error: 'Nothing is exported',
       },
       {
         title: 'error for an unknown expression type',
         input: `module.exports = 3`,
-        error: 'Invalid export type'
+        error: 'Invalid export type',
       },
       {
         title: 'error for an unknown expression type',
         input: `const app = { triggers: {} }; const exportedApp = app; module.exports = exportedApp;`,
-        error: 'Unable to find object definition'
+        error: 'Unable to find object definition',
       },
       {
         title: 'error for an unknown expression type',
         input: `module.exports = {triggers: 4};`,
-        error: "Tried to edit the triggers key, but the value wasn't an object"
-      }
+        error: "Tried to edit the triggers key, but the value wasn't an object",
+      },
     ];
 
     errors.forEach(

@@ -5,12 +5,12 @@ const path = require('path');
 
 const fse = require('fs-extra');
 
-const fixHome = dir => {
+const fixHome = (dir) => {
   const home = process.env.HOME || process.env.USERPROFILE;
   return dir.replace(/^~/, home);
 };
 
-const fileExistsSync = fileName => {
+const fileExistsSync = (fileName) => {
   try {
     fse.accessSync(fileName);
     return true;
@@ -36,6 +36,11 @@ const readFile = (fileName, errMsg) => {
   );
 };
 
+const readFileStr = async (fileName, errMsg) => {
+  const buf = await readFile(fileName, errMsg);
+  return buf.toString();
+};
+
 // Returns a promise that writes a file.
 const writeFile = (fileName, data) => {
   if (!data) {
@@ -45,7 +50,7 @@ const writeFile = (fileName, data) => {
 };
 
 // deletes a file, eats the error
-const deleteFile = path => {
+const deleteFile = (path) => {
   try {
     fse.unlinkSync(path);
     return true;
@@ -55,7 +60,7 @@ const deleteFile = path => {
 };
 
 // Returns a promise that ensures a directory exists.
-const ensureDir = dir => fse.ensureDir(dir);
+const ensureDir = (dir) => fse.ensureDir(dir);
 
 const copyFile = (src, dest, mode) => {
   return new Promise((resolve, reject) => {
@@ -65,11 +70,11 @@ const copyFile = (src, dest, mode) => {
     readStream.on('error', reject);
     writeStream.on('error', reject);
 
-    writeStream.on('open', function() {
+    writeStream.on('open', function () {
       readStream.pipe(writeStream);
     });
 
-    writeStream.once('finish', err => {
+    writeStream.once('finish', (err) => {
       if (err) {
         reject(err);
       }
@@ -80,7 +85,7 @@ const copyFile = (src, dest, mode) => {
 
 // Returns a promise that copies a directory.
 const copyDir = (src, dst, options) => {
-  const defaultFilter = dir => {
+  const defaultFilter = (dir) => {
     const isntPackage = dir.indexOf('node_modules') === -1;
     const isntBuild = dir.indexOf('.zip') === -1;
     return isntPackage && isntBuild;
@@ -90,13 +95,13 @@ const copyDir = (src, dst, options) => {
     clobber: false,
     filter: defaultFilter,
     onCopy: () => {},
-    onSkip: () => {}
+    onSkip: () => {},
   });
 
   return ensureDir(dst)
     .then(() => fse.readdir(src))
-    .then(files => {
-      const promises = files.map(file => {
+    .then((files) => {
+      const promises = files.map((file) => {
         const srcItem = path.resolve(src, file);
         const dstItem = path.resolve(dst, file);
         const stat = fse.statSync(srcItem);
@@ -131,12 +136,12 @@ const copyDir = (src, dst, options) => {
 };
 
 // Delete a directory.
-const removeDir = dir => fse.remove(dir);
+const removeDir = (dir) => fse.remove(dir);
 
 // Returns true if directory is empty, else false.
 // Rejects if directory does not exist.
-const isEmptyDir = dir => fse.readdir(dir).then(items => _.isEmpty(items));
-const isExistingEmptyDir = async dir =>
+const isEmptyDir = (dir) => fse.readdir(dir).then((items) => _.isEmpty(items));
+const isExistingEmptyDir = async (dir) =>
   fse.existsSync(dir) && !(await isEmptyDir(dir));
 
 const makeTempDir = () => {
@@ -157,9 +162,10 @@ module.exports = {
   isEmptyDir,
   isExistingEmptyDir,
   readFile,
+  readFileStr,
   removeDir,
   validateFileExists,
   writeFile,
   copyFile,
-  makeTempDir
+  makeTempDir,
 };

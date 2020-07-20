@@ -9,9 +9,9 @@ const App = {
         operation: {
           perform: () => {
             return [{ id: 123, name: 'Project 1' }];
-          } // called for project_id
-        }
-      }
+          }, // called for project_id
+        },
+      },
     },
     issue: {
       key: 'issue',
@@ -25,17 +25,17 @@ const App = {
               required: true,
               label: 'Project',
               dynamic: 'projectList.id.name',
-              search: 'projectSearch.id'
+              search: 'projectSearch.id',
             }, // calls project.search (requires a trigger in the "dynamic" property)
             {
               key: 'title',
               required: true,
               label: 'Title',
-              helpText: 'What is the name of the issue?'
-            }
-          ]
-        }
-      }
-    }
-  }
+              helpText: 'What is the name of the issue?',
+            },
+          ],
+        },
+      },
+    },
+  },
 };

@@ -1,7 +1,6 @@
 require('should');
 
 describe('Utils/Libraries', () => {
-
   it('btoa', (done) => {
     const btoa = require('../btoa');
     const result = btoa('something');
@@ -20,7 +19,7 @@ describe('Utils/Libraries', () => {
     const $ = require('../$');
 
     it('$.param()', (done) => {
-      const result = $.param({test: 'something', more: true, also: '@'});
+      const result = $.param({ test: 'something', more: true, also: '@' });
       result.should.equal('test=something&more=true&also=%40');
       done();
     });
@@ -32,5 +31,4 @@ describe('Utils/Libraries', () => {
       done();
     });
   });
-
 });

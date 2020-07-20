@@ -2,7 +2,7 @@ const ZapierBaseCommand = require('../../ZapierBaseCommand');
 const { flags } = require('@oclif/command');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
-const { callAPI, getLinkedApp } = require('../../../utils/api');
+const { callAPI } = require('../../../utils/api');
 
 class UsersRemoveCommand extends ZapierBaseCommand {
   async perform() {
@@ -19,8 +19,8 @@ class UsersRemoveCommand extends ZapierBaseCommand {
       return;
     }
 
+    const { id } = await this.getWritableApp();
     this.startSpinner('Removing User');
-    const { id } = await getLinkedApp();
     const url = `/apps/${id}/invitees/${this.args.email}`;
     await callAPI(url, { method: 'DELETE' });
     this.stopSpinner();
@@ -31,16 +31,16 @@ UsersRemoveCommand.args = [
   {
     name: 'email',
     description: 'The user to be removed.',
-    required: true
-  }
+    required: true,
+  },
 ];
 UsersRemoveCommand.flags = buildFlags({
   commandFlags: {
     force: flags.boolean({
       char: 'f',
-      description: 'Skips confirmation. Useful for running programatically.'
-    })
-  }
+      description: 'Skips confirmation. Useful for running programatically.',
+    }),
+  },
 });
 UsersRemoveCommand.description = `Remove a user from all versions of your integration.
 

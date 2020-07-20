@@ -13,7 +13,7 @@ console.log(zipFileLambda.length, 'bytes of code');
 
 var params = {
   Code: {
-    ZipFile: zipFileLambda
+    ZipFile: zipFileLambda,
   },
   FunctionName: 'integration-test-cli',
   Handler: 'index.integrationTestHandler',
@@ -21,7 +21,7 @@ var params = {
   Runtime: 'nodejs8.10',
   Description: 'Via node ./lambda-upload.js for dev-platform-cli.',
   MemorySize: 512,
-  Timeout: 30
+  Timeout: 30,
 };
 
 // lambda.createFunction(

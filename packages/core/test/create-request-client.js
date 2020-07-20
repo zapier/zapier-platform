@@ -8,36 +8,38 @@ const should = require('should');
 
 const createAppRequestClient = require('../src/tools/create-app-request-client');
 const createInput = require('../src/tools/create-input');
+const errors = require('../src/errors');
+const { HTTPBIN_URL } = require('./constants');
 
 describe('request client', () => {
   const testLogger = () => Promise.resolve({});
   const input = createInput({}, {}, testLogger);
 
-  it('should include a user-agent header', done => {
+  it('should include a user-agent header', (done) => {
     const request = createAppRequestClient(input);
-    request({ url: 'https://httpbin.org/get' })
-      .then(responseBefore => {
+    request({ url: `${HTTPBIN_URL}/get` })
+      .then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         response.request.headers['user-agent'].should.eql('Zapier');
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
   });
 
-  it('should allow overriding the user-agent header', done => {
+  it('should allow overriding the user-agent header', (done) => {
     const request = createAppRequestClient(input);
     request({
-      url: 'https://httpbin.org/get',
+      url: `${HTTPBIN_URL}/get`,
       headers: {
-        'User-Agent': 'Zapier!'
-      }
+        'User-Agent': 'Zapier!',
+      },
     })
-      .then(responseBefore => {
+      .then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         should(response.request.headers['user-agent']).eql(undefined);
@@ -45,49 +47,47 @@ describe('request client', () => {
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
   });
 
-  it('should have json serializable response', done => {
+  it('should have json serializable response', async () => {
     const request = createAppRequestClient(input);
-    request({ url: 'https://httpbin.org/get' })
-      .then(responseBefore => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
+    const responseBefore = await request({
+      url: `${HTTPBIN_URL}/get`,
+    });
+    const response = JSON.parse(JSON.stringify(responseBefore));
 
-        response.headers['content-type'].should.eql('application/json');
-        response.status.should.eql(200);
+    response.headers['content-type'].should.containEql('application/json');
+    response.status.should.eql(200);
 
-        const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
-        done();
-      })
-      .catch(done);
+    const body = JSON.parse(response.content);
+    body.url.should.eql(`${HTTPBIN_URL}/get`);
   });
 
-  it('should wrap a request entirely', done => {
+  it('should wrap a request entirely', (done) => {
     const request = createAppRequestClient(input);
-    request({ url: 'https://httpbin.org/get' })
-      .then(response => {
+    request({ url: `${HTTPBIN_URL}/get` })
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
   });
 
-  it('should support promise bodies', done => {
+  it('should support promise bodies', (done) => {
     const payload = { hello: 'world is nice' };
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
-      url: 'https://httpbin.org/post',
-      body: Promise.resolve(payload)
+      url: `${HTTPBIN_URL}/post`,
+      body: Promise.resolve(payload),
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         response.request.body.should.eql(JSON.stringify(payload));
         const body = JSON.parse(response.content);
@@ -97,7 +97,7 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming another request', done => {
+  it('should support streaming another request', (done) => {
     const fileUrl =
       'https://s3.amazonaws.com/zapier-downloads/just-a-few-lines.txt';
     const fileExpectedContent =
@@ -106,9 +106,9 @@ describe('request client', () => {
     request({
       method: 'POST',
       url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
-      body: request({ url: fileUrl, raw: true })
+      body: request({ url: fileUrl, raw: true }),
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
         body.postData.text.should.eql(fileExpectedContent);
@@ -117,14 +117,14 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should handle a buffer upload fine', done => {
+  it('should handle a buffer upload fine', (done) => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
       url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
-      body: Buffer.from('hello world this is a cat (=^..^=)')
+      body: Buffer.from('hello world this is a cat (=^..^=)'),
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
         body.postData.text.should.eql('hello world this is a cat (=^..^=)');
@@ -133,14 +133,14 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should handle a stream upload fine', done => {
+  it('should handle a stream upload fine', (done) => {
     const request = createAppRequestClient(input);
     request({
       method: 'POST',
       url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
-      body: fs.createReadStream(path.join(__dirname, 'test.txt'))
+      body: fs.createReadStream(path.join(__dirname, 'test.txt')),
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
         body.postData.text.should.eql('hello world this is a cat (=^..^=)');
@@ -149,35 +149,34 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support single url param', done => {
+  it('should support single url param', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.org/get')
-      .then(response => {
+    request(`${HTTPBIN_URL}/get`)
+      .then((response) => {
         response.status.should.eql(200);
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
   });
 
-  it('should support url param with options', done => {
+  it('should support url param with options', async () => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.org/get', { headers: { A: 'B' } })
-      .then(response => {
-        response.status.should.eql(200);
-        const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
-        body.headers.A.should.eql('B');
-        done();
-      })
-      .catch(done);
+    const response = await request(`${HTTPBIN_URL}/get`, {
+      headers: { A: 'B' },
+    });
+
+    response.status.should.eql(200);
+    const body = JSON.parse(response.content);
+    body.url.should.eql(`${HTTPBIN_URL}/get`);
+    body.headers.A.should.deepEqual(['B']);
   });
 
-  it('should support bytes', done => {
+  it('should support bytes', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.org/bytes/1024')
-      .then(response => {
+    request(`${HTTPBIN_URL}/bytes/1024`)
+      .then((response) => {
         response.status.should.eql(200);
         // it tries to decode the bytes /shrug
         response.content.length.should.belowOrEqual(1024);
@@ -186,10 +185,10 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support bytes raw', done => {
+  it('should support bytes raw', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.org/bytes/1024', { raw: true })
-      .then(response => {
+    request(`${HTTPBIN_URL}/bytes/1024`, { raw: true })
+      .then((response) => {
         response.status.should.eql(200);
         should(response.buffer).be.type('function');
         should(response.text).be.type('function');
@@ -199,10 +198,10 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming bytes', done => {
+  it('should support streaming bytes', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.org/stream-bytes/1024')
-      .then(response => {
+    request(`${HTTPBIN_URL}/stream-bytes/1024`)
+      .then((response) => {
         response.status.should.eql(200);
         // it tries to decode the bytes /shrug
         response.content.length.should.belowOrEqual(1024);
@@ -211,12 +210,12 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming bytes raw', done => {
+  it('should support streaming bytes raw', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.org/stream-bytes/1024', {
-      raw: true
+    request(`${HTTPBIN_URL}/stream-bytes/1024`, {
+      raw: true,
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         should(response.buffer).be.type('function');
         should(response.text).be.type('function');
@@ -226,131 +225,133 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming bytes raw as buffer', done => {
+  it('should support streaming bytes raw as buffer', (done) => {
     const request = createAppRequestClient(input);
-    request('https://httpbin.org/stream-bytes/1024', {
-      raw: true
+    request(`${HTTPBIN_URL}/stream-bytes/1024`, {
+      raw: true,
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         return response.buffer();
       })
-      .then(buffer => {
+      .then((buffer) => {
         buffer.length.should.eql(1024);
         done();
       })
       .catch(done);
   });
 
-  it('should run any beforeRequest functions', done => {
+  it('should run any beforeRequest functions', (done) => {
     const inputWithBeforeMiddleware = createInput(
       {
         beforeRequest: [
-          request => {
+          (request) => {
             request.headers['X-Testing-True'] = 'Yes';
             return request;
-          }
-        ]
+          },
+        ],
       },
       {},
       testLogger
     );
     const request = createAppRequestClient(inputWithBeforeMiddleware);
-    request({ url: 'https://httpbin.org/get' })
-      .then(responseBefore => {
+    request({ url: `${HTTPBIN_URL}/get` })
+      .then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
         response.request.headers['X-Testing-True'].should.eql('Yes');
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
   });
 
-  it('should run any afterResponse functions', done => {
+  it('should default to run throwForStatus', () => {
+    const request = createAppRequestClient(input);
+    return request({
+      url: `${HTTPBIN_URL}/status/400`,
+    }).should.be.rejectedWith(errors.ResponseError);
+  });
+
+  it('should be able to skip throwForStatus via request', async () => {
+    const request = createAppRequestClient(input);
+    const response = await request({
+      url: `${HTTPBIN_URL}/status/400`,
+      skipThrowForStatus: true,
+    });
+    response.status.should.eql(400);
+  });
+
+  it('should be able to skip throwForStatus via afterResponse', async () => {
     const inputWithAfterMiddleware = createInput(
       {
         afterResponse: [
-          response => {
-            response.json = { testing: true };
+          (response) => {
+            response.skipThrowForStatus = true;
             return response;
-          }
-        ]
+          },
+        ],
       },
       {},
       testLogger
     );
     const request = createAppRequestClient(inputWithAfterMiddleware);
-    request({ url: 'https://httpbin.org/get' })
-      .then(responseBefore => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
-
-        response.json.testing.should.eql(true);
-        response.status.should.eql(200);
-
-        const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
-        done();
-      })
-      .catch(done);
+    const response = await request({
+      url: `${HTTPBIN_URL}/status/400`,
+    });
+    response.status.should.eql(400);
   });
 
-  it('should parse form type request body', done => {
+  it('should parse form type request body', async () => {
     const request = createAppRequestClient(input);
-    request({
-      url: 'https://httpbin.org/post',
+    const response = await request({
+      url: `${HTTPBIN_URL}/post`,
       method: 'POST',
       headers: {
-        'content-type': 'application/x-www-form-urlencoded'
+        'content-type': 'application/x-www-form-urlencoded',
       },
       body: {
         name: 'Something Else',
-        directions: '!!No Way José'
-      }
-    })
-      .then(response => {
-        response.status.should.eql(200);
-        response.request.body.should.eql(
-          'name=Something+Else&directions=!!No+Way+Jos%C3%A9'
-        );
-        const body = JSON.parse(response.content);
-        body.form.name.should.eql('Something Else');
-        body.form.directions.should.eql('!!No Way José');
-        done();
-      })
-      .catch(done);
+        directions: '!!No Way José',
+      },
+    });
+
+    response.status.should.eql(200);
+    response.request.body.should.eql(
+      'name=Something+Else&directions=!!No+Way+Jos%C3%A9'
+    );
+    const body = JSON.parse(response.content);
+    body.form.name.should.deepEqual(['Something Else']);
+    body.form.directions.should.deepEqual(['!!No Way José']);
   });
 
-  it('should not parse form type request body when string', done => {
+  it('should not parse form type request body when string', async () => {
     const request = createAppRequestClient(input);
-    request({
-      url: 'https://httpbin.org/post',
+    const response = await request({
+      url: `${HTTPBIN_URL}/post`,
       method: 'POST',
       headers: {
-        'content-type': 'application/x-www-form-urlencoded'
+        'content-type': 'application/x-www-form-urlencoded',
       },
-      body: 'name=Something Else&directions=!!No Way José'
-    })
-      .then(response => {
-        response.status.should.eql(200);
-        response.request.body.should.eql(
-          'name=Something Else&directions=!!No Way José'
-        );
-        const body = JSON.parse(response.content);
-        body.form.name.should.eql('Something Else');
-        body.form.directions.should.eql('!!No Way José');
-        done();
-      })
-      .catch(done);
+      body: 'name=Something Else&directions=!!No Way José',
+    });
+
+    response.status.should.eql(200);
+    response.request.body.should.eql(
+      'name=Something Else&directions=!!No Way José'
+    );
+    const body = JSON.parse(response.content);
+    body.form.name.should.deepEqual(['Something Else']);
+    body.form.directions.should.deepEqual(['!!No Way José']);
   });
 
   it('should block self-signed SSL certificate', () => {
     const request = createAppRequestClient(input);
     return request('https://self-signed.badssl.com').should.be.rejectedWith({
-      name: 'FetchError'
+      name: 'FetchError',
     });
   });
 
@@ -358,7 +359,7 @@ describe('request client', () => {
     const newInput = _.cloneDeep(input);
     newInput._zapier.event.verifySSL = false;
     const request = createAppRequestClient(newInput);
-    return request('https://self-signed.badssl.com').then(response => {
+    return request('https://self-signed.badssl.com').then((response) => {
       response.status.should.eql(200);
     });
   });
@@ -367,77 +368,113 @@ describe('request client', () => {
     const newInput = _.cloneDeep(input);
     newInput._zapier.event.verifySSL = false;
     const request = createAppRequestClient(newInput);
-    return request('https://httpbin.org/get').then(response => {
+    return request(`${HTTPBIN_URL}/get`).then((response) => {
       response.status.should.eql(200);
     });
   });
 
+  it('should delete GET body by default', async () => {
+    const request = createAppRequestClient(input);
+    const response = await request({
+      method: 'GET',
+      url: 'https://auth-json-server.zapier-staging.com/echo',
+      body: {
+        name: 'Darth Vader',
+      },
+    });
+    response.status.should.eql(200);
+    response.data.method.should.eql('GET');
+    should.not.exist(response.data.textBody);
+  });
+
+  it('should allow GET with body', async () => {
+    const request = createAppRequestClient(input);
+    const response = await request({
+      method: 'GET',
+      url: 'https://auth-json-server.zapier-staging.com/echo',
+      body: {
+        name: 'Darth Vader',
+      },
+      allowGetBody: true,
+    });
+    response.status.should.eql(200);
+    response.data.method.should.eql('GET');
+    response.data.textBody.should.eql('{"name":"Darth Vader"}');
+  });
+
+  it('allowGetBody should not send empty body', async () => {
+    const request = createAppRequestClient(input);
+    const response = await request({
+      method: 'GET',
+      url: 'https://auth-json-server.zapier-staging.com/echo',
+      body: {},
+      allowGetBody: true,
+    });
+    response.status.should.eql(200);
+    response.data.method.should.eql('GET');
+    should.not.exist(response.data.textBody);
+  });
+
   describe('adds query params', () => {
-    it('should replace remaining curly params with empty string by default', () => {
+    it('should replace remaining curly params with empty string by default', async () => {
       const request = createAppRequestClient(input);
-      return request({
-        url: 'https://httpbin.org/get',
+      const responseBefore = await request({
+        url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
-          cool: 'true'
-        }
-      }).then(responseBefore => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
-
-        response.json.args.something.should.eql('');
-        response.json.args.really.should.eql('');
-        response.json.args.cool.should.eql('true');
-        response.status.should.eql(200);
-
-        const body = JSON.parse(response.content);
-        body.url.should.eql(
-          'https://httpbin.org/get?something=&really=&cool=true'
-        );
+          cool: 'true',
+        },
       });
+
+      const response = JSON.parse(JSON.stringify(responseBefore));
+      response.data.args.something.should.deepEqual(['']);
+      response.data.args.really.should.deepEqual(['']);
+      response.data.args.cool.should.deepEqual(['true']);
+      response.status.should.eql(200);
+
+      const body = JSON.parse(response.content);
+      body.url.should.eql(`${HTTPBIN_URL}/get?something=&really=&cool=true`);
     });
 
-    it('should replace remaining curly params with empty string when set as false', () => {
+    it('should replace remaining curly params with empty string when set as false', async () => {
       const request = createAppRequestClient(input);
-      return request({
-        url: 'https://httpbin.org/get',
+      const responseBefore = await request({
+        url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
-          cool: 'true'
+          cool: 'true',
         },
         removeMissingValuesFrom: {
-          params: false
-        }
-      }).then(responseBefore => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
-
-        response.json.args.something.should.eql('');
-        response.json.args.really.should.eql('');
-        response.json.args.cool.should.eql('true');
-        response.status.should.eql(200);
-
-        const body = JSON.parse(response.content);
-        body.url.should.eql(
-          'https://httpbin.org/get?something=&really=&cool=true'
-        );
+          params: false,
+        },
       });
+
+      const response = JSON.parse(JSON.stringify(responseBefore));
+      response.data.args.something.should.deepEqual(['']);
+      response.data.args.really.should.deepEqual(['']);
+      response.data.args.cool.should.deepEqual(['true']);
+      response.status.should.eql(200);
+
+      const body = JSON.parse(response.content);
+      body.url.should.eql(`${HTTPBIN_URL}/get?something=&really=&cool=true`);
     });
 
-    it('should omit empty params when set as true', () => {
+    it('should omit empty params when set as true', async () => {
       const event = {
         bundle: {
           inputData: {
-            name: 'zapier'
-          }
-        }
+            name: 'zapier',
+          },
+        },
       };
       const request = createAppRequestClient(
         createInput({}, event, testLogger)
       );
 
-      return request({
-        url: 'https://httpbin.org/get',
+      const responseBefore = await request({
+        url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
@@ -447,103 +484,102 @@ describe('request client', () => {
           bar: undefined,
           zzz: '[]',
           yyy: '{}',
-          qqq: ' '
+          qqq: ' ',
         },
         removeMissingValuesFrom: {
-          params: true
-        }
-      }).then(responseBefore => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
-
-        should(response.json.args.something).eql(undefined);
-        should(response.json.args.foo).eql(undefined);
-        should(response.json.args.bar).eql(undefined);
-        should(response.json.args.empty).eql(undefined);
-        should(response.json.args.really).eql(undefined);
-        response.json.args.cool.should.eql('false');
-        response.json.args.zzz.should.eql('[]');
-        response.json.args.yyy.should.eql('{}');
-        response.json.args.qqq.should.eql(' ');
-        response.json.args.name.should.eql('zapier');
-        response.status.should.eql(200);
-
-        const body = JSON.parse(response.content);
-        body.url.should.eql(
-          'https://httpbin.org/get?cool=false&name=zapier&zzz=[]&yyy={}&qqq= '
-        );
+          params: true,
+        },
       });
+
+      const response = JSON.parse(JSON.stringify(responseBefore));
+      should(response.data.args.something).eql(undefined);
+      should(response.data.args.foo).eql(undefined);
+      should(response.data.args.bar).eql(undefined);
+      should(response.data.args.empty).eql(undefined);
+      should(response.data.args.really).eql(undefined);
+
+      response.data.args.cool.should.deepEqual(['false']);
+      response.data.args.zzz.should.deepEqual(['[]']);
+      response.data.args.yyy.should.deepEqual(['{}']);
+      response.data.args.qqq.should.deepEqual([' ']);
+      response.data.args.name.should.deepEqual(['zapier']);
+      response.status.should.eql(200);
+
+      const body = JSON.parse(response.content);
+      body.url.should.eql(
+        `${HTTPBIN_URL}/get?cool=false&name=zapier&zzz=%5B%5D&yyy=%7B%7D&qqq=%20`
+      );
     });
 
     it('should not include ? if there are no params after cleaning', () => {
       const request = createAppRequestClient(input);
       return request({
-        url: 'https://httpbin.org/get',
+        url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
-          cool: ''
+          cool: '',
         },
         removeMissingValuesFrom: {
-          params: true
-        }
-      }).then(responseBefore => {
+          params: true,
+        },
+      }).then((responseBefore) => {
         const response = JSON.parse(JSON.stringify(responseBefore));
 
-        should(response.json.args.something).eql(undefined);
-        should(response.json.args.cool).eql(undefined);
+        should(response.data.args.something).eql(undefined);
+        should(response.data.args.cool).eql(undefined);
         response.status.should.eql(200);
 
         const body = JSON.parse(response.content);
-        body.url.should.eql('https://httpbin.org/get');
+        body.url.should.eql(`${HTTPBIN_URL}/get`);
       });
     });
   });
 
   describe('shorthand hook subscriptions', () => {
-    it('should resolve bundle tokens in performSubscribe', () => {
+    it('should resolve bundle tokens in performSubscribe', async () => {
       const targetUrl = 'https://zapier.com/hooks';
       const event = {
         bundle: {
           targetUrl,
           meta: {
-            zap: { id: 987 }
-          }
-        }
+            zap: { id: 987 },
+          },
+        },
       };
       const subscribeInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(subscribeInput);
-      return request({
-        url: 'https://httpbin.org/post',
+      const response = await request({
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           hookUrl: '{{bundle.targetUrl}}',
-          zapId: '{{bundle.meta.zap.id}}'
-        }
-      }).then(response => {
-        const { hookUrl, zapId } = JSON.parse(response.json.data);
-
-        hookUrl.should.eql(targetUrl);
-        zapId.should.eql(987);
+          zapId: '{{bundle.meta.zap.id}}',
+        },
       });
+
+      const { hookUrl, zapId } = JSON.parse(response.data.data);
+      hookUrl.should.eql(targetUrl);
+      zapId.should.eql(987);
     });
 
     it('should resolve bundle tokens in performUnubscribe', () => {
       const subscribeData = { id: 123 };
       const event = {
-        bundle: { subscribeData }
+        bundle: { subscribeData },
       };
       const subscribeInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(subscribeInput);
       return request({
-        url: 'https://httpbin.org/delete',
+        url: `${HTTPBIN_URL}/delete`,
         method: 'DELETE',
         params: {
-          id: '{{bundle.subscribeData.id}}'
-        }
-      }).then(response => {
+          id: '{{bundle.subscribeData.id}}',
+        },
+      }).then((response) => {
         const { url } = JSON.parse(response.content);
 
-        response.json.args.id.should.eql('123');
-        url.should.eql('https://httpbin.org/delete?id=123');
+        response.data.args.id.should.deepEqual(['123']);
+        url.should.eql(`${HTTPBIN_URL}/delete?id=123`);
       });
     });
   });
@@ -556,23 +592,23 @@ describe('request client', () => {
             number: 123,
             bool: true,
             float: 123.456,
-            arr: [1, 2, 3]
-          }
-        }
+            arr: [1, 2, 3],
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'https://httpbin.org/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           number: '{{bundle.inputData.number}}',
           bool: '{{bundle.inputData.bool}}',
           float: '{{bundle.inputData.float}}',
-          arr: '{{bundle.inputData.arr}}'
-        }
-      }).then(response => {
-        const { json } = response.json;
+          arr: '{{bundle.inputData.arr}}',
+        },
+      }).then((response) => {
+        const { json } = response.data;
 
         should(json.empty).eql(undefined);
         json.number.should.eql(123);
@@ -593,24 +629,23 @@ describe('request client', () => {
             bool: true,
             float: 123.456,
             arr: [1, 2, 3],
-            nested: { very: 'cool' }
-          }
-        }
+            nested: { very: 'cool' },
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'https://httpbin.org/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           number: 123,
           bool: true,
           float: 123.456,
-          arr: [1, 2, 3]
-        }
-      }).then(response => {
-        const { json } = response.json;
-
+          arr: [1, 2, 3],
+        },
+      }).then((response) => {
+        const { json } = response.data;
         should(json.empty).eql(undefined);
         json.number.should.eql(123);
         json.bool.should.eql(true);
@@ -623,24 +658,24 @@ describe('request client', () => {
       const event = {
         bundle: {
           inputData: {
-            name: 'Burgundy'
-          }
-        }
+            name: 'Burgundy',
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'https://httpbin.org/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           name: '{{bundle.inputData.name}}',
-          empty: '{{bundle.inputData.empty}}'
+          empty: '{{bundle.inputData.empty}}',
         },
         removeMissingValuesFrom: {
-          body: true
-        }
-      }).then(response => {
-        const { json } = response.json;
+          body: true,
+        },
+      }).then((response) => {
+        const { json } = response.data;
 
         should(json.empty).eql(undefined);
         json.name.should.eql('Burgundy');
@@ -650,15 +685,15 @@ describe('request client', () => {
     it('should replace curlies with an empty string by default', () => {
       const request = createAppRequestClient(input);
       return request({
-        url: 'https://httpbin.org/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           empty: '{{bundle.inputData.empty}}',
           partial: 'text {{bundle.inputData.partial}}',
-          value: 'exists'
-        }
-      }).then(response => {
-        const { json } = response.json;
+          value: 'exists',
+        },
+      }).then((response) => {
+        const { json } = response.data;
 
         should(json.empty).eql('');
         should(json.partial).eql('text ');
@@ -666,54 +701,54 @@ describe('request client', () => {
       });
     });
 
-    it('should interpolate strings', () => {
+    it('should interpolate strings', async () => {
       const event = {
         bundle: {
           inputData: {
-            resourceId: 123
+            resourceId: 123,
           },
           authData: {
-            access_token: 'Let me in'
-          }
-        }
+            access_token: 'Let me in',
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
-      return request({
-        url: 'https://httpbin.org/post',
+      const response = await request({
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
-          message: 'We just got #{{bundle.inputData.resourceId}}'
+          message: 'We just got #{{bundle.inputData.resourceId}}',
         },
         headers: {
-          Authorization: 'Bearer {{bundle.authData.access_token}}'
-        }
-      }).then(response => {
-        const { json, headers } = response.json;
-
-        json.message.should.eql('We just got #123');
-        headers.Authorization.should.eql('Bearer Let me in');
+          Authorization: 'Bearer {{bundle.authData.access_token}}',
+        },
       });
+
+      const { json, headers } = response.data;
+      json.message.should.eql('We just got #123');
+      headers.Authorization.should.deepEqual(['Bearer Let me in']);
     });
 
     it('should throw when interpolating a string with an array', () => {
       const event = {
         bundle: {
           inputData: {
-            badData: [1, 2, 3]
-          }
-        }
+            badData: [1, 2, 3],
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'https://httpbin.org/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
-          message: 'No arrays, thank you: {{bundle.inputData.badData}}'
-        }
+          message: 'No arrays, thank you: {{bundle.inputData.badData}}',
+        },
       }).should.be.rejectedWith(
-        'Cannot reliably interpolate objects or arrays into a string. We received an Array:\n"1,2,3"'
+        'Cannot reliably interpolate objects or arrays into a string. ' +
+          'Variable `bundle.inputData.badData` is an Array:\n"1,2,3"'
       );
     });
 
@@ -723,59 +758,101 @@ describe('request client', () => {
           inputData: {
             address: {
               street: '123 Zapier Way',
-              city: 'El Mundo'
-            }
-          }
-        }
+              city: 'El Mundo',
+            },
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
       return request({
-        url: 'https://httpbin.org/post',
+        url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           streetAddress: '{{bundle.inputData.address.street}}',
-          city: '{{bundle.inputData.address.city}}'
-        }
-      }).then(response => {
-        const { json } = response.json;
+          city: '{{bundle.inputData.address.city}}',
+        },
+      }).then((response) => {
+        const { json } = response.data;
 
         json.streetAddress.should.eql('123 Zapier Way');
         json.city.should.eql('El Mundo');
       });
     });
 
-    it('should resolve all bundle fields', () => {
+    it('should resolve all bundle fields', async () => {
       const event = {
         bundle: {
           inputData: {
-            resourceId: 123
+            resourceId: 123,
           },
           authData: {
-            access_token: 'Let me in'
+            access_token: 'Let me in',
           },
           meta: {
-            limit: 20
-          }
-        }
+            limit: 20,
+          },
+        },
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
-      return request({
-        url: 'https://httpbin.org/get',
+      const response = await request({
+        url: `${HTTPBIN_URL}/get`,
         method: 'GET',
         params: {
           limit: '{{bundle.meta.limit}}',
-          id: '{{bundle.inputData.resourceId}}'
+          id: '{{bundle.inputData.resourceId}}',
         },
         headers: {
-          Authorization: 'Bearer {{bundle.authData.access_token}}'
-        }
-      }).then(response => {
-        const { headers } = response.json;
-        const { url } = JSON.parse(response.content);
-        url.should.eql('https://httpbin.org/get?limit=20&id=123');
-        headers.Authorization.should.eql('Bearer Let me in');
+          Authorization: 'Bearer {{bundle.authData.access_token}}',
+        },
+      });
+
+      const { headers } = response.data;
+      const { url } = JSON.parse(response.content);
+      url.should.eql(`${HTTPBIN_URL}/get?limit=20&id=123`);
+      headers.Authorization.should.deepEqual(['Bearer Let me in']);
+    });
+
+    it('should be able to interpolate arrays/objects to a string', async () => {
+      const event = {
+        bundle: {
+          inputData: {
+            arr: [1, 2, 3, 'red', 'blue'],
+            obj: {
+              id: '456',
+              name: 'John',
+            },
+            str: 'hello',
+          },
+        },
+      };
+      const bodyInput = createInput({}, event, testLogger);
+      const request = createAppRequestClient(bodyInput);
+      const response = await request({
+        url: `${HTTPBIN_URL}/post`,
+        method: 'POST',
+        body: {
+          arr: 'arr: {{bundle.inputData.arr}}',
+          obj: 'obj: {{bundle.inputData.obj}}',
+          str: 'str: {{bundle.inputData.str}}',
+        },
+        serializeValueForCurlies: (value) => {
+          if (Array.isArray(value)) {
+            return value.join(',');
+          } else if (_.isPlainObject(value)) {
+            return Object.entries(value)
+              .map(([k, v]) => `${k}=${v}`)
+              .join(',');
+          }
+          return value;
+        },
+      });
+
+      response.data.json.should.deepEqual({
+        arr: 'arr: 1,2,3,red,blue',
+        obj: 'obj: id=456,name=John',
+        str: 'str: hello',
       });
     });
   });

@@ -6,7 +6,7 @@ const { sortBy } = require('lodash');
 const {
   listApps,
   writeLinkedAppConfig,
-  getLinkedAppConfig
+  getLinkedAppConfig,
 } = require('../../utils/api');
 const { CURRENT_APP_FILE } = require('../../constants');
 
@@ -20,16 +20,16 @@ class LinkCommand extends BaseCommand {
     const chosenApp = await this.promptWithList(
       'Which integration should be associated with the code in this directory?',
       sortBy(
-        apps.map(app => ({
+        apps.map((app) => ({
           name: `${app.title} (${app.id})${
             linkedAppId && app.id === linkedAppId
               ? ' [currently linked app]'
               : ''
           }`,
           short: app.title,
-          value: { id: app.id, key: app.key }
+          value: { id: app.id, key: app.key },
         })),
-        app => app.name.toLowerCase()
+        (app) => app.name.toLowerCase()
       ),
       15
     );

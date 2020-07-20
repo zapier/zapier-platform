@@ -8,9 +8,9 @@ class UsersListCommand extends ZapierBaseCommand {
     this.startSpinner('Loading users');
     const { users } = await listEndpoint('invitees', 'users');
 
-    const cleanedUsers = users.map(u => ({
+    const cleanedUsers = users.map((u) => ({
       ...u,
-      app_version: u.app_version || 'All'
+      app_version: u.app_version || 'All',
     }));
 
     this.stopSpinner();
@@ -26,9 +26,9 @@ class UsersListCommand extends ZapierBaseCommand {
       headers: [
         ['Email', 'email'],
         ['Status', 'status'],
-        ['Version', 'app_version']
+        ['Version', 'app_version'],
       ],
-      emptyMessage: 'No users have been invited directly by email.'
+      emptyMessage: 'No users have been invited directly by email.',
     });
 
     this.log(

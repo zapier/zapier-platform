@@ -1,51 +1,54 @@
 'use strict';
 
 const should = require('should');
+
 const request = require('../src/tools/request-client-internal');
+const { HTTPBIN_URL } = require('./constants');
 
 describe('http requests', () => {
-  it('should make GET requests', done => {
-    request({ url: 'https://httpbin.org/get' })
-      .then(response => {
+  it('should make GET requests', async () => {
+    const response = await request({
+      url: `${HTTPBIN_URL}/get`,
+    });
+    response.status.should.eql(200);
+    should.exist(response.content);
+    // httpbin capitalizes the response header name
+    should.exist(response.content.headers['User-Agent']);
+    response.content.headers['User-Agent'][0]
+      .includes('zapier-platform-core/')
+      .should.be.true();
+    response.content.url.should.eql(`${HTTPBIN_URL}/get`);
+  });
+
+  it('should make GET with url sugar param', (done) => {
+    request(`${HTTPBIN_URL}/get`)
+      .then((response) => {
         response.status.should.eql(200);
         should.exist(response.content);
-        response.content.url.should.eql('https://httpbin.org/get');
+        response.content.url.should.eql(`${HTTPBIN_URL}/get`);
         done();
       })
       .catch(done);
   });
 
-  it('should make GET with url sugar param', done => {
-    request('https://httpbin.org/get')
-      .then(response => {
-        response.status.should.eql(200);
-        should.exist(response.content);
-        response.content.url.should.eql('https://httpbin.org/get');
-        done();
-      })
-      .catch(done);
+  it('should make GET with url sugar param and options', async () => {
+    const options = { headers: { A: 'B', 'user-agent': 'cool thing' } };
+    const response = await request(`${HTTPBIN_URL}/get`, options);
+    response.status.should.eql(200);
+    should.exist(response.content);
+    response.content.url.should.eql(`${HTTPBIN_URL}/get`);
+    response.content.headers.A.should.deepEqual(['B']);
+    // don't clobber other internal user-agent headers if we decide to use them
+    response.content.headers['User-Agent'].should.deepEqual(['cool thing']);
   });
 
-  it('should make GET with url sugar param and options', done => {
-    const options = { headers: { A: 'B' } };
-    request('https://httpbin.org/get', options)
-      .then(response => {
-        response.status.should.eql(200);
-        should.exist(response.content);
-        response.content.url.should.eql('https://httpbin.org/get');
-        response.content.headers.A.should.eql('B');
-        done();
-      })
-      .catch(done);
-  });
-
-  it('should make POST requests', done => {
+  it('should make POST requests', (done) => {
     request({
-      url: 'https://httpbin.org/post',
+      url: `${HTTPBIN_URL}/post`,
       method: 'POST',
-      body: 'test'
+      body: 'test',
     })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         response.content.data.should.eql('test');
         done();

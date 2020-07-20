@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 
-const ensureArray = maybeArray => {
+const ensureArray = (maybeArray) => {
   if (_.isArray(maybeArray)) {
     return maybeArray;
   }

@@ -1,37 +1,38 @@
 'use strict';
 
-const _ = require('lodash');
-
 const fetch = require('./fetch');
 const requestSugar = require('./request-sugar');
+const { PACKAGE_NAME, PACKAGE_VERSION } = require('../constants');
 
-const parseResponse = resp => {
+const parseResponse = async (resp) => {
   const contentType = resp.headers.get('Content-Type') || '';
 
   if (contentType.match(/^application\/json/)) {
-    return resp.json().then(json => {
-      resp.content = json;
-      return resp;
-    });
+    const json = await resp.json();
+    resp.content = json;
+
+    return resp;
   }
 
-  return resp.text().then(text => {
-    resp.content = text;
-    return resp;
-  });
+  const text = await resp.text();
+  resp.content = text;
+
+  return resp;
 };
 
 // Return our INTERNAL convenient flavor of resp. No middleware!
-const request = options => {
-  const fetchUrl = options.url;
-  options = _.omit(options, 'url');
+const request = async (options) => {
+  const { url: fetchUrl, ...fetchOptions } = options;
 
-  return fetch(fetchUrl, options)
-    .then(resp => {
-      resp.options = options;
-      return resp;
-    })
-    .then(parseResponse);
+  fetchOptions.headers = {
+    'user-agent': `${PACKAGE_NAME}/${PACKAGE_VERSION}`,
+    ...(fetchOptions.headers || {}),
+  };
+
+  const resp = await fetch(fetchUrl, fetchOptions);
+  resp.options = fetchOptions;
+
+  return parseResponse(resp);
 };
 
 module.exports = requestSugar.addUrlOrOptions(request);

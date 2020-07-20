@@ -10,14 +10,14 @@ const initApp = async (path, createFunc) => {
 
   const copyOpts = {
     clobber: false,
-    onCopy: file => {
+    onCopy: (file) => {
       startSpinner(`Copying ${file}`);
       endSpinner();
     },
-    onSkip: file => {
+    onSkip: (file) => {
       startSpinner(`File ${file} already exists (skipped)`);
       endSpinner();
-    }
+    },
   };
 
   await removeDir(tempAppDir);
@@ -29,5 +29,5 @@ const initApp = async (path, createFunc) => {
 };
 
 module.exports = {
-  initApp
+  initApp,
 };

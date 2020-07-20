@@ -16,7 +16,7 @@ const addBasicAuthHeader = (req, z, bundle) => {
       req.headers.Authorization = header;
     } else {
       req.headers = {
-        Authorization: header
+        Authorization: header,
       };
     }
   }

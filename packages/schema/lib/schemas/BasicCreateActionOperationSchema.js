@@ -17,7 +17,7 @@ BasicCreateActionOperationSchema.description =
 BasicCreateActionOperationSchema.properties.shouldLock = {
   description:
     'Should this action be performed one at a time (avoid concurrency)?',
-  type: 'boolean'
+  type: 'boolean',
 };
 
 module.exports = makeSchema(

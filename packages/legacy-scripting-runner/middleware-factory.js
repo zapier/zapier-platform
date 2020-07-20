@@ -20,7 +20,7 @@ const renderTemplate = (templateString, context) => {
   return _.template(templateString, options)(finalContext);
 };
 
-const createBeforeRequest = app => {
+const createBeforeRequest = (app) => {
   const authType = _.get(app, 'authentication.type');
   const authMapping = _.get(app, 'legacy.authentication.mapping');
   const placement = _.get(app, 'legacy.authentication.placement') || 'header';
@@ -53,7 +53,7 @@ const createBeforeRequest = app => {
     return req;
   };
 
-  const getGrantType = req => {
+  const getGrantType = (req) => {
     const grantType = _.get(req, 'params.grant_type');
     if (grantType) {
       return grantType;
@@ -170,55 +170,77 @@ const createBeforeRequest = app => {
     return req;
   };
 
-  let beforeRequest;
+  let authBefore;
 
   if (authType === 'session') {
-    beforeRequest = {
+    authBefore = {
       header: sessionAuthInHeader,
       querystring: sessionAuthInQuerystring,
-      both: sessionAuthInBoth
+      both: sessionAuthInBoth,
     }[placement];
   } else if (authType === 'oauth2') {
-    beforeRequest = {
+    authBefore = {
       header: oauth2InHeader,
       querystring: oauth2InQuerystring,
-      both: oauth2InBoth
+      both: oauth2InBoth,
     }[placement];
   } else if (authType === 'custom') {
-    beforeRequest = {
+    authBefore = {
       header: apiKeyInHeader,
-      querystring: apiKeyInQuerystring
+      querystring: apiKeyInQuerystring,
     }[placement];
   } else if (authType === 'basic' || authType === 'digest') {
-    beforeRequest = basicDigestAuth;
+    authBefore = basicDigestAuth;
   } else if (authType === 'oauth1') {
-    beforeRequest = oauth1;
+    authBefore = oauth1;
   }
 
-  if (!beforeRequest) {
-    beforeRequest = req => req;
+  if (!authBefore) {
+    authBefore = (req) => req;
   }
-  return beforeRequest;
+
+  const pruneEmptyBodyForGET = (req, z, bundle) => {
+    if (req.allowGetBody && req.method === 'GET') {
+      const contentType = req.headers['Content-Type'] || '';
+      try {
+        const parsedBody = contentType.includes('application/json')
+          ? JSON.parse(req.body)
+          : req.body;
+        if (_.isEmpty(parsedBody)) {
+          delete req.body;
+        }
+      } catch (err) {
+        // Ignore
+      }
+    }
+    return req;
+  };
+
+  return (req, z, bundle) => {
+    req = authBefore(req, z, bundle);
+    return pruneEmptyBodyForGET(req, z, bundle);
+  };
 };
 
-const createAfterResponse = app => {
+const createAfterResponse = (app) => {
   const authType = _.get(app, 'authentication.type');
+  const autoRefresh = _.get(app, 'authentication.oauth2Config.autoRefresh');
 
-  const sessionAuthCheckResponse = (response, z) => {
+  const throwForStaleAuth = (response, z) => {
     if (response.status === 401) {
-      throw new z.errors.RefreshAuthError('Session key needs refreshing');
+      throw new z.errors.RefreshAuthError('Authentication needs refreshing');
     }
     return response;
   };
 
   let afterResponse;
 
-  if (authType === 'session') {
-    afterResponse = sessionAuthCheckResponse;
+  if (authType === 'session' || (authType === 'oauth2' && autoRefresh)) {
+    afterResponse = throwForStaleAuth;
   }
 
   if (!afterResponse) {
-    afterResponse = response => response;
+    afterResponse = (response) => response;
   }
   return afterResponse;
 };
@@ -226,5 +248,5 @@ const createAfterResponse = app => {
 module.exports = {
   createBeforeRequest,
   createAfterResponse,
-  renderTemplate
+  renderTemplate,
 };

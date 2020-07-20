@@ -4,13 +4,13 @@ const should = require('should');
 const applyMiddleware = require('../src/middleware');
 
 describe('middleware', () => {
-  it('should apply middlewares', done => {
-    const before = input => {
+  it('should apply middlewares', (done) => {
+    const before = (input) => {
       input.n = 1;
       return Promise.resolve(input);
     };
 
-    const plusOne = output => {
+    const plusOne = (output) => {
       output.results = [output.input.n + 1];
       return Promise.resolve(output);
     };
@@ -18,18 +18,18 @@ describe('middleware', () => {
     const app = applyMiddleware([before], [plusOne], () => Promise.resolve({}));
 
     app({})
-      .then(envelope => {
+      .then((envelope) => {
         envelope.results.should.eql([2]);
         done();
       })
       .catch(done);
   });
 
-  it('should apply no middlewares', done => {
+  it('should apply no middlewares', (done) => {
     const app = applyMiddleware([], [], () => Promise.resolve(undefined));
 
     app()
-      .then(output => {
+      .then((output) => {
         should(output.__type).eql('OutputEnvelope');
         should(output.input).eql(undefined);
         should(output.results).eql(undefined);

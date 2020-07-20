@@ -1,11 +1,18 @@
 const querystring = require('querystring');
+const { promisify } = require('util');
+const { URL } = require('url');
 
 const _ = require('lodash');
-const FormData = require('form-data');
-const cleaner = require('zapier-platform-core/src/tools/cleaner');
 const flatten = require('flat');
+const FormData = require('form-data');
 
-const createInternalRequestClient = input => {
+const {
+  recurseReplaceBank,
+} = require('zapier-platform-core/src/tools/cleaner');
+
+const { flattenPaths } = require('zapier-platform-core/src/tools/data');
+
+const createInternalRequestClient = (input) => {
   const addQueryParams = require('zapier-platform-core/src/http-middlewares/before/add-query-params');
   const createInjectInputMiddleware = require('zapier-platform-core/src/http-middlewares/before/inject-input');
   const createRequestClient = require('zapier-platform-core/src/tools/create-request-client');
@@ -15,12 +22,12 @@ const createInternalRequestClient = input => {
   const prepareResponse = require('zapier-platform-core/src/http-middlewares/after/prepare-response');
 
   const options = {
-    skipDefaultMiddle: true
+    skipDefaultMiddle: true,
   };
   const httpBefores = [
     createInjectInputMiddleware(input),
     prepareRequest,
-    addQueryParams
+    addQueryParams,
   ];
 
   const verifySSL = _.get(input, '_zapier.event.verifySSL');
@@ -37,12 +44,12 @@ const {
   markFileFieldsInBundle,
   hasFileFields,
   isFileField,
-  LazyFile
+  LazyFile,
 } = require('./file');
 const {
   createBeforeRequest,
   createAfterResponse,
-  renderTemplate
+  renderTemplate,
 } = require('./middleware-factory');
 
 const FIELD_TYPE_CONVERT_MAP = {
@@ -56,13 +63,13 @@ const FIELD_TYPE_CONVERT_MAP = {
   int: 'integer',
   password: 'password',
   text: 'text',
-  unicode: 'string'
+  unicode: 'string',
 };
 
-const cleanCustomFields = fields => {
+const cleanCustomFields = (fields) => {
   return fields
-    .filter(field => _.isPlainObject(field) && field.key)
-    .map(field => {
+    .filter((field) => _.isPlainObject(field) && field.key)
+    .map((field) => {
       if (field.type === 'dict') {
         // For CLI, we set field.dict to true to represet a dict field instead
         // of setting field.type to 'dict'
@@ -94,8 +101,8 @@ const makeMultipartBody = async (data, lazyFilesObject) => {
   const fileFieldKeys = Object.keys(lazyFilesObject);
   const lazyFiles = Object.values(lazyFilesObject);
 
-  const fileMetas = await Promise.all(lazyFiles.map(f => f.meta()));
-  const fileStreams = await Promise.all(lazyFiles.map(f => f.readStream()));
+  const fileMetas = await Promise.all(lazyFiles.map((f) => f.meta()));
+  const fileStreams = await Promise.all(lazyFiles.map((f) => f.readStream()));
 
   _.zip(fileFieldKeys, fileMetas, fileStreams).forEach(
     ([k, meta, fileStream]) => {
@@ -207,12 +214,47 @@ const parseFinalResult = async (result, event) => {
   return result;
 };
 
-const replaceCurliesInRequest = (request, bundle) => {
-  const bank = cleaner.createBundleBank(undefined, { bundle: bundle });
-  return cleaner.recurseReplaceBank(request, bank);
+const serializeValueForCurlies = (value) => {
+  if (typeof value === 'boolean') {
+    return value ? 'True' : 'False';
+  } else if (Array.isArray(value)) {
+    return value.join(',');
+  } else if (_.isPlainObject(value)) {
+    // Not sure if anyone would ever expect '[object Object]', but who knows?
+    return value.toString();
+  }
+  return value;
 };
 
-const cleanHeaders = headers => {
+const createCurliesBank = (bundle) => {
+  const bank = {
+    // This is for new curlies syntax, such as '{{bundle.inputData.var}}' and
+    // '{{bundle.authData.var}}'
+    bundle,
+
+    // These are for legacy curlies syntax without the 'bundle' prefix, such as
+    // {{var}}. The order matters.
+    ...bundle.inputData,
+    ...bundle.subscribeData,
+    ...bundle.authData,
+  };
+  const flattenedBank = flattenPaths(bank, {
+    perseve: {
+      'bundle.inputData': true,
+    },
+  });
+  return Object.entries(flattenedBank).reduce((coll, [key, value]) => {
+    coll[`{{${key}}}`] = serializeValueForCurlies(value);
+    return coll;
+  }, {});
+};
+
+const replaceCurliesInRequest = (request, bundle) => {
+  const bank = createCurliesBank(bundle);
+  return recurseReplaceBank(request, bank);
+};
+
+const cleanHeaders = (headers) => {
   const newHeaders = {};
   const badChars = /[\r\n\t]/g;
   _.each(headers, (v, k) => {
@@ -237,12 +279,12 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
     StopRequestException,
     ExpiredAuthException,
     RefreshTokenException,
-    InvalidSessionException
+    InvalidSessionException,
   } = require('./exceptions');
 
   const underscore = require('underscore');
   underscore.templateSettings = {
-    interpolate: /\{\{(.+?)\}\}/g
+    interpolate: /\{\{(.+?)\}\}/g,
   };
 
   return new Function( // eslint-disable-line no-new-func
@@ -290,12 +332,12 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
 const applyBeforeMiddleware = (befores, request, z, bundle) => {
   befores = befores || [];
   return befores.reduce(
-    (prev, cur) => prev.then(req => cur(req, z, bundle)),
+    (prev, cur) => prev.then((req) => cur(req, z, bundle)),
     Promise.resolve(request)
   );
 };
 
-const createEventNameToMethodMapping = key => {
+const createEventNameToMethodMapping = (key) => {
   return {
     //
     // Auth
@@ -353,7 +395,7 @@ const createEventNameToMethodMapping = key => {
     //
     // Hydration
     //
-    'hydrate.method': key
+    'hydrate.method': key,
   };
 };
 
@@ -368,7 +410,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   // Does string replacement ala WB, using bundle and a potential result object
   const replaceVars = (templateString, bundle, result) => {
     const options = {
-      interpolate: /{{([\s\S]+?)}}/g
+      interpolate: /{{([\s\S]+?)}}/g,
     };
     const values = { ...bundle.authData, ...bundle.inputData, ...result };
     return _.template(templateString, options)(values);
@@ -421,7 +463,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   /**
     flattens trigger data for wb v1 apps
   */
-  const flattenTriggerData = data => {
+  const flattenTriggerData = (data) => {
     for (const i in data) {
       for (const j in data[i]) {
         if (Array.isArray(data[i][j])) {
@@ -439,7 +481,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   /**
     see handle_legacy_params in the python backend
   */
-  const handleLegacyParams = data => {
+  const handleLegacyParams = (data) => {
     if (!_.isPlainObject(data)) {
       return data;
     }
@@ -461,7 +503,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   /**
     see textify_list in the python backend
   */
-  const textifyList = data => {
+  const textifyList = (data) => {
     if (!Array.isArray(data)) {
       return data;
     }
@@ -497,61 +539,54 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return out;
   };
 
-  const runEvent = (event, z, bundle) =>
-    new Promise((resolve, reject) => {
-      if (!Zap || _.isEmpty(Zap) || !event || !event.name || !z) {
-        resolve();
-        return;
+  const runEvent = async (event, z, bundle) => {
+    if (!Zap || _.isEmpty(Zap) || !event || !event.name || !z) {
+      return;
+    }
+
+    const eventNameToMethod = createEventNameToMethodMapping(event.key);
+    const methodName = eventNameToMethod[event.name];
+
+    if (!methodName || !_.isFunction(Zap[methodName])) {
+      return;
+    }
+
+    const convertedBundle = await bundleConverter(bundle, event, z);
+
+    // To know if request.files is changed by scripting
+    event.originalFiles = _.cloneDeep(
+      _.get(convertedBundle, 'request.files') || {}
+    );
+
+    const method = Zap[methodName].bind(Zap);
+
+    // method.length is the number of args method accepts
+    const isAsync = method.length > 1;
+
+    let result;
+    try {
+      if (isAsync) {
+        result = await promisify(method)(convertedBundle);
+      } else {
+        result = method(convertedBundle);
       }
-
-      bundleConverter(bundle, event, z).then(convertedBundle => {
-        const eventNameToMethod = createEventNameToMethodMapping(event.key);
-        const methodName = eventNameToMethod[event.name];
-
-        if (methodName && _.isFunction(Zap[methodName])) {
-          // Handle async
-          const optionalCallback = (err, asyncResult) => {
-            if (err) {
-              reject(err);
-            } else {
-              parseFinalResult(asyncResult, event).then(res => {
-                resolve(res);
-              });
-            }
-          };
-
-          // To know if request.files is changed by scripting
-          event.originalFiles = _.cloneDeep(
-            _.get(convertedBundle, 'request.files') || {}
-          );
-
-          // method.length is the number of args method accepts
-          const method = Zap[methodName].bind(Zap);
-          const isAsync = method.length > 1;
-          let result;
-          try {
-            result = method(convertedBundle, optionalCallback);
-          } catch (err) {
-            reject(err);
-            return;
-          }
-
-          logger(`Called legacy scripting ${methodName}`, {
-            request_data: convertedBundle,
-            log_type: 'bundle'
-          }).then(() => {
-            // Handle sync
-            if (!isAsync) {
-              parseFinalResult(result, event).then(res => {
-                resolve(res);
-              });
-            }
-          });
-        } else {
-          resolve({});
-        }
+    } catch (err) {
+      logger(`Errored calling legacy scripting ${methodName}`, {
+        log_type: 'bundle',
+        input: convertedBundle,
+        error_message: err.stack,
       });
+      throw err;
+    }
+
+    logger(`Called legacy scripting ${methodName}`, {
+      log_type: 'bundle',
+      input: convertedBundle,
+      output: result,
     });
+
+    return parseFinalResult(result, event);
+  };
 
   // Simulates how WB backend runs JS scripting methods
   const runEventCombo = async (
@@ -584,7 +619,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       resetRequestForFullMethod: false,
       defaultToResponse: false,
 
-      ...options
+      ...options,
     };
 
     if (bundle.request) {
@@ -629,15 +664,22 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         await addFilesToRequestBodyFromBody(request, bundle);
       }
 
+      // encode everything, but retain curlies - those are replaced in z.request
+      // important to maintain case here; new URL lowercases everything
+      request.url = encodeURI(request.url)
+        .replace(/%7B/g, '{')
+        .replace(/%7D/g, '}');
       request.headers = cleanHeaders(request.headers);
+      request.allowGetBody = true;
+      request.serializeValueForCurlies = serializeValueForCurlies;
+      request.skipThrowForStatus = true;
 
       const response = await zcli.request(request);
 
-      if (options.checkResponseStatus) {
-        response.throwForStatus();
-      }
-
       if (!options.parseResponse) {
+        if (options.checkResponseStatus) {
+          response.throwForStatus();
+        }
         return response;
       }
 
@@ -650,6 +692,13 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           zcli,
           bundle
         );
+
+        if (options.checkResponseStatus) {
+          // Raising this error AFTER postMethod is executed allows devs to
+          // intercept and throw another error from postMethod
+          response.throwForStatus();
+        }
+
         if (options.defaultToResponse && !result) {
           try {
             result = zcli.JSON.parse(response.content);
@@ -658,6 +707,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           }
         }
       } else {
+        if (options.checkResponseStatus) {
+          response.throwForStatus();
+        }
+
         try {
           result = zcli.JSON.parse(response.content);
         } catch {
@@ -674,13 +727,14 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const response = await zcli.request({
       method: 'POST',
       url,
-      auth: authParams
+      auth: authParams,
+      skipThrowForStatus: true,
     });
     response.throwForStatus();
     return querystring.parse(response.content);
   };
 
-  const runOAuth1GetRequestToken = bundle => {
+  const runOAuth1GetRequestToken = (bundle) => {
     const url = _.get(
       app,
       'legacy.authentication.oauth1Config.requestTokenUrl'
@@ -697,11 +751,11 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       oauth_consumer_key: consumerKey,
       oauth_consumer_secret: consumerSecret,
       oauth_signature_method: 'HMAC-SHA1',
-      oauth_callback: bundle.inputData.redirect_uri
+      oauth_callback: bundle.inputData.redirect_uri,
     });
   };
 
-  const runOAuth1AuthorizeUrl = bundle => {
+  const runOAuth1AuthorizeUrl = (bundle) => {
     let url = _.get(app, 'legacy.authentication.oauth1Config.authorizeUrl');
     if (!url) {
       return '';
@@ -717,7 +771,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return urlObj.href;
   };
 
-  const runOAuth1GetAccessToken = bundle => {
+  const runOAuth1GetAccessToken = (bundle) => {
     const url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
 
     const templateContext = { ...bundle.authData, ...bundle.inputData };
@@ -732,11 +786,11 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       oauth_consumer_secret: consumerSecret,
       oauth_token: bundle.inputData.oauth_token,
       oauth_token_secret: bundle.inputData.oauth_token_secret,
-      oauth_verifier: bundle.inputData.oauth_verifier
+      oauth_verifier: bundle.inputData.oauth_verifier,
     });
   };
 
-  const runOAuth2AuthorizeUrl = bundle => {
+  const runOAuth2AuthorizeUrl = (bundle) => {
     let url = _.get(app, 'legacy.authentication.oauth2Config.authorizeUrl');
     if (!url) {
       return '';
@@ -762,7 +816,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return urlObj.href;
   };
 
-  const runOAuth2GetAccessToken = bundle => {
+  const runOAuth2GetAccessToken = (bundle) => {
     const url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
 
     let request = bundle.request;
@@ -815,7 +869,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     });
   };
 
-  const runOAuth2RefreshAccessToken = bundle => {
+  const runOAuth2RefreshAccessToken = (bundle) => {
     const url = _.get(
       app,
       'legacy.authentication.oauth2Config.refreshTokenUrl'
@@ -853,7 +907,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     });
   };
 
-  const isTestingAuth = bundle => {
+  const isTestingAuth = (bundle) => {
     // For core < 8.0.0
     if (
       _.get(bundle, 'meta.test_poll') === true &&
@@ -905,7 +959,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const promise = Zap[methodName]
       ? runEvent({ key, name: 'trigger.hook' }, zcli, bundle)
       : Promise.resolve(bundle.cleanedRequest);
-    return promise.then(result => {
+    return promise.then((result) => {
       if (!Array.isArray(result)) {
         result = [result];
       }
@@ -934,15 +988,15 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const shouldRunPrePostHook =
       hookType === 'notification' &&
       cleanedArray &&
-      cleanedArray.every(x => x.resource_url);
+      cleanedArray.every((x) => x.resource_url);
 
     if (shouldRunPrePostHook) {
-      const promises = cleanedArray.map(obj => {
+      const promises = cleanedArray.map((obj) => {
         const bund = _.cloneDeep(bundle);
         bund.request.url = obj.resource_url;
         return runPrePostHook(bund, key);
       });
-      return Promise.all(promises).then(obj => {
+      return Promise.all(promises).then((obj) => {
         obj = _.flatten(obj);
         if (needsFlattenedData) {
           obj = flattenTriggerData(obj);
@@ -1142,7 +1196,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'search.resource.pre',
       'search.resource.post',
       'search.resource',
-      { parseResponseForPostMethod: true }
+      { parseResponseForPostMethod: true, ensureType: 'object-first' }
     );
   };
 
@@ -1156,12 +1210,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return runCustomFields(bundle, key, 'search.output', url);
   };
 
-  const runHydrateMethod = bundle => {
+  const runHydrateMethod = (bundle) => {
     const methodName = bundle.inputData.method;
     return runEvent({ name: 'hydrate.method', key: methodName }, zcli, bundle);
   };
 
-  const runHydrateFile = bundle => {
+  const runHydrateFile = (bundle) => {
     const meta = bundle.inputData.meta || {};
     const requestOptions = bundle.inputData.request || {};
 
@@ -1174,6 +1228,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
     requestOptions.url = bundle.inputData.url || requestOptions.url;
     requestOptions.raw = true;
+    requestOptions.throwForStatus = true;
 
     const filePromise = request(requestOptions);
     return zcli.stashFile(filePromise, meta.length, meta.name);
@@ -1187,10 +1242,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       url: '',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8',
       },
       params: {},
-      body: {}
+      body: {},
     };
 
     if (key) {
@@ -1268,7 +1323,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     beforeRequest,
     run,
     runEvent,
-    replaceVars
+    replaceVars,
   };
 };
 

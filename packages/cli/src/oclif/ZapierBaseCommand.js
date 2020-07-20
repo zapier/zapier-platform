@@ -7,6 +7,8 @@ const { startSpinner, endSpinner, formatStyles } = require('../utils/display');
 const { isValidAppInstall } = require('../utils/misc');
 const { recordAnalytics } = require('../utils/analytics');
 
+const { getWritableApp } = require('../utils/api');
+
 const inquirer = require('inquirer');
 
 const DATA_FORMATS = ['json', 'raw'];
@@ -36,7 +38,7 @@ class ZapierBaseCommand extends Command {
     return Promise.all([
       this._recordAnalytics(),
 
-      this.perform().catch(e => {
+      this.perform().catch((e) => {
         this.stopSpinner({ success: false });
         const errTextLines = [e.message];
 
@@ -49,7 +51,7 @@ class ZapierBaseCommand extends Command {
         }
 
         this.error(errTextLines.join('\n\n'));
-      })
+      }),
     ]);
   }
 
@@ -88,6 +90,13 @@ class ZapierBaseCommand extends Command {
     }
   }
 
+  async getWritableApp() {
+    this.startSpinner('Checking authentication & permissions');
+    const app = await getWritableApp();
+    this.stopSpinner();
+    return app;
+  }
+
   // UTILS
   /**
    * Helps us not have helpful UI messages when the whole output should only be JSON.
@@ -119,7 +128,7 @@ class ZapierBaseCommand extends Command {
     rows = [],
     headers = [],
     emptyMessage = '',
-    formatOverride = ''
+    formatOverride = '',
   } = {}) {
     const formatter = formatOverride
       ? formatStyles[formatOverride]
@@ -154,7 +163,7 @@ class ZapierBaseCommand extends Command {
       type: 'string',
       ...opts,
       name: 'ans',
-      message: question
+      message: question,
     });
     return ans;
   }
@@ -162,7 +171,7 @@ class ZapierBaseCommand extends Command {
   promptHidden(question) {
     return this.prompt(question, {
       type: 'password',
-      mask: true
+      mask: true,
     });
   }
 
@@ -196,7 +205,7 @@ class ZapierBaseCommand extends Command {
   // pulled from https://github.com/oclif/plugin-help/blob/73bfd5a861e65844a1d6c3a0a9638ee49d16fee8/src/command.ts
   // renamed to avoid naming collision
   static zUsage(name) {
-    const formatArg = arg => {
+    const formatArg = (arg) => {
       const argName = arg.name.toUpperCase();
       return arg.required ? argName : `[${argName}]`;
     };
@@ -204,7 +213,7 @@ class ZapierBaseCommand extends Command {
     return [
       'zapier',
       name,
-      ...(this.args || []).filter(a => !a.hidden).map(a => formatArg(a))
+      ...(this.args || []).filter((a) => !a.hidden).map((a) => formatArg(a)),
     ].join(' ');
   }
 
@@ -212,7 +221,7 @@ class ZapierBaseCommand extends Command {
   // the presentation is wrapped into the formatting, so it's a little tough to pull out
   static markdownHelp(name) {
     const formattedArgs = () =>
-      this.args.map(arg =>
+      this.args.map((arg) =>
         arg.hidden
           ? null
           : `* ${arg.required ? '(required) ' : ''}\`${arg.name}\` | ${
@@ -251,11 +260,15 @@ class ZapierBaseCommand extends Command {
       ...(this.args ? ['', '**Arguments**', ...formattedArgs()] : []),
       ...(this.flags ? ['', '**Flags**', ...formattedFlags()] : []),
       ...(this.examples
-        ? ['', '**Examples**', this.examples.map(e => `* \`${e}\``).join('\n')]
+        ? [
+            '',
+            '**Examples**',
+            this.examples.map((e) => `* \`${e}\``).join('\n'),
+          ]
         : []),
       ...(this.aliases.length
-        ? ['', '**Aliases**', this.aliases.map(e => `* \`${e}\``).join('\n')]
-        : [])
+        ? ['', '**Aliases**', this.aliases.map((e) => `* \`${e}\``).join('\n')]
+        : []),
     ]
       .join('\n')
       .trim();

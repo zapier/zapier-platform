@@ -10,7 +10,7 @@ const ZapierPromise = require('./promise');
 const constants = require('../constants');
 const { unheader } = require('./http');
 
-const truncate = str => dataTools.simpleTruncate(str, 3500, ' [...]');
+const truncate = (str) => dataTools.simpleTruncate(str, 3500, ' [...]');
 
 const formatHeaders = (headers = {}) => {
   if (_.isEmpty(headers)) {
@@ -28,7 +28,7 @@ const formatHeaders = (headers = {}) => {
     .join('\n');
 };
 
-const maybeStringify = d => {
+const maybeStringify = (d) => {
   if (_.isPlainObject(d) || Array.isArray(d)) {
     return JSON.stringify(d);
   }
@@ -36,7 +36,7 @@ const maybeStringify = d => {
 };
 
 // format HTTP request details into string suitable for printing to stdout
-const httpDetailsLogMessage = data => {
+const httpDetailsLogMessage = (data) => {
   if (data.log_type !== 'http') {
     return '';
   }
@@ -58,9 +58,9 @@ const httpDetailsLogMessage = data => {
   }
 
   return `\
-${trimmedData.request_method || 'GET'} ${
-    trimmedData.request_url
-  }${trimmedData.request_params || ''}
+${trimmedData.request_method || 'GET'} ${trimmedData.request_url}${
+    trimmedData.request_params || ''
+  }
 ${formatHeaders(trimmedData.request_headers) || ''}
 
 ${maybeStringify(trimmedData.request_data) || ''}
@@ -93,12 +93,12 @@ const makeSensitiveBank = (event, data) => {
   const matcher = (key, value) => {
     if (_.isString(value)) {
       const lowerKey = key.toLowerCase();
-      return _.some(constants.SENSITIVE_KEYS, k => lowerKey.indexOf(k) >= 0);
+      return _.some(constants.SENSITIVE_KEYS, (k) => lowerKey.indexOf(k) >= 0);
     }
     return false;
   };
 
-  dataTools.recurseExtract(data, matcher).forEach(value => {
+  dataTools.recurseExtract(data, matcher).forEach((value) => {
     sensitiveValues.push(value);
   });
 
@@ -144,7 +144,7 @@ const sendLog = (options, event, message, data) => {
   const unsafeData = dataTools.recurseReplace(data, truncate);
 
   // Keep safe log keys uncensored
-  Object.keys(safeData).forEach(key => {
+  Object.keys(safeData).forEach((key) => {
     if (constants.SAFE_LOG_KEYS.indexOf(key) !== -1) {
       safeData[key] = unsafeData[key];
     }
@@ -156,7 +156,7 @@ const sendLog = (options, event, message, data) => {
   const body = {
     message: safeMessage,
     data: safeData,
-    token: options.token
+    token: options.token,
   };
 
   const httpOptions = {
@@ -164,7 +164,7 @@ const sendLog = (options, event, message, data) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
-    timeout: 3000
+    timeout: 3000,
   };
 
   if (event.logToStdout) {
@@ -177,7 +177,7 @@ const sendLog = (options, event, message, data) => {
   }
 
   if (options.token) {
-    return request(httpOptions).catch(err => {
+    return request(httpOptions).catch((err) => {
       // Swallow logging errors.
       // This will show up in AWS logs at least:
       console.error(
@@ -205,7 +205,7 @@ const createLogger = (event, options) => {
       process.env.LOGGING_ENDPOINT || constants.DEFAULT_LOGGING_HTTP_ENDPOINT,
     apiKey:
       process.env.LOGGING_API_KEY || constants.DEFAULT_LOGGING_HTTP_API_KEY,
-    token: process.env.LOGGING_TOKEN || event.token
+    token: process.env.LOGGING_TOKEN || event.token,
   });
 
   return sendLog.bind(undefined, options, event);

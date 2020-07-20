@@ -1,4 +1,4 @@
-const { AUTH_JSON_SERVER_URL } = require('../auth-json-server');
+const { AUTH_JSON_SERVER_URL } = require('../constants');
 
 const testAuthSource = `
   const responsePromise = z.request({
@@ -24,16 +24,12 @@ const refreshAccessTokenSource = `
   return z.legacyScripting.run(bundle, 'auth.oauth2.refresh');
 `;
 
-const beforeRequestSource = `
-  return z.legacyScripting.beforeRequest(request, z, bundle);
-`;
-
 module.exports = {
   legacy: {
     authentication: {
       placement: 'header',
-      mapping: {}
-    }
+      mapping: {},
+    },
   },
   authentication: {
     type: 'oauth2',
@@ -45,26 +41,20 @@ module.exports = {
         key: 'something_custom',
         type: 'string',
         required: true,
-        computed: true
-      }
+        computed: true,
+      },
     ],
     oauth2Config: {
       authorizeUrl: {
-        source: getAuthorizeUrlSource
+        source: getAuthorizeUrlSource,
       },
       getAccessToken: {
-        source: getAccessTokenSource
+        source: getAccessTokenSource,
       },
       refreshAccessToken: {
-        source: refreshAccessTokenSource
+        source: refreshAccessTokenSource,
       },
-      autoRefresh: true
-    }
+      autoRefresh: true,
+    },
   },
-  beforeRequest: [
-    { source: beforeRequestSource, args: ['request', 'z', 'bundle'] }
-  ]
-
-  // We don't need afterResponse to refresh auth as core appends one
-  // automatically when autoRefresh is true
 };

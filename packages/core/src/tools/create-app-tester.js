@@ -10,19 +10,28 @@ const { genId } = require('./data');
 // have a storeKey when canPaginate is true. otherwise, a test would work but a
 // poll on site would fail. this is only used in test handlers
 
+// there are 2 places you can put a method that can interact with cursors:
+// triggers.contact.operation.perform, if it's a poll trigger
+// resources.contact.list.operation.perform if it's a resource
+// schema doesn't currently allow cursor use on hook trigger `performList`, so we don't need to account for it
 const shouldPaginate = (appRaw, method) => {
-  if (method.startsWith('triggers') && method.endsWith('perform')) {
-    const methodParts = method.split('.');
+  const methodParts = method.split('.');
+
+  if (
+    method.endsWith('perform') &&
+    ((methodParts[0] === 'resources' && methodParts[2] === 'list') ||
+      methodParts[0] === 'triggers')
+  ) {
     methodParts.pop();
-    return get(appRaw, `${methodParts.join('.')}.canPaginate`);
+    return get(appRaw, [...methodParts, 'canPaginate']);
   }
 
   return false;
 };
 
 // Convert a app handler to promise for convenience.
-const promisifyHandler = handler => {
-  return event => {
+const promisifyHandler = (handler) => {
+  return (event) => {
     return new ZapierPromise((resolve, reject) => {
       handler(event, {}, (err, resp) => {
         if (err) {
@@ -56,7 +65,7 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       command: 'execute',
       method,
       bundle,
-      storeKey
+      storeKey,
     };
 
     if (process.env.LOG_TO_STDOUT) {
@@ -66,7 +75,7 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       event.detailedLogToStdout = true;
     }
 
-    return createHandlerPromise(event).then(resp => resp.results);
+    return createHandlerPromise(event).then((resp) => resp.results);
   };
 };
 

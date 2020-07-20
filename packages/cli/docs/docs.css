@@ -4,7 +4,7 @@ body .docs-toc {
 
 .docs-toc.docs-toc--scrolled {
   position: fixed;
-  top: 0; 
+  top: 0;
 }
 
 .docs-header {
@@ -20,77 +20,31 @@ body .docs-toc {
 }
 
 .docs-header__platform {
-  display: flex;
-  justify-content: center;
-  height: 132px;
-  background-color: #ff4a00;
+  height: 69px;
+  background-color: #20272b;
+  overflow: auto;
 }
 
 .docs-header__container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 1em 1.25em;
-  width: 100%;
 }
 
 .docs-header__logo {
-  background: url(https://cdn.zapier.com/storage/photos/2920d3c0b2440f715c9d658d227cf763.png)
-    no-repeat center;
-  background-size: 70px;
-  height: 42px;
-  width: 70px;
-  margin-right: auto;
+  float: left;
+  margin: 15px 0 0 15px;
 }
 
 .docs-header__links {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  float: right;
+  font-size: 14px;
+  margin: 25px 25px 0 0;
 }
 
-.docs-header__main .docs-header__links a {
-  padding: 0 1.3em;
-  color: #969ea2;
-  font-size: 0.9em;
-  font-weight: 600;
-  text-decoration: none;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transition: all 0.1s ease;
+.docs-header__links a {
+  color: rgb(218, 223, 226);
+  margin-left: 17px;
 }
 
-.docs-header__main .docs-header__links a:hover {
+.docs-header__links a:hover {
   color: #7b858a;
   text-decoration: none;
-}
-
-.docs-header__main .docs-header__links a.docs-header__sign-up {
-  color: #fff;
-  background-color: #ff4a00;
-  padding: 1em 1.6em;
-  border-radius: 4px;
-}
-
-.docs-header__main .docs-header__links a.docs-header__sign-up:hover {
-  background-color: #f54700;
-}
-
-.docs-header__platform-title {
-  color: #fff;
-  margin-right: auto;
-  font-size: 32px;
-  font-weight: 500;
-}
-
-.docs-header__platform .docs-header__links a {
-  padding: 0 1.3em;
-  font-size: 1em;
-  font-weight: 400;
-  text-decoration: none;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transition: all 0.1s ease;
-  color: #fff;
 }

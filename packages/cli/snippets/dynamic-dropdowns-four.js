@@ -8,14 +8,14 @@ const App = {
       display: {
         label: 'New Project',
         description: 'Triggers when a new project is added.',
-        hidden: true
+        hidden: true,
       },
       operation: {
-        perform: projectListRequest
-      }
+        perform: projectListRequest,
+      },
     },
     another_trigger: {
       // Another trigger definition...
-    }
-  }
+    },
+  },
 };

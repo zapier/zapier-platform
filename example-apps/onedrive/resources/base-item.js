@@ -16,16 +16,16 @@ const { BASE_ITEM_URL } = require('../constants')
 
 const getItem = (itemType, z, bundle) => {
   const options = {
-    url: `${BASE_ITEM_URL}/me/drive/items/${bundle.inputData.id}`
+    url: `${BASE_ITEM_URL}/me/drive/items/${bundle.inputData.id}`,
   }
   return z
     .request(options)
-    .then(_.partial(parseResponse, itemType))
+    .then(_.partial(parseResponse, z, itemType))
     .then((item) => cleanupPaths([item])[0])
     .then((item) => {
       if (item.file) {
         item.fileContents = z.dehydrate(hydrators.getFileContents, {
-          id: item.id
+          id: item.id,
         })
       }
 
@@ -42,18 +42,18 @@ const listItems = (itemType, z, bundle) => {
   }
 
   const options = {
-    url: `${BASE_ITEM_URL}/me/drive/root${folder}/children`
+    url: `${BASE_ITEM_URL}/me/drive/root${folder}/children`,
   }
 
   return z
     .request(options)
-    .then(_.partial(parseResponse, itemType))
+    .then(_.partial(parseResponse, z, itemType))
     .then(cleanupPaths)
     .then((items) => {
       items.forEach((item) => {
         if (item.file) {
           item.fileContents = z.dehydrate(hydrators.getFileContents, {
-            id: item.id
+            id: item.id,
           })
         }
       })
@@ -73,12 +73,12 @@ const searchItem = (itemType, z, bundle) => {
   const options = {
     url: `${BASE_ITEM_URL}/me/drive/root${folder}/search(q='${encodeURIComponent(
       bundle.inputData.name
-    )}')`
+    )}')`,
   }
 
   return z
     .request(options)
-    .then(_.partial(parseResponse, itemType))
+    .then(_.partial(parseResponse, z, itemType))
     .then(cleanupPaths)
     .catch(handleError)
 }
@@ -105,19 +105,15 @@ const handleCreateWithSession = (
       method: 'POST',
       body: {
         item: {
-          '@microsoft.graph.conflictBehavior': 'rename'
-        }
+          '@microsoft.graph.conflictBehavior': 'rename',
+        },
       },
       headers: {
-        'content-type': 'application/json'
-      }
+        'content-type': 'application/json',
+      },
     })
     .then((response) => {
-      if (response.status >= 300) {
-        throw new Error('Unable to start an upload session.')
-      }
-
-      const uploadUrl = z.JSON.parse(response.content).uploadUrl
+      const uploadUrl = response.data.uploadUrl
 
       // This should work fine for files up to 60MB (https://dev.onedrive.com/items/upload_large_files.htm#upload-fragments)
 
@@ -134,15 +130,15 @@ const handleCreateWithSession = (
         headers: {
           'content-type': fileContentType,
           'content-length': fileSize,
-          'content-range': `bytes 0-${fileSize - 1}/${fileSize}`
-        }
+          'content-range': `bytes 0-${fileSize - 1}/${fileSize}`,
+        },
       })
     })
     .then((response) => response.text())
     .then((content) => {
       const resourceId = z.JSON.parse(content).id
       bundle.inputData = {
-        id: resourceId
+        id: resourceId,
       }
 
       return _.partial(getItem, 'file')(z, bundle)
@@ -154,5 +150,5 @@ module.exports = {
   getItem,
   listItems,
   searchItem,
-  handleCreateWithSession
+  handleCreateWithSession,
 }

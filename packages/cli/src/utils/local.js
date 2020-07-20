@@ -7,7 +7,7 @@ const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
   const entryPath = `${process.cwd()}/index`;
   const rootPath = path.dirname(require.resolve(entryPath));
   if (reload) {
-    Object.keys(require.cache).map(cachePath => {
+    Object.keys(require.cache).map((cachePath) => {
       if (cachePath.startsWith(rootPath)) {
         delete require.cache[cachePath];
       }
@@ -28,7 +28,7 @@ const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
       {},
       event,
       {
-        calledFromCli: true
+        calledFromCli: true,
       },
       baseEvent
     );
@@ -37,7 +37,7 @@ const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
 };
 
 // Runs a local app command (./index.js) like {command: 'validate'};
-const localAppCommand = event => {
+const localAppCommand = (event) => {
   const handler = getLocalAppHandler();
   return new Promise((resolve, reject) => {
     handler(event, {}, (err, resp) => {
@@ -52,5 +52,5 @@ const localAppCommand = event => {
 
 module.exports = {
   getLocalAppHandler,
-  localAppCommand
+  localAppCommand,
 };

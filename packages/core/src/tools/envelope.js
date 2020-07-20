@@ -10,14 +10,14 @@ stash large results.
 
 const OUTPUT_ENVELOPE_TYPE = 'OutputEnvelope';
 
-const isOutputEnvelope = obj =>
+const isOutputEnvelope = (obj) =>
   _.isObject(obj) && obj.__type === OUTPUT_ENVELOPE_TYPE;
-const ensureOutputEnvelope = results =>
+const ensureOutputEnvelope = (results) =>
   isOutputEnvelope(results)
     ? results
     : { __type: OUTPUT_ENVELOPE_TYPE, results, status: STATUSES.SUCCESS };
 
 module.exports = {
   ensureOutputEnvelope,
-  isOutputEnvelope
+  isOutputEnvelope,
 };

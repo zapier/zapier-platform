@@ -3,21 +3,27 @@ const addHeader = (request, z, bundle) => {
   return request;
 };
 
-const mustBe200 = (response, z, bundle) => {
-  if (response.status !== 200) {
-    throw new Error(`Unexpected status code ${response.status}`);
+// This example only works on core v10+!
+const handleErrors = (response, z) => {
+  // Prevent `throwForStatus` from throwing for a certain status.
+  if (response.status === 456) {
+    response.skipThrowForStatus = true;
+  } else if (response.status === 200 && response.data.success === false) {
+    throw new z.errors.Error(response.data.message, response.data.code);
   }
-  return response;
 };
 
-const autoParseJson = (response, z, bundle) => {
-  response.json = z.JSON.parse(response.content);
+// This example only works on core v10+!
+const parseXML = (response, z, bundle) => {
+  // Parse content that is not JSON
+  // eslint-disable-next-line no-undef
+  response.data = xml.parse(response.content);
   return response;
 };
 
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [mustBe200, autoParseJson]
+  afterResponse: [parseXML, handleErrors],
   // ...
 };

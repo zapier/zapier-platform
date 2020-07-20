@@ -8,15 +8,15 @@ const ora = require('ora');
 
 const { CHECK_REF_DOC_LINK } = require('../constants');
 
-const notUndef = s => String(s === undefined ? '' : s).trim();
+const notUndef = (s) => String(s === undefined ? '' : s).trim();
 
-const prettyJSONstringify = obj => JSON.stringify(obj, null, '  ');
+const prettyJSONstringify = (obj) => JSON.stringify(obj, null, '  ');
 
 // Convert rows from keys to column labels.
 const rewriteLabels = (rows, columnDefs) => {
-  return rows.map(row => {
+  return rows.map((row) => {
     const consumptionRow = {};
-    columnDefs.forEach(columnDef => {
+    columnDefs.forEach((columnDef) => {
       const [label, key, _default] = columnDef;
       const val = _.get(row, key || label, _default);
       consumptionRow[label] = notUndef(val);
@@ -25,7 +25,7 @@ const rewriteLabels = (rows, columnDefs) => {
   });
 };
 
-const makePlainSingle = row => {
+const makePlainSingle = (row) => {
   return _.map(row, (value, key) => {
     return (colors.grey('==') + ' ' + colors.bold(key) + '\n' + value).trim();
   }).join('\n');
@@ -40,7 +40,7 @@ const makePlain = (rows, columnDefs) => {
   );
 };
 
-const isTooWideForWindow = str => {
+const isTooWideForWindow = (str) => {
   const widestRow = str.split('\n').reduce((coll, row) => {
     if (stringLength(row) > coll) {
       return stringLength(row);
@@ -52,11 +52,11 @@ const isTooWideForWindow = str => {
   return widestRow > process.stdout.columns;
 };
 
-const ansiTrim = s =>
+const ansiTrim = (s) =>
   _.trim(s, [
     '\r',
     '\n',
-    ' '
+    ' ',
     // '\u001b[39m',
     // '\u001b[90m',
   ]);
@@ -72,8 +72,8 @@ const makeRowBasedTable = (rows, columnDefs, { includeIndex = true } = {}) => {
   const tableOptions = {
     chars: CHARS,
     style: {
-      compact: true
-    }
+      compact: true,
+    },
   };
   const table = new Table(tableOptions);
 
@@ -97,7 +97,7 @@ const makeRowBasedTable = (rows, columnDefs, { includeIndex = true } = {}) => {
       table.push([{ colSpan: 2, content: colors.grey(`= ${index + 1} =`) }]);
     }
 
-    columnDefs.forEach(columnDef => {
+    columnDefs.forEach((columnDef) => {
       const consumptionRow = {};
       const [label, key, _default] = columnDef;
       let val = _.get(row, key || label, _default);
@@ -149,14 +149,14 @@ const makeTable = (rows, columnDefs) => {
     chars: CHARS,
     style: {
       compact: true,
-      head: ['bold']
-    }
+      head: ['bold'],
+    },
   };
   const table = new Table(tableOptions);
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const consumptionRow = [];
-    columnDefs.forEach(columnDef => {
+    columnDefs.forEach((columnDef) => {
       const [label, key, _default] = columnDef;
       const val = _.get(row, key || label, _default);
       consumptionRow.push(notUndef(val));
@@ -175,20 +175,20 @@ const makeTable = (rows, columnDefs) => {
 
 const makeJSON = (rows, columnDefs) =>
   prettyJSONstringify(rewriteLabels(rows, columnDefs));
-const makeRawJSON = rows => prettyJSONstringify(rows);
+const makeRawJSON = (rows) => prettyJSONstringify(rows);
 
 const formatStyles = {
   plain: makePlain,
   json: makeJSON,
   raw: makeRawJSON,
   row: makeRowBasedTable,
-  table: makeTable
+  table: makeTable,
 };
 
 // single global instance of the spinner
 const spinner = ora();
 
-const startSpinner = msg => {
+const startSpinner = (msg) => {
   spinner.start(msg);
 };
 
@@ -205,7 +205,7 @@ const endSpinner = (success = true, message) => {
   }
 };
 
-const flattenCheckResult = checkResult => {
+const flattenCheckResult = (checkResult) => {
   const res = [];
   for (const severity in checkResult) {
     const results = checkResult[severity].results;
@@ -224,7 +224,7 @@ const flattenCheckResult = checkResult => {
         {
           write: 'creates',
           read: 'triggers',
-          auth: 'authentication'
+          auth: 'authentication',
         }[issueGroup.type] || issueGroup.type;
 
       for (const violation of issueGroup.violations) {
@@ -233,7 +233,7 @@ const flattenCheckResult = checkResult => {
             category: displaySeverity,
             method: `${opType}.${violation.type}`,
             description: `${result.message} (${result.tag})`,
-            link: `${CHECK_REF_DOC_LINK}#${result.tag}`
+            link: `${CHECK_REF_DOC_LINK}#${result.tag}`,
           });
         }
       }
@@ -248,5 +248,5 @@ module.exports = {
   formatStyles,
   makeTable, // exported for tests
   prettyJSONstringify,
-  startSpinner
+  startSpinner,
 };

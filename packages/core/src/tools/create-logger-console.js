@@ -3,7 +3,7 @@
 const stream = require('stream');
 const Console = require('console').Console;
 
-const createLoggerConsole = input => {
+const createLoggerConsole = (input) => {
   const doWrite = (data, chunk, encoding, next) => {
     const promise = input._zapier.logger(chunk.toString(), data);
 
@@ -16,11 +16,11 @@ const createLoggerConsole = input => {
   };
 
   const stdout = new stream.Writable({
-    write: doWrite.bind(undefined, { log_type: 'console' })
+    write: doWrite.bind(undefined, { log_type: 'console' }),
   });
 
   const stderr = new stream.Writable({
-    write: doWrite.bind(undefined, { log_type: 'error' })
+    write: doWrite.bind(undefined, { log_type: 'error' }),
   });
 
   return new Console(stdout, stderr);

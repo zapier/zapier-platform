@@ -2,30 +2,29 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "chalk": "2.4.2",
-    "eslint": "6.2.2",
-    "eslint-config-prettier": "6.1.0",
-    "eslint-config-standard": "14.0.1",
-    "eslint-plugin-import": "2.18.2",
-    "eslint-plugin-mocha": "6.1.0",
-    "eslint-plugin-node": "9.1.0",
-    "eslint-plugin-promise": "4.2.1",
-    "eslint-plugin-standard": "4.0.1",
-    "husky": "3.0.4",
-    "inquirer": "7.0.3",
-    "lerna": "3.16.4",
-    "lint-staged": "9.2.4",
-    "mocha": "6.2.0",
-    "prettier": "1.18.2",
-    "semver": "7.1.1",
-    "should": "13.2.3"
+    "chalk": "^4",
+    "eslint": "^6",
+    "eslint-config-prettier": "^6",
+    "eslint-config-standard": "^14",
+    "eslint-plugin-import": "^2",
+    "eslint-plugin-mocha": "^6",
+    "eslint-plugin-node": "^9",
+    "eslint-plugin-promise": "^4",
+    "eslint-plugin-standard": "^4",
+    "husky": "^4",
+    "inquirer": "^7",
+    "lerna": "^3",
+    "lint-staged": "^10",
+    "mocha": "^7",
+    "prettier": "^2",
+    "semver": "^7",
+    "should": "^13"
   },
   "workspaces": [
-    "packages/*",
-    "example-apps/*"
+    "packages/*"
   ],
   "scripts": {
-    "lint": "lerna run --stream --ignore zapier-platform-example-app-* lint",
+    "lint": "lerna run --ignore zapier-platform-example-app-* lint",
     "lint-examples": "eslint examples",
     "validate": "lerna run --ignore zapier-platform-example-app-* validate",
     "bump": "./scripts/bump.js"
@@ -37,12 +36,10 @@
   },
   "lint-staged": {
     "*.{js}": [
-      "eslint --fix --quiet",
-      "git add"
+      "eslint --fix --quiet"
     ],
     "*.{js,json}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
   "prettier": {

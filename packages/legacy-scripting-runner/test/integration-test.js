@@ -2,7 +2,7 @@ const _ = require('lodash');
 const should = require('should');
 const nock = require('nock');
 
-const { AUTH_JSON_SERVER_URL } = require('./auth-json-server');
+const { AUTH_JSON_SERVER_URL, HTTPBIN_URL } = require('./constants');
 const apiKeyAuth = require('./example-app/api-key-auth');
 const appDefinition = require('./example-app');
 const oauth2Config = require('./example-app/oauth2');
@@ -45,7 +45,7 @@ describe('Integration Test', () => {
     const event = {
       command: 'execute',
       bundle: {},
-      method
+      method,
     };
     return createInput(compiledApp, event, testLogger);
   };
@@ -68,9 +68,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = {
         username: 'user',
-        password: 'secret'
+        password: 'secret',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.equal(output.results.key1, 'sec');
         should.equal(output.results.key2, 'ret');
       });
@@ -88,9 +88,9 @@ describe('Integration Test', () => {
         'authentication.connectionLabel'
       );
       input.bundle.inputData = {
-        name: 'Mark'
+        name: 'Mark',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.equal(output.results, 'Hi Mark');
       });
     });
@@ -99,10 +99,10 @@ describe('Integration Test', () => {
       const input = createTestInput(compiledApp, 'authentication.test');
       input.bundle.authData = {
         key1: 'sec',
-        key2: 'ret'
+        key2: 'ret',
       };
       input.bundle.meta = { isTestingAuth: true };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const user = output.results;
         should.equal(user.id, 1);
         should.equal(user.username, 'Bret');
@@ -113,10 +113,10 @@ describe('Integration Test', () => {
       const input = createTestInput(compiledApp, 'authentication.test');
       input.bundle.authData = {
         key1: 'sec',
-        key2: 'ret'
+        key2: 'ret',
       };
       input.bundle.meta = { standard_poll: false, test_poll: true };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const user = output.results;
         should.equal(user.id, 1);
         should.equal(user.username, 'Bret');
@@ -131,7 +131,7 @@ describe('Integration Test', () => {
       origEnv = process.env;
       process.env = {
         CLIENT_ID: '1234',
-        CLIENT_SECRET: 'asdf'
+        CLIENT_SECRET: 'asdf',
       };
     });
 
@@ -154,9 +154,9 @@ describe('Integration Test', () => {
       input.bundle.inputData = {
         my_client_id: '1234',
         redirect_uri: 'https://example.com',
-        state: 'qwerty'
+        state: 'qwerty',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.equal(
           output.results,
           `${AUTH_JSON_SERVER_URL}/oauth/authorize?` +
@@ -179,9 +179,9 @@ describe('Integration Test', () => {
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com/new',
-        state: 'qwerty'
+        state: 'qwerty',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.equal(
           output.results,
           `${AUTH_JSON_SERVER_URL}/oauth/authorize?` +
@@ -207,9 +207,9 @@ describe('Integration Test', () => {
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com',
-        code: 'one_time_code'
+        code: 'one_time_code',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.equal(output.results.access_token, 'a_token');
         should.equal(output.results.something_custom, 'alright!');
         should.not.exist(output.results.name);
@@ -233,9 +233,9 @@ describe('Integration Test', () => {
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com',
-        code: 'one_time_code'
+        code: 'one_time_code',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.equal(output.results.access_token, 'a_token');
         should.equal(output.results.something_custom, 'alright!!!');
         should.equal(output.results.name, 'Jane Doe');
@@ -253,9 +253,9 @@ describe('Integration Test', () => {
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com',
-        code: 'one_time_code'
+        code: 'one_time_code',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.equal(output.results.access_token, 'a_token');
         should.equal(output.results.something_custom, 'alright!!!');
         should.equal(output.results.name, 'Jane Doe');
@@ -276,10 +276,10 @@ describe('Integration Test', () => {
         'authentication.oauth2Config.refreshAccessToken'
       );
       input.bundle.authData = {
-        refresh_token: 'a_refresh_token'
+        refresh_token: 'a_refresh_token',
       };
-      return app(input).then(output => {
-        should.equal(output.results.access_token, 'a_new_token');
+      return app(input).then((output) => {
+        should.equal(output.results.access_token, 'a_token');
       });
     });
 
@@ -298,9 +298,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = {
         refresh_token: 'my_refresh_token',
-        access_token: 'my_access_token'
+        access_token: 'my_access_token',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const response = output.results;
         should.not.exist(response.headers.Authorization);
         should.equal(response.form.refresh_token, 'my_refresh_token');
@@ -322,9 +322,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = {
         refresh_token: 'my_refresh_token',
-        access_token: 'my_access_token'
+        access_token: 'my_access_token',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const response = output.results;
         should.not.exist(response.headers.Authorization);
         should.equal(response.json.refresh_token, 'my_refresh_token');
@@ -345,9 +345,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = {
         refresh_token: 'my_refresh_token',
-        access_token: 'my_access_token'
+        access_token: 'my_access_token',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const data = output.results.form;
 
         should.deepEqual(data, {
@@ -356,7 +356,7 @@ describe('Integration Test', () => {
           client_secret: [process.env.CLIENT_SECRET],
           foo: ['hello'],
           grant_type: ['refresh_token'],
-          refresh_token: ['my_refresh_token']
+          refresh_token: ['my_refresh_token'],
         });
       });
     });
@@ -375,16 +375,16 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = {
         refresh_token: 'my_refresh_token',
-        access_token: 'my_access_token'
+        access_token: 'my_access_token',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const response = output.results;
         should.not.exist(response.headers.Authorization);
         should.deepEqual(response.form, {
           client_id: [process.env.CLIENT_ID],
           client_secret: [process.env.CLIENT_SECRET],
           grant_type: ['refresh_token'],
-          refresh_token: ['my_refresh_token']
+          refresh_token: ['my_refresh_token'],
         });
       });
     });
@@ -408,9 +408,9 @@ describe('Integration Test', () => {
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com',
-        code: 'one_time_code'
+        code: 'one_time_code',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.equal(output.results.access_token, 'a_token');
         should.equal(output.results.something_custom, 'alright!');
         should.not.exist(output.results.name);
@@ -423,21 +423,39 @@ describe('Integration Test', () => {
     const compiledApp = schemaTools.prepareApp(appDefWithAuth);
     const app = createApp(appDefWithAuth);
 
-    it('KEY_poll', () => {
+    it('scriptingless, curlies in URL', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
-        'movie_post_poll_no_id',
-        'movie_post_poll'
+        'movie_post_poll_make_array',
+        'recipe_post_poll'
       );
+      appDef.legacy.triggers.recipe.operation.url = `${HTTPBIN_URL}/get?name={{name}}&active={{active}}`;
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.recipe.operation.perform'
+      );
+      input.bundle.authData = { name: 'john' };
+      input.bundle.inputData = { name: 'johnny', active: false };
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        should.deepEqual(echoed.args, { name: ['john'], active: ['False'] });
+        should.equal(echoed.url, `${HTTPBIN_URL}/get?name=john&active=False`);
+      });
+    });
+
+    it('KEY_poll', () => {
       const input = createTestInput(
         compiledApp,
         'triggers.contact_full.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.meta = {
-        zap: { name: 'My Awesome Zap' }
+        zap: { name: 'My Awesome Zap' },
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.greaterThan(1);
 
         const firstContact = output.results[0];
@@ -461,7 +479,7 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const movies = output.results;
         movies[0].titleHas2.should.be.false();
         movies[1].titleHas2.should.be.true();
@@ -482,7 +500,7 @@ describe('Integration Test', () => {
         _compiledApp,
         'triggers.movie.operation.perform'
       );
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const echoed = output.results[0];
         should.equal(echoed.headers.Accept[0], 'application/json');
         should.equal(
@@ -503,7 +521,7 @@ describe('Integration Test', () => {
         'triggers.contact_pre.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const contact = output.results[0];
@@ -528,7 +546,7 @@ describe('Integration Test', () => {
         _compiledApp,
         'triggers.movie.operation.perform'
       );
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const echoed = output.results[0];
         should.equal(echoed.headers.Accept[0], 'application/json');
         should.equal(
@@ -561,13 +579,13 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
       input.bundle.meta = {
-        isFillingDynamicDropdown: true
+        isFillingDynamicDropdown: true,
       };
       input.bundle.inputData = {
         name: 'test',
-        greeting: 'hello'
+        greeting: 'hello',
       };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const echoed = output.results[0];
 
         // When pulling for a dynamic dropdown (DD), bundle.inputData and
@@ -604,7 +622,7 @@ describe('Integration Test', () => {
         _compiledApp,
         'triggers.movie.operation.perform'
       );
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const echoed = output.results[0];
         should.equal(echoed.args.requestDataIsNull[0], 'yes');
       });
@@ -633,9 +651,9 @@ describe('Integration Test', () => {
         isTestingAuth: false,
         isPopulatingDedupe: true,
         limit: 20,
-        page: 1
+        page: 1,
       };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const echoed = output.results[0];
         should.deepEqual(echoed.json, {
           auth_test: false,
@@ -646,7 +664,7 @@ describe('Integration Test', () => {
           test_poll: false,
           hydrate: true,
           limit: 20,
-          page: 1
+          page: 1,
         });
       });
     });
@@ -668,7 +686,7 @@ describe('Integration Test', () => {
         _compiledApp,
         'triggers.movie.operation.perform'
       );
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const echoed = output.results[0];
         should.equal(echoed.headers['X-Api-Key'], 'H E Y');
       });
@@ -691,7 +709,7 @@ describe('Integration Test', () => {
         _compiledApp,
         'triggers.movie.operation.perform'
       );
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const echoed = output.results[0];
         should.exist(echoed.headers['X-Api-Key']);
       });
@@ -712,7 +730,7 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const movies = output.results;
         movies.length.should.greaterThan(1);
         should.equal(movies[0].title, 'title 1');
@@ -750,9 +768,148 @@ describe('Integration Test', () => {
         'triggers.recipe.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const firstRecipe = output.results[0];
         should.equal(firstRecipe.name, 'name 1');
+      });
+    });
+
+    it('KEY_pre_poll, array curlies', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.triggers.movie.operation.url = `${HTTPBIN_URL}/get?things={{things}}`;
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+
+      // appDef will be injected to `input` as `input._zapier.app` by
+      // createInput(). core has an injectInput beforeRequest middleware that
+      // inject `input` to the request object. When core does prepareRequest,
+      // it's going to replace every curlies in req.input._zapier.app. So apart
+      // from the request options passed into z.request, we also need to make
+      // sure array curlies from another trigger/action don't break either.
+      appDef.legacy.triggers.recipe.operation.url =
+        'https://example.com?things={{bundle.inputData.things}}';
+
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.inputData = {
+        things: ['eyedrops', 'cyclops', 'ipod'],
+      };
+      return app(input).then((output) => {
+        const req = output.results[0];
+        req.args.should.deepEqual({
+          things: ['eyedrops,cyclops,ipod'],
+        });
+        req.url.should.equal(
+          `${HTTPBIN_URL}/get?things=eyedrops%2Ccyclops%2Cipod`
+        );
+      });
+    });
+
+    it('KEY_pre_poll, GET with body', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_GET_with_body',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        should.equal(echoed.args.name, 'Luke Skywalker');
+      });
+    });
+
+    it('KEY_pre_poll, GET with empty body', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_GET_with_empty_body',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        should.not.exist(echoed.textBody);
+      });
+    });
+
+    it('KEY_pre_poll, non-ascii URL', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_non_ascii_url',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        const result = output.results[0];
+        should.equal(result.hello, '你好');
+      });
+    });
+
+    it('KEY_pre_poll, env in url', () => {
+      process.env.SECRET_HTTPBIN_URL = HTTPBIN_URL.slice(8); // remove the protocol
+
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_env_var',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+
+      delete process.env.MY_SECRET;
+
+      return _app(input).then((output) => {
+        const result = output.results[0];
+        should.equal(result.url, 'https://httpbin.zapier-tooling.com/get');
       });
     });
 
@@ -762,7 +919,7 @@ describe('Integration Test', () => {
         'triggers.contact_post.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.greaterThan(1);
 
         const firstContact = output.results[0];
@@ -806,17 +963,17 @@ describe('Integration Test', () => {
         'triggers.contact_post.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const contacts = output.results;
         should.equal(contacts.length, 2);
 
         should.deepEqual(contacts[0], {
           id: 123,
-          name: 'Alice'
+          name: 'Alice',
         });
         should.deepEqual(contacts[1], {
           id: 456,
-          name: 'Bob'
+          name: 'Bob',
         });
       });
     });
@@ -836,10 +993,10 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const movies = output.results;
         movies.length.should.greaterThan(1);
-        movies.forEach(movie => {
+        movies.forEach((movie) => {
           should.not.exist(movie.id);
           should.exist(movie.title);
         });
@@ -863,7 +1020,7 @@ describe('Integration Test', () => {
         _compiledApp,
         'triggers.movie.operation.perform'
       );
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const request = output.results[0];
         should.equal(request.method, 'POST');
         should.equal(request.headers.foo, '1234');
@@ -878,7 +1035,7 @@ describe('Integration Test', () => {
         'triggers.contact_pre_post.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const contact = output.results[0];
@@ -902,7 +1059,7 @@ describe('Integration Test', () => {
         'triggers.contact_full.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 5);
         should.equal(fields[0].key, 'id');
@@ -929,7 +1086,7 @@ describe('Integration Test', () => {
         'triggers.contact_full.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 6);
         should.equal(fields[0].key, 'id');
@@ -947,7 +1104,7 @@ describe('Integration Test', () => {
         'triggers.contact_full.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 6);
         should.equal(fields[0].key, 'id');
@@ -968,9 +1125,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.meta = {
         standard_poll: true,
-        test_poll: true
+        test_poll: true,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movies = output.results;
         movies.length.should.greaterThan(1);
         should.equal(movies[0].title, 'title 1');
@@ -992,10 +1149,10 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const movies = output.results;
         movies.length.should.greaterThan(1);
-        movies.forEach(movie => {
+        movies.forEach((movie) => {
           movie.user.should.startWith('hydrate|||');
           movie.user.should.endWith('|||hydrate');
 
@@ -1023,20 +1180,17 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return _app(input).then(output => {
+      return _app(input).then((output) => {
         const movies = output.results;
         movies.length.should.greaterThan(1);
-        movies.forEach(movie => {
+        movies.forEach((movie) => {
           movie.trailer.should.startWith('hydrate|||');
           movie.trailer.should.endWith('|||hydrate');
 
           const payload = JSON.parse(movie.trailer.split('|||')[1]);
           should.equal(payload.type, 'file');
           should.equal(payload.method, 'hydrators.legacyFileHydrator');
-          should.equal(
-            payload.bundle.url,
-            'https://auth-json-server.zapier-staging.com/movies'
-          );
+          should.equal(payload.bundle.url, `${AUTH_JSON_SERVER_URL}/movies`);
           should.equal(payload.bundle.request.params.id, movie.id);
           should.equal(payload.bundle.meta.name, `movie ${movie.id}.json`);
           should.equal(payload.bundle.meta.length, 1234);
@@ -1068,11 +1222,11 @@ describe('Integration Test', () => {
             cast: ['John Doe', 'Jane Doe'],
             meta: {
               running_time: 120,
-              format: 'widescreen'
-            }
-          }
+              format: 'widescreen',
+            },
+          },
         ]);
-      return app(input).then(output => {
+      return app(input).then((output) => {
         // The result from the scripting runner should be flattened
         const expectedResult = {
           id: '1',
@@ -1081,7 +1235,7 @@ describe('Integration Test', () => {
           genre: 'genre 1',
           cast: 'John Doe,Jane Doe',
           meta__running_time: 120,
-          meta__format: 'widescreen'
+          meta__format: 'widescreen',
         };
         should.deepEqual(output.results[0], expectedResult);
       });
@@ -1107,21 +1261,23 @@ describe('Integration Test', () => {
 
   describe('hook trigger', () => {
     it('scriptingless', () => {
-      const app = createApp(appDefinition);
+      const appDef = _.cloneDeep(appDefinition);
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
       const input = createTestInput(
-        appDefinition,
+        compiledApp,
         'triggers.contact_hook_scriptingless.operation.perform'
       );
       input.bundle.cleanedRequest = {
         id: 9,
-        name: 'Amy'
+        name: 'Amy',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
         const contact = output.results[0];
         should.deepEqual(contact, {
           id: 9,
-          name: 'Amy'
+          name: 'Amy',
         });
       });
     });
@@ -1132,16 +1288,17 @@ describe('Integration Test', () => {
         'contact_hook_scripting_catch_hook_returning_object',
         'contact_hook_scripting_catch_hook'
       );
+      const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
       const input = createTestInput(
-        appDef,
+        compiledApp,
         'triggers.contact_hook_scripting.operation.perform'
       );
       input.bundle.cleanedRequest = {
         id: 10,
-        name: 'Bob'
+        name: 'Bob',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const contact = output.results[0];
@@ -1157,16 +1314,17 @@ describe('Integration Test', () => {
         'contact_hook_scripting_catch_hook_returning_array',
         'contact_hook_scripting_catch_hook'
       );
+      const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
       const input = createTestInput(
-        appDef,
+        compiledApp,
         'triggers.contact_hook_scripting.operation.perform'
       );
       input.bundle.cleanedRequest = [
         { id: 11, name: 'Cate' },
-        { id: 22, name: 'Dave' }
+        { id: 22, name: 'Dave' },
       ];
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const contacts = output.results;
         should.equal(contacts.length, 2);
         should.equal(contacts[0].id, 11);
@@ -1184,20 +1342,21 @@ describe('Integration Test', () => {
         'contact_hook_scripting_catch_hook_raw_request',
         'contact_hook_scripting_catch_hook'
       );
+      const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
       const input = createTestInput(
-        appDef,
+        compiledApp,
         'triggers.contact_hook_scripting.operation.perform'
       );
       input.bundle.rawRequest = {
         headers: {
           'Content-Type': 'application/xml',
-          'Http-X-Custom': 'hello'
+          'Http-X-Custom': 'hello',
         },
         content: '<name>Tom</name>',
-        querystring: 'foo=bar'
+        querystring: 'foo=bar',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const result = output.results[0];
         should.equal(result.headers['Content-Type'], 'application/xml');
         should.equal(result.headers['Http-X-Custom'], 'hello');
@@ -1229,9 +1388,9 @@ describe('Integration Test', () => {
       input.bundle.cleanedRequest = {
         id: 3,
         name: 'Eric',
-        resource_url: 'https://dont.care'
+        resource_url: 'https://dont.care',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const contact = output.results[0];
@@ -1266,9 +1425,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.cleanedRequest = {
         id: 3,
-        name: 'Eric'
+        name: 'Eric',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const contact = output.results[0];
@@ -1298,9 +1457,9 @@ describe('Integration Test', () => {
       input.bundle.cleanedRequest = {
         id: 3,
         name: 'Dont Care',
-        resource_url: `${AUTH_JSON_SERVER_URL}/users/3`
+        resource_url: `${AUTH_JSON_SERVER_URL}/users/3`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const movie = output.results[0];
@@ -1329,9 +1488,9 @@ describe('Integration Test', () => {
       input.bundle.cleanedRequest = {
         id: 3,
         name: 'Dont Care',
-        resource_url: `${AUTH_JSON_SERVER_URL}/users/3`
+        resource_url: `${AUTH_JSON_SERVER_URL}/users/3`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const contact = output.results[0];
@@ -1361,9 +1520,9 @@ describe('Integration Test', () => {
       input.bundle.cleanedRequest = {
         id: 3,
         name: 'Dont Care',
-        resource_url: `${AUTH_JSON_SERVER_URL}/users/3`
+        resource_url: `${AUTH_JSON_SERVER_URL}/users/3`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const things = output.results;
         should.equal(things.length, 2);
         should.equal(things[0].id, 3);
@@ -1399,9 +1558,9 @@ describe('Integration Test', () => {
       input.bundle.cleanedRequest = {
         id: 3,
         name: 'Dont Care',
-        resource_url: `${AUTH_JSON_SERVER_URL}/users/3`
+        resource_url: `${AUTH_JSON_SERVER_URL}/users/3`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const movie = output.results[0];
@@ -1424,7 +1583,7 @@ describe('Integration Test', () => {
       input.bundle.inputData = { foo: 'bar' };
       input.bundle.targetUrl = 'https://foo.bar';
       input.bundle.meta = { zap: { id: 9511 } };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.equal(output.results.json.event, 'contact.created');
         should.equal(
           output.results.json.hidden_message,
@@ -1434,10 +1593,10 @@ describe('Integration Test', () => {
         should.equal(output.results.hiddenMessage, 'post_subscribe was here!');
 
         should.deepEqual(output.results.json.bundleAuthFields, {
-          api_key: 'hey hey'
+          api_key: 'hey hey',
         });
         should.deepEqual(output.results.json.bundleTriggerFields, {
-          foo: 'bar'
+          foo: 'bar',
         });
         should.equal(output.results.json.bundleTargetUrl, 'https://foo.bar');
         should.equal(output.results.json.bundleEvent, 'contact.created');
@@ -1459,19 +1618,24 @@ describe('Integration Test', () => {
         'triggers.contact_hook_scripting.operation.performUnsubscribe'
       );
       input.bundle.authData = { api_key: 'yo yo' };
-      input.bundle.inputData = { foo: 'bar' };
+      input.bundle.inputData = { foo: 'bar', subscription_id: 8866 };
       input.bundle.targetUrl = 'https://foo.bar';
+      input.bundle.subscribeData = { subscription_id: 7744 };
       input.bundle.meta = { zap: { id: 9512 } };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.equal(output.results.request.method, 'DELETE');
 
         const echoed = output.results.json;
+        should.equal(echoed.args.sub_id, '7744');
         should.equal(echoed.json.event, 'contact.created');
         should.equal(echoed.json.hidden_message, 'pre_unsubscribe was here!');
         should.equal(echoed.headers['X-Api-Key'], 'yo yo');
 
         should.deepEqual(echoed.json.bundleAuthFields, { api_key: 'yo yo' });
-        should.deepEqual(echoed.json.bundleTriggerFields, { foo: 'bar' });
+        should.deepEqual(echoed.json.bundleTriggerFields, {
+          foo: 'bar',
+          subscription_id: 8866,
+        });
         should.equal(echoed.json.bundleTargetUrl, 'https://foo.bar');
         should.equal(echoed.json.bundleEvent, 'contact.created');
         should.deepEqual(echoed.json.bundleZap, { id: 9512 });
@@ -1504,8 +1668,8 @@ describe('Integration Test', () => {
         cast: ['John Doe', 'Jane Doe'],
         meta: {
           running_time: 120,
-          format: 'widescreen'
-        }
+          format: 'widescreen',
+        },
       };
       input.bundle.authData = { api_key: 'secret' };
       // title key is removed deliberately for other tests
@@ -1514,7 +1678,7 @@ describe('Integration Test', () => {
           releaseDate: 1471295527,
           genre: 'genre 1',
           cast: 'John Doe,Jane Doe',
-          meta: 'running_time|120\nformat|widescreen'
+          meta: 'running_time|120\nformat|widescreen',
         })
         .reply(200, { id: 'abcd1234' });
       return app(input).then(() => {
@@ -1536,9 +1700,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         title: 'It',
-        genre: 'Horror'
+        genre: 'Horror',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.exist(movie.id);
         should.not.exist(movie.title);
@@ -1565,9 +1729,9 @@ describe('Integration Test', () => {
       input.bundle.inputData = {
         title: 'The Dark Knight',
         genre: 'Drama',
-        resource_name: 'movies'
+        resource_name: 'movies',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.exist(movie.id);
         should.not.exist(movie.title);
@@ -1592,9 +1756,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         title: 'The Shape of Water',
-        genre: 'Fantasy'
+        genre: 'Fantasy',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.exist(movie.id);
         should.equal(movie.title, 'The Shape of Water');
@@ -1619,33 +1783,33 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         meta__title: 'The Shape of Water',
-        meta__genre: 'Fantasy'
+        meta__genre: 'Fantasy',
       };
       input.bundle.inputDataRaw = {
         meta__title: '{{123__title}}',
-        meta__genre: '{{234__genre}}'
+        meta__genre: '{{234__genre}}',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const echoed = output.results.json;
         should.deepEqual(echoed.action_fields, {
           meta: {
             title: 'The Shape of Water',
-            genre: 'Fantasy'
-          }
+            genre: 'Fantasy',
+          },
         });
         should.deepEqual(echoed.action_fields_full, {
           meta__title: 'The Shape of Water',
-          meta__genre: 'Fantasy'
+          meta__genre: 'Fantasy',
         });
         should.deepEqual(echoed.action_fields_raw, {
           meta__title: '{{123__title}}',
-          meta__genre: '{{234__genre}}'
+          meta__genre: '{{234__genre}}',
         });
         should.deepEqual(echoed.orig_data, {
           meta: {
             title: 'The Shape of Water',
-            genre: 'Fantasy'
-          }
+            genre: 'Fantasy',
+          },
         });
       });
     });
@@ -1666,21 +1830,21 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
-        title: 'The Shape of Water'
+        title: 'The Shape of Water',
       };
       input.bundle.inputDataRaw = {
-        title: '{{123__title}}'
+        title: '{{123__title}}',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const echoed = output.results.json;
 
         // Doesn't have 'title' because it's in fieldsExcludedFromBody
         should.deepEqual(echoed.action_fields, {});
         should.deepEqual(echoed.action_fields_full, {
-          title: 'The Shape of Water'
+          title: 'The Shape of Water',
         });
         should.deepEqual(echoed.action_fields_raw, {
-          title: '{{123__title}}'
+          title: '{{123__title}}',
         });
         should.deepEqual(echoed.orig_data, {});
       });
@@ -1699,7 +1863,7 @@ describe('Integration Test', () => {
         compiledApp,
         'creates.movie.operation.perform'
       );
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const echoed = output.results;
         should.equal(echoed.headers.Accept[0], 'application/json');
         should.equal(
@@ -1731,9 +1895,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         urlPath: '/recipes',
-        name: 'Egg & Cheese'
+        name: 'Egg & Cheese',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const recipe = output.results;
         should.exist(recipe.id);
         should.equal(recipe.name, 'Egg & Cheese');
@@ -1758,9 +1922,9 @@ describe('Integration Test', () => {
       input.bundle.inputData = {
         title: 'IT 2',
         genre: 'Horror',
-        year: 2019
+        year: 2019,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.exist(movie.id);
         should.not.exist(movie.title); // title is in fieldsExcludedFromBody
@@ -1783,7 +1947,7 @@ describe('Integration Test', () => {
         compiledApp,
         'creates.movie.operation.perform'
       );
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.deepEqual(output.results, {});
       });
     });
@@ -1806,9 +1970,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         title: 'Get Out',
-        genre: 'Comedy'
+        genre: 'Comedy',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.exist(movie.id);
         should.not.exist(movie.title);
@@ -1835,9 +1999,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         title: 'First Man',
-        genre: 'Drama'
+        genre: 'Drama',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.exist(movie.id);
         should.not.exist(movie.title);
@@ -1866,7 +2030,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         title: 'First Man',
-        genre: 'Drama'
+        genre: 'Drama',
       };
       return app(input).should.be.rejectedWith(/Unexpected identifier/);
     });
@@ -1887,7 +2051,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.perform'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.equal(movie.title, 'Joker');
         should.equal(movie.year, 2019);
@@ -1912,9 +2076,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         title: 'The Rise of Skywalker',
-        genre: 'Sci-fi'
+        genre: 'Sci-fi',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.deepEqual(output.results, {});
       });
     });
@@ -1937,11 +2101,33 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         title: 'Us',
-        genre: 'Horror'
+        genre: 'Horror',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.deepEqual(output.results, { message: 'ok' });
       });
+    });
+
+    it('KEY_post_write, intercept error', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_write_intercept_error',
+        'movie_pre_write'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_write_intercept_error',
+        'movie_post_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).should.be.rejectedWith(
+        /teapot here, go find a coffee machine/
+      );
     });
 
     it('KEY_pre_write & KEY_post_write', () => {
@@ -1965,9 +2151,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         title: 'Phantom Thread',
-        genre: 'Drama'
+        genre: 'Drama',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.exist(movie.id);
         should.equal(movie.title, 'Phantom Thread');
@@ -1993,9 +2179,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         title: 'Room',
-        genre: 'Drama'
+        genre: 'Drama',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.exist(movie.id);
         should.equal(movie.title, 'Room');
@@ -2021,9 +2207,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         title: 'Arrival',
-        genre: 'Sci-fi'
+        genre: 'Sci-fi',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.exist(movie.id);
         should.equal(movie.title, 'Arrival');
@@ -2049,7 +2235,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = [];
 
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.deepEqual(output.results, {});
       });
     });
@@ -2071,7 +2257,7 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = [1234];
 
-      return app(input).then(output => {
+      return app(input).then((output) => {
         should.deepEqual(output.results, { message: 1234 });
       });
     });
@@ -2099,9 +2285,9 @@ describe('Integration Test', () => {
       input.bundle.inputData = {
         title: 'La La Land',
         genre: 'Musical',
-        resource_name: 'movie'
+        resource_name: 'movie',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.exist(movie.id);
         should.equal(movie.title, 'La La Land');
@@ -2123,7 +2309,7 @@ describe('Integration Test', () => {
         compiledApp,
         'creates.movie.operation.perform'
       );
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const echoed = output.results;
         should.equal(echoed.headers.Accept[0], 'application/json');
         should.equal(
@@ -2150,7 +2336,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 3);
         should.equal(fields[0].key, 'title');
@@ -2174,7 +2360,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 3);
         should.equal(fields[0].key, 'title');
@@ -2199,9 +2385,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
-        urlPath: '/input-fields'
+        urlPath: '/input-fields',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 3);
         should.equal(fields[0].key, 'name');
@@ -2226,7 +2412,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 4);
         should.equal(fields[0].key, 'title');
@@ -2253,7 +2439,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 4);
         should.equal(fields[3].key, 'attrs');
@@ -2279,7 +2465,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 2);
         should.equal(fields[0].key, 'title');
@@ -2306,7 +2492,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 4);
         should.equal(fields[0].key, 'title');
@@ -2332,7 +2518,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 4);
         should.equal(fields[0].key, 'title');
@@ -2355,7 +2541,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 6);
         should.equal(fields[0].key, 'id');
@@ -2382,7 +2568,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 6);
         should.equal(fields[0].key, 'id');
@@ -2410,7 +2596,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 7);
         should.equal(fields[0].key, 'id');
@@ -2443,7 +2629,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 7);
         should.equal(fields[0].key, 'id');
@@ -2472,7 +2658,7 @@ describe('Integration Test', () => {
         'creates.movie.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 7);
         should.equal(fields[0].key, 'id');
@@ -2501,9 +2687,9 @@ describe('Integration Test', () => {
         // In reality, file will always be a "hydrate URL" that looks something
         // like https://zapier.com/engine/hydrate/1/abcd/, but in fact any
         // valid URL would work.
-        file: 'https://httpbin.zapier-tooling.com/image/png'
+        file: `${HTTPBIN_URL}/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, '379f5137831350c900e757b39e525b9db1426d53');
         should.equal(file.mimetype, 'image/png');
@@ -2526,9 +2712,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'this is a pig.png',
-        file: 'https://httpbin.zapier-tooling.com/redirect-to?url=/image/png'
+        file: `${HTTPBIN_URL}/redirect-to?url=/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, '379f5137831350c900e757b39e525b9db1426d53');
         should.equal(file.mimetype, 'image/png');
@@ -2555,9 +2741,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'this is a pig.png',
-        file: 'https://httpbin.zapier-tooling.com/image/png'
+        file: `${HTTPBIN_URL}/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, '379f5137831350c900e757b39e525b9db1426d53');
         should.equal(file.mimetype, 'image/png');
@@ -2584,9 +2770,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'this is a wolf.jpg',
-        file: 'https://httpbin.zapier-tooling.com/image/jpeg'
+        file: `${HTTPBIN_URL}/image/jpeg`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, 'eb1db8fa7b8277f2de5d7b40d6cdbc708aac4e52');
         should.equal(file.mimetype, 'image/jpeg');
@@ -2613,9 +2799,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png'
+        file: `${HTTPBIN_URL}/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, 'e3076b0be57756b9e7e23192a9d29dfb0b3f4b31');
         should.equal(file.mimetype, 'text/plain');
@@ -2642,9 +2828,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png'
+        file: `${HTTPBIN_URL}/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, 'eb1db8fa7b8277f2de5d7b40d6cdbc708aac4e52');
         should.equal(file.mimetype, 'image/jpeg');
@@ -2671,9 +2857,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png'
+        file: `${HTTPBIN_URL}/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, 'd17d3480b251a1556c3a4a48fdbd8a0aa2746c6f');
         should.equal(file.mimetype, 'text/plain');
@@ -2700,9 +2886,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png'
+        file: `${HTTPBIN_URL}/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, '04bc9f090eafc29a4ab29b05f0f306365b017857');
         should.equal(file.mimetype, 'application/json');
@@ -2729,9 +2915,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png'
+        file: `${HTTPBIN_URL}/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, 'ebad26f071d502f26ea7afccea320195c1ad7e8e');
         should.equal(file.mimetype, 'application/json');
@@ -2758,9 +2944,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png'
+        file: `${HTTPBIN_URL}/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, 'd7bd9d0e663a001291d1536715403744cbff054d');
         should.equal(file.mimetype, 'application/json');
@@ -2787,9 +2973,9 @@ describe('Integration Test', () => {
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
         filename: 'dont.care',
-        file: 'https://httpbin.zapier-tooling.com/image/png'
+        file: `${HTTPBIN_URL}/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, '379f5137831350c900e757b39e525b9db1426d53');
 
@@ -2815,9 +3001,9 @@ describe('Integration Test', () => {
       input.bundle.inputData = {
         id: 'whatever',
         name: 'a pig',
-        file_1: 'https://httpbin.zapier-tooling.com/image/png'
+        file_1: `${HTTPBIN_URL}/image/png`,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const file = output.results.file;
         should.equal(file.sha1, '379f5137831350c900e757b39e525b9db1426d53');
 
@@ -2841,10 +3027,10 @@ describe('Integration Test', () => {
         input.bundle.inputData = {
           method: 'getUser',
           bundle: {
-            userId: 3
-          }
+            userId: 3,
+          },
         };
-        return app(input).then(output => {
+        return app(input).then((output) => {
           const user = output.results;
           should.equal(user.id, 3);
           should.equal(user.name, 'Clementine Bauch');
@@ -2860,8 +3046,8 @@ describe('Integration Test', () => {
         input.bundle.inputData = {
           method: 'getUser',
           bundle: {
-            userId: 3
-          }
+            userId: 3,
+          },
         };
         return app(input).should.be.rejectedWith(/Unauthorized/);
       });
@@ -2874,15 +3060,15 @@ describe('Integration Test', () => {
         input.bundle.inputData = {
           method: 'getUser',
           bundle: {
-            userId: 3
-          }
+            userId: 3,
+          },
         };
         return app(input).should.be.rejectedWith(/Unauthorized/);
       });
     });
 
     describe('legacyFileHydrator', () => {
-      const mockFileStahser = input => {
+      const mockFileStahser = (input) => {
         // Mock z.stashFile to do nothing but return file content and meta
         input.z.stashFile = async (
           filePromise,
@@ -2899,7 +3085,7 @@ describe('Integration Test', () => {
             content: JSON.parse(content),
             knownLength,
             filename,
-            contentType
+            contentType,
           };
         };
         return input;
@@ -2909,7 +3095,7 @@ describe('Integration Test', () => {
         const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
         const compiledApp = schemaTools.prepareApp(appDefWithAuth);
         const app = createAppWithCustomBefores(appDefWithAuth, [
-          mockFileStahser
+          mockFileStahser,
         ]);
 
         const input = createTestInput(
@@ -2919,15 +3105,15 @@ describe('Integration Test', () => {
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
           // This endpoint echoes what we send to it, so we know if auth info was sent
-          url: 'https://httpbin.zapier-tooling.com/get'
+          url: `${HTTPBIN_URL}/get`,
         };
-        return app(input).then(output => {
+        return app(input).then((output) => {
           const {
             response,
             content,
             knownLength,
             filename,
-            contentType
+            contentType,
           } = output.results;
           should.equal(content.headers['X-Api-Key'], 'super secret');
           should.not.exist(knownLength);
@@ -2947,7 +3133,7 @@ describe('Integration Test', () => {
         const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
         const compiledApp = schemaTools.prepareApp(appDefWithAuth);
         const app = createAppWithCustomBefores(appDefWithAuth, [
-          mockFileStahser
+          mockFileStahser,
         ]);
 
         const input = createTestInput(
@@ -2957,18 +3143,18 @@ describe('Integration Test', () => {
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
           // This endpoint echoes what we send to it, so we know if auth info was sent
-          url: 'https://httpbin.zapier-tooling.com/get',
+          url: `${HTTPBIN_URL}/get`,
           request: {
-            params: { foo: 1, bar: 'hello' }
-          }
+            params: { foo: 1, bar: 'hello' },
+          },
         };
-        return app(input).then(output => {
+        return app(input).then((output) => {
           const {
             response,
             content,
             knownLength,
             filename,
-            contentType
+            contentType,
           } = output.results;
 
           should.equal(content.args.foo, '1');
@@ -2991,7 +3177,7 @@ describe('Integration Test', () => {
         const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
         const compiledApp = schemaTools.prepareApp(appDefWithAuth);
         const app = createAppWithCustomBefores(appDefWithAuth, [
-          mockFileStahser
+          mockFileStahser,
         ]);
 
         const input = createTestInput(
@@ -3001,22 +3187,22 @@ describe('Integration Test', () => {
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
           // This endpoint echoes what we send to it, so we know if auth info was sent
-          url: 'https://httpbin.zapier-tooling.com/get',
+          url: `${HTTPBIN_URL}/get`,
           request: {
-            params: { foo: 1, bar: 'hello' }
+            params: { foo: 1, bar: 'hello' },
           },
           meta: {
             length: 1234,
-            name: 'hello.json'
-          }
+            name: 'hello.json',
+          },
         };
-        return app(input).then(output => {
+        return app(input).then((output) => {
           const {
             response,
             content,
             knownLength,
             filename,
-            contentType
+            contentType,
           } = output.results;
 
           should.equal(content.args.foo, '1');
@@ -3051,9 +3237,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
-        query: 'title 10'
+        query: 'title 10',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const movie = output.results[0];
@@ -3077,9 +3263,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
-        query: 'title 20'
+        query: 'title 20',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const movie = output.results[0];
@@ -3105,9 +3291,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
-        query: 'title 20'
+        query: 'title 20',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const movie = output.results[0];
@@ -3135,9 +3321,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
-        query: 'title 20'
+        query: 'title 20',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const movie = output.results[0];
@@ -3161,9 +3347,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
-        query: 'title 12'
+        query: 'title 12',
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         output.results.length.should.equal(1);
 
         const movie = output.results[0];
@@ -3189,9 +3375,9 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
-        id: 5
+        id: 5,
       };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.equal(movie.id, 5);
         should.equal(movie.title, 'title 5');
@@ -3214,7 +3400,7 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 5 };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.equal(movie.id, 5);
         should.equal(movie.title, 'title 5');
@@ -3242,7 +3428,7 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 6 };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.equal(movie.id, 6);
         should.equal(
@@ -3250,6 +3436,34 @@ describe('Integration Test', () => {
           'title 6 (movie_post_read_resource was here)'
         );
         should.equal(movie.anotherId, 6);
+      });
+    });
+
+    it('KEY_post_read_resource, returning array', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      const legacyProps = appDefWithAuth.legacy.searches.movie.operation;
+      legacyProps.resourceUrl = legacyProps.resourceUrl.replace(
+        '/movie/',
+        '/movies/'
+      );
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_post_read_resource_array',
+        'movie_post_read_resource'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'searches.movie.operation.performGet'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = { id: 6 };
+      return app(input).then((output) => {
+        const movie = output.results;
+        should.equal(movie.rating, 'PG');
+        should.equal(movie.year, 2020);
       });
     });
 
@@ -3273,7 +3487,7 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 7 };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.equal(movie.id, 7);
         should.equal(
@@ -3300,7 +3514,7 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 8 };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const movie = output.results;
         should.equal(movie.id, 8);
         should.equal(movie.title, 'title 8 (movie_read_resource was here)');
@@ -3319,7 +3533,7 @@ describe('Integration Test', () => {
         'searches.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 2);
         should.equal(fields[0].key, 'query');
@@ -3342,7 +3556,7 @@ describe('Integration Test', () => {
         'searches.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 2);
         should.equal(fields[0].key, 'query');
@@ -3366,7 +3580,7 @@ describe('Integration Test', () => {
         'searches.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 3);
         should.equal(fields[0].key, 'query');
@@ -3395,7 +3609,7 @@ describe('Integration Test', () => {
         'searches.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 3);
         should.equal(fields[0].key, 'query');
@@ -3420,7 +3634,7 @@ describe('Integration Test', () => {
         'searches.movie.operation.inputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 3);
         should.equal(fields[0].key, 'query');
@@ -3442,7 +3656,7 @@ describe('Integration Test', () => {
         'searches.movie.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 6);
         should.equal(fields[0].key, 'id');
@@ -3469,7 +3683,7 @@ describe('Integration Test', () => {
         'searches.movie.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 6);
         should.equal(fields[0].key, 'id');
@@ -3497,7 +3711,7 @@ describe('Integration Test', () => {
         'searches.movie.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 7);
         should.equal(fields[0].key, 'id');
@@ -3530,7 +3744,7 @@ describe('Integration Test', () => {
         'searches.movie.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 7);
         should.equal(fields[0].key, 'id');
@@ -3559,7 +3773,7 @@ describe('Integration Test', () => {
         'searches.movie.operation.outputFields'
       );
       input.bundle.authData = { api_key: 'secret' };
-      return app(input).then(output => {
+      return app(input).then((output) => {
         const fields = output.results;
         should.equal(fields.length, 7);
         should.equal(fields[0].key, 'id');

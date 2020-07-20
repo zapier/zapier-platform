@@ -2,7 +2,7 @@ const ZapierBaseCommand = require('../../ZapierBaseCommand');
 const { flags } = require('@oclif/command');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
-const { callAPI, getLinkedApp } = require('../../../utils/api');
+const { callAPI } = require('../../../utils/api');
 
 class UsersAddCommand extends ZapierBaseCommand {
   async perform() {
@@ -19,8 +19,8 @@ class UsersAddCommand extends ZapierBaseCommand {
       return;
     }
 
+    const { id } = await this.getWritableApp();
     this.startSpinner('Inviting user');
-    const { id } = await getLinkedApp();
     const url = `/apps/${id}/invitees/${this.args.email}${
       this.args.version ? `/${this.args.version}` : ''
     }`;
@@ -34,25 +34,25 @@ UsersAddCommand.args = [
     name: 'email',
     description:
       "The user to be invited. If they don't have a Zapier account, they'll be prompted to create one.",
-    required: true
+    required: true,
   },
   {
     name: 'version',
     description:
-      'A version string (like 1.2.3). Optional, used only if you want to invite a user to a specific version instead of all versions.'
-  }
+      'A version string (like 1.2.3). Optional, used only if you want to invite a user to a specific version instead of all versions.',
+  },
 ];
 UsersAddCommand.flags = buildFlags({
   commandFlags: {
     force: flags.boolean({
       char: 'f',
-      description: 'Skip confirmation. Useful for running programatically.'
-    })
-  }
+      description: 'Skip confirmation. Useful for running programatically.',
+    }),
+  },
 });
 UsersAddCommand.examples = [
   'zapier users:add bruce@wayne.com',
-  'zapier users:add alfred@wayne.com 1.2.3'
+  'zapier users:add alfred@wayne.com 1.2.3',
 ];
 UsersAddCommand.description = `Add a user to some or all versions of your integration.
 

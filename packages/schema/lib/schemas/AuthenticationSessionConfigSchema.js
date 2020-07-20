@@ -15,10 +15,10 @@ module.exports = makeSchema(
       perform: {
         description:
           'Define how Zapier fetches the additional authData needed to make API calls.',
-        oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
-      }
+        oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [FunctionSchema, RequestSchema]
 );

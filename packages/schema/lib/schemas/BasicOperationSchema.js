@@ -19,22 +19,22 @@ module.exports = makeSchema(
       resource: {
         description:
           'Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.',
-        $ref: KeySchema.id
+        $ref: KeySchema.id,
       },
       perform: {
         description:
           "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
-        oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
+        oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
       },
       inputFields: {
         description:
           'What should the form a user sees and configures look like?',
-        $ref: DynamicFieldsSchema.id
+        $ref: DynamicFieldsSchema.id,
       },
       outputFields: {
         description:
           'What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.',
-        $ref: DynamicFieldsSchema.id
+        $ref: DynamicFieldsSchema.id,
       },
       sample: {
         description:
@@ -45,12 +45,12 @@ module.exports = makeSchema(
         docAnnotation: {
           required: {
             type: 'replace', // replace or append
-            value: '**yes** (with exceptions, see description)'
-          }
-        }
-      }
+            value: '**yes** (with exceptions, see description)',
+          },
+        },
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [DynamicFieldsSchema, FunctionSchema, KeySchema, RequestSchema, ResultsSchema]
 );

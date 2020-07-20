@@ -1,22 +1,15 @@
-const listExample = (z, bundle) => {
+const listExample = async (z, bundle) => {
   const customHttpOptions = {
+    url: 'https://example.com/api/v2/recipes.json',
     headers: {
-      'my-header': 'from zapier'
-    }
+      'my-header': 'from zapier',
+    },
   };
+  const response = await z.request(customHttpOptions);
 
-  return z
-    .request('https://example.com/api/v2/recipes.json', customHttpOptions)
-    .then(response => {
-      if (response.status >= 300) {
-        throw new Error(`Unexpected status code ${response.status}`);
-      }
-
-      const recipes = z.JSON.parse(response.content);
-      // do any custom processing of recipes here...
-
-      return recipes;
-    });
+  const recipes = response.data; // or response.json if you're using core v9 or older
+  // You can do any custom processing of recipes here...
+  return recipes;
 };
 
 const App = {
@@ -26,8 +19,8 @@ const App = {
       // ...
       operation: {
         // ...
-        perform: listExample
-      }
-    }
-  }
+        perform: listExample,
+      },
+    },
+  },
 };

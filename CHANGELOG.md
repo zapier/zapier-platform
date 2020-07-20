@@ -1,3 +1,100 @@
+## 10.0.0
+
+Another major release! We have some great improvements in this version but also have breaking changes. Please review the following to see if you need to change anything to upgrade `zapier-platform-core` to v10.
+
+(a) Zapier integrations that depend on the new Core v10 **will run using Node.js 12**. To upgrade, first you need install Node 12 if you haven't. You can install Node 12 using `nvm`. Second, update your `package.json` to depend on `zapier-platform-core@10.0.0`. Third, run `npm install`. Finally, you may want to run unit tests on Node 12 before you push your code to production for further testing.
+
+(b) **`z.request` now always calls `response.throwForStatus`** via a middleware by default. You no longer need to call `response.throwForStatus` after `z.request`, the built-in middleware will do that for you. See [Error Response Handling](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#error-response-handling) for details.
+
+(c) **`response.throwForStatus` now only throws an error if the status code is between 400 and 600 (inclusive)**. Before v10, it threw for status >= 300. So if your code rely on that old behavior, you should change your code to check `response.status` explicitly instead of using `response.throwForStatus`.
+
+(d) **Session and OAuth2 refresh now happens AFTER your `afterResponse`**. Before v10, the refresh happens before your `afterResponse`. This is a breaking change if your `afterResponse` captures 401 response status. See [v10 Breaking Change: Auth Refresh](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#v10-breaking-change-auth-refresh) for details.
+
+(e) We now **parse JSON and form-encoded response body by default**. So no more `z.JSON.parse(response.content)`! The parsed object is available as `response.data` (`response.json` will be still available for JSON body but less preferable). Before v10, we only parsed JSON for [manual requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#manual-http-requests); parsed JSON and form-encoded body for [shorthand requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#shorthand-http-requests). This change could be breaking if you have an `afterResponse` that modifies `response.content`, with the expectation for shorthand requests to pick up on that. In which case, you'll have to replace `response.content = JSON.stringify(parsedOrTransformed)` with `response.data = parsedOrTransformed`.
+
+(f) We rewrote the CLI `zapier init` command. Now the project templates are more up-to-date, with better coding practices. However, **we've removed the following templates**: `babel`, `create`, `github`, `middleware`, `oauth1-tumblr`, `oauth1-twitter`, `onedrive`, `resource`, `rest-hooks`, `trigger`. For trigger/create/search, use `zapier scaffold` command instead. For `babel`, look at `typescript` template and replace the build step with the similar code from https://babeljs.io/setup#installation. For `oauth1`, we now only keep `oauth1-trello` for simplicity. If you ever need to look at the old templates, they're always available in the [example-apps](https://github.com/zapier/zapier-platform/tree/60eaabd04571df30a3c33e4ab5ec4fe0312ad701/example-apps) directory in the repo.
+
+(g) `zapier init` no longer uses the `minimal` template by default. If you don't specify `--template`, **`zapier init` will prompt you interactively**. So if you're using `zapier init` (without any arguments) in CI and expect it to use `minimal` by default, you should replace the command with `zapier init -t minimal`.
+
+See below for a detailed changelog (**:exclamation: denotes a breaking change**):
+
+### cli
+
+* :exclamation: We've improved and removed some templates from `init` command, see (e) above for a list of templates that were removed ([#206](https://github.com/zapier/zapier-platform/pull/206))
+* :nail_care: `build` command no longer needs login ([#216](https://github.com/zapier/zapier-platform/pull/216))
+* :nail_care: `promote` command becomes more receptive about the changelog format ([#209](https://github.com/zapier/zapier-platform/pull/209))
+* :nail_care: Regenerate [example apps](https://github.com/zapier/zapier-platform/tree/60eaabd04571df30a3c33e4ab5ec4fe0312ad701/example-apps) using the new `init` command ([#229](https://github.com/zapier/zapier-platform/pull/229))
+* :scroll: Update and clean up docs ([#222](https://github.com/zapier/zapier-platform/pull/222))
+* :scroll: Add some clarity around what we're sending for analytics ([#215](https://github.com/zapier/zapier-platform/pull/215))
+* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+
+### core
+
+* :exclamation: Integrations now run on Node.js 12!
+* :exclamation: `z.request` now always calls `response.throwForStatus` via a middleware by default ([#210](https://github.com/zapier/zapier-platform/pull/210))
+* :exclamation: Session and OAuth2 refresh now happens AFTER your `afterResponse` ([#210](https://github.com/zapier/zapier-platform/pull/210))
+* :exclamation: `response.throwForStatus` now only throws for 400 <= status <= 600 ([#192](https://github.com/zapier/zapier-platform/pull/192))
+* :exclamation: Introduce `response.data` with support for form-urlencoded and custom parsing ([#211](https://github.com/zapier/zapier-platform/pull/211))
+* :bug: Don't log request body when it's streaming data ([#214](https://github.com/zapier/zapier-platform/pull/214))
+* :bug: `z.request`'s `allowGetBody` option shouldn't send empty body ([#227](https://github.com/zapier/zapier-platform/pull/227))
+* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+
+### schema
+
+* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+
+## 9.4.0
+
+### cli
+
+* :nail_care: `build` and `push` command now produces smaller zips (≈30% of the original size!) ([#202](https://github.com/zapier/zapier-platform/pull/202))
+
+### core
+
+* :nail_care: `z.request` now has an `allowGetBody` option that allows you to send a GET request with a body ([#195](https://github.com/zapier/zapier-platform/pull/195))
+* :scroll: Update examples to demonstrate `z.errors.Error` ([#198](https://github.com/zapier/zapier-platform/pull/198))
+* :scroll: Encourage use of `response.json` rather than `z.JSON.parse(response.content)` ([#200](https://github.com/zapier/zapier-platform/pull/200))
+* :hammer: Include `User-Agent` header for internal calls ([#204](https://github.com/zapier/zapier-platform/pull/204))
+
+### schema
+
+* No changes
+
+## 9.3.0
+
+### cli
+
+* No changes
+
+### core
+
+- :tada: We have new error classes! Use them to help improve user-facing error messages. Read [Error Handling](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#error-handling) in the docs for more. ([#189](https://github.com/zapier/zapier-platform/pull/189))
+- :nail_care: Show variable name when curlies have a type error ([#188](https://github.com/zapier/zapier-platform/pull/188))
+
+### schema
+
+- :nail_care: `RequestSchema` now has a `serializeValueForCurlies` option, allowing to "reliably interpolate arrays or objects to a string" ([#190](https://github.com/zapier/zapier-platform/pull/190))
+
+## 9.2.0
+
+### cli
+
+- :tada: `scaffold` command was entirely rewritten. Now it generates better code and is more resilient. ([#146](https://github.com/zapier/zapier-platform/pull/146))
+- :bug: Fix `convert` command so it correctly handles a visual builder app converted from Web Builder ([#159](https://github.com/zapier/zapier-platform/pull/159))
+- :bug: Allow env variables containing equals ([#179](https://github.com/zapier/zapier-platform/pull/179))
+- :bug: Fix SSO link in `login` command output ([#157](https://github.com/zapier/zapier-platform/pull/157))
+- :hammer: Fix test circular dependency ([#184](https://github.com/zapier/zapier-platform/pull/184))
+
+### core
+
+- :bug: Preserve non-empty values that include empty curlies in request objects ([#162](https://github.com/zapier/zapier-platform/pull/162))
+- :bug: Improve `appTester` types and bump Node versions ([#172](https://github.com/zapier/zapier-platform/pull/172))
+- :hammer: Fix smoke test circular dependency ([#175](https://github.com/zapier/zapier-platform/pull/175), [#185](https://github.com/zapier/zapier-platform/pull/185))
+
+### schema
+
+- :scroll: Clarify `FieldSchema.list` when used in `inputFields` vs. `outputFields` ([#143](https://github.com/zapier/zapier-platform/pull/143))
+
 ## 9.1.0
 
 ### cli

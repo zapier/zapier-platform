@@ -13,17 +13,17 @@ const App = {
               key: 'spreadsheet_id',
               required: true,
               label: 'Spreadsheet',
-              dynamic: 'spreadsheet.id.name'
+              dynamic: 'spreadsheet.id.name',
             },
             {
               key: 'worksheet_id',
               required: true,
               label: 'Worksheet',
-              dynamic: 'worksheet.id.name'
-            }
-          ]
-        }
-      }
-    }
-  }
+              dynamic: 'worksheet.id.name',
+            },
+          ],
+        },
+      },
+    },
+  },
 };

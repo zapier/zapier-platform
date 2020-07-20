@@ -24,38 +24,38 @@ module.exports = makeSchema(
         get: {
           display: {
             label: 'Get Tag by ID',
-            description: 'Grab a specific Tag by ID.'
+            description: 'Grab a specific Tag by ID.',
           },
           operation: {
             perform: {
-              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}'
+              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}',
             },
             sample: {
               id: 385,
-              name: 'proactive enable ROI'
-            }
-          }
-        }
+              name: 'proactive enable ROI',
+            },
+          },
+        },
       },
       {
         key: 'tag',
         noun: 'Tag',
         sample: {
           id: 385,
-          name: 'proactive enable ROI'
+          name: 'proactive enable ROI',
         },
         get: {
           display: {
             label: 'Get Tag by ID',
-            description: 'Grab a specific Tag by ID.'
+            description: 'Grab a specific Tag by ID.',
           },
           operation: {
             perform: {
-              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}'
-            }
+              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}',
+            },
             // resource sample is used
-          }
-        }
+          },
+        },
       },
       {
         key: 'tag',
@@ -64,30 +64,30 @@ module.exports = makeSchema(
           display: {
             label: 'Get Tag by ID',
             description: 'Grab a specific Tag by ID.',
-            hidden: true
+            hidden: true,
           },
           operation: {
             perform: {
-              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}'
-            }
-          }
+              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}',
+            },
+          },
         },
         list: {
           display: {
             label: 'New Tag',
-            description: 'Trigger when a new Tag is created in your account.'
+            description: 'Trigger when a new Tag is created in your account.',
           },
           operation: {
             perform: {
-              url: 'https://fake-crm.getsandbox.com/tags'
+              url: 'https://fake-crm.getsandbox.com/tags',
             },
             sample: {
               id: 385,
-              name: 'proactive enable ROI'
-            }
-          }
-        }
-      }
+              name: 'proactive enable ROI',
+            },
+          },
+        },
+      },
     ],
     antiExamples: [
       {
@@ -96,30 +96,30 @@ module.exports = makeSchema(
         get: {
           display: {
             label: 'Get Tag by ID',
-            description: 'Grab a specific Tag by ID.'
+            description: 'Grab a specific Tag by ID.',
           },
           operation: {
             perform: {
-              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}'
-            }
+              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}',
+            },
             // missing sample (and no sample on resource)
-          }
+          },
         },
         list: {
           display: {
             label: 'New Tag',
-            description: 'Trigger when a new Tag is created in your account.'
+            description: 'Trigger when a new Tag is created in your account.',
           },
           operation: {
             perform: {
-              url: 'https://fake-crm.getsandbox.com/tags'
+              url: 'https://fake-crm.getsandbox.com/tags',
             },
             sample: {
               id: 385,
-              name: 'proactive enable ROI'
-            }
-          }
-        }
+              name: 'proactive enable ROI',
+            },
+          },
+        },
       },
       {
         key: 'tag',
@@ -127,62 +127,62 @@ module.exports = makeSchema(
         get: {
           display: {
             label: 'Get Tag by ID',
-            description: 'Grab a specific Tag by ID.'
+            description: 'Grab a specific Tag by ID.',
           },
           operation: {
             perform: {
-              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}'
-            }
+              url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}',
+            },
             // missing sample (and no sample on resource)
-          }
-        }
-      }
+          },
+        },
+      },
     ],
     properties: {
       key: {
         description: 'A key to uniquely identify this resource.',
-        $ref: KeySchema.id
+        $ref: KeySchema.id,
       },
       noun: {
         description:
           'A noun for this resource that completes the sentence "create a new XXX".',
         type: 'string',
         minLength: 2,
-        maxLength: 255
+        maxLength: 255,
       },
       // TODO: do we need to break these all apart too? :-/
       get: {
         description: ResourceMethodGetSchema.schema.description,
-        $ref: ResourceMethodGetSchema.id
+        $ref: ResourceMethodGetSchema.id,
       },
       hook: {
         description: ResourceMethodHookSchema.schema.description,
-        $ref: ResourceMethodHookSchema.id
+        $ref: ResourceMethodHookSchema.id,
       },
       list: {
         description: ResourceMethodListSchema.schema.description,
-        $ref: ResourceMethodListSchema.id
+        $ref: ResourceMethodListSchema.id,
       },
       search: {
         description: ResourceMethodSearchSchema.schema.description,
-        $ref: ResourceMethodSearchSchema.id
+        $ref: ResourceMethodSearchSchema.id,
       },
       create: {
         description: ResourceMethodCreateSchema.schema.description,
-        $ref: ResourceMethodCreateSchema.id
+        $ref: ResourceMethodCreateSchema.id,
       },
       outputFields: {
         description: 'What fields of data will this return?',
-        $ref: DynamicFieldsSchema.id
+        $ref: DynamicFieldsSchema.id,
       },
       sample: {
         description: 'What does a sample of data look like?',
         type: 'object',
         // TODO: require id, ID, Id property?
-        minProperties: 1
-      }
+        minProperties: 1,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [
     ResourceMethodGetSchema,
@@ -191,6 +191,6 @@ module.exports = makeSchema(
     ResourceMethodSearchSchema,
     ResourceMethodCreateSchema,
     DynamicFieldsSchema,
-    KeySchema
+    KeySchema,
   ]
 );

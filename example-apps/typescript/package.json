@@ -1,36 +1,23 @@
 {
-  "name": "zapier-platform-example-app-typescript",
+  "name": "typescript",
   "version": "1.0.0",
-  "description": "An example app for the Zapier platform.",
-  "repository": "zapier/zapier-platform-example-app-typescript",
-  "homepage": "https://zapier.com/",
-  "author": "Bryan Helmig <bryan@zapier.com>",
-  "license": "BSD-3-Clause",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "zapier-clean": "rimraf ./lib || rimraf ./build",
-    "zapier-build": "npm run zapier-clean && tsc",
-    "zapier-dev": "npm run zapier-clean && tsc --watch",
-    "zapier-validate": "npm run zapier-build && zapier validate",
-    "zapier-push": "npm run zapier-build && zapier push",
-    "prepare": "npm run zapier-build",
-    "pretest": "npm run zapier-build",
-    "test": "mocha --recursive lib/test"
-  },
-  "engines": {
-    "node": ">=8.10.0",
-    "npm": ">=5.6.0"
+    "test": "npm run build && jest --testTimeout 10000 --rootDir ./lib/test",
+    "build": "npm run clean && tsc",
+    "clean": "rimraf ./lib ./build",
+    "watch": "npm run clean && tsc --watch"
   },
   "dependencies": {
-    "zapier-platform-core": "9.1.0"
+    "zapier-platform-core": "10.0.0"
   },
   "devDependencies": {
-    "@types/mocha": "5.2.0",
-    "@types/node": "10.17.9",
-    "mocha": "5.1.0",
-    "rimraf": "3.0.0",
-    "should": "13.2.1",
-    "typescript": "3.7.3"
+    "jest": "^25.5.3",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.13.5",
+    "rimraf": "^3.0.2",
+    "typescript": "^3.8.3"
   },
   "private": true
 }

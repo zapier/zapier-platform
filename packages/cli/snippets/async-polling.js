@@ -11,11 +11,11 @@ const asyncExample = async (z, bundle) => {
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       _start: start,
-      _limit: limit
-    }
+      _limit: limit,
+    },
   });
 
-  let results = response.json;
+  let results = response.data; // response.json if you're using core v9 or older
 
   // keep paging until the last item was created over two hours ago
   // then we know we almost certainly haven't missed anything and can let
@@ -28,11 +28,11 @@ const asyncExample = async (z, bundle) => {
       url: 'https://jsonplaceholder.typicode.com/posts',
       params: {
         _start: start,
-        _limit: limit
-      }
+        _limit: limit,
+      },
     });
 
-    results = results.concat(response.json);
+    results = results.concat(response.data);
   }
 
   return results;

@@ -4,7 +4,7 @@ const _ = require('lodash');
 const memoize = require('./memoize');
 const plainModule = require('./plain');
 
-const isPlainObj = o => {
+const isPlainObj = (o) => {
   return (
     o &&
     typeof o === 'object' &&
@@ -14,7 +14,7 @@ const isPlainObj = o => {
 
 const comparison = (obj, needle) => obj === needle;
 
-const getObjectType = obj => {
+const getObjectType = (obj) => {
   if (_.isPlainObject(obj)) {
     return 'Object';
   }
@@ -71,8 +71,8 @@ const findMapDeep = (haystack, needle, comp) => {
 
 const memoizedFindMapDeep = memoize(findMapDeep);
 
-const deepCopy = obj => {
-  return _.cloneDeepWith(obj, value => {
+const deepCopy = (obj) => {
+  return _.cloneDeepWith(obj, (value) => {
     if (_.isFunction(value)) {
       return value;
     }
@@ -80,14 +80,14 @@ const deepCopy = obj => {
   });
 };
 
-const jsonCopy = obj => {
+const jsonCopy = (obj) => {
   return JSON.parse(JSON.stringify(obj));
 };
 
-const deepFreeze = obj => {
+const deepFreeze = (obj) => {
   Object.freeze(obj);
 
-  Object.getOwnPropertyNames(obj).forEach(function(prop) {
+  Object.getOwnPropertyNames(obj).forEach(function (prop) {
     if (
       Object.prototype.hasOwnProperty.call(obj, prop) && // https://eslint.org/docs/rules/no-prototype-builtins
       (typeof obj[prop] === 'object' || typeof obj[prop] === 'function') &&
@@ -107,12 +107,12 @@ const recurseReplace = (obj, replacer, options = {}) => {
     obj = replacer(obj);
   }
   if (Array.isArray(obj)) {
-    return obj.map(value => {
+    return obj.map((value) => {
       return recurseReplace(value, replacer, options);
     });
   } else if (isPlainObj(obj)) {
     const newObj = {};
-    Object.keys(obj).map(key => {
+    Object.keys(obj).map((key) => {
       const value = obj[key];
       newObj[key] = recurseReplace(value, replacer, options);
     });
@@ -126,12 +126,12 @@ const recurseReplace = (obj, replacer, options = {}) => {
 // Recursively extract values from a nested object based on the matcher function.
 const recurseExtract = (obj, matcher) => {
   const values = [];
-  Object.keys(obj).map(key => {
+  Object.keys(obj).map((key) => {
     const value = obj[key];
     if (matcher(key, value)) {
       values.push(value);
     } else if (isPlainObj(value)) {
-      recurseExtract(value, matcher).map(v => {
+      recurseExtract(value, matcher).map((v) => {
         values.push(v);
       });
     }
@@ -202,5 +202,5 @@ module.exports = {
   memoizedFindMapDeep,
   recurseExtract,
   recurseReplace,
-  simpleTruncate
+  simpleTruncate,
 };

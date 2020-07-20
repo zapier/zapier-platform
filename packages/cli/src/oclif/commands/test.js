@@ -14,7 +14,7 @@ class TestCommand extends BaseCommand {
     }
 
     const extraEnv = {
-      ZAPIER_BASE_ENDPOINT: constants.BASE_ENDPOINT
+      ZAPIER_BASE_ENDPOINT: constants.BASE_ENDPOINT,
     };
 
     if (this.debug.enabled) {
@@ -36,7 +36,7 @@ class TestCommand extends BaseCommand {
       '--silent',
       'test',
       '--',
-      `--timeout=${this.flags.timeout}`
+      `--timeout=${this.flags.timeout}`,
     ];
     if (this.flags.grep) {
       argv.push(`--grep=${this.flags.grep}`);
@@ -47,7 +47,7 @@ class TestCommand extends BaseCommand {
     const packageManager = this.flags.yarn ? 'yarn' : 'npm';
     const output = await runCommand(packageManager, argv, {
       stdio: 'inherit',
-      env
+      env,
     });
     if (output.stdout) {
       this.log(output.stdout);
@@ -60,23 +60,23 @@ TestCommand.flags = buildFlags({
     timeout: flags.integer({
       char: 't',
       description: 'Set test-case timeout in milliseconds.',
-      default: 2000
+      default: 2000,
     }),
     grep: flags.string({
-      description: 'Only run tests matching pattern.'
+      description: 'Only run tests matching pattern.',
     }),
     'skip-validate': flags.boolean({
-      description: 'Forgo running `zapier validate` before `npm test`.'
+      description: 'Forgo running `zapier validate` before `npm test`.',
     }),
     yarn: flags.boolean({
-      description: 'Use yarn instead of npm.'
-    })
-  }
+      description: 'Use yarn instead of npm.',
+    }),
+  },
 });
 
 TestCommand.examples = [
   'zapier test',
-  'zapier test -t 30000 --grep api --skip-validate'
+  'zapier test -t 30000 --grep api --skip-validate',
 ];
 TestCommand.description = `Test your integration via \`npm test\`.
 

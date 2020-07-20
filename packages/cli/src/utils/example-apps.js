@@ -12,7 +12,7 @@ const REPO_ZIP_URL = `https://codeload.github.com/zapier/zapier-platform/zip/zap
 const zipName = `zapier-platform-zapier-platform-cli-${PACKAGE_VERSION}`;
 const folderName = `zapier-platform-cached`; // version independant
 
-const checkCacheUpToDate = async repoDir => {
+const checkCacheUpToDate = async (repoDir) => {
   const etagPath = path.join(repoDir, 'etag');
   let currentEtag;
   try {
@@ -26,7 +26,7 @@ const checkCacheUpToDate = async repoDir => {
   return currentEtag === latestEtag;
 };
 
-const downloadRepo = async destDir => {
+const downloadRepo = async (destDir) => {
   const destZipPath = path.join(destDir, `${zipName}.zip`);
 
   const res = await fetch(REPO_ZIP_URL);
@@ -79,11 +79,11 @@ const downloadExampleAppTo = async (exampleName, destDir) => {
   await copyDir(cachedExampleDir, destDir);
 };
 
-const removeReadme = dir => {
+const removeReadme = (dir) => {
   return fse.remove(path.join(dir, 'README.md'));
 };
 
 module.exports = {
   downloadExampleAppTo,
-  removeReadme
+  removeReadme,
 };

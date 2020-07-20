@@ -8,7 +8,7 @@ class UsersLinksCommand extends ZapierBaseCommand {
     this.startSpinner('Loading links');
     const {
       invite_url: inviteUrl,
-      versions_invite_urls: versionInviteUrls
+      versions_invite_urls: versionInviteUrls,
     } = await listEndpoint('invitees');
 
     this.stopSpinner();
@@ -26,9 +26,12 @@ class UsersLinksCommand extends ZapierBaseCommand {
     this.logTable({
       rows: Object.entries(versionInviteUrls).map(([version, url]) => ({
         version,
-        url
+        url,
       })),
-      headers: [['Version', 'version'], ['URL', 'url']]
+      headers: [
+        ['Version', 'version'],
+        ['URL', 'url'],
+      ],
     });
 
     this.log(

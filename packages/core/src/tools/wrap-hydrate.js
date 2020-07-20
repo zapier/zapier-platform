@@ -6,7 +6,7 @@ const { DehydrateError } = require('../errors');
 
 const MAX_PAYLOAD_SIZE = 2048;
 
-const wrapHydrate = payload => {
+const wrapHydrate = (payload) => {
   payload = JSON.stringify(payload);
 
   if (payload.length > MAX_PAYLOAD_SIZE) {

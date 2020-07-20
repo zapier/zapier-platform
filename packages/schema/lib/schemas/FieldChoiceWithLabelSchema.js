@@ -15,18 +15,18 @@ module.exports = makeSchema({
       description:
         'The actual value that is sent into the Zap. Should match sample exactly.',
       type: 'string',
-      minLength: 1
+      minLength: 1,
     },
     sample: {
       description:
         "Displayed as light grey text in the editor. It's important that the value match the sample. Otherwise, the actual value won't match what the user picked, which is confusing.",
       type: 'string',
-      minLength: 1
+      minLength: 1,
     },
     label: {
       description: 'A human readable label for this value.',
       type: 'string',
-      minLength: 1
-    }
-  }
+      minLength: 1,
+    },
+  },
 });

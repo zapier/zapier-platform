@@ -3,6 +3,7 @@
 const makeSchema = require('../utils/makeSchema');
 
 const FlatObjectSchema = require('./FlatObjectSchema');
+const FunctionSchema = require('./FunctionSchema');
 
 module.exports = makeSchema(
   {
@@ -15,12 +16,12 @@ module.exports = makeSchema(
         description: 'The HTTP method for the request.',
         type: 'string',
         default: 'GET',
-        enum: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD']
+        enum: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'HEAD'],
       },
       url: {
         description:
           'A URL for the request (we will parse the querystring and merge with params). Keys and values will not be re-encoded.',
-        type: 'string'
+        type: 'string',
       },
       body: {
         description: 'Can be nothing, a raw string or JSON (object or array).',
@@ -28,17 +29,17 @@ module.exports = makeSchema(
           { type: 'null' }, // nothing
           { type: 'string' }, // raw body
           { type: 'object' }, // json body object
-          { type: 'array' } // json body array
-        ]
+          { type: 'array' }, // json body array
+        ],
       },
       params: {
         description:
           'A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.',
-        $ref: FlatObjectSchema.id
+        $ref: FlatObjectSchema.id,
       },
       headers: {
         description: 'The HTTP headers for the request.',
-        $ref: FlatObjectSchema.id
+        $ref: FlatObjectSchema.id,
       },
       auth: {
         description:
@@ -49,11 +50,11 @@ module.exports = makeSchema(
             items: {
               type: 'string',
               minProperties: 2,
-              maxProperties: 2
-            }
+              maxProperties: 2,
+            },
           },
-          { $ref: FlatObjectSchema.id }
-        ]
+          { $ref: FlatObjectSchema.id },
+        ],
       },
       removeMissingValuesFrom: {
         description:
@@ -64,19 +65,30 @@ module.exports = makeSchema(
             description:
               'Refers to data sent via a requests query params (`req.params`)',
             type: 'boolean',
-            default: false
+            default: false,
           },
           body: {
             description:
               'Refers to tokens sent via a requsts body (`req.body`)',
             type: 'boolean',
-            default: false
-          }
+            default: false,
+          },
         },
-        additionalProperties: false
-      }
+        additionalProperties: false,
+      },
+      serializeValueForCurlies: {
+        description:
+          'A function to customize how to serialize a value for curlies `{{var}}` in the request object. By default, when this is unspecified, the request client only replaces curlies where variables are strings, and would throw an error for non-strings. The function should accepts a single argument as the value to be serialized and return the string representation of the argument.',
+        $ref: FunctionSchema.id,
+      },
+      skipThrowForStatus: {
+        description:
+          "If `true`, don't throw an exception for response 400 <= status < 600 automatically before resolving with the response. Defaults to `false`.",
+        type: 'boolean',
+        default: false,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
-  [FlatObjectSchema]
+  [FlatObjectSchema, FunctionSchema]
 );

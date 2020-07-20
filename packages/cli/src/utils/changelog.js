@@ -9,9 +9,8 @@ const getChangelogFromMarkdown = (version, markdown) => {
     .replace(/\r/g, '\n')
     .split('\n');
 
-  let startingLine = _.findIndex(
-    lines,
-    line => line.indexOf(`## ${version}`) === 0
+  let startingLine = _.findIndex(lines, (line) =>
+    RegExp(`## .*${version}`).test(line)
   );
 
   if (startingLine === -1) {
@@ -23,7 +22,7 @@ const getChangelogFromMarkdown = (version, markdown) => {
 
   let endingLine = _.findIndex(
     lines,
-    line => line.indexOf('## ') === 0,
+    (line) => line.indexOf('## ') === 0,
     startingLine
   );
 
@@ -43,10 +42,10 @@ const getVersionChangelog = (version, appDir = '.') => {
   const file = path.resolve(appDir, 'CHANGELOG.md');
 
   return readFile(file)
-    .then(buffer => getChangelogFromMarkdown(version, buffer.toString()))
+    .then((buffer) => getChangelogFromMarkdown(version, buffer.toString()))
     .catch(() => ''); // We're ignoring files that don't exist or that aren't readable
 };
 
 module.exports = {
-  getVersionChangelog
+  getVersionChangelog,
 };

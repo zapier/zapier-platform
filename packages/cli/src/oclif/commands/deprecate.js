@@ -1,13 +1,11 @@
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 
-const { callAPI, getLinkedApp, checkCredentials } = require('../../utils/api');
+const { callAPI } = require('../../utils/api');
 
 class DeprecateCommand extends BaseCommand {
   async perform() {
-    await checkCredentials();
-
-    const app = await getLinkedApp();
+    const app = await this.getWritableApp();
     const { version, date } = this.args;
     this.log(
       `Preparing to deprecate version ${version} your app "${app.title}".\n`
@@ -17,8 +15,8 @@ class DeprecateCommand extends BaseCommand {
     await callAPI(url, {
       method: 'PUT',
       body: {
-        deprecation_date: date
-      }
+        deprecation_date: date,
+      },
     });
     this.stopSpinner();
     this.log(
@@ -32,14 +30,14 @@ DeprecateCommand.args = [
   {
     name: 'version',
     description: 'The version to deprecate.',
-    required: true
+    required: true,
   },
   {
     name: 'date',
     required: true,
     description:
-      'The date (YYYY-MM-DD) when Zapier will make the specified version unavailable.'
-  }
+      'The date (YYYY-MM-DD) when Zapier will make the specified version unavailable.',
+  },
 ];
 DeprecateCommand.examples = ['zapier deprecate 1.2.3 2011-10-01'];
 DeprecateCommand.description = `Mark a non-production version of your integration as deprecated, with removal by a certain date.

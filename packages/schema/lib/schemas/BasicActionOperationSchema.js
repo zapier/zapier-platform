@@ -22,16 +22,16 @@ BasicActionOperationSchema.properties = {
   performResume: {
     description:
       'A function that parses data from a perform + callback to resume this action. For use with callback semantics',
-    $ref: FunctionSchema.id
+    $ref: FunctionSchema.id,
   },
   performGet: {
     description:
       'How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.',
-    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }]
+    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
   },
   inputFields: BasicActionOperationSchema.properties.inputFields,
   outputFields: BasicActionOperationSchema.properties.outputFields,
-  sample: BasicActionOperationSchema.properties.sample
+  sample: BasicActionOperationSchema.properties.sample,
 };
 
 module.exports = makeSchema(

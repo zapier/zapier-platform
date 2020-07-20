@@ -22,14 +22,14 @@ const createCommandHandler = require('./create-command-handler');
    Applies standard middlewares that we want on every z-app, but
    caller can supply custom before and after middlewares.
 */
-const createApp = appRaw => {
+const createApp = (appRaw) => {
   const frozenCompiledApp = schemaTools.prepareApp(appRaw);
 
   // standard before middlewares
   const befores = [
     addAppContext,
     injectZObject,
-    ...ensureArray(frozenCompiledApp.beforeApp)
+    ...ensureArray(frozenCompiledApp.beforeApp),
   ];
 
   // standard after middlewares
@@ -38,7 +38,7 @@ const createApp = appRaw => {
     largeResponseCachePointer,
     waitForPromises,
     callbackStatusCatcher,
-    ...ensureArray(frozenCompiledApp.afterApp)
+    ...ensureArray(frozenCompiledApp.afterApp),
   ];
 
   const app = createCommandHandler(frozenCompiledApp);

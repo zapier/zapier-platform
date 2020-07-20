@@ -13,10 +13,10 @@ module.exports = makeSchema(
       [],
       [{ key: 'abc' }],
       [{ key: 'abc' }, '$func$2$f$'],
-      ['$func$2$f$', '$func$2$f$']
+      ['$func$2$f$', '$func$2$f$'],
     ],
     antiExamples: [[{}], [{ key: 'abc', choices: {} }], '$func$2$f$'],
-    $ref: FieldOrFunctionSchema.id
+    $ref: FieldOrFunctionSchema.id,
   },
   [FieldOrFunctionSchema]
 );

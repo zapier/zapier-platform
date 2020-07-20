@@ -14,5 +14,5 @@ const integrationTestHandler = (event, context, callback) => {
 module.exports = {
   createAppHandler: createLambdaHandler,
   createAppTester: createAppTester,
-  integrationTestHandler
+  integrationTestHandler,
 };

@@ -1,4 +1,4 @@
-const { AUTH_JSON_SERVER_URL } = require('../auth-json-server');
+const { AUTH_JSON_SERVER_URL, HTTPBIN_URL } = require('../constants');
 
 const legacyScriptingSource = `
     var qs = require('querystring');
@@ -56,12 +56,12 @@ const legacyScriptingSource = `
       },
 
       pre_oauthv2_refresh_httpbin_form: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         return bundle.request;
       },
 
       pre_oauthv2_refresh_httpbin_json: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.headers['Content-Type'] = 'application/json';
         return bundle.request;
       },
@@ -78,7 +78,7 @@ const legacyScriptingSource = `
         bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 
         return {
-          url: 'https://httpbin.zapier-tooling.com/post',
+          url: '${HTTPBIN_URL}/post',
           method: bundle.request.method,
           headers: bundle.request.headers,
           data: bundle.request.data
@@ -86,7 +86,7 @@ const legacyScriptingSource = `
       },
 
       pre_oauthv2_refresh_bundle_load: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = qs.stringify(bundle.load);
         bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
         return bundle.request;
@@ -194,7 +194,7 @@ const legacyScriptingSource = `
       movie_pre_poll_default_headers: function(bundle) {
         // Copy Accept and Content-Type to params so we know they're already
         // available in pre_poll
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.url = '${HTTPBIN_URL}/get';
         bundle.request.params.accept = bundle.request.headers.Accept;
         bundle.request.params.contentType = bundle.request.headers['Content-Type'];
         return bundle.request;
@@ -202,7 +202,7 @@ const legacyScriptingSource = `
 
       movie_pre_poll_dynamic_dropdown: function(bundle) {
         bundle.request.method = 'POST';
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
 
         // bundle.trigger_fields should be the values of the input fields of the
         // action/search/trigger that pulls the dynamic dropdown. Send it to
@@ -212,7 +212,7 @@ const legacyScriptingSource = `
       },
 
       movie_pre_poll_null_request_data: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.url = '${HTTPBIN_URL}/get';
         bundle.request.params.requestDataIsNull =
           bundle.request.data === null ? 'yes' : 'no';
         return bundle.request;
@@ -220,14 +220,14 @@ const legacyScriptingSource = `
 
       movie_pre_poll_bundle_meta: function(bundle) {
         bundle.request.method = 'POST';
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify(bundle.meta);
         return bundle.request;
       },
 
       movie_pre_poll_request_options: function(bundle) {
         bundle.request.method = 'POST';
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.headers.foo = '1234';
         bundle.request.params.bar = '5678';
         bundle.request.data = '{"aa":"bb"}';
@@ -236,13 +236,13 @@ const legacyScriptingSource = `
 
       movie_pre_poll_invalid_chars_in_headers: function(bundle) {
         bundle.request.headers['x-api-key'] = ' \\t\\n\\r H\\t E \\nY \\r\\n\\t ';
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.url = '${HTTPBIN_URL}/get';
         return bundle.request;
       },
 
       movie_pre_poll_number_header: function(bundle) {
         bundle.request.headers['x-api-key'] = Math.floor( Date.now() / 1000 )
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.url = '${HTTPBIN_URL}/get';
         return bundle.request;
       },
 
@@ -262,6 +262,31 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_GET_with_body: function(bundle) {
+        // Use postman-echo because httpbin doesn't echo a GET request's body
+        bundle.request.url = 'https://postman-echo.com/get';
+        bundle.request.method = 'GET';
+        bundle.request.data = JSON.stringify({
+          name: 'Luke Skywalker'
+        });
+        return bundle.request;
+      },
+
+      movie_pre_poll_GET_with_empty_body: function(bundle) {
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/echo';
+        return bundle.request;
+      },
+
+      movie_pre_poll_non_ascii_url: function(bundle) {
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/中文';
+        return bundle.request;
+      },
+
+      movie_pre_poll_env_var: function(bundle) {
+        bundle.request.url = 'https://{{process.env.SECRET_HTTPBIN_URL}}/get';
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];
@@ -274,7 +299,7 @@ const legacyScriptingSource = `
       movie_poll_default_headers: function(bundle) {
         // Copy Accept and Content-Type to params so we know they're already
         // available in pre_poll
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/get';
+        bundle.request.url = '${HTTPBIN_URL}/get';
         bundle.request.params.accept = bundle.request.headers.Accept;
         bundle.request.params.contentType = bundle.request.headers['Content-Type'];
 
@@ -457,7 +482,7 @@ const legacyScriptingSource = `
       movie_pre_write_unflatten: function(bundle) {
         // Make sure bundle.action_fields is unflatten, bundle.action_fields_full
         // isn't, and bundle.action_fields_raw still got curlies
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({
           action_fields: bundle.action_fields,
           action_fields_full: bundle.action_fields_full,
@@ -470,7 +495,7 @@ const legacyScriptingSource = `
       movie_pre_write_action_fields: function(bundle) {
         // Make sure bundle.action_fields is filtered, bundle.action_fields_full
         // isn't, and bundle.action_fields_raw still got curlies
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({
           action_fields: bundle.action_fields,
           action_fields_full: bundle.action_fields_full,
@@ -503,10 +528,22 @@ const legacyScriptingSource = `
         return 'ok';
       },
 
+      movie_pre_write_intercept_error: function(bundle) {
+        bundle.request.url = '${HTTPBIN_URL}/status/418';
+        return bundle.request;
+      },
+
+      movie_post_write_intercept_error: function(bundle) {
+        if (bundle.response.status_code == 418) {
+          throw new HaltedException('teapot here, go find a coffee machine');
+        }
+        return z.JSON.parse(bundle.response.content);
+      },
+
       movie_pre_write_default_headers: function(bundle) {
         // Copy Accept and Content-Type to request body so we know they're
         // already available in pre_write
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({
           accept: bundle.request.headers.Accept,
           contentType: bundle.request.headers['Content-Type']
@@ -534,12 +571,12 @@ const legacyScriptingSource = `
       },
 
       movie_pre_write_no_content: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/status/204';
+        bundle.request.url = '${HTTPBIN_URL}/status/204';
         return bundle.request;
       },
 
       movie_write_default_headers: function(bundle) {
-        bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+        bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({
           accept: bundle.request.headers.Accept,
           contentType: bundle.request.headers['Content-Type']
@@ -689,7 +726,7 @@ const legacyScriptingSource = `
 
       // To be replaced with 'file_pre_write' at runtime
       file_pre_write_fully_replace_url: function(bundle) {
-        bundle.request.files.file = 'https://httpbin.zapier-tooling.com/image/jpeg';
+        bundle.request.files.file = '${HTTPBIN_URL}/image/jpeg';
         return bundle.request;
       },
 
@@ -701,21 +738,21 @@ const legacyScriptingSource = `
 
       file_pre_write_content_dispoistion_with_quotes: function(bundle) {
         bundle.request.files.file =
-          'https://httpbin.zapier-tooling.com/response-headers?' +
+          '${HTTPBIN_URL}/response-headers?' +
           'Content-Disposition=filename=%22an%20example.json%22';
         return bundle.request;
       },
 
       file_pre_write_content_dispoistion_no_quotes: function(bundle) {
         bundle.request.files.file =
-          'https://httpbin.zapier-tooling.com/response-headers?' +
+          '${HTTPBIN_URL}/response-headers?' +
           'Content-Disposition=filename=example.json';
         return bundle.request;
       },
 
       file_pre_write_content_dispoistion_non_ascii: function(bundle) {
         bundle.request.files.file =
-          'https://httpbin.zapier-tooling.com/response-headers?' +
+          '${HTTPBIN_URL}/response-headers?' +
           'Content-Disposition=filename*=UTF-8%27%27%25E4%25B8%25AD%25E6%2596%2587.json';
         return bundle.request;
       },
@@ -775,6 +812,11 @@ const legacyScriptingSource = `
         movie.title += ' (movie_post_read_resource was here)';
         movie.anotherId = bundle.read_fields.id;
         return movie;
+      },
+
+      movie_post_read_resource_array: function(bundle) {
+        // WB would take the first item if the result is an array
+        return [{rating: 'PG', year: 2020}];
       },
 
       movie_read_resource_disabled: function(bundle) {
@@ -858,159 +900,162 @@ const contactTriggerFull = {
   key: 'contact_full',
   noun: 'Contact',
   display: {
-    label: 'New Contact with Full Scripting'
+    label: 'New Contact with Full Scripting',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_full');"
+      source:
+        "return z.legacyScripting.run(bundle, 'trigger', 'contact_full');",
     },
     outputFields: [
       {
         key: 'id',
         label: 'ID',
-        type: 'integer'
+        type: 'integer',
       },
       {
         key: 'name',
         label: 'Name',
-        type: 'string'
+        type: 'string',
       },
       {
         source:
-          "return z.legacyScripting.run(bundle, 'trigger.output', 'contact_full');"
-      }
-    ]
-  }
+          "return z.legacyScripting.run(bundle, 'trigger.output', 'contact_full');",
+      },
+    ],
+  },
 };
 
 const contactTriggerPre = {
   key: 'contact_pre',
   noun: 'Contact',
   display: {
-    label: 'New Contact with Pre Scripting'
+    label: 'New Contact with Pre Scripting',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_pre');"
-    }
-  }
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_pre');",
+    },
+  },
 };
 
 const contactTriggerPost = {
   key: 'contact_post',
   noun: 'Contact',
   display: {
-    label: 'New Contact with Post Scripting'
+    label: 'New Contact with Post Scripting',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'contact_post');"
-    }
-  }
+      source:
+        "return z.legacyScripting.run(bundle, 'trigger', 'contact_post');",
+    },
+  },
 };
 
 const contactTriggerPrePost = {
   key: 'contact_pre_post',
   noun: 'Contact',
   display: {
-    label: 'New Contact with Pre & Post Scripting'
+    label: 'New Contact with Pre & Post Scripting',
   },
   operation: {
     perform: {
       source:
-        "return z.legacyScripting.run(bundle, 'trigger', 'contact_pre_post');"
-    }
-  }
+        "return z.legacyScripting.run(bundle, 'trigger', 'contact_pre_post');",
+    },
+  },
 };
 
 const contactHookScriptingless = {
   key: 'contact_hook_scriptingless',
   noun: 'Contact',
   display: {
-    label: 'Contact Hook without Scripting'
+    label: 'Contact Hook without Scripting',
   },
   operation: {
     perform: {
       source:
-        "return z.legacyScripting.run(bundle, 'trigger.hook', 'contact_hook_scriptingless');"
-    }
-  }
+        "return z.legacyScripting.run(bundle, 'trigger.hook', 'contact_hook_scriptingless');",
+    },
+  },
 };
 
 const contactHookScripting = {
   key: 'contact_hook_scripting',
   noun: 'Contact',
   display: {
-    label: 'Contact Hook with KEY_catch_hook Scripting'
+    label: 'Contact Hook with KEY_catch_hook Scripting',
   },
   operation: {
     perform: {
       source:
-        "return z.legacyScripting.run(bundle, 'trigger.hook', 'contact_hook_scripting');"
+        "return z.legacyScripting.run(bundle, 'trigger.hook', 'contact_hook_scripting');",
     },
     performSubscribe: {
       source:
-        "return z.legacyScripting.run(bundle, 'trigger.hook.subscribe', 'contact_hook_scripting');"
+        "return z.legacyScripting.run(bundle, 'trigger.hook.subscribe', 'contact_hook_scripting');",
     },
     performUnsubscribe: {
       source:
-        "return z.legacyScripting.run(bundle, 'trigger.hook.unsubscribe', 'contact_hook_scripting');"
-    }
-  }
+        "return z.legacyScripting.run(bundle, 'trigger.hook.unsubscribe', 'contact_hook_scripting');",
+    },
+  },
 };
 
 const TestTrigger = {
   key: 'test',
   display: {
-    label: 'Test Auth'
+    label: 'Test Auth',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'test');"
-    }
-  }
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'test');",
+    },
+  },
 };
 
 const MovieTrigger = {
   key: 'movie',
   display: {
-    label: 'New Movie'
+    label: 'New Movie',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'movie');"
-    }
-  }
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'movie');",
+    },
+  },
 };
 
 const RecipeTrigger = {
   key: 'recipe',
   display: {
-    label: 'New Recipe'
+    label: 'New Recipe',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'trigger', 'recipe');"
-    }
-  }
+      source: "return z.legacyScripting.run(bundle, 'trigger', 'recipe');",
+    },
+  },
 };
 
 const MovieCreate = {
   key: 'movie',
   noun: 'Movie',
   display: {
-    label: 'Create a Movie'
+    label: 'Create a Movie',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'create', 'movie');"
+      source: "return z.legacyScripting.run(bundle, 'create', 'movie');",
     },
     inputFields: [
       { key: 'title', label: 'Title', type: 'string' },
       { key: 'genre', label: 'Genre', type: 'string' },
       {
-        source: "return z.legacyScripting.run(bundle, 'create.input', 'movie');"
-      }
+        source:
+          "return z.legacyScripting.run(bundle, 'create.input', 'movie');",
+      },
     ],
     outputFields: [
       { key: 'id', label: 'ID', type: 'integer' },
@@ -1018,94 +1063,95 @@ const MovieCreate = {
       { key: 'genre', label: 'Genre', type: 'string' },
       {
         source:
-          "return z.legacyScripting.run(bundle, 'create.output', 'movie');"
-      }
-    ]
-  }
+          "return z.legacyScripting.run(bundle, 'create.output', 'movie');",
+      },
+    ],
+  },
 };
 
 const FileUpload = {
   key: 'file',
   noun: 'File',
   display: {
-    label: 'Upload a File'
+    label: 'Upload a File',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'create', 'file');"
+      source: "return z.legacyScripting.run(bundle, 'create', 'file');",
     },
     inputFields: [
       { key: 'filename', label: 'Filename', type: 'string' },
-      { key: 'file', label: 'File', type: 'file' }
+      { key: 'file', label: 'File', type: 'file' },
     ],
-    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }]
-  }
+    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }],
+  },
 };
 
 const FileUpload2 = {
   key: 'file2',
   noun: 'File',
   display: {
-    label: 'Upload a File 2'
+    label: 'Upload a File 2',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'create', 'file2');"
+      source: "return z.legacyScripting.run(bundle, 'create', 'file2');",
     },
     inputFields: [
       { key: 'id', label: 'ID', type: 'string' },
       { key: 'name', label: 'Name', type: 'string' },
-      { key: 'file_1', label: 'File', type: 'file' }
+      { key: 'file_1', label: 'File', type: 'file' },
     ],
-    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }]
-  }
+    outputFields: [{ key: 'id', label: 'ID', type: 'integer' }],
+  },
 };
 
 const RecipeCreate = {
   key: 'recipe',
   noun: 'Recipe',
   display: {
-    label: 'Create a Recipe'
+    label: 'Create a Recipe',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'create', 'recipe');"
+      source: "return z.legacyScripting.run(bundle, 'create', 'recipe');",
     },
     inputFields: [
       { key: 'name', label: 'Name', type: 'string' },
       { key: 'directions', label: 'Directions', type: 'string' },
       {
         source:
-          "return z.legacyScripting.run(bundle, 'create.input', 'recipe');"
-      }
+          "return z.legacyScripting.run(bundle, 'create.input', 'recipe');",
+      },
     ],
     outputFields: [
       { key: 'id', label: 'ID', type: 'integer' },
       { key: 'name', label: 'Name', type: 'string' },
-      { key: 'directions', label: 'directions', type: 'string' }
-    ]
-  }
+      { key: 'directions', label: 'directions', type: 'string' },
+    ],
+  },
 };
 
 const MovieSearch = {
   key: 'movie',
   noun: 'Movie',
   display: {
-    label: 'Find a Movie'
+    label: 'Find a Movie',
   },
   operation: {
     perform: {
-      source: "return z.legacyScripting.run(bundle, 'search', 'movie');"
+      source: "return z.legacyScripting.run(bundle, 'search', 'movie');",
     },
     performGet: {
       source:
-        "return z.legacyScripting.run(bundle, 'search.resource', 'movie');"
+        "return z.legacyScripting.run(bundle, 'search.resource', 'movie');",
     },
     inputFields: [
       { key: 'query', label: 'Query', type: 'string' },
       {
-        source: "return z.legacyScripting.run(bundle, 'search.input', 'movie');"
-      }
+        source:
+          "return z.legacyScripting.run(bundle, 'search.input', 'movie');",
+      },
     ],
     outputFields: [
       { key: 'id', label: 'ID', type: 'integer' },
@@ -1113,11 +1159,19 @@ const MovieSearch = {
       { key: 'genre', label: 'Genre', type: 'string' },
       {
         source:
-          "return z.legacyScripting.run(bundle, 'search.output', 'movie');"
-      }
-    ]
-  }
+          "return z.legacyScripting.run(bundle, 'search.output', 'movie');",
+      },
+    ],
+  },
 };
+
+const beforeRequestSource = `
+  return z.legacyScripting.beforeRequest(request, z, bundle);
+`;
+
+const afterResponseSource = `
+  return z.legacyScripting.afterResponse(response, z, bundle);
+`;
 
 const App = {
   title: 'Example App',
@@ -1130,30 +1184,43 @@ const App = {
     [contactHookScripting.key]: contactHookScripting,
     [TestTrigger.key]: TestTrigger,
     [MovieTrigger.key]: MovieTrigger,
-    [RecipeTrigger.key]: RecipeTrigger
+    [RecipeTrigger.key]: RecipeTrigger,
   },
   creates: {
     [MovieCreate.key]: MovieCreate,
     [RecipeCreate.key]: RecipeCreate,
     [FileUpload.key]: FileUpload,
-    [FileUpload2.key]: FileUpload2
+    [FileUpload2.key]: FileUpload2,
   },
   searches: {
-    [MovieSearch.key]: MovieSearch
+    [MovieSearch.key]: MovieSearch,
   },
   hydrators: {
     legacyMethodHydrator: {
-      source: "return z.legacyScripting.run(bundle, 'hydrate.method');"
+      source: "return z.legacyScripting.run(bundle, 'hydrate.method');",
     },
     legacyFileHydrator: {
-      source: "return z.legacyScripting.run(bundle, 'hydrate.file');"
-    }
+      source: "return z.legacyScripting.run(bundle, 'hydrate.file');",
+    },
   },
+  // This breaks `applyBeforeMiddleware` which it looks like gets the original definition without `findSourceRequireFunctions` applied?!
+  beforeRequest: [
+    {
+      source: beforeRequestSource,
+      args: ['request', 'z', 'bundle'],
+    },
+  ],
+  afterResponse: [
+    {
+      source: afterResponseSource,
+      args: ['response', 'z', 'bundle'],
+    },
+  ],
   legacy: {
     scriptingSource: legacyScriptingSource,
 
-    subscribeUrl: 'https://httpbin.zapier-tooling.com/post',
-    unsubscribeUrl: 'https://httpbin.zapier-tooling.com/delete',
+    subscribeUrl: `${HTTPBIN_URL}/post`,
+    unsubscribeUrl: `${HTTPBIN_URL}/delete?sub_id={{subscription_id}}`,
 
     authentication: {
       oauth2Config: {
@@ -1161,8 +1228,8 @@ const App = {
 
         // Incomplete URLs on purpose to test pre_oauthv2_token
         accessTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/access-`,
-        refreshTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/refresh-`
-      }
+        refreshTokenUrl: `${AUTH_JSON_SERVER_URL}/oauth/refresh-`,
+      },
     },
 
     triggers: {
@@ -1171,36 +1238,36 @@ const App = {
           // The URL misses an 's' at the end of the resource names. That is,
           // 'output-field' where it should be 'output-fields'. Done purposely for
           // scripting to fix it.
-          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`
-        }
+          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`,
+        },
       },
       contact_post: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}/users`
-        }
+          url: `${AUTH_JSON_SERVER_URL}/users`,
+        },
       },
       contact_hook_scripting: {
         operation: {
           event: 'contact.created',
-          hookType: 'rest'
-        }
+          hookType: 'rest',
+        },
       },
       test: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}/me`
-        }
+          url: `${AUTH_JSON_SERVER_URL}/me`,
+        },
       },
       movie: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}/movies`
-        }
+          url: `${AUTH_JSON_SERVER_URL}/movies`,
+        },
       },
       recipe: {
         operation: {
           url: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
-          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`
-        }
-      }
+          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
+        },
+      },
     },
 
     creates: {
@@ -1212,25 +1279,25 @@ const App = {
           url: `${AUTH_JSON_SERVER_URL}/movie`,
           inputFieldsUrl: `${AUTH_JSON_SERVER_URL}/input-field`,
           outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`,
-          fieldsExcludedFromBody: ['title']
-        }
+          fieldsExcludedFromBody: ['title'],
+        },
       },
       recipe: {
         operation: {
           url: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
-          inputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`
-        }
+          inputFieldsUrl: `${AUTH_JSON_SERVER_URL}{{bundle.inputData.urlPath}}`,
+        },
       },
       file: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}/upload`
-        }
+          url: `${AUTH_JSON_SERVER_URL}/upload`,
+        },
       },
       file2: {
         operation: {
-          url: `${AUTH_JSON_SERVER_URL}/upload`
-        }
-      }
+          url: `${AUTH_JSON_SERVER_URL}/upload`,
+        },
+      },
     },
 
     searches: {
@@ -1242,11 +1309,11 @@ const App = {
           url: `${AUTH_JSON_SERVER_URL}/movie?q={{bundle.inputData.query}}`,
           resourceUrl: `${AUTH_JSON_SERVER_URL}/movie/{{bundle.inputData.id}}`,
           inputFieldsUrl: `${AUTH_JSON_SERVER_URL}/input-field`,
-          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`
-        }
-      }
-    }
-  }
+          outputFieldsUrl: `${AUTH_JSON_SERVER_URL}/output-field`,
+        },
+      },
+    },
+  },
 };
 
 module.exports = App;

@@ -16,23 +16,23 @@ module.exports = makeSchema(
       {
         display: {
           label: 'Find a Recipe',
-          description: 'Search for recipe by cuisine style.'
+          description: 'Search for recipe by cuisine style.',
         },
         operation: {
           perform: '$func$2$f$',
-          sample: { id: 1 }
-        }
+          sample: { id: 1 },
+        },
       },
       {
         display: {
           label: 'Find a Recipe',
           description: 'Search for recipe by cuisine style.',
-          hidden: true
+          hidden: true,
         },
         operation: {
-          perform: '$func$2$f$'
-        }
-      }
+          perform: '$func$2$f$',
+        },
+      },
     ],
     antiExamples: [
       {
@@ -40,24 +40,24 @@ module.exports = makeSchema(
         noun: 'Recipe',
         display: {
           label: 'Find a Recipe',
-          description: 'Search for recipe by cuisine style.'
+          description: 'Search for recipe by cuisine style.',
         },
         operation: {
-          perform: '$func$2$f$'
-        }
-      }
+          perform: '$func$2$f$',
+        },
+      },
     ],
     properties: {
       display: {
         description: 'Define how this search method will be exposed in the UI.',
-        $ref: BasicDisplaySchema.id
+        $ref: BasicDisplaySchema.id,
       },
       operation: {
         description: 'Define how this search method will work.',
-        $ref: BasicActionOperationSchema.id
-      }
+        $ref: BasicActionOperationSchema.id,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [BasicDisplaySchema, BasicActionOperationSchema]
 );

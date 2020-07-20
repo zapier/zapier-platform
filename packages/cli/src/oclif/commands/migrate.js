@@ -2,7 +2,7 @@ const { flags } = require('@oclif/command');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const PromoteCommand = require('./promote');
-const { callAPI, getLinkedApp } = require('../../utils/api');
+const { callAPI } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
 
 class MigrateCommand extends BaseCommand {
@@ -22,7 +22,7 @@ class MigrateCommand extends BaseCommand {
       );
     }
 
-    const app = await getLinkedApp();
+    const app = await this.getWritableApp();
 
     let promoteFirst = false;
     if (
@@ -46,7 +46,7 @@ class MigrateCommand extends BaseCommand {
     }
 
     const body = {
-      percent
+      percent,
     };
     if (user) {
       body.user = user;
@@ -75,34 +75,34 @@ class MigrateCommand extends BaseCommand {
 MigrateCommand.flags = buildFlags({
   commandFlags: {
     user: flags.string({
-      description: 'Migrate only this user'
-    })
-  }
+      description: 'Migrate only this user',
+    }),
+  },
 });
 
 MigrateCommand.args = [
   {
     name: 'fromVersion',
     required: true,
-    description: 'The version FROM which to migrate users.'
+    description: 'The version FROM which to migrate users.',
   },
   {
     name: 'toVersion',
     required: true,
-    description: 'The version TO which to migrate users.'
+    description: 'The version TO which to migrate users.',
   },
   {
     name: 'percent',
     default: 100,
     description: 'Percentage (between 1 and 100) of users to migrate.',
-    parse: input => parseInt(input, 10)
-  }
+    parse: (input) => parseInt(input, 10),
+  },
 ];
 
 MigrateCommand.examples = [
   'zapier migrate 1.0.0 1.0.1',
   'zapier migrate 1.0.1 2.0.0 10',
-  'zapier migrate 2.0.0 2.0.1 --user=user@example.com'
+  'zapier migrate 2.0.0 2.0.1 --user=user@example.com',
 ];
 MigrateCommand.description = `Migrate users from one version of your integration to another.
 

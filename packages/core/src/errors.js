@@ -3,9 +3,42 @@
 const util = require('util');
 const _ = require('lodash');
 
+class AppError extends Error {
+  constructor(message, code, status) {
+    super(
+      JSON.stringify({
+        message,
+        code,
+        status,
+      })
+    );
+    this.name = 'AppError';
+    this.doNotContextify = true;
+  }
+}
+
+class ResponseError extends Error {
+  constructor(response) {
+    super(
+      JSON.stringify({
+        status: response.status,
+        headers: {
+          'content-type': response.headers.get('content-type'),
+        },
+        content: response.content,
+        request: {
+          url: response.request.url,
+        },
+      })
+    );
+    this.name = 'ResponseError';
+    this.doNotContextify = true;
+  }
+}
+
 // Make some of the errors we'll use!
-const createError = name => {
-  const NewError = function(message = '') {
+const createError = (name) => {
+  const NewError = function (message = '') {
     this.name = name;
     this.message = message;
     Error.call(this);
@@ -24,7 +57,7 @@ const names = [
   'NotImplementedError',
   'RefreshAuthError',
   'RequireModuleError',
-  'StopRequestError'
+  'StopRequestError',
 ];
 
 const exceptions = _.reduce(
@@ -33,7 +66,10 @@ const exceptions = _.reduce(
     col[name] = createError(name);
     return col;
   },
-  {}
+  {
+    Error: AppError,
+    ResponseError,
+  }
 );
 
 const isRequireError = ({ name, message }) =>
@@ -53,5 +89,5 @@ const handleError = (...args) => {
 
 module.exports = {
   ...exceptions,
-  handleError
+  handleError,
 };

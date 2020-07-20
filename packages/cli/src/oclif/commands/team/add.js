@@ -2,7 +2,7 @@ const ZapierBaseCommand = require('../../ZapierBaseCommand');
 // const { flags } = require('@oclif/command');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
-const { callAPI, getLinkedApp } = require('../../../utils/api');
+const { callAPI } = require('../../../utils/api');
 
 const inviteMessage = (roleIsAdmin, title) =>
   roleIsAdmin
@@ -11,9 +11,7 @@ const inviteMessage = (roleIsAdmin, title) =>
 
 class TeamAddCommand extends ZapierBaseCommand {
   async perform() {
-    this.startSpinner('Getting integration info');
-    const { id, title } = await getLinkedApp();
-    this.stopSpinner();
+    const { id, title } = await this.getWritableApp();
 
     const roleIsAdmin = this.args.role === 'admin';
     const message = this.args.message || inviteMessage(roleIsAdmin, title);
@@ -39,7 +37,7 @@ class TeamAddCommand extends ZapierBaseCommand {
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,
       method: 'POST',
-      body: { email: this.args.email, message }
+      body: { email: this.args.email, message },
     });
     this.stopSpinner();
   }
@@ -50,20 +48,20 @@ TeamAddCommand.args = [
     name: 'email',
     description:
       "The user to be invited. If they don't have a Zapier account, they'll be prompted to create one.",
-    required: true
+    required: true,
   },
   {
     name: 'role',
     description:
       'The level the invited team member should be at. Admins can edit everything and get email updates. Subscribers only get email updates.',
     options: ['admin', 'subscriber'],
-    required: true
+    required: true,
   },
   {
     name: 'message',
     description:
-      'A message sent in the email to your team member, if you need to provide context. Wrap the message in quotes to ensure spaces get saved.'
-  }
+      'A message sent in the email to your team member, if you need to provide context. Wrap the message in quotes to ensure spaces get saved.',
+  },
 ];
 TeamAddCommand.flags = buildFlags();
 TeamAddCommand.description = `Add a team member to your integration.
@@ -77,7 +75,7 @@ Team members can be freely added and removed.`;
 
 TeamAddCommand.examples = [
   'zapier team:add bruce@wayne.com admin',
-  'zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."'
+  'zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."',
 ];
 TeamAddCommand.aliases = ['team:invite'];
 

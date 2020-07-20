@@ -2,9 +2,9 @@ const { cyan } = require('colors/safe');
 
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
-const { callAPI, getLinkedApp } = require('../../../utils/api');
+const { callAPI } = require('../../../utils/api');
 
-const successMessage = version =>
+const successMessage = (version) =>
   `Successfully unset the following keys in the environment of version ${cyan(
     version
   )} (if they existed):`;
@@ -16,14 +16,14 @@ class UnsetEnvCommand extends BaseCommand {
     // args should be [ '1.0.0', 'qer=123', 'qwer=123' ]
     const keysToUnset = this.argv
       .slice(1)
-      .filter(k => !k.startsWith('-'))
-      .map(k => k.toUpperCase());
+      .filter((k) => !k.startsWith('-'))
+      .map((k) => k.toUpperCase());
 
     if (!keysToUnset.length) {
       this.error('Must specify at least one key to unset (like `SOME_KEY`)');
     }
 
-    if (keysToUnset.some(v => v.includes('='))) {
+    if (keysToUnset.some((v) => v.includes('='))) {
       this.error('Do not specify values using the unset operation, only keys');
     }
 
@@ -33,7 +33,7 @@ class UnsetEnvCommand extends BaseCommand {
       return result;
     }, {});
 
-    const app = await getLinkedApp();
+    const app = await this.getWritableApp();
 
     const url = `/apps/${app.id}/versions/${version}/multi-environment`;
 
@@ -41,7 +41,7 @@ class UnsetEnvCommand extends BaseCommand {
     // also, no need to cath errors here, since invalid keys don't get tripped over if the env var didn't exist in the first place
     await callAPI(url, {
       body: payload,
-      method: 'POST'
+      method: 'POST',
     });
 
     this.log(successMessage(version));
@@ -53,12 +53,12 @@ UnsetEnvCommand.args = [
   {
     name: 'version',
     description: 'The version to set the environment for.',
-    required: true
+    required: true,
   },
   {
     name: 'keys...',
-    description: 'The keys to unset. Keys are case-insensitive.'
-  }
+    description: 'The keys to unset. Keys are case-insensitive.',
+  },
 ];
 UnsetEnvCommand.flags = buildFlags();
 UnsetEnvCommand.description = `Unset environment variables for a version.`;

@@ -1,22 +1,63 @@
 language: node_js
 node_js:
-  - '10.16.3' # lambda version as of 2019-11-21
+  - "12"
+cache:
+  - npm: true
+  - yarn: true
+  - pip: true
 before_install:
   - npm install -g yarn
   - pip install --user awscli
 install:
   - yarn install
-script:
-  - yarn validate
+stages:
+  - name: "Test"
+  - name: "Deploy"
+    if: tag IS present
+jobs:
+  include:
+    - stage: "Test"
+      name: "lint"
+      script: "yarn lint"
+      node_js: "12"
+    - name: "cli - unit tests - Node 10"
+      script: "yarn workspace zapier-platform-cli test"
+      node_js: "10"
+    - name: "cli - smoke tests - Node 10"
+      script: "yarn workspace zapier-platform-cli smoke-test"
+      node_js: "10"
+    - name: "cli - unit tests - Node 12"
+      script: "yarn workspace zapier-platform-cli test"
+      node_js: "12"
+    - name: "cli - smoke tests - Node 12"
+      script: "yarn workspace zapier-platform-cli smoke-test"
+      node_js: "12"
+    - name: "core - unit tests - Node 12"
+      script: "yarn workspace zapier-platform-core test"
+      node_js: "12"
+    - name: "core - smoke tests - Node 12"
+      script: "yarn workspace zapier-platform-core smoke-test"
+      node_js: "12"
+    - name: "schema - unit tests - Node 12"
+      script: "yarn workspace zapier-platform-schema test"
+      node_js: "12"
+    - name: "schema - smoke tests - Node 12"
+      script: "yarn workspace zapier-platform-schema smoke-test"
+      node_js: "12"
+    - name: "legacy-scripting-runner - integration tests - Node 12"
+      script: "yarn workspace zapier-platform-legacy-scripting-runner test"
+      node_js: "12"
+    - stage: "Deploy"
+      script: skip
+      deploy:
+        provider: script
+        script: ./scripts/publish.sh
+        on:
+          tags: true,
+          node: "12"
+        skip_cleanup: true
 notifications:
   email: false
-deploy:
-  provider: script
-  script: ./scripts/publish.sh
-  on:
-    tags: true
-    node: '10.16.3'
-  skip_cleanup: true
 env:
   global:
     - PATH: PATH=$HOME/.local/bin:$PATH

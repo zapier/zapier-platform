@@ -1,9 +1,10 @@
 const should = require('should');
 
 const z = require('../zfactory')();
+const { HTTPBIN_URL } = require('./constants');
 
 describe('z', () => {
-  it('z.hash', done => {
+  it('z.hash', (done) => {
     const result = z.hash('sha256', 'my awesome string');
     result.should.equal(
       '97f13a1635524dd41daca6601e5d9fe07e10e62790851e527b039851b1f8b9a1'
@@ -11,30 +12,30 @@ describe('z', () => {
     done();
   });
 
-  it('z.hmac', done => {
+  it('z.hmac', (done) => {
     const result = z.hmac('sha1', 'secret', 'signme');
     result.should.equal('f67a0be1fa49a3f1dbd659726d8983b838ee6e7d');
     done();
   });
 
-  it('z.snipify', done => {
+  it('z.snipify', (done) => {
     const result = z.snipify('something');
     result.should.equal(':censored:9:720a531ca0:');
     done();
   });
 
-  it('z.request - sync', done => {
+  it('z.request - sync', () => {
     const bundleRequest = {
       method: 'GET',
-      url: 'https://httpbin.org/get',
+      url: `${HTTPBIN_URL}/get`,
       params: {
-        hello: 'world'
+        hello: 'world',
       },
       headers: {
-        Accept: 'application/json'
+        Accept: 'application/json',
       },
       auth: null,
-      data: null
+      data: null,
     };
 
     const response = z.request(bundleRequest);
@@ -44,26 +45,24 @@ describe('z', () => {
 
     response.status_code.should.eql(200);
     const results = JSON.parse(response.content);
-    results.args.should.eql(bundleRequest.params);
-    results.headers.Accept.should.eql(bundleRequest.headers.Accept);
-
-    done();
+    results.args.should.deepEqual({ hello: ['world'] });
+    results.headers.Accept.should.deepEqual(['application/json']);
   });
 
-  it('z.request - async', done => {
+  it('z.request - async', (done) => {
     const bundleRequest = {
       method: 'POST',
-      url: 'https://httpbin.org/post',
+      url: `${HTTPBIN_URL}/post`,
       params: {
-        hello: 'world'
+        hello: 'world',
       },
       headers: {
-        Accept: 'application/json'
+        Accept: 'application/json',
       },
       auth: null,
       data: JSON.stringify({
-        world: 'hello'
-      })
+        world: 'hello',
+      }),
     };
 
     z.request(bundleRequest, (error, response) => {
@@ -74,15 +73,15 @@ describe('z', () => {
 
       response.status_code.should.eql(200);
       const results = JSON.parse(response.content);
-      results.args.should.eql(bundleRequest.params);
+      results.args.should.eql({ hello: ['world'] });
       results.data.should.eql(bundleRequest.data);
-      results.headers.Accept.should.eql(bundleRequest.headers.Accept);
+      results.headers.Accept.should.deepEqual(['application/json']);
 
       done();
     });
   });
 
-  it('z.JSON.parse', done => {
+  it('z.JSON.parse', (done) => {
     const result = z.JSON.parse('{"hello": "world"}');
     result.should.have.property('hello');
     result.hello.should.eql('world');
@@ -100,15 +99,15 @@ describe('z', () => {
     }
   });
 
-  it('z.JSON.stringify', done => {
+  it('z.JSON.stringify', (done) => {
     const result = z.JSON.stringify({
-      hello: 'world'
+      hello: 'world',
     });
     result.should.equal('{"hello":"world"}');
     done();
   });
 
-  it('z.AWS', done => {
+  it('z.AWS', (done) => {
     const AWS = z.AWS();
     AWS.config.getCredentials(done);
   });

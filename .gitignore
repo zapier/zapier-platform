@@ -92,5 +92,8 @@ typings/
 
 example-apps/*/yarn.lock
 example-apps/*/package-lock.json
+example-apps/typescript/lib
 
 boilerplate/build
+
+.vscode

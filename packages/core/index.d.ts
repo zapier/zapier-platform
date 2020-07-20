@@ -63,6 +63,9 @@ export interface Bundle<InputData = { [x: string]: any }> {
   targetUrl?: string;
 }
 
+declare class AppError extends Error {
+  constructor(message: string, code?: string, status?: number);
+}
 declare class HaltedError extends Error {}
 declare class ExpiredAuthError extends Error {}
 declare class RefreshAuthError extends Error {}
@@ -87,6 +90,7 @@ export interface HttpRequestOptions {
   size?: number;
   timeout?: number;
   url?: string;
+  skipThrowForStatus?: boolean;
 }
 
 interface BaseHttpResponse {
@@ -94,11 +98,13 @@ interface BaseHttpResponse {
   headers: { [key: string]: string };
   getHeader(key: string): string | undefined;
   throwForStatus(): void;
+  skipThrowForStatus: boolean;
   request: HttpRequestOptions;
 }
 
 export interface HttpResponse extends BaseHttpResponse {
   content: string;
+  data?: object;
   json?: object;
 }
 
@@ -107,6 +113,11 @@ export interface RawHttpResponse extends BaseHttpResponse {
   json: Promise<object | undefined>;
   body: NodeJS.ReadableStream;
 }
+
+type DehydrateFunc = <T>(
+  func: (z: ZObject, bundle: Bundle<T>) => any,
+  inputData: object
+) => string;
 
 export interface ZObject {
   request: {
@@ -124,10 +135,8 @@ export interface ZObject {
 
   console: Console;
 
-  dehydrate: <T>(
-    func: (z: this, bundle: Bundle<T>) => any,
-    inputData: object
-  ) => string;
+  dehydrate: DehydrateFunc;
+  dehydrateFile: DehydrateFunc;
 
   cursor: {
     get: () => Promise<string>;
@@ -145,6 +154,7 @@ export interface ZObject {
       filename?: string,
       contentType?: string
     ): string;
+    (input: Promise<RawHttpResponse>): string;
     (input: Promise<string>): string;
   };
 
@@ -171,6 +181,7 @@ export interface ZObject {
   ) => string;
 
   errors: {
+    Error: typeof AppError;
     HaltedError: typeof HaltedError;
     ExpiredAuthError: typeof ExpiredAuthError;
     RefreshAuthError: typeof RefreshAuthError;

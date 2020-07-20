@@ -10,9 +10,9 @@ class TeamListCommand extends ZapierBaseCommand {
     const { admins, subscribers } = await listEndpointMulti(
       { endpoint: 'collaborators', keyOverride: 'admins' },
       {
-        endpoint: app =>
+        endpoint: (app) =>
           `${BASE_ENDPOINT}/api/platform/v3/integrations/${app.id}/subscribers`,
-        keyOverride: 'subscribers'
+        keyOverride: 'subscribers',
       }
     );
 
@@ -23,7 +23,7 @@ class TeamListCommand extends ZapierBaseCommand {
         status,
         name,
         role: role === 'collaborator' ? 'admin' : 'subscriber',
-        email
+        email,
       })
     );
 
@@ -33,8 +33,8 @@ class TeamListCommand extends ZapierBaseCommand {
         ['Name', 'name'],
         ['Role', 'role'],
         ['Status', 'status'],
-        ['Email', 'email']
-      ]
+        ['Email', 'email'],
+      ],
     });
 
     this.log(

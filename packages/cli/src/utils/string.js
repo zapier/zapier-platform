@@ -8,5 +8,5 @@ function splitFileFromPath(filePath, extension = 'js') {
 }
 
 module.exports = {
-  splitFileFromPath
+  splitFileFromPath,
 };

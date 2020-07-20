@@ -9,9 +9,8 @@ const perform = async (z, bundle) => {
       name: bundle.inputData.name
     }
   });
-  response.throwForStatus();
   // this should return a single object
-  return z.JSON.parse(response.content);
+  return response.data;
 };
 
 module.exports = {

@@ -16,7 +16,7 @@ const hashing = require('../../tools/hashing');
 /*
    Before middleware that injects z object.
 */
-const injectZObject = input => {
+const injectZObject = (input) => {
   const bundle = _.get(input, '_zapier.event.bundle', {});
   const zRoot = {
     console: createLoggerConsole(input),
@@ -27,14 +27,14 @@ const injectZObject = input => {
     generateCallbackUrl: createCallbackHigherOrderFunction(input),
     hash: hashing.hashify,
     JSON: createJSONtool(),
-    require: moduleName => require(moduleName),
-    stashFile: createFileStasher(input)
+    require: (moduleName) => require(moduleName),
+    stashFile: createFileStasher(input),
   };
 
   const zSkinny = _.extend({}, zRoot);
 
   const z = _.extend({}, zSkinny, {
-    request: createAppRequestClient(input, { extraArgs: [zSkinny, bundle] })
+    request: createAppRequestClient(input, { extraArgs: [zSkinny, bundle] }),
   });
 
   const runner = createLegacyScriptingRunner(z, input);

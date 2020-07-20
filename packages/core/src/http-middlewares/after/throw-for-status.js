@@ -1,15 +1,17 @@
 'use strict';
 
-const { stripQueryFromURL } = require('../../tools/http');
+const errors = require('../../errors');
 
-const throwForStatus = resp => {
-  if (resp.status > 300) {
-    const cleanURL = stripQueryFromURL(resp.request.url);
-    const message = `Got ${resp.status} calling ${resp.request.method} ${cleanURL}, expected 2xx.`;
-    throw new Error(message);
+const throwForStatus = (response) => {
+  if (
+    !response.skipThrowForStatus &&
+    response.status >= 400 &&
+    response.status < 600
+  ) {
+    throw new errors.ResponseError(response);
   }
 
-  return resp;
+  return response;
 };
 
 module.exports = throwForStatus;

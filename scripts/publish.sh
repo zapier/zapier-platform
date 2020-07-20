@@ -53,6 +53,24 @@ if [[ "$CORE_VERSION" != "" && "$LEGACY_VERSION" != "" ]]; then
     echo "Let's wait for a second for the packages to be available on npm..."
     sleep 10
 
+    retries=0
+    SCHEMA_VERSION=$(curl https://registry.npmjs.org/zapier-platform-schema/latest | jq -r .version)
+    until [ $SCHEMA_VERSION == $CORE_VERSION ] || [ retries == 60 ]
+    do
+        echo "Waiting for zapier-platform-schema to be published to npm..."
+        sleep 5
+        SCHEMA_VERSION=$(curl https://registry.npmjs.org/zapier-platform-schema/latest | jq -r .version)
+        ((retries++))
+    done
+
+    if [[ $SCHEMA_VERSION != $CORE_VERSION ]]; then
+        echo "Latest version of zapier-platform-schema still hasn't published to npm. Can't build boilerplate, sorry."
+        exit 1
+    fi
+
+    echo "Let's wait for yarnpkg.com to be aware of the latest zapier-platform-schema..."
+    sleep 15
+
     # Build boilerplate and let Zapier know about this
     ./boilerplate/scripts/build.sh $CORE_VERSION $LEGACY_VERSION &&
     ./boilerplate/scripts/upload.sh $CORE_VERSION &&

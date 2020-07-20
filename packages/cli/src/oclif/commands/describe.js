@@ -2,9 +2,9 @@ const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 const { bold, grey } = require('colors/safe');
 const {
-  getLinkedApp,
+  getWritableApp,
   getLinkedAppConfig,
-  getVersionInfo
+  getVersionInfo,
 } = require('../../utils/api');
 const { localAppCommand } = require('../../utils/local');
 
@@ -14,7 +14,7 @@ const authenticationPaths = [
   'authentication.test',
   'authentication.oauth2Config.getAccessToken',
   'authentication.oauth2Config.refreshAccessToken',
-  'authentication.sessionConfig.perform'
+  'authentication.sessionConfig.perform',
 ];
 
 // {type:triggers}.{key:lead}.operation.perform
@@ -23,8 +23,8 @@ const actionTemplates = [
   '<%= type %>.<%= key %>.operation.performSubscribe',
   '<%= type %>.<%= key %>.operation.performUnsubscribe',
   '<%= type %>.<%= key %>.operation.inputFields',
-  '<%= type %>.<%= key %>.operation.outputFields'
-].map(template => _.template(template));
+  '<%= type %>.<%= key %>.operation.outputFields',
+].map((template) => _.template(template));
 
 const hydrateTemplate = _.template('hydrators.<%= key %>');
 
@@ -34,11 +34,11 @@ const inlineResourceMethods = [
   'list',
   'search',
   'create',
-  'searchOrCreate'
+  'searchOrCreate',
 ];
 
 // resources.{key:lead}.get.operation.perform
-const makeResourceTemplates = methods =>
+const makeResourceTemplates = (methods) =>
   methods
     .reduce((acc, method) => {
       return acc.concat([
@@ -46,17 +46,17 @@ const makeResourceTemplates = methods =>
         `resources.<%= key %>.${method}.operation.performSubscribe`,
         `resources.<%= key %>.${method}.operation.performUnsubscribe`,
         `resources.<%= key %>.${method}.operation.inputFields`,
-        `resources.<%= key %>.${method}.operation.outputFields`
+        `resources.<%= key %>.${method}.operation.outputFields`,
       ]);
     }, [])
-    .map(template => _.template(template));
+    .map((template) => _.template(template));
 
 const allResourceTemplates = makeResourceTemplates(inlineResourceMethods);
 
 const typeMap = {
   triggers: ['list', 'hook'],
   searches: ['search'],
-  creates: ['create']
+  creates: ['create'],
 };
 
 class DescribeCommand extends BaseCommand {
@@ -67,10 +67,10 @@ class DescribeCommand extends BaseCommand {
   async perform() {
     this.startSpinner('Fetching integration info');
     const [app, appConfig, version, definition] = await Promise.all([
-      getLinkedApp().catch(() => null),
+      getWritableApp().catch(() => null),
       getLinkedAppConfig().catch(() => null),
       getVersionInfo().catch(() => null),
-      localAppCommand({ command: 'definition' })
+      localAppCommand({ command: 'definition' }),
     ]);
     this.stopSpinner();
     if (app) {
@@ -88,7 +88,7 @@ class DescribeCommand extends BaseCommand {
     if (definition.authentication) {
       const authentication = { ...definition.authentication };
       authentication.paths = authenticationPaths
-        .filter(path => _.has(definition, path))
+        .filter((path) => _.has(definition, path))
         .join('\n');
       if (['oauth2', 'oauth1'].includes(authentication.type)) {
         if (appConfig && version) {
@@ -106,48 +106,53 @@ class DescribeCommand extends BaseCommand {
       headers: [
         ['Type', 'type'],
         ['Redirect URI', 'redirect_uri', grey('n/a')],
-        ['Available Methods', 'paths', grey('n/a')]
+        ['Available Methods', 'paths', grey('n/a')],
       ],
-      emptyMessage: grey('No authentication found.')
+      emptyMessage: grey('No authentication found.'),
     });
     this.log();
 
     const hydratorRows = _.map(definition.hydrators, (val, key) => ({
       key,
-      paths: hydrateTemplate({ key })
+      paths: hydrateTemplate({ key }),
     }));
     this.logTitle('Hydrators');
     this.logTable({
       rows: hydratorRows,
-      headers: [['Key', 'key'], ['Method', 'paths', grey('n/a')]],
-      emptyMessage: grey('No hydrators found.')
+      headers: [
+        ['Key', 'key'],
+        ['Method', 'paths', grey('n/a')],
+      ],
+      emptyMessage: grey('No hydrators found.'),
     });
     this.log();
 
-    const resourceRows = _.values(definition.resources || {}).map(resource => ({
-      ...resource,
-      paths: allResourceTemplates
-        .map(method => method({ key: resource.key }))
-        .filter(path => _.has(definition, path))
-        .join('\n')
-    }));
+    const resourceRows = _.values(definition.resources || {}).map(
+      (resource) => ({
+        ...resource,
+        paths: allResourceTemplates
+          .map((method) => method({ key: resource.key }))
+          .filter((path) => _.has(definition, path))
+          .join('\n'),
+      })
+    );
     this.logTitle('Resources');
     this.logTable({
       rows: resourceRows,
       headers: [
         ['Noun', 'noun'],
         ['Ref', 'key'],
-        ['Available Methods', 'paths', grey('n/a')]
+        ['Available Methods', 'paths', grey('n/a')],
       ],
-      emptyMessage: grey('No resources found.')
+      emptyMessage: grey('No resources found.'),
     });
     this.log();
 
-    Object.keys(typeMap).forEach(type => {
+    Object.keys(typeMap).forEach((type) => {
       this.logTitle(_.capitalize(type));
-      const rows = _.values(definition[type]).map(row => {
+      const rows = _.values(definition[type]).map((row) => {
         // add possible action paths
-        let paths = actionTemplates.map(method =>
+        let paths = actionTemplates.map((method) =>
           method({ type, key: row.key })
         );
 
@@ -156,15 +161,15 @@ class DescribeCommand extends BaseCommand {
           const key = row.operation.resource.split('.')[0];
           const resourceTemplates = makeResourceTemplates(typeMap[type]);
           paths = paths.concat(
-            resourceTemplates.map(method => method({ key }))
+            resourceTemplates.map((method) => method({ key }))
           );
         }
 
-        paths = paths.filter(path => _.has(definition, path)).join('\n');
+        paths = paths.filter((path) => _.has(definition, path)).join('\n');
 
         return {
           ...row,
-          paths
+          paths,
         };
       });
 
@@ -174,11 +179,11 @@ class DescribeCommand extends BaseCommand {
           ['Noun', 'noun'],
           ['Label', 'display.label'],
           ['Resource Ref', 'operation.resource', grey('n/a')],
-          ['Available Methods', 'paths', grey('n/a')]
+          ['Available Methods', 'paths', grey('n/a')],
         ],
         emptyMessage: grey(
           `Nothing found for ${type}. Use the \`zapier scaffold\` command to add one.`
-        )
+        ),
       });
 
       this.log();

@@ -7,5 +7,5 @@ module.exports = makeSchema({
   description: 'A unique identifier for this item.',
   type: 'string',
   minLength: 2,
-  pattern: '^[a-zA-Z]+[a-zA-Z0-9_]*$'
+  pattern: '^[a-zA-Z]+[a-zA-Z0-9_]*$',
 });

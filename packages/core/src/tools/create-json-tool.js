@@ -2,8 +2,8 @@
 
 const _ = require('lodash');
 
-const parse = str => {
-  const newError = message => {
+const parse = (str) => {
+  const newError = (message) => {
     const error = new SyntaxError(message);
     Error.captureStackTrace(error, parse);
     return error;
@@ -25,7 +25,7 @@ const parse = str => {
 const createJSONtool = () => {
   return {
     parse,
-    stringify: JSON.stringify
+    stringify: JSON.stringify,
   };
 };
 

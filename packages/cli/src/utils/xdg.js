@@ -29,10 +29,10 @@ if (process.platform === 'win32') {
   // NOTE: LOCALAPPDATA is not available on Windows XP
   ensureDataDir = ensureDir.bind(null, 'LOCALAPPDATA', defaultAppDir, ['data']);
   ensureCacheDir = ensureDir.bind(null, 'LOCALAPPDATA', defaultAppDir, [
-    'cache'
+    'cache',
   ]);
   ensureConfigDir = ensureDir.bind(null, 'LOCALAPPDATA', defaultAppDir, [
-    'config'
+    'config',
   ]);
 } else {
   ensureDataDir = ensureDir.bind(
@@ -55,5 +55,5 @@ if (process.platform === 'win32') {
 module.exports = {
   ensureDataDir,
   ensureCacheDir,
-  ensureConfigDir
+  ensureConfigDir,
 };

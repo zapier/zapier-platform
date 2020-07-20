@@ -31,5 +31,5 @@ module.exports = [
 
   // full examples
   'github',
-  'onedrive'
+  'onedrive',
 ];

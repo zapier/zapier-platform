@@ -22,16 +22,17 @@ const BLACKLISTED_PATHS = [
   '.git',
   '.env',
   '.environment',
-  'build'
+  'build',
 ];
-const nodeVersion = versionStore[versionStore.length - 1].nodeVersion;
-const LAMBDA_VERSION = `v${nodeVersion}`;
+const NODE_VERSION = versionStore[versionStore.length - 1].nodeVersion;
+const LAMBDA_VERSION = `v${NODE_VERSION}`;
+const NODE_VERSION_CLI_REQUIRES = '>=10';
 const AUTH_KEY = 'deployKey';
 const ANALYTICS_KEY = 'analyticsMode';
 const ANALYTICS_MODES = {
   enabled: 'enabled',
   anonymous: 'anonymous',
-  disabled: 'disabled'
+  disabled: 'disabled',
 };
 
 const packageJson = require('../package.json');
@@ -61,8 +62,8 @@ module.exports = {
   ANALYTICS_MODES,
   API_PATH,
   AUTH_KEY,
-  AUTH_LOCATION_RAW,
   AUTH_LOCATION,
+  AUTH_LOCATION_RAW,
   BASE_ENDPOINT,
   BLACKLISTED_PATHS,
   BUILD_DIR,
@@ -75,10 +76,12 @@ module.exports = {
   ISSUES_URL,
   LAMBDA_VERSION,
   LEGACY_RUNNER_PACKAGE,
+  NODE_VERSION,
+  NODE_VERSION_CLI_REQUIRES,
   PACKAGE_NAME,
   PACKAGE_VERSION,
   PLATFORM_PACKAGE,
   SOURCE_PATH,
   STARTER_REPO,
-  UPDATE_NOTIFICATION_INTERVAL
+  UPDATE_NOTIFICATION_INTERVAL,
 };

@@ -15,7 +15,7 @@ module.exports = {
     ['children', 'default'], // default is ignored
     ['dict', 'list'], // Use only one or the other
     ['dynamic', 'dict'], // dict is ignored
-    ['dynamic', 'choices'] // choices are ignored
+    ['dynamic', 'choices'], // choices are ignored
   ],
-  FIELD_SCHEMA_BOOLEANS: new Set(['dict', 'list'])
+  FIELD_SCHEMA_BOOLEANS: new Set(['dict', 'list']),
 };

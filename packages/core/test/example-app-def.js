@@ -3,28 +3,28 @@ var ItemResource = {
   noun: 'Item',
   list: {
     display: {
-      description: 'This is a description'
+      description: 'This is a description',
     },
     operation: {
       perform: {
-        url: 'https://example.com'
+        url: 'https://example.com',
       },
       inputFields: [
         { key: 'integer' },
         { key: 'test', type: 'string' },
-        { key: 'whatever', dynamic: 'thing.id.cat' }
-      ]
-    }
+        { key: 'whatever', dynamic: 'thing.id.cat' },
+      ],
+    },
   },
   search: {
     display: {
-      description: 'This is a description'
+      description: 'This is a description',
     },
     operation: {
       perform: () => {},
-      inputFields: () => {}
-    }
-  }
+      inputFields: () => {},
+    },
+  },
 };
 
 var PingResource = {
@@ -32,12 +32,12 @@ var PingResource = {
   noun: 'Ping',
   hook: {
     display: {
-      description: 'This is a description for a static hook.'
+      description: 'This is a description for a static hook.',
     },
     operation: {
-      perform: () => {}
-    }
-  }
+      perform: () => {},
+    },
+  },
 };
 
 var SubPingResource = {
@@ -45,7 +45,7 @@ var SubPingResource = {
   noun: 'Sub Ping',
   hook: {
     display: {
-      description: 'This is a description for a sub hook.'
+      description: 'This is a description for a sub hook.',
     },
     operation: {
       perform: () => {},
@@ -53,12 +53,12 @@ var SubPingResource = {
         method: 'POST',
         url: 'https://example.com/api/subscribe',
         body: {
-          url: '{{subscriptionUrl}}'
-        }
+          url: '{{subscriptionUrl}}',
+        },
       },
-      performUnsubscribe: () => {}
-    }
-  }
+      performUnsubscribe: () => {},
+    },
+  },
 };
 
 var Lead = {
@@ -67,14 +67,14 @@ var Lead = {
   list: {
     display: {
       label: 'New Lead',
-      description: 'Triggers on any new lead in the project.'
+      description: 'Triggers on any new lead in the project.',
     },
     operation: {
       // polling is implied
       canPaginate: true,
-      perform: function() {}
-    }
-  }
+      perform: function () {},
+    },
+  },
 };
 
 var ExtraTrigger = {
@@ -87,7 +87,7 @@ var ExtraTrigger = {
     description: 'Triggers when a lead is added to a project.',
     important: false,
     hidden: false,
-    order: 3
+    order: 3,
   },
   operation: {
     // behavioral effects
@@ -95,14 +95,14 @@ var ExtraTrigger = {
     // if subscription - we find other resources and do polls there?
     resource: Lead.key,
     canPaginate: false,
-    perform: function() {},
+    perform: function () {},
     // performSubscribe
     // performUnsubscribe
     inputFields: [{ key: 'project_name' }],
     outputFields: [],
-    sample: { id: 123 }
+    sample: { id: 123 },
     // flags?
-  }
+  },
 };
 
 module.exports = {
@@ -114,9 +114,9 @@ module.exports = {
     [ItemResource.key]: ItemResource,
     [PingResource.key]: PingResource,
     [SubPingResource.key]: SubPingResource,
-    [Lead.key]: Lead
+    [Lead.key]: Lead,
   },
   triggers: {
-    [ExtraTrigger.key]: ExtraTrigger
-  }
+    [ExtraTrigger.key]: ExtraTrigger,
+  },
 };

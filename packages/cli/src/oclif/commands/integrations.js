@@ -17,9 +17,9 @@ class IntegrationsCommand extends BaseCommand {
         ['Title', 'title'],
         ['Unique Slug', 'key'],
         ['Date Created', 'date'],
-        ['Linked', 'linked']
+        ['Linked', 'linked'],
       ],
-      emptyMessage: 'No integrations found, try the `zapier register` command.'
+      emptyMessage: 'No integrations found, try the `zapier register` command.',
     });
   }
 }

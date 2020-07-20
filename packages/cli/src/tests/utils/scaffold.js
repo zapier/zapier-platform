@@ -4,7 +4,7 @@ const {
   plural,
   writeTemplateFile,
   createTemplateContext,
-  updateEntryFile
+  updateEntryFile,
 } = require('../../utils/scaffold');
 
 const { getNewTempDirPath } = require('../_helpers');

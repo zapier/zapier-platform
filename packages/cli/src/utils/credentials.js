@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const { BASE_ENDPOINT } = require('../constants');
 
-const isSamlEmail = async email => {
+const isSamlEmail = async (email) => {
   const rawResponse = await fetch(
     `${BASE_ENDPOINT}/api/v4/idp-discovery/?email=${encodeURIComponent(email)}`
   );

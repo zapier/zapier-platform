@@ -15,9 +15,9 @@ const { LAMBDA_VERSION, PACKAGE_VERSION } = require('../constants');
 // Takes all the cmd.docs and puts them into a big md file.
 const generateCliMarkdown = () => {
   return _.orderBy(Object.keys(commands))
-    .filter(name => !_.isBoolean(commands[name]))
-    .filter(name => !commands[name].hide)
-    .map(name => {
+    .filter((name) => !_.isBoolean(commands[name]))
+    .filter((name) => !commands[name].hide)
+    .map((name) => {
       return commands[name].markdownHelp(name);
     })
     .join('\n\n\n');
@@ -48,7 +48,7 @@ ${docs}
 };
 
 // replaces line with file contents if line has [insert-file:xxx]
-const maybeInsertSnippet = line => {
+const maybeInsertSnippet = (line) => {
   const m = line.match(/\[insert-file:(.+)\]/);
   if (m) {
     const file = path.resolve(__dirname, '../..', m[1]);
@@ -57,11 +57,11 @@ const maybeInsertSnippet = line => {
   return line;
 };
 
-const fillLambdaVersion = line => {
+const fillLambdaVersion = (line) => {
   return line.replace(/LAMBDA_VERSION/g, LAMBDA_VERSION);
 };
 
-const fillPackageVersion = line => {
+const fillPackageVersion = (line) => {
   return line.replace(/PACKAGE_VERSION/g, PACKAGE_VERSION);
 };
 
@@ -86,14 +86,14 @@ const buildReadme = () => {
 buildReadme();
 
 writeCliDocs({
-  markdownPath: './docs/cli.md'
+  markdownPath: './docs/cli.md',
 });
 
 litdoc({
   title: 'Zapier Platform CLI Documentation',
   markdownPath: path.join(__dirname, '../../README.md'),
   outputPath: path.join(__dirname, '../../docs/index.html'),
-  templatePath: path.join(__dirname, '../../docs/template.jst')
+  templatePath: path.join(__dirname, '../../docs/template.jst'),
 });
 
 // TODO: toc(../../docs/README.md) to ../../README.md
@@ -102,5 +102,5 @@ litdoc({
   title: 'Zapier Platform CLI Reference',
   markdownPath: path.join(__dirname, '../../docs/cli.md'),
   outputPath: path.join(__dirname, '../../docs/cli.html'),
-  templatePath: path.join(__dirname, '../../docs/template.jst')
+  templatePath: path.join(__dirname, '../../docs/template.jst'),
 });
