@@ -16,14 +16,8 @@ const getAccessToken = async (z, bundle) => {
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
   });
 
-  if (response.status !== 200) {
-    throw new z.errors.Error(
-      // This message is surfaced to the user
-      'Unable to fetch access token: ' + response.content,
-      'getAccessTokenError',
-      response.status
-    );
-  }
+  // If you're using core v9.x or older, you should call response.throwForStatus()
+  // or verify response.status === 200 before you continue.
 
   // This function should return `access_token`.
   // If your app does an app refresh, then `refresh_token` should be returned here
@@ -47,14 +41,8 @@ const refreshAccessToken = async (z, bundle) => {
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
   });
 
-  if (response.status !== 200) {
-    throw new z.errors.Error(
-      // This message is surfaced to the user
-      'Unable to fetch access token: ' + response.content,
-      'refreshAccessTokenError',
-      response.status
-    );
-  }
+  // If you're using core v9.x or older, you should call response.throwForStatus()
+  // or verify response.status === 200 before you continue.
 
   // This function should return `access_token`.
   // If the refresh token stays constant, no need to return it.
@@ -74,22 +62,6 @@ const includeBearerToken = (request, z, bundle) => {
   }
 
   return request;
-};
-
-// This function runs after every outbound request. You can use it to check for
-// errors or modify the response. You can have as many as you need. They'll need
-// to each be registered in your index.js file.
-const handleBadResponses = (response, z, bundle) => {
-  if (response.status === 401) {
-    throw new z.errors.Error(
-      // This message is surfaced to the user
-      'The access token you supplied is incorrect',
-      'AuthenticationError',
-      response.status
-    );
-  }
-
-  return response;
 };
 
 // You want to make a request to an endpoint that is either specifically designed
@@ -138,5 +110,5 @@ module.exports = {
     connectionLabel: '{{json.username}}',
   },
   befores: [includeBearerToken],
-  afters: [handleBadResponses],
+  afters: [],
 };
