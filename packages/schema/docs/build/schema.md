@@ -717,10 +717,7 @@ To idenitfy firehose webhooks are their corresponding Zaps. For Zapier internal 
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`subscriptionLookup` | **yes** | [/FunctionSchema](#functionschema) | Takes a webhook payload and returns the identifier required to lookup subscribed Zaps.
-`dedupe` | no | `boolean` | set to true if your API sends duplicate webhook events, and Zapier needs to filter duplicates
-`batchKey` | no | `string` | if your API sends webhooks in batches (ie a list/array of events) and the events are nested under a json key, provide the key
-`challenge` | no | `object` | For APIs that send challenge payloads to the webhook endpoint, as well as webhook events
+`performSubscriptionKeyList` | **yes** | [/FunctionSchema](#functionschema) | Takes a webhook payload and returns the identifier required to lookup subscribed Zaps.
 
 -----
 
