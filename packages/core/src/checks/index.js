@@ -7,4 +7,5 @@ module.exports = {
   triggerIsObject: require('./trigger-is-object'),
   triggerHasUniqueIds: require('./trigger-has-unique-ids'),
   triggerHasId: require('./trigger-has-id'),
+  firehoseWebhookIsArray: require('./firehose_is_array'),
 };
