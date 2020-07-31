@@ -222,6 +222,27 @@ const createBeforeRequest = (app) => {
   };
 };
 
+const proxyHeaders = (headers) => {
+  const proxy = {
+    get: (target, prop) => {
+      const original = Reflect.get(target, prop);
+      if (typeof original === 'function' || typeof original === 'symbol') {
+        // defaults to defined functions on the Headers class; the symbol type
+        // is used for accessing an internal map
+        return original;
+      }
+      try {
+        // try to retrieve the header via the get() function
+        return target.get(prop); // try to retrieve the header via the get() function
+      } catch {
+        // otherwise, default to original target[prop] value
+        return original;
+      }
+    },
+  };
+  return new Proxy(headers, proxy);
+};
+
 const createAfterResponse = (app) => {
   const authType = _.get(app, 'authentication.type');
   const autoRefresh = _.get(app, 'authentication.oauth2Config.autoRefresh');
@@ -230,6 +251,11 @@ const createAfterResponse = (app) => {
     if (response.status === 401) {
       throw new z.errors.RefreshAuthError('Authentication needs refreshing');
     }
+    return response;
+  };
+
+  const makeHeaderCaseInsensitive = (response, z) => {
+    response.headers = proxyHeaders(response.headers);
     return response;
   };
 
@@ -242,7 +268,11 @@ const createAfterResponse = (app) => {
   if (!afterResponse) {
     afterResponse = (response) => response;
   }
-  return afterResponse;
+
+  return (response, z, bundle) => {
+    response = afterResponse(response);
+    return makeHeaderCaseInsensitive(response);
+  };
 };
 
 module.exports = {
