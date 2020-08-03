@@ -233,7 +233,7 @@ const proxyHeaders = (headers) => {
       }
       try {
         // try to retrieve the header via the get() function
-        return target.get(prop); // try to retrieve the header via the get() function
+        return target.get(prop);
       } catch {
         // otherwise, default to original target[prop] value
         return original;
