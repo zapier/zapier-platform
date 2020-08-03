@@ -487,6 +487,27 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_poll, header case', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_header_case',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then((output) => {
+        const movies = output.results;
+        should.equal(movies[0].contentType, 'application/json; charset=utf-8');
+      });
+    });
+
     it('KEY_poll, default headers', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(

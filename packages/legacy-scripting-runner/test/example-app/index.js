@@ -460,6 +460,13 @@ const legacyScriptingSource = `
         });
       },
 
+      movie_post_poll_header_case: function(bundle) {
+        var movies = z.JSON.parse(bundle.response.content);
+        var contentType = bundle.response.headers['CONTENT-type'];
+        movies[0].contentType = contentType;
+        return movies;
+      },
+
       /*
        * Create/Action
        */
