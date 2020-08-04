@@ -511,6 +511,30 @@ const ExecuteCallbackRequest = {
   },
 };
 
+const DuplicateInputFields = {
+  key: 'duplicateinputfields',
+  noun: 'duplicateinputfields',
+  list: {
+    display: {
+      label: 'Duplicate Input Fields',
+      description: 'returns input fields with duplicate keys',
+    },
+    operation: {
+      inputFields: [
+        function (z, bundle) {
+          return Promise.resolve([{ key: 'key 1' }, { key: 'key 1' }]);
+        },
+      ],
+      outputFields: [
+        function (z, bundle) {
+          return Promise.resolve([{ key: 'key 1' }, { key: 'key 1' }]);
+        },
+      ],
+      perform: () => {},
+    },
+  },
+};
+
 // custom HTTP middlewares /////
 
 /*
@@ -549,6 +573,7 @@ const App = {
     [ExecuteRequestAsShorthand.key]: ExecuteRequestAsShorthand,
     [ExecuteCallbackRequest.key]: ExecuteCallbackRequest,
     [EnvironmentVariable.key]: EnvironmentVariable,
+    [DuplicateInputFields.key]: DuplicateInputFields,
   },
   hydrators: {
     getBigStuff: () => {},

@@ -578,6 +578,10 @@ const doTest = (runner) => {
         'resources.failerfuncpromise.list.operation.perform',
         'Failer on promise function!'
       );
+      testError(
+        'resources.duplicateinputfields.list.operation.inputFields',
+        'Invalid API Response:\n  - Duplicate field keys: key 1'
+      );
     });
   });
 };

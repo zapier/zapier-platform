@@ -8,6 +8,7 @@ const checkOutput = require('../src/app-middlewares/after/checks');
 const isTrigger = require('../src/checks/is-trigger');
 const isSearch = require('../src/checks/is-search');
 const isCreate = require('../src/checks/is-create');
+const isInputFields = require('../src/checks/is-input-fields');
 
 const testMethod = 'some.method';
 
@@ -84,6 +85,10 @@ describe('checks', () => {
     isCreate('creates.blah.operation.perform').should.be.true();
     isCreate('resources.blah.create.operation.perform').should.be.true();
     isCreate('blah').should.be.false();
+
+    isInputFields('triggers.blah.operation.inputFields').should.be.true();
+    isInputFields('resources.blah.list.operation.inputFields').should.be.true();
+    isInputFields('triggers.blah.operation.perform').should.be.false();
   });
 });
 
@@ -121,6 +126,49 @@ describe('checkOutput', () => {
         },
       },
       results: [{ text: 'An item without id' }],
+    };
+
+    const newOutput = checkOutput(output);
+    newOutput.should.deepEqual(output);
+  });
+});
+
+describe('inputFieldsHaveUniqueKeys', () => {
+  it('should ensure fields do not have duplicate keys', () => {
+    const output = {
+      input: {
+        _zapier: {
+          event: {
+            method: 'triggers.key.operation.inputFields',
+            command: 'execute',
+            bundle: {
+              skipChecks: ['triggerHasId'],
+            },
+          },
+        },
+      },
+      results: [{ key: 'a' }, { key: 'b' }, { key: 'a' }],
+    };
+
+    (() => {
+      checkOutput(output);
+    }).should.throw(/Invalid API Response:\n\s+- Duplicate field keys: a/);
+  });
+
+  it('should allow fields with no duplicate keys', () => {
+    const output = {
+      input: {
+        _zapier: {
+          event: {
+            method: 'triggers.key.operation.inputFields',
+            command: 'execute',
+            bundle: {
+              skipChecks: ['triggerHasId'],
+            },
+          },
+        },
+      },
+      results: [{ key: 'a' }, { key: 'b' }, { key: 'c' }],
     };
 
     const newOutput = checkOutput(output);

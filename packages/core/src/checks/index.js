@@ -7,4 +7,6 @@ module.exports = {
   triggerIsObject: require('./trigger-is-object'),
   triggerHasUniqueIds: require('./trigger-has-unique-ids'),
   triggerHasId: require('./trigger-has-id'),
+
+  inputFieldsHaveUniqueKeys: require('./input-fields-have-unique-keys'),
 };
