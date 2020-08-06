@@ -1679,34 +1679,7 @@ This object holds the user's auth details and the data for the API requests.
 
 > Before v8.0.0, the information in `bundle.meta` was different. See [the old docs](https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta) for the previous values and [the wiki](https://github.com/zapier/zapier-platform/wiki/bundle.meta-changes) for a mapping of old values to new.
 
-There's also `bundle.meta.zap.id`, which is only available in the `performSubscribe` and `performUnsubscribe` methods.
 
-The user's Zap ID is available during the [subscribe and unsubscribe](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#basichookoperationschema) methods.
-
-For example - you could do:
-
-```js
-const subscribeHook = async (z, bundle) => {
-
-  const options = {
-    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
-    method: 'POST',
-    body: {
-      url: bundle.targetUrl, // bundle.targetUrl has the Hook URL this app should call
-      zap_id: bundle.meta.zap.id,
-    },
-  };
-
-  const response = await z.request(options);
-  return response.data; // or response.json if you're using core v9 or older
-};
-
-module.exports = {
-  // ... see our rest hook example for additional details: https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js
-  performSubscribe: subscribeHook,
-  // ...
-};
-```
 
 ### `bundle.rawRequest`
 

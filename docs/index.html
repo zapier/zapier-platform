@@ -2916,30 +2916,10 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Before v8.0.0, the information in <code>bundle.meta</code> was different. See <a href="https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta">the old docs</a> for the previous values and <a href="https://github.com/zapier/zapier-platform/wiki/bundle.meta-changes">the wiki</a> for a mapping of old values to new.</p>
-</blockquote><p>There&apos;s also <code>bundle.meta.zap.id</code>, which is only available in the <code>performSubscribe</code> and <code>performUnsubscribe</code> methods.</p><p>The user&apos;s Zap ID is available during the <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#basichookoperationschema">subscribe and unsubscribe</a> methods.</p><p>For example - you could do:</p>
+</blockquote>
     </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> subscribeHook = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
-
-  <span class="hljs-keyword">const</span> options = {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks&apos;</span>,
-    <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
-    <span class="hljs-attr">body</span>: {
-      <span class="hljs-attr">url</span>: bundle.targetUrl, <span class="hljs-comment">// bundle.targetUrl has the Hook URL this app should call</span>
-      <span class="hljs-attr">zap_id</span>: bundle.meta.zap.id,
-    },
-  };
-
-  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(options);
-  <span class="hljs-keyword">return</span> response.data; <span class="hljs-comment">// or response.json if you&apos;re using core v9 or older</span>
-};
-
-<span class="hljs-built_in">module</span>.exports = {
-  <span class="hljs-comment">// ... see our rest hook example for additional details: https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js</span>
-  <span class="hljs-attr">performSubscribe</span>: subscribeHook,
-  <span class="hljs-comment">// ...</span>
-};
-</code></pre>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
