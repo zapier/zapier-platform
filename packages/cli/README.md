@@ -1728,6 +1728,30 @@ This object holds the user's auth details and the data for the API requests.
 
 This the URL to which you should send hook data. It'll look something like `https://hooks.zapier.com/1234/abcd`. We provide it so you can make a POST request to your server. Your server should store this URL and use is as a destination when there's new data to report.
 
+For example:
+
+```js
+const subscribeHook = async (z, bundle) => {
+
+  const options = {
+    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
+    method: 'POST',
+    body: {
+      url: bundle.targetUrl, // bundle.targetUrl has the Hook URL this app should call
+    },
+  };
+
+  const response = await z.request(options);
+  return response.data; // or response.json if you're using core v9 or older
+};
+
+module.exports = {
+  // ...
+  performSubscribe: subscribeHook,
+  // ...
+};
+```
+
 Read more in the [REST hook example](https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js).
 
 ### `bundle.subscribeData`
