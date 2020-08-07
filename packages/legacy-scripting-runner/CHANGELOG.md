@@ -1,3 +1,8 @@
+## 3.7.5
+
+- :bug: Make response headers case-insensitive ([#253](https://github.com/zapier/zapier-platform/pull/253))
+- :bug: `bundle.request.data` should be undefined in `pre_custom_action_fields` ([#256](https://github.com/zapier/zapier-platform/pull/256))
+
 ## 3.7.4
 
 - :bug: Fix env vars in curlies not resolving properly ([#237](https://github.com/zapier/zapier-platform/pull/237))
