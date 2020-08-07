@@ -2390,6 +2390,30 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_custom_action_fields, empty request.data', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_pre_custom_action_fields_empty_request_data',
+        'movie_pre_custom_action_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then((output) => {
+        const fields = output.results;
+        should.equal(fields.length, 3);
+        should.equal(fields[0].key, 'title');
+        should.equal(fields[1].key, 'genre');
+        should.equal(fields[2].key, 'luckyNumber');
+      });
+    });
+
     it('KEY_pre_custom_action_fields, _.template(bundle.raw_url)', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(

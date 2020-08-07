@@ -624,6 +624,14 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_custom_action_fields_empty_request_data: function(bundle) {
+        if (!bundle.request.data) {
+          // Should reach here
+          bundle.request.url += 's';
+        }
+        return bundle.request;
+      },
+
       // To be replaced with 'movie_post_custom_action_fields' at runtime
       movie_post_custom_action_fields_disabled: function(bundle) {
         var fields = z.JSON.parse(bundle.response.content);
