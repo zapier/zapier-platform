@@ -2916,10 +2916,27 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Before v8.0.0, the information in <code>bundle.meta</code> was different. See <a href="https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta">the old docs</a> for the previous values and <a href="https://github.com/zapier/zapier-platform/wiki/bundle.meta-changes">the wiki</a> for a mapping of old values to new.</p>
-</blockquote>
+</blockquote><p>Here&apos;s an example of a polling trigger that is also used to power a dynamic dropdown:</p>
     </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> perform = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-keyword">const</span> params = { <span class="hljs-attr">per_page</span>: <span class="hljs-number">100</span> }; <span class="hljs-comment">// poll for the most recent 100 teams</span>
+
+  <span class="hljs-keyword">if</span> (bundle.meta.isFillingDynamicDropdown) {
+    <span class="hljs-comment">// dynamic dropdowns support pagination</span>
+    params.per_page = <span class="hljs-number">30</span>;
+    params.offset = params.per_page * bundle.meta.page;
+  }
+
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">`<span class="hljs-subst">${API_BASE_URL}</span>/teams`</span>,
+    params,
+  });
+
+  <span class="hljs-keyword">return</span> response.json;
+};
+  <span class="hljs-comment">// ...</span>
+</code></pre>
     </div>
   </div>
 </div><div class="row">

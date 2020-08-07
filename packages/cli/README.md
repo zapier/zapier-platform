@@ -1679,6 +1679,28 @@ This object holds the user's auth details and the data for the API requests.
 
 > Before v8.0.0, the information in `bundle.meta` was different. See [the old docs](https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta) for the previous values and [the wiki](https://github.com/zapier/zapier-platform/wiki/bundle.meta-changes) for a mapping of old values to new.
 
+Here's an example of a polling trigger that is also used to power a dynamic dropdown:
+
+```js
+const perform = async (z, bundle) => {
+  const params = { per_page: 100 }; // poll for the most recent 100 teams
+
+  if (bundle.meta.isFillingDynamicDropdown) {
+    // dynamic dropdowns support pagination
+    params.per_page = 30;
+    params.offset = params.per_page * bundle.meta.page;
+  }
+
+  const response = await z.request({
+    url: `${API_BASE_URL}/teams`,
+    params,
+  });
+
+  return response.json;
+};
+  // ...
+```
+
 
 
 ### `bundle.rawRequest`
