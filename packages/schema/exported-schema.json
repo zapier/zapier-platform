@@ -70,9 +70,7 @@
         "legacy": {
           "description": "**INTERNAL USE ONLY**. Zapier uses this to hold properties from a legacy Web Builder app.",
           "type": "object",
-          "docAnnotation": {
-            "hide": true
-          }
+          "docAnnotation": { "hide": true }
         }
       },
       "additionalProperties": false
@@ -110,21 +108,14 @@
       "id": "/FieldChoicesSchema",
       "description": "A static dropdown of options. Which you use depends on your order and label requirements:\n\nNeed a Label? | Does Order Matter? | Type to Use\n---|---|---\nYes | No | Object of value -> label\nNo | Yes | Array of Strings\nYes | Yes | Array of [FieldChoiceWithLabel](#fieldchoicewithlabelschema)",
       "oneOf": [
-        {
-          "type": "object",
-          "minProperties": 1
-        },
+        { "type": "object", "minProperties": 1 },
         {
           "type": "array",
           "minItems": 1,
           "items": {
             "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "$ref": "/FieldChoiceWithLabelSchema"
-              }
+              { "type": "string" },
+              { "$ref": "/FieldChoiceWithLabelSchema" }
             ]
           }
         }
@@ -199,9 +190,7 @@
         },
         "children": {
           "type": "array",
-          "items": {
-            "$ref": "/FieldSchema"
-          },
+          "items": { "$ref": "/FieldSchema" },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
         },
@@ -231,11 +220,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": ["require"],
-      "properties": {
-        "require": {
-          "type": "string"
-        }
-      }
+      "properties": { "require": { "type": "string" } }
     },
     "FunctionSourceSchema": {
       "id": "/FunctionSourceSchema",
@@ -251,9 +236,7 @@
         },
         "args": {
           "type": "array",
-          "items": {
-            "type": "string"
-          },
+          "items": { "type": "string" },
           "description": "Function signature. Defaults to `['z', 'bundle']` if not specified."
         }
       }
@@ -266,21 +249,11 @@
         "[^\\s]+": {
           "description": "Any key may exist in this flat object as long as its values are simple.",
           "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "integer"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            }
+            { "type": "null" },
+            { "type": "string" },
+            { "type": "integer" },
+            { "type": "number" },
+            { "type": "boolean" }
           ]
         }
       },
@@ -290,16 +263,9 @@
       "id": "/FunctionSchema",
       "description": "Internal pointer to a function from the original source or the source code itself. Encodes arity and if `arguments` is used in the body. Note - just write normal functions and the system will encode the pointers for you. Or, provide {source: \"return 1 + 2\"} and the system will wrap in a function for you.",
       "oneOf": [
-        {
-          "type": "string",
-          "pattern": "^\\$func\\$\\d+\\$[tf]\\$$"
-        },
-        {
-          "$ref": "/FunctionRequireSchema"
-        },
-        {
-          "$ref": "/FunctionSourceSchema"
-        }
+        { "type": "string", "pattern": "^\\$func\\$\\d+\\$[tf]\\$$" },
+        { "$ref": "/FunctionRequireSchema" },
+        { "$ref": "/FunctionSourceSchema" }
       ]
     },
     "RedirectRequestSchema": {
@@ -342,18 +308,10 @@
         "body": {
           "description": "Can be nothing, a raw string or JSON (object or array).",
           "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "object"
-            },
-            {
-              "type": "array"
-            }
+            { "type": "null" },
+            { "type": "string" },
+            { "type": "object" },
+            { "type": "array" }
           ]
         },
         "params": {
@@ -375,9 +333,7 @@
                 "maxProperties": 2
               }
             },
-            {
-              "$ref": "/FlatObjectSchema"
-            }
+            { "$ref": "/FlatObjectSchema" }
           ]
         },
         "removeMissingValuesFrom": {
@@ -413,9 +369,7 @@
       "id": "/FieldsSchema",
       "description": "An array or collection of fields.",
       "type": "array",
-      "items": {
-        "$ref": "/FieldSchema"
-      }
+      "items": { "$ref": "/FieldSchema" }
     },
     "AuthenticationBasicConfigSchema": {
       "id": "/AuthenticationBasicConfigSchema",
@@ -446,36 +400,18 @@
       "properties": {
         "getRequestToken": {
           "description": "Define where Zapier will acquire a request token which is used for the rest of the three legged authentication process.",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         },
         "authorizeUrl": {
           "description": "Define where Zapier will redirect the user to authorize our app. Typically, you should append an `oauth_token` querystring parameter to the request.",
           "oneOf": [
-            {
-              "$ref": "/RedirectRequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
+            { "$ref": "/RedirectRequestSchema" },
+            { "$ref": "/FunctionSchema" }
           ]
         },
         "getAccessToken": {
           "description": "Define how Zapier fetches an access token from the API",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         }
       },
       "additionalProperties": false
@@ -489,35 +425,17 @@
         "authorizeUrl": {
           "description": "Define where Zapier will redirect the user to authorize our app. Note: we append the redirect URL and state parameters to return value of this function.",
           "oneOf": [
-            {
-              "$ref": "/RedirectRequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
+            { "$ref": "/RedirectRequestSchema" },
+            { "$ref": "/FunctionSchema" }
           ]
         },
         "getAccessToken": {
           "description": "Define how Zapier fetches an access token from the API",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         },
         "refreshAccessToken": {
           "description": "Define how Zapier will refresh the access token from the API",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         },
         "scope": {
           "description": "What scope should Zapier request?",
@@ -538,14 +456,7 @@
       "properties": {
         "perform": {
           "description": "Define how Zapier fetches the additional authData needed to make API calls.",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         }
       },
       "additionalProperties": false
@@ -555,14 +466,7 @@
       "description": "Represents an array of fields or functions.",
       "type": "array",
       "items": {
-        "oneOf": [
-          {
-            "$ref": "/FieldSchema"
-          },
-          {
-            "$ref": "/FunctionSchema"
-          }
-        ]
+        "oneOf": [{ "$ref": "/FieldSchema" }, { "$ref": "/FunctionSchema" }]
       }
     },
     "DynamicFieldsSchema": {
@@ -581,10 +485,7 @@
       "id": "/ResultsSchema",
       "description": "An array of objects suitable for returning in perform calls.",
       "type": "array",
-      "items": {
-        "type": "object",
-        "minProperties": 1
-      }
+      "items": { "type": "object", "minProperties": 1 }
     },
     "BasicDisplaySchema": {
       "id": "/BasicDisplaySchema",
@@ -644,14 +545,7 @@
         },
         "perform": {
           "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
@@ -703,12 +597,8 @@
         "performList": {
           "description": "Can get \"live\" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.",
           "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
+            { "$ref": "/RequestSchema" },
+            { "$ref": "/FunctionSchema" }
           ],
           "docAnnotation": {
             "required": {
@@ -720,12 +610,8 @@
         "performSubscribe": {
           "description": "Takes a URL and any necessary data from the user and subscribes. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.",
           "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
+            { "$ref": "/RequestSchema" },
+            { "$ref": "/FunctionSchema" }
           ],
           "docAnnotation": {
             "required": {
@@ -737,12 +623,8 @@
         "performUnsubscribe": {
           "description": "Takes a URL and data from a previous subscribe call and unsubscribes. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.",
           "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
+            { "$ref": "/RequestSchema" },
+            { "$ref": "/FunctionSchema" }
           ],
           "docAnnotation": {
             "required": {
@@ -791,14 +673,7 @@
         },
         "perform": {
           "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         },
         "canPaginate": {
           "description": "Does this endpoint support a page offset?",
@@ -838,14 +713,7 @@
         },
         "perform": {
           "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         },
         "performResume": {
           "description": "A function that parses data from a perform + callback to resume this action. For use with callback semantics",
@@ -853,14 +721,7 @@
         },
         "performGet": {
           "description": "How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
@@ -1040,12 +901,8 @@
         "operation": {
           "description": "Powers the functionality for this trigger.",
           "anyOf": [
-            {
-              "$ref": "/BasicPollingOperationSchema"
-            },
-            {
-              "$ref": "/BasicHookOperationSchema"
-            }
+            { "$ref": "/BasicPollingOperationSchema" },
+            { "$ref": "/BasicHookOperationSchema" }
           ]
         }
       },
@@ -1090,14 +947,7 @@
         },
         "perform": {
           "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         },
         "performResume": {
           "description": "A function that parses data from a perform + callback to resume this action. For use with callback semantics",
@@ -1105,14 +955,7 @@
         },
         "performGet": {
           "description": "How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
@@ -1205,14 +1048,7 @@
         },
         "test": {
           "description": "A function or request that confirms the authentication is working.",
-          "oneOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "oneOf": [{ "$ref": "/RequestSchema" }, { "$ref": "/FunctionSchema" }]
         },
         "fields": {
           "description": "Fields you can request from the user before they connect your app to Zapier.",
@@ -1221,35 +1057,17 @@
         "connectionLabel": {
           "description": "A string with variables, function, or request that returns the connection label for the authenticated user.",
           "anyOf": [
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            },
-            {
-              "type": "string"
-            }
+            { "$ref": "/RequestSchema" },
+            { "$ref": "/FunctionSchema" },
+            { "type": "string" }
           ]
         },
-        "basicConfig": {
-          "$ref": "/AuthenticationBasicConfigSchema"
-        },
-        "customConfig": {
-          "$ref": "/AuthenticationCustomConfigSchema"
-        },
-        "digestConfig": {
-          "$ref": "/AuthenticationDigestConfigSchema"
-        },
-        "oauth1Config": {
-          "$ref": "/AuthenticationOAuth1ConfigSchema"
-        },
-        "oauth2Config": {
-          "$ref": "/AuthenticationOAuth2ConfigSchema"
-        },
-        "sessionConfig": {
-          "$ref": "/AuthenticationSessionConfigSchema"
-        }
+        "basicConfig": { "$ref": "/AuthenticationBasicConfigSchema" },
+        "customConfig": { "$ref": "/AuthenticationCustomConfigSchema" },
+        "digestConfig": { "$ref": "/AuthenticationDigestConfigSchema" },
+        "oauth1Config": { "$ref": "/AuthenticationOAuth1ConfigSchema" },
+        "oauth2Config": { "$ref": "/AuthenticationOAuth2ConfigSchema" },
+        "sessionConfig": { "$ref": "/AuthenticationSessionConfigSchema" }
       },
       "additionalProperties": false
     },
@@ -1320,15 +1138,8 @@
       "id": "/MiddlewaresSchema",
       "description": "List of before or after middlewares. Can be an array of functions or a single function",
       "oneOf": [
-        {
-          "type": "array",
-          "items": {
-            "$ref": "/FunctionSchema"
-          }
-        },
-        {
-          "$ref": "/FunctionSchema"
-        }
+        { "type": "array", "items": { "$ref": "/FunctionSchema" } },
+        { "$ref": "/FunctionSchema" }
       ],
       "additionalProperties": false
     },

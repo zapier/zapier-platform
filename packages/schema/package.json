@@ -19,7 +19,7 @@
     "test:debug": "mocha -t 5-10000 --recursive --inspect-brk test",
     "lint": "eslint lib",
     "coverage": "istanbul cover _mocha -- --recursive",
-    "export": "node bin/export.js && prettier --write exported-schema.json",
+    "export": "node bin/export.js",
     "docs": "node bin/docs.js",
     "build": "yarn docs && yarn export",
     "git-add": "git add exported-schema.json README.md docs",
@@ -34,6 +34,7 @@
     "fs-extra": "^9.0.0",
     "istanbul": "0.4.5",
     "markdown-toc": "^1",
-    "node-fetch": "^2"
+    "node-fetch": "^2",
+    "prettier": "^2.0.5"
   }
 }
