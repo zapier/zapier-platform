@@ -8,7 +8,7 @@
     "build": "npm run clean && tsc",
     "clean": "rimraf ./lib ./build",
     "watch": "npm run clean && tsc --watch",
-    "zapier-build": "npm run build"
+    "_zapier-build": "npm run build"
   },
   "dependencies": {
     "zapier-platform-core": "10.0.1"
