@@ -290,6 +290,19 @@ const maybeNotifyAboutOutdated = () => {
   }
 };
 
+const maybeRunBuildScript = async (options = {}) => {
+  const npmScripts = _.get(
+    require(path.resolve(options.cwd || '.', './package.json')),
+    'scripts'
+  );
+
+  if ('zapier-build' in npmScripts) {
+    startSpinner('Running zapier-build script');
+    await runCommand('npm', ['run', 'zapier-build'], options);
+    endSpinner();
+  }
+};
+
 const _buildFunc = async ({
   skipNpmInstall = false,
   disableDependencyDetection = false,
@@ -305,6 +318,8 @@ const _buildFunc = async ({
   );
 
   maybeNotifyAboutOutdated();
+
+  await maybeRunBuildScript();
 
   // make sure our directories are there
   await ensureDir(tmpDir);
@@ -462,4 +477,5 @@ module.exports = {
   makeSourceZip,
   listFiles,
   requiredFiles,
+  maybeRunBuildScript,
 };

@@ -296,4 +296,13 @@ describe('build (runs slowly)', () => {
         should.not.exist(environmentFile);
       });
   });
+
+  it('should run the zapier-build script', async () => {
+    runCommand('npm', ['run', 'clean'], { cwd: tmpDir });
+
+    await build.maybeRunBuildScript({ cwd: tmpDir });
+
+    const buildExists = await fs.pathExists(path.join(tmpDir, 'lib'));
+    should.equal(buildExists, true);
+  });
 });
