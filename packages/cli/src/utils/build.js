@@ -291,14 +291,15 @@ const maybeNotifyAboutOutdated = () => {
 };
 
 const maybeRunBuildScript = async (options = {}) => {
-  const npmScripts = _.get(
-    require(path.resolve(options.cwd || '.', './package.json')),
-    'scripts'
-  );
+  const ZAPIER_BUILD_KEY = 'zapier-build';
+  const pJson = require(path.resolve(
+    options.cwd || process.cwd(),
+    'package.json'
+  ));
 
-  if ('zapier-build' in npmScripts) {
-    startSpinner('Running zapier-build script');
-    await runCommand('npm', ['run', 'zapier-build'], options);
+  if (_.get(pJson, 'scripts', ZAPIER_BUILD_KEY)) {
+    startSpinner(`Running ${ZAPIER_BUILD_KEY} script`);
+    await runCommand('npm', ['run', ZAPIER_BUILD_KEY], options);
     endSpinner();
   }
 };
