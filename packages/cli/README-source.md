@@ -1546,18 +1546,19 @@ Now you should be able to run `docker-compose run pusher` and see the build and 
 
 ## Using Transpilers
 
-We do not yet support transpilers out of the box, but if you would like to use `babel` or similar, we recommend creating a custom wrapper on `zapier push` like this in your `package.json`:
+If you would like to use a transpiler like `babel`, you can add a script named `_zapier-build` to your `package.json`, which will be run during `zapier build`,
+`zapier push`, and `zapier upload`.  See the following example:
 
 ```json
 {
   "scripts": {
     "zapier-dev": "babel src --out-dir lib --watch",
-    "zapier-push": "babel src --out-dir lib && zapier push"
+    "_zapier-build": "babel src --out-dir lib"
   }
 }
 ```
 
-And then you can have your fancy ES7 code in `src/*` and a root `index.js` like this:
+Then, you can have your fancy ES7 code in `src/*` and a root `index.js` like this:
 
 ```js
 module.exports = require('./lib');
@@ -1573,7 +1574,7 @@ npm run zapier-dev
 zapier test
 
 # every build ensures a fresh build
-npm run zapier-push
+zapier push
 ```
 
 There are a lot of details left out - check out the full example app for a working setup.
