@@ -8,8 +8,8 @@ const isFirehoseWebhook = require('./is-firehose-webhook');
 /*
   The firehoseWebhook performSubscriptionKeyList function should always return an array of objects.
 */
-const firehoseWebhookIsArray = {
-  name: 'firehoseWebhookIsArray',
+const firehoseSubscriptionIsArray = {
+  name: 'firehoseSubscriptionIsArray',
   shouldRun: isFirehoseWebhook,
   run: (method, results) => {
     if (!_.isArray(results)) {
@@ -20,4 +20,4 @@ const firehoseWebhookIsArray = {
   },
 };
 
-module.exports = firehoseWebhookIsArray;
+module.exports = firehoseSubscriptionIsArray;

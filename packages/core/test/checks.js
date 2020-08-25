@@ -8,6 +8,7 @@ const checkOutput = require('../src/app-middlewares/after/checks');
 const isTrigger = require('../src/checks/is-trigger');
 const isSearch = require('../src/checks/is-search');
 const isCreate = require('../src/checks/is-create');
+const isFirehoseWebhook = require('../src/checks/is-firehose-webhook');
 
 const testMethod = 'some.method';
 
@@ -72,6 +73,36 @@ describe('checks', () => {
       .length.should.eql(1, 'mismatched objects');
   });
 
+  it('should error for objects via firehoseSubscriptionIsArray', () => {
+    checks.firehoseSubscriptionIsArray
+      .run('performSubscriptionKeyList', ['test', 'teststr'])
+      .length.should.eql(0);
+    checks.firehoseSubscriptionIsArray
+      .run('performSubscriptionKeyList', [])
+      .length.should.eql(0);
+    checks.firehoseSubscriptionIsArray
+      .run('performSubscriptionKeyList', 'test')
+      .length.should.eql(1);
+    checks.firehoseSubscriptionIsArray
+      .run('performSubscriptionKeyList', {})
+      .length.should.eql(1);
+  });
+
+  it('should error for non-strings via firehoseSubscriptionKeyIsString', () => {
+    checks.firehoseSubscriptionKeyIsString
+      .run('performSubscriptionKeyList', [])
+      .length.should.eql(0);
+    checks.firehoseSubscriptionKeyIsString
+      .run('performSubscriptionKeyList', ['test', 'test moar'])
+      .length.should.eql(0);
+    checks.firehoseSubscriptionKeyIsString
+      .run('performSubscriptionKeyList', ['test', 2])
+      .length.should.eql(1);
+    checks.firehoseSubscriptionKeyIsString
+      .run('performSubscriptionKeyList', [{}, {}])
+      .length.should.eql(1);
+  });
+
   it('should recognize types by name', () => {
     isTrigger('triggers.blah.operation.perform').should.be.true();
     isTrigger('resources.blah.list.operation.perform').should.be.true();
@@ -84,6 +115,11 @@ describe('checks', () => {
     isCreate('creates.blah.operation.perform').should.be.true();
     isCreate('resources.blah.create.operation.perform').should.be.true();
     isCreate('blah').should.be.false();
+
+    isFirehoseWebhook(
+      'firehoseWebhooks.performSubscriptionKeyList'
+    ).should.be.true();
+    isFirehoseWebhook('triggers.blah.operation.perform').should.be.false(); // the firehose webhook check is at app level, not trigger
   });
 });
 
