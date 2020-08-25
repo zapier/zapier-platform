@@ -1370,11 +1370,11 @@
       "required": ["performSubscriptionKeyList"],
       "properties": {
         "performSubscriptionKeyList": {
-          "description": "Takes a webhook payload and returns the identifier required to lookup subscribed Zaps.",
+          "description": "Takes a webhook payload and returns the list of subscription keys required to lookup subscribed Zaps.",
           "$ref": "/FunctionSchema"
         }
       },
-      "additionalProperties": true
+      "additionalProperties": false
     }
   }
 }

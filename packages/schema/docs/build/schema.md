@@ -709,7 +709,7 @@ To idenitfy firehose webhooks are their corresponding Zaps. For Zapier internal 
 
 * **Type** - `object`
 * **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/FirehoseWebhookSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.0.0/packages/schema/lib/schemas/FirehoseWebhookSchema.js)
+* **Source Code** - [lib/schemas/FirehoseWebhookSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.0.1/packages/schema/lib/schemas/FirehoseWebhookSchema.js)
 
 
 
@@ -717,7 +717,7 @@ To idenitfy firehose webhooks are their corresponding Zaps. For Zapier internal 
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`performSubscriptionKeyList` | **yes** | [/FunctionSchema](#functionschema) | Takes a webhook payload and returns the identifier required to lookup subscribed Zaps.
+`performSubscriptionKeyList` | **yes** | [/FunctionSchema](#functionschema) | Takes a webhook payload and returns the list of subscription keys required to lookup subscribed Zaps.
 
 -----
 
