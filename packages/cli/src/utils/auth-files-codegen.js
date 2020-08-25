@@ -493,7 +493,7 @@ const oauth1AuthFile = () => {
           'Put your OAuth1 credentials in `req.auth`, Zapier will sign the request for you.'
         ),
         assignmentStatement(
-          'req.auth',
+          'request.auth',
           obj(
             objProperty('oauth_consumer_key', 'process.env.CLIENT_ID'),
             objProperty('oauth_consumer_secret', 'process.env.CLIENT_SECRET'),
@@ -503,11 +503,12 @@ const oauth1AuthFile = () => {
               'bundle.authData.oauth_token_secret'
             ),
             comment("oauth_version: '1.0', // sometimes required"),
-            objProperty('...(req.auth || {})')
+            objProperty('...(request.auth || {})')
           )
         )
       )
     ),
+    authTestFunc(strLiteral('https://api.trello.com/1/members/me/')),
     authFileExport('oauth1', 'OAuth1 is an older form of OAuth', {
       beforeFuncNames: [includeAccessTokenFuncName],
       extraConfigProps: [
@@ -534,15 +535,6 @@ const oauth1AuthFile = () => {
                   )
                 )
               )
-            )
-          )
-        ),
-        objProperty(
-          'test',
-          obj(
-            objProperty(
-              'url',
-              strLiteral('https://api.trello.com/1/members/me/')
             )
           )
         ),

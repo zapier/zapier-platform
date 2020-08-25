@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/zapier/zapier-platform-example-app-babel.svg?branch=master)](https://travis-ci.org/zapier/zapier-platform-example-app-babel)
 
-A barebones app that has a resource defined. This is mainly a proof-of-concept for using features not yet available in node v6.x.
+A barebones app that has a resource defined. This is mainly a proof-of-concept for using features not yet available in node v12.x.
 
 Run this:
 
@@ -11,16 +11,6 @@ npm run zapier-dev # compiles live
 zapier test
 ```
 
-There's also a non- watch command:
-
-```bash
-npm run zapier-build
-```
-
-To push, instead of `zapier push`, we do:
-
-```bash
-npm run zapier-push # compiles first
-```
+`zapier build` works as a non-watch command that calls the `npm run _zapier-build` hook, and `zapier push` will make a fresh build using that hook as well.
 
 > We recommend using the zapier-platform-cli and `zapier init . --template=babel` to create an app.

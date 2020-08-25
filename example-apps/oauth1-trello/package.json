@@ -1,5 +1,5 @@
 {
-  "name": "custom-auth",
+  "name": "oauth1-trello",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

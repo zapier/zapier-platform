@@ -180,7 +180,13 @@ const addRequestData = async (event, z, bundle, convertedBundle) => {
       delete convertedBundle.request.headers['Content-Type'];
     }
   } else if (event.name.startsWith('create')) {
-    convertedBundle.request.data = JSON.stringify(bundle._unflatInputData);
+    if (
+      !_.isEmpty(bundle._unflatInputData) ||
+      (!event.name.includes('.input') && !event.name.includes('.output'))
+    ) {
+      // Only stringify an empty object when we aren't fetching custom fields
+      convertedBundle.request.data = JSON.stringify(bundle._unflatInputData);
+    }
   }
 };
 

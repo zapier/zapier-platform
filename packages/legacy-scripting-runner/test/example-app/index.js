@@ -460,6 +460,13 @@ const legacyScriptingSource = `
         });
       },
 
+      movie_post_poll_header_case: function(bundle) {
+        var movies = z.JSON.parse(bundle.response.content);
+        var contentType = bundle.response.headers['CONTENT-type'];
+        movies[0].contentType = contentType;
+        return movies;
+      },
+
       /*
        * Create/Action
        */
@@ -614,6 +621,14 @@ const legacyScriptingSource = `
       // To be replaced with 'movie_pre_custom_action_fields' at runtime
       movie_pre_custom_action_fields_disabled: function(bundle) {
         bundle.request.url += 's';
+        return bundle.request;
+      },
+
+      movie_pre_custom_action_fields_empty_request_data: function(bundle) {
+        if (!bundle.request.data) {
+          // Should reach here
+          bundle.request.url += 's';
+        }
         return bundle.request;
       },
 

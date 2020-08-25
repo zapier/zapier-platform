@@ -8,22 +8,6 @@
 const test = (z, bundle) =>
   z.request({ url: 'https://auth-json-server.zapier-staging.com/me' });
 
-// This function runs after every outbound request. You can use it to check for
-// errors or modify the response. You can have as many as you need. They'll need
-// to each be registered in your index.js file.
-const handleBadResponses = (response, z, bundle) => {
-  if (response.status === 401) {
-    throw new z.errors.Error(
-      // This message is surfaced to the user
-      'The session key you supplied is incorrect',
-      'AuthenticationError',
-      response.status
-    );
-  }
-
-  return response;
-};
-
 const getSessionKey = async (z, bundle) => {
   const response = await z.request({
     url: 'https://httpbin.zapier-tooling.com/post',
@@ -34,15 +18,8 @@ const getSessionKey = async (z, bundle) => {
     },
   });
 
-  if (response.status !== 200) {
-    throw new z.errors.Error(
-      // This message is surfaced to the user
-      'The username/password you supplied is invalid',
-      'getSessionKeyError',
-      response.status
-    );
-  }
-
+  // If you're using core v9.x or older, you should call response.throwForStatus()
+  // or verify response.status === 200 before you continue.
   return {
     // FIXME: The `|| "secret"` below is just for demo purposes, you should remove it.
     sessionKey: response.data.sessionKey || 'secret',
@@ -58,17 +35,6 @@ const includeSessionKeyHeader = (request, z, bundle) => {
   }
 
   return request;
-};
-
-// This function runs after every outbound request. You can use it to check for
-// errors or modify the response. You can have as many as you need. They'll need
-// to each be registered in your index.js file.
-const sessionRefreshIf401 = (response, z, bundle) => {
-  if (bundle.authData.sessionKey && response.status === 401) {
-    throw new z.errors.RefreshAuthError('Session key needs refreshing.');
-  }
-
-  return response;
 };
 
 module.exports = {
@@ -106,5 +72,5 @@ module.exports = {
     connectionLabel: '{{json.username}}',
   },
   befores: [includeSessionKeyHeader],
-  afters: [sessionRefreshIf401, handleBadResponses],
+  afters: [],
 };

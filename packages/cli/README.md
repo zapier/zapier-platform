@@ -20,7 +20,7 @@ You may find docs duplicate or outdated across the Zapier site. The most up-to-d
 - [Latest CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
 - [Latest Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
 
-This doc decribes the latest CLI version **10.0.0**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+This doc decribes the latest CLI version **10.0.1**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
 - CLI Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
 - CLI Reference: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
@@ -1679,34 +1679,29 @@ This object holds the user's auth details and the data for the API requests.
 
 > Before v8.0.0, the information in `bundle.meta` was different. See [the old docs](https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta) for the previous values and [the wiki](https://github.com/zapier/zapier-platform/wiki/bundle.meta-changes) for a mapping of old values to new.
 
-There's also `bundle.meta.zap.id`, which is only available in the `performSubscribe` and `performUnsubscribe` methods.
-
-The user's Zap ID is available during the [subscribe and unsubscribe](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#basichookoperationschema) methods.
-
-For example - you could do:
+Here's an example of a polling trigger that is also used to power a dynamic dropdown:
 
 ```js
-const subscribeHook = async (z, bundle) => {
+const perform = async (z, bundle) => {
+  const params = { per_page: 100 }; // poll for the most recent 100 teams
 
-  const options = {
-    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
-    method: 'POST',
-    body: {
-      url: bundle.targetUrl, // bundle.targetUrl has the Hook URL this app should call
-      zap_id: bundle.meta.zap.id,
-    },
-  };
+  if (bundle.meta.isFillingDynamicDropdown) {
+    // dynamic dropdowns support pagination
+    params.per_page = 30;
+    params.offset = params.per_page * bundle.meta.page;
+  }
 
-  const response = await z.request(options);
-  return response.data; // or response.json if you're using core v9 or older
+  const response = await z.request({
+    url: `${API_BASE_URL}/teams`,
+    params,
+  });
+
+  return response.json;
 };
-
-module.exports = {
-  // ... see our rest hook example for additional details: https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js
-  performSubscribe: subscribeHook,
   // ...
-};
 ```
+
+
 
 ### `bundle.rawRequest`
 
@@ -1754,6 +1749,30 @@ module.exports = {
 > `bundle.targetUrl` is only available in the `performSubscribe` and `performUnsubscribe` methods for webhooks.
 
 This the URL to which you should send hook data. It'll look something like `https://hooks.zapier.com/1234/abcd`. We provide it so you can make a POST request to your server. Your server should store this URL and use is as a destination when there's new data to report.
+
+For example:
+
+```js
+const subscribeHook = async (z, bundle) => {
+
+  const options = {
+    url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
+    method: 'POST',
+    body: {
+      url: bundle.targetUrl, // bundle.targetUrl has the Hook URL this app should call
+    },
+  };
+
+  const response = await z.request(options);
+  return response.data; // or response.json if you're using core v9 or older
+};
+
+module.exports = {
+  // ...
+  performSubscribe: subscribeHook,
+  // ...
+};
+```
 
 Read more in the [REST hook example](https://github.com/zapier/zapier-platform/blob/master/example-apps/rest-hooks/triggers/recipe.js).
 
@@ -2740,18 +2759,19 @@ Now you should be able to run `docker-compose run pusher` and see the build and 
 
 ## Using Transpilers
 
-We do not yet support transpilers out of the box, but if you would like to use `babel` or similar, we recommend creating a custom wrapper on `zapier push` like this in your `package.json`:
+If you would like to use a transpiler like `babel`, you can add a script named `_zapier-build` to your `package.json`, which will be run during `zapier build`,
+`zapier push`, and `zapier upload`.  See the following example:
 
 ```json
 {
   "scripts": {
     "zapier-dev": "babel src --out-dir lib --watch",
-    "zapier-push": "babel src --out-dir lib && zapier push"
+    "_zapier-build": "babel src --out-dir lib"
   }
 }
 ```
 
-And then you can have your fancy ES7 code in `src/*` and a root `index.js` like this:
+Then, you can have your fancy ES7 code in `src/*` and a root `index.js` like this:
 
 ```js
 module.exports = require('./lib');
@@ -2767,7 +2787,7 @@ npm run zapier-dev
 zapier test
 
 # every build ensures a fresh build
-npm run zapier-push
+zapier push
 ```
 
 There are a lot of details left out - check out the full example app for a working setup.
@@ -3125,7 +3145,7 @@ The Zapier platform and its tools are under active development. While you don't 
 Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is **10.0.0**. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is **10.0.1**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 

@@ -66,7 +66,7 @@ describe('build (runs slowly)', () => {
       dumbPaths.should.containEql('src/triggers/movie.ts');
       dumbPaths.should.containEql('tsconfig.json');
 
-      dumbPaths.length.should.be.within(8000, 15000);
+      dumbPaths.length.should.be.within(5000, 15000);
     });
   });
 
@@ -295,5 +295,14 @@ describe('build (runs slowly)', () => {
         );
         should.not.exist(environmentFile);
       });
+  });
+
+  it('should run the zapier-build script', async () => {
+    runCommand('npm', ['run', 'clean'], { cwd: tmpDir });
+
+    await build.maybeRunBuildScript({ cwd: tmpDir });
+
+    const buildExists = await fs.pathExists(path.join(tmpDir, 'lib'));
+    should.equal(buildExists, true);
   });
 });

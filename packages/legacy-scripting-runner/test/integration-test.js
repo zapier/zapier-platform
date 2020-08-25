@@ -487,6 +487,27 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_poll, header case', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_header_case',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return _app(input).then((output) => {
+        const movies = output.results;
+        should.equal(movies[0].contentType, 'application/json; charset=utf-8');
+      });
+    });
+
     it('KEY_poll, default headers', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
@@ -2349,6 +2370,30 @@ describe('Integration Test', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'movie_pre_custom_action_fields_disabled',
+        'movie_pre_custom_action_fields'
+      );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.inputFields'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      return app(input).then((output) => {
+        const fields = output.results;
+        should.equal(fields.length, 3);
+        should.equal(fields[0].key, 'title');
+        should.equal(fields[1].key, 'genre');
+        should.equal(fields[2].key, 'luckyNumber');
+      });
+    });
+
+    it('KEY_pre_custom_action_fields, empty request.data', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'movie_pre_custom_action_fields_empty_request_data',
         'movie_pre_custom_action_fields'
       );
 

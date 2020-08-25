@@ -290,6 +290,24 @@ const maybeNotifyAboutOutdated = () => {
   }
 };
 
+const maybeRunBuildScript = async (options = {}) => {
+  const ZAPIER_BUILD_KEY = '_zapier-build';
+
+  // Make sure we don't accidentally call the Zapier build hook inside itself
+  if (process.env.npm_lifecycle_event !== ZAPIER_BUILD_KEY) {
+    const pJson = require(path.resolve(
+      options.cwd || process.cwd(),
+      'package.json'
+    ));
+
+    if (_.get(pJson, 'scripts', ZAPIER_BUILD_KEY)) {
+      startSpinner(`Running ${ZAPIER_BUILD_KEY} script`);
+      await runCommand('npm', ['run', ZAPIER_BUILD_KEY], options);
+      endSpinner();
+    }
+  }
+};
+
 const _buildFunc = async ({
   skipNpmInstall = false,
   disableDependencyDetection = false,
@@ -305,6 +323,8 @@ const _buildFunc = async ({
   );
 
   maybeNotifyAboutOutdated();
+
+  await maybeRunBuildScript();
 
   // make sure our directories are there
   await ensureDir(tmpDir);
@@ -462,4 +482,5 @@ module.exports = {
   makeSourceZip,
   listFiles,
   requiredFiles,
+  maybeRunBuildScript,
 };
