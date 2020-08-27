@@ -11,6 +11,9 @@ module.exports = makeSchema(
       'To idenitfy firehose webhooks are their corresponding Zaps. ' +
       'For Zapier internal webhooks - not publically available.',
     type: 'object',
+    docAnnotation: {
+      hide: true,
+    },
     required: ['performSubscriptionKeyList'],
     properties: {
       performSubscriptionKeyList: {
