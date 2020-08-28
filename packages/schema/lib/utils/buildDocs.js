@@ -27,9 +27,7 @@ const walkSchemas = (InitSchema, callback) => {
 const collectSchemas = (InitSchema) => {
   const schemas = {};
   walkSchemas(InitSchema, (Schema) => {
-    if (!_.get(Schema, 'schema.docAnnotation.hide')) {
-      schemas[Schema.id] = Schema;
-    }
+    schemas[Schema.id] = Schema;
   });
   return schemas;
 };

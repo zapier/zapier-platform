@@ -76,7 +76,7 @@
         },
         "firehoseWebhooks": {
           "description": "**INTERNAL USE ONLY**. Zapier uses this for internal webhook app configurations.",
-          "$ref": "/FirehoseWebhookSchema",
+          "type": "object",
           "docAnnotation": {
             "hide": true
           }
@@ -1359,22 +1359,6 @@
         "skipHttpPatch": {
           "description": "By default, Zapier patches the core `http` module so that all requests (including those from 3rd-party SDKs) can be logged. Set this to true if you're seeing issues using an SDK (such as AWS).",
           "type": "boolean"
-        }
-      },
-      "additionalProperties": false
-    },
-    "FirehoseWebhookSchema": {
-      "id": "/FirehoseWebhookSchema",
-      "description": "To idenitfy firehose webhooks are their corresponding Zaps. For Zapier internal webhooks - not publically available.",
-      "type": "object",
-      "docAnnotation": {
-        "hide": true
-      },
-      "required": ["performSubscriptionKeyList"],
-      "properties": {
-        "performSubscriptionKeyList": {
-          "description": "Takes a webhook payload and returns the list of subscription keys required to lookup subscribed Zaps.",
-          "$ref": "/FunctionSchema"
         }
       },
       "additionalProperties": false
