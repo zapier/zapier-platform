@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-schema",
-  "version": "10.1.0",
+  "version": "10.1.1",
   "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-schema",
   "homepage": "https://zapier.com/",
@@ -14,17 +14,10 @@
   ],
   "scripts": {
     "preversion": "git pull && yarn test && yarn build",
-<<<<<<< HEAD
     "test": "mocha -t 10000 --recursive test",
     "smoke-test": "mocha -t 10000 --recursive smoke-test",
     "test:debug": "mocha -t 5-10000 --recursive --inspect-brk test",
     "lint": "eslint lib",
-=======
-    "test": "./node_modules/.bin/mocha -t 10000 --recursive test",
-    "smoke-test": "./node_modules/.bin/mocha -t 10000 --recursive smoke-test",
-    "test:debug": "./node_modules/.bin/mocha -t 5-10000 --recursive --inspect-brk test",
-    "lint": "eslint lib --fix",
->>>>>>> 38505877... updated for read schema
     "coverage": "istanbul cover _mocha -- --recursive",
     "export": "node bin/export.js && prettier --write exported-schema.json",
     "docs": "node bin/docs.js",
@@ -40,13 +33,7 @@
   "devDependencies": {
     "fs-extra": "^9.0.0",
     "istanbul": "0.4.5",
-<<<<<<< HEAD
     "markdown-toc": "^1",
     "node-fetch": "^2"
-=======
-    "markdown-toc": "1.2.0",
-    "mocha": "^7.1.1",
-    "node-fetch": "2.6.0"
->>>>>>> 38505877... updated for read schema
   }
 }
