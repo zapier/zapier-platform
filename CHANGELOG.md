@@ -1,3 +1,17 @@
+## 10.0.2
+
+### cli
+
+* :tada: Add custom build hook to Zapier commands ([#262](https://github.com/zapier/zapier-platform/pull/262))
+
+### core
+
+* :hammer: Increase max payload size for hydration ([#257](https://github.com/zapier/zapier-platform/pull/257))
+
+### schema
+
+* :scroll: Remove legacy reference to `bundle.meta.zap` ([#255](https://github.com/zapier/zapier-platform/pull/255))
+
 ## 10.0.1
 
 ### cli
