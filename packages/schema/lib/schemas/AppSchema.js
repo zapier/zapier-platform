@@ -102,6 +102,14 @@ module.exports = makeSchema(
           hide: true,
         },
       },
+      firehoseWebhooks: {
+        description:
+          '**INTERNAL USE ONLY**. Zapier uses this for internal webhook app configurations.',
+        type: 'object',
+        docAnnotation: {
+          hide: true,
+        },
+      },
     },
     additionalProperties: false,
   },
