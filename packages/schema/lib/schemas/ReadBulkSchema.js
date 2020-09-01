@@ -8,7 +8,7 @@ const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema(
   {
-    id: '/ReadSchema',
+    id: '/ReadBulkSchema',
     description: 'How will Zapier fetch resources from your application?',
     type: 'object',
     required: ['key', 'noun', 'display', 'operation'],
@@ -18,7 +18,7 @@ module.exports = makeSchema(
         noun: 'Recipes',
         display: {
           label: 'Recipes',
-          description: 'A Read to let Zapier fetch recipes.'
+          description: 'A Read that lets Zapier fetch all recipes.',
         },
         operation: {
           perform: '$func$0$f$',
@@ -26,44 +26,44 @@ module.exports = makeSchema(
             id: 1,
             firstName: 'Walter',
             lastName: 'Sobchak',
-            occupation: 'Bowler'
-          }
-        }
-      }
+            occupation: 'Bowler',
+          },
+        },
+      },
     ],
     antiExamples: [
       {
         display: {
           label: 'Get Users',
-          description: 'Retrieve an index of users.'
+          description: 'Retrieve an index of users.',
         },
         operation: {
-          description: 'Define how this search method will work.'
-        }
-      }
+          description: 'Define how this search method will work.',
+        },
+      },
     ],
     properties: {
       key: {
-        description: 'A key to uniquely identify this trigger.',
-        $ref: KeySchema.id
+        description: 'A key to uniquely identify a record.',
+        $ref: KeySchema.id,
       },
       noun: {
         description:
-          'A noun for this trigger that completes the sentence "triggers on a new XXX".',
+          'A noun for this read that completes the sentence "reads all of the XXX".',
         type: 'string',
         minLength: 2,
-        maxLength: 255
+        maxLength: 255,
       },
       display: {
-        description: 'Configures the UI for this trigger.',
-        $ref: BasicDisplaySchema.id
+        description: 'Configures the UI for this read bulk.',
+        $ref: BasicDisplaySchema.id,
       },
       operation: {
-        description: 'Powers the functionality for this trigger.',
-        $ref: BasicActionOperationSchema.id
-      }
+        description: 'Powers the functionality for this read bulk.',
+        $ref: BasicActionOperationSchema.id,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [KeySchema, BasicDisplaySchema, BasicActionOperationSchema]
 );

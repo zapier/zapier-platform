@@ -6,7 +6,7 @@ const AuthenticationSchema = require('./AuthenticationSchema');
 const FlatObjectSchema = require('./FlatObjectSchema');
 const ResourcesSchema = require('./ResourcesSchema');
 const TriggersSchema = require('./TriggersSchema');
-const ReadsSchema = require('./ReadsSchema');
+const ReadBulksSchema = require('./ReadBulksSchema');
 const SearchesSchema = require('./SearchesSchema');
 const CreatesSchema = require('./CreatesSchema');
 const SearchOrCreatesSchema = require('./SearchOrCreatesSchema');
@@ -78,8 +78,8 @@ module.exports = makeSchema(
       },
       reads: {
         description:
-          'All of the reads (GETs) your app exposes to retrieve resources in batches.',
-        $ref: ReadsSchema.id
+          'All of the read bulks (GETs) your app exposes to retrieve resources in batches.',
+        $ref: ReadBulksSchema.id,
       },
       searches: {
         description:
@@ -123,7 +123,7 @@ module.exports = makeSchema(
     AuthenticationSchema,
     FlatObjectSchema,
     ResourcesSchema,
-    ReadsSchema,
+    ReadBulksSchema,
     TriggersSchema,
     SearchesSchema,
     CreatesSchema,

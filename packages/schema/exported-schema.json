@@ -1,5 +1,5 @@
 {
-  "version": "10.1.1",
+  "version": "10.2.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -52,8 +52,8 @@
           "$ref": "/TriggersSchema"
         },
         "reads": {
-          "description": "All of the reads (GETs) your app exposes to retrieve resources in batches.",
-          "$ref": "/ReadsSchema"
+          "description": "All of the read bulks (GETs) your app exposes to retrieve resources in batches.",
+          "$ref": "/ReadBulksSchema"
         },
         "searches": {
           "description": "All the searches for your app. You can add your own here, or Zapier will automatically register any from the search method on your resources.",
@@ -1028,28 +1028,28 @@
       },
       "additionalProperties": false
     },
-    "ReadSchema": {
-      "id": "/ReadSchema",
+    "ReadBulkSchema": {
+      "id": "/ReadBulkSchema",
       "description": "How will Zapier fetch resources from your application?",
       "type": "object",
       "required": ["key", "noun", "display", "operation"],
       "properties": {
         "key": {
-          "description": "A key to uniquely identify this trigger.",
+          "description": "A key to uniquely identify a record.",
           "$ref": "/KeySchema"
         },
         "noun": {
-          "description": "A noun for this trigger that completes the sentence \"triggers on a new XXX\".",
+          "description": "A noun for this read that completes the sentence \"reads all of the XXX\".",
           "type": "string",
           "minLength": 2,
           "maxLength": 255
         },
         "display": {
-          "description": "Configures the UI for this trigger.",
+          "description": "Configures the UI for this read bulk.",
           "$ref": "/BasicDisplaySchema"
         },
         "operation": {
-          "description": "Powers the functionality for this trigger.",
+          "description": "Powers the functionality for this read bulk.",
           "$ref": "/BasicActionOperationSchema"
         }
       },
@@ -1303,14 +1303,14 @@
       },
       "additionalProperties": false
     },
-    "ReadsSchema": {
-      "id": "/ReadsSchema",
-      "description": "Enumerates the reads your app exposes.",
+    "ReadBulksSchema": {
+      "id": "/ReadBulksSchema",
+      "description": "Enumerates the read bulks your app exposes.",
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z]+[a-zA-Z0-9_]*$": {
-          "description": "Any unique key can be used and its values will be validated against the ReadSchema.",
-          "$ref": "/ReadSchema"
+          "description": "Any unique key can be used and its values will be validated against the ReadBulkSchema.",
+          "$ref": "/ReadBulkSchema"
         }
       },
       "additionalProperties": false
