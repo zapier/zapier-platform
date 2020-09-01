@@ -300,7 +300,7 @@ const maybeRunBuildScript = async (options = {}) => {
       'package.json'
     ));
 
-    if (_.get(pJson, 'scripts', ZAPIER_BUILD_KEY)) {
+    if (_.get(pJson, ['scripts', ZAPIER_BUILD_KEY])) {
       startSpinner(`Running ${ZAPIER_BUILD_KEY} script`);
       await runCommand('npm', ['run', ZAPIER_BUILD_KEY], options);
       endSpinner();

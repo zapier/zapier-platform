@@ -56,10 +56,14 @@ const setupZapierAppRC = (workdir) => {
   return hasAppRC;
 };
 
-const getSchemaDir = () => path.resolve(path.dirname(process.cwd()), 'schema');
+const getPackageDir = (dirname) =>
+  path.resolve(path.dirname(process.cwd()), dirname);
 
-const npmPackSchema = (schemaDir) => {
-  const proc = spawnSync('npm', ['pack'], { encoding: 'utf8', cwd: schemaDir });
+const npmPack = (workingDir) => {
+  const proc = spawnSync('npm', ['pack'], {
+    encoding: 'utf8',
+    cwd: workingDir,
+  });
   const lines = proc.stdout.split('\n');
   let filename;
   for (let i = lines.length - 1; i >= 0; i--) {
@@ -127,7 +131,7 @@ const copyTestApps = (workdir) => {
   });
 };
 
-const npmInstalls = (coreZipPath, workdir) => {
+const npmInstalls = (coreZipPath, cliZipPath, workdir) => {
   // When releasing a new core version, example apps would have bumped their
   // core before the new core version is published to npm. So we need to patch
   // example app's package.json to use local core temporarily to avoid `npm
@@ -144,7 +148,7 @@ const npmInstalls = (coreZipPath, workdir) => {
       encoding: 'utf8',
       cwd: workdir,
     });
-    spawnSync('npm', ['install', '--no-save', 'zapier-platform-cli'], {
+    spawnSync('npm', ['install', '--no-save', cliZipPath], {
       encoding: 'utf8',
       cwd: workdir,
     });
@@ -164,6 +168,10 @@ describe('smoke tests - setup will take some time', () => {
       filename: null,
       path: null,
     },
+    cliPackage: {
+      filename: null,
+      path: null,
+    },
     workRepoDir: null,
     workAppDir: null,
     cliBin: null,
@@ -174,8 +182,12 @@ describe('smoke tests - setup will take some time', () => {
   before(async () => {
     context.hasRC = setupZapierRC();
 
-    const schemaDir = getSchemaDir();
-    context.schemaPackage.filename = npmPackSchema(schemaDir);
+    const cliDir = getPackageDir('cli');
+    context.cliPackage.filename = npmPack(cliDir);
+    context.cliPackage.path = path.join(cliDir, context.cliPackage.filename);
+
+    const schemaDir = getPackageDir('schema');
+    context.schemaPackage.filename = npmPack(schemaDir);
     context.schemaPackage.path = path.join(
       schemaDir,
       context.schemaPackage.filename
@@ -193,6 +205,7 @@ describe('smoke tests - setup will take some time', () => {
   });
 
   after(() => {
+    fs.unlinkSync(context.cliPackage.path);
     fs.unlinkSync(context.corePackage.path);
     fs.unlinkSync(context.schemaPackage.path);
     fs.removeSync(context.workRepoDir);
@@ -221,7 +234,11 @@ describe('smoke tests - setup will take some time', () => {
     describe(appName, () => {
       before(async () => {
         context.workAppDir = path.join(context.workRepoDir, appName);
-        npmInstalls(context.corePackage.path, context.workAppDir);
+        npmInstalls(
+          context.corePackage.path,
+          context.cliPackage.path,
+          context.workAppDir
+        );
 
         context.hasAppRC = setupZapierAppRC(context.workAppDir);
 
