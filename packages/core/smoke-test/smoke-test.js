@@ -13,13 +13,13 @@ const CORE_PACKAGE_NAME = 'zapier-platform-core';
 
 const TEST_APPS = [
   'basic-auth',
-  // 'create',
+  'create',
   // 'custom-auth',
   // 'oauth2',
   // 'resource',
   // 'search',
   // 'session-auth',
-  // 'trigger',
+  'trigger',
 ];
 
 const setupZapierRC = () => {
