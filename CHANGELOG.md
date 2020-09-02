@@ -1,3 +1,17 @@
+## 10.1.1
+
+### cli
+
+* :bug: `_zapier-build` should be optional ([#265](https://github.com/zapier/zapier-platform/pull/265))
+
+### core
+
+* :bug: Don't censor save urls in logs ([#266](https://github.com/zapier/zapier-platform/pull/266))
+
+### schema
+
+None!
+
 ## 10.1.0
 
 ### cli
