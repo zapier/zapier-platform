@@ -1,5 +1,5 @@
 {
-  "version": "10.2.0",
+  "version": "10.1.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -51,9 +51,9 @@
           "description": "All the triggers for your app. You can add your own here, or Zapier will automatically register any from the list/hook methods on your resources.",
           "$ref": "/TriggersSchema"
         },
-        "reads": {
+        "bulkReads": {
           "description": "All of the read bulks (GETs) your app exposes to retrieve resources in batches.",
-          "$ref": "/ReadBulksSchema"
+          "$ref": "/BulkReadsSchema"
         },
         "searches": {
           "description": "All the searches for your app. You can add your own here, or Zapier will automatically register any from the search method on your resources.",
@@ -1028,8 +1028,8 @@
       },
       "additionalProperties": false
     },
-    "ReadBulkSchema": {
-      "id": "/ReadBulkSchema",
+    "BulkReadSchema": {
+      "id": "/BulkReadSchema",
       "description": "How will Zapier fetch resources from your application?",
       "type": "object",
       "required": ["key", "noun", "display", "operation"],
@@ -1303,14 +1303,14 @@
       },
       "additionalProperties": false
     },
-    "ReadBulksSchema": {
-      "id": "/ReadBulksSchema",
-      "description": "Enumerates the read bulks your app exposes.",
+    "BulkReadsSchema": {
+      "id": "/BulkReadsSchema",
+      "description": "Enumerates the bulk reads your app exposes.",
       "type": "object",
       "patternProperties": {
         "^[a-zA-Z]+[a-zA-Z0-9_]*$": {
-          "description": "Any unique key can be used and its values will be validated against the ReadBulkSchema.",
-          "$ref": "/ReadBulkSchema"
+          "description": "Any unique key can be used and its values will be validated against the BulkReadSchema.",
+          "$ref": "/BulkReadSchema"
         }
       },
       "additionalProperties": false

@@ -8,7 +8,7 @@ const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema(
   {
-    id: '/ReadBulkSchema',
+    id: '/BulkReadSchema',
     description: 'How will Zapier fetch resources from your application?',
     type: 'object',
     required: ['key', 'noun', 'display', 'operation'],
@@ -34,8 +34,8 @@ module.exports = makeSchema(
     antiExamples: [
       {
         display: {
-          label: 'Get Users',
-          description: 'Retrieve an index of users.',
+          label: 'Get User',
+          description: 'Retrieve an a user.',
         },
         operation: {
           description: 'Define how this search method will work.',
