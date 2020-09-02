@@ -353,4 +353,35 @@ describe('logger', () => {
       });
     });
   });
+
+  it('should not replace safe urls', () => {
+    const bundle = {
+      authData: {
+        password: 'https://a-url-like.password.com',
+        safe_url: 'https://example.com',
+        basic_auth_url: 'https://foo:bar@example.com',
+        param_url: 'https://example.com?foo=bar',
+      },
+    };
+    const logger = createlogger({ bundle }, options);
+
+    const data = bundle.authData;
+
+    return logger(`200 GET https://example.com/test`, data).then((response) => {
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: options.token,
+        message: '200 GET https://example.com/test',
+        data: {
+          log_type: 'console',
+          password: ':censored:31:68af4cbe15:',
+          // Only safe_url (no basic auth or query params) should be left
+          // uncensored
+          safe_url: 'https://example.com',
+          basic_auth_url: ':censored:27:5eaaee9fc2:',
+          param_url: ':censored:27:c1e27a03b8:',
+        },
+      });
+    });
+  });
 });

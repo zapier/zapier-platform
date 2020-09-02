@@ -7,7 +7,12 @@ const cleaner = require('./cleaner');
 const dataTools = require('./data');
 const hashing = require('./hashing');
 const ZapierPromise = require('./promise');
-const constants = require('../constants');
+const {
+  DEFAULT_LOGGING_HTTP_API_KEY,
+  DEFAULT_LOGGING_HTTP_ENDPOINT,
+  SAFE_LOG_KEYS,
+  SENSITIVE_KEYS,
+} = require('../constants');
 const { unheader } = require('./http');
 
 const truncate = (str) => dataTools.simpleTruncate(str, 3500, ' [...]');
@@ -84,16 +89,36 @@ const toStdout = (event, msg, data) => {
   }
 };
 
+const isSafeUrl = (value) => {
+  let url;
+  try {
+    url = new URL(value);
+  } catch (err) {
+    return false;
+  }
+  return !(url.username || url.password || url.search);
+};
+
 const makeSensitiveBank = (event, data) => {
   const bundle = event.bundle || {};
-  const sensitiveValues = _.values(
-    _.extend({}, bundle.authData || {}, _.extend({}, process.env || {}))
+
+  const bank = { ...bundle.authData, ...process.env };
+  const sensitiveValues = Object.entries(bank).reduce(
+    (values, [key, value]) => {
+      if (SENSITIVE_KEYS.includes(key) || !isSafeUrl(value)) {
+        return [...values, value];
+      }
+      // Allow uncensored if the value is a safe URL and the key is not in
+      // SENSITIVE_KEYS
+      return [...values];
+    },
+    []
   );
 
   const matcher = (key, value) => {
     if (_.isString(value)) {
       const lowerKey = key.toLowerCase();
-      return _.some(constants.SENSITIVE_KEYS, (k) => lowerKey.indexOf(k) >= 0);
+      return _.some(SENSITIVE_KEYS, (k) => lowerKey.indexOf(k) >= 0);
     }
     return false;
   };
@@ -145,7 +170,7 @@ const sendLog = (options, event, message, data) => {
 
   // Keep safe log keys uncensored
   Object.keys(safeData).forEach((key) => {
-    if (constants.SAFE_LOG_KEYS.indexOf(key) !== -1) {
+    if (SAFE_LOG_KEYS.includes(key)) {
       safeData[key] = unsafeData[key];
     }
   });
@@ -201,10 +226,8 @@ const createLogger = (event, options) => {
   event = event || {};
 
   options = _.defaults(options, {
-    endpoint:
-      process.env.LOGGING_ENDPOINT || constants.DEFAULT_LOGGING_HTTP_ENDPOINT,
-    apiKey:
-      process.env.LOGGING_API_KEY || constants.DEFAULT_LOGGING_HTTP_API_KEY,
+    endpoint: process.env.LOGGING_ENDPOINT || DEFAULT_LOGGING_HTTP_ENDPOINT,
+    apiKey: process.env.LOGGING_API_KEY || DEFAULT_LOGGING_HTTP_API_KEY,
     token: process.env.LOGGING_TOKEN || event.token,
   });
 
