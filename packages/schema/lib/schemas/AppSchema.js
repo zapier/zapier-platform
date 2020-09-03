@@ -6,6 +6,7 @@ const AuthenticationSchema = require('./AuthenticationSchema');
 const FlatObjectSchema = require('./FlatObjectSchema');
 const ResourcesSchema = require('./ResourcesSchema');
 const TriggersSchema = require('./TriggersSchema');
+const ReadBulksSchema = require('./BulkReadsSchema');
 const SearchesSchema = require('./SearchesSchema');
 const CreatesSchema = require('./CreatesSchema');
 const SearchOrCreatesSchema = require('./SearchOrCreatesSchema');
@@ -75,6 +76,11 @@ module.exports = makeSchema(
           'All the triggers for your app. You can add your own here, or Zapier will automatically register any from the list/hook methods on your resources.',
         $ref: TriggersSchema.id,
       },
+      bulkReads: {
+        description:
+          'All of the read bulks (GETs) your app exposes to retrieve resources in batches.',
+        $ref: ReadBulksSchema.id,
+      },
       searches: {
         description:
           'All the searches for your app. You can add your own here, or Zapier will automatically register any from the search method on your resources.',
@@ -117,6 +123,7 @@ module.exports = makeSchema(
     AuthenticationSchema,
     FlatObjectSchema,
     ResourcesSchema,
+    ReadBulksSchema,
     TriggersSchema,
     SearchesSchema,
     CreatesSchema,

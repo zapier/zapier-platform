@@ -30,6 +30,9 @@ const testInlineSchemaExamples = (name) => {
           .filter((t) => !t[SKIP_KEY])
           .forEach((bad) => {
             const { errors } = Schema.validate(bad);
+            if (errors.length === 0) {
+              console.log(bad);
+            }
             errors.should.not.have.length(0);
           });
       }
