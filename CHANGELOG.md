@@ -6,7 +6,7 @@
 
 ### core
 
-* :bug: Don't censor save urls in logs ([#266](https://github.com/zapier/zapier-platform/pull/266))
+* :bug: Don't censor safe URLs in logs ([#266](https://github.com/zapier/zapier-platform/pull/266))
 
 ### schema
 
