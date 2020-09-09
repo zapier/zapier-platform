@@ -4,8 +4,8 @@
   "description": "The CLI for managing integrations in Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-cli",
   "homepage": "https://zapier.com/",
-  "author": "Bryan Helmig <bryan@zapier.com>",
-  "license": "UNLICENSED",
+  "author": "Zapier Engineering <contact@zapier.com>",
+  "license": "SEE LICENSE IN LICENSE",
   "main": "./src/index.js",
   "files": [
     "/src/*.js",

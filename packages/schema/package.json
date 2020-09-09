@@ -4,8 +4,8 @@
   "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-schema",
   "homepage": "https://zapier.com/",
-  "author": "Bryan Helmig <bryan@zapier.com>",
-  "license": "UNLICENSED",
+  "author": "Zapier Engineering <contact@zapier.com>",
+  "license": "SEE LICENSE IN LICENSE",
   "main": "schema.js",
   "files": [
     "/exported-schema.json",

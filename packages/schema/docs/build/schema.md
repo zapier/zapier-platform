@@ -451,24 +451,29 @@ How will Zapier fetch resources from your application?
 
 * **Type** - `object`
 * **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/BulkReadSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.0/packages/schema/lib/schemas/BulkReadSchema.js)
+* **Source Code** - [lib/schemas/BulkReadSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BulkReadSchema.js)
 
 #### Examples
 
 * ```
-  { key: 'recipes',
+  {
+    key: 'recipes',
     noun: 'Recipes',
     display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
-    operation:
-     { perform: '$func$0$f$',
-       sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' } } }
+    operation: {
+      perform: '$func$0$f$',
+      sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' }
+    }
+  }
   ```
 
 #### Anti-Examples
 
 * ```
-  { display: { label: 'Get User', description: 'Retrieve an a user.' },
-    operation: { description: 'Define how this search method will work.' } }
+  {
+    display: { label: 'Get User', description: 'Retrieve an a user.' },
+    operation: { description: 'Define how this search method will work.' }
+  }
   ```
 
 #### Properties
@@ -490,7 +495,7 @@ Enumerates the bulk reads your app exposes.
 
 * **Type** - `object`
 * **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/BulkReadsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.0/packages/schema/lib/schemas/BulkReadsSchema.js)
+* **Source Code** - [lib/schemas/BulkReadsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BulkReadsSchema.js)
 
 
 
