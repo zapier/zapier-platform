@@ -22,7 +22,7 @@
     "node": ">=10"
   },
   "scripts": {
-    "docs": "ZAPIER_BASE_ENDPOINT='' node src/bin/docs.js && cp -r docs ../..",
+    "docs": "ZAPIER_BASE_ENDPOINT='' node scripts/docs.js && cp -r docs ../..",
     "preversion": "git pull && yarn validate",
     "prepack": "oclif-dev manifest",
     "postpack": "rm -f oclif.manifest.json",
