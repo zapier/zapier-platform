@@ -324,6 +324,7 @@ a code {
 </ul>
 </li>
 <li><a href="#dehydration">Dehydration</a><ul>
+<li><a href="#merging-hydrated-data">Merging Hydrated Data</a></li>
 <li><a href="#file-dehydration">File Dehydration</a></li>
 </ul>
 </li>
@@ -525,6 +526,7 @@ a code {
 </ul>
 </li>
 <li><a href="#dehydration">Dehydration</a><ul>
+<li><a href="#merging-hydrated-data">Merging Hydrated Data</a></li>
 <li><a href="#file-dehydration">File Dehydration</a></li>
 </ul>
 </li>
@@ -3697,6 +3699,48 @@ response.throwForStatus();
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="merging-hydrated-data">Merging Hydrated Data</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>As you&apos;ve seen, the usual call to dehydrate will assign the result to an object property:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js">movie.details = z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id });
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>In this example, all of the movie details will be located in the <code>details</code> property (e.g. <code>details.releaseDate</code>) after hydration occurs. But what if you want these results available at the top-level (e.g. <code>releaseDate</code>)? Zapier supports a specific keyword for this scenario:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js">movie.$HOIST$ = z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id });
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Using <code>$HOIST$</code> as the key will signal to Zapier that the results should be merged into the object containing the <code>$HOIST$</code> key. You can also use this to merge your hydrated data into a property containing &quot;partial&quot; data that exists before dehydration occurs:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js">movie.details = {
+  <span class="hljs-attr">title</span>: movie.title,
+  <span class="hljs-attr">$HOIST$</span>: z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id })
+};
+</code></pre>
     </div>
   </div>
 </div><div class="row">

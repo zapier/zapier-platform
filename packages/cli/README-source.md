@@ -1144,6 +1144,28 @@ And in future steps of the Zap - if Zapier encounters a pointer as returned by `
 
 > **Why can't I just load the data immediately?** Isn't it easier? In some cases it can be - but imagine an API that returns 100 records when polling - doing 100x `GET /id.json` aggressive inline HTTP calls when 99% of the time Zapier doesn't _need_ the data yet is wasteful.
 
+### Merging Hydrated Data
+
+As you've seen, the usual call to dehydrate will assign the result to an object property:
+
+```js
+movie.details = z.dehydrate(getMovieDetails, { id: movie.id });
+```
+
+In this example, all of the movie details will be located in the `details` property (e.g. `details.releaseDate`) after hydration occurs. But what if you want these results available at the top-level (e.g. `releaseDate`)? Zapier supports a specific keyword for this scenario:
+
+```js
+movie.$HOIST$ = z.dehydrate(getMovieDetails, { id: movie.id });
+```
+
+Using `$HOIST$` as the key will signal to Zapier that the results should be merged into the object containing the `$HOIST$` key. You can also use this to merge your hydrated data into a property containing "partial" data that exists before dehydration occurs:
+
+```js
+movie.details = {
+  title: movie.title,
+  $HOIST$: z.dehydrate(getMovieDetails, { id: movie.id })
+};
+```
 
 ### File Dehydration
 
