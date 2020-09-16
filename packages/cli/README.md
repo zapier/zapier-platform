@@ -127,6 +127,7 @@ This doc decribes the latest CLI version **10.1.1**, as of this writing. If you'
   * [How do search-powered fields relate to dynamic dropdowns and why are they both required together?](#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together)
   * [What's the deal with pagination? When is it used and how does it work?](#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work)
   * [How does deduplication work?](#how-does-deduplication-work)
+  * [Can I merge my hydrated data into the top level of an object, or does it all have to be assigned to an object property?](#can-i-merge-my-hydrated-data-into-the-top-level-of-an-object-or-does-it-all-have-to-be-assigned-to-an-object-property)
   * [Why are my triggers complaining if I don't provide an explicit `id` field?](#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field)
   * [Node X No Longer Supported](#node-x-no-longer-supported)
   * [What Analytics are Collected?](#what-analytics-are-collected)
@@ -3055,6 +3056,30 @@ Each time a polling Zap runs, Zapier needs to decide which of the items in the r
 For example, the initial poll returns objects 4, 5, and 6 (where a higher `id` is newer). If a later poll increases the limit and returns objects 1-6, then 1, 2, and 3 will be (incorrectly) treated like new objects.
 
 There's a more in-depth explanation [here](https://platform.zapier.com/legacy/dedupe).
+
+<a id="hoist"></a>
+### Can I merge my hydrated data into the top level of an object, or does it all have to be assigned to an object property?
+
+As you've seen, the usual call to dehydrate will assign the result to an object property:
+
+```js
+movie.details = z.dehydrate(getMovieDetails, { id: movie.id });
+```
+
+In this example, all of the move details will be located in the `details` property (e.g. `details.releaseDate`) after hydration occurs. But what if you want these results available at the top-level (e.g. `releaseDate`)? Zapier supports a specific keyword for this scenario:
+
+```js
+movie.$HOIST$ = z.dehydrate(getMovieDetails, { id: movie.id });
+```
+
+Using `$HOIST$` as the key will signal to Zapier that the results should be merged into the object containing the `$HOIST$` key. You can also use this to merge your hydrated data into a property containing "partial" data that exists before dehydration occurs:
+
+```js
+movie.details = {
+  title: movie.title,
+  $HOIST$: z.dehydrate(getMovieDetails, { id: movie.id })
+};
+```
 
 ### Why are my triggers complaining if I don't provide an explicit `id` field?
 

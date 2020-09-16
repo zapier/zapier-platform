@@ -1695,6 +1695,30 @@ For example, the initial poll returns objects 4, 5, and 6 (where a higher `id` i
 
 There's a more in-depth explanation [here](https://platform.zapier.com/legacy/dedupe).
 
+<a id="hoist"></a>
+### Can I merge my hydrated data into the top level of an object, or does it all have to be assigned to an object property?
+
+As you've seen, the usual call to dehydrate will assign the result to an object property:
+
+```js
+movie.details = z.dehydrate(getMovieDetails, { id: movie.id });
+```
+
+In this example, all of the move details will be located in the `details` property (e.g. `details.releaseDate`) after hydration occurs. But what if you want these results available at the top-level (e.g. `releaseDate`)? Zapier supports a specific keyword for this scenario:
+
+```js
+movie.$HOIST$ = z.dehydrate(getMovieDetails, { id: movie.id });
+```
+
+Using `$HOIST$` as the key will signal to Zapier that the results should be merged into the object containing the `$HOIST$` key. You can also use this to merge your hydrated data into a property containing "partial" data that exists before dehydration occurs:
+
+```js
+movie.details = {
+  title: movie.title,
+  $HOIST$: z.dehydrate(getMovieDetails, { id: movie.id })
+};
+```
+
 ### Why are my triggers complaining if I don't provide an explicit `id` field?
 
 For deduplication to work, we need to be able to identify and use a unique field. In older, legacy Zapier Web Builder apps, we guessed if `id` wasn't present. In order to ensure we don't guess wrong, we now require that the developers send us an `id` field. If your objects have a differently-named unique field, feel free to adapt this snippet and ensure this test passes:
