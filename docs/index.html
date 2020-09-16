@@ -324,6 +324,7 @@ a code {
 </ul>
 </li>
 <li><a href="#dehydration">Dehydration</a><ul>
+<li><a href="#merging-hydrated-data">Merging Hydrated Data</a></li>
 <li><a href="#file-dehydration">File Dehydration</a></li>
 </ul>
 </li>
@@ -365,7 +366,6 @@ a code {
 <li><a href="#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</a></li>
 <li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&#39;s the deal with pagination? When is it used and how does it work?</a></li>
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
-<li><a href="#can-i-merge-my-hydrated-data-into-the-top-level-of-an-object-or-does-it-all-have-to-be-assigned-to-an-object-property">Can I merge my hydrated data into the top level of an object, or does it all have to be assigned to an object property?</a></li>
 <li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&#39;t provide an explicit <code>id</code> field?</a></li>
 <li><a href="#node-x-no-longer-supported">Node X No Longer Supported</a></li>
 <li><a href="#what-analytics-are-collected">What Analytics are Collected?</a></li>
@@ -526,6 +526,7 @@ a code {
 </ul>
 </li>
 <li><a href="#dehydration">Dehydration</a><ul>
+<li><a href="#merging-hydrated-data">Merging Hydrated Data</a></li>
 <li><a href="#file-dehydration">File Dehydration</a></li>
 </ul>
 </li>
@@ -567,7 +568,6 @@ a code {
 <li><a href="#how-do-search-powered-fields-relate-to-dynamic-dropdowns-and-why-are-they-both-required-together">How do search-powered fields relate to dynamic dropdowns and why are they both required together?</a></li>
 <li><a href="#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work">What&apos;s the deal with pagination? When is it used and how does it work?</a></li>
 <li><a href="#how-does-deduplication-work">How does deduplication work?</a></li>
-<li><a href="#can-i-merge-my-hydrated-data-into-the-top-level-of-an-object-or-does-it-all-have-to-be-assigned-to-an-object-property">Can I merge my hydrated data into the top level of an object, or does it all have to be assigned to an object property?</a></li>
 <li><a href="#why-are-my-triggers-complaining-if-i-dont-provide-an-explicit-id-field">Why are my triggers complaining if I don&apos;t provide an explicit <code>id</code> field?</a></li>
 <li><a href="#node-x-no-longer-supported">Node X No Longer Supported</a></li>
 <li><a href="#what-analytics-are-collected">What Analytics are Collected?</a></li>
@@ -3704,6 +3704,48 @@ response.throwForStatus();
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="merging-hydrated-data">Merging Hydrated Data</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>As you&apos;ve seen, the usual call to dehydrate will assign the result to an object property:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js">movie.details = z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id });
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>In this example, all of the movie details will be located in the <code>details</code> property (e.g. <code>details.releaseDate</code>) after hydration occurs. But what if you want these results available at the top-level (e.g. <code>releaseDate</code>)? Zapier supports a specific keyword for this scenario:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js">movie.$HOIST$ = z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id });
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Using <code>$HOIST$</code> as the key will signal to Zapier that the results should be merged into the object containing the <code>$HOIST$</code> key. You can also use this to merge your hydrated data into a property containing &quot;partial&quot; data that exists before dehydration occurs:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js">movie.details = {
+  <span class="hljs-attr">title</span>: movie.title,
+  <span class="hljs-attr">$HOIST$</span>: z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id })
+};
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h3 id="file-dehydration">File Dehydration</h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -4931,52 +4973,10 @@ zapier push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Each time a polling Zap runs, Zapier needs to decide which of the items in the response should trigger the zap. To do this, we compare the <code>id</code>s to all those we&apos;ve seen before, trigger on new objects, and update the list of seen <code>id</code>s. When a Zap is turned on, we initialize the list of seen <code>id</code>s with a single poll. When it&apos;s turned off, we clear that list. For this reason, it&apos;s important that calls to a polling endpoint always return the newest items.</p><p>For example, the initial poll returns objects 4, 5, and 6 (where a higher <code>id</code> is newer). If a later poll increases the limit and returns objects 1-6, then 1, 2, and 3 will be (incorrectly) treated like new objects.</p><p>There&apos;s a more in-depth explanation <a href="https://platform.zapier.com/legacy/dedupe">here</a>.</p><p><a id="hoist"></a></p>
+      <p>Each time a polling Zap runs, Zapier needs to decide which of the items in the response should trigger the zap. To do this, we compare the <code>id</code>s to all those we&apos;ve seen before, trigger on new objects, and update the list of seen <code>id</code>s. When a Zap is turned on, we initialize the list of seen <code>id</code>s with a single poll. When it&apos;s turned off, we clear that list. For this reason, it&apos;s important that calls to a polling endpoint always return the newest items.</p><p>For example, the initial poll returns objects 4, 5, and 6 (where a higher <code>id</code> is newer). If a later poll increases the limit and returns objects 1-6, then 1, 2, and 3 will be (incorrectly) treated like new objects.</p><p>There&apos;s a more in-depth explanation <a href="https://platform.zapier.com/legacy/dedupe">here</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="can-i-merge-my-hydrated-data-into-the-top-level-of-an-object-or-does-it-all-have-to-be-assigned-to-an-object-property">Can I merge my hydrated data into the top level of an object, or does it all have to be assigned to an object property?</h3>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
-      
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>As you&apos;ve seen, the usual call to dehydrate will assign the result to an object property:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js">movie.details = z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id });
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>In this example, all of the move details will be located in the <code>details</code> property (e.g. <code>details.releaseDate</code>) after hydration occurs. But what if you want these results available at the top-level (e.g. <code>releaseDate</code>)? Zapier supports a specific keyword for this scenario:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js">movie.$HOIST$ = z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id });
-</code></pre>
-    </div>
-  </div>
-</div><div class="row">
-  <div class="row-height">
-    <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Using <code>$HOIST$</code> as the key will signal to Zapier that the results should be merged into the object containing the <code>$HOIST$</code> key. You can also use this to merge your hydrated data into a property containing &quot;partial&quot; data that exists before dehydration occurs:</p>
-    </div>
-    <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js">movie.details = {
-  <span class="hljs-attr">title</span>: movie.title,
-  <span class="hljs-attr">$HOIST$</span>: z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id })
-};
-</code></pre>
     </div>
   </div>
 </div><div class="row">
