@@ -339,7 +339,7 @@ Registering your App with Zapier is a necessary first step which only enables ba
 zapier register "Zapier Example"
 
 # list your apps
-zapier apps
+zapier integrations
 ```
 
 > Note: This doesn't put your app in the editor - see the docs on pushing an App Version to do that!
@@ -389,10 +389,10 @@ This is how you would share your app with friends, co-workers or clients. This i
 
 ```bash
 # sends an email this user to let them view the app version 1.0.0 in the UI privately
-zapier invite user@example.com 1.0.0
+zapier users:add user@example.com 1.0.0
 
 # sends an email this user to let them admin the app (make changes just like you)
-zapier collaborate user@example.com
+zapier team:add user@example.com
 ```
 
 You can also invite anyone on the internet to your app by using the links from `zapier users:links`. The link should look something like `https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/`. You can put this in your help docs, post it to Twitter, add it to your email campaign, etc. You can choose an invite link specific to an app version or for the entire app (i.e. all app versions).
@@ -652,8 +652,8 @@ You'll also likely need to set your `CLIENT_ID` and `CLIENT_SECRET` as environme
 
 ```bash
 # setting the environment variables on Zapier.com
-$ zapier env 1.0.0 CLIENT_ID 1234
-$ zapier env 1.0.0 CLIENT_SECRET abcd
+$ zapier env:set 1.0.0 CLIENT_ID=1234
+$ zapier env:set 1.0.0 CLIENT_SECRET=abcd
 
 # and when running tests locally, don't forget to define them in .env or in the command!
 $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
@@ -764,8 +764,8 @@ You are required to define the authorization URL and the API call to fetch the a
 
 ```bash
 # setting the environment variables on Zapier.com
-$ zapier env 1.0.0 CLIENT_ID 1234
-$ zapier env 1.0.0 CLIENT_SECRET abcd
+$ zapier env:set 1.0.0 CLIENT_ID=1234
+$ zapier env:set 1.0.0 CLIENT_SECRET=abcd
 
 # and when running tests locally, don't forget to define them in .env or in the command!
 $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
@@ -1802,7 +1802,7 @@ To define an environment variable, use the `env` command:
 
 ```bash
 # Will set the environment variable on Zapier.com
-zapier env 1.0.0 MY_SECRET_VALUE 1234
+zapier env:set 1.0.0 MY_SECRET_VALUE=1234
 ```
 
 You will likely also want to set the value locally for testing.
@@ -1817,7 +1817,7 @@ Alternatively, we provide some extra tooling to work with an `.env` (or `.enviro
 MY_SECRET_VALUE=1234
 ```
 
-> `.env` is the new recommended name for the environment file since v5.1.0. The old name `.environment` is depreated but will continue to work for backward compatibility.
+> `.env` is the new recommended name for the environment file since v5.1.0. The old name `.environment` is deprecated but will continue to work for backward compatibility.
 
 And then in your `test/basic.js` file:
 
@@ -1833,7 +1833,7 @@ should('some tests', () => {
 
 > This is a popular way to provide `process.env.ACCESS_TOKEN || bundle.authData.access_token` for convenient testing.
 
-> **NOTE** Variables defined via `zapier env` will _always_ be uppercased. For example, you would access the variable defined by `zapier env 1.0.0 foo_bar 1234` with `process.env.FOO_BAR`.
+> **NOTE** Variables defined via `zapier env:set` will _always_ be uppercased. For example, you would access the variable defined by `zapier env:set 1.0.0 foo_bar=1234` with `process.env.FOO_BAR`.
 
 
 ### Accessing Environment Variables
@@ -1842,10 +1842,10 @@ To view existing environment variables, use the `env` command.
 
 ```bash
 # Will print a table listing the variables for this version
-zapier env 1.0.0
+zapier env:get 1.0.0
 ```
 
-Within your app, you can access the environment via the standard `process.env` - any values set via local `export` or `zapier env` will be there.
+Within your app, you can access the environment via the standard `process.env` - any values set via local `export` or `zapier env:set` will be there.
 
 For example, you can access the `process.env` in your perform functions and in templates:
 
@@ -2543,7 +2543,7 @@ const yourAfterResponse = (resp) => {
 
 ## Testing
 
-You can write unit tests for your Zapier app that run locally, outside of the zapier editor.
+You can write unit tests for your Zapier app that run locally, outside of the Zapier editor.
 You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
 
 ### Writing Unit Tests
@@ -2837,7 +2837,7 @@ You will see both [template literal placeholders](https://developer.mozilla.org/
 
 In general, use `${var}` within functions and use `{{var}}` anywhere else.
 
-Placeholders get evaluated as soon as the line of code is evaluated. This means that if you use `${process.env.VAR}` in a trigger configuration, `zapier push` will substitute it with your local environment's value for `VAR` when it builds your app and the value set via `zapier env` will not be used.
+Placeholders get evaluated as soon as the line of code is evaluated. This means that if you use `${process.env.VAR}` in a trigger configuration, `zapier push` will substitute it with your local environment's value for `VAR` when it builds your app and the value set via `zapier env:set` will not be used.
 
 > If you're not familiar with [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), know that `const val = "a" + b + "c"` is essentially the same as <code>const val = &#96;a${b}c&#96;</code>.
 
@@ -3165,7 +3165,7 @@ The Zapier Platform consists of 3 npm packages that are released simultaneously 
 
 The Zapier platform and its tools are under active development. While you don't need to install every release, we release new versions because they are better than the last. We do our best to adhere to [Semantic Versioning](https://semver.org/) wherein we won't break your code unless there's a `major` release. Otherwise, we're just fixing bugs (`patch`) and adding features (`minor`).
 
-Barring unforeseen circumstances, all released platform versions will continue to work for the forseeable future. While you never *have* to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bux fixes are available.
+Barring unforeseen circumstances, all released platform versions will continue to work for the foreseeable future. While you never *have* to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bug fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
 The most recently released version of `cli` and `core` is **10.1.1**. You can see the versions you're working with by running `zapier -v`.
