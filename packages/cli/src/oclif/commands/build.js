@@ -16,6 +16,7 @@ class BuildCommand extends BaseCommand {
       {
         skipNpmInstall: this.flags['skip-npm-install'],
         disableDependencyDetection: this.flags['disable-dependency-detection'],
+        skipValidation: this.flags['skip-validation'],
       }
     );
 
@@ -33,6 +34,11 @@ BuildCommand.flags = buildFlags({
     'skip-npm-install': flags.boolean({
       description:
         'Skips installing a fresh copy of npm dependencies on build. Helpful for using `yarn` or local copies of dependencies.',
+      hidden: true,
+    }),
+    'skip-validation': flags.boolean({
+      description:
+        "Skips local pre-push validation checks, and remote validation check of the CLI app's schema and AppVersion integrity.",
       hidden: true,
     }),
   },

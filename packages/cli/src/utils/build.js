@@ -128,7 +128,7 @@ const respectGitIgnore = (dir, paths) => {
   const gitIgnorePath = path.join(dir, '.gitignore');
   if (!fs.existsSync(gitIgnorePath)) {
     if (!constants.IS_TESTING) {
-      console.log(
+      console.warn(
         `\n\n\t${colors.yellow(
           '!! Warning !!'
         )}\n\nThere is no .gitignore, so we are including all files. This might make the source.zip file too large\n`
@@ -311,6 +311,7 @@ const maybeRunBuildScript = async (options = {}) => {
 const _buildFunc = async ({
   skipNpmInstall = false,
   disableDependencyDetection = false,
+  skipValidation = false,
 } = {}) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
@@ -394,34 +395,46 @@ const _buildFunc = async ({
   }
   endSpinner();
 
-  startSpinner('Validating project');
-  const validateResponse = await _appCommandZapierWrapper(tmpDir, {
-    command: 'validate',
-  });
+  if (!skipValidation) {
+    /**
+     * 'Validation' as performed here is twofold:
+     * (Locally - `validate`) A Schema Validation is performed locally against the versions schema
+     * (Remote - `validateApp`) Both the Schema, AppVersion, and Auths are validated
+     */
 
-  const validationErrors = validateResponse.results;
-  if (validationErrors.length) {
-    debug('\nErrors:\n', validationErrors, '\n');
-    throw new Error(
-      'We hit some validation errors, try running `zapier validate` to see them!'
-    );
+    startSpinner('Validating project schema');
+    const validateResponse = await _appCommandZapierWrapper(tmpDir, {
+      command: 'validate',
+    });
+
+    const validationErrors = validateResponse.results;
+    if (validationErrors.length) {
+      debug('\nErrors:\n', validationErrors, '\n');
+      throw new Error(
+        'We hit some validation errors, try running `zapier validate` to see them!'
+      );
+    }
+
+    startSpinner('Validating project style');
+
+    // No need to mention specifically we're validating style checks as that's
+    //   implied from `zapier validate`, though it happens as a separate process
+    const styleChecksResponse = await validateApp(rawDefinition);
+
+    if (_.get(styleChecksResponse, ['errors', 'total_failures'])) {
+      debug(
+        '\nErrors:\n',
+        prettyJSONstringify(styleChecksResponse.errors.results),
+        '\n'
+      );
+      throw new Error(
+        'We hit some style validation errors, try running `zapier validate` to see them!'
+      );
+    }
+    endSpinner();
+  } else {
+    debug('\nWarning: Skipping Validation');
   }
-
-  // No need to mention specifically we're validating style checks as that's
-  //   implied from `zapier validate`, though it happens as a separate process
-  const styleChecksResponse = await validateApp(rawDefinition);
-
-  if (_.get(styleChecksResponse, ['errors', 'total_failures'])) {
-    debug(
-      '\nErrors:\n',
-      prettyJSONstringify(styleChecksResponse.errors.results),
-      '\n'
-    );
-    throw new Error(
-      'We hit some style validation errors, try running `zapier validate` to see them!'
-    );
-  }
-  endSpinner();
 
   startSpinner('Zipping project and dependencies');
   await makeZip(tmpDir, path.join(wdir, zipPath), disableDependencyDetection);
@@ -472,7 +485,7 @@ const buildAndOrUpload = async (
     await _buildFunc(buildOpts);
   }
   if (upload) {
-    await _uploadFunc(app);
+    await _uploadFunc(app, buildOpts);
   }
 };
 

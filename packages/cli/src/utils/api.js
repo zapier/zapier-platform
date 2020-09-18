@@ -356,7 +356,7 @@ const validateApp = async (definition) => {
   });
 };
 
-const upload = async (app) => {
+const upload = async (app, { skipValidation = false } = {}) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
   const appDir = process.cwd();
@@ -389,6 +389,7 @@ const upload = async (app) => {
     body: {
       zip_file: buffer,
       source_zip_file: sourceBuffer,
+      skip_validation: skipValidation,
     },
   });
 
