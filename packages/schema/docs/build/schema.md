@@ -454,24 +454,19 @@ How will Zapier fetch resources from your application?
 #### Examples
 
 * ```
-  {
-    key: 'recipes',
+  { key: 'recipes',
     noun: 'Recipes',
     display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
-    operation: {
-      perform: '$func$0$f$',
-      sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' }
-    }
-  }
+    operation:
+     { perform: '$func$0$f$',
+       sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    display: { label: 'Get User', description: 'Retrieve an a user.' },
-    operation: { description: 'Define how this search method will work.' }
-  }
+  { display: { label: 'Get User', description: 'Retrieve an a user.' },
+    operation: { description: 'Define how this search method will work.' } }
   ```
 
 #### Properties

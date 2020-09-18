@@ -9,10 +9,9 @@ const { validateApp } = require('../../utils/api');
 
 class ValidateCommand extends BaseCommand {
   async perform() {
-    this.log('Validating project locally here.');
+    this.log('Validating project locally');
 
     const errors = await localAppCommand({ command: 'validate' });
-    this.log('Validating project locally: .', errors);
     const newErrors = errors.map((error) => ({
       ...error,
       property: error.property.replace(/^instance/, 'App'),
