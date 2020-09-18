@@ -38,7 +38,7 @@ BuildCommand.flags = buildFlags({
     }),
     'skip-validation': flags.boolean({
       description:
-        "Skips a local and remote validation check of the CLI app's schema and AppVersion integrity.",
+        "Skips local pre-push validation checks, and remote validation check of the CLI app's schema and AppVersion integrity.",
       hidden: true,
     }),
   },
