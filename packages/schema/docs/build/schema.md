@@ -340,13 +340,11 @@ Represents user information for a trigger, search, or create.
 
 * `{ label: 'New Thing', description: 'Gets a new thing for you.' }`
 * ```
-  {
-    label: 'New Thing',
+  { label: 'New Thing',
     description: 'Gets a new thing for you.',
     directions: 'This is how you use the thing.',
     hidden: false,
-    important: true
-  }
+    important: true }
   ```
 
 #### Anti-Examples
@@ -520,48 +518,38 @@ How will Zapier create a new object?
 #### Examples
 
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 } }
-  }
+    operation: { perform: '$func$2$f$', sample: { id: 1 } } }
   ```
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 }, shouldLock: true }
-  }
+    operation: { perform: '$func$2$f$', sample: { id: 1 }, shouldLock: true } }
   ```
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.', hidden: true },
-    operation: { perform: '$func$2$f$' }
-  }
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Anti-Examples
 
 * `'abc'`
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$', shouldLock: 'yes' }
-  }
+    operation: { perform: '$func$2$f$', shouldLock: 'yes' } }
   ```
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$' }
-  }
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Properties
@@ -741,12 +729,7 @@ Defines a field an app either needs as input, or gives as output. In addition to
 * `{ key: 'abc', type: 'loltype' }`
 * `{ key: 'abc', children: [], helpText: '' }`
 * `{ key: 'abc', children: [ { key: 'def', children: [] } ] }`
-* `{
-  key: 'abc',
-  children: [
-    { key: 'def', children: [ { key: 'dhi' } ] }
-  ]
-}`
+* `{ key: 'abc', children: [ { key: 'def', children: [ { key: 'dhi' } ] } ] }`
 * `{ key: 'abc', children: [ '$func$2$f$' ] }`
 
 #### Properties
@@ -1033,29 +1016,19 @@ How will we find create a specific object given inputs? Will be turned into a cr
 #### Examples
 
 * ```
-  {
-    display: { label: 'Create Tag', description: 'Create a new Tag in your account.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 } }
-  }
+  { display: { label: 'Create Tag', description: 'Create a new Tag in your account.' },
+    operation: { perform: '$func$2$f$', sample: { id: 1 } } }
   ```
 * ```
-  {
-    display: {
-      label: 'Create Tag',
-      description: 'Create a new Tag in your account.',
-      hidden: true
-    },
-    operation: { perform: '$func$2$f$' }
-  }
+  { display: { label: 'Create Tag', description: 'Create a new Tag in your account.', hidden: true },
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    display: { label: 'Create Tag', description: 'Create a new Tag in your account.' },
-    operation: { perform: '$func$2$f$' }
-  }
+  { display: { label: 'Create Tag', description: 'Create a new Tag in your account.' },
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Properties
@@ -1080,25 +1053,19 @@ How will we get a single object given a unique identifier/id?
 #### Examples
 
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-    operation: { perform: { url: '$func$0$f$' }, sample: { id: 385, name: 'proactive enable ROI' } }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+    operation: { perform: { url: '$func$0$f$' }, sample: { id: 385, name: 'proactive enable ROI' } } }
   ```
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
-    operation: { perform: { url: '$func$0$f$' } }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
+    operation: { perform: { url: '$func$0$f$' } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-    operation: { perform: { url: '$func$0$f$' } }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+    operation: { perform: { url: '$func$0$f$' } } }
   ```
 
 #### Properties
@@ -1123,29 +1090,19 @@ How will we get notified of new objects? Will be turned into a trigger automatic
 #### Examples
 
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-    operation: {
-      type: 'hook',
-      perform: '$func$0$f$',
-      sample: { id: 385, name: 'proactive enable ROI' }
-    }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+    operation: { type: 'hook', perform: '$func$0$f$', sample: { id: 385, name: 'proactive enable ROI' } } }
   ```
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
-    operation: { type: 'hook', perform: '$func$0$f$' }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
+    operation: { type: 'hook', perform: '$func$0$f$' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-    operation: { type: 'hook', perform: '$func$0$f$' }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+    operation: { type: 'hook', perform: '$func$0$f$' } }
   ```
 
 #### Properties
@@ -1170,38 +1127,24 @@ How will we get a list of new objects? Will be turned into a trigger automatical
 #### Examples
 
 * ```
-  {
-    display: {
-      label: 'New User',
-      description: 'Trigger when a new User is created in your account.'
-    },
-    operation: {
-      perform: { url: 'https://fake-crm.getsandbox.com/users' },
-      sample: { id: 49, name: 'Veronica Kuhn', email: 'veronica.kuhn@company.com' }
-    }
-  }
+  { display: { label: 'New User', description: 'Trigger when a new User is created in your account.' },
+    operation:
+     { perform: { url: 'https://fake-crm.getsandbox.com/users' },
+       sample: { id: 49, name: 'Veronica Kuhn', email: 'veronica.kuhn@company.com' } } }
   ```
 * ```
-  {
-    display: {
-      label: 'New User',
-      description: 'Trigger when a new User is created in your account.',
-      hidden: true
-    },
-    operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } }
-  }
+  { display:
+     { label: 'New User',
+       description: 'Trigger when a new User is created in your account.',
+       hidden: true },
+    operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    display: {
-      label: 'New User',
-      description: 'Trigger when a new User is created in your account.'
-    },
-    operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } }
-  }
+  { display: { label: 'New User', description: 'Trigger when a new User is created in your account.' },
+    operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } } }
   ```
 
 #### Properties
@@ -1226,31 +1169,21 @@ How will we find a specific object given filters or search terms? Will be turned
 #### Examples
 
 * ```
-  {
-    display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 } }
-  }
+  { display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
+    operation: { perform: '$func$2$f$', sample: { id: 1 } } }
   ```
 * ```
-  {
-    display: {
-      label: 'Find a Recipe',
-      description: 'Search for recipe by cuisine style.',
-      hidden: true
-    },
-    operation: { perform: '$func$2$f$' }
-  }
+  { display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.', hidden: true },
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
-    operation: { perform: '$func$2$f$' }
-  }
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Properties
@@ -1275,81 +1208,55 @@ Represents a resource, which will in turn power triggers, searches, or creates.
 #### Examples
 
 * ```
-  {
-    key: 'tag',
+  { key: 'tag',
     noun: 'Tag',
-    get: {
-      display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-      operation: {
-        perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
-        sample: { id: 385, name: 'proactive enable ROI' }
-      }
-    }
-  }
+    get:
+     { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+       operation:
+        { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
+          sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
 * ```
-  {
-    key: 'tag',
+  { key: 'tag',
     noun: 'Tag',
     sample: { id: 385, name: 'proactive enable ROI' },
-    get: {
-      display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-      operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
-    }
-  }
+    get:
+     { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } }
   ```
 * ```
-  {
-    key: 'tag',
+  { key: 'tag',
     noun: 'Tag',
-    get: {
-      display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
-      operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
-    },
-    list: {
-      display: {
-        label: 'New Tag',
-        description: 'Trigger when a new Tag is created in your account.'
-      },
-      operation: {
-        perform: { url: 'https://fake-crm.getsandbox.com/tags' },
-        sample: { id: 385, name: 'proactive enable ROI' }
-      }
-    }
-  }
+    get:
+     { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } },
+    list:
+     { display: { label: 'New Tag', description: 'Trigger when a new Tag is created in your account.' },
+       operation:
+        { perform: { url: 'https://fake-crm.getsandbox.com/tags' },
+          sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    key: 'tag',
+  { key: 'tag',
     noun: 'Tag',
-    get: {
-      display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-      operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
-    },
-    list: {
-      display: {
-        label: 'New Tag',
-        description: 'Trigger when a new Tag is created in your account.'
-      },
-      operation: {
-        perform: { url: 'https://fake-crm.getsandbox.com/tags' },
-        sample: { id: 385, name: 'proactive enable ROI' }
-      }
-    }
-  }
+    get:
+     { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } },
+    list:
+     { display: { label: 'New Tag', description: 'Trigger when a new Tag is created in your account.' },
+       operation:
+        { perform: { url: 'https://fake-crm.getsandbox.com/tags' },
+          sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
 * ```
-  {
-    key: 'tag',
+  { key: 'tag',
     noun: 'Tag',
-    get: {
-      display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-      operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
-    }
-  }
+    get:
+     { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } }
   ```
 
 #### Properties
@@ -1456,36 +1363,26 @@ How will Zapier search for existing objects?
 #### Examples
 
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 } }
-  }
+    operation: { perform: '$func$2$f$', sample: { id: 1 } } }
   ```
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
-    display: {
-      label: 'Find a Recipe',
-      description: 'Search for recipe by cuisine style.',
-      hidden: true
-    },
-    operation: { perform: '$func$2$f$' }
-  }
+    display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.', hidden: true },
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Anti-Examples
 
 * `'abc'`
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
-    operation: { perform: '$func$2$f$' }
-  }
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Properties
@@ -1532,35 +1429,25 @@ How will Zapier get notified of new objects?
 #### Examples
 
 * ```
-  {
-    key: 'new_recipe',
+  { key: 'new_recipe',
     noun: 'Recipe',
     display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
-    operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } }
-  }
+    operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } } }
   ```
 * ```
-  {
-    key: 'new_recipe',
+  { key: 'new_recipe',
     noun: 'Recipe',
-    display: {
-      label: 'New Recipe',
-      description: 'Triggers when a new recipe is added.',
-      hidden: true
-    },
-    operation: { type: 'polling', perform: '$func$0$f$' }
-  }
+    display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.', hidden: true },
+    operation: { type: 'polling', perform: '$func$0$f$' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    key: 'new_recipe',
+  { key: 'new_recipe',
     noun: 'Recipe',
     display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
-    operation: { perform: '$func$0$f$' }
-  }
+    operation: { perform: '$func$0$f$' } }
   ```
 
 #### Properties
