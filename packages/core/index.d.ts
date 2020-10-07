@@ -59,6 +59,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
         content: { [x: string]: string };
       }>
     | any;
+  outputData?: object;
   subscribeData?: { id: string };
   targetUrl?: string;
 }

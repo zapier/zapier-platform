@@ -757,7 +757,7 @@ Content-Type: application/json
 {"foo":"bar"}
 ```
 
-And finally, in a `performResume` to handle the final step:
+And finally, in a `performResume` to handle the final step (which will receive `bundle.cleanedRequest`, `bundle.rawRequest`, and `bundle.outputData`):
 
 ```js
 const performResume = async (z, bundle) => {
@@ -842,7 +842,7 @@ const perform = async (z, bundle) => {
 
 ### `bundle.rawRequest`
 
-> `bundle.rawRequest` is only available in the `perform` for web hooks and `getAccessToken` for oauth authentication methods.
+> `bundle.rawRequest` is only available in the `perform` for web hooks, `getAccessToken` for oauth authentication methods, and `performResume` in a callback action.
 
 `bundle.rawRequest` holds raw information about the HTTP request that triggered the `perform` method or that represents the users browser request that triggered the `getAccessToken` call:
 
@@ -861,7 +861,7 @@ const perform = async (z, bundle) => {
 
 ### `bundle.cleanedRequest`
 
-> `bundle.cleanedRequest` is only available in the `perform` for webhooks and `getAccessToken` for oauth authentication methods.
+> `bundle.cleanedRequest` is only available in the `perform` for webhooks, `getAccessToken` for oauth authentication methods, and `performResume` in a callback action.
 
 `bundle.cleanedRequest` will return a formatted and parsed version of the request. Some or all of the following will be available:
 
@@ -880,6 +880,13 @@ const perform = async (z, bundle) => {
   }
 }
 ```
+
+### `bundle.outputData`
+
+> `bundle.outputData` is only available in the `performResume` in a callback action.
+
+`bundle.outputData` will return a whatever data you originally returned in the `perform` allowing you to mix that with `bundle.rawRequest` or `bundle.cleanedRequest`.
+
 
 ### `bundle.targetUrl`
 
