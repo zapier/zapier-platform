@@ -724,6 +724,38 @@ The `z.cursor` object exposes two methods:
 
 Any data you `set` will be available to that Zap for about an hour (or until it's overwritten). For more information, see: [paging](#paging).
 
+### `z.generateCallbackUrl()`
+
+The `z.generateCallbackUrl()` will return a callback URL your app can `POST` to later for handling long running tasks (like transcription or encoding jobs). In the meantime, the Zap and Task will wait for your response and the user will see the Task marked as waiting. For example, you might do:
+
+```js
+const perform = async (z, bundle) => {
+  // something like this url:
+  // https://hooks.zapier.com/hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/
+  const callbackUrl = z.generateCallbackUrl();
+  const response = await z.request({
+    url: 'https://example.com/api/slow-job',
+    method: 'POST',
+    body: {
+      // ... whatever your app needs
+      url: callbackUrl,
+    },
+  });
+  return response.data;
+};
+```
+
+And in your own `/api/slow-job` view (or more likely, an async job) you'd make this request to Zapier:
+
+```http
+POST /hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/ HTTP/1.1
+Host: hooks.zapier.com
+Content-Type: application/json
+
+{"any output":"data","but should":"match sample data"}
+```
+
+
 ## Bundle Object
 
 This object holds the user's auth details and the data for the API requests.
