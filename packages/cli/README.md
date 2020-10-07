@@ -1671,9 +1671,11 @@ And finally, in a `performResume` to handle the final step (which will receive `
 ```js
 const performResume = async (z, bundle) => {
   // this will give a final value of: {"hello": "world", "foo": "bar"}
-  return Object.assign({}, bundle.outputData, bundle.cleanedRequest);
+  return  { ...bundle.outputData, ...bundle.cleanedRequest };
 };
 ```
+
+> The app will have a maximum of 90 days to `POST` to the callback URL. If a user deletes or modifies the Zap or Task in the meantime, we will not resume the task.
 
 
 ## Bundle Object
