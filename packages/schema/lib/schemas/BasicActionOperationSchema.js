@@ -21,7 +21,7 @@ BasicActionOperationSchema.properties = {
   perform: BasicActionOperationSchema.properties.perform,
   performResume: {
     description:
-      'A function that parses data from a perform + callback to resume this action. For use with callback semantics',
+      'A function that parses data from a perform (which uses z.generateCallbackUrl()) and callback request to resume this action.',
     $ref: FunctionSchema.id,
   },
   performGet: {

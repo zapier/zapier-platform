@@ -2767,14 +2767,14 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The <code>z.generateCallbackUrl()</code> will return a callback URL your app can <code>POST</code> to later for handling long running tasks (like transcription or encoding jobs). In the meantime, the Zap and Task will wait for your response and the user will see the Task marked as waiting. For example, you might do:</p>
+      <p>The <code>z.generateCallbackUrl()</code> will return a callback URL your app can <code>POST</code> to later for handling long running tasks (like transcription or encoding jobs). In the meantime, the Zap and Task will wait for your response and the user will see the Task marked as waiting.</p><p>For example, in your <code>perform</code> you might do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> perform = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-comment">// something like this url:</span>
   <span class="hljs-comment">// https://hooks.zapier.com/hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/</span>
   <span class="hljs-keyword">const</span> callbackUrl = z.generateCallbackUrl();
-  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
+  <span class="hljs-keyword">await</span> z.request({
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/slow-job&apos;</span>,
     <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
     <span class="hljs-attr">body</span>: {
@@ -2782,7 +2782,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <span class="hljs-attr">url</span>: callbackUrl,
     },
   });
-  <span class="hljs-keyword">return</span> response.data;
+  <span class="hljs-keyword">return</span> {<span class="hljs-string">&quot;hello&quot;</span>: <span class="hljs-string">&quot;world&quot;</span>};
 };
 </code></pre>
     </div>
@@ -2797,7 +2797,20 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 <span class="hljs-attribute">Host</span>: hooks.zapier.com
 <span class="hljs-attribute">Content-Type</span>: application/json
 
-<span class="json">{<span class="hljs-attr">&quot;any output&quot;</span>:<span class="hljs-string">&quot;data&quot;</span>,<span class="hljs-attr">&quot;but should&quot;</span>:<span class="hljs-string">&quot;match sample data&quot;</span>}</span>
+<span class="json">{<span class="hljs-attr">&quot;foo&quot;</span>:<span class="hljs-string">&quot;bar&quot;</span>}</span>
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>And finally, in a <code>performResume</code> to handle the final step:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> performResume = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-comment">// this will give a final value of: {&quot;hello&quot;: &quot;world&quot;, &quot;foo&quot;: &quot;bar&quot;}</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Object</span>.assign({}, bundle.outputData, bundle.cleanedRequest);
+};
 </code></pre>
     </div>
   </div>
