@@ -75,6 +75,7 @@ This doc decribes the latest CLI version **10.1.1**, as of this writing. If you'
   * [`z.hash()`](#zhash)
   * [`z.errors`](#zerrors)
   * [`z.cursor`](#zcursor)
+  * [`z.generateCallbackUrl()`](#zgeneratecallbackurl)
 - [Bundle Object](#bundle-object)
   * [`bundle.authData`](#bundleauthdata)
   * [`bundle.inputData`](#bundleinputdata)
@@ -82,6 +83,7 @@ This doc decribes the latest CLI version **10.1.1**, as of this writing. If you'
   * [`bundle.meta`](#bundlemeta)
   * [`bundle.rawRequest`](#bundlerawrequest)
   * [`bundle.cleanedRequest`](#bundlecleanedrequest)
+  * [`bundle.outputData`](#bundleoutputdata)
   * [`bundle.targetUrl`](#bundletargeturl)
   * [`bundle.subscribeData`](#bundlesubscribedata)
 - [Environment](#environment)
@@ -1631,6 +1633,55 @@ The `z.cursor` object exposes two methods:
 
 Any data you `set` will be available to that Zap for about an hour (or until it's overwritten). For more information, see: [paging](#paging).
 
+### `z.generateCallbackUrl()`
+
+The `z.generateCallbackUrl()` will return a callback URL your app can `POST` to later for handling long running tasks (like transcription or encoding jobs). In the meantime, the Zap and Task will wait for your response and the user will see the Task marked as waiting.
+
+For example, in your `perform` you might do:
+
+```js
+const perform = async (z, bundle) => {
+  // something like this url:
+  // https://zapier.com/hooks/callback/123/abcdef01-2345-6789-abcd-ef0123456789/abcdef0123456789abcdef0123456789abcdef01/
+  const callbackUrl = z.generateCallbackUrl();
+  await z.request({
+    url: 'https://example.com/api/slow-job',
+    method: 'POST',
+    body: {
+      // ... whatever your integration needs
+      url: callbackUrl,
+    },
+  });
+  return {"hello": "world"}; // available later in bundle.outputData
+};
+```
+
+And in your own `/api/slow-job` view (or more likely, an async job) you'd make this request to Zapier when the long-running job completes to populate `bundle.cleanedRequest`:
+
+```http
+POST /hooks/callback/123/abcdef01-2345-6789-abcd-ef0123456789/abcdef0123456789abcdef0123456789abcdef01/ HTTP/1.1
+Host: zapier.com
+Content-Type: application/json
+
+{"foo":"bar"}
+```
+
+And finally, in a `performResume` to handle the final step which will receive three bundle properties:
+
+* `bundle.outputData` is `{"hello": "world"}`, the data returned from the initial `perform`
+* `bundle.cleanedRequest` is `{"foo": "bar"}`, the payload from the callback URL
+* `bundle.rawRequest` is the full request object corresponding to `bundle.cleanedRequest`
+
+```js
+const performResume = async (z, bundle) => {
+  // this will give a final value of: {"hello": "world", "foo": "bar"}
+  return  { ...bundle.outputData, ...bundle.cleanedRequest };
+};
+```
+
+> The app will have a maximum of 90 days to `POST` to the callback URL. If a user deletes or modifies the Zap or Task in the meantime, we will not resume the task.
+
+
 ## Bundle Object
 
 This object holds the user's auth details and the data for the API requests.
@@ -1706,7 +1757,7 @@ const perform = async (z, bundle) => {
 
 ### `bundle.rawRequest`
 
-> `bundle.rawRequest` is only available in the `perform` for web hooks and `getAccessToken` for oauth authentication methods.
+> `bundle.rawRequest` is only available in the `perform` for web hooks, `getAccessToken` for oauth authentication methods, and `performResume` in a callback action.
 
 `bundle.rawRequest` holds raw information about the HTTP request that triggered the `perform` method or that represents the users browser request that triggered the `getAccessToken` call:
 
@@ -1725,7 +1776,7 @@ const perform = async (z, bundle) => {
 
 ### `bundle.cleanedRequest`
 
-> `bundle.cleanedRequest` is only available in the `perform` for webhooks and `getAccessToken` for oauth authentication methods.
+> `bundle.cleanedRequest` is only available in the `perform` for webhooks, `getAccessToken` for oauth authentication methods, and `performResume` in a callback action.
 
 `bundle.cleanedRequest` will return a formatted and parsed version of the request. Some or all of the following will be available:
 
@@ -1744,6 +1795,13 @@ const perform = async (z, bundle) => {
   }
 }
 ```
+
+### `bundle.outputData`
+
+> `bundle.outputData` is only available in the `performResume` in a callback action.
+
+`bundle.outputData` will return a whatever data you originally returned in the `perform` allowing you to mix that with `bundle.rawRequest` or `bundle.cleanedRequest`.
+
 
 ### `bundle.targetUrl`
 

@@ -291,7 +291,7 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.
-`performResume` | no | [/FunctionSchema](#functionschema) | A function that parses data from a perform + callback to resume this action. For use with callback semantics
+`performResume` | no | [/FunctionSchema](#functionschema) | A function that parses data from a perform (which uses z.generateCallbackUrl()) and callback request to resume this action.
 `performGet` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
@@ -317,7 +317,7 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.
-`performResume` | no | [/FunctionSchema](#functionschema) | A function that parses data from a perform + callback to resume this action. For use with callback semantics
+`performResume` | no | [/FunctionSchema](#functionschema) | A function that parses data from a perform (which uses z.generateCallbackUrl()) and callback request to resume this action.
 `performGet` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.

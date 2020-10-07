@@ -501,6 +501,9 @@ const ExecuteCallbackRequest = {
         const callbackUrl = z.generateCallbackUrl();
         return { callbackUrl };
       },
+      performResume: (z, bundle) => {
+        return Object.assign({}, bundle.outputData, bundle.cleanedRequest);
+      },
       inputFields: [
         {
           key: 'test',
