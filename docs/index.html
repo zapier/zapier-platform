@@ -2774,7 +2774,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> perform = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-comment">// something like this url:</span>
-  <span class="hljs-comment">// https://hooks.zapier.com/hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/</span>
+  <span class="hljs-comment">// https://zapier.com/hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/</span>
   <span class="hljs-keyword">const</span> callbackUrl = z.generateCallbackUrl();
   <span class="hljs-keyword">await</span> z.request({
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/slow-job&apos;</span>,
@@ -2796,7 +2796,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/</span> HTTP/1.1
-<span class="hljs-attribute">Host</span>: hooks.zapier.com
+<span class="hljs-attribute">Host</span>: zapier.com
 <span class="hljs-attribute">Content-Type</span>: application/json
 
 <span class="json">{<span class="hljs-attr">&quot;foo&quot;</span>:<span class="hljs-string">&quot;bar&quot;</span>}</span>

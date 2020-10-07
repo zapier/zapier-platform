@@ -1642,7 +1642,7 @@ For example, in your `perform` you might do:
 ```js
 const perform = async (z, bundle) => {
   // something like this url:
-  // https://hooks.zapier.com/hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/
+  // https://zapier.com/hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/
   const callbackUrl = z.generateCallbackUrl();
   await z.request({
     url: 'https://example.com/api/slow-job',
@@ -1660,7 +1660,7 @@ And in your own `/api/slow-job` view (or more likely, an async job) you'd make t
 
 ```http
 POST /hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/ HTTP/1.1
-Host: hooks.zapier.com
+Host: zapier.com
 Content-Type: application/json
 
 {"foo":"bar"}
