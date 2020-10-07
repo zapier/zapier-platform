@@ -20,7 +20,8 @@ const shouldPaginate = (appRaw, method) => {
   if (
     method.endsWith('perform') &&
     ((methodParts[0] === 'resources' && methodParts[2] === 'list') ||
-      methodParts[0] === 'triggers')
+      methodParts[0] === 'triggers' ||
+      methodParts[0] === 'bulkReads')
   ) {
     methodParts.pop();
     return get(appRaw, [...methodParts, 'canPaginate']);
