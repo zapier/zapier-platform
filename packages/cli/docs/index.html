@@ -2774,17 +2774,17 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> perform = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-comment">// something like this url:</span>
-  <span class="hljs-comment">// https://zapier.com/hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/</span>
+  <span class="hljs-comment">// https://zapier.com/hooks/callback/123/abcdef01-2345-6789-abcd-ef0123456789/abcdef0123456789abcdef0123456789abcdef01/</span>
   <span class="hljs-keyword">const</span> callbackUrl = z.generateCallbackUrl();
   <span class="hljs-keyword">await</span> z.request({
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/slow-job&apos;</span>,
     <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
     <span class="hljs-attr">body</span>: {
-      <span class="hljs-comment">// ... whatever your app needs</span>
+      <span class="hljs-comment">// ... whatever your integration needs</span>
       <span class="hljs-attr">url</span>: callbackUrl,
     },
   });
-  <span class="hljs-keyword">return</span> {<span class="hljs-string">&quot;hello&quot;</span>: <span class="hljs-string">&quot;world&quot;</span>};
+  <span class="hljs-keyword">return</span> {<span class="hljs-string">&quot;hello&quot;</span>: <span class="hljs-string">&quot;world&quot;</span>}; <span class="hljs-comment">// available later in bundle.outputData</span>
 };
 </code></pre>
     </div>
@@ -2792,10 +2792,10 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>And in your own <code>/api/slow-job</code> view (or more likely, an async job) you&apos;d make this request to Zapier:</p>
+      <p>And in your own <code>/api/slow-job</code> view (or more likely, an async job) you&apos;d make this request to Zapier when the long-running job completes to populate <code>bundle.cleanedRequest</code>:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/</span> HTTP/1.1
+      <pre><code class="lang-http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/hooks/callback/123/abcdef01-2345-6789-abcd-ef0123456789/abcdef0123456789abcdef0123456789abcdef01/</span> HTTP/1.1
 <span class="hljs-attribute">Host</span>: zapier.com
 <span class="hljs-attribute">Content-Type</span>: application/json
 
@@ -2806,7 +2806,11 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>And finally, in a <code>performResume</code> to handle the final step (which will receive <code>bundle.cleanedRequest</code>, <code>bundle.rawRequest</code>, and <code>bundle.outputData</code>):</p>
+      <p>And finally, in a <code>performResume</code> to handle the final step which will receive three bundle properties:</p><ul>
+<li><code>bundle.outputData</code> is <code>{&quot;hello&quot;: &quot;world&quot;}</code>, the data returned from the initial <code>perform</code></li>
+<li><code>bundle.cleanedRequest</code> is <code>{&quot;foo&quot;: &quot;bar&quot;}</code>, the payload from the callback URL</li>
+<li><code>bundle.rawRequest</code> is the full request object corresponding to <code>bundle.cleanedRequest</code></li>
+</ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> performResume = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {

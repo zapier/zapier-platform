@@ -733,31 +733,35 @@ For example, in your `perform` you might do:
 ```js
 const perform = async (z, bundle) => {
   // something like this url:
-  // https://zapier.com/hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/
+  // https://zapier.com/hooks/callback/123/abcdef01-2345-6789-abcd-ef0123456789/abcdef0123456789abcdef0123456789abcdef01/
   const callbackUrl = z.generateCallbackUrl();
   await z.request({
     url: 'https://example.com/api/slow-job',
     method: 'POST',
     body: {
-      // ... whatever your app needs
+      // ... whatever your integration needs
       url: callbackUrl,
     },
   });
-  return {"hello": "world"};
+  return {"hello": "world"}; // available later in bundle.outputData
 };
 ```
 
-And in your own `/api/slow-job` view (or more likely, an async job) you'd make this request to Zapier:
+And in your own `/api/slow-job` view (or more likely, an async job) you'd make this request to Zapier when the long-running job completes to populate `bundle.cleanedRequest`:
 
 ```http
-POST /hooks/callback/123/deadbeef-dead-dead-dead-deaddeafbeef/abcdef0123456789abcdef0123456789abcdef01/ HTTP/1.1
+POST /hooks/callback/123/abcdef01-2345-6789-abcd-ef0123456789/abcdef0123456789abcdef0123456789abcdef01/ HTTP/1.1
 Host: zapier.com
 Content-Type: application/json
 
 {"foo":"bar"}
 ```
 
-And finally, in a `performResume` to handle the final step (which will receive `bundle.cleanedRequest`, `bundle.rawRequest`, and `bundle.outputData`):
+And finally, in a `performResume` to handle the final step which will receive three bundle properties:
+
+* `bundle.outputData` is `{"hello": "world"}`, the data returned from the initial `perform`
+* `bundle.cleanedRequest` is `{"foo": "bar"}`, the payload from the callback URL
+* `bundle.rawRequest` is the full request object corresponding to `bundle.cleanedRequest`
 
 ```js
 const performResume = async (z, bundle) => {
