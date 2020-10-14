@@ -67,6 +67,7 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       method,
       bundle,
       storeKey,
+      callback_url: 'https://auth-json-server.zapier-staging.com/echo',
     };
 
     if (process.env.LOG_TO_STDOUT) {
