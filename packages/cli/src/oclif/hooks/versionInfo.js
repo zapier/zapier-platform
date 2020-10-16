@@ -28,7 +28,7 @@ module.exports = (options) => {
     const maybeCoreDepVersion = get(pJson, ['dependencies', PLATFORM_PACKAGE]);
     if (maybeCoreDepVersion) {
       console.log(
-        `* \`zapier-platform-core\` dependency: ${maybeCoreDepVersion}`
+        `* \`${PLATFORM_PACKAGE}\` dependency: ${maybeCoreDepVersion}`
       );
     }
   } catch {}
