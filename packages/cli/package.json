@@ -94,6 +94,7 @@
     ],
     "hooks": {
       "init": [
+        "./src/oclif/hooks/versionInfo",
         "./src/oclif/hooks/deprecated",
         "./src/oclif/hooks/updateNotifier",
         "./src/oclif/hooks/checkValidNodeVersion",
