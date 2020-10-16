@@ -153,6 +153,7 @@ const writeForStandaloneTemplate = (gen) => {
 
 const TEMPLATE_ROUTES = {
   'basic-auth': writeForAuthTemplate,
+  callback: writeForStandaloneTemplate,
   'custom-auth': writeForAuthTemplate,
   'digest-auth': writeForAuthTemplate,
   'dynamic-dropdown': writeForStandaloneTemplate,
