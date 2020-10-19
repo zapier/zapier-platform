@@ -5,7 +5,7 @@ const { get } = require('lodash');
 const { PLATFORM_PACKAGE } = require('../../constants');
 const path = require('path');
 
-const VERSION_ARGS = ['version', 'v', '--version', '-V'];
+const VERSION_ARGS = ['version', '-v', '--version', '-V'];
 
 module.exports = (options) => {
   const firstArg = options.id;
