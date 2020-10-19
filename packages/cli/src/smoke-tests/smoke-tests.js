@@ -117,9 +117,9 @@ describe('smoke tests - setup will take some time', () => {
   });
 
   it('zapier --version', () => {
-    const firstLine = runCommand(context.cliBin, ['--version']);
-    firstLine
-      .includes(`zapier-platform-cli/${context.package.version}`)
+    const versionOutput = runCommand(context.cliBin, ['--version']);
+    versionOutput
+      .includes(`CLI version: ${context.package.version}`)
       .should.be.true();
   });
 

@@ -78,23 +78,26 @@ const isValidNodeVersion = (version = process.version) =>
   semver.satisfies(version, NODE_VERSION_CLI_REQUIRES);
 
 const isValidAppInstall = () => {
-  let packageJson;
+  let packageJson, dependedCoreVersion;
   try {
     packageJson = require(path.join(process.cwd(), 'package.json'));
-    const coreVersion = _.get(packageJson, ['dependencies', PLATFORM_PACKAGE]);
+    dependedCoreVersion = _.get(packageJson, [
+      'dependencies',
+      PLATFORM_PACKAGE,
+    ]);
     // could check for a lot more, but this is probably enough: https://docs.npmjs.com/files/package.json#dependencies
-    if (!coreVersion) {
+    if (!dependedCoreVersion) {
       return {
         valid: false,
         reason: `Your app doesn't depend on ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
           `npm install -E ${PLATFORM_PACKAGE}`
         )}\` to resolve`,
       };
-    } else if (!semver.valid(coreVersion)) {
-      // semver.valid only matches single versions
+    } else if (!semver.valid(dependedCoreVersion)) {
+      // semver.valid only matches exact versions
       return {
         valid: false,
-        reason: `Your app must depend on an exact version of ${PLATFORM_PACKAGE}. Instead of "${coreVersion}", specify an exact version (such as "${PACKAGE_VERSION}")`,
+        reason: `Your app must depend on an exact version of ${PLATFORM_PACKAGE}. Instead of "${dependedCoreVersion}", specify an exact version (such as "${PACKAGE_VERSION}")`,
       };
     }
   } catch (err) {
@@ -102,7 +105,20 @@ const isValidAppInstall = () => {
   }
 
   try {
-    require(path.join(process.cwd(), 'node_modules', PLATFORM_PACKAGE));
+    const installedPackageJson = require(path.join(
+      process.cwd(),
+      'node_modules',
+      PLATFORM_PACKAGE,
+      'package.json'
+    ));
+
+    const installedCoreVersion = installedPackageJson.version;
+    // not an error for now, but something to mention to them
+    if (dependedCoreVersion !== installedCoreVersion) {
+      console.warn(
+        `\nYour code depends on v${dependedCoreVersion} of ${PLATFORM_PACKAGE}, but your local copy is v${installedCoreVersion}. You should probably reinstall your dependencies.\n`
+      );
+    }
   } catch (err) {
     return {
       valid: false,
