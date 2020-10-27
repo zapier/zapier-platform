@@ -1872,4 +1872,4 @@ For maximum compatibility, keep the versions of `cli` and `core` in sync.
 
 ## Get Help!
 
-You can get help by either emailing partners@zapier.com or by [joining our Slack team here](https://join.slack.com/t/zapier-platform/shared_invite/enQtOTgyMjkzNDU1NjM5LWM1MGQ1YmY5ODgxNmM1NjIzZTk3NjNkMzFlZWExYzU2MDJjNTVmNDEzMWUzYjdlNmMzZGViMzE0YjhlOGIyZDA).
+You can get help by either emailing partners@zapier.com or by [joining our developer community here](https://community.zapier.com/developer-discussion-13).
