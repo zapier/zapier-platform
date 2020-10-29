@@ -19,6 +19,15 @@ module.exports = makeSchema(
       },
     },
     additionalProperties: false,
+    examples: [
+      { perform: { require: 'some/path/to/file.js' }, },
+    ],
+    antiExamples: [
+      {
+        example: {},
+        reason: 'Missing required key: perform',
+      },
+    ],
   },
   [FunctionSchema, RequestSchema]
 );

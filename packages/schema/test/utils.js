@@ -28,6 +28,7 @@ const testInlineSchemaExamples = (name) => {
       } else {
         bads
           .filter((t) => !t[SKIP_KEY])
+          .map((t) => t.example)
           .forEach((bad) => {
             const { errors } = Schema.validate(bad);
             if (errors.length === 0) {

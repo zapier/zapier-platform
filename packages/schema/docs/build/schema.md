@@ -82,8 +82,8 @@ Codifies high-level options for your app.
 
 #### Anti-Examples
 
-* `{ blah: true }`
-* `{ skipHttpPatch: 'yes' }`
+* `{ foo: true }` - _Invalid key._
+* `{ skipHttpPatch: 'yes' }` - _Invalid value._
 
 #### Properties
 
@@ -103,7 +103,14 @@ Represents a full app.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/AppSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AppSchema.js)
 
+#### Examples
 
+* `{ version: '1.0.0', platformVersion: '10.1.1' }`
+
+#### Anti-Examples
+
+* `{ version: 'v1.0.0', platformVersion: '10.1.1' }` - _Invalid value for version._
+* `{ version: '1.0.0', platformVersion: 'v10.1.1' }` - _Invalid value for platformVersion._
 
 #### Properties
 
@@ -138,6 +145,14 @@ Config for Basic Authentication. No extra properties are required to setup Basic
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/AuthenticationBasicConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationBasicConfigSchema.js)
 
+#### Examples
+
+* `{}`
+
+#### Anti-Examples
+
+* `{ foo: true }` - _Invalid key._
+
 -----
 
 ## /AuthenticationCustomConfigSchema
@@ -149,6 +164,14 @@ Config for custom authentication (like API keys). No extra properties are requir
 * **Type** - `object`
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/AuthenticationCustomConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationCustomConfigSchema.js)
+
+#### Examples
+
+* `{}`
+
+#### Anti-Examples
+
+* `{ foo: true }` - _Invalid key._
 
 -----
 
@@ -162,6 +185,14 @@ Config for Digest Authentication. No extra properties are required to setup Dige
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/AuthenticationDigestConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationDigestConfigSchema.js)
 
+#### Examples
+
+* `{}`
+
+#### Anti-Examples
+
+* `{ foo: true }` - _Invalid key._
+
 -----
 
 ## /AuthenticationOAuth1ConfigSchema
@@ -174,7 +205,24 @@ Config for OAuth1 authentication.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/AuthenticationOAuth1ConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationOAuth1ConfigSchema.js)
 
+#### Examples
 
+* ```
+  {
+    getRequestToken: { require: 'some/path/to/file.js' },
+    authorizeUrl: { require: 'some/path/to/file2.js' },
+    getAccessToken: { require: 'some/path/to/file3.js' }
+  }
+  ```
+
+#### Anti-Examples
+
+* ```
+  {
+    getRequestToken: { require: 'some/path/to/file.js' },
+    authorizeUrl: { require: 'some/path/to/file2.js' }
+  }
+  ``` - _Missing required key._
 
 #### Properties
 
@@ -196,7 +244,27 @@ Config for OAuth2 authentication.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/AuthenticationOAuth2ConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationOAuth2ConfigSchema.js)
 
+#### Examples
 
+* ```
+  {
+    authorizeUrl: { require: 'some/path/to/file.js' },
+    getAccessToken: { require: 'some/path/to/file2.js' }
+  }
+  ```
+* ```
+  {
+    authorizeUrl: { require: 'some/path/to/file.js' },
+    getAccessToken: { require: 'some/path/to/file2.js' },
+    refreshAccessToken: { require: 'some/path/to/file3.js' },
+    scope: 'read/write',
+    autoRefresh: true
+  }
+  ```
+
+#### Anti-Examples
+
+* `{ authorizeUrl: { require: 'some/path/to/file.js' } }` - _Missing required key getAccessToken._
 
 #### Properties
 
@@ -230,11 +298,10 @@ Represents authentication schemes.
 
 #### Anti-Examples
 
-* `{}`
-* `'$func$2$f$'`
-* `{ type: 'unknown', test: '$func$2$f$' }`
-* `{ type: 'custom', test: '$func$2$f$', fields: '$func$2$f$' }`
-* `{ type: 'custom', test: '$func$2$f$', fields: [ { key: 'abc' }, '$func$2$f$' ] }`
+* `{}` - _Missing required keys: type and test_
+* `'$func$2$f$'` - _Must be object_
+* `{ type: 'unknown', test: '$func$2$f$' }` - _Invalid value for key: type_
+* `{ type: 'custom', test: '$func$2$f$', fields: '$func$2$f$' }` - _Invalid value for key: fields_
 
 #### Properties
 
@@ -263,7 +330,13 @@ Config for session authentication.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/AuthenticationSessionConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationSessionConfigSchema.js)
 
+#### Examples
 
+* `{ perform: { require: 'some/path/to/file.js' } }`
+
+#### Anti-Examples
+
+* `{}` - _Missing required key: perform_
 
 #### Properties
 
@@ -283,7 +356,13 @@ Represents the fundamental mechanics of a search/create.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/BasicActionOperationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicActionOperationSchema.js)
 
+#### Examples
 
+* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
+
+#### Anti-Examples
+
+* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
 
 #### Properties
 
@@ -309,7 +388,13 @@ Represents the fundamental mechanics of a create.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/BasicCreateActionOperationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicCreateActionOperationSchema.js)
 
+#### Examples
 
+* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
+
+#### Anti-Examples
+
+* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
 
 #### Properties
 
@@ -338,6 +423,7 @@ Represents user information for a trigger, search, or create.
 
 #### Examples
 
+* `{ hidden: true }`
 * `{ label: 'New Thing', description: 'Gets a new thing for you.' }`
 * ```
   {
@@ -351,7 +437,9 @@ Represents user information for a trigger, search, or create.
 
 #### Anti-Examples
 
-* `{ label: 'New Thing', description: 'Gets a new thing for you.', important: 1 }`
+* `{ label: 'New Thing', hidden: false }` - _Missing required key: description_
+* `{ description: 'Gets a new thing for you.', hidden: false }` - _Missing required key: label_
+* `{ label: 'New Thing', description: 'Gets a new thing for you.', important: 1 }` - _Invalid value for key: important_
 
 #### Properties
 
@@ -375,7 +463,30 @@ Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. D
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/BasicHookOperationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicHookOperationSchema.js)
 
+#### Examples
 
+* ```
+  {
+    type: 'hook',
+    perform: { require: 'some/path/to/file.js' },
+    performList: { require: 'some/path/to/file2.js' },
+    performSubscribe: { require: 'some/path/to/file3.js' },
+    performUnsubscribe: { require: 'some/path/to/file4.js' },
+    sample: { id: 42, name: 'Hooli' }
+  }
+  ```
+
+#### Anti-Examples
+
+* ```
+  {
+    type: 'hook',
+    perform: { require: 'some/path/to/file.js' },
+    performList: { require: 'some/path/to/file2.js' },
+    performSubscribe: { require: 'some/path/to/file3.js' },
+    performUnsubscribe: { require: 'some/path/to/file4.js' }
+  }
+  ``` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
 
 #### Properties
 
@@ -403,7 +514,13 @@ Represents the fundamental mechanics of triggers, searches, or creates.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/BasicOperationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicOperationSchema.js)
 
+#### Examples
 
+* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
+
+#### Anti-Examples
+
+* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
 
 #### Properties
 
@@ -427,7 +544,13 @@ Represents the fundamental mechanics of a trigger.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/BasicPollingOperationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicPollingOperationSchema.js)
 
+#### Examples
 
+* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
+
+#### Anti-Examples
+
+* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
 
 #### Properties
 
@@ -471,10 +594,10 @@ How will Zapier fetch resources from your application?
 
 * ```
   {
-    display: { label: 'Get User', description: 'Retrieve an a user.' },
+    display: { label: 'Get User', description: 'Retrieve a user.' },
     operation: { description: 'Define how this search method will work.' }
   }
-  ```
+  ``` - _Missing required keys: key and noun_
 
 #### Properties
 
@@ -497,7 +620,37 @@ Enumerates the bulk reads your app exposes.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/BulkReadsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BulkReadsSchema.js)
 
+#### Examples
 
+* ```
+  {
+    recipes: {
+      key: 'recipes',
+      noun: 'Recipes',
+      display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
+      operation: {
+        perform: '$func$0$f$',
+        sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' }
+      }
+    }
+  }
+  ```
+
+#### Anti-Examples
+
+* ```
+  {
+    readRecipes: {
+      key: 'recipes',
+      noun: 'Recipes',
+      display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
+      operation: {
+        perform: '$func$0$f$',
+        sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' }
+      }
+    }
+  }
+  ``` - _Key must match the key of the associated BulkReadSchema_
 
 #### Properties
 
@@ -546,7 +699,7 @@ How will Zapier create a new object?
 
 #### Anti-Examples
 
-* `'abc'`
+* `'abc'` - _Must be an object_
 * ```
   {
     key: 'recipe',
@@ -554,7 +707,7 @@ How will Zapier create a new object?
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
     operation: { perform: '$func$2$f$', shouldLock: 'yes' }
   }
-  ```
+  ``` - _Invalid value for key on operation: shouldLock_
 * ```
   {
     key: 'recipe',
@@ -562,7 +715,7 @@ How will Zapier create a new object?
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
     operation: { perform: '$func$2$f$' }
   }
-  ```
+  ``` - _Missing required key on operation: sample. Note - this is valid if the resource has defined a sample._
 
 #### Properties
 
@@ -585,7 +738,51 @@ Enumerates the creates your app has available for users.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/CreatesSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/CreatesSchema.js)
 
+#### Examples
 
+* ```
+  {
+    createRecipe: {
+      key: 'createRecipe',
+      noun: 'Recipe',
+      display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+      operation: { perform: '$func$2$f$', sample: { id: 1 } }
+    }
+  }
+  ```
+* ```
+  {
+    Create_Recipe_01: {
+      key: 'Create_Recipe_01',
+      noun: 'Recipe',
+      display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+      operation: { perform: '$func$2$f$', sample: { id: 1 } }
+    }
+  }
+  ```
+
+#### Anti-Examples
+
+* ```
+  {
+    '01_Create_Recipe': {
+      key: '01_Create_Recipe',
+      noun: 'Recipe',
+      display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+      operation: { perform: '$func$2$f$', sample: { id: 1 } }
+    }
+  }
+  ``` - _Key must start with a letter_
+* ```
+  {
+    Create_Recipe: {
+      key: 'createRecipe',
+      noun: 'Recipe',
+      display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+      operation: { perform: '$func$2$f$', sample: { id: 1 } }
+    }
+  }
+  ``` - _Key must match the key field in CreateSchema_
 
 #### Properties
 
@@ -614,9 +811,9 @@ Like [/FieldsSchema](#fieldsschema) but you can provide functions to create dyna
 
 #### Anti-Examples
 
-* `[ {} ]`
-* `[ { key: 'abc', choices: {} } ]`
-* `'$func$2$f$'`
+* `[ {} ]` - _FieldSchema missing required key: key_
+* `[ { key: 'abc', choices: {} } ]` - _Invalid value for key in FieldSchema: choices (cannot be empty)_
+* `'$func$2$f$'` - _Must be an array_
 
 -----
 
@@ -636,7 +833,7 @@ An object describing a labeled choice in a static dropdown. Useful if the value 
 
 #### Anti-Examples
 
-* `{ label: 'Red', value: '#f00' }`
+* `{ label: 'Red', value: '#f00' }` - _Missing required key: sample_
 
 #### Properties
 
@@ -671,8 +868,8 @@ Yes | Yes | Array of [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
 
 #### Anti-Examples
 
-* `[ 1, 2, 3 ]`
-* `[ { a: '1', b: '2', c: '3' } ]`
+* `[ 1, 2, 3 ]` - _If an array, must be of either type string or FieldChoiceWithLabelSchema_
+* `[ { a: '1', b: '2', c: '3' } ]` - _If an array, must be of either type string or FieldChoiceWithLabelSchema_
 
 -----
 
@@ -695,9 +892,9 @@ Represents an array of fields or functions.
 
 #### Anti-Examples
 
-* `[ {} ]`
-* `[ { key: 'abc', choices: {} } ]`
-* `'$func$2$f$'`
+* `[ {} ]` - _Array item not a valid FieldSchema or FunctionSchema_
+* `[ { key: 'abc', choices: {} } ]` - _Array item not a valid FieldSchema_
+* `'$func$2$f$'` - _Must be an array_
 
 -----
 
@@ -732,22 +929,14 @@ Defines a field an app either needs as input, or gives as output. In addition to
 
 #### Anti-Examples
 
-* `{}`
-* `{ key: 'abc', choices: {} }`
-* `{ key: 'abc', choices: [] }`
-* `{ key: 'abc', choices: [ 3 ] }`
-* `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }`
-* `{ key: 'abc', choices: 'mobile' }`
-* `{ key: 'abc', type: 'loltype' }`
-* `{ key: 'abc', children: [], helpText: '' }`
-* `{ key: 'abc', children: [ { key: 'def', children: [] } ] }`
-* `{
-  key: 'abc',
-  children: [
-    { key: 'def', children: [ { key: 'dhi' } ] }
-  ]
-}`
-* `{ key: 'abc', children: [ '$func$2$f$' ] }`
+* `{}` - _Missing required key: key_
+* `{ key: 'abc', type: 'loltype' }` - _Invalid value for key: type_
+* `{ key: 'abc', choices: {} }` - _Invalid value for key: choices (cannot be empty)_
+* `{ key: 'abc', choices: [] }` - _Invalid value for key: choices (cannot be empty)_
+* `{ key: 'abc', choices: [ 3 ] }` - _Invalid value for key: choices (if an array, must be of either string or FieldChoiceWithLabelSchema)_
+* `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }` - _Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)_
+* `{ key: 'abc', choices: 'mobile' }` - _Invalid value for key: choices (must be either object or array)_
+* `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of FieldSchema)_
 
 #### Properties
 
@@ -782,6 +971,14 @@ An array or collection of fields.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/FieldsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldsSchema.js)
 
+#### Examples
+
+* `[ { key: 'abc' } ]`
+
+#### Anti-Examples
+
+* `{}` - _Must be an array_
+
 -----
 
 ## /FlatObjectSchema
@@ -805,13 +1002,9 @@ An object whose values can only be primitives
 
 #### Anti-Examples
 
-* `{ a: {}, b: 2 }`
-* `{ a: { aa: 1 }, b: 2 }`
-* `{ a: [], b: 2 }`
-* `{ a: [ 1, 2, 3 ], b: 2 }`
-* `{ '': 1 }`
-* `{ ' ': 1 }`
-* `{ '     ': 1 }`
+* `{ a: {}, b: 2 }` - _Invalid value for key: a (objects are not allowed)_
+* `{ a: [], b: 2 }` - _Invalid value for key: a (arrays are not allowed)_
+* `{ '': 1 }` - _Key cannot be empty_
 
 #### Properties
 
@@ -835,6 +1028,10 @@ A path to a file that might have content like `module.exports = (z, bundle) => [
 
 * `{ require: 'some/path/to/file.js' }`
 
+#### Anti-Examples
+
+* `{}` - _Missing required key: require_
+* `{ required: 2 }` - _Invalid value for key: required (must be of type string)_
 
 #### Properties
 
@@ -863,9 +1060,9 @@ Internal pointer to a function from the original source or the source code itsel
 
 #### Anti-Examples
 
-* `'funcy'`
-* `{ source: '1 + 2' }`
-* `{ source: '1 + 2', require: 'some/path/to/file.js' }`
+* `'funcy'` - _Invalid function reference_
+* `{ source: '1 + 2' }` - _Invalid value for key: source (must end with a `return` statement)_
+* `{ source: '1 + 2', require: 'some/path/to/file.js' }` - _Must be either /FunctionRequireSchema _or_ /FunctionSourceSchema_
 
 -----
 
@@ -886,7 +1083,7 @@ Source code like `{source: "return 1 + 2"}` which the system will wrap in a func
 
 #### Anti-Examples
 
-* `{ source: '1 + 2' }`
+* `{ source: '1 + 2' }` - _Invalid value for key: source (must end with a `return` statement._
 
 #### Properties
 
@@ -907,7 +1104,13 @@ A bank of named functions that you can use in `z.hydrate('someName')` to lazily 
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/HydratorsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/HydratorsSchema.js)
 
+#### Examples
 
+* `{ hydrateFile: { require: 'some/path/to/file.js' } }`
+
+#### Anti-Examples
+
+* `{ '12th': { require: 'some/path/to/file.js' } }` - _Invalid key (must start with a letter)_
 
 #### Properties
 
@@ -927,6 +1130,19 @@ A unique identifier for this item.
 * **Pattern** - `^[a-zA-Z]+[a-zA-Z0-9_]*$`
 * **Source Code** - [lib/schemas/KeySchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/KeySchema.js)
 
+#### Examples
+
+* `'vk'`
+* `'validKey'`
+* `'ValidKey'`
+* `'Valid_Key_2'`
+
+#### Anti-Examples
+
+* `''` - _Cannot be empty_
+* `'A'` - _Minimum of two characters_
+* `'1_Valid_Key'` - _Must start with a letter_
+
 -----
 
 ## /MiddlewaresSchema
@@ -938,6 +1154,14 @@ List of before or after middlewares. Can be an array of functions or a single fu
 * **Type** - oneOf(`array`[[/FunctionSchema](#functionschema)], [/FunctionSchema](#functionschema))
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/MiddlewaresSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/MiddlewaresSchema.js)
+
+#### Examples
+
+* `[ { require: 'some/path/to/file.js' } ]`
+
+#### Anti-Examples
+
+* `{}` - _Does not match either /FunctionSchema or an array of such_
 
 -----
 
@@ -951,7 +1175,13 @@ A representation of a HTTP redirect - you can use the `{{syntax}}` to inject aut
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/RedirectRequestSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/RedirectRequestSchema.js)
 
+#### Examples
 
+* `{ method: 'GET', url: 'https://google.com' }`
+
+#### Anti-Examples
+
+* `{ method: 'POST', url: 'https://google.com' }` - _Invalid value for key: method_
 
 #### Properties
 
@@ -982,13 +1212,7 @@ Reference a resource by key and the data it returns. In the format of: `{resourc
 
 #### Anti-Examples
 
-* `'contact'`
-* `'Contact.list.id.full_name'`
-* `'contact.id,name'`
-* `'cont,act.id,name'`
-* `'contact'`
-* `'contact.id.,,'`
-* `'contact.id.a,,'`
+* `'Contact.list.id.full_name'` - _Does not match pattern_
 
 -----
 
@@ -1002,7 +1226,13 @@ A representation of a HTTP request - you can use the `{{syntax}}` to inject auth
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/RequestSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/RequestSchema.js)
 
+#### Examples
 
+* `{ method: 'GET', url: 'https://zapier.com' }`
+
+#### Anti-Examples
+
+* `{ method: 'SUPERCHARGE', url: 'https://zapier.com' }` - _Invalid value for key: method_
 
 #### Properties
 
@@ -1056,7 +1286,7 @@ How will we find create a specific object given inputs? Will be turned into a cr
     display: { label: 'Create Tag', description: 'Create a new Tag in your account.' },
     operation: { perform: '$func$2$f$' }
   }
-  ```
+  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 #### Properties
 
@@ -1099,7 +1329,7 @@ How will we get a single object given a unique identifier/id?
     display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
     operation: { perform: { url: '$func$0$f$' } }
   }
-  ```
+  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 #### Properties
 
@@ -1146,7 +1376,7 @@ How will we get notified of new objects? Will be turned into a trigger automatic
     display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
     operation: { type: 'hook', perform: '$func$0$f$' }
   }
-  ```
+  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 #### Properties
 
@@ -1202,7 +1432,7 @@ How will we get a list of new objects? Will be turned into a trigger automatical
     },
     operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } }
   }
-  ```
+  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 #### Properties
 
@@ -1251,7 +1481,7 @@ How will we find a specific object given filters or search terms? Will be turned
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
     operation: { perform: '$func$2$f$' }
   }
-  ```
+  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 #### Properties
 
@@ -1328,29 +1558,9 @@ Represents a resource, which will in turn power triggers, searches, or creates.
     get: {
       display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
-    },
-    list: {
-      display: {
-        label: 'New Tag',
-        description: 'Trigger when a new Tag is created in your account.'
-      },
-      operation: {
-        perform: { url: 'https://fake-crm.getsandbox.com/tags' },
-        sample: { id: 385, name: 'proactive enable ROI' }
-      }
     }
   }
-  ```
-* ```
-  {
-    key: 'tag',
-    noun: 'Tag',
-    get: {
-      display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-      operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
-    }
-  }
-  ```
+  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 #### Properties
 
@@ -1378,7 +1588,53 @@ All the resources that underlie common CRUD methods powering automatically handl
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/ResourcesSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourcesSchema.js)
 
+#### Examples
 
+* ```
+  {
+    tag: {
+      key: 'tag',
+      noun: 'Tag',
+      get: {
+        display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+        operation: {
+          perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
+          sample: { id: 385, name: 'proactive enable ROI' }
+        }
+      }
+    }
+  }
+  ```
+
+#### Anti-Examples
+
+* ```
+  {
+    getTag: {
+      key: 'tag',
+      noun: 'Tag',
+      get: {
+        display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+        operation: {
+          perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
+          sample: { id: 385, name: 'proactive enable ROI' }
+        }
+      }
+    }
+  }
+  ``` - _Key does not match key for associated /ResourceSchema_
+* ```
+  {
+    tag: {
+      key: 'tag',
+      noun: 'Tag',
+      get: {
+        display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+        operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
+      }
+    }
+  }
+  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 #### Properties
 
@@ -1398,6 +1654,15 @@ An array of objects suitable for returning in perform calls.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/ResultsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResultsSchema.js)
 
+#### Examples
+
+* `[ { name: 'Alex Trebek' } ]`
+
+#### Anti-Examples
+
+* `1` - _Invalid type (must be array)_
+* `[ 1 ]` - _Invalid type (must be array of objects)_
+
 -----
 
 ## /SearchOrCreateSchema
@@ -1410,7 +1675,50 @@ Pair an existing search and a create to enable "Find or Create" functionality in
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/SearchOrCreateSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchOrCreateSchema.js)
 
+#### Examples
 
+* ```
+  {
+    key: 'searchOrCreateWidgets',
+    display: {
+      label: 'Search or Create Widgets',
+      description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+      important: true,
+      hidden: false
+    },
+    search: 'searchWidgets',
+    create: 'createWidget'
+  }
+  ```
+
+#### Anti-Examples
+
+* ```
+  {
+    key: '01_Search_or_Create_Widgets',
+    display: {
+      label: 'Search or Create Widgets',
+      description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+      important: true,
+      hidden: false
+    },
+    search: 'searchWidgets',
+    create: 'createWidget'
+  }
+  ``` - _Invalid value for key: key (must start with a letter)_
+* ```
+  {
+    key: 'searchOrCreateWidgets',
+    display: {
+      label: 'Search or Create Widgets',
+      description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+      important: true,
+      hidden: false
+    },
+    search: { require: 'path/to/some/file.js' },
+    create: { require: 'path/to/some/file.js' }
+  }
+  ``` - _Invalid values for keys: search and create (must be a string that matches the key of a registered search or create)_
 
 #### Properties
 
@@ -1433,7 +1741,41 @@ Enumerates the search-or-creates your app has available for users.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/SearchOrCreatesSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchOrCreatesSchema.js)
 
+#### Examples
 
+* ```
+  {
+    searchOrCreateWidgets: {
+      key: 'searchOrCreateWidgets',
+      display: {
+        label: 'Search or Create Widgets',
+        description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+        important: true,
+        hidden: false
+      },
+      search: 'searchWidgets',
+      create: 'createWidget'
+    }
+  }
+  ```
+
+#### Anti-Examples
+
+* ```
+  {
+    searchOrCreateWidgets: {
+      key: 'socWidgets',
+      display: {
+        label: 'Search or Create Widgets',
+        description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+        important: true,
+        hidden: false
+      },
+      search: 'searchWidgets',
+      create: 'createWidget'
+    }
+  }
+  ``` - _Key must match the key of the associated /SearchOrCreateSchema_
 
 #### Properties
 
@@ -1478,7 +1820,7 @@ How will Zapier search for existing objects?
 
 #### Anti-Examples
 
-* `'abc'`
+* `'abc'` - _Must be an object_
 * ```
   {
     key: 'recipe',
@@ -1486,7 +1828,7 @@ How will Zapier search for existing objects?
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
     operation: { perform: '$func$2$f$' }
   }
-  ```
+  ``` - _Missing required key in operation: sample. Note - this is valid if the associated resource has defined a sample._
 
 #### Properties
 
@@ -1509,7 +1851,39 @@ Enumerates the searches your app has available for users.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/SearchesSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchesSchema.js)
 
+#### Examples
 
+* ```
+  {
+    recipe: {
+      key: 'recipe',
+      noun: 'Recipe',
+      display: {
+        label: 'Find a Recipe',
+        description: 'Search for recipe by cuisine style.',
+        hidden: true
+      },
+      operation: { perform: '$func$2$f$' }
+    }
+  }
+  ```
+
+#### Anti-Examples
+
+* ```
+  {
+    searchRecipe: {
+      key: 'recipe',
+      noun: 'Recipe',
+      display: {
+        label: 'Find a Recipe',
+        description: 'Search for recipe by cuisine style.',
+        hidden: true
+      },
+      operation: { perform: '$func$2$f$' }
+    }
+  }
+  ``` - _Key must match the key of the associated /SearchSchema_
 
 #### Properties
 
@@ -1561,7 +1935,7 @@ How will Zapier get notified of new objects?
     display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
     operation: { perform: '$func$0$f$' }
   }
-  ```
+  ``` - _Missing required key from operation: sample. Note - this is valid if the Recipe resource has defined a sample._
 
 #### Properties
 
@@ -1584,7 +1958,31 @@ Enumerates the triggers your app has available for users.
 * **Pattern** - _n/a_
 * **Source Code** - [lib/schemas/TriggersSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/TriggersSchema.js)
 
+#### Examples
 
+* ```
+  {
+    newRecipe: {
+      key: 'newRecipe',
+      noun: 'Recipe',
+      display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
+      operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } }
+    }
+  }
+  ```
+
+#### Anti-Examples
+
+* ```
+  {
+    newRecipe: {
+      key: 'new_recipe',
+      noun: 'Recipe',
+      display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
+      operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } }
+    }
+  }
+  ``` - _Key must match the key on the associated /TriggerSchema_
 
 #### Properties
 
@@ -1612,10 +2010,8 @@ Represents a simplified semver string, from `0.0.0` to `999.999.999`.
 
 #### Anti-Examples
 
-* `'1.0.0.0'`
-* `'1000.0.0'`
-* `'v1.0.0'`
-* `'1.0.0-beta'`
-* `'1.0.0-beta.x.y.z'`
-* `'1.0.0-beta+12487'`
+* `'1.0.0.0'` - _Must have only 2 periods_
+* `'1000.0.0'` - _Each number can be a maximum of 3 digits_
+* `'v1.0.0'` - _No letters allowed_
+* `'1.0.0-beta'` - _undefined_
 <!-- {% endraw %} -->

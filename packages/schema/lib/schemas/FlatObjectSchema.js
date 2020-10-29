@@ -6,23 +6,6 @@ module.exports = makeSchema({
   id: '/FlatObjectSchema',
   description: 'An object whose values can only be primitives',
   type: 'object',
-  examples: [
-    { a: 1, b: 2, c: 3 },
-    { a: 1.2, b: 2.2, c: 3.3 },
-    { a: 'a', b: 'b', c: 'c' },
-    { a: true, b: true, c: false },
-    { a: 'a', b: 2, c: 3.1, d: true, e: false },
-    { 123: 'hello' },
-  ],
-  antiExamples: [
-    { a: {}, b: 2 },
-    { a: { aa: 1 }, b: 2 },
-    { a: [], b: 2 },
-    { a: [1, 2, 3], b: 2 },
-    { '': 1 },
-    { ' ': 1 },
-    { '     ': 1 },
-  ],
   patternProperties: {
     '[^\\s]+': {
       description:
@@ -36,5 +19,27 @@ module.exports = makeSchema({
       ],
     },
   },
+  examples: [
+    { a: 1, b: 2, c: 3 },
+    { a: 1.2, b: 2.2, c: 3.3 },
+    { a: 'a', b: 'b', c: 'c' },
+    { a: true, b: true, c: false },
+    { a: 'a', b: 2, c: 3.1, d: true, e: false },
+    { 123: 'hello' },
+  ],
+  antiExamples: [
+    {
+      example: { a: {}, b: 2 },
+      reason: 'Invalid value for key: a (objects are not allowed)',
+    },
+    {
+      example: { a: [], b: 2 },
+      reason: 'Invalid value for key: a (arrays are not allowed)',
+    },
+    {
+      example: { '': 1 },
+      reason: 'Key cannot be empty',
+    },
+  ],
   additionalProperties: false,
 });

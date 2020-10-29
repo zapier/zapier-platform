@@ -103,7 +103,9 @@ const makeAntiExampleSection = (Schema) => {
   return `\
 #### Anti-Examples
 
-${examples.map(formatExample).join('\n')}
+${examples.map(({ example, reason}) => (
+  `${formatExample(example)} - _${reason}_`
+)).join('\n')}
 `;
 };
 

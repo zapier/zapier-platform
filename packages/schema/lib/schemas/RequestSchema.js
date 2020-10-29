@@ -89,6 +89,21 @@ module.exports = makeSchema(
       },
     },
     additionalProperties: false,
+    examples: [
+      {
+        method: 'GET',
+        url: 'https://zapier.com',
+      },
+    ],
+    antiExamples: [
+      {
+        example: {
+          method: 'SUPERCHARGE',
+          url: 'https://zapier.com',
+        },
+        reason: 'Invalid value for key: method',
+      },
+    ],
   },
   [FlatObjectSchema, FunctionSchema]
 );

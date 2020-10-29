@@ -32,6 +32,49 @@ module.exports = makeSchema(
       },
     },
     additionalProperties: false,
+    examples: [
+      {
+        key: 'searchOrCreateWidgets',
+        display: {
+          label: 'Search or Create Widgets',
+          description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+          important: true,
+          hidden: false,
+        },
+        search: 'searchWidgets',
+        create: 'createWidget',
+      },
+    ],
+    antiExamples: [
+      {
+        example: {
+          key: '01_Search_or_Create_Widgets',
+          display: {
+            label: 'Search or Create Widgets',
+            description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+            important: true,
+            hidden: false,
+          },
+          search: 'searchWidgets',
+          create: 'createWidget',
+        },
+        reason: 'Invalid value for key: key (must start with a letter)',
+      },
+      {
+        example: {
+          key: 'searchOrCreateWidgets',
+          display: {
+            label: 'Search or Create Widgets',
+            description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+            important: true,
+            hidden: false,
+          },
+          search: { require: 'path/to/some/file.js' },
+          create: { require: 'path/to/some/file.js' },
+        },
+        reason: 'Invalid values for keys: search and create (must be a string that matches the key of a registered search or create)',
+      },
+    ],
   },
   [BasicDisplaySchema, KeySchema]
 );

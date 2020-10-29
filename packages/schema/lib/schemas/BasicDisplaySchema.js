@@ -1,28 +1,12 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
+const { SKIP_KEY } = require('../constants');
 
 module.exports = makeSchema({
   id: '/BasicDisplaySchema',
   description: 'Represents user information for a trigger, search, or create.',
   type: 'object',
-  examples: [
-    { label: 'New Thing', description: 'Gets a new thing for you.' },
-    {
-      label: 'New Thing',
-      description: 'Gets a new thing for you.',
-      directions: 'This is how you use the thing.',
-      hidden: false,
-      important: true,
-    },
-  ],
-  antiExamples: [
-    {
-      label: 'New Thing',
-      description: 'Gets a new thing for you.',
-      important: 1,
-    },
-  ],
   properties: {
     label: {
       description:
@@ -68,4 +52,41 @@ module.exports = makeSchema({
     },
   },
   additionalProperties: false,
+  examples: [
+    { hidden: true },
+    { label: 'New Thing', description: 'Gets a new thing for you.' },
+    {
+      label: 'New Thing',
+      description: 'Gets a new thing for you.',
+      directions: 'This is how you use the thing.',
+      hidden: false,
+      important: true,
+    },
+  ],
+  antiExamples: [
+    {
+      [SKIP_KEY]: true, // Cannot validate that description is required if hidden is false
+      example: {
+        label: 'New Thing',
+        hidden: false,
+      },
+      reason: 'Missing required key: description',
+    },
+    {
+      [SKIP_KEY]: true, // Cannot validate that description is required if hidden is false
+      example: {
+        description: 'Gets a new thing for you.',
+        hidden: false,
+      },
+      reason: 'Missing required key: label',
+    },
+    {
+      example: {
+        label: 'New Thing',
+        description: 'Gets a new thing for you.',
+        important: 1,
+      },
+      reason: 'Invalid value for key: important',
+    },
+  ],
 });

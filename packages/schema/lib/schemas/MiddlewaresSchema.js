@@ -15,4 +15,13 @@ module.exports = makeSchema({
     { $ref: FunctionSchema.id },
   ],
   additionalProperties: false,
-});
+  examples: [
+    [{ require: 'some/path/to/file.js' }],
+  ],
+  antiExamples: [
+    {
+      example: {},
+      reason: 'Does not match either /FunctionSchema or an array of such',
+    },
+  ],
+}, [FunctionSchema]);

@@ -6,13 +6,7 @@ module.exports = makeSchema({
   id: '/FunctionSourceSchema',
   description:
     'Source code like `{source: "return 1 + 2"}` which the system will wrap in a function for you.',
-  examples: [
-    { source: 'return 1 + 2' },
-    { args: ['x', 'y'], source: 'return x + y;' },
-  ],
-  antiExamples: [{ source: '1 + 2' }],
   type: 'object',
-  additionalProperties: false,
   required: ['source'],
   properties: {
     source: {
@@ -28,4 +22,15 @@ module.exports = makeSchema({
         "Function signature. Defaults to `['z', 'bundle']` if not specified.",
     },
   },
+  additionalProperties: false,
+  examples: [
+    { source: 'return 1 + 2' },
+    { args: ['x', 'y'], source: 'return x + y;' },
+  ],
+  antiExamples: [
+    {
+      example: { source: '1 + 2' },
+      reason: 'Invalid value for key: source (must end with a `return` statement.',
+    },
+  ],
 });

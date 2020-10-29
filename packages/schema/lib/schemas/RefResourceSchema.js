@@ -7,6 +7,8 @@ module.exports = makeSchema({
   description:
     'Reference a resource by key and the data it returns. In the format of: `{resource_key}.{foreign_key}(.{human_label_key})`.',
   type: 'string',
+  pattern:
+    '^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*)?$',
   examples: [
     'contact.id',
     'contact.id.name',
@@ -14,14 +16,9 @@ module.exports = makeSchema({
     'contact.id.first_name,last_name,email',
   ],
   antiExamples: [
-    'contact',
-    'Contact.list.id.full_name',
-    'contact.id,name',
-    'cont,act.id,name',
-    'contact',
-    'contact.id.,,',
-    'contact.id.a,,',
+    {
+      example: 'Contact.list.id.full_name',
+      reason: 'Does not match pattern',
+    },
   ],
-  pattern:
-    '^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*)?$',
 });
