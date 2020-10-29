@@ -163,13 +163,11 @@ ${Schema.schema.description || NO_DESCRIPTION}
 * **Type** - ${typeOrLink(Schema.schema)}${Schema.schema.pattern ? `
 * **Pattern** - ${quoteOrNa(Schema.schema.pattern)}
 ` : ''}
-* **Source Code** - [lib/schemas${Schema.id}.js](${links.makeCodeLink(
-    Schema.id
-  )})
+* [**Source Code**](${links.makeCodeLink(Schema.id)})
 
+${makePropertiesSection(Schema)}
 ${makeExampleSection(Schema)}
 ${makeAntiExampleSection(Schema)}
-${makePropertiesSection(Schema)}
 `.trim();
 };
 

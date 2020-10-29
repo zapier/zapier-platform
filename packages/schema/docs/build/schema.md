@@ -71,8 +71,13 @@ Codifies high-level options for your app.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/AppFlagsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AppFlagsSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AppFlagsSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`skipHttpPatch` | no | `boolean` | By default, Zapier patches the core `http` module so that all requests (including those from 3rd-party SDKs) can be logged. Set this to true if you're seeing issues using an SDK (such as AWS).
 
 #### Examples
 
@@ -85,12 +90,6 @@ Codifies high-level options for your app.
 * `{ foo: true }` - _Invalid key._
 * `{ skipHttpPatch: 'yes' }` - _Invalid value._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`skipHttpPatch` | no | `boolean` | By default, Zapier patches the core `http` module so that all requests (including those from 3rd-party SDKs) can be logged. Set this to true if you're seeing issues using an SDK (such as AWS).
-
 -----
 
 ## /AppSchema
@@ -100,17 +99,7 @@ Represents a full app.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/AppSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AppSchema.js)
-
-#### Examples
-
-* `{ version: '1.0.0', platformVersion: '10.1.1' }`
-
-#### Anti-Examples
-
-* `{ version: 'v1.0.0', platformVersion: '10.1.1' }` - _Invalid value for version._
-* `{ version: '1.0.0', platformVersion: 'v10.1.1' }` - _Invalid value for platformVersion._
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AppSchema.js)
 
 #### Properties
 
@@ -133,6 +122,17 @@ Key | Required | Type | Description
 `searchOrCreates` | no | [/SearchOrCreatesSchema](#searchorcreatesschema) | All the search-or-create combos for your app. You can create your own here, or Zapier will automatically register any from resources that define a search, a create, and a get (or define a searchOrCreate directly). Register non-resource search-or-creates here as well.
 `flags` | no | [/AppFlagsSchema](#appflagsschema) | Top-level app options
 
+
+
+#### Examples
+
+* `{ version: '1.0.0', platformVersion: '10.1.1' }`
+
+#### Anti-Examples
+
+* `{ version: 'v1.0.0', platformVersion: '10.1.1' }` - _Invalid value for version._
+* `{ version: '1.0.0', platformVersion: 'v10.1.1' }` - _Invalid value for platformVersion._
+
 -----
 
 ## /AuthenticationBasicConfigSchema
@@ -142,8 +142,8 @@ Config for Basic Authentication. No extra properties are required to setup Basic
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/AuthenticationBasicConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationBasicConfigSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationBasicConfigSchema.js)
+
 
 #### Examples
 
@@ -162,8 +162,8 @@ Config for custom authentication (like API keys). No extra properties are requir
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/AuthenticationCustomConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationCustomConfigSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationCustomConfigSchema.js)
+
 
 #### Examples
 
@@ -182,8 +182,8 @@ Config for Digest Authentication. No extra properties are required to setup Dige
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/AuthenticationDigestConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationDigestConfigSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationDigestConfigSchema.js)
+
 
 #### Examples
 
@@ -202,8 +202,15 @@ Config for OAuth1 authentication.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/AuthenticationOAuth1ConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationOAuth1ConfigSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationOAuth1ConfigSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`getRequestToken` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define where Zapier will acquire a request token which is used for the rest of the three legged authentication process.
+`authorizeUrl` | **yes** | oneOf([/RedirectRequestSchema](#redirectrequestschema), [/FunctionSchema](#functionschema)) | Define where Zapier will redirect the user to authorize our app. Typically, you should append an `oauth_token` querystring parameter to the request.
+`getAccessToken` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier fetches an access token from the API
 
 #### Examples
 
@@ -224,14 +231,6 @@ Config for OAuth1 authentication.
   }
   ``` - _Missing required key._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`getRequestToken` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define where Zapier will acquire a request token which is used for the rest of the three legged authentication process.
-`authorizeUrl` | **yes** | oneOf([/RedirectRequestSchema](#redirectrequestschema), [/FunctionSchema](#functionschema)) | Define where Zapier will redirect the user to authorize our app. Typically, you should append an `oauth_token` querystring parameter to the request.
-`getAccessToken` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier fetches an access token from the API
-
 -----
 
 ## /AuthenticationOAuth2ConfigSchema
@@ -241,8 +240,17 @@ Config for OAuth2 authentication.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/AuthenticationOAuth2ConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationOAuth2ConfigSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationOAuth2ConfigSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`authorizeUrl` | **yes** | oneOf([/RedirectRequestSchema](#redirectrequestschema), [/FunctionSchema](#functionschema)) | Define where Zapier will redirect the user to authorize our app. Note: we append the redirect URL and state parameters to return value of this function.
+`getAccessToken` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier fetches an access token from the API
+`refreshAccessToken` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier will refresh the access token from the API
+`scope` | no | `string` | What scope should Zapier request?
+`autoRefresh` | no | `boolean` | Should Zapier invoke `refreshAccessToken` when we receive an error for a 401 response?
 
 #### Examples
 
@@ -266,16 +274,6 @@ Config for OAuth2 authentication.
 
 * `{ authorizeUrl: { require: 'some/path/to/file.js' } }` - _Missing required key getAccessToken._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`authorizeUrl` | **yes** | oneOf([/RedirectRequestSchema](#redirectrequestschema), [/FunctionSchema](#functionschema)) | Define where Zapier will redirect the user to authorize our app. Note: we append the redirect URL and state parameters to return value of this function.
-`getAccessToken` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier fetches an access token from the API
-`refreshAccessToken` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier will refresh the access token from the API
-`scope` | no | `string` | What scope should Zapier request?
-`autoRefresh` | no | `boolean` | Should Zapier invoke `refreshAccessToken` when we receive an error for a 401 response?
-
 -----
 
 ## /AuthenticationSchema
@@ -285,23 +283,7 @@ Represents authentication schemes.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/AuthenticationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationSchema.js)
-
-#### Examples
-
-* `{ type: 'basic', test: '$func$2$f$' }`
-* `{ type: 'custom', test: '$func$2$f$', fields: [ { key: 'abc' } ] }`
-* `{ type: 'custom', test: '$func$2$f$', connectionLabel: '{{bundle.inputData.abc}}' }`
-* `{ type: 'custom', test: '$func$2$f$', connectionLabel: '$func$2$f$' }`
-* `{ type: 'custom', test: '$func$2$f$', connectionLabel: { url: 'abc' } }`
-
-#### Anti-Examples
-
-* `{}` - _Missing required keys: type and test_
-* `'$func$2$f$'` - _Must be object_
-* `{ type: 'unknown', test: '$func$2$f$' }` - _Invalid value for key: type_
-* `{ type: 'custom', test: '$func$2$f$', fields: '$func$2$f$' }` - _Invalid value for key: fields_
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationSchema.js)
 
 #### Properties
 
@@ -318,6 +300,21 @@ Key | Required | Type | Description
 `oauth2Config` | no | [/AuthenticationOAuth2ConfigSchema](#authenticationoauth2configschema) | _No description given._
 `sessionConfig` | no | [/AuthenticationSessionConfigSchema](#authenticationsessionconfigschema) | _No description given._
 
+#### Examples
+
+* `{ type: 'basic', test: '$func$2$f$' }`
+* `{ type: 'custom', test: '$func$2$f$', fields: [ { key: 'abc' } ] }`
+* `{ type: 'custom', test: '$func$2$f$', connectionLabel: '{{bundle.inputData.abc}}' }`
+* `{ type: 'custom', test: '$func$2$f$', connectionLabel: '$func$2$f$' }`
+* `{ type: 'custom', test: '$func$2$f$', connectionLabel: { url: 'abc' } }`
+
+#### Anti-Examples
+
+* `{}` - _Missing required keys: type and test_
+* `'$func$2$f$'` - _Must be object_
+* `{ type: 'unknown', test: '$func$2$f$' }` - _Invalid value for key: type_
+* `{ type: 'custom', test: '$func$2$f$', fields: '$func$2$f$' }` - _Invalid value for key: fields_
+
 -----
 
 ## /AuthenticationSessionConfigSchema
@@ -327,8 +324,13 @@ Config for session authentication.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/AuthenticationSessionConfigSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationSessionConfigSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/AuthenticationSessionConfigSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier fetches the additional authData needed to make API calls.
 
 #### Examples
 
@@ -337,12 +339,6 @@ Config for session authentication.
 #### Anti-Examples
 
 * `{}` - _Missing required key: perform_
-
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier fetches the additional authData needed to make API calls.
 
 -----
 
@@ -353,16 +349,7 @@ Represents the fundamental mechanics of a search/create.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/BasicActionOperationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicActionOperationSchema.js)
-
-#### Examples
-
-* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
-
-#### Anti-Examples
-
-* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicActionOperationSchema.js)
 
 #### Properties
 
@@ -376,6 +363,14 @@ Key | Required | Type | Description
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 
+#### Examples
+
+* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
+
+#### Anti-Examples
+
+* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
+
 -----
 
 ## /BasicCreateActionOperationSchema
@@ -385,16 +380,7 @@ Represents the fundamental mechanics of a create.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/BasicCreateActionOperationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicCreateActionOperationSchema.js)
-
-#### Examples
-
-* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
-
-#### Anti-Examples
-
-* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicCreateActionOperationSchema.js)
 
 #### Properties
 
@@ -409,6 +395,14 @@ Key | Required | Type | Description
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `shouldLock` | no | `boolean` | Should this action be performed one at a time (avoid concurrency)?
 
+#### Examples
+
+* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
+
+#### Anti-Examples
+
+* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
+
 -----
 
 ## /BasicDisplaySchema
@@ -418,8 +412,17 @@ Represents user information for a trigger, search, or create.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/BasicDisplaySchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicDisplaySchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicDisplaySchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`label` | **yes** (with exceptions, see description) | `string` | A short label like "New Record" or "Create Record in Project". Optional if `hidden` is true.
+`description` | **yes** (with exceptions, see description) | `string` | A description of what this trigger, search, or create does. Optional if `hidden` is true.
+`directions` | no | `string` | A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application. Only evaluated for static webhooks.
+`important` | no | `boolean` | Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.
+`hidden` | no | `boolean` | Should this operation be unselectable by users?
 
 #### Examples
 
@@ -441,16 +444,6 @@ Represents user information for a trigger, search, or create.
 * `{ description: 'Gets a new thing for you.', hidden: false }` - _Missing required key: label_
 * `{ label: 'New Thing', description: 'Gets a new thing for you.', important: 1 }` - _Invalid value for key: important_
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`label` | **yes** (with exceptions, see description) | `string` | A short label like "New Record" or "Create Record in Project". Optional if `hidden` is true.
-`description` | **yes** (with exceptions, see description) | `string` | A description of what this trigger, search, or create does. Optional if `hidden` is true.
-`directions` | no | `string` | A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application. Only evaluated for static webhooks.
-`important` | no | `boolean` | Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.
-`hidden` | no | `boolean` | Should this operation be unselectable by users?
-
 -----
 
 ## /BasicHookOperationSchema
@@ -460,8 +453,21 @@ Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. D
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/BasicHookOperationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicHookOperationSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicHookOperationSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`type` | **yes** (with exceptions, see description) | `string` in (`'hook'`) | Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it's optional.
+`resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
+`perform` | **yes** | [/FunctionSchema](#functionschema) | A function that processes the inbound webhook request.
+`performList` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
+`performSubscribe` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Takes a URL and any necessary data from the user and subscribes. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
+`performUnsubscribe` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Takes a URL and data from a previous subscribe call and unsubscribes. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
+`inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
+`outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
+`sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 
 #### Examples
 
@@ -488,20 +494,6 @@ Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. D
   }
   ``` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`type` | **yes** (with exceptions, see description) | `string` in (`'hook'`) | Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it's optional.
-`resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
-`perform` | **yes** | [/FunctionSchema](#functionschema) | A function that processes the inbound webhook request.
-`performList` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
-`performSubscribe` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Takes a URL and any necessary data from the user and subscribes. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
-`performUnsubscribe` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Takes a URL and data from a previous subscribe call and unsubscribes. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
-`inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
-`outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
-`sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-
 -----
 
 ## /BasicOperationSchema
@@ -511,16 +503,7 @@ Represents the fundamental mechanics of triggers, searches, or creates.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/BasicOperationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicOperationSchema.js)
-
-#### Examples
-
-* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
-
-#### Anti-Examples
-
-* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicOperationSchema.js)
 
 #### Properties
 
@@ -532,6 +515,14 @@ Key | Required | Type | Description
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 
+#### Examples
+
+* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
+
+#### Anti-Examples
+
+* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
+
 -----
 
 ## /BasicPollingOperationSchema
@@ -541,16 +532,7 @@ Represents the fundamental mechanics of a trigger.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/BasicPollingOperationSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicPollingOperationSchema.js)
-
-#### Examples
-
-* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
-
-#### Anti-Examples
-
-* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BasicPollingOperationSchema.js)
 
 #### Properties
 
@@ -564,6 +546,14 @@ Key | Required | Type | Description
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 
+#### Examples
+
+* `{ perform: { require: 'some/path/to/file.js' }, sample: { id: 42, name: 'Hooli' } }`
+
+#### Anti-Examples
+
+* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
+
 -----
 
 ## /BulkReadSchema
@@ -573,8 +563,16 @@ How will Zapier fetch resources from your application?
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/BulkReadSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BulkReadSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BulkReadSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify a record.
+`noun` | **yes** | `string` | A noun for this read that completes the sentence "reads all of the XXX".
+`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this read bulk.
+`operation` | **yes** | [/BasicActionOperationSchema](#basicactionoperationschema) | Powers the functionality for this read bulk.
 
 #### Examples
 
@@ -599,15 +597,6 @@ How will Zapier fetch resources from your application?
   }
   ``` - _Missing required keys: key and noun_
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify a record.
-`noun` | **yes** | `string` | A noun for this read that completes the sentence "reads all of the XXX".
-`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this read bulk.
-`operation` | **yes** | [/BasicActionOperationSchema](#basicactionoperationschema) | Powers the functionality for this read bulk.
-
 -----
 
 ## /BulkReadsSchema
@@ -617,8 +606,13 @@ Enumerates the bulk reads your app exposes.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/BulkReadsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BulkReadsSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/BulkReadsSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/BulkReadSchema](#bulkreadschema) | Any unique key can be used and its values will be validated against the BulkReadSchema.
 
 #### Examples
 
@@ -652,12 +646,6 @@ Enumerates the bulk reads your app exposes.
   }
   ``` - _Key must match the key of the associated BulkReadSchema_
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/BulkReadSchema](#bulkreadschema) | Any unique key can be used and its values will be validated against the BulkReadSchema.
-
 -----
 
 ## /CreateSchema
@@ -667,8 +655,16 @@ How will Zapier create a new object?
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/CreateSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/CreateSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/CreateSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this create.
+`noun` | **yes** | `string` | A noun for this create that completes the sentence "creates a new XXX".
+`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this create.
+`operation` | **yes** | [/BasicCreateActionOperationSchema](#basiccreateactionoperationschema) | Powers the functionality for this create.
 
 #### Examples
 
@@ -717,15 +713,6 @@ How will Zapier create a new object?
   }
   ``` - _Missing required key on operation: sample. Note - this is valid if the resource has defined a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this create.
-`noun` | **yes** | `string` | A noun for this create that completes the sentence "creates a new XXX".
-`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this create.
-`operation` | **yes** | [/BasicCreateActionOperationSchema](#basiccreateactionoperationschema) | Powers the functionality for this create.
-
 -----
 
 ## /CreatesSchema
@@ -735,8 +722,13 @@ Enumerates the creates your app has available for users.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/CreatesSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/CreatesSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/CreatesSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/CreateSchema](#createschema) | Any unique key can be used and its values will be validated against the CreateSchema.
 
 #### Examples
 
@@ -784,12 +776,6 @@ Enumerates the creates your app has available for users.
   }
   ``` - _Key must match the key field in CreateSchema_
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/CreateSchema](#createschema) | Any unique key can be used and its values will be validated against the CreateSchema.
-
 -----
 
 ## /DynamicFieldsSchema
@@ -799,8 +785,8 @@ Like [/FieldsSchema](#fieldsschema) but you can provide functions to create dyna
 #### Details
 
 * **Type** - [/FieldOrFunctionSchema](#fieldorfunctionschema)
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/DynamicFieldsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/DynamicFieldsSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/DynamicFieldsSchema.js)
+
 
 #### Examples
 
@@ -824,16 +810,7 @@ An object describing a labeled choice in a static dropdown. Useful if the value 
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/FieldChoiceWithLabelSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldChoiceWithLabelSchema.js)
-
-#### Examples
-
-* `{ label: 'Red', sample: '#f00', value: '#f00' }`
-
-#### Anti-Examples
-
-* `{ label: 'Red', value: '#f00' }` - _Missing required key: sample_
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldChoiceWithLabelSchema.js)
 
 #### Properties
 
@@ -842,6 +819,14 @@ Key | Required | Type | Description
 `value` | **yes** | `string` | The actual value that is sent into the Zap. Should match sample exactly.
 `sample` | **yes** | `string` | Displayed as light grey text in the editor. It's important that the value match the sample. Otherwise, the actual value won't match what the user picked, which is confusing.
 `label` | **yes** | `string` | A human readable label for this value.
+
+#### Examples
+
+* `{ label: 'Red', sample: '#f00', value: '#f00' }`
+
+#### Anti-Examples
+
+* `{ label: 'Red', value: '#f00' }` - _Missing required key: sample_
 
 -----
 
@@ -858,8 +843,8 @@ Yes | Yes | Array of [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
 #### Details
 
 * **Type** - oneOf(`object`, `array`[oneOf(`string`, [/FieldChoiceWithLabelSchema](#fieldchoicewithlabelschema))])
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/FieldChoicesSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldChoicesSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldChoicesSchema.js)
+
 
 #### Examples
 
@@ -880,8 +865,8 @@ Represents an array of fields or functions.
 #### Details
 
 * **Type** - `array`[oneOf([/FieldSchema](#fieldschema), [/FunctionSchema](#functionschema))]
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/FieldOrFunctionSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldOrFunctionSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldOrFunctionSchema.js)
+
 
 #### Examples
 
@@ -915,28 +900,7 @@ Defines a field an app either needs as input, or gives as output. In addition to
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/FieldSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldSchema.js)
-
-#### Examples
-
-* `{ key: 'abc' }`
-* `{ key: 'abc', choices: { mobile: 'Mobile Phone' } }`
-* `{ key: 'abc', choices: [ 'first', 'second', 'third' ] }`
-* `{ key: 'abc', choices: [ { label: 'Red', sample: '#f00', value: '#f00' } ] }`
-* `{ key: 'abc', children: [ { key: 'abc' } ] }`
-* `{ key: 'abc', type: 'integer', helpText: 'neat' }`
-
-#### Anti-Examples
-
-* `{}` - _Missing required key: key_
-* `{ key: 'abc', type: 'loltype' }` - _Invalid value for key: type_
-* `{ key: 'abc', choices: {} }` - _Invalid value for key: choices (cannot be empty)_
-* `{ key: 'abc', choices: [] }` - _Invalid value for key: choices (cannot be empty)_
-* `{ key: 'abc', choices: [ 3 ] }` - _Invalid value for key: choices (if an array, must be of either string or FieldChoiceWithLabelSchema)_
-* `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }` - _Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)_
-* `{ key: 'abc', choices: 'mobile' }` - _Invalid value for key: choices (must be either object or array)_
-* `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of FieldSchema)_
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldSchema.js)
 
 #### Properties
 
@@ -959,6 +923,26 @@ Key | Required | Type | Description
 `altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?
 `inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
 
+#### Examples
+
+* `{ key: 'abc' }`
+* `{ key: 'abc', choices: { mobile: 'Mobile Phone' } }`
+* `{ key: 'abc', choices: [ 'first', 'second', 'third' ] }`
+* `{ key: 'abc', choices: [ { label: 'Red', sample: '#f00', value: '#f00' } ] }`
+* `{ key: 'abc', children: [ { key: 'abc' } ] }`
+* `{ key: 'abc', type: 'integer', helpText: 'neat' }`
+
+#### Anti-Examples
+
+* `{}` - _Missing required key: key_
+* `{ key: 'abc', type: 'loltype' }` - _Invalid value for key: type_
+* `{ key: 'abc', choices: {} }` - _Invalid value for key: choices (cannot be empty)_
+* `{ key: 'abc', choices: [] }` - _Invalid value for key: choices (cannot be empty)_
+* `{ key: 'abc', choices: [ 3 ] }` - _Invalid value for key: choices (if an array, must be of either string or FieldChoiceWithLabelSchema)_
+* `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }` - _Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)_
+* `{ key: 'abc', choices: 'mobile' }` - _Invalid value for key: choices (must be either object or array)_
+* `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of FieldSchema)_
+
 -----
 
 ## /FieldsSchema
@@ -968,8 +952,8 @@ An array or collection of fields.
 #### Details
 
 * **Type** - `array`[[/FieldSchema](#fieldschema)]
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/FieldsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldsSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FieldsSchema.js)
+
 
 #### Examples
 
@@ -988,8 +972,13 @@ An object whose values can only be primitives
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/FlatObjectSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FlatObjectSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FlatObjectSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`[^\s]+` | no | anyOf(`null`, `string`, `integer`, `number`, `boolean`) | Any key may exist in this flat object as long as its values are simple.
 
 #### Examples
 
@@ -1006,12 +995,6 @@ An object whose values can only be primitives
 * `{ a: [], b: 2 }` - _Invalid value for key: a (arrays are not allowed)_
 * `{ '': 1 }` - _Key cannot be empty_
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`[^\s]+` | no | anyOf(`null`, `string`, `integer`, `number`, `boolean`) | Any key may exist in this flat object as long as its values are simple.
-
 -----
 
 ## /FunctionRequireSchema
@@ -1021,8 +1004,13 @@ A path to a file that might have content like `module.exports = (z, bundle) => [
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/FunctionRequireSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FunctionRequireSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FunctionRequireSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`require` | **yes** | `string` | _No description given._
 
 #### Examples
 
@@ -1033,12 +1021,6 @@ A path to a file that might have content like `module.exports = (z, bundle) => [
 * `{}` - _Missing required key: require_
 * `{ required: 2 }` - _Invalid value for key: required (must be of type string)_
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`require` | **yes** | `string` | _No description given._
-
 -----
 
 ## /FunctionSchema
@@ -1048,8 +1030,8 @@ Internal pointer to a function from the original source or the source code itsel
 #### Details
 
 * **Type** - oneOf(`string`, [/FunctionRequireSchema](#functionrequireschema), [/FunctionSourceSchema](#functionsourceschema))
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/FunctionSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FunctionSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FunctionSchema.js)
+
 
 #### Examples
 
@@ -1073,8 +1055,14 @@ Source code like `{source: "return 1 + 2"}` which the system will wrap in a func
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/FunctionSourceSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FunctionSourceSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/FunctionSourceSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`source` | **yes** | `string` | JavaScript code for the function body. This must end with a `return` statement.
+`args` | no | `array`[`string`] | Function signature. Defaults to `['z', 'bundle']` if not specified.
 
 #### Examples
 
@@ -1085,13 +1073,6 @@ Source code like `{source: "return 1 + 2"}` which the system will wrap in a func
 
 * `{ source: '1 + 2' }` - _Invalid value for key: source (must end with a `return` statement._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`source` | **yes** | `string` | JavaScript code for the function body. This must end with a `return` statement.
-`args` | no | `array`[`string`] | Function signature. Defaults to `['z', 'bundle']` if not specified.
-
 -----
 
 ## /HydratorsSchema
@@ -1101,8 +1082,13 @@ A bank of named functions that you can use in `z.hydrate('someName')` to lazily 
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/HydratorsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/HydratorsSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/HydratorsSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`^[a-zA-Z]+[a-zA-Z0-9]*$` | no | [/FunctionSchema](#functionschema) | Any unique key can be used in `z.hydrate('uniqueKeyHere')`.
 
 #### Examples
 
@@ -1111,12 +1097,6 @@ A bank of named functions that you can use in `z.hydrate('someName')` to lazily 
 #### Anti-Examples
 
 * `{ '12th': { require: 'some/path/to/file.js' } }` - _Invalid key (must start with a letter)_
-
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`^[a-zA-Z]+[a-zA-Z0-9]*$` | no | [/FunctionSchema](#functionschema) | Any unique key can be used in `z.hydrate('uniqueKeyHere')`.
 
 -----
 
@@ -1128,7 +1108,9 @@ A unique identifier for this item.
 
 * **Type** - `string`
 * **Pattern** - `^[a-zA-Z]+[a-zA-Z0-9_]*$`
-* **Source Code** - [lib/schemas/KeySchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/KeySchema.js)
+
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/KeySchema.js)
+
 
 #### Examples
 
@@ -1152,11 +1134,12 @@ List of before or after middlewares. Can be an array of functions or a single fu
 #### Details
 
 * **Type** - oneOf(`array`[[/FunctionSchema](#functionschema)], [/FunctionSchema](#functionschema))
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/MiddlewaresSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/MiddlewaresSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/MiddlewaresSchema.js)
+
 
 #### Examples
 
+* `{ require: 'some/path/to/file.js' }`
 * `[ { require: 'some/path/to/file.js' } ]`
 
 #### Anti-Examples
@@ -1172,16 +1155,7 @@ A representation of a HTTP redirect - you can use the `{{syntax}}` to inject aut
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/RedirectRequestSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/RedirectRequestSchema.js)
-
-#### Examples
-
-* `{ method: 'GET', url: 'https://google.com' }`
-
-#### Anti-Examples
-
-* `{ method: 'POST', url: 'https://google.com' }` - _Invalid value for key: method_
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/RedirectRequestSchema.js)
 
 #### Properties
 
@@ -1190,6 +1164,14 @@ Key | Required | Type | Description
 `method` | no | `string` in (`'GET'`) | The HTTP method for the request.
 `url` | no | `string` | A URL for the request (we will parse the querystring and merge with params). Keys and values will not be re-encoded.
 `params` | no | [/FlatObjectSchema](#flatobjectschema) | A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.
+
+#### Examples
+
+* `{ method: 'GET', url: 'https://google.com' }`
+
+#### Anti-Examples
+
+* `{ method: 'POST', url: 'https://google.com' }` - _Invalid value for key: method_
 
 -----
 
@@ -1201,7 +1183,9 @@ Reference a resource by key and the data it returns. In the format of: `{resourc
 
 * **Type** - `string`
 * **Pattern** - `^[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*)?$`
-* **Source Code** - [lib/schemas/RefResourceSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/RefResourceSchema.js)
+
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/RefResourceSchema.js)
+
 
 #### Examples
 
@@ -1223,16 +1207,7 @@ A representation of a HTTP request - you can use the `{{syntax}}` to inject auth
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/RequestSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/RequestSchema.js)
-
-#### Examples
-
-* `{ method: 'GET', url: 'https://zapier.com' }`
-
-#### Anti-Examples
-
-* `{ method: 'SUPERCHARGE', url: 'https://zapier.com' }` - _Invalid value for key: method_
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/RequestSchema.js)
 
 #### Properties
 
@@ -1248,6 +1223,14 @@ Key | Required | Type | Description
 `serializeValueForCurlies` | no | [/FunctionSchema](#functionschema) | A function to customize how to serialize a value for curlies `{{var}}` in the request object. By default, when this is unspecified, the request client only replaces curlies where variables are strings, and would throw an error for non-strings. The function should accepts a single argument as the value to be serialized and return the string representation of the argument.
 `skipThrowForStatus` | no | `boolean` | If `true`, don't throw an exception for response 400 <= status < 600 automatically before resolving with the response. Defaults to `false`.
 
+#### Examples
+
+* `{ method: 'GET', url: 'https://zapier.com' }`
+
+#### Anti-Examples
+
+* `{ method: 'SUPERCHARGE', url: 'https://zapier.com' }` - _Invalid value for key: method_
+
 -----
 
 ## /ResourceMethodCreateSchema
@@ -1257,8 +1240,14 @@ How will we find create a specific object given inputs? Will be turned into a cr
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/ResourceMethodCreateSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceMethodCreateSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceMethodCreateSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Define how this create method will be exposed in the UI.
+`operation` | **yes** | [/BasicActionOperationSchema](#basicactionoperationschema) | Define how this create method will work.
 
 #### Examples
 
@@ -1288,13 +1277,6 @@ How will we find create a specific object given inputs? Will be turned into a cr
   }
   ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Define how this create method will be exposed in the UI.
-`operation` | **yes** | [/BasicActionOperationSchema](#basicactionoperationschema) | Define how this create method will work.
-
 -----
 
 ## /ResourceMethodGetSchema
@@ -1304,8 +1286,14 @@ How will we get a single object given a unique identifier/id?
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/ResourceMethodGetSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceMethodGetSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceMethodGetSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Define how this get method will be exposed in the UI.
+`operation` | **yes** | [/BasicOperationSchema](#basicoperationschema) | Define how this get method will work.
 
 #### Examples
 
@@ -1331,13 +1319,6 @@ How will we get a single object given a unique identifier/id?
   }
   ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Define how this get method will be exposed in the UI.
-`operation` | **yes** | [/BasicOperationSchema](#basicoperationschema) | Define how this get method will work.
-
 -----
 
 ## /ResourceMethodHookSchema
@@ -1347,8 +1328,14 @@ How will we get notified of new objects? Will be turned into a trigger automatic
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/ResourceMethodHookSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceMethodHookSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceMethodHookSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Define how this hook/trigger method will be exposed in the UI.
+`operation` | **yes** | [/BasicHookOperationSchema](#basichookoperationschema) | Define how this hook/trigger method will work.
 
 #### Examples
 
@@ -1378,13 +1365,6 @@ How will we get notified of new objects? Will be turned into a trigger automatic
   }
   ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Define how this hook/trigger method will be exposed in the UI.
-`operation` | **yes** | [/BasicHookOperationSchema](#basichookoperationschema) | Define how this hook/trigger method will work.
-
 -----
 
 ## /ResourceMethodListSchema
@@ -1394,8 +1374,14 @@ How will we get a list of new objects? Will be turned into a trigger automatical
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/ResourceMethodListSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceMethodListSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceMethodListSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Define how this list/trigger method will be exposed in the UI.
+`operation` | **yes** | [/BasicPollingOperationSchema](#basicpollingoperationschema) | Define how this list/trigger method will work.
 
 #### Examples
 
@@ -1434,13 +1420,6 @@ How will we get a list of new objects? Will be turned into a trigger automatical
   }
   ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Define how this list/trigger method will be exposed in the UI.
-`operation` | **yes** | [/BasicPollingOperationSchema](#basicpollingoperationschema) | Define how this list/trigger method will work.
-
 -----
 
 ## /ResourceMethodSearchSchema
@@ -1450,8 +1429,14 @@ How will we find a specific object given filters or search terms? Will be turned
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/ResourceMethodSearchSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceMethodSearchSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceMethodSearchSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Define how this search method will be exposed in the UI.
+`operation` | **yes** | [/BasicActionOperationSchema](#basicactionoperationschema) | Define how this search method will work.
 
 #### Examples
 
@@ -1483,13 +1468,6 @@ How will we find a specific object given filters or search terms? Will be turned
   }
   ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Define how this search method will be exposed in the UI.
-`operation` | **yes** | [/BasicActionOperationSchema](#basicactionoperationschema) | Define how this search method will work.
-
 -----
 
 ## /ResourceSchema
@@ -1499,8 +1477,21 @@ Represents a resource, which will in turn power triggers, searches, or creates.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/ResourceSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourceSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this resource.
+`noun` | **yes** | `string` | A noun for this resource that completes the sentence "create a new XXX".
+`get` | no | [/ResourceMethodGetSchema](#resourcemethodgetschema) | How will we get a single object given a unique identifier/id?
+`hook` | no | [/ResourceMethodHookSchema](#resourcemethodhookschema) | How will we get notified of new objects? Will be turned into a trigger automatically.
+`list` | no | [/ResourceMethodListSchema](#resourcemethodlistschema) | How will we get a list of new objects? Will be turned into a trigger automatically.
+`search` | no | [/ResourceMethodSearchSchema](#resourcemethodsearchschema) | How will we find a specific object given filters or search terms? Will be turned into a search automatically.
+`create` | no | [/ResourceMethodCreateSchema](#resourcemethodcreateschema) | How will we find create a specific object given inputs? Will be turned into a create automatically.
+`outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return?
+`sample` | no | `object` | What does a sample of data look like?
 
 #### Examples
 
@@ -1562,20 +1553,6 @@ Represents a resource, which will in turn power triggers, searches, or creates.
   }
   ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this resource.
-`noun` | **yes** | `string` | A noun for this resource that completes the sentence "create a new XXX".
-`get` | no | [/ResourceMethodGetSchema](#resourcemethodgetschema) | How will we get a single object given a unique identifier/id?
-`hook` | no | [/ResourceMethodHookSchema](#resourcemethodhookschema) | How will we get notified of new objects? Will be turned into a trigger automatically.
-`list` | no | [/ResourceMethodListSchema](#resourcemethodlistschema) | How will we get a list of new objects? Will be turned into a trigger automatically.
-`search` | no | [/ResourceMethodSearchSchema](#resourcemethodsearchschema) | How will we find a specific object given filters or search terms? Will be turned into a search automatically.
-`create` | no | [/ResourceMethodCreateSchema](#resourcemethodcreateschema) | How will we find create a specific object given inputs? Will be turned into a create automatically.
-`outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return?
-`sample` | no | `object` | What does a sample of data look like?
-
 -----
 
 ## /ResourcesSchema
@@ -1585,8 +1562,13 @@ All the resources that underlie common CRUD methods powering automatically handl
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/ResourcesSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourcesSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResourcesSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/ResourceSchema](#resourceschema) | Any unique key can be used and its values will be validated against the ResourceSchema.
 
 #### Examples
 
@@ -1636,12 +1618,6 @@ All the resources that underlie common CRUD methods powering automatically handl
   }
   ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/ResourceSchema](#resourceschema) | Any unique key can be used and its values will be validated against the ResourceSchema.
-
 -----
 
 ## /ResultsSchema
@@ -1651,8 +1627,8 @@ An array of objects suitable for returning in perform calls.
 #### Details
 
 * **Type** - `array`[`object`]
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/ResultsSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResultsSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/ResultsSchema.js)
+
 
 #### Examples
 
@@ -1672,8 +1648,16 @@ Pair an existing search and a create to enable "Find or Create" functionality in
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/SearchOrCreateSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchOrCreateSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchOrCreateSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this search-or-create. Must match the search key.
+`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this search-or-create.
+`search` | **yes** | [/KeySchema](#keyschema) | The key of the search that powers this search-or-create
+`create` | **yes** | [/KeySchema](#keyschema) | The key of the create that powers this search-or-create
 
 #### Examples
 
@@ -1720,15 +1704,6 @@ Pair an existing search and a create to enable "Find or Create" functionality in
   }
   ``` - _Invalid values for keys: search and create (must be a string that matches the key of a registered search or create)_
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this search-or-create. Must match the search key.
-`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this search-or-create.
-`search` | **yes** | [/KeySchema](#keyschema) | The key of the search that powers this search-or-create
-`create` | **yes** | [/KeySchema](#keyschema) | The key of the create that powers this search-or-create
-
 -----
 
 ## /SearchOrCreatesSchema
@@ -1738,8 +1713,13 @@ Enumerates the search-or-creates your app has available for users.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/SearchOrCreatesSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchOrCreatesSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchOrCreatesSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/SearchOrCreateSchema](#searchorcreateschema) | Any unique key can be used and its values will be validated against the SearchOrCreateSchema.
 
 #### Examples
 
@@ -1777,12 +1757,6 @@ Enumerates the search-or-creates your app has available for users.
   }
   ``` - _Key must match the key of the associated /SearchOrCreateSchema_
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/SearchOrCreateSchema](#searchorcreateschema) | Any unique key can be used and its values will be validated against the SearchOrCreateSchema.
-
 -----
 
 ## /SearchSchema
@@ -1792,8 +1766,16 @@ How will Zapier search for existing objects?
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/SearchSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this search.
+`noun` | **yes** | `string` | A noun for this search that completes the sentence "finds a specific XXX".
+`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this search.
+`operation` | **yes** | [/BasicActionOperationSchema](#basicactionoperationschema) | Powers the functionality for this search.
 
 #### Examples
 
@@ -1830,15 +1812,6 @@ How will Zapier search for existing objects?
   }
   ``` - _Missing required key in operation: sample. Note - this is valid if the associated resource has defined a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this search.
-`noun` | **yes** | `string` | A noun for this search that completes the sentence "finds a specific XXX".
-`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this search.
-`operation` | **yes** | [/BasicActionOperationSchema](#basicactionoperationschema) | Powers the functionality for this search.
-
 -----
 
 ## /SearchesSchema
@@ -1848,8 +1821,13 @@ Enumerates the searches your app has available for users.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/SearchesSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchesSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/SearchesSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/SearchSchema](#searchschema) | Any unique key can be used and its values will be validated against the SearchSchema.
 
 #### Examples
 
@@ -1885,12 +1863,6 @@ Enumerates the searches your app has available for users.
   }
   ``` - _Key must match the key of the associated /SearchSchema_
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/SearchSchema](#searchschema) | Any unique key can be used and its values will be validated against the SearchSchema.
-
 -----
 
 ## /TriggerSchema
@@ -1900,8 +1872,16 @@ How will Zapier get notified of new objects?
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/TriggerSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/TriggerSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/TriggerSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this trigger.
+`noun` | **yes** | `string` | A noun for this trigger that completes the sentence "triggers on a new XXX".
+`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this trigger.
+`operation` | **yes** | anyOf([/BasicPollingOperationSchema](#basicpollingoperationschema), [/BasicHookOperationSchema](#basichookoperationschema)) | Powers the functionality for this trigger.
 
 #### Examples
 
@@ -1937,15 +1917,6 @@ How will Zapier get notified of new objects?
   }
   ``` - _Missing required key from operation: sample. Note - this is valid if the Recipe resource has defined a sample._
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this trigger.
-`noun` | **yes** | `string` | A noun for this trigger that completes the sentence "triggers on a new XXX".
-`display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this trigger.
-`operation` | **yes** | anyOf([/BasicPollingOperationSchema](#basicpollingoperationschema), [/BasicHookOperationSchema](#basichookoperationschema)) | Powers the functionality for this trigger.
-
 -----
 
 ## /TriggersSchema
@@ -1955,8 +1926,13 @@ Enumerates the triggers your app has available for users.
 #### Details
 
 * **Type** - `object`
-* **Pattern** - _n/a_
-* **Source Code** - [lib/schemas/TriggersSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/TriggersSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/TriggersSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/TriggerSchema](#triggerschema) | Any unique key can be used and its values will be validated against the TriggerSchema.
 
 #### Examples
 
@@ -1984,12 +1960,6 @@ Enumerates the triggers your app has available for users.
   }
   ``` - _Key must match the key on the associated /TriggerSchema_
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`^[a-zA-Z]+[a-zA-Z0-9_]*$` | no | [/TriggerSchema](#triggerschema) | Any unique key can be used and its values will be validated against the TriggerSchema.
-
 -----
 
 ## /VersionSchema
@@ -2000,7 +1970,9 @@ Represents a simplified semver string, from `0.0.0` to `999.999.999`.
 
 * **Type** - `string`
 * **Pattern** - `^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$`
-* **Source Code** - [lib/schemas/VersionSchema.js](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/VersionSchema.js)
+
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/VersionSchema.js)
+
 
 #### Examples
 
