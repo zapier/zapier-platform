@@ -160,8 +160,9 @@ ${Schema.schema.description || NO_DESCRIPTION}
 
 #### Details
 
-* **Type** - ${typeOrLink(Schema.schema)}
+* **Type** - ${typeOrLink(Schema.schema)}${Schema.schema.pattern ? `
 * **Pattern** - ${quoteOrNa(Schema.schema.pattern)}
+` : ''}
 * **Source Code** - [lib/schemas${Schema.id}.js](${links.makeCodeLink(
     Schema.id
   )})
