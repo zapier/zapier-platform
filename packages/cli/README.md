@@ -57,6 +57,7 @@ This doc decribes the latest CLI version **10.1.1**, as of this writing. If you'
   * [Resource Definition](#resource-definition)
 - [Triggers/Searches/Creates](#triggerssearchescreates)
   * [Return Types](#return-types)
+  * [Fallback Sample](#fallback-sample)
 - [Input Fields](#input-fields)
   * [Custom/Dynamic Fields](#customdynamic-fields)
   * [Dynamic Dropdowns](#dynamic-dropdowns)
@@ -1006,6 +1007,16 @@ Each of the 3 types of function expects a certain type of object. As of core v1.
 | Trigger | Array       | 0 or more objects that will be passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) |
 | Search  | Array       | 0 or more objects. If len > 0, put the best match first                                                              |
 | Action  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
+
+### Fallback Sample
+In cases where Zapier needs to show an example record to the user, but we are unable to get a live example from the API, Zapier will fallback to this hard-coded sample. This should reflect the data structure of the Trigger's perform method, and have dummy values that we can show to any user.
+
+```js
+,sample: {
+  dummydata_field1: 'This will be compared against your perform method output'
+  style: 'mediterranean'
+}
+```
 
 ## Input Fields
 
