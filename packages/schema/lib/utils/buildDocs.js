@@ -161,8 +161,7 @@ ${Schema.schema.description || NO_DESCRIPTION}
 #### Details
 
 * **Type** - ${typeOrLink(Schema.schema)}${Schema.schema.pattern ? `
-* **Pattern** - ${quoteOrNa(Schema.schema.pattern)}
-` : ''}
+* **Pattern** - ${quoteOrNa(Schema.schema.pattern)}` : ''}
 * [**Source Code**](${links.makeCodeLink(Schema.id)})
 
 ${makePropertiesSection(Schema)}

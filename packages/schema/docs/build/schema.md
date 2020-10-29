@@ -1108,7 +1108,6 @@ A unique identifier for this item.
 
 * **Type** - `string`
 * **Pattern** - `^[a-zA-Z]+[a-zA-Z0-9_]*$`
-
 * [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/KeySchema.js)
 
 
@@ -1183,7 +1182,6 @@ Reference a resource by key and the data it returns. In the format of: `{resourc
 
 * **Type** - `string`
 * **Pattern** - `^[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*)?$`
-
 * [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/RefResourceSchema.js)
 
 
@@ -1970,7 +1968,6 @@ Represents a simplified semver string, from `0.0.0` to `999.999.999`.
 
 * **Type** - `string`
 * **Pattern** - `^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$`
-
 * [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.1.1/packages/schema/lib/schemas/VersionSchema.js)
 
 
