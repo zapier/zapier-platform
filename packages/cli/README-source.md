@@ -516,6 +516,16 @@ Each of the 3 types of function expects a certain type of object. As of core v1.
 | Search  | Array       | 0 or more objects. If len > 0, put the best match first                                                              |
 | Action  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
 
+### Fallback Sample
+In cases where Zapier needs to show an example record to the user, but we are unable to get a live example from the API, Zapier will fallback to this hard-coded sample. This should reflect the data structure of the Trigger's perform method, and have dummy values that we can show to any user.
+
+```js
+,sample: {
+  dummydata_field1: 'This will be compared against your perform method output'
+  style: 'mediterranean'
+}
+```
+
 ## Input Fields
 
 On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a "Create Contact" action with fields like "First name", "Last name", "Email", etc. These fields will be able to accept input from previous steps in a Zap, for example:
