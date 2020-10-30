@@ -14,6 +14,7 @@ This release mostly has internal features, but also ships a lot of documentation
 ### core
 
 * :bug: Add `callback_url` during testing ([#280](https://github.com/zapier/zapier-platform/pull/280))
+* :nail_care: Relax type info for `response.json` to better match the actual TS definition ([#261](https://github.com/zapier/zapier-platform/pull/261))
 
 ### schema
 
