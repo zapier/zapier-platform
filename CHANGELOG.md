@@ -1,3 +1,25 @@
+## 10.1.2
+
+This release mostly has internal features, but also ships a lot of documentation updates and a few bumped dependencies.
+
+### cli
+
+* :nail_care: Improve logging for diagnostic info ([#282](https://github.com/zapier/zapier-platform/pull/282))
+* :scroll: Document the `$HOIST$` directive ([#273](https://github.com/zapier/zapier-platform/pull/273))
+* :scroll: Update oudated command references ([#274](https://github.com/zapier/zapier-platform/pull/274))
+* :scroll: Add docs for `callback_url` ([#278](https://github.com/zapier/zapier-platform/pull/278))
+* :hammer: Add new example app, `callbacks` ([#281](https://github.com/zapier/zapier-platform/pull/281))
+* :scroll: Replace Slack link with one for Community ([#286](https://github.com/zapier/zapier-platform/pull/286))
+
+### core
+
+* :bug: Add `callback_url` during testing ([#280](https://github.com/zapier/zapier-platform/pull/280))
+* :nail_care: Relax type info for `response.json` to better match the actual TS definition ([#261](https://github.com/zapier/zapier-platform/pull/261))
+
+### schema
+
+None!
+
 ## 10.1.1
 
 ### cli

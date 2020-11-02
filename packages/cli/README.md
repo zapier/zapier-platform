@@ -20,7 +20,7 @@ You may find docs duplicate or outdated across the Zapier site. The most up-to-d
 - [Latest CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
 - [Latest Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
 
-This doc decribes the latest CLI version **10.1.1**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+This doc decribes the latest CLI version **10.1.2**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
 - CLI Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
 - CLI Reference: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
@@ -57,6 +57,7 @@ This doc decribes the latest CLI version **10.1.1**, as of this writing. If you'
   * [Resource Definition](#resource-definition)
 - [Triggers/Searches/Creates](#triggerssearchescreates)
   * [Return Types](#return-types)
+  * [Fallback Sample](#fallback-sample)
 - [Input Fields](#input-fields)
   * [Custom/Dynamic Fields](#customdynamic-fields)
   * [Dynamic Dropdowns](#dynamic-dropdowns)
@@ -1006,6 +1007,16 @@ Each of the 3 types of function expects a certain type of object. As of core v1.
 | Trigger | Array       | 0 or more objects that will be passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) |
 | Search  | Array       | 0 or more objects. If len > 0, put the best match first                                                              |
 | Action  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
+
+### Fallback Sample
+In cases where Zapier needs to show an example record to the user, but we are unable to get a live example from the API, Zapier will fallback to this hard-coded sample. This should reflect the data structure of the Trigger's perform method, and have dummy values that we can show to any user.
+
+```js
+,sample: {
+  dummydata_field1: 'This will be compared against your perform method output'
+  style: 'mediterranean'
+}
+```
 
 ## Input Fields
 
@@ -3226,7 +3237,7 @@ The Zapier platform and its tools are under active development. While you don't 
 Barring unforeseen circumstances, all released platform versions will continue to work for the foreseeable future. While you never *have* to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bug fixes are available.
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is **10.1.1**. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is **10.1.2**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 

@@ -105,8 +105,8 @@ interface BaseHttpResponse {
 
 export interface HttpResponse extends BaseHttpResponse {
   content: string;
-  data?: object;
-  json?: object;
+  data?: any;
+  json?: any;
 }
 
 export interface RawHttpResponse extends BaseHttpResponse {

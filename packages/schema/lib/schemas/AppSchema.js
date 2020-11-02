@@ -119,15 +119,15 @@ module.exports = makeSchema(
     },
     additionalProperties: false,
     examples: [
-      { version: '1.0.0', platformVersion: '10.1.1' },
+      { version: '1.0.0', platformVersion: '10.1.2' },
     ],
     antiExamples: [
       {
-        example: { version: 'v1.0.0', platformVersion: '10.1.1' },
+        example: { version: 'v1.0.0', platformVersion: '10.1.2' },
         reason: 'Invalid value for version.',
       },
       {
-        example: { version: '1.0.0', platformVersion: 'v10.1.1' },
+        example: { version: '1.0.0', platformVersion: 'v10.1.2' },
         reason: 'Invalid value for platformVersion.',
       },
     ],
