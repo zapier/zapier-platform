@@ -229,7 +229,8 @@ Key | Required | Type | Description
     getRequestToken: { require: 'some/path/to/file.js' },
     authorizeUrl: { require: 'some/path/to/file2.js' }
   }
-  ``` - _Missing required key._
+  ```
+  _Missing required key._
 
 -----
 
@@ -492,7 +493,8 @@ Key | Required | Type | Description
     performSubscribe: { require: 'some/path/to/file3.js' },
     performUnsubscribe: { require: 'some/path/to/file4.js' }
   }
-  ``` - _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
+  ```
+  _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
 
 -----
 
@@ -595,7 +597,8 @@ Key | Required | Type | Description
     display: { label: 'Get User', description: 'Retrieve a user.' },
     operation: { description: 'Define how this search method will work.' }
   }
-  ``` - _Missing required keys: key and noun_
+  ```
+  _Missing required keys: key and noun_
 
 -----
 
@@ -644,7 +647,8 @@ Key | Required | Type | Description
       }
     }
   }
-  ``` - _Key must match the key of the associated BulkReadSchema_
+  ```
+  _Key must match the key of the associated BulkReadSchema_
 
 -----
 
@@ -703,7 +707,8 @@ Key | Required | Type | Description
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
     operation: { perform: '$func$2$f$', shouldLock: 'yes' }
   }
-  ``` - _Invalid value for key on operation: shouldLock_
+  ```
+  _Invalid value for key on operation: shouldLock_
 * ```
   {
     key: 'recipe',
@@ -711,7 +716,8 @@ Key | Required | Type | Description
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
     operation: { perform: '$func$2$f$' }
   }
-  ``` - _Missing required key on operation: sample. Note - this is valid if the resource has defined a sample._
+  ```
+  _Missing required key on operation: sample. Note - this is valid if the resource has defined a sample._
 
 -----
 
@@ -764,7 +770,8 @@ Key | Required | Type | Description
       operation: { perform: '$func$2$f$', sample: { id: 1 } }
     }
   }
-  ``` - _Key must start with a letter_
+  ```
+  _Key must start with a letter_
 * ```
   {
     Create_Recipe: {
@@ -774,7 +781,8 @@ Key | Required | Type | Description
       operation: { perform: '$func$2$f$', sample: { id: 1 } }
     }
   }
-  ``` - _Key must match the key field in CreateSchema_
+  ```
+  _Key must match the key field in CreateSchema_
 
 -----
 
@@ -1071,7 +1079,7 @@ Key | Required | Type | Description
 
 #### Anti-Examples
 
-* `{ source: '1 + 2' }` - _Invalid value for key: source (must end with a `return` statement._
+* `{ source: '1 + 2' }` - _Invalid value for key: source (must end with a `return` statement)_
 
 -----
 
@@ -1273,7 +1281,8 @@ Key | Required | Type | Description
     display: { label: 'Create Tag', description: 'Create a new Tag in your account.' },
     operation: { perform: '$func$2$f$' }
   }
-  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
+  ```
+  _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 -----
 
@@ -1315,7 +1324,8 @@ Key | Required | Type | Description
     display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
     operation: { perform: { url: '$func$0$f$' } }
   }
-  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
+  ```
+  _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 -----
 
@@ -1361,7 +1371,8 @@ Key | Required | Type | Description
     display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
     operation: { type: 'hook', perform: '$func$0$f$' }
   }
-  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
+  ```
+  _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 -----
 
@@ -1416,7 +1427,8 @@ Key | Required | Type | Description
     },
     operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } }
   }
-  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
+  ```
+  _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 -----
 
@@ -1464,7 +1476,8 @@ Key | Required | Type | Description
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
     operation: { perform: '$func$2$f$' }
   }
-  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
+  ```
+  _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 -----
 
@@ -1549,7 +1562,8 @@ Key | Required | Type | Description
       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
     }
   }
-  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
+  ```
+  _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 -----
 
@@ -1602,7 +1616,8 @@ Key | Required | Type | Description
       }
     }
   }
-  ``` - _Key does not match key for associated /ResourceSchema_
+  ```
+  _Key does not match key for associated /ResourceSchema_
 * ```
   {
     tag: {
@@ -1614,7 +1629,8 @@ Key | Required | Type | Description
       }
     }
   }
-  ``` - _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
+  ```
+  _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
 -----
 
@@ -1687,7 +1703,8 @@ Key | Required | Type | Description
     search: 'searchWidgets',
     create: 'createWidget'
   }
-  ``` - _Invalid value for key: key (must start with a letter)_
+  ```
+  _Invalid value for key: key (must start with a letter)_
 * ```
   {
     key: 'searchOrCreateWidgets',
@@ -1700,7 +1717,8 @@ Key | Required | Type | Description
     search: { require: 'path/to/some/file.js' },
     create: { require: 'path/to/some/file.js' }
   }
-  ``` - _Invalid values for keys: search and create (must be a string that matches the key of a registered search or create)_
+  ```
+  _Invalid values for keys: search and create (must be a string that matches the key of a registered search or create)_
 
 -----
 
@@ -1753,7 +1771,8 @@ Key | Required | Type | Description
       create: 'createWidget'
     }
   }
-  ``` - _Key must match the key of the associated /SearchOrCreateSchema_
+  ```
+  _Key must match the key of the associated /SearchOrCreateSchema_
 
 -----
 
@@ -1808,7 +1827,8 @@ Key | Required | Type | Description
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
     operation: { perform: '$func$2$f$' }
   }
-  ``` - _Missing required key in operation: sample. Note - this is valid if the associated resource has defined a sample._
+  ```
+  _Missing required key in operation: sample. Note - this is valid if the associated resource has defined a sample._
 
 -----
 
@@ -1859,7 +1879,8 @@ Key | Required | Type | Description
       operation: { perform: '$func$2$f$' }
     }
   }
-  ``` - _Key must match the key of the associated /SearchSchema_
+  ```
+  _Key must match the key of the associated /SearchSchema_
 
 -----
 
@@ -1913,7 +1934,8 @@ Key | Required | Type | Description
     display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
     operation: { perform: '$func$0$f$' }
   }
-  ``` - _Missing required key from operation: sample. Note - this is valid if the Recipe resource has defined a sample._
+  ```
+  _Missing required key from operation: sample. Note - this is valid if the Recipe resource has defined a sample._
 
 -----
 
@@ -1956,7 +1978,8 @@ Key | Required | Type | Description
       operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } }
     }
   }
-  ``` - _Key must match the key on the associated /TriggerSchema_
+  ```
+  _Key must match the key on the associated /TriggerSchema_
 
 -----
 

@@ -30,7 +30,7 @@ module.exports = makeSchema({
   antiExamples: [
     {
       example: { source: '1 + 2' },
-      reason: 'Invalid value for key: source (must end with a `return` statement.',
+      reason: 'Invalid value for key: source (must end with a `return` statement)',
     },
   ],
 });
