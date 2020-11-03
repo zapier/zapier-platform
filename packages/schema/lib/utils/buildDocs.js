@@ -96,14 +96,21 @@ ${examples.map(formatExample).join('\n')}
 
 // Properly quote and display anti-examples.
 const makeAntiExampleSection = (Schema) => {
-  const examples = Schema.schema.antiExamples || [];
-  if (!examples.length) {
+  const antiExamples = Schema.schema.antiExamples || [];
+  if (!antiExamples.length) {
     return '';
   }
   return `\
 #### Anti-Examples
 
-${examples.map(formatExample).join('\n')}
+${antiExamples.map(({ example, reason }) => {
+  const formattedAntiExample = formatExample(example);
+  // If block quote, newline and indent the reason.
+  // Otherwise, show the reason inline w/ the anti-example and separated by a dash.
+  return formattedAntiExample.endsWith('```')
+    ? `${formattedAntiExample}\n  _${reason}_`
+    : `${formattedAntiExample} - _${reason}_`;
+}).join('\n')}
 `;
 };
 
@@ -158,15 +165,13 @@ ${Schema.schema.description || NO_DESCRIPTION}
 
 #### Details
 
-* **Type** - ${typeOrLink(Schema.schema)}
-* **Pattern** - ${quoteOrNa(Schema.schema.pattern)}
-* **Source Code** - [lib/schemas${Schema.id}.js](${links.makeCodeLink(
-    Schema.id
-  )})
+* **Type** - ${typeOrLink(Schema.schema)}${Schema.schema.pattern ? `
+* **Pattern** - ${quoteOrNa(Schema.schema.pattern)}` : ''}
+* [**Source Code**](${links.makeCodeLink(Schema.id)})
 
+${makePropertiesSection(Schema)}
 ${makeExampleSection(Schema)}
 ${makeAntiExampleSection(Schema)}
-${makePropertiesSection(Schema)}
 `.trim();
 };
 

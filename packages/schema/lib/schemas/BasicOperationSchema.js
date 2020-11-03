@@ -1,6 +1,7 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
+const { SKIP_KEY } = require('../constants');
 
 const DynamicFieldsSchema = require('./DynamicFieldsSchema');
 const FunctionSchema = require('./FunctionSchema');
@@ -50,6 +51,22 @@ module.exports = makeSchema(
         },
       },
     },
+    examples: [
+      {
+        perform: { require: 'some/path/to/file.js' },
+        sample: { id: 42, name: 'Hooli' },
+      },
+    ],
+    antiExamples: [
+      {
+        [SKIP_KEY]: true, // Cannot validate that sample is only required if display isn't true / top-level resource doesn't have sample
+        example: {
+          perform: { require: 'some/path/to/file.js' },
+        },
+        reason:
+          'Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample.',
+      },
+    ],
     additionalProperties: false,
   },
   [DynamicFieldsSchema, FunctionSchema, KeySchema, RequestSchema, ResultsSchema]

@@ -14,6 +14,13 @@ module.exports = makeSchema({
     },
   },
   additionalProperties: false,
-  examples: [{ skipHttpPatch: true }, { skipHttpPatch: false }, {}],
-  antiExamples: [{ blah: true }, { skipHttpPatch: 'yes' }],
+  examples: [
+    { skipHttpPatch: true },
+    { skipHttpPatch: false },
+    {},
+  ],
+  antiExamples: [
+    { example: { foo: true }, reason: 'Invalid key.' },
+    { example: { skipHttpPatch: 'yes' }, reason: 'Invalid value.' },
+  ],
 });

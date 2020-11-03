@@ -6,8 +6,6 @@ module.exports = makeSchema({
   id: '/FieldChoiceWithLabelSchema',
   description:
     "An object describing a labeled choice in a static dropdown. Useful if the value a user picks isn't exactly what the zap uses. For instance, when they click on a nickname, but the zap uses the user's full name ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).",
-  examples: [{ label: 'Red', sample: '#f00', value: '#f00' }],
-  antiExamples: [{ label: 'Red', value: '#f00' }],
   type: 'object',
   required: ['value', 'sample', 'label'],
   properties: {
@@ -29,4 +27,11 @@ module.exports = makeSchema({
       minLength: 1,
     },
   },
+  examples: [{ label: 'Red', sample: '#f00', value: '#f00' }],
+  antiExamples: [
+    {
+      example: { label: 'Red', value: '#f00' },
+      reason: 'Missing required key: sample',
+    },
+  ],
 });

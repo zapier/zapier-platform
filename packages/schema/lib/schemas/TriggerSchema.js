@@ -13,6 +13,31 @@ module.exports = makeSchema(
     description: 'How will Zapier get notified of new objects?',
     type: 'object',
     required: ['key', 'noun', 'display', 'operation'],
+    properties: {
+      key: {
+        description: 'A key to uniquely identify this trigger.',
+        $ref: KeySchema.id,
+      },
+      noun: {
+        description:
+          'A noun for this trigger that completes the sentence "triggers on a new XXX".',
+        type: 'string',
+        minLength: 2,
+        maxLength: 255,
+      },
+      display: {
+        description: 'Configures the UI for this trigger.',
+        $ref: BasicDisplaySchema.id,
+      },
+      operation: {
+        description: 'Powers the functionality for this trigger.',
+        anyOf: [
+          { $ref: BasicPollingOperationSchema.id },
+          { $ref: BasicHookOperationSchema.id },
+        ],
+      },
+    },
+    additionalProperties: false,
     examples: [
       {
         key: 'new_recipe',
@@ -43,42 +68,20 @@ module.exports = makeSchema(
     ],
     antiExamples: [
       {
-        key: 'new_recipe',
-        noun: 'Recipe',
-        display: {
-          label: 'New Recipe',
-          description: 'Triggers when a new recipe is added.',
+        example: {
+          key: 'new_recipe',
+          noun: 'Recipe',
+          display: {
+            label: 'New Recipe',
+            description: 'Triggers when a new recipe is added.',
+          },
+          operation: {
+            perform: '$func$0$f$',
+          },
         },
-        operation: {
-          perform: '$func$0$f$',
-        },
+        reason: 'Missing required key from operation: sample. Note - this is valid if the Recipe resource has defined a sample.',
       },
     ],
-    properties: {
-      key: {
-        description: 'A key to uniquely identify this trigger.',
-        $ref: KeySchema.id,
-      },
-      noun: {
-        description:
-          'A noun for this trigger that completes the sentence "triggers on a new XXX".',
-        type: 'string',
-        minLength: 2,
-        maxLength: 255,
-      },
-      display: {
-        description: 'Configures the UI for this trigger.',
-        $ref: BasicDisplaySchema.id,
-      },
-      operation: {
-        description: 'Powers the functionality for this trigger.',
-        anyOf: [
-          { $ref: BasicPollingOperationSchema.id },
-          { $ref: BasicHookOperationSchema.id },
-        ],
-      },
-    },
-    additionalProperties: false,
   },
   [
     KeySchema,

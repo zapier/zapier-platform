@@ -16,28 +16,6 @@ module.exports = makeSchema(
   {
     id: '/AuthenticationSchema',
     description: 'Represents authentication schemes.',
-    examples: [
-      { type: 'basic', test: '$func$2$f$' },
-      { type: 'custom', test: '$func$2$f$', fields: [{ key: 'abc' }] },
-      {
-        type: 'custom',
-        test: '$func$2$f$',
-        connectionLabel: '{{bundle.inputData.abc}}',
-      },
-      { type: 'custom', test: '$func$2$f$', connectionLabel: '$func$2$f$' },
-      { type: 'custom', test: '$func$2$f$', connectionLabel: { url: 'abc' } },
-    ],
-    antiExamples: [
-      {},
-      '$func$2$f$',
-      { type: 'unknown', test: '$func$2$f$' },
-      { type: 'custom', test: '$func$2$f$', fields: '$func$2$f$' },
-      {
-        type: 'custom',
-        test: '$func$2$f$',
-        fields: [{ key: 'abc' }, '$func$2$f$'],
-      },
-    ],
     type: 'object',
     required: ['type', 'test'],
     properties: {
@@ -74,6 +52,57 @@ module.exports = makeSchema(
       sessionConfig: { $ref: AuthenticationSessionConfigSchema.id },
     },
     additionalProperties: false,
+    examples: [
+      {
+        type: 'basic',
+        test: '$func$2$f$',
+      },
+      {
+        type: 'custom',
+        test: '$func$2$f$',
+        fields: [{ key: 'abc' }],
+      },
+      {
+        type: 'custom',
+        test: '$func$2$f$',
+        connectionLabel: '{{bundle.inputData.abc}}',
+      },
+      {
+        type: 'custom',
+        test: '$func$2$f$',
+        connectionLabel: '$func$2$f$',
+      },
+      {
+        type: 'custom',
+        test: '$func$2$f$',
+        connectionLabel: { url: 'abc' },
+      },
+    ],
+    antiExamples: [
+      {
+        example: {},
+        reason: 'Missing required keys: type and test',
+      },
+      {
+        example: '$func$2$f$',
+        reason: 'Must be object',
+      },
+      {
+        example: {
+          type: 'unknown',
+          test: '$func$2$f$',
+        },
+        reason: 'Invalid value for key: type',
+      },
+      {
+        example: {
+          type: 'custom',
+          test: '$func$2$f$',
+          fields: '$func$2$f$',
+        },
+        reason: 'Invalid value for key: fields',
+      },
+    ],
   },
   [
     FieldsSchema,

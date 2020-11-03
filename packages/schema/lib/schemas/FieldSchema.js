@@ -6,7 +6,7 @@ const RefResourceSchema = require('./RefResourceSchema');
 
 const FieldChoicesSchema = require('./FieldChoicesSchema');
 
-const { SKIP_KEY, INCOMPATIBLE_FIELD_SCHEMA_KEYS } = require('../constants');
+const { INCOMPATIBLE_FIELD_SCHEMA_KEYS } = require('../constants');
 
 // the following takes an array of string arrays (string[][]) and returns the follwing string:
 // * `a` & `b`
@@ -23,37 +23,6 @@ module.exports = makeSchema(
     id: '/FieldSchema',
     description: `Defines a field an app either needs as input, or gives as output. In addition to the requirements below, the following keys are mutually exclusive:\n\n${incompatibleFieldsList}`,
     type: 'object',
-    examples: [
-      { key: 'abc' },
-      { key: 'abc', choices: { mobile: 'Mobile Phone' } },
-      { key: 'abc', choices: ['first', 'second', 'third'] },
-      {
-        key: 'abc',
-        choices: [{ label: 'Red', sample: '#f00', value: '#f00' }],
-      },
-      { key: 'abc', children: [{ key: 'abc' }] },
-      { key: 'abc', type: 'integer', helpText: 'neat' },
-    ],
-    antiExamples: [
-      {},
-      { key: 'abc', choices: {} },
-      { key: 'abc', choices: [] },
-      { key: 'abc', choices: [3] },
-      { key: 'abc', choices: [{ label: 'Red', value: '#f00' }] },
-      { key: 'abc', choices: 'mobile' },
-      { key: 'abc', type: 'loltype' },
-      { key: 'abc', children: [], helpText: '' },
-      {
-        key: 'abc',
-        children: [{ key: 'def', children: [] }],
-      },
-      {
-        key: 'abc',
-        children: [{ key: 'def', children: [{ key: 'dhi' }] }],
-        [SKIP_KEY]: true,
-      },
-      { key: 'abc', children: ['$func$2$f$'] },
-    ],
     required: ['key'],
     properties: {
       key: {
@@ -158,6 +127,52 @@ module.exports = makeSchema(
         pattern: '^.*{{input}}.*$',
       },
     },
+    examples: [
+      { key: 'abc' },
+      { key: 'abc', choices: { mobile: 'Mobile Phone' } },
+      { key: 'abc', choices: ['first', 'second', 'third'] },
+      {
+        key: 'abc',
+        choices: [{ label: 'Red', sample: '#f00', value: '#f00' }],
+      },
+      { key: 'abc', children: [{ key: 'abc' }] },
+      { key: 'abc', type: 'integer', helpText: 'neat' },
+    ],
+    antiExamples: [
+      {
+        example: {},
+        reason: 'Missing required key: key',
+      },
+      {
+        example: { key: 'abc', type: 'loltype' },
+        reason: 'Invalid value for key: type',
+      },
+      {
+        example: { key: 'abc', choices: {} },
+        reason: 'Invalid value for key: choices (cannot be empty)',
+      },
+      {
+        example: { key: 'abc', choices: [] },
+        reason: 'Invalid value for key: choices (cannot be empty)',
+      },
+      {
+        example: { key: 'abc', choices: [3] },
+        reason: 'Invalid value for key: choices (if an array, must be of either string or FieldChoiceWithLabelSchema)',
+      },
+      {
+        example: { key: 'abc', choices: [{ label: 'Red', value: '#f00' }] },
+        reason: 'Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)',
+      },
+      {
+        example: { key: 'abc', choices: 'mobile' },
+        reason: 'Invalid value for key: choices (must be either object or array)',
+      },
+
+      {
+        example: { key: 'abc', children: ['$func$2$f$'] },
+        reason: 'Invalid value for key: children (must be array of FieldSchema)',
+      },
+    ],
     additionalProperties: false,
   },
   [RefResourceSchema, FieldChoicesSchema]

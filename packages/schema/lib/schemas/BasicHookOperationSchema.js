@@ -1,6 +1,7 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
+const { SKIP_KEY } = require('../constants');
 
 const BasicOperationSchema = require('./BasicOperationSchema');
 const FunctionSchema = require('./FunctionSchema');
@@ -78,6 +79,32 @@ BasicHookOperationSchema.properties = {
   outputFields: BasicHookOperationSchema.properties.outputFields,
   sample: BasicHookOperationSchema.properties.sample,
 };
+
+BasicHookOperationSchema.examples = [
+  {
+    type: 'hook',
+    perform: { require: 'some/path/to/file.js' },
+    performList: { require: 'some/path/to/file2.js' },
+    performSubscribe: { require: 'some/path/to/file3.js' },
+    performUnsubscribe: { require: 'some/path/to/file4.js' },
+    sample: { id: 42, name: 'Hooli' },
+  },
+];
+
+BasicHookOperationSchema.antiExamples = [
+  {
+    [SKIP_KEY]: true, // Cannot validate that sample is only required if display isn't true / top-level resource doesn't have sample
+    example: {
+      type: 'hook',
+      perform: { require: 'some/path/to/file.js' },
+      performList: { require: 'some/path/to/file2.js' },
+      performSubscribe: { require: 'some/path/to/file3.js' },
+      performUnsubscribe: { require: 'some/path/to/file4.js' },
+    },
+    reason:
+      'Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample.',
+  },
+];
 
 module.exports = makeSchema(
   BasicHookOperationSchema,

@@ -12,6 +12,17 @@ module.exports = makeSchema(
       'How will we get a single object given a unique identifier/id?',
     type: 'object',
     required: ['display', 'operation'],
+    properties: {
+      display: {
+        description: 'Define how this get method will be exposed in the UI.',
+        $ref: BasicDisplaySchema.id,
+      },
+      operation: {
+        description: 'Define how this get method will work.',
+        $ref: BasicOperationSchema.id,
+      },
+    },
+    additionalProperties: false,
     examples: [
       {
         display: {
@@ -43,28 +54,20 @@ module.exports = makeSchema(
     ],
     antiExamples: [
       {
-        display: {
-          label: 'Get Tag by ID',
-          description: 'Grab a specific Tag by ID.',
-        },
-        operation: {
-          perform: {
-            url: '$func$0$f$',
+        example: {
+          display: {
+            label: 'Get Tag by ID',
+            description: 'Grab a specific Tag by ID.',
+          },
+          operation: {
+            perform: {
+              url: '$func$0$f$',
+            },
           },
         },
+        reason: 'Missing key from operation: sample. Note – this is valid if the resource has defined a sample.',
       },
     ],
-    properties: {
-      display: {
-        description: 'Define how this get method will be exposed in the UI.',
-        $ref: BasicDisplaySchema.id,
-      },
-      operation: {
-        description: 'Define how this get method will work.',
-        $ref: BasicOperationSchema.id,
-      },
-    },
-    additionalProperties: false,
   },
   [BasicDisplaySchema, BasicOperationSchema]
 );

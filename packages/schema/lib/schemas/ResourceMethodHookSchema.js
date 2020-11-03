@@ -12,6 +12,18 @@ module.exports = makeSchema(
       'How will we get notified of new objects? Will be turned into a trigger automatically.',
     type: 'object',
     required: ['display', 'operation'],
+    properties: {
+      display: {
+        description:
+          'Define how this hook/trigger method will be exposed in the UI.',
+        $ref: BasicDisplaySchema.id,
+      },
+      operation: {
+        description: 'Define how this hook/trigger method will work.',
+        $ref: BasicHookOperationSchema.id,
+      },
+    },
+    additionalProperties: false,
     examples: [
       {
         display: {
@@ -41,28 +53,19 @@ module.exports = makeSchema(
     ],
     antiExamples: [
       {
-        display: {
-          label: 'Get Tag by ID',
-          description: 'Grab a specific Tag by ID.',
+        example: {
+          display: {
+            label: 'Get Tag by ID',
+            description: 'Grab a specific Tag by ID.',
+          },
+          operation: {
+            type: 'hook',
+            perform: '$func$0$f$',
+          },
         },
-        operation: {
-          type: 'hook',
-          perform: '$func$0$f$',
-        },
+        reason: 'Missing key from operation: sample. Note – this is valid if the resource has defined a sample.',
       },
     ],
-    properties: {
-      display: {
-        description:
-          'Define how this hook/trigger method will be exposed in the UI.',
-        $ref: BasicDisplaySchema.id,
-      },
-      operation: {
-        description: 'Define how this hook/trigger method will work.',
-        $ref: BasicHookOperationSchema.id,
-      },
-    },
-    additionalProperties: false,
   },
   [BasicDisplaySchema, BasicHookOperationSchema]
 );

@@ -16,4 +16,13 @@ module.exports = makeSchema({
     },
   },
   additionalProperties: false,
-});
+  examples: [
+    { 'hydrateFile': { require: 'some/path/to/file.js' } },
+  ],
+  antiExamples: [
+    {
+      example: { '12th': { require: 'some/path/to/file.js' } },
+      reason: 'Invalid key (must start with a letter)',
+    },
+  ],
+}, [FunctionSchema]);

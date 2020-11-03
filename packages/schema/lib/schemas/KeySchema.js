@@ -8,4 +8,21 @@ module.exports = makeSchema({
   type: 'string',
   minLength: 2,
   pattern: '^[a-zA-Z]+[a-zA-Z0-9_]*$',
+  examples: [
+    'vk', 'validKey', 'ValidKey', 'Valid_Key_2',
+  ],
+  antiExamples: [
+    {
+      example: '',
+      reason: 'Cannot be empty',
+    },
+    {
+      example: 'A',
+      reason: 'Minimum of two characters',
+    },
+    {
+      example: '1_Valid_Key',
+      reason: 'Must start with a letter',
+    },
+  ],
 });

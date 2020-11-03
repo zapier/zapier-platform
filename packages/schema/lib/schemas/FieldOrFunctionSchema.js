@@ -11,17 +11,30 @@ module.exports = makeSchema(
   {
     id: '/FieldOrFunctionSchema',
     description: 'Represents an array of fields or functions.',
+    type: 'array',
+    items: {
+      oneOf: [{ $ref: FieldSchema.id }, { $ref: FunctionSchema.id }],
+    },
     examples: [
       [],
       [{ key: 'abc' }],
       [{ key: 'abc' }, '$func$2$f$'],
       ['$func$2$f$', '$func$2$f$'],
     ],
-    antiExamples: [[{}], [{ key: 'abc', choices: {} }], '$func$2$f$'],
-    type: 'array',
-    items: {
-      oneOf: [{ $ref: FieldSchema.id }, { $ref: FunctionSchema.id }],
-    },
+    antiExamples: [
+      {
+        example: [{}],
+        reason: 'Array item not a valid FieldSchema or FunctionSchema',
+      },
+      {
+        example: [{ key: 'abc', choices: {} }],
+        reason: 'Array item not a valid FieldSchema',
+      },
+      {
+        example: '$func$2$f$',
+        reason: 'Must be an array',
+      },
+    ],
   },
   [FieldSchema, FunctionSchema]
 );

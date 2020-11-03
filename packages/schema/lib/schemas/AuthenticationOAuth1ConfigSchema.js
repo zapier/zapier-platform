@@ -32,6 +32,22 @@ module.exports = makeSchema(
       },
     },
     additionalProperties: false,
+    examples: [
+      {
+        getRequestToken: { require: 'some/path/to/file.js' },
+        authorizeUrl: { require: 'some/path/to/file2.js' },
+        getAccessToken: { require: 'some/path/to/file3.js' },
+      },
+    ],
+    antiExamples: [
+      {
+        example: {
+          getRequestToken: { require: 'some/path/to/file.js' },
+          authorizeUrl: { require: 'some/path/to/file2.js' },
+        },
+        reason: 'Missing required key.',
+      },
+    ],
   },
   [FunctionSchema, RedirectRequestSchema, RequestSchema]
 );
