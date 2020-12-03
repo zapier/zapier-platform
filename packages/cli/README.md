@@ -1690,7 +1690,7 @@ const performResume = async (z, bundle) => {
 };
 ```
 
-> The app will have a maximum of 90 days to `POST` to the callback URL. If a user deletes or modifies the Zap or Task in the meantime, we will not resume the task.
+> The app will have a maximum of 30 days to `POST` to the callback URL. If a user deletes or modifies the Zap or Task in the meantime, we will not resume the task.
 
 
 ## Bundle Object
