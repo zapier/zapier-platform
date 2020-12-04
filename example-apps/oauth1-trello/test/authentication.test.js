@@ -2,7 +2,7 @@
 
 const zapier = require('zapier-platform-core');
 
-zapier.tools.env.inject(); // read fromt the .env file
+zapier.tools.env.inject(); // read from the .env file
 
 const App = require('../index');
 const appTester = zapier.createAppTester(App);
