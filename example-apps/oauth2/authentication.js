@@ -97,7 +97,7 @@ module.exports = {
     fields: [],
 
     // The test method allows Zapier to verify that the credentials a user provides
-    // are valid. We'll execute this method whenver a user connects their account for
+    // are valid. We'll execute this method whenever a user connects their account for
     // the first time.
     test,
 

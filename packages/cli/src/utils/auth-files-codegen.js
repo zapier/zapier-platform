@@ -58,7 +58,7 @@ const authFileExport = (
           ),
           objProperty('fields', arr(...authFields)),
           comment(
-            "The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this method whenver a user connects their account for the first time."
+            "The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this method whenever a user connects their account for the first time."
           ),
           test,
           comment(
