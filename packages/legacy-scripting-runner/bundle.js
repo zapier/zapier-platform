@@ -179,6 +179,9 @@ const addRequestData = async (event, z, bundle, convertedBundle) => {
       convertedBundle.request.files = files;
       delete convertedBundle.request.headers['Content-Type'];
     }
+  } else if (event.name.startsWith('auth.oauth2.refresh.pre')) {
+    // Make sure bundle.request.data is an object
+    convertedBundle.request.data = convertedBundle.request.data || {};
   } else if (event.name.startsWith('create')) {
     if (
       !_.isEmpty(bundle._unflatInputData) ||
