@@ -320,7 +320,7 @@ const main = async () => {
   console.log(
     `\nDone! Review the change with ${bold.underline(
       'git diff HEAD~1..HEAD'
-    )} then ${bold.underline('git push origin master --tags')}.`
+    )} then ${bold.underline('git push origin HEAD --tags')}.`
   );
   return 0;
 };
