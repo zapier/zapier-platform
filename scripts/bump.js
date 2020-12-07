@@ -49,18 +49,18 @@ const ensureMainPackageVersionsAreSame = () => {
   }
 };
 
-const confirmIfNotMasterBranch = async () => {
+const confirmIfMasterBranch = async () => {
   const result = spawnSync('git', ['branch', '--show-current'], {
     encoding: 'utf8',
   });
   const branch = (result.stdout || '').trim();
-  if (branch !== 'master') {
+  if (branch === 'master' || branch === 'main') {
     const answer = await inquirer.prompt([
       {
         type: 'confirm',
         name: 'continue',
         message:
-          'This was supposed to be run on master branch. ' +
+          'This was supposed to be run on a feature branch. ' +
           `You want to proceed with branch ${underline(branch)} anyway?`,
         default: false,
       },
@@ -278,7 +278,7 @@ const gitTag = (versionsToBump) => {
 const main = async () => {
   try {
     ensureMainPackageVersionsAreSame();
-    await confirmIfNotMasterBranch();
+    await confirmIfMasterBranch();
     ensureNoUncommittedChanges();
   } catch (err) {
     console.error(err.message);
