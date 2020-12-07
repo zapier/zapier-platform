@@ -361,6 +361,39 @@ describe('Integration Test', () => {
       });
     });
 
+    it('pre_oauthv2_refresh, request.data should be an object on retry', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'pre_oauthv2_refresh_request_data_retry',
+        'pre_oauthv2_refresh'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.refreshAccessToken'
+      );
+      input.bundle.authData = {
+        refresh_token: 'my_refresh_token',
+        access_token: 'my_access_token',
+      };
+      return app(input).then((output) => {
+        const data = output.results.form;
+        const params = output.results.args;
+
+        should.deepEqual(data, {
+          bar: ['world'],
+          foo: ['hello'],
+        });
+        should.deepEqual(params, {
+          client_id: [process.env.CLIENT_ID],
+          client_secret: [process.env.CLIENT_SECRET],
+          grant_type: ['refresh_token'],
+          refresh_token: ['my_refresh_token'],
+        });
+      });
+    });
+
     it('pre_oauthv2_refresh, bundle.load', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(

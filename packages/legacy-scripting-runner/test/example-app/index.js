@@ -85,6 +85,29 @@ const legacyScriptingSource = `
         };
       },
 
+      pre_oauthv2_refresh_request_data_retry: function(bundle) {
+        'use strict';
+
+        if (bundle.request.data.client_id) {
+          throw new Error('make it retry');
+        }
+
+        // bundle.request.data should be an object, so this would error in
+        // strict mode if request.data is a string
+        bundle.request.data.foo = 'hello';
+        bundle.request.data.bar = 'world';
+        bundle.request.data = $.param(bundle.request.data);
+
+        bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+        return {
+          url: '${HTTPBIN_URL}/post',
+          method: bundle.request.method,
+          headers: bundle.request.headers,
+          data: bundle.request.data
+        };
+      },
+
       pre_oauthv2_refresh_bundle_load: function(bundle) {
         bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = qs.stringify(bundle.load);
