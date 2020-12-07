@@ -1,3 +1,7 @@
+## 3.7.6
+
+- :bug: `bundle.request.data` should always be an object in `pre_oauthv2_refresh` ([#294](https://github.com/zapier/zapier-platform/pull/294))
+
 ## 3.7.5
 
 - :bug: Make response headers case-insensitive ([#253](https://github.com/zapier/zapier-platform/pull/253))
