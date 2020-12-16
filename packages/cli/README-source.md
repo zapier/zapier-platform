@@ -938,7 +938,7 @@ Read more in the [REST hook example](https://github.com/zapier/zapier-platform/b
 
 ### `bundle.subscribeData`
 
-> `bundle.subscribeData` is only available in the `performUnsubscribe` method for webhooks.
+> `bundle.subscribeData` is available in the `perform` and `performUnsubscribe` method for webhooks.
 
 This is an object that contains the data you returned from the `performSubscribe` function. It should contain whatever information you need send a `DELETE` request to your server to stop sending webhooks to Zapier.
 
