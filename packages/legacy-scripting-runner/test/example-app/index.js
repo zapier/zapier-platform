@@ -269,6 +269,11 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_urlencode: function(bundle) {
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/echo?url=' + encodeURIComponent('https://example.com');
+        return bundle.request;
+      },
+
       getMovesUrl: function() {
         return '${AUTH_JSON_SERVER_URL}/movies';
       },

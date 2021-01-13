@@ -665,8 +665,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       }
 
       // encode everything, but retain curlies - those are replaced in z.request
-      // important to maintain case here; new URL lowercases everything
+      // important to maintain case here; `new URL()` lowercases the hostname,
+      // which may contain a variable like '{{process.env.URL}}'
       request.url = encodeURI(request.url)
+        .replace(/%25/g, '%') // fixes double encoding
         .replace(/%7B/g, '{')
         .replace(/%7D/g, '}');
       request.headers = cleanHeaders(request.headers);
