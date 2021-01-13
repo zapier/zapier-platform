@@ -1,3 +1,7 @@
+## 3.7.7
+
+- :bug: Shouldn't double encode when `pre` method also encodes the URL ([#304](https://github.com/zapier/zapier-platform/pull/304))
+
 ## 3.7.6
 
 - :bug: `bundle.request.data` should always be an object in `pre_oauthv2_refresh` ([#294](https://github.com/zapier/zapier-platform/pull/294))
