@@ -2207,6 +2207,26 @@ describe('Integration Test', () => {
       );
     });
 
+    it('KEY_post_write, response error overrules script error', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_write_intercept_error',
+        'movie_pre_write'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_write_bad_code',
+        'movie_post_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).should.be.rejectedWith(/I'm a teapot/);
+    });
+
     it('KEY_pre_write & KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(

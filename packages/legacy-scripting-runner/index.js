@@ -12,6 +12,16 @@ const {
 
 const { flattenPaths } = require('zapier-platform-core/src/tools/data');
 
+const {
+  ErrorException,
+  HaltedException,
+  StopRequestException,
+  ExpiredAuthException,
+  RefreshTokenException,
+  InvalidSessionException,
+  DEFINED_ERROR_NAMES,
+} = require('./exceptions');
+
 const createInternalRequestClient = (input) => {
   const addQueryParams = require('zapier-platform-core/src/http-middlewares/before/add-query-params');
   const createInjectInputMiddleware = require('zapier-platform-core/src/http-middlewares/before/inject-input');
@@ -273,14 +283,6 @@ const cleanHeaders = (headers) => {
 
 const compileLegacyScriptingSource = (source, zcli, app) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
-  const {
-    ErrorException,
-    HaltedException,
-    StopRequestException,
-    ExpiredAuthException,
-    RefreshTokenException,
-    InvalidSessionException,
-  } = require('./exceptions');
 
   const underscore = require('underscore');
   underscore.templateSettings = {
@@ -539,6 +541,15 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return out;
   };
 
+  const chooseBetterError = (responseError, scriptError) => {
+    if (scriptError) {
+      if (DEFINED_ERROR_NAMES.includes(scriptError.name)) {
+        return scriptError;
+      }
+    }
+    return responseError;
+  };
+
   const runEvent = async (event, z, bundle) => {
     if (!Zap || _.isEmpty(Zap) || !event || !event.name || !z) {
       return;
@@ -680,6 +691,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
       if (!options.parseResponse) {
         if (options.checkResponseStatus) {
+          response.skipThrowForStatus = false;
           response.throwForStatus();
         }
         return response;
@@ -689,16 +701,30 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
       const postMethod = postMethodName ? Zap[postMethodName] : null;
       if (postMethod) {
-        result = await runEvent(
-          { key, name: postEventName, response },
-          zcli,
-          bundle
-        );
+        let scriptError, responseError;
+        try {
+          result = await runEvent(
+            { key, name: postEventName, response },
+            zcli,
+            bundle
+          );
+        } catch (error) {
+          scriptError = error;
+        }
 
         if (options.checkResponseStatus) {
           // Raising this error AFTER postMethod is executed allows devs to
           // intercept and throw another error from postMethod
-          response.throwForStatus();
+          response.skipThrowForStatus = false;
+          try {
+            response.throwForStatus();
+          } catch (error) {
+            responseError = error;
+          }
+        }
+
+        if (responseError || scriptError) {
+          throw chooseBetterError(responseError, scriptError);
         }
 
         if (options.defaultToResponse && !result) {
@@ -710,6 +736,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         }
       } else {
         if (options.checkResponseStatus) {
+          response.skipThrowForStatus = false;
           response.throwForStatus();
         }
 
@@ -732,6 +759,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       auth: authParams,
       skipThrowForStatus: true,
     });
+    response.skipThrowForStatus = false;
     response.throwForStatus();
     return querystring.parse(response.content);
   };
