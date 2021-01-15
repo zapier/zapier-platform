@@ -546,7 +546,7 @@ You can find more details on the different field schema options at [our Field Sc
 
 In some cases, it might be necessary to provide fields that are dynamically generated - especially for custom fields. This is a common pattern for CRMs, form software, databases and more. Basically - you can provide a function instead of a field and we'll evaluate that function - merging the dynamic fields with the static fields.
 
-> You should see `bundle.inputData` partially filled in as users provide data - even in field retrieval. This allows you to build hierarchical relationships into fields (EG: only show issues from the previously selected project).
+> You should see `bundle.inputData` partially filled in as users provide data - even in field retrieval. This allows you to build hierarchical relationships into fields (e.g. only show issues from the previously selected project).
 
 > A function that returns a list of dynamic fields cannot include additional functions in that list to call for dynamic fields.
 
@@ -561,6 +561,14 @@ Additionally, if there is a field that affects the generation of dynamic fields,
 ```
 
 > Only dropdowns support `altersDynamicFields`.
+
+When using dynamic fields, the fields will be retrieved in three different contexts:
+
+* Whenever the value of a field with `altersDynamicFields` is changed, as described above.
+* Whenever Zap Editor opens the "Set up" section for the trigger or action.
+* Whenever the Refresh Fields button is used on the trigger or action.
+
+Be sure to set up your code accordingly - for example, don't rely on any input fields already having a value, since they won't have one the first time the "Set up" section loads.
 
 ### Dynamic Dropdowns
 
