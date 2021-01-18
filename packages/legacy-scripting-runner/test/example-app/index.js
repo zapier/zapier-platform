@@ -575,6 +575,10 @@ const legacyScriptingSource = `
         return z.JSON.parse(bundle.response.content);
       },
 
+      movie_post_write_bad_code: function(bundle) {
+        throw new TypeError("You shouldn't see this if bundle.response is an error");
+      },
+
       movie_pre_write_default_headers: function(bundle) {
         // Copy Accept and Content-Type to request body so we know they're
         // already available in pre_write
