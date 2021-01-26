@@ -177,7 +177,7 @@ The Zapier Platform includes two ways to build integrations: a CLI to build inte
 
 Zapier Platform CLI is designed to be used by development teams who collaborate with version control and CI, and can be used to build more advanced integrations with custom coding for every part of your API calls and response parsing.
 
-[Zapier Platform UI](https://zapier.com/app/developer/) is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It's the quickest way to start using the Zapier platform—and you can manage your CLI apps' core details from its online UI as well. Coming soon, you will be able to convert Zapier Platform UI integrations to CLI to start development in your browser then finish out the core features in your local development environment.
+[Zapier Platform UI](https://zapier.com/app/developer/) is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It's the quickest way to start using the Zapier platform—and you can manage your CLI apps' core details from its online UI as well. You can also [export](https://platform.zapier.com/docs/export) Zapier Platform UI integrations to CLI to start development in your browser, then finish out the core features in your local development environment.
 
 > Learn more in our [Zapier Platform UI vs CLI](https://platform.zapier.com/docs/vs) post.
 
