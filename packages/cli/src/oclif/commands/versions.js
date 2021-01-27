@@ -22,6 +22,12 @@ class VersionCommand extends BaseCommand {
       emptyMessage:
         'No versions to show. Try adding one with the `zapier push` command',
     });
+
+    if (versions[0].user_count === null) {
+      this.warn(
+        'User counts are still being calculated - run this command again in ~10 seconds (or longer if your integration has lots of users).'
+      );
+    }
   }
 }
 
