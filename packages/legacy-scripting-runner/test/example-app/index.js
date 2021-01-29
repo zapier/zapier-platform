@@ -570,7 +570,7 @@ const legacyScriptingSource = `
 
       movie_post_write_intercept_error: function(bundle) {
         if (bundle.response.status_code == 418) {
-          throw new HaltedException('teapot here, go find a coffee machine');
+          throw new ErrorException('teapot here, go find a coffee machine');
         }
         return z.JSON.parse(bundle.response.content);
       },
