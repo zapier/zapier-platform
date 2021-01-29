@@ -58,7 +58,7 @@ const exceptions = {
   DehydrateException: cliErrors.DehydrateError,
 };
 
-const DEFINED_ERROR_NAMES = ['ErrorException', ...names];
+const DEFINED_ERROR_NAMES = ['AppError', ...names];
 
 module.exports = {
   ...exceptions,

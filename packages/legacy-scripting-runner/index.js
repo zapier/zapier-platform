@@ -543,7 +543,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
   const chooseBetterError = (responseError, scriptError) => {
     if (scriptError) {
-      if (DEFINED_ERROR_NAMES.includes(scriptError.name)) {
+      if (!responseError || DEFINED_ERROR_NAMES.includes(scriptError.name)) {
         return scriptError;
       }
     }
