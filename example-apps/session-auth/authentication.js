@@ -47,7 +47,7 @@ module.exports = {
     // Define any input app's auth requires here. The user will be prompted to enter
     // this info when they connect their account.
     fields: [
-      { key: 'username', label: 'Username', required: 'true' },
+      { key: 'username', label: 'Username', required: true },
       {
         key: 'password',
         label: 'Password',
