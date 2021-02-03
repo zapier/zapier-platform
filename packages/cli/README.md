@@ -265,7 +265,7 @@ npm install
 If you'd like to manage your **local App**, use these commands:
 
 * `zapier init myapp` - initialize/start a local app project
-* `zapier convert 1234 .` - initialize/start from an existing app (alpha)
+* `zapier convert 1234 .` - initialize/start from an existing app
 * `zapier scaffold resource Contact` - auto-injects a new resource, trigger, etc.
 * `zapier test` - run the same tests as `npm test`
 * `zapier validate` - ensure your app is valid
