@@ -355,6 +355,7 @@ a code {
 <li><a href="#running-unit-tests">Running Unit Tests</a></li>
 <li><a href="#testing--environment-variables">Testing &amp; Environment Variables</a></li>
 <li><a href="#testing-in-your-ci">Testing in Your CI</a></li>
+<li><a href="#debugging-tests">Debugging Tests</a></li>
 </ul>
 </li>
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
@@ -560,6 +561,7 @@ a code {
 <li><a href="#running-unit-tests">Running Unit Tests</a></li>
 <li><a href="#testing--environment-variables">Testing &amp; Environment Variables</a></li>
 <li><a href="#testing-in-your-ci">Testing in Your CI</a></li>
+<li><a href="#debugging-tests">Debugging Tests</a></li>
 </ul>
 </li>
 <li><a href="#using-npm-modules">Using <code>npm</code> Modules</a></li>
@@ -4553,6 +4555,69 @@ zapier <span class="hljs-built_in">test</span>
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>You can substitute <code>zapier test</code> with <code>npm test</code>, or a direct call to <code>node_modules/.bin/jest</code>. Also, we generally recommend putting the environment variables into whatever configuration screen Jenkins or Travis provides!</p><p>As an alternative to reading the deploy key from root (the default location), you may set the <code>ZAPIER_DEPLOY_KEY</code> environment variable to run privileged commands without the human input needed for <code>zapier login</code>. We suggest encrypting your deploy key in whatever manner you CI provides (such as <a href="https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml">these instructions</a>, for Travis).</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="debugging-tests">Debugging Tests</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Sometimes tests aren&apos;t enough and you may want to step through your code and set breakpoints. The testing suite is a regular Node.js process, so debugging it doesn&apos;t take anything special. Because we recommend <code>jest</code> for testing, these instructions will outline steps for debugging w/ jest, but other test runners will work similarly. You can also refer to <a href="https://jestjs.io/docs/en/troubleshooting#tests-are-failing-and-you-dont-know-why">Jest&apos;s own docs on the subject</a>.</p><p>To start, add the following line to the <code>scripts</code> section of your <code>package.json</code>:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code>&quot;test:debug&quot;: &quot;node --inspect-brk node_modules/.bin/jest --runInBand&quot;
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>This will tell <code>node</code> to inspect the <code>jest</code> processes, which is exactly what we need.</p><p>Next, add a <code>debugger;</code> statement somewhere in your code, probably in a <code>perform</code> method:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-comment">// triggers on a new pizza with a certain tag</span>
+<span class="hljs-keyword">const</span> perform = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;https://jsonplaceholder.typicode.com/posts&quot;</span>,
+    <span class="hljs-attr">params</span>: {
+      <span class="hljs-attr">tag</span>: bundle.inputData.tagName,
+    },
+  });
+  <span class="hljs-keyword">debugger</span>;
+  <span class="hljs-comment">// this should return an array of objects</span>
+  <span class="hljs-keyword">return</span> response.data;
+};
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>This creates a <em>breakpoint</em> in while <code>inspect</code>ing, or a starting point for our manual inspection.</p><p>Next, you&apos;ll need an inspection client. The most available one is probably the Google Chrome browser, but there are <a href="https://nodejs.org/en/docs/guides/debugging-getting-started/#inspector-clients">lots of options</a>. We&apos;ll use Chrome for this example. In your terminal (and in your integration&apos;s root directory), run <code>yarn test:debug</code> (or <code>npm run test:debug</code>). You should see the following:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code>% yarn test:debug
+yarn run v1.22.10
+$ node --inspect-brk node_modules/.bin/jest --runInBand
+Debugger listening on ws://127.0.0.1:9229/5edaab3c-a1d3-45e4-b374-0536095c559b
+For help, see: https://nodejs.org/en/docs/inspector
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Now in Chrome, go to chrome://inspect. Make sure <code>Discover Network Targets</code> is checked and you should see a path to your <code>jest</code> file on your local machine:</p><p><img src="https://cdn.zappy.app/e2836d2950e1f8a03e3621a22452c3cd.png" alt></p><p>Click <code>inspect</code>. A new window will open. Next, click the little blue arrow in the top right to actually run the code:</p><p><img src="https://cdn.zappy.app/a64e7963a7090e9730d9c8e7b3595a6a.png" alt></p><p>After a few seconds, you&apos;ll see your code, the <code>debugger</code> statement, and info about the current environment on the right panel. You should see familiar data in the <code>Locals</code> section, such as the <code>response</code> variable, and the <code>z</code> object.</p><p><img src="https://cdn.zappy.app/4bfdfe079a344ab7aced64ad7728bc6a.png" alt></p><p>Using debugging in combination with thorough unit tests, you will hopefully be able to keep your Zapier ingration in smooth working order.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

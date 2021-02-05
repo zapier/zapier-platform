@@ -119,6 +119,7 @@ This doc decribes the latest CLI version **10.1.2**, as of this writing. If you'
   * [Running Unit Tests](#running-unit-tests)
   * [Testing & Environment Variables](#testing--environment-variables)
   * [Testing in Your CI](#testing-in-your-ci)
+  * [Debugging Tests](#debugging-tests)
 - [Using `npm` Modules](#using-npm-modules)
 - [Building Native Packages with Docker](#building-native-packages-with-docker)
 - [Using Transpilers](#using-transpilers)
@@ -2772,6 +2773,60 @@ You can substitute `zapier test` with `npm test`, or a direct call to `node_modu
 
 As an alternative to reading the deploy key from root (the default location), you may set the `ZAPIER_DEPLOY_KEY` environment variable to run privileged commands without the human input needed for `zapier login`. We suggest encrypting your deploy key in whatever manner you CI provides (such as [these instructions](https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml), for Travis).
 
+### Debugging Tests
+
+Sometimes tests aren't enough and you may want to step through your code and set breakpoints. The testing suite is a regular Node.js process, so debugging it doesn't take anything special. Because we recommend `jest` for testing, these instructions will outline steps for debugging w/ jest, but other test runners will work similarly. You can also refer to [Jest's own docs on the subject](https://jestjs.io/docs/en/troubleshooting#tests-are-failing-and-you-dont-know-why).
+
+To start, add the following line to the `scripts` section of your `package.json`:
+
+```
+"test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
+```
+
+This will tell `node` to inspect the `jest` processes, which is exactly what we need.
+
+Next, add a `debugger;` statement somewhere in your code, probably in a `perform` method:
+
+```js
+// triggers on a new pizza with a certain tag
+const perform = async (z, bundle) => {
+  const response = await z.request({
+    url: "https://jsonplaceholder.typicode.com/posts",
+    params: {
+      tag: bundle.inputData.tagName,
+    },
+  });
+  debugger;
+  // this should return an array of objects
+  return response.data;
+};
+```
+
+This creates a _breakpoint_ in while `inspect`ing, or a starting point for our manual inspection.
+
+Next, you'll need an inspection client. The most available one is probably the Google Chrome browser, but there are [lots of options](https://nodejs.org/en/docs/guides/debugging-getting-started/#inspector-clients). We'll use Chrome for this example. In your terminal (and in your integration's root directory), run `yarn test:debug` (or `npm run test:debug`). You should see the following:
+
+```
+% yarn test:debug
+yarn run v1.22.10
+$ node --inspect-brk node_modules/.bin/jest --runInBand
+Debugger listening on ws://127.0.0.1:9229/5edaab3c-a1d3-45e4-b374-0536095c559b
+For help, see: https://nodejs.org/en/docs/inspector
+```
+
+Now in Chrome, go to chrome://inspect. Make sure `Discover Network Targets` is checked and you should see a path to your `jest` file on your local machine:
+
+![](https://cdn.zappy.app/e2836d2950e1f8a03e3621a22452c3cd.png)
+
+Click `inspect`. A new window will open. Next, click the little blue arrow in the top right to actually run the code:
+
+![](https://cdn.zappy.app/a64e7963a7090e9730d9c8e7b3595a6a.png)
+
+After a few seconds, you'll see your code, the `debugger` statement, and info about the current environment on the right panel. You should see familiar data in the `Locals` section, such as the `response` variable, and the `z` object.
+
+![](https://cdn.zappy.app/4bfdfe079a344ab7aced64ad7728bc6a.png)
+
+Using debugging in combination with thorough unit tests, you will hopefully be able to keep your Zapier ingration in smooth working order.
 
 ## Using `npm` Modules
 
