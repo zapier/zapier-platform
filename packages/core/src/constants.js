@@ -52,6 +52,7 @@ const SAFE_LOG_KEYS = [
   'response_status_code',
   'selected_api',
   'timestamp',
+  'trigger_subscription_id',
 ];
 const STATUSES = {
   CALLBACK: 'CALLBACK',
