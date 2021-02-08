@@ -19,13 +19,21 @@ class AppError extends Error {
 
 class ResponseError extends Error {
   constructor(response) {
+    let content;
+    try {
+      content = response.content;
+    } catch (err) {
+      // Stream request (z.request({raw: true})) doesn't have response.content
+      content = null;
+    }
+
     super(
       JSON.stringify({
         status: response.status,
         headers: {
           'content-type': response.headers.get('content-type'),
         },
-        content: response.content,
+        content,
         request: {
           url: response.request.url,
         },

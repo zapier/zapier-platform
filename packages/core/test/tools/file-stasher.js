@@ -121,7 +121,7 @@ describe('file upload', () => {
     });
     stashFile(file)
       .catch((err) => {
-        should(err.message).containEql('Received 401 code from');
+        should(err.message).containEql('"status":401');
         done();
       })
       .catch(done);
