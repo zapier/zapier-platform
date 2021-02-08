@@ -364,6 +364,17 @@ describe('request client', () => {
     });
   });
 
+  it('should be able to redirect from https to http while disabling SSL certificate checks', () => {
+    const newInput = _.cloneDeep(input);
+    newInput._zapier.event.verifySSL = false;
+    const request = createAppRequestClient(newInput);
+    return request(`${HTTPBIN_URL}/redirect-to?url=http://example.com`).then(
+      (response) => {
+        response.status.should.eql(200);
+      }
+    );
+  });
+
   it('should allow unencrypted requests when SSL checks are disabled', () => {
     const newInput = _.cloneDeep(input);
     newInput._zapier.event.verifySSL = false;
