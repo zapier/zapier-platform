@@ -40,5 +40,30 @@ describe('errors', () => {
         '{"status":400,"headers":{"content-type":"text/html; charset=utf-8"},"content":"","request":{"url":"https://httpbin.org/status/400"}}'
       );
     });
+
+    it('should work with stream request', async () => {
+      const response = {
+        status: 401,
+        headers: {
+          get: () => 'application/json',
+        },
+        request: {
+          url: 'https://example.com',
+        },
+      };
+      Object.defineProperty(response, 'content', {
+        get: function () {
+          throw new Error('stream request does not have content');
+        },
+      });
+
+      const error = new errors.ResponseError(response);
+
+      error.should.instanceOf(errors.ResponseError);
+      error.name.should.eql('ResponseError');
+      error.message.should.eql(
+        `{"status":401,"headers":{"content-type":"application/json"},"content":null,"request":{"url":"https://example.com"}}`
+      );
+    });
   });
 });

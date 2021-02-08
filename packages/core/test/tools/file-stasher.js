@@ -21,18 +21,18 @@ describe('file upload', () => {
     _zapier: {
       rpc,
       event: {
-        method: 'hydrators.test'
-      }
-    }
+        method: 'hydrators.test',
+      },
+    },
   });
 
-  it('should upload a standard blob of text', done => {
+  it('should upload a standard blob of text', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
     mocky.mockUpload();
 
     const file = 'hello world this is a plain blob of text';
     stashFile(file)
-      .then(url => {
+      .then((url) => {
         should(url).eql(
           `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
@@ -41,13 +41,13 @@ describe('file upload', () => {
       .catch(done);
   });
 
-  it('should upload a standard buffer of text', done => {
+  it('should upload a standard buffer of text', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
     mocky.mockUpload();
 
     const file = Buffer.from('hello world this is a buffer of text');
     stashFile(file)
-      .then(url => {
+      .then((url) => {
         should(url).eql(
           `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
@@ -56,7 +56,7 @@ describe('file upload', () => {
       .catch(done);
   });
 
-  it('should fail a standard file stream of text with no length', done => {
+  it('should fail a standard file stream of text with no length', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
 
     // known failure when "You must provide the Content-Length HTTP header."
@@ -65,14 +65,14 @@ describe('file upload', () => {
     const file = fs.createReadStream(path.join(__dirname, 'test.txt'));
     stashFile(file)
       .then(() => done(new Error('this should have exploded')))
-      .catch(err => {
+      .catch((err) => {
         should(err.message).containEql('knownLength');
         done();
       })
       .catch(done);
   });
 
-  it('should upload a standard file stream of text', done => {
+  it('should upload a standard file stream of text', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
     mocky.mockUpload();
 
@@ -80,7 +80,7 @@ describe('file upload', () => {
     const knownLength = fs.readFileSync(path.join(__dirname, 'test.txt'))
       .length;
     stashFile(file, knownLength)
-      .then(url => {
+      .then((url) => {
         should(url).eql(
           `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
@@ -89,16 +89,16 @@ describe('file upload', () => {
       .catch(done);
   });
 
-  it('should upload a raw response', done => {
+  it('should upload a raw response', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
     mocky.mockUpload();
 
     const request = createAppRequestClient(input);
     const file = request('https://httpbin.org/stream-bytes/1024', {
-      raw: true
+      raw: true,
     });
     stashFile(file)
-      .then(url => {
+      .then((url) => {
         should(url).eql(
           `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
@@ -107,28 +107,26 @@ describe('file upload', () => {
       .catch(done);
   });
 
-  it('should throwForStatus if bad status', done => {
+  it('should throwForStatus if bad status', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
     mocky.mockUpload();
 
-    nock('https://example.com')
-      .get('/stream-bytes')
-      .reply(401);
+    nock('https://example.com').get('/stream-bytes').reply(401);
 
     const request = createAppRequestClient(input);
     const file = request({
       url: 'https://example.com/stream-bytes',
-      raw: true
+      raw: true,
     });
     stashFile(file)
-      .catch(err => {
-        should(err.message).containEql('Received 401 code from');
+      .catch((err) => {
+        should(err.message).containEql('"status":401');
         done();
       })
       .catch(done);
   });
 
-  it('should upload a resolved buffer', done => {
+  it('should upload a resolved buffer', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
     mocky.mockUpload();
 
@@ -137,7 +135,7 @@ describe('file upload', () => {
     );
 
     stashFile(file)
-      .then(url => {
+      .then((url) => {
         should(url).eql(
           `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
@@ -146,20 +144,20 @@ describe('file upload', () => {
       .catch(done);
   });
 
-  it('should fail if being called from a trigger event', done => {
+  it('should fail if being called from a trigger event', (done) => {
     const pollingStashFile = createFileStasher({
       _zapier: {
         rpc,
         event: {
-          method: 'triggers.test.operation.perform'
-        }
-      }
+          method: 'triggers.test.operation.perform',
+        },
+      },
     });
 
     const file = fs.createReadStream(path.join(__dirname, 'test.txt'));
     pollingStashFile(file)
       .then(() => done(new Error('this should have exploded')))
-      .catch(err => {
+      .catch((err) => {
         should(err.message).containEql(
           'Files can only be stashed within a create or hydration function/method'
         );
@@ -168,20 +166,20 @@ describe('file upload', () => {
       .catch(done);
   });
 
-  it('should fail if being called from a search event', done => {
+  it('should fail if being called from a search event', (done) => {
     const stashFileTest = createFileStasher({
       _zapier: {
         rpc,
         event: {
-          method: 'search.test.operation.perform'
-        }
-      }
+          method: 'search.test.operation.perform',
+        },
+      },
     });
 
     const file = fs.createReadStream(path.join(__dirname, 'test.txt'));
     stashFileTest(file)
       .then(() => done(new Error('this should have exploded')))
-      .catch(err => {
+      .catch((err) => {
         should(err.message).containEql(
           'Files can only be stashed within a create or hydration function/method'
         );
@@ -190,7 +188,7 @@ describe('file upload', () => {
       .catch(done);
   });
 
-  it('should work if being called from a create/action event', done => {
+  it('should work if being called from a create/action event', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
     mocky.mockUpload();
 
@@ -198,14 +196,14 @@ describe('file upload', () => {
       _zapier: {
         rpc,
         event: {
-          method: 'creates.test.operation.perform'
-        }
-      }
+          method: 'creates.test.operation.perform',
+        },
+      },
     });
 
     const file = 'hello world this is a plain blob of text';
     stashFileTest(file)
-      .then(url => {
+      .then((url) => {
         should(url).eql(
           `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
@@ -214,7 +212,7 @@ describe('file upload', () => {
       .catch(done);
   });
 
-  it('should get filename from content-disposition', done => {
+  it('should get filename from content-disposition', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
 
     // Expect to have this part in the request body sent to S3
@@ -226,12 +224,12 @@ describe('file upload', () => {
     const file = request({
       url: 'https://httpbin.org/response-headers',
       params: {
-        'Content-Disposition': 'inline; filename="an example.json"'
+        'Content-Disposition': 'inline; filename="an example.json"',
       },
-      raw: true
+      raw: true,
     });
     stashFile(file)
-      .then(url => {
+      .then((url) => {
         should(url).eql(
           `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
         );
