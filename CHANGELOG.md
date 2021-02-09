@@ -1,3 +1,26 @@
+## 10.1.3
+
+### cli
+
+* :bug: Fix phrasing in `link` command ([#316](https://github.com/zapier/zapier-platform/pull/316))
+* :nail_care: Add warning if user counts are still being calculated ([#308](https://github.com/zapier/zapier-platform/pull/308))
+* :scroll: Mention `subscribeData` is available in `perform` ([#300](https://github.com/zapier/zapier-platform/pull/300))
+* :scroll: Add debugging info ([#318](https://github.com/zapier/zapier-platform/pull/318))
+* :scroll: Update readiness of UI → CLI conversion tool ([#307](https://github.com/zapier/zapier-platform/pull/307), [#311](https://github.com/zapier/zapier-platform/pull/311))
+* :scroll: Add details about when dynamic fields are loaded ([#303](https://github.com/zapier/zapier-platform/pull/303))
+* :scroll: Change 90-day limit for callbacks to 30-day ([#293](https://github.com/zapier/zapier-platform/pull/293))
+* :scroll: Fix typos in examples ([#296](https://github.com/zapier/zapier-platform/pull/296), [#297](https://github.com/zapier/zapier-platform/pull/297))
+
+### core
+
+* :bug: `ResponseError` no longer fails when request is `raw` ([#320](https://github.com/zapier/zapier-platform/pull/320))
+* :bug: Redirecting from `https` to `http` breaks when disabling SSL certificate checks ([#313](https://github.com/zapier/zapier-platform/pull/313))
+* :hammer: Log `trigger_subscription_id` field ([#317](https://github.com/zapier/zapier-platform/pull/317))
+
+### schema
+
+* :scroll: Add reasons to anti-examples, update README, rearrange schema layout ([#287](https://github.com/zapier/zapier-platform/pull/287))
+
 ## 10.1.2
 
 This release mostly has internal features, but also ships a lot of documentation updates and a few bumped dependencies.
@@ -106,7 +129,7 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 * :exclamation: Integrations now run on Node.js 12!
 * :exclamation: `z.request` now always calls `response.throwForStatus` via a middleware by default ([#210](https://github.com/zapier/zapier-platform/pull/210))
 * :exclamation: Session and OAuth2 refresh now happens AFTER your `afterResponse` ([#210](https://github.com/zapier/zapier-platform/pull/210))
-* :exclamation: `response.throwForStatus` now only throws for 400 <= status <= 600 ([#192](https://github.com/zapier/zapier-platform/pull/192))
+* :exclamation: `response.throwForStatus` now only throws for 400 ≤ status ≤ 600 ([#192](https://github.com/zapier/zapier-platform/pull/192))
 * :exclamation: Introduce `response.data` with support for form-urlencoded and custom parsing ([#211](https://github.com/zapier/zapier-platform/pull/211))
 * :bug: Don't log request body when it's streaming data ([#214](https://github.com/zapier/zapier-platform/pull/214))
 * :bug: `z.request`'s `allowGetBody` option shouldn't send empty body ([#227](https://github.com/zapier/zapier-platform/pull/227))
@@ -115,6 +138,21 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 ### schema
 
 * :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+
+## 9.4.2
+
+### cli
+
+* None!
+
+### core
+
+* :bug: `ResponseError` no longer fails when request is `raw` ([#320](https://github.com/zapier/zapier-platform/pull/320))
+* :bug: Redirecting from `https` to `http` breaks when disabling SSL certificate checks ([#314](https://github.com/zapier/zapier-platform/pull/314))
+
+### schema
+
+* None!
 
 ## 9.4.0
 
