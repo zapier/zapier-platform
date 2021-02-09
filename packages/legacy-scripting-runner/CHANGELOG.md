@@ -1,3 +1,7 @@
+## 3.7.9
+
+- :bug: Throwing `ErrorException` should appear in an error log ([#309](https://github.com/zapier/zapier-platform/pull/309))
+
 ## 3.7.8
 
 - :bug: Better choose between `ResponseError` and script error ([#305](https://github.com/zapier/zapier-platform/pull/305))
