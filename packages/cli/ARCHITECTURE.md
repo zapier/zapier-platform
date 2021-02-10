@@ -4,6 +4,7 @@
 
 - This package, released as `zapier-platform-cli` publicly on [npm](https://www.npmjs.com/package/zapier-platform-cli), powers the Zapier CLI (invoked via the `zapier` command).
 - Developers install and use this tool to complete operations required to develop an integration on the Zapier platform.
+- The `core`, `schema`, and `cli` packages are always released together under matching version numbers.
 
 ## Technical Organization
 
