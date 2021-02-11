@@ -1261,8 +1261,8 @@ The interface `z.stashFile(bufferStringStream, [knownLength], [filename], [conte
 
 ```js
 const content = 'Hello world!';
-z.stashFile(content, content.length, 'hello.txt', 'text/plain')
-  .then(url => z.console.log(url));
+const url = await z.stashFile(content, content.length, 'hello.txt', 'text/plain');
+z.console.log(url);
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/f75e2819-05e2-41d0-b70e-9f8272f9eebf
 ```
 
@@ -1270,8 +1270,8 @@ Most likely you'd want to stream from another URL - note the usage of `z.request
 
 ```js
 const fileRequest = z.request({url: 'https://example.com/file.pdf', raw: true});
-z.stashFile(fileRequest) // knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream
-  .then(url => z.console.log(url));
+const url = await z.stashFile(fileRequest); // knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream
+z.console.log(url);
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7
 ```
 
