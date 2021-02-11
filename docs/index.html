@@ -3907,8 +3907,8 @@ response.throwForStatus();
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> content = <span class="hljs-string">&apos;Hello world!&apos;</span>;
-z.stashFile(content, content.length, <span class="hljs-string">&apos;hello.txt&apos;</span>, <span class="hljs-string">&apos;text/plain&apos;</span>)
-  .then(<span class="hljs-function"><span class="hljs-params">url</span> =&gt;</span> z.console.log(url));
+<span class="hljs-keyword">const</span> url = <span class="hljs-keyword">await</span> z.stashFile(content, content.length, <span class="hljs-string">&apos;hello.txt&apos;</span>, <span class="hljs-string">&apos;text/plain&apos;</span>);
+z.console.log(url);
 <span class="hljs-comment">// https://zapier-dev-files.s3.amazonaws.com/cli-platform/f75e2819-05e2-41d0-b70e-9f8272f9eebf</span>
 </code></pre>
     </div>
@@ -3920,8 +3920,8 @@ z.stashFile(content, content.length, <span class="hljs-string">&apos;hello.txt&a
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> fileRequest = z.request({<span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/file.pdf&apos;</span>, <span class="hljs-attr">raw</span>: <span class="hljs-literal">true</span>});
-z.stashFile(fileRequest) <span class="hljs-comment">// knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream</span>
-  .then(<span class="hljs-function"><span class="hljs-params">url</span> =&gt;</span> z.console.log(url));
+<span class="hljs-keyword">const</span> url = <span class="hljs-keyword">await</span> z.stashFile(fileRequest); <span class="hljs-comment">// knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream</span>
+z.console.log(url);
 <span class="hljs-comment">// https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7</span>
 </code></pre>
     </div>
