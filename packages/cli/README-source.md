@@ -1925,7 +1925,7 @@ The Zapier Platform consists of 3 npm packages that are released simultaneously 
 
 - [`zapier-platform-core`](https://github.com/zapier/zapier-platform/tree/master/packages/core) is what allows your app to interact with Zapier. It holds the `z` object and app tester code. Your app depends on a specific version of `zapier-platform-core` in the `package.json` file. It's installed via `npm install` along with the rest of your app's dependencies.
 
-- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/master/packages/clischema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
+- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/master/packages/schema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
 
 ### Updating
 
