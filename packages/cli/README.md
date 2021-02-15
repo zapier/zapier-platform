@@ -20,7 +20,7 @@ You may find docs duplicate or outdated across the Zapier site. The most up-to-d
 - [Latest CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
 - [Latest Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
 
-This doc decribes the latest CLI version **10.1.3**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+This doc describes the latest CLI version **10.1.3**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
 - CLI Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
 - CLI Reference: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
@@ -1867,7 +1867,7 @@ Read more in the [REST hook example](https://github.com/zapier/zapier-platform/b
 
 Apps can define environment variables that are available when the app's code executes. They work just like environment
 variables defined on the command line. They are useful when you have data like an OAuth client ID and secret that you
-don't want to commit to source control. Environment variables can also be used as a quick way to toggle between a
+don't want to commit to source control. Environment variables can also be used as a quick way to toggle between
 a staging and production environment during app development.
 
 It is important to note that **variables are defined on a per-version basis!** When you push a new version, the
@@ -2257,7 +2257,7 @@ The method `z.dehydrate(func, inputData)` has two required arguments:
 * `func` - the function to call to fetch the extra data. Can be any raw `function`, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app's `hydrators` property
 * `inputData` - this is an object that contains things like a `path` or `id` - whatever you need to load data on the other side
 
-> **Why do I need to register my functions?** Because of how Javascript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to "automagically" (and sometimes incorrectly) infer code locations.
+> **Why do I need to register my functions?** Because of how JavaScript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to "automagically" (and sometimes incorrectly) infer code locations.
 
 Here is an example that pulls in extra data for a movie:
 
@@ -2735,7 +2735,7 @@ zapier.tools.env.inject(); // inject() can take a filename; defaults to ".env"
 // now process.env has all the values in your .env file
 ```
 
-> `.env` is the new recommended name for the environment file since v5.1.0. The old name `.environment` is depreated but will continue to work for backward compatibility.
+> `.env` is the new recommended name for the environment file since v5.1.0. The old name `.environment` is deprecated but will continue to work for backward compatibility.
 
 > Remember: **NEVER** add your secrets file to version control!
 
@@ -2802,7 +2802,7 @@ const perform = async (z, bundle) => {
 };
 ```
 
-This creates a _breakpoint_ in while `inspect`ing, or a starting point for our manual inspection.
+This creates a _breakpoint_ while `inspect`ing, or a starting point for our manual inspection.
 
 Next, you'll need an inspection client. The most available one is probably the Google Chrome browser, but there are [lots of options](https://nodejs.org/en/docs/guides/debugging-getting-started/#inspector-clients). We'll use Chrome for this example. In your terminal (and in your integration's root directory), run `yarn test:debug` (or `npm run test:debug`). You should see the following:
 
@@ -2826,7 +2826,7 @@ After a few seconds, you'll see your code, the `debugger` statement, and info ab
 
 ![](https://cdn.zappy.app/4bfdfe079a344ab7aced64ad7728bc6a.png)
 
-Using debugging in combination with thorough unit tests, you will hopefully be able to keep your Zapier ingration in smooth working order.
+Using debugging in combination with thorough unit tests, you will hopefully be able to keep your Zapier integration in smooth working order.
 
 ## Using `npm` Modules
 
