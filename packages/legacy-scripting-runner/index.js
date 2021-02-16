@@ -846,13 +846,15 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return urlObj.href;
   };
 
-  const runOAuth2GetAccessToken = (bundle) => {
+  const runOAuth2GetAccessToken = async (bundle) => {
     const url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
 
-    let request = bundle.request;
+    const request = bundle.request;
     request.method = 'POST';
     request.url = url;
     request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+    const origRequest = _.cloneDeep(request);
 
     const templateContext = { ...bundle.authData, ...bundle.inputData };
     const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
@@ -861,34 +863,17 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       templateContext
     );
 
-    // Try two ways to get the token: POST with parameters in a form-encoded body. If
-    // that returns a 4xx, retry a POST with parameters in querystring.
-    const body = request.body;
-    body.code = bundle.inputData.code;
-    body.client_id = clientId;
-    body.client_secret = clientSecret;
-    body.redirect_uri = bundle.inputData.redirect_uri;
-    body.grant_type = 'authorization_code';
+    const params = request.params;
+    params.code = bundle.inputData.code;
+    params.client_id = clientId;
+    params.client_secret = clientSecret;
+    params.redirect_uri = bundle.inputData.redirect_uri;
+    params.grant_type = 'authorization_code';
 
-    return runEventCombo(
-      bundle,
-      '',
-      'auth.oauth2.token.pre',
-      'auth.oauth2.token.post',
-      undefined,
-      { defaultToResponse: true }
-    ).catch(() => {
-      request = bundle.request;
-      request.body = {};
+    let result;
 
-      const params = request.params;
-      params.code = bundle.inputData.code;
-      params.client_id = clientId;
-      params.client_secret = clientSecret;
-      params.redirect_uri = bundle.inputData.redirect_uri;
-      params.grant_type = 'authorization_code';
-
-      return runEventCombo(
+    try {
+      result = await runEventCombo(
         bundle,
         '',
         'auth.oauth2.token.pre',
@@ -896,19 +881,45 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         undefined,
         { defaultToResponse: true }
       );
-    });
+    } catch (err) {
+      if (err.name !== 'ResponseError' || Zap.pre_oauthv2_token) {
+        throw err;
+      }
+
+      bundle.request = origRequest;
+
+      const body = origRequest.body;
+      body.code = bundle.inputData.code;
+      body.client_id = clientId;
+      body.client_secret = clientSecret;
+      body.redirect_uri = bundle.inputData.redirect_uri;
+      body.grant_type = 'authorization_code';
+
+      result = await runEventCombo(
+        bundle,
+        '',
+        'auth.oauth2.token.pre',
+        'auth.oauth2.token.post',
+        undefined,
+        { defaultToResponse: true }
+      );
+    }
+
+    return result;
   };
 
-  const runOAuth2RefreshAccessToken = (bundle) => {
+  const runOAuth2RefreshAccessToken = async (bundle) => {
     const url = _.get(
       app,
       'legacy.authentication.oauth2Config.refreshTokenUrl'
     );
 
-    let request = bundle.request;
+    const request = bundle.request;
     request.method = 'POST';
     request.url = url;
     request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+    const origRequest = _.cloneDeep(request);
 
     const templateContext = { ...bundle.authData, ...bundle.inputData };
     const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
@@ -923,18 +934,27 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     body.refresh_token = bundle.authData.refresh_token;
     body.grant_type = 'refresh_token';
 
-    return runEventCombo(bundle, '', 'auth.oauth2.refresh.pre').catch(() => {
-      request = bundle.request;
-      request.body = {};
+    let result;
 
-      const params = request.params;
+    try {
+      result = await runEventCombo(bundle, '', 'auth.oauth2.refresh.pre');
+    } catch (err) {
+      if (err.name !== 'ResponseError' || Zap.pre_oauthv2_refresh) {
+        throw err;
+      }
+
+      bundle.request = origRequest;
+
+      const params = origRequest.params;
       params.client_id = clientId;
       params.client_secret = clientSecret;
       params.refresh_token = bundle.authData.refresh_token;
       params.grant_type = 'refresh_token';
 
-      return runEventCombo(bundle, '', 'auth.oauth2.refresh.pre');
-    });
+      result = await runEventCombo(bundle, '', 'auth.oauth2.refresh.pre');
+    }
+
+    return result;
   };
 
   const isTestingAuth = (bundle) => {
