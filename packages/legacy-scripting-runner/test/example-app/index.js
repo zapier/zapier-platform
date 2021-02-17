@@ -38,16 +38,27 @@ const legacyScriptingSource = `
         };
       },
 
-      pre_oauthv2_token: function(bundle) {
+      pre_oauthv2_token_basic: function(bundle) {
         bundle.request.url += 'token';
+        bundle.request.data = bundle.request.params;
         return bundle.request;
       },
 
-      post_oauthv2_token: function(bundle) {
+      post_oauthv2_token_basic: function(bundle) {
         var data = z.JSON.parse(bundle.response.content);
         data.something_custom += '!!';
         data.name = 'Jane Doe';
         return data;
+      },
+
+      pre_oauthv2_token_payload_only_in_params: function(bundle) {
+        bundle.request.url += 'token';
+        if (bundle.request.params.grant_type) {
+          bundle.request.data = bundle.request.params;
+        } else {
+          throw new Error('should not reach here');
+        }
+        return bundle.request;
       },
 
       pre_oauthv2_refresh_auth_json_server: function(bundle) {
@@ -85,27 +96,12 @@ const legacyScriptingSource = `
         };
       },
 
-      pre_oauthv2_refresh_request_data_retry: function(bundle) {
-        'use strict';
-
+      pre_oauthv2_refresh_does_not_retry: function(bundle) {
         if (bundle.request.data.client_id) {
-          throw new Error('make it retry');
+          bundle.request.url = '${HTTPBIN_URL}/post';
+          return bundle.request;
         }
-
-        // bundle.request.data should be an object, so this would error in
-        // strict mode if request.data is a string
-        bundle.request.data.foo = 'hello';
-        bundle.request.data.bar = 'world';
-        bundle.request.data = $.param(bundle.request.data);
-
-        bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-
-        return {
-          url: '${HTTPBIN_URL}/post',
-          method: bundle.request.method,
-          headers: bundle.request.headers,
-          data: bundle.request.data
-        };
+        throw new Error('should not reach here');
       },
 
       pre_oauthv2_refresh_bundle_load: function(bundle) {

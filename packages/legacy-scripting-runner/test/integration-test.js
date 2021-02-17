@@ -195,8 +195,8 @@ describe('Integration Test', () => {
     it('pre_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'post_oauthv2_token',
-        'dont_care'
+        'pre_oauthv2_token_basic',
+        'pre_oauthv2_token'
       );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -219,8 +219,8 @@ describe('Integration Test', () => {
     it('post_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'pre_oauthv2_token',
-        'dont_care'
+        'post_oauthv2_token_basic',
+        'post_oauthv2_token'
       );
       appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl +=
         'token';
@@ -244,6 +244,14 @@ describe('Integration Test', () => {
 
     it('pre_oauthv2_token & post_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'pre_oauthv2_token_basic',
+        'pre_oauthv2_token'
+      );
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'post_oauthv2_token_basic',
+        'post_oauthv2_token'
+      );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -259,6 +267,28 @@ describe('Integration Test', () => {
         should.equal(output.results.access_token, 'a_token');
         should.equal(output.results.something_custom, 'alright!!!');
         should.equal(output.results.name, 'Jane Doe');
+      });
+    });
+
+    it('pre_oauthv2_token, payload only in params', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'pre_oauthv2_token_payload_only_in_params',
+        'pre_oauthv2_token'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.getAccessToken'
+      );
+      input.bundle.inputData = {
+        redirect_uri: 'https://example.com',
+        code: 'one_time_code',
+      };
+      return app(input).then((output) => {
+        should.equal(output.results.access_token, 'a_token');
       });
     });
 
@@ -361,10 +391,10 @@ describe('Integration Test', () => {
       });
     });
 
-    it('pre_oauthv2_refresh, request.data should be an object on retry', () => {
+    it('pre_oauthv2_refresh, does not retry', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'pre_oauthv2_refresh_request_data_retry',
+        'pre_oauthv2_refresh_does_not_retry',
         'pre_oauthv2_refresh'
       );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -382,15 +412,12 @@ describe('Integration Test', () => {
         const params = output.results.args;
 
         should.deepEqual(data, {
-          bar: ['world'],
-          foo: ['hello'],
-        });
-        should.deepEqual(params, {
           client_id: [process.env.CLIENT_ID],
           client_secret: [process.env.CLIENT_SECRET],
           grant_type: ['refresh_token'],
           refresh_token: ['my_refresh_token'],
         });
+        should.deepEqual(params, {});
       });
     });
 
@@ -425,13 +452,11 @@ describe('Integration Test', () => {
     it('post_oauthv2_token, returns nothing', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'post_oauthv2_token:',
-        'dont_care:'
-      );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
         'post_oauthv2_token_returns_nothing',
         'post_oauthv2_token'
       );
+      appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl +=
+        'token';
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
