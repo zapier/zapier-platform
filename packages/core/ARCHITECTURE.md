@@ -6,8 +6,8 @@
 - Once declared as a dependency and installed, developers can import it to help with testing & TypeScript types.
 - It's not actually `require`d directly in app code, but it runs an app's exposed functions at runtime.
 - Its main responsibilities are:
-  - organizing data passed from the Zapier monolith into the developer code (see []())
-  - maintaining the `z` object, on which developers rely
+  - organizing data passed from the Zapier monolith into the developer code (see [A bridge between...](#a-bridge-between-monolith-and-developer) below)
+  - maintaining the `z` object, on which developers rely (see [Z Object](#z-object) below)
 - The `core`, `schema`, and `cli` packages are always released together under matching version numbers.
 
 ## Technical Organization
