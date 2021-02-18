@@ -29,8 +29,8 @@ const getLocalFilePath = (directory, actionKey) =>
 const getFullActionFilePath = (directory, actionKey) =>
   path.join(process.cwd(), getLocalFilePath(directory, actionKey));
 
-const getFullActionFilePathWithExtension = (directory, actionKey) =>
-  `${getFullActionFilePath(directory, actionKey)}.js`;
+const getFullActionFilePathWithExtension = (directory, actionKey, isTest) =>
+  `${getFullActionFilePath(directory, actionKey)}${isTest ? '.test' : ''}.js`;
 
 class ScaffoldCommand extends BaseCommand {
   async perform() {
@@ -86,7 +86,7 @@ class ScaffoldCommand extends BaseCommand {
     await writeTemplateFile(
       'test',
       templateContext,
-      getFullActionFilePathWithExtension(newTestActionDir, actionKey),
+      getFullActionFilePathWithExtension(newTestActionDir, actionKey, true),
       preventOverwrite
     );
     this.stopSpinner();
