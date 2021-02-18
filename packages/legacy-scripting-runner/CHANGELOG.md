@@ -1,3 +1,7 @@
+## 3.7.10
+
+- :bug: Fix `pre_oauthv2_token` and `pre_oauthv2_refresh` discrepancies ([#329](https://github.com/zapier/zapier-platform/pull/329))
+
 ## 3.7.9
 
 - :bug: Throwing `ErrorException` should appear in an error log ([#309](https://github.com/zapier/zapier-platform/pull/309))
