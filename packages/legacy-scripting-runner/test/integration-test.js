@@ -292,6 +292,32 @@ describe('Integration Test', () => {
       });
     });
 
+    it('pre_oauthv2_token, yet to save auth_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'pre_oauthv2_token_yet_to_save_auth_fields',
+        'pre_oauthv2_token'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.getAccessToken'
+      );
+      input.bundle.inputData = {
+        redirect_uri: 'https://example.com',
+        code: 'one_time_code',
+        something_custom: 'hey',
+      };
+      return app(input).then((output) => {
+        const echoed = output.results;
+        should.deepEqual(echoed.form, {
+          something_custom: ['hey'],
+        });
+      });
+    });
+
     it('pre_oauthv2_refresh', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(

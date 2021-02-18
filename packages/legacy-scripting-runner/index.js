@@ -863,6 +863,19 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       templateContext
     );
 
+    const authFieldKeys = (_.get(app, 'authentication.fields') || []).map(
+      (f) => f.key
+    );
+    authFieldKeys.push('_zapier_account_id');
+
+    // In CLI, it's bundle.inputData instead of bundle.authData has yet-to-save
+    // (auth hasn't been saved) auth fields. In WB, bundle.auth_fields always
+    // has yet-to-save auth fields.
+    bundle.authData = {
+      ..._.pick(bundle.inputData, authFieldKeys),
+      ...bundle.authData,
+    };
+
     const params = request.params;
     params.code = bundle.inputData.code;
     params.client_id = clientId;
