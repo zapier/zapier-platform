@@ -868,9 +868,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     );
     authFieldKeys.push('_zapier_account_id');
 
-    // In CLI, it's bundle.inputData instead of bundle.authData has yet-to-save
-    // (auth hasn't been saved) auth fields. In WB, bundle.auth_fields always
-    // has yet-to-save auth fields.
+    // In CLI, it's bundle.inputData instead of bundle.authData that has
+    // yet-to-save (auth hasn't been saved) auth fields. In WB,
+    // bundle.auth_fields always has yet-to-save auth fields.
     bundle.authData = {
       ..._.pick(bundle.inputData, authFieldKeys),
       ...bundle.authData,
