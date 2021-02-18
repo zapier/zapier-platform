@@ -61,6 +61,12 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      pre_oauthv2_token_yet_to_save_auth_fields: function(bundle) {
+        bundle.request.url = '${HTTPBIN_URL}/post';
+        bundle.request.data = bundle.auth_fields;
+        return bundle.request;
+      },
+
       pre_oauthv2_refresh_auth_json_server: function(bundle) {
         bundle.request.url += 'token';
         return bundle.request;
