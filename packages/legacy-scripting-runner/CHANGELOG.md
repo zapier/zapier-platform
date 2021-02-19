@@ -1,3 +1,7 @@
+## 3.7.11
+
+- :bug: Yet-to-save auth fields should be in `bundle.auth_fields` ([#331](https://github.com/zapier/zapier-platform/pull/331))
+
 ## 3.7.10
 
 - :bug: Fix `pre_oauthv2_token` and `pre_oauthv2_refresh` discrepancies ([#329](https://github.com/zapier/zapier-platform/pull/329))
