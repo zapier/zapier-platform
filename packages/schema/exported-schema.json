@@ -530,6 +530,10 @@
             }
           ]
         },
+        "codeParam": {
+          "description": "Define a non-standard code param Zapier should scrape instead.",
+          "type": "string"
+        },
         "scope": {
           "description": "What scope should Zapier request?",
           "type": "string"

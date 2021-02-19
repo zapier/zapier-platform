@@ -30,6 +30,11 @@ module.exports = makeSchema(
           'Define how Zapier will refresh the access token from the API',
         oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
       },
+      codeParam: {
+        description:
+          'Define a non-standard code param Zapier should scrape instead.',
+        type: 'string',
+      },
       scope: {
         description: 'What scope should Zapier request?',
         type: 'string',
@@ -50,6 +55,7 @@ module.exports = makeSchema(
         authorizeUrl: { require: 'some/path/to/file.js' },
         getAccessToken: { require: 'some/path/to/file2.js' },
         refreshAccessToken: { require: 'some/path/to/file3.js' },
+        codeParam: 'unique_code',
         scope: 'read/write',
         autoRefresh: true,
       },
