@@ -1919,12 +1919,7 @@ The Zapier Platform consists of 3 npm packages that are released simultaneously.
 
 - [`zapier-platform-cli`](https://github.com/zapier/zapier-platform/tree/master/packages/cli) is the code that powers the `zapier` command. You use it most commonly with the `test`, `scaffold`, and `push` commands. It's installed with `npm install -g zapier-platform-cli` and does not correspond to a particular app.
 - [`zapier-platform-core`](https://github.com/zapier/zapier-platform/tree/master/packages/core) is what allows your app to interact with Zapier. It holds the `z` object and app tester code. Your app depends on a specific version of `zapier-platform-core` in the `package.json` file. It's installed via `npm install` along with the rest of your app's dependencies.
-<<<<<<< HEAD
-- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/master/packages/clischema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
-=======
-
 - [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/master/packages/schema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
->>>>>>> master
 
 To learn more about the structure of the code (especially if you're interested in contributing), check out the `ARCHITECTURE.md` file(s).
 
@@ -1948,3 +1943,9 @@ For maximum compatibility, keep the versions of `cli` and `core` in sync.
 ## Get Help!
 
 You can get help by either emailing `partners@zapier.com` or by [joining our developer community here](https://community.zapier.com/developer-discussion-13).
+
+---
+
+## Developing on the CLI
+
+For Zapier employees, see [this quip doc](https://zapier.quip.com/bns4AxqwaMIm/Working-on-the-CLI-Platform-CoreSchemaCLI) for info about creating releases.
