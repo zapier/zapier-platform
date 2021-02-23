@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-cli",
-  "version": "10.1.3",
+  "version": "10.2.0",
   "description": "The CLI for managing integrations in Zapier Developer Platform.",
   "repository": "zapier/zapier-platform-cli",
   "homepage": "https://zapier.com/",
