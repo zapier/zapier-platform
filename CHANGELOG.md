@@ -1,3 +1,21 @@
+## 10.2.0
+
+### cli
+
+* :scroll: add architecture files ([#324](https://github.com/zapier/zapier-platform/pull/324))
+* :scroll: fix typos in README ([#328](https://github.com/zapier/zapier-platform/pull/328))
+* :scroll: Make file stashing snippets copy-paste-able ([#326](https://github.com/zapier/zapier-platform/pull/326))
+* :scroll: Fix broken README schema package link ([#325](https://github.com/zapier/zapier-platform/pull/325))
+* :bug: ensure test files can be run out of the box with jest ([#327](https://github.com/zapier/zapier-platform/pull/327))
+
+### core
+
+None!
+
+### schema
+
+* :nail_care: Add ability to specify "code" param to OAuth2 schema ([#333](https://github.com/zapier/zapier-platform/pull/333))
+
 ## 10.1.3
 
 ### cli

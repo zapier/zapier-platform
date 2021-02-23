@@ -20,7 +20,7 @@ You may find docs duplicate or outdated across the Zapier site. The most up-to-d
 - [Latest CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
 - [Latest Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
 
-This doc describes the latest CLI version **10.1.3**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+This doc describes the latest CLI version **10.2.0**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
 - CLI Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
 - CLI Reference: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
@@ -140,6 +140,7 @@ This doc describes the latest CLI version **10.1.3**, as of this writing. If you
 - [The Zapier Platform Packages](#the-zapier-platform-packages)
   * [Updating These Packages](#updating-these-packages)
 - [Get Help!](#get-help)
+- [Developing on the CLI](#developing-on-the-cli)
 
 <!-- tocstop -->
 
@@ -3285,12 +3286,7 @@ The Zapier Platform consists of 3 npm packages that are released simultaneously.
 
 - [`zapier-platform-cli`](https://github.com/zapier/zapier-platform/tree/master/packages/cli) is the code that powers the `zapier` command. You use it most commonly with the `test`, `scaffold`, and `push` commands. It's installed with `npm install -g zapier-platform-cli` and does not correspond to a particular app.
 - [`zapier-platform-core`](https://github.com/zapier/zapier-platform/tree/master/packages/core) is what allows your app to interact with Zapier. It holds the `z` object and app tester code. Your app depends on a specific version of `zapier-platform-core` in the `package.json` file. It's installed via `npm install` along with the rest of your app's dependencies.
-<<<<<<< HEAD
-- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/master/packages/clischema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
-=======
-
 - [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/master/packages/schema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
->>>>>>> master
 
 To learn more about the structure of the code (especially if you're interested in contributing), check out the `ARCHITECTURE.md` file(s).
 
@@ -3303,7 +3299,7 @@ Broadly speaking, all releases will continue to work indefinitely. While you nev
 For more info about which Node versions are supported, see [the faq](#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with).
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is **10.1.3**. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is **10.2.0**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 
@@ -3314,3 +3310,9 @@ For maximum compatibility, keep the versions of `cli` and `core` in sync.
 ## Get Help!
 
 You can get help by either emailing `partners@zapier.com` or by [joining our developer community here](https://community.zapier.com/developer-discussion-13).
+
+---
+
+## Developing on the CLI
+
+For Zapier employees, see [this quip doc](https://zapier.quip.com/bns4AxqwaMIm/Working-on-the-CLI-Platform-CoreSchemaCLI) for info about creating releases.
