@@ -445,6 +445,8 @@ Most applications require some sort of authentication - and Zapier provides a ha
 
 > Hint: You can access the data tied to your authentication via the `bundle.authData` property in any method called in your app. Exceptions exist in OAuth and Session auth. Please see them below.
 
+> Note: Authentication is required for integrations intending to go public on Zapier.
+
 ### Basic
 
 Useful if your app requires two pieces of information to authentication: `username` and `password` which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).
