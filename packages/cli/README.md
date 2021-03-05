@@ -20,7 +20,9 @@ You may find docs duplicate or outdated across the Zapier site. The most up-to-d
 - [Latest CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
 - [Latest Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
 
-This doc describes the latest CLI version **10.2.0**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+Our code is updated frequently. To see a full list of changes, look no further than [the CHANGELOG](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md).
+
+This doc describes the latest CLI version (**10.2.0**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
 - CLI Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
 - CLI Reference: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
