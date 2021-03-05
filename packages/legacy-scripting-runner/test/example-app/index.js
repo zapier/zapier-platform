@@ -411,6 +411,7 @@ const legacyScriptingSource = `
         data.bundleTargetUrl = bundle.target_url;
         data.bundleEvent = bundle.event;
         data.bundleZap = bundle.zap;
+        data.bundleTriggerData = bundle.trigger_data;
 
         // Old alias for bundle.target_url
         data.bundleSubscriptionUrl = bundle.subscription_url;
@@ -423,6 +424,7 @@ const legacyScriptingSource = `
         // This will go to bundle.subscribe_data in pre_unsubscribe
         var data = z.JSON.parse(bundle.response.content);
         data.hiddenMessage = 'post_subscribe was here!';
+        data.bundleTriggerData2 = bundle.trigger_data;
         return data;
       },
 
