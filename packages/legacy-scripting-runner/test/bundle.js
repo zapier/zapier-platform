@@ -280,6 +280,9 @@ describe('bundleConverter', () => {
       trigger_fields: {
         user: 'Zapier',
       },
+      trigger_data: {
+        user: 'Zapier',
+      },
       trigger_fields_raw: {
         user: 'Zapier',
       },
@@ -334,6 +337,9 @@ describe('bundleConverter', () => {
       url_raw: 'https://zapier.com',
       raw_url: 'https://zapier.com',
       trigger_fields: {
+        user: 'Zapier',
+      },
+      trigger_data: {
         user: 'Zapier',
       },
       trigger_fields_raw: {
@@ -395,6 +401,9 @@ describe('bundleConverter', () => {
       url_raw: 'https://zapier.com',
       raw_url: 'https://zapier.com',
       trigger_fields: {
+        user: 'Zapier',
+      },
+      trigger_data: {
         user: 'Zapier',
       },
       trigger_fields_raw: {

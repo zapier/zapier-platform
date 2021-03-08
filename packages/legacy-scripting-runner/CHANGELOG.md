@@ -1,3 +1,7 @@
+## 3.7.12 (unreleased)
+
+- :bug: Add `bundle.trigger_data` to `pre_subscribe` and `post_subscribe` ([#342](https://github.com/zapier/zapier-platform/pull/342))
+
 ## 3.7.11
 
 - :bug: Yet-to-save auth fields should be in `bundle.auth_fields` ([#331](https://github.com/zapier/zapier-platform/pull/331))

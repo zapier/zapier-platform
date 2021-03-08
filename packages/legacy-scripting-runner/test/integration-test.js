@@ -1711,6 +1711,7 @@ describe('Integration Test', () => {
       input.bundle.inputData = { foo: 'bar' };
       input.bundle.targetUrl = 'https://foo.bar';
       input.bundle.meta = { zap: { id: 9511 } };
+
       return app(input).then((output) => {
         should.equal(output.results.json.event, 'contact.created');
         should.equal(
@@ -1720,6 +1721,12 @@ describe('Integration Test', () => {
         should.equal(output.results.headers['X-Api-Key'], 'hey hey');
         should.equal(output.results.hiddenMessage, 'post_subscribe was here!');
 
+        should.deepEqual(output.results.json.bundleTriggerData, {
+          foo: 'bar',
+        });
+        should.deepEqual(output.results.bundleTriggerData2, {
+          foo: 'bar',
+        });
         should.deepEqual(output.results.json.bundleAuthFields, {
           api_key: 'hey hey',
         });
