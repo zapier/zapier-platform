@@ -3192,6 +3192,58 @@ describe('Integration Test', () => {
       });
     });
 
+    it('file upload, KEY_pre_write, optional file field is empty', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'file_pre_write_optional_file_field',
+        'file_pre_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.file.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        filename: 'pig.png',
+      };
+      return app(input).then((output) => {
+        const echoed = output.results;
+        should.equal(echoed.headers['Content-Type'], 'application/json');
+        should.deepEqual(echoed.json, { filename: 'pig.png' });
+      });
+    });
+
+    it('file upload, KEY_pre_write, optional file field is filled', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
+        'file_pre_write_optional_file_field',
+        'file_pre_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.file.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        filename: 'pig.png',
+        file: `${HTTPBIN_URL}/robots.txt`,
+        yes: true,
+      };
+      return app(input).then((output) => {
+        const response = output.results;
+        const file = response.file;
+        should.equal(response.filename, 'pig.png');
+        should.equal(response.yes, 'True');
+        should.equal(file.sha1, '4becbe4770c949a40cb28f9d1c2b4910fbf7e37d');
+      });
+    });
+
     describe('legacyMethodHydrator', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);

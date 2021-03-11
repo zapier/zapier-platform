@@ -52,7 +52,7 @@ const createInternalRequestClient = (input) => {
 const { bundleConverter, unflattenObject } = require('./bundle');
 const {
   markFileFieldsInBundle,
-  hasFileFields,
+  isAnyFileFieldSet,
   isFileField,
   LazyFile,
 } = require('./file');
@@ -91,6 +91,16 @@ const cleanCustomFields = (fields) => {
     });
 };
 
+const stringifyForFormData = (value) => {
+  const dataType = typeof value;
+  if (dataType === 'string') {
+    return value;
+  } else if (dataType === 'boolean') {
+    return value ? 'True' : 'False'; // mimic str(true) in Python
+  }
+  return JSON.stringify(value);
+};
+
 // Makes a multipart/form-data request body that can be set to request.body for
 // node-fetch.
 const makeMultipartBody = async (data, lazyFilesObject) => {
@@ -98,7 +108,9 @@ const makeMultipartBody = async (data, lazyFilesObject) => {
   if (data) {
     if (_.isPlainObject(data)) {
       _.each(data, (v, k) => {
-        form.append(k, v);
+        if (v !== undefined && v !== null) {
+          form.append(k, stringifyForFormData(v));
+        }
       });
     } else {
       if (typeof data !== 'string') {
@@ -670,7 +682,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       request = { ...bundle.request, ...request };
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
-      if (hasFileFields(bundle) && !isBodyStream) {
+      if (isAnyFileFieldSet(bundle) && !isBodyStream) {
         // Runs only when there's no KEY_pre_ method
         await addFilesToRequestBodyFromBody(request, bundle);
       }
