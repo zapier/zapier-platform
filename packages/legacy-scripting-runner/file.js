@@ -28,6 +28,18 @@ const isFileField = (fieldKey, bundle) => {
   return bundle._fileFieldKeys.indexOf(fieldKey) >= 0;
 };
 
+const isAnyFileFieldSet = (bundle) => {
+  const body = _.get(bundle, 'request.body');
+  if (body && bundle._fileFieldKeys) {
+    for (const k of bundle._fileFieldKeys) {
+      if (body[k]) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
 const isUrl = (str) => {
   try {
     const parsed = new urllib.URL(str);
@@ -168,5 +180,6 @@ module.exports = {
   markFileFieldsInBundle,
   hasFileFields,
   isFileField,
+  isAnyFileFieldSet,
   LazyFile,
 };

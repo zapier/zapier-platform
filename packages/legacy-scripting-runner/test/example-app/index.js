@@ -823,6 +823,20 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      file_pre_write_optional_file_field: function(bundle) {
+        if (_.isEmpty(bundle.request.files)) {
+          // Reach here when the optional file field is empty
+          bundle.request.headers['Content-Type'] = 'application/json';
+          bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+          return bundle.request;
+        } else {
+          // Reach here when the optional file field is filled
+          bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+          bundle.request.data = JSON.parse(bundle.request.data);
+          return bundle.request;
+        }
+      },
+
       /*
        * Search
        */
@@ -1133,6 +1147,7 @@ const FileUpload = {
     inputFields: [
       { key: 'filename', label: 'Filename', type: 'string' },
       { key: 'file', label: 'File', type: 'file' },
+      { key: 'yes', label: 'Yes', type: 'boolean' },
     ],
     outputFields: [{ key: 'id', label: 'ID', type: 'integer' }],
   },

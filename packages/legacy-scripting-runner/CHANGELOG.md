@@ -1,6 +1,7 @@
 ## 3.7.12 (unreleased)
 
 - :bug: Add `bundle.trigger_data` to `pre_subscribe` and `post_subscribe` ([#342](https://github.com/zapier/zapier-platform/pull/342))
+- :bug: Fix inconsistency with optional file fields ([#344](https://github.com/zapier/zapier-platform/pull/344))
 
 ## 3.7.11
 
