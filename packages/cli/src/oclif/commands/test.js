@@ -1,4 +1,7 @@
+const path = require('path');
+const { pathExists } = require('fs-extra');
 const { flags } = require('@oclif/command');
+const chalk = require('chalk');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const ValidateCommand = require('./validate');
@@ -31,20 +34,33 @@ class TestCommand extends BaseCommand {
     }
 
     const env = Object.assign({}, process.env, extraEnv);
+
+    const useYarn =
+      this.flags.yarn ||
+      (await pathExists(path.join(process.cwd(), 'yarn.lock')));
+
+    const passthroughArgs = this.argv.includes('--')
+      ? this.argv.slice(this.argv.indexOf('--') + 1)
+      : [];
+
     const argv = [
       'run',
       '--silent',
       'test',
-      '--',
-      `--timeout=${this.flags.timeout}`,
-    ];
-    if (this.flags.grep) {
-      argv.push(`--grep=${this.flags.grep}`);
-    }
+      useYarn ? '' : '--', // yarn gives a warning if we include `--`
+      ...passthroughArgs,
+    ].filter(Boolean);
+    const packageManager = useYarn ? 'yarn' : 'npm';
 
-    this.log('Running test suite.');
+    this.log('Running test suite with the following command:');
+    // some extra formatting happen w/ quotes so it's clear when they're already like that in the array,
+    // but the space-joined array made that unclear
+    this.log(
+      `\n  ${chalk.cyanBright.bold(packageManager)} ${chalk.cyanBright(
+        argv.map((a) => (a.includes(' ') ? `"${a}"` : a)).join(' ')
+      )}\n`
+    );
 
-    const packageManager = this.flags.yarn ? 'yarn' : 'npm';
     const output = await runCommand(packageManager, argv, {
       stdio: 'inherit',
       env,
@@ -57,29 +73,27 @@ class TestCommand extends BaseCommand {
 
 TestCommand.flags = buildFlags({
   commandFlags: {
-    timeout: flags.integer({
-      char: 't',
-      description: 'Set test-case timeout in milliseconds.',
-      default: 2000,
-    }),
-    grep: flags.string({
-      description: 'Only run tests matching pattern.',
-    }),
     'skip-validate': flags.boolean({
-      description: 'Forgo running `zapier validate` before `npm test`.',
+      description:
+        "Forgo running `zapier validate` before tests are run. This will speed up tests if you're modifying functionality of an existing integration rather than adding new actions.",
     }),
     yarn: flags.boolean({
-      description: 'Use yarn instead of npm.',
+      description:
+        "Use `yarn` instead of `npm`. This happens automatically if there's a `yarn.lock` file, but you can manually force `yarn` if you run tests from a sub-directory.",
     }),
   },
 });
 
+TestCommand.strict = false;
 TestCommand.examples = [
   'zapier test',
-  'zapier test -t 30000 --grep api --skip-validate',
+  'zapier test --skip-validate',
+  'zapier test -- --f --testNamePattern "auth pass"',
 ];
-TestCommand.description = `Test your integration via \`npm test\`.
+TestCommand.description = `Test your integration via the "test" script in your "package.json".
 
-This command is effectively the same as \`npm test\`, except we also validate your integration and set up the environment. We recommend using mocha as your testing framework.`;
+This command is a wrapper around \`npm test\` that also validates the structure of your integration and sets up extra environment variables.
+
+You can pass any args/flags after a \`--\`; they will get forwarded onto your test script.`;
 
 module.exports = TestCommand;
