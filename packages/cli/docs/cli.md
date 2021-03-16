@@ -530,8 +530,8 @@ You can pass any args/flags after a `--`; they will get forwarded onto your test
 
 **Examples**
 * `zapier test`
-* `zapier test --skip-validate`
-* `zapier test -- --f --testNamePattern "auth pass"`
+* `zapier test --skip-validate -- -t 30000 --grep api`
+* `zapier test -- -fo --testNamePattern "auth pass"`
 
 
 ## upload

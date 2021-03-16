@@ -87,8 +87,8 @@ TestCommand.flags = buildFlags({
 TestCommand.strict = false;
 TestCommand.examples = [
   'zapier test',
-  'zapier test --skip-validate',
-  'zapier test -- --f --testNamePattern "auth pass"',
+  'zapier test --skip-validate -- -t 30000 --grep api',
+  'zapier test -- -fo --testNamePattern "auth pass"',
 ];
 TestCommand.description = `Test your integration via the "test" script in your "package.json".
 
