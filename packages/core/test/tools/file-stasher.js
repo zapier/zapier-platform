@@ -213,6 +213,52 @@ describe('file upload', () => {
       .catch(done);
   });
 
+  it("should work if being called from a resource's create event", (done) => {
+    mocky.mockRpcCall(mocky.fakeSignedPostData);
+    mocky.mockUpload();
+
+    const stashFileTest = createFileStasher({
+      _zapier: {
+        rpc,
+        event: {
+          method: 'resources.test.create.operation.perform',
+        },
+      },
+    });
+
+    const file = 'hello world this is a plain blob of text';
+    stashFileTest(file)
+      .then((url) => {
+        should(url).eql(
+          `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
+        );
+        done();
+      })
+      .catch(done);
+  });
+
+  it('should fail if being called from a invalid resource key', (done) => {
+    const stashFileTest = createFileStasher({
+      _zapier: {
+        rpc,
+        event: {
+          method: 'resources.te-st.create.operation.perform',
+        },
+      },
+    });
+
+    const file = fs.createReadStream(path.join(__dirname, 'test.txt'));
+    stashFileTest(file)
+      .then(() => done(new Error('this should have exploded')))
+      .catch((err) => {
+        should(err.message).containEql(
+          'Files can only be stashed within a create or hydration function/method'
+        );
+        done();
+      })
+      .catch(done);
+  });
+
   it('should get filename from content-disposition', (done) => {
     mocky.mockRpcCall(mocky.fakeSignedPostData);
 
