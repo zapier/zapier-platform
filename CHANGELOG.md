@@ -1,4 +1,16 @@
+## 11.0.0
+
+_unreleased_
+
+### Migration Guide
+
+1. Whenever you call `zapier test` with the `timeout` or `grep` flags:
+  * Add `--` before any existing `grep` and `timeout` flags
+  * `zapier test -g 'cool' --timeout 5000` :arrow_right: `zapier test -- -g 'cool' --timeout 5000`
+
 ## 10.2.0
+
+_released `2021-02-23`_
 
 ### cli
 
@@ -17,6 +29,8 @@ None!
 * :nail_care: Add ability to specify "code" param to OAuth2 schema ([#333](https://github.com/zapier/zapier-platform/pull/333))
 
 ## 10.1.3
+
+_released `2021-02-09`_
 
 ### cli
 
@@ -41,6 +55,8 @@ None!
 
 ## 10.1.2
 
+_released `2020-10-30`_
+
 This release mostly has internal features, but also ships a lot of documentation updates and a few bumped dependencies.
 
 ### cli
@@ -63,6 +79,8 @@ None!
 
 ## 10.1.1
 
+_released `2020-09-02`_
+
 ### cli
 
 * :bug: `_zapier-build` should be optional ([#265](https://github.com/zapier/zapier-platform/pull/265))
@@ -76,6 +94,8 @@ None!
 None!
 
 ## 10.1.0
+
+_released `2020-08-30`_
 
 ### cli
 
@@ -91,6 +111,8 @@ None!
 * None!
 
 ## 10.0.1
+
+_released `2020-07-20`_
 
 ### cli
 
@@ -113,6 +135,8 @@ None!
 * :hammer: Bump Lodash from 4.17.15 to 4.17.19 ([#248](https://github.com/zapier/zapier-platform/pull/248))
 
 ## 10.0.0
+
+_released `2020-05-20`_
 
 Another major release! We have some great improvements in this version but also have breaking changes. Please review the following to see if you need to change anything to upgrade `zapier-platform-core` to v10.
 
