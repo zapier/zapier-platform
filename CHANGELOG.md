@@ -5,8 +5,8 @@ _unreleased_
 ### Migration Guide
 
 1. Whenever you call `zapier test` with the `timeout` or `grep` flags:
-  * Add `--` before any existing `grep` and `timeout` flags
-  * `zapier test -g 'cool' --timeout 5000` :arrow_right: `zapier test -- -g 'cool' --timeout 5000`
+    * Add `--` before any existing `grep` and `timeout` flags
+    * `zapier test -g 'cool' --timeout 5000` :arrow_right: `zapier test -- -g 'cool' --timeout 5000`
 
 ## 10.2.0
 
