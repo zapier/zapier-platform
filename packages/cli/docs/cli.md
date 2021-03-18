@@ -515,22 +515,23 @@ Admins will immediately lose write access to the integration. Subscribers won't 
 
 ## test
 
-> Test your integration via `npm test`.
+> Test your integration via the "test" script in your "package.json".
 
 **Usage**: `zapier test`
 
-This command is effectively the same as `npm test`, except we also validate your integration and set up the environment. We recommend using mocha as your testing framework.
+This command is a wrapper around `npm test` that also validates the structure of your integration and sets up extra environment variables.
+
+You can pass any args/flags after a `--`; they will get forwarded onto your test script.
 
 **Flags**
-* `-t, --timeout` | Set test-case timeout in milliseconds.  Defaults to `2000`.
-* `--grep` | Only run tests matching pattern.
-* `--skip-validate` | Forgo running `zapier validate` before `npm test`.
-* `--yarn` | Use yarn instead of npm.
+* `--skip-validate` | Forgo running `zapier validate` before tests are run. This will speed up tests if you're modifying functionality of an existing integration rather than adding new actions.
+* `--yarn` | Use `yarn` instead of `npm`. This happens automatically if there's a `yarn.lock` file, but you can manually force `yarn` if you run tests from a sub-directory.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
 * `zapier test`
-* `zapier test -t 30000 --grep api --skip-validate`
+* `zapier test --skip-validate -- -t 30000 --grep api`
+* `zapier test -- -fo --testNamePattern "auth pass"`
 
 
 ## upload
