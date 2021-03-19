@@ -26,7 +26,7 @@ const BLACKLISTED_PATHS = [
 ];
 const NODE_VERSION = versionStore[versionStore.length - 1].nodeVersion;
 const LAMBDA_VERSION = `v${NODE_VERSION}`;
-const NODE_VERSION_CLI_REQUIRES = '>=10';
+const NODE_VERSION_CLI_REQUIRES = '>=12'; // should be the oldest non-ETL version
 const AUTH_KEY = 'deployKey';
 const ANALYTICS_KEY = 'analyticsMode';
 const ANALYTICS_MODES = {
