@@ -86,12 +86,14 @@ const createFileStasher = (input) => {
       return ZapierPromise.reject(new Error('rpc is not available'));
     }
 
-    const isRunningOnHydrator =
-      _.get(input, '_zapier.event.method', '').indexOf('hydrators.') === 0;
-    const isRunningOnCreate =
-      _.get(input, '_zapier.event.method', '').indexOf('creates.') === 0;
+    const method = _.get(input, ['_zapier', 'event', 'method'], '');
+    const isValidSource =
+      method.startsWith('hydrators.') ||
+      method.startsWith('creates.') ||
+      // key regex from KeySchema
+      method.match(/^resources\.[a-zA-Z][a-zA-Z0-9_]*\.create\./);
 
-    if (!isRunningOnHydrator && !isRunningOnCreate) {
+    if (!isValidSource) {
       return ZapierPromise.reject(
         new Error(
           'Files can only be stashed within a create or hydration function/method.'

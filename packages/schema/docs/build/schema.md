@@ -1132,7 +1132,8 @@ A unique identifier for this item.
 
 * `''` - _Cannot be empty_
 * `'A'` - _Minimum of two characters_
-* `'1_Valid_Key'` - _Must start with a letter_
+* `'1_Key'` - _Must start with a letter_
+* `'a-Key'` - _Must not use dashes_
 
 -----
 
