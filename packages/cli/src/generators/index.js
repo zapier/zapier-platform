@@ -32,7 +32,7 @@ const writeGitignore = (gen) => {
 
 const writeGenericPackageJson = (gen, packageJsonExtension) => {
   gen.fs.writeJSON(
-    'package.json',
+    gen.destinationPath('package.json'),
     merge(
       {
         name: gen.options.packageName,
@@ -75,7 +75,7 @@ const authTypes = {
 const writeGenericAuth = (gen) => {
   const authType = authTypes[gen.options.template];
   const content = authFilesCodegen[authType]();
-  gen.fs.write('authentication.js', content);
+  gen.fs.write(gen.destinationPath('authentication.js'), content);
 };
 
 const writeGenericAuthTest = (gen) => {
@@ -174,7 +174,7 @@ class ProjectGenerator extends Generator {
     this.destinationRoot(path.resolve(this.options.path));
 
     const jsFilter = filter(['*.js', '*.json'], { restore: true });
-    this.registerTransformStream([
+    this.queueTransformStream([
       jsFilter,
       prettier({ singleQuote: true }),
       jsFilter.restore,
