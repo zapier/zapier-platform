@@ -91,7 +91,7 @@ const createFileStasher = (input) => {
       method.startsWith('hydrators.') ||
       method.startsWith('creates.') ||
       // key regex from KeySchema
-      method.match(/^resources\.[a-zA-Z]+[a-zA-Z0-9_]*\.create\./);
+      method.match(/^resources\.[a-zA-Z][a-zA-Z0-9_]*\.create\./);
 
     if (!isValidSource) {
       return ZapierPromise.reject(
