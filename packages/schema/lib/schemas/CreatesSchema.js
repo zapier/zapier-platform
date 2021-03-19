@@ -19,18 +19,24 @@ module.exports = makeSchema(
     },
     examples: [
       {
-        'createRecipe': {
+        createRecipe: {
           key: 'createRecipe',
           noun: 'Recipe',
-          display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+          display: {
+            label: 'Create Recipe',
+            description: 'Creates a new recipe.',
+          },
           operation: { perform: '$func$2$f$', sample: { id: 1 } },
         },
       },
       {
-        'Create_Recipe_01': {
+        Create_Recipe_01: {
           key: 'Create_Recipe_01',
           noun: 'Recipe',
-          display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+          display: {
+            label: 'Create Recipe',
+            description: 'Creates a new recipe.',
+          },
           operation: { perform: '$func$2$f$', sample: { id: 1 } },
         },
       },
@@ -42,7 +48,10 @@ module.exports = makeSchema(
           '01_Create_Recipe': {
             key: '01_Create_Recipe',
             noun: 'Recipe',
-            display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+            display: {
+              label: 'Create Recipe',
+              description: 'Creates a new recipe.',
+            },
             operation: { perform: '$func$2$f$', sample: { id: 1 } },
           },
         },
@@ -51,16 +60,19 @@ module.exports = makeSchema(
       {
         [SKIP_KEY]: true, // Cannot validate that keys match
         example: {
-          'Create_Recipe': {
+          Create_Recipe: {
             key: 'createRecipe',
             noun: 'Recipe',
-            display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+            display: {
+              label: 'Create Recipe',
+              description: 'Creates a new recipe.',
+            },
             operation: { perform: '$func$2$f$', sample: { id: 1 } },
           },
         },
         reason: 'Key must match the key field in CreateSchema',
       },
-    ]
+    ],
   },
   [CreateSchema]
 );

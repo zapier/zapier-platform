@@ -118,9 +118,7 @@ module.exports = makeSchema(
       },
     },
     additionalProperties: false,
-    examples: [
-      { version: '1.0.0', platformVersion: '10.1.2' },
-    ],
+    examples: [{ version: '1.0.0', platformVersion: '10.1.2' }],
     antiExamples: [
       {
         example: { version: 'v1.0.0', platformVersion: '10.1.2' },

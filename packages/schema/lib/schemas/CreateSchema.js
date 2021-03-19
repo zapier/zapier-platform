@@ -99,7 +99,7 @@ module.exports = makeSchema(
           },
         },
         reason:
-        'Missing required key on operation: sample. Note - this is valid if the resource has defined a sample.',
+          'Missing required key on operation: sample. Note - this is valid if the resource has defined a sample.',
       },
     ],
     additionalProperties: false,

@@ -157,20 +157,24 @@ module.exports = makeSchema(
       },
       {
         example: { key: 'abc', choices: [3] },
-        reason: 'Invalid value for key: choices (if an array, must be of either string or FieldChoiceWithLabelSchema)',
+        reason:
+          'Invalid value for key: choices (if an array, must be of either string or FieldChoiceWithLabelSchema)',
       },
       {
         example: { key: 'abc', choices: [{ label: 'Red', value: '#f00' }] },
-        reason: 'Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)',
+        reason:
+          'Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)',
       },
       {
         example: { key: 'abc', choices: 'mobile' },
-        reason: 'Invalid value for key: choices (must be either object or array)',
+        reason:
+          'Invalid value for key: choices (must be either object or array)',
       },
 
       {
         example: { key: 'abc', children: ['$func$2$f$'] },
-        reason: 'Invalid value for key: children (must be array of FieldSchema)',
+        reason:
+          'Invalid value for key: children (must be array of FieldSchema)',
       },
     ],
     additionalProperties: false,
