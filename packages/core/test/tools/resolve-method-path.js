@@ -86,7 +86,7 @@ describe('resolve-method-path', () => {
   it('should resolve deep paths fastly', () => {
     // is >1000ms if not memoizedFindMapDeep, ~300ms after
     const authApp = schemaTools.prepareApp(oauthAppDef);
-    for (var i = 1000; i >= 0; i--) {
+    for (let i = 1000; i >= 0; i--) {
       resolveMethodPath(
         authApp,
         oauthAppDef.authentication.oauth2Config.authorizeUrl

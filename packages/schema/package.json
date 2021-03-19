@@ -18,6 +18,7 @@
     "smoke-test": "mocha -t 10000 --recursive smoke-test",
     "test:debug": "mocha -t 5-10000 --recursive --inspect-brk test",
     "lint": "eslint lib",
+    "lint:fix": "eslint --fix lib",
     "coverage": "istanbul cover _mocha -- --recursive",
     "export": "node bin/export.js && prettier --write exported-schema.json",
     "docs": "node bin/docs.js",

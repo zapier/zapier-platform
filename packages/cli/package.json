@@ -30,6 +30,7 @@
     "version": "yarn docs && git add docs/* README.md",
     "postversion": "git push && git push --tags",
     "lint": "eslint src snippets",
+    "lint:fix": "eslint --fix src snippets",
     "test": "NODE_ENV=test mocha -t 50000 --recursive src/tests",
     "smoke-test": "NODE_ENV=test mocha -t 120000 --recursive src/smoke-tests",
     "validate-templates": "./scripts/validate-app-templates.js",

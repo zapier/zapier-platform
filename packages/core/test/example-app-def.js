@@ -1,4 +1,4 @@
-var ItemResource = {
+const ItemResource = {
   key: 'item',
   noun: 'Item',
   list: {
@@ -27,7 +27,7 @@ var ItemResource = {
   },
 };
 
-var PingResource = {
+const PingResource = {
   key: 'ping',
   noun: 'Ping',
   hook: {
@@ -40,7 +40,7 @@ var PingResource = {
   },
 };
 
-var SubPingResource = {
+const SubPingResource = {
   key: 'subping',
   noun: 'Sub Ping',
   hook: {
@@ -61,7 +61,7 @@ var SubPingResource = {
   },
 };
 
-var Lead = {
+const Lead = {
   key: 'lead',
   noun: 'Lead',
   list: {
@@ -77,7 +77,7 @@ var Lead = {
   },
 };
 
-var ExtraTrigger = {
+const ExtraTrigger = {
   key: 'new_lead_project',
   noun: 'Lead',
   // automatic?
