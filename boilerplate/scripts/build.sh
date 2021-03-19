@@ -113,8 +113,8 @@ update_deps "$BOILERPLATE_DIR/package.json" $CORE_VERSION $LEGACY_VERSION
 pushd $BOILERPLATE_DIR > /dev/null
 
 # Build the zip!
-# the node-X segment in the next line should match all supported node versions
-zip -R $TARGET_FILE '*.js' '*.json' '*/linux-x64-node-12/*.node' '*/linux-x64-node-14/*.node'
+# the node-X segment in the next line should match all node versions where a boilerplate built with this script might run on
+zip -R $TARGET_FILE '*.js' '*.json' '*/linux-x64-node-10/*.node' '*/linux-x64-node-12/*.node' '*/linux-x64-node-14/*.node'
 
 # Remove generated files
 rm -f zapierwrapper.js definition.json core-*.tgz legacy-*.tgz
