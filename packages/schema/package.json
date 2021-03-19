@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "jsonschema": "1.2.2",
-    "lodash": "4.17.19"
+    "lodash": "4.17.21"
   },
   "devDependencies": {
     "fs-extra": "^9.0.0",
