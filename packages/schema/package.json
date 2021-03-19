@@ -32,7 +32,7 @@
     "lodash": "4.17.21"
   },
   "devDependencies": {
-    "fs-extra": "^9.0.0",
+    "fs-extra": "^9.1.0",
     "istanbul": "0.4.5",
     "markdown-toc": "^1",
     "node-fetch": "^2"
