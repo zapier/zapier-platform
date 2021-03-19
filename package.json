@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "chalk": "^4",
+    "chalk": "^4.1.0",
     "eslint": "^7.22.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-config-standard": "^16.0.2",
@@ -12,12 +12,12 @@
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^5.0.0",
     "husky": "^4",
-    "inquirer": "^7",
-    "lerna": "^3",
-    "lint-staged": "^10",
-    "mocha": "^7",
+    "inquirer": "^8.0.0",
+    "lerna": "^4.0.0",
+    "lint-staged": "^10.5.4",
+    "mocha": "^8.3.2",
     "prettier": "^2.2.1",
-    "semver": "^7",
+    "semver": "^7.3.4",
     "should": "^13"
   },
   "workspaces": [
@@ -27,7 +27,7 @@
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint:fix",
     "lint-examples": "eslint examples",
-    "validate": "lerna run --ignore zapier-platform-example-app-* validate",
+    "validate": "lerna run validate",
     "bump": "./scripts/bump.js"
   },
   "husky": {
