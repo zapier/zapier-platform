@@ -193,11 +193,11 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
     zip.pipe(output);
 
     paths.forEach(function (filePath) {
-      var basePath = path.dirname(filePath);
+      let basePath = path.dirname(filePath);
       if (basePath === '.') {
         basePath = undefined;
       }
-      var name = path.join(dir, filePath);
+      const name = path.join(dir, filePath);
       zip.file(name, { name: filePath, mode: 0o755 });
     });
 

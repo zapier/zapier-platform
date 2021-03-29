@@ -2130,7 +2130,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;1&apos;</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;First Option&apos;</span>, <span class="hljs-attr">dateCreated</span>: <span class="hljs-string">&apos;01/01/2000&apos;</span> },
   { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;2&apos;</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Second Option&apos;</span>, <span class="hljs-attr">dateCreated</span>: <span class="hljs-string">&apos;01/01/2000&apos;</span> },
   { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;3&apos;</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Third Option&apos;</span>, <span class="hljs-attr">dateCreated</span>: <span class="hljs-string">&apos;01/01/2000&apos;</span> },
-  { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;4&apos;</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Fourth Option&apos;</span>, <span class="hljs-attr">dateCreated</span>: <span class="hljs-string">&apos;01/01/2000&apos;</span> }
+  { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;4&apos;</span>, <span class="hljs-attr">name</span>: <span class="hljs-string">&apos;Fourth Option&apos;</span>, <span class="hljs-attr">dateCreated</span>: <span class="hljs-string">&apos;01/01/2000&apos;</span> },
 ];
 
 </code></pre>
@@ -5098,15 +5098,15 @@ zapier push
         <span class="hljs-keyword">return</span> z.cursor.get(); <span class="hljs-comment">// Promise&lt;string | null&gt;</span>
       }
     })
-    .then(<span class="hljs-function"><span class="hljs-params">cursor</span> =&gt;</span> {
+    .then(<span class="hljs-function">(<span class="hljs-params">cursor</span>) =&gt;</span> {
       <span class="hljs-keyword">return</span> z.request(
         <span class="hljs-string">&apos;https://5ae7ad3547436a00143e104d.mockapi.io/api/recipes&apos;</span>,
         {
-          <span class="hljs-attr">params</span>: { <span class="hljs-attr">cursor</span>: cursor } <span class="hljs-comment">// if cursor is null, it&apos;s ignored here</span>
+          <span class="hljs-attr">params</span>: { <span class="hljs-attr">cursor</span>: cursor }, <span class="hljs-comment">// if cursor is null, it&apos;s ignored here</span>
         }
       );
     })
-    .then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+    .then(<span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> {
       <span class="hljs-comment">// need to save the cursor and return a promise, but also need to pass the data along</span>
       <span class="hljs-keyword">return</span> <span class="hljs-built_in">Promise</span>.all([response.items, z.cursor.set(response.nextPage)]);
     })
@@ -5128,7 +5128,7 @@ zapier push
     {
       <span class="hljs-comment">// if cursor is null, it&apos;s sent as an empty query</span>
       <span class="hljs-comment">//   param and should be ignored by the server</span>
-      <span class="hljs-attr">params</span>: { <span class="hljs-attr">cursor</span>: cursor }
+      <span class="hljs-attr">params</span>: { <span class="hljs-attr">cursor</span>: cursor },
     }
   );
 

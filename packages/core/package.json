@@ -27,6 +27,7 @@
     "lambda-integration-test": "mocha -t 10000 integration-test --lambda",
     "smoke-test": "mocha -t 120000 smoke-test",
     "lint": "eslint src test",
+    "lint:fix": "eslint --fix src test",
     "build-integration-test": "bin/build.sh local.bundle.zip",
     "upload-integration-test": "bin/upload-lambda.js local.bundle.zip",
     "deploy-integration-test": "yarn build-integration-test && yarn upload-integration-test",
@@ -41,20 +42,20 @@
     "bluebird": "3.7.2",
     "content-disposition": "0.5.3",
     "dotenv": "8.2.0",
-    "form-data": "3.0.0",
-    "lodash": "4.17.19",
+    "form-data": "4.0.0",
+    "lodash": "4.17.21",
     "node-fetch": "2.6.1",
     "oauth-sign": "0.9.0",
-    "semver": "7.3.2",
+    "semver": "7.3.4",
     "zapier-platform-schema": "10.2.0"
   },
   "devDependencies": {
-    "adm-zip": "0.4.14",
-    "aws-sdk": "^2",
-    "fs-extra": "^9",
-    "mock-fs": "^4"
+    "adm-zip": "0.5.4",
+    "aws-sdk": "^2.868.0",
+    "fs-extra": "^9.1.0",
+    "mock-fs": "^4.13.0"
   },
   "optionalDependencies": {
-    "@types/node": "^10"
+    "@types/node": "^14.14.35"
   }
 }

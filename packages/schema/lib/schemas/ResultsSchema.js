@@ -11,9 +11,7 @@ module.exports = makeSchema({
     // TODO: require id, ID, Id property?
     minProperties: 1,
   },
-  examples: [
-    [{ name: 'Alex Trebek' }],
-  ],
+  examples: [[{ name: 'Alex Trebek' }]],
   antiExamples: [
     {
       example: 1,

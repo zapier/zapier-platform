@@ -20,7 +20,7 @@ module.exports = makeSchema({
     },
     {
       example: {
-        required: 2
+        required: 2,
       },
       reason: 'Invalid value for key: required (must be of type string)',
     },

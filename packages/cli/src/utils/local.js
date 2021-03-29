@@ -7,7 +7,7 @@ const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
   const entryPath = `${process.cwd()}/index`;
   const rootPath = path.dirname(require.resolve(entryPath));
   if (reload) {
-    Object.keys(require.cache).map((cachePath) => {
+    Object.keys(require.cache).forEach((cachePath) => {
       if (cachePath.startsWith(rootPath)) {
         delete require.cache[cachePath];
       }

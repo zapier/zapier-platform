@@ -15,7 +15,7 @@ module.exports = makeSchema(
       {
         display: {
           label: 'Get Users',
-          description: 'Retrieve an index of users.'
+          description: 'Retrieve an index of users.',
         },
         operation: {
           display: 'Fetch users',
@@ -24,34 +24,34 @@ module.exports = makeSchema(
             id: 1,
             firstName: 'Walter',
             lastName: 'Sobchak',
-            occupation: 'Bowler'
-          }
-        }
-      }
+            occupation: 'Bowler',
+          },
+        },
+      },
     ],
     antiExamples: [
       {
         display: {
           label: 'Get Users',
-          description: 'Retrieve an index of users.'
+          description: 'Retrieve an index of users.',
         },
         operation: {
           description: 'Define how this search method will work.',
-          $ref: BasicActionOperationSchema.id
-        }
-      }
+          $ref: BasicActionOperationSchema.id,
+        },
+      },
     ],
     properties: {
       display: {
         description: 'Define how this get method will be exposed in the UI.',
-        $ref: BasicDisplaySchema.id
+        $ref: BasicDisplaySchema.id,
       },
       operation: {
         description: 'Define how this get method will work.',
-        $ref: BasicActionOperationSchema.id
-      }
+        $ref: BasicActionOperationSchema.id,
+      },
     },
-    additionalProperties: false
+    additionalProperties: false,
   },
   [BasicDisplaySchema, BasicActionOperationSchema]
 );

@@ -23,7 +23,8 @@ module.exports = makeSchema(
       },
       {
         example: [{ key: 'abc', choices: {} }],
-        reason: 'Invalid value for key in FieldSchema: choices (cannot be empty)',
+        reason:
+          'Invalid value for key in FieldSchema: choices (cannot be empty)',
       },
       {
         example: '$func$2$f$',

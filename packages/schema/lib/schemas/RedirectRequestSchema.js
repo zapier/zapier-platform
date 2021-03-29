@@ -29,9 +29,7 @@ module.exports = makeSchema(
       },
     },
     additionalProperties: false,
-    examples: [
-      { method: 'GET', url: 'https://google.com' },
-    ],
+    examples: [{ method: 'GET', url: 'https://google.com' }],
     antiExamples: [
       {
         example: { method: 'POST', url: 'https://google.com' },

@@ -7,7 +7,7 @@ window.DOMParser = DOMParser;
 
 const $ = jQuery(window);
 
-$.parseXML = data => {
+$.parseXML = (data) => {
   if (!data || typeof data !== 'string') {
     return null;
   }

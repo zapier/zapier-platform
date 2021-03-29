@@ -24,7 +24,8 @@ module.exports = makeSchema(
           key: 'searchOrCreateWidgets',
           display: {
             label: 'Search or Create Widgets',
-            description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+            description:
+              'Searches for a widget matching the provided query, or creates one if it does not exist.',
             important: true,
             hidden: false,
           },
@@ -41,7 +42,8 @@ module.exports = makeSchema(
             key: 'socWidgets',
             display: {
               label: 'Search or Create Widgets',
-              description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+              description:
+                'Searches for a widget matching the provided query, or creates one if it does not exist.',
               important: true,
               hidden: false,
             },
@@ -49,7 +51,8 @@ module.exports = makeSchema(
             create: 'createWidget',
           },
         },
-        reason: 'Key must match the key of the associated /SearchOrCreateSchema',
+        reason:
+          'Key must match the key of the associated /SearchOrCreateSchema',
       },
     ],
   },

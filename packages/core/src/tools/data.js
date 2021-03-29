@@ -112,7 +112,7 @@ const recurseReplace = (obj, replacer, options = {}) => {
     });
   } else if (isPlainObj(obj)) {
     const newObj = {};
-    Object.keys(obj).map((key) => {
+    Object.keys(obj).forEach((key) => {
       const value = obj[key];
       newObj[key] = recurseReplace(value, replacer, options);
     });
@@ -126,12 +126,12 @@ const recurseReplace = (obj, replacer, options = {}) => {
 // Recursively extract values from a nested object based on the matcher function.
 const recurseExtract = (obj, matcher) => {
   const values = [];
-  Object.keys(obj).map((key) => {
+  Object.keys(obj).forEach((key) => {
     const value = obj[key];
     if (matcher(key, value)) {
       values.push(value);
     } else if (isPlainObj(value)) {
-      recurseExtract(value, matcher).map((v) => {
+      recurseExtract(value, matcher).forEach((v) => {
         values.push(v);
       });
     }
