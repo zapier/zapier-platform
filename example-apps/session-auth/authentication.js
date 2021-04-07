@@ -53,7 +53,7 @@ module.exports = {
         label: 'Password',
         required: true,
 
-        // this lets the user enter maksed data
+        // this lets the user enter masked data
         type: 'password',
       },
     ],
