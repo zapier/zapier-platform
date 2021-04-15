@@ -248,7 +248,7 @@ const serializeValueForCurlies = (value) => {
   return value;
 };
 
-const createCurliesBank = (bundle) => {
+const createCurliesBank = (bundle, extra) => {
   const bank = {
     // This is for new curlies syntax, such as '{{bundle.inputData.var}}' and
     // '{{bundle.authData.var}}'
@@ -259,6 +259,7 @@ const createCurliesBank = (bundle) => {
     ...bundle.inputData,
     ...bundle.subscribeData,
     ...bundle.authData,
+    ...extra,
   };
   const flattenedBank = flattenPaths(bank, {
     perseve: {
@@ -271,8 +272,8 @@ const createCurliesBank = (bundle) => {
   }, {});
 };
 
-const replaceCurliesInRequest = (request, bundle) => {
-  const bank = createCurliesBank(bundle);
+const replaceCurliesInRequest = (request, bundle, extra) => {
+  const bank = createCurliesBank(bundle, extra);
   return recurseReplaceBank(request, bank);
 };
 
@@ -803,7 +804,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       return '';
     }
 
-    url = replaceCurliesInRequest({ url }, bundle).url;
+    url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
     const urlObj = new URL(url);
 
     if (!urlObj.searchParams.has('oauth_token')) {
@@ -838,7 +839,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       return '';
     }
 
-    url = replaceCurliesInRequest({ url }, bundle).url;
+    url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
     const urlObj = new URL(url);
 
     if (!urlObj.searchParams.has('client_id')) {
