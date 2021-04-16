@@ -1,3 +1,7 @@
+## 3.7.13
+
+- :bug: `inputData` should take precedence over `authData` when auth fields are not saved yet ([#359](https://github.com/zapier/zapier-platform/pull/359))
+
 ## 3.7.12
 
 - :bug: Add `bundle.trigger_data` to `pre_subscribe` and `post_subscribe` ([#342](https://github.com/zapier/zapier-platform/pull/342))

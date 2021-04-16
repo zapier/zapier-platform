@@ -192,6 +192,69 @@ describe('Integration Test', () => {
       });
     });
 
+    it('oauth2 authorizeUrl, curly replacement', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.authentication.oauth2Config.authorizeUrl =
+        '{{base_url}}/authorize';
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.authorizeUrl'
+      );
+
+      // inputData should take precedence over authData for authorizeUrl. This
+      // is because on CLI authData always holds the *saved* auth fields, and
+      // when rendering authorizeUrl, auth fields are not saved yet.
+      input.bundle.authData = {
+        base_url: 'https://from.auth.data',
+      };
+      input.bundle.inputData = {
+        base_url: 'https://from.input.data',
+        redirect_uri: 'https://example.com',
+        state: 'qwerty',
+      };
+      return app(input).then((output) => {
+        should.equal(
+          output.results,
+          'https://from.input.data/authorize?' +
+            'client_id=1234&' +
+            'redirect_uri=https%3A%2F%2Fexample.com&' +
+            'response_type=code&state=qwerty'
+        );
+      });
+    });
+
+    it('oauth2 getAccessToken curly replacement', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl =
+        '{{base_url}}/oauth/access-token';
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.getAccessToken'
+      );
+      // inputData should take precedence over authData for getAccessToken. This
+      // is because on CLI authData always holds the *saved* auth fields, and
+      // when rendering accessToekUrl, auth fields are not saved yet.
+      input.bundle.authData = {
+        base_url: HTTPBIN_URL,
+      };
+      input.bundle.inputData = {
+        base_url: AUTH_JSON_SERVER_URL,
+        redirect_uri: 'https://example.com',
+        code: 'one_time_code',
+      };
+      return app(input).then((output) => {
+        should.equal(output.results.access_token, 'a_token');
+        should.equal(output.results.something_custom, 'alright!');
+        should.not.exist(output.results.name);
+      });
+    });
+
     it('pre_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
       appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
@@ -305,6 +368,10 @@ describe('Integration Test', () => {
         compiledApp,
         'authentication.oauth2Config.getAccessToken'
       );
+      // inputData should take precedence over authData
+      input.bundle.authData = {
+        something_custom: 'hi',
+      };
       input.bundle.inputData = {
         redirect_uri: 'https://example.com',
         code: 'one_time_code',

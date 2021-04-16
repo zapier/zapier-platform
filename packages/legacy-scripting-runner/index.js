@@ -248,7 +248,7 @@ const serializeValueForCurlies = (value) => {
   return value;
 };
 
-const createCurliesBank = (bundle) => {
+const createCurliesBank = (bundle, extra) => {
   const bank = {
     // This is for new curlies syntax, such as '{{bundle.inputData.var}}' and
     // '{{bundle.authData.var}}'
@@ -259,6 +259,7 @@ const createCurliesBank = (bundle) => {
     ...bundle.inputData,
     ...bundle.subscribeData,
     ...bundle.authData,
+    ...extra,
   };
   const flattenedBank = flattenPaths(bank, {
     perseve: {
@@ -271,8 +272,8 @@ const createCurliesBank = (bundle) => {
   }, {});
 };
 
-const replaceCurliesInRequest = (request, bundle) => {
-  const bank = createCurliesBank(bundle);
+const replaceCurliesInRequest = (request, bundle, extra) => {
+  const bank = createCurliesBank(bundle, extra);
   return recurseReplaceBank(request, bank);
 };
 
@@ -803,7 +804,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       return '';
     }
 
-    url = replaceCurliesInRequest({ url }, bundle).url;
+    url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
     const urlObj = new URL(url);
 
     if (!urlObj.searchParams.has('oauth_token')) {
@@ -814,7 +815,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runOAuth1GetAccessToken = (bundle) => {
-    const url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
+    let url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
+    if (url) {
+      url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
+    }
 
     const templateContext = { ...bundle.authData, ...bundle.inputData };
     const consumerKey = renderTemplate(process.env.CLIENT_ID, templateContext);
@@ -838,7 +842,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       return '';
     }
 
-    url = replaceCurliesInRequest({ url }, bundle).url;
+    url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
     const urlObj = new URL(url);
 
     if (!urlObj.searchParams.has('client_id')) {
@@ -859,7 +863,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runOAuth2GetAccessToken = async (bundle) => {
-    const url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
+    let url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
+    if (url) {
+      url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
+    }
 
     const request = bundle.request;
     request.method = 'POST';
