@@ -1,6 +1,6 @@
 ## 3.7.13
 
-- :bug: `inputData` should take precedence over `authData` for `authorizeUrl` ([#359](https://github.com/zapier/zapier-platform/pull/359))
+- :bug: `inputData` should take precedence over `authData` when auth fields are not saved yet ([#359](https://github.com/zapier/zapier-platform/pull/359))
 
 ## 3.7.12
 
