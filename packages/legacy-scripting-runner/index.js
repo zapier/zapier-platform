@@ -815,7 +815,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runOAuth1GetAccessToken = (bundle) => {
-    const url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
+    let url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
+    if (url) {
+      url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
+    }
 
     const templateContext = { ...bundle.authData, ...bundle.inputData };
     const consumerKey = renderTemplate(process.env.CLIENT_ID, templateContext);
@@ -860,7 +863,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runOAuth2GetAccessToken = async (bundle) => {
-    const url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
+    let url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
+    if (url) {
+      url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
+    }
 
     const request = bundle.request;
     request.method = 'POST';

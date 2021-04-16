@@ -98,6 +98,14 @@ const addInputData = (event, bundle, convertedBundle) => {
     }
   } else if (event.name === 'hydrate.method') {
     Object.assign(convertedBundle, bundle.inputData.bundle);
+  } else if (event.name.startsWith('auth.oauth2.token')) {
+    // Overwrite convertedBundle.auth_fields with bundle.inputData
+    convertedBundle.auth_fields = Object.keys(
+      convertedBundle.auth_fields
+    ).reduce((result, k) => {
+      result[k] = bundle.inputData[k] || convertedBundle.auth_fields[k];
+      return result;
+    }, {});
   }
 };
 
