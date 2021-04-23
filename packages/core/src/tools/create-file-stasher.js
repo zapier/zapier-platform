@@ -106,7 +106,7 @@ const createFileStasher = (input) => {
     return rpc('get_presigned_upload_post_data', fileContentType).then(
       (result) => {
         const parseFinalResponse = (stream) => {
-          var newBufferStringStream = stream;
+          let newBufferStringStream = stream;
 
           // if stream is string, don't update headers, just return as is
           if (_.isString(stream)) {
