@@ -13,7 +13,7 @@ const createAppRequestClient = require('../../src/tools/create-app-request-clien
 const createInput = require('../../src/tools/create-input');
 const { HTTPBIN_URL } = require('../constants');
 
-describe('file upload', () => {
+describe('file upload from promise', () => {
   const testLogger = () => Promise.resolve({});
   const input = createInput({}, {}, testLogger);
 
@@ -283,5 +283,58 @@ describe('file upload', () => {
         done();
       })
       .catch(done);
+  });
+});
+
+describe('file upload using async/await', () => {
+  const testLogger = () => Promise.resolve({});
+  const input = createInput({}, {}, testLogger);
+
+  const rpc = mocky.makeRpc();
+  const stashFile = createFileStasher({
+    _zapier: {
+      rpc,
+      event: {
+        method: 'hydrators.test',
+      },
+    },
+  });
+
+  it('should upload a raw response', async () => {
+    mocky.mockRpcCall(mocky.fakeSignedPostData);
+    mocky.mockUpload();
+
+    const request = createAppRequestClient(input);
+    const file = await request(`${HTTPBIN_URL}/stream-bytes/1024`, {
+      raw: true,
+    });
+
+    const url = await stashFile(file);
+    should(url).eql(
+      `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
+    );
+  });
+
+  it('should get filename from content-disposition', async () => {
+    mocky.mockRpcCall(mocky.fakeSignedPostData);
+
+    // Expect to have this part in the request body sent to S3
+    mocky.mockUpload(
+      /name="Content-Disposition"\r\n\r\nattachment; filename="an example\.json"/
+    );
+
+    const request = createAppRequestClient(input);
+    const file = await request({
+      url: `${HTTPBIN_URL}/response-headers`,
+      params: {
+        'Content-Disposition': 'inline; filename="an example.json"',
+      },
+      raw: true,
+    });
+
+    const url = await stashFile(file);
+    should(url).eql(
+      `${mocky.fakeSignedPostData.url}${mocky.fakeSignedPostData.fields.key}`
+    );
   });
 });
