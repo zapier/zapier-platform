@@ -294,6 +294,27 @@ const cleanHeaders = (headers) => {
   return newHeaders;
 };
 
+// Header keys are considered case insensitive. This function removes duplicate
+// headers. A former value is replaced by latterly appearing value with the same
+// case-insensitive key.
+const dedupeHeaders = (headers) => {
+  // lowerToFirstKeys stores the mapping from lowercased keys to the key that
+  // first appears in the headers
+  const lowerToFirstKeys = {};
+
+  const newHeaders = {};
+  Object.entries(headers).forEach(([k, v], index) => {
+    const lowerKey = k.toLowerCase();
+    if (lowerToFirstKeys[lowerKey] === undefined) {
+      lowerToFirstKeys[lowerKey] = k;
+    }
+    const firstKey = lowerToFirstKeys[lowerKey] || k;
+    newHeaders[firstKey] = v;
+  });
+
+  return newHeaders;
+};
+
 const compileLegacyScriptingSource = (source, zcli, app) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
 
@@ -696,6 +717,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         .replace(/%7B/g, '{')
         .replace(/%7D/g, '}');
       request.headers = cleanHeaders(request.headers);
+      request.headers = dedupeHeaders(request.headers);
       request.allowGetBody = true;
       request.serializeValueForCurlies = serializeValueForCurlies;
       request.skipThrowForStatus = true;
