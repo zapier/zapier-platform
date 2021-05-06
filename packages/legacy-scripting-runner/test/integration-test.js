@@ -1108,10 +1108,10 @@ describe('Integration Test', () => {
       });
     });
 
-    it('KEY_pre_poll, no double headers', () => {
+    it('KEY_pre_poll, double headers', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
-        'movie_pre_poll_invalid_chars_in_headers',
+        'movie_pre_poll_double_headers',
         'movie_pre_poll'
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
@@ -1131,7 +1131,7 @@ describe('Integration Test', () => {
       };
       return _app(input).then((output) => {
         const echoed = output.results[0];
-        should.equal(echoed.headers['X-Api-Key'], 'H E Y');
+        should.deepEqual(echoed.headers['X-Api-Key'], ['three']);
       });
     });
 

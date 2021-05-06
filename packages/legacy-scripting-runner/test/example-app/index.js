@@ -317,6 +317,15 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_double_headers: function(bundle) {
+        bundle.request.url = '${HTTPBIN_URL}/get';
+        bundle.request.headers = {
+          'x-api-key': 'two',
+          'X-API-KEY': 'three'
+        };
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];
