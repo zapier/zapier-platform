@@ -1,3 +1,7 @@
+## 3.7.15
+
+- :bug: Fix another edge case that can lead to duplicate API Key headers ([#365](https://github.com/zapier/zapier-platform/pull/365))
+
 ## 3.7.14
 
 - :bug: Fix case-insesitive duplicate auth headers when using "API Key in Header" ([#364](https://github.com/zapier/zapier-platform/pull/364))
