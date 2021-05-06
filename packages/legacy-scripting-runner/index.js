@@ -307,7 +307,7 @@ const dedupeHeaders = (headers) => {
     if (lowerToFirstKeys[lowerKey] === undefined) {
       lowerToFirstKeys[lowerKey] = k;
     }
-    const firstKey = lowerToFirstKeys[lowerKey] || k;
+    const firstKey = lowerToFirstKeys[lowerKey];
     result[firstKey] = v;
     return result;
   }, {});
