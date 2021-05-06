@@ -1,3 +1,7 @@
+## 3.7.14
+
+- :bug: Fix case-insesitive duplicate auth headers when using "API Key in Header" ([#364](https://github.com/zapier/zapier-platform/pull/364))
+
 ## 3.7.13
 
 - :bug: `inputData` should take precedence over `authData` when auth fields are not saved yet ([#359](https://github.com/zapier/zapier-platform/pull/359))
