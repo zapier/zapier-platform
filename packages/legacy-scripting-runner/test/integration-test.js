@@ -1251,6 +1251,29 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_post_poll, z.request auth', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_z_request_auth',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = {
+        api_key: 'secret',
+      };
+      return _app(input).then((output) => {
+        const movie = output.results[0];
+        should.deepEqual(movie.authHeader, ['Bearer secret']);
+      });
+    });
+
     it('KEY_pre_poll & KEY_post_poll', () => {
       const input = createTestInput(
         compiledApp,

@@ -335,6 +335,21 @@ const legacyScriptingSource = `
         return [z.JSON.parse(bundle.response.content)];
       },
 
+      movie_post_poll_z_request_auth: function(bundle) {
+        var response = z.request({
+          url: '${HTTPBIN_URL}/get',
+          auth: {
+            bearer: bundle.auth_fields.api_key
+          }
+        });
+        var data = z.JSON.parse(response.content);
+        var authHeader = data.headers.Authorization;
+        return z.JSON.parse(bundle.response.content).map(function(movie) {
+          movie.authHeader = authHeader;
+          return movie;
+        });
+      },
+
       movie_poll_default_headers: function(bundle) {
         // Copy Accept and Content-Type to params so we know they're already
         // available in pre_poll
