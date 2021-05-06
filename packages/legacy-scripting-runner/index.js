@@ -295,22 +295,22 @@ const cleanHeaders = (headers) => {
 };
 
 // Header keys are considered case insensitive. This function removes duplicate
-// headers. A former value is replaced by latterly appearing value with the same
-// case-insensitive key.
+// headers.
+// dedupeHeaders({'x-key': 'one', 'X-KEY': 'two'}) returns {'x-key': 'two'}
 const dedupeHeaders = (headers) => {
   // lowerToFirstKeys stores the mapping from lowercased keys to the key that
   // first appears in the headers
   const lowerToFirstKeys = {};
 
-  const newHeaders = {};
-  Object.entries(headers).forEach(([k, v], index) => {
+  const newHeaders = Object.entries(headers).reduce((result, [k, v]) => {
     const lowerKey = k.toLowerCase();
     if (lowerToFirstKeys[lowerKey] === undefined) {
       lowerToFirstKeys[lowerKey] = k;
     }
     const firstKey = lowerToFirstKeys[lowerKey] || k;
-    newHeaders[firstKey] = v;
-  });
+    result[firstKey] = v;
+    return result;
+  }, {});
 
   return newHeaders;
 };
