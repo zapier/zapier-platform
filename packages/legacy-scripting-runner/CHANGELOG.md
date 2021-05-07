@@ -1,3 +1,7 @@
+## 3.7.16
+
+- :bug: Allow `auth` to be an object for `z.request` ([#366](https://github.com/zapier/zapier-platform/pull/366))
+
 ## 3.7.15
 
 - :bug: Fix another edge case that can lead to duplicate API Key headers ([#365](https://github.com/zapier/zapier-platform/pull/365))

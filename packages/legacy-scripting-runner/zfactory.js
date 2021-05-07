@@ -13,21 +13,18 @@ const convertBundleRequest = (bundleOrBundleRequest) => {
     ? bundleOrBundleRequest.request
     : bundleOrBundleRequest;
 
-  let auth = null;
-
   if (
     bundleRequest.auth &&
-    _.isArray(bundleRequest.auth) &&
+    Array.isArray(bundleRequest.auth) &&
     bundleRequest.auth.length === 2
   ) {
-    auth = {
+    bundleRequest.auth = {
       user: bundleRequest.auth[0],
       password: bundleRequest.auth[1],
     };
   }
 
   bundleRequest.qs = bundleRequest.params || {};
-  bundleRequest.auth = auth;
   bundleRequest.body = bundleRequest.data || '';
 
   delete bundleRequest.params;
