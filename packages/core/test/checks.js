@@ -51,6 +51,9 @@ describe('checks', () => {
       .length.should.eql(1);
 
     checks.triggerHasUniqueIds.run(testMethod, []).length.should.eql(0);
+    checks.triggerHasUniqueIds
+      .run(testMethod, { throwsIfNull: null })
+      .length.should.eql(0);
   });
 
   it('should error for objects via triggerIsArray', () => {
@@ -135,6 +138,25 @@ describe('checkOutput', () => {
         },
       },
       results: [{ text: 'An item without id' }],
+    };
+
+    (() => {
+      checkOutput(output);
+    }).should.throw(/missing the "id"/);
+  });
+
+  it('should be ok if there is a null', () => {
+    const output = {
+      input: {
+        _zapier: {
+          event: {
+            method: 'triggers.key.operation.perform',
+            command: 'execute',
+            bundle: {},
+          },
+        },
+      },
+      results: { text: 'An item without id', throwForNull: null },
     };
 
     (() => {
