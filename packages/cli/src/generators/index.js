@@ -46,7 +46,7 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
           [PLATFORM_PACKAGE]: PACKAGE_VERSION,
         },
         devDependencies: {
-          jest: '^25.5.3',
+          jest: '^26.6.3',
         },
         private: true,
       },
@@ -135,10 +135,10 @@ const writeForStandaloneTemplate = (gen) => {
         test: 'npm run build && jest --testTimeout 10000 --rootDir ./lib/test',
       },
       devDependencies: {
-        '@types/jest': '^25.2.1',
-        '@types/node': '^13.13.5',
+        '@types/jest': '^26.0.23',
+        '@types/node': '^14',
         rimraf: '^3.0.2',
-        typescript: '^3.8.3',
+        typescript: '4.2.4',
       },
     },
   }[gen.options.template];
