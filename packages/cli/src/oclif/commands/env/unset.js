@@ -34,6 +34,11 @@ class UnsetEnvCommand extends BaseCommand {
     }, {});
 
     const app = await this.getWritableApp();
+    if (!app.all_versions.includes(version)) {
+      this.error(
+        `Version ${version} doesn't exist on integration "${app.title}"`
+      );
+    }
 
     const url = `/apps/${app.id}/versions/${version}/multi-environment`;
 
