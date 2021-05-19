@@ -15,6 +15,11 @@ const uniqueInputFieldKeys = (definition) => {
       const existingKeys = {}; // map of key to where it already lives
 
       inputFields.forEach((inputField, index) => {
+        // could be a string or a non-field object (`source` or `require` function obj)
+        if (!inputField.key) {
+          return;
+        }
+
         if (existingKeys[inputField.key]) {
           errors.push(
             new jsonschema.ValidationError(

@@ -117,4 +117,35 @@ describe('uniqueInputFieldKeys', () => {
       )
       .should.be.true();
   });
+
+  it('should handle non-inputField objects', () => {
+    const definition = {
+      version: '1.0.0',
+      platformVersion: '1.0.0',
+      creates: {
+        foo: {
+          key: 'foo',
+          noun: 'Foo',
+          display: {
+            label: 'Create Foo',
+            description: 'Creates a...',
+          },
+          operation: {
+            perform: '$func$2$f$',
+            sample: { id: 1 },
+            inputFields: [
+              // each of these is valid, but none declares a .key property
+              '$func$2$f$', // dynamic fields
+              '$func$2$f$',
+              { source: 'return []' },
+              { require: './some/js/file.js' },
+            ],
+          },
+        },
+      },
+    };
+
+    const results = schema.validateAppDefinition(definition);
+    results.errors.should.have.length(0);
+  });
 });
