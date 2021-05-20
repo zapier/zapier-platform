@@ -24,9 +24,9 @@ Our code is updated frequently. To see a full list of changes, look no further t
 
 This doc describes the latest CLI version (**11.0.0**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
-- CLI Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
-- CLI Reference: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
-- Schema Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.4.0/packages/schema/docs/build/schema.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@8.4.2/packages/schema/docs/build/schema.md)
+- CLI Docs: [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/README.md),[9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
+- CLI Reference: [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/README.md),[9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
+- Schema Docs: [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.2.0/packages/schema/docs/build/schema.md),[9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.4.0/packages/schema/docs/build/schema.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@8.4.2/packages/schema/docs/build/schema.md)
 
 ## Table of Contents
 
