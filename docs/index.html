@@ -2252,24 +2252,21 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <span class="hljs-attr">issue</span>: {
       <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;new_records&apos;</span>,
       <span class="hljs-comment">// ...</span>
-      <span class="hljs-attr">create</span>: {
-        <span class="hljs-comment">// ...</span>
-        <span class="hljs-attr">operation</span>: {
-          <span class="hljs-attr">inputFields</span>: [
-            {
-              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;spreadsheet_id&apos;</span>,
-              <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
-              <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Spreadsheet&apos;</span>,
-              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;spreadsheet.id.name&apos;</span>,
-            },
-            {
-              <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;worksheet_id&apos;</span>,
-              <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
-              <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Worksheet&apos;</span>,
-              <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;worksheet.id.name&apos;</span>,
-            },
-          ],
-        },
+      <span class="hljs-attr">operation</span>: {
+        <span class="hljs-attr">inputFields</span>: [
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;spreadsheet_id&apos;</span>,
+            <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Spreadsheet&apos;</span>,
+            <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;spreadsheet.id.name&apos;</span>,
+          },
+          {
+            <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;worksheet_id&apos;</span>,
+            <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+            <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Worksheet&apos;</span>,
+            <span class="hljs-attr">dynamic</span>: <span class="hljs-string">&apos;worksheet.id.name&apos;</span>,
+          },
+        ],
       },
     },
   },
