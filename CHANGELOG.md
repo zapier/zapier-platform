@@ -1,3 +1,21 @@
+## 11.0.1
+
+_released `2021-05-28`_
+
+### cli
+
+- :bug: Handle missing versions better in env command ([#374](https://github.com/zapier/zapier-platform/pull/374))
+- :scroll: Fix incorrect snippet ([#378](https://github.com/zapier/zapier-platform/pull/378))
+- :scroll: Update historical releases section to include v10 ([#377](https://github.com/zapier/zapier-platform/pull/377))
+
+### core
+
+- None!
+
+### schema
+
+- :bug: skip checking keys on fields without the `key` property (fixes [zapier-platform#375](https://github.com/zapier/zapier-platform/pull/375) via [#376](https://github.com/zapier/zapier-platform/pull/376))
+
 ## 11.0.0
 
 _released `2021-05-12`_
@@ -8,13 +26,13 @@ Additionally, any integrations that depend on `zapier-platform-core@11.0.0` will
 
 Read on for a detailed set of release notes, paying special attention to any :exclamation: BREAKING CHANGEs.
 
-## cli
+### cli
 
 - :exclamation: Remove the `-g | --grep` and `-t | --timeout` flags from `zapier test` ([#348](https://github.com/zapier/zapier-platform/pull/348)). You can now pass flags directly to your `test` script by adding `--` before them. To migrate existing scripts:
   - Add `--` before any existing `grep` and `timeout` flags
   - `zapier test -g 'cool' --timeout 5000` :arrow_right: `zapier test -- -g 'cool' --timeout 5000`
 
-## core
+### core
 
 - :exclamation: Run apps using Node.js v14.x ([#350](https://github.com/zapier/zapier-platform/pull/350))
 - :bug: Checks should properly handle possibly null values ([#371](https://github.com/zapier/zapier-platform/pull/371))
@@ -24,13 +42,13 @@ Read on for a detailed set of release notes, paying special attention to any :ex
 - :hammer: Typescript type of `inputData` for hydration function should be of type T as well ([#357](https://github.com/zapier/zapier-platform/pull/357))
 - :scroll: Fix typo in authentication.js ([#356](https://github.com/zapier/zapier-platform/pull/356))
 
-## schema
+### schema
 
 - :exclamation: add validation to ensure globally unique input fields ([#347](https://github.com/zapier/zapier-platform/pull/347)).
   - Your integration's input fields wouldn't have worked correctly if they didn't comply with this check, but now we're more explicit about it
   - No action should be needed for migration
 
-## misc
+### misc
 
 - Many under-the-hood dependency updates:
   - :hammer: update deps ([#351](https://github.com/zapier/zapier-platform/pull/351), [#372](https://github.com/zapier/zapier-platform/pull/372))
