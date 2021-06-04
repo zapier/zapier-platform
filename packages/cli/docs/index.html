@@ -3577,6 +3577,7 @@ zapier env:get 1.0.0
   } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (response.status === <span class="hljs-number">200</span> &amp;&amp; response.data.success === <span class="hljs-literal">false</span>) {
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> z.errors.Error(response.data.message, response.data.code);
   }
+  <span class="hljs-keyword">return</span> response;
 };
 
 <span class="hljs-comment">// This example only works on core v10+!</span>
