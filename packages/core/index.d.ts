@@ -16,7 +16,10 @@ export const createAppTester: (
   options?: { customStoreKey?: string }
 ) => <T, B extends Bundle>(
   func: (z: ZObject, bundle: B) => T | Promise<T>,
-  bundle?: Partial<B> // partial so we don't have to make a full bundle in tests
+  bundle?: Partial<B>, // partial so we don't have to make a full bundle in tests
+  opts?: {
+    adHoc?: boolean;
+  }
 ) => Promise<T>; // appTester always returns a promise
 
 // internal only
@@ -123,12 +126,13 @@ type DehydrateFunc = <T>(
 export interface ZObject {
   request: {
     // most specific overloads go first
-    (url: string, options: HttpRequestOptions & { raw: true }): Promise<
-      RawHttpResponse
-    >;
-    (options: HttpRequestOptions & { raw: true; url: string }): Promise<
-      RawHttpResponse
-    >;
+    (
+      url: string,
+      options: HttpRequestOptions & { raw: true }
+    ): Promise<RawHttpResponse>;
+    (
+      options: HttpRequestOptions & { raw: true; url: string }
+    ): Promise<RawHttpResponse>;
 
     (url: string, options?: HttpRequestOptions): Promise<HttpResponse>;
     (options: HttpRequestOptions & { url: string }): Promise<HttpResponse>;

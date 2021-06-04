@@ -52,10 +52,17 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
 
   const randomSeed = genId();
 
-  return (methodOrFunc, bundle) => {
+  return (methodOrFunc, bundle, { adHoc } = {}) => {
     bundle = bundle || {};
 
-    const method = resolveMethodPath(appRaw, methodOrFunc);
+    let method;
+    if (adHoc) {
+      appRaw._testRequest = (z, bundle) => methodOrFunc(z, bundle);
+      method = resolveMethodPath(appRaw, appRaw._testRequest);
+    } else {
+      method = resolveMethodPath(appRaw, methodOrFunc);
+    }
+
     const storeKey = shouldPaginate(appRaw, method)
       ? customStoreKey
         ? `testKey-${customStoreKey}`
@@ -77,7 +84,10 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       event.detailedLogToStdout = true;
     }
 
-    return createHandlerPromise(event).then((resp) => resp.results);
+    return createHandlerPromise(event).then((resp) => {
+      delete appRaw._testRequest; // clear adHocFunc so tests can't affect each other
+      return resp.results;
+    });
   };
 };
 
