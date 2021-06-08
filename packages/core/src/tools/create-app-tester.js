@@ -3,7 +3,7 @@
 const createLambdaHandler = require('./create-lambda-handler');
 const resolveMethodPath = require('./resolve-method-path');
 const ZapierPromise = require('./promise');
-const { get } = require('lodash');
+const { get, isFunction } = require('lodash');
 const { genId } = require('./data');
 
 // this is (annoyingly) mirrored in cli/api_base, so that test functions only
@@ -52,15 +52,22 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
 
   const randomSeed = genId();
 
-  return (methodOrFunc, bundle, { adHoc } = {}) => {
+  return (methodOrFunc, bundle) => {
     bundle = bundle || {};
 
-    let method;
-    if (adHoc) {
-      appRaw._testRequest = (z, bundle) => methodOrFunc(z, bundle);
-      method = resolveMethodPath(appRaw, appRaw._testRequest);
-    } else {
-      method = resolveMethodPath(appRaw, methodOrFunc);
+    let method = resolveMethodPath(appRaw, methodOrFunc, false);
+    if (!method) {
+      if (isFunction(methodOrFunc)) {
+        // definitely have a function but didn't find it on the app; it's an adhoc
+        appRaw._testRequest = (z, bundle) => methodOrFunc(z, bundle);
+        method = resolveMethodPath(appRaw, appRaw._testRequest);
+      } else {
+        throw new Error(
+          `Unable to find the following on your App instance: ${JSON.stringify(
+            methodOrFunc
+          )}`
+        );
+      }
     }
 
     const storeKey = shouldPaginate(appRaw, method)

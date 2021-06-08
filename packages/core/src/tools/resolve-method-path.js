@@ -13,7 +13,7 @@ const isRequestMethod = (needle) =>
     resolveMethodPath(app, app.resources.contact.get.operation.perform)
 
 */
-const resolveMethodPath = (app, needle) => {
+const resolveMethodPath = (app, needle, explodeIfMissing = true) => {
   // temporary warning for all those with old code
   if (typeof needle === 'string') {
     console.log(
@@ -39,7 +39,7 @@ const resolveMethodPath = (app, needle) => {
   const path =
     dataTools.memoizedFindMapDeep(app, needle) ||
     dataTools.memoizedFindMapDeep(app, needle, _.isEqual);
-  if (!path) {
+  if (!path && explodeIfMissing) {
     throw new Error(
       'We could not find your function/array/object anywhere on your App definition.'
     );

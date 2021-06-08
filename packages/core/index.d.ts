@@ -16,10 +16,7 @@ export const createAppTester: (
   options?: { customStoreKey?: string }
 ) => <T, B extends Bundle>(
   func: (z: ZObject, bundle: B) => T | Promise<T>,
-  bundle?: Partial<B>, // partial so we don't have to make a full bundle in tests
-  opts?: {
-    adHoc?: boolean;
-  }
+  bundle?: Partial<B> // partial so we don't have to make a full bundle in tests
 ) => Promise<T>; // appTester always returns a promise
 
 // internal only
