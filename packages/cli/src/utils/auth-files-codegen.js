@@ -404,13 +404,13 @@ const sessionAuthFile = () => {
           obj(
             objProperty('key', strLiteral('username')),
             objProperty('label', strLiteral('Username')),
-            objProperty('required', strLiteral('true'))
+            objProperty('required', 'true')
           ),
           obj(
             objProperty('key', strLiteral('password')),
             objProperty('label', strLiteral('Password')),
             objProperty('required', 'true'),
-            comment('this lets the user enter maksed data'),
+            comment('this lets the user enter masked data'),
             objProperty('type', strLiteral('password'))
           ),
         ],
