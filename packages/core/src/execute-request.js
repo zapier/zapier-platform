@@ -10,7 +10,7 @@ const executeRequest = (input) => {
   if (!options.url) {
     throw new Error('Missing url for request');
   }
-  options.replace = true;
+  options.replace = options.replace === undefined ? true : options.replace;
   return input.z.request(options).then(responseCleaner);
 };
 
