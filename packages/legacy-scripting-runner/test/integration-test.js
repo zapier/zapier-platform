@@ -279,7 +279,7 @@ describe('Integration Test', () => {
         refresh_token: 'a_refresh_token'
       };
       return app(input).then(output => {
-        should.equal(output.results.access_token, 'a_new_token');
+        should.equal(output.results.access_token, 'a_token');
       });
     });
 
