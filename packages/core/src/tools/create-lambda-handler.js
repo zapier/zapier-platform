@@ -204,7 +204,8 @@ const createLambdaHandler = appRawOrPath => {
           // Adds logging for _all_ kinds of http(s) requests, no matter the library
           if (!skipHttpPatch) {
             const httpPatch = createHttpPatch(event);
-            httpPatch(require('http')); // 'https' uses 'http' under the hood
+            httpPatch(require('http'));
+            httpPatch(require('https')); // 'https' needs to be patched separately
           }
 
           // TODO: Avoid calling prepareApp(appRaw) repeatedly here as createApp()
