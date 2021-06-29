@@ -123,22 +123,6 @@ const recurseReplace = (obj, replacer, options = {}) => {
   return obj;
 };
 
-// Recursively extract values from a nested object based on the matcher function.
-const recurseExtract = (obj, matcher) => {
-  const values = [];
-  Object.keys(obj).forEach((key) => {
-    const value = obj[key];
-    if (matcher(key, value)) {
-      values.push(value);
-    } else if (isPlainObj(value)) {
-      recurseExtract(value, matcher).forEach((v) => {
-        values.push(v);
-      });
-    }
-  });
-  return values;
-};
-
 const _IGNORE = {};
 
 // Flatten a nested object.
@@ -200,7 +184,6 @@ module.exports = {
   isPlainObj,
   jsonCopy,
   memoizedFindMapDeep,
-  recurseExtract,
   recurseReplace,
   simpleTruncate,
 };
