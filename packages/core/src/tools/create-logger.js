@@ -122,8 +122,14 @@ const sendLog = (options, event, message, data) => {
   data.response_headers = unheader(data.response_headers);
 
   const sensitiveValues = buildSensitiveValues(event, data);
-  const safeMessage = truncate(scrub(message, sensitiveValues));
-  const safeData = recurseReplace(scrub(data, sensitiveValues), truncate);
+  // scrub throws an error if there are no secrets
+  const safeMessage = truncate(
+    sensitiveValues.length ? scrub(message, sensitiveValues) : message
+  );
+  const safeData = recurseReplace(
+    sensitiveValues.length ? scrub(data, sensitiveValues) : data,
+    truncate
+  );
   const unsafeData = recurseReplace(data, truncate);
 
   // Keep safe log keys uncensored
