@@ -851,7 +851,7 @@ const legacyScriptingSource = `
         if (_.isEmpty(bundle.request.files)) {
           // Reach here when the optional file field is empty
           bundle.request.headers['Content-Type'] = 'application/json';
-          bundle.request.url = 'https://httpbin.zapier-tooling.com/post';
+          bundle.request.url = '${HTTPBIN_URL}/post';
           return bundle.request;
         } else {
           // Reach here when the optional file field is filled
@@ -859,6 +859,21 @@ const legacyScriptingSource = `
           bundle.request.data = JSON.parse(bundle.request.data);
           return bundle.request;
         }
+      },
+
+      file_pre_write_cancel_multipart: function(bundle) {
+        var file = bundle.request.files.file;
+        var data = z.JSON.parse(bundle.request.data);
+        data.file = file;
+
+        bundle.request.url = '${HTTPBIN_URL}/post';
+
+        // This should make legacy-scripting-runner switch from multipart to
+        // JSON body
+        bundle.request.files = {};
+        bundle.request.data = z.JSON.stringify(data);
+
+        return bundle.request;
       },
 
       /*

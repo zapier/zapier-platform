@@ -704,8 +704,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       request = { ...bundle.request, ...request };
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
-      if (isAnyFileFieldSet(bundle) && !isBodyStream) {
-        // Runs only when there's no KEY_pre_ method
+      if (!preMethod && !isBodyStream && isAnyFileFieldSet(bundle)) {
+        // Enter here only when there's no KEY_pre method. When a KEY_pre method
+        // is defined, addFilesToRequestBodyFromPreResult() already does the
+        // file handling, so we don't want to do it again here.
         await addFilesToRequestBodyFromBody(request, bundle);
       }
 
