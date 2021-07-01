@@ -23,17 +23,6 @@ const REQUEST_OBJECT_SHORTHAND_OPTIONS = { isShorthand: true, replace: true };
 const DEFAULT_LOGGING_HTTP_ENDPOINT = 'https://httplogger.zapier.com/input';
 const DEFAULT_LOGGING_HTTP_API_KEY = 'R24hzu86v3jntwtX2DtYECeWAB'; // It's ok, this isn't PROD
 
-const SENSITIVE_KEYS = [
-  'api_key',
-  'apikey',
-  'auth',
-  'passwd',
-  'password',
-  'secret',
-  'signature',
-  'token',
-];
-
 const SAFE_LOG_KEYS = [
   'account_id',
   'api_title',
@@ -76,6 +65,5 @@ module.exports = {
   REQUEST_OBJECT_SHORTHAND_OPTIONS,
   RESPONSE_SIZE_LIMIT,
   SAFE_LOG_KEYS,
-  SENSITIVE_KEYS,
   STATUSES,
 };

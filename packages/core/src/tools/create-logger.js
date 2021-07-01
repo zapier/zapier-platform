@@ -3,19 +3,29 @@
 const _ = require('lodash');
 
 const request = require('./request-client-internal');
-const cleaner = require('./cleaner');
-const dataTools = require('./data');
-const hashing = require('./hashing');
+const { simpleTruncate, recurseReplace } = require('./data');
 const ZapierPromise = require('./promise');
 const {
   DEFAULT_LOGGING_HTTP_API_KEY,
   DEFAULT_LOGGING_HTTP_ENDPOINT,
   SAFE_LOG_KEYS,
-  SENSITIVE_KEYS,
 } = require('../constants');
 const { unheader } = require('./http');
+const { scrub, findSensitiveValues } = require('@zapier/secret-scrubber');
+// not really a public function, but it came from here originally
+const { isUrlWithSecrets } = require('@zapier/secret-scrubber/lib/convenience');
 
-const truncate = (str) => dataTools.simpleTruncate(str, 3500, ' [...]');
+const isUrl = (url) => {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const truncate = (str) => simpleTruncate(str, 3500, ' [...]');
 
 const formatHeaders = (headers = {}) => {
   if (_.isEmpty(headers)) {
@@ -89,66 +99,19 @@ const toStdout = (event, msg, data) => {
   }
 };
 
-const isSafeUrl = (value) => {
-  let url;
-  try {
-    url = new URL(value);
-  } catch (err) {
-    return false;
-  }
-  return !(url.username || url.password || url.search);
-};
-
-const makeSensitiveBank = (event, data) => {
+const buildSensitiveValues = (event, data) => {
   const bundle = event.bundle || {};
-
-  const bank = { ...bundle.authData, ...process.env };
-  const sensitiveValues = Object.entries(bank).reduce(
-    (values, [key, value]) => {
-      if (SENSITIVE_KEYS.includes(key) || !isSafeUrl(value)) {
-        return [...values, value];
-      }
-      // Allow uncensored if the value is a safe URL and the key is not in
-      // SENSITIVE_KEYS
-      return [...values];
-    },
-    []
+  const authData = Object.values(bundle.authData || {});
+  // for the most part, we should censor all the values from authData
+  // the exception is safe urls, which should be filtered out - we want those to be logged
+  const sensitiveAuthData = authData.filter(
+    (item) => !isUrl(item) || isUrlWithSecrets(item)
   );
-
-  const matcher = (key, value) => {
-    if (_.isString(value)) {
-      const lowerKey = key.toLowerCase();
-      return _.some(SENSITIVE_KEYS, (k) => lowerKey.indexOf(k) >= 0);
-    }
-    return false;
-  };
-
-  dataTools.recurseExtract(data, matcher).forEach((value) => {
-    sensitiveValues.push(value);
-  });
-
-  return _.reduce(
-    sensitiveValues,
-    (bank, val) => {
-      // keeps short values from spamming censor strings in logs, < 6 chars is not a proper secret
-      // see https://github.com/zapier/zapier-platform-core/issues/4#issuecomment-277855071
-      if (val && String(val).length > 5) {
-        const censored = hashing.snipify(val);
-        bank[val] = censored;
-        bank[encodeURIComponent(val)] = censored;
-        try {
-          bank[Buffer.from(String(val)).toString('base64')] = censored;
-        } catch (e) {
-          if (e.name !== 'TypeError') {
-            throw e;
-          }
-          // ignore; Buffer is semi-selective about what types it takes
-        }
-      }
-      return bank;
-    },
-    {}
-  );
+  return [
+    ...sensitiveAuthData,
+    ...findSensitiveValues(process.env),
+    ...findSensitiveValues(data),
+  ];
 };
 
 const sendLog = (options, event, message, data) => {
@@ -158,15 +121,16 @@ const sendLog = (options, event, message, data) => {
   data.request_headers = unheader(data.request_headers);
   data.response_headers = unheader(data.response_headers);
 
-  const sensitiveBank = makeSensitiveBank(event, data);
+  const sensitiveValues = buildSensitiveValues(event, data);
+  // scrub throws an error if there are no secrets
   const safeMessage = truncate(
-    cleaner.recurseReplaceBank(message, sensitiveBank)
+    sensitiveValues.length ? scrub(message, sensitiveValues) : message
   );
-  const safeData = dataTools.recurseReplace(
-    cleaner.recurseReplaceBank(data, sensitiveBank),
+  const safeData = recurseReplace(
+    sensitiveValues.length ? scrub(data, sensitiveValues) : data,
     truncate
   );
-  const unsafeData = dataTools.recurseReplace(data, truncate);
+  const unsafeData = recurseReplace(data, truncate);
 
   // Keep safe log keys uncensored
   Object.keys(safeData).forEach((key) => {
