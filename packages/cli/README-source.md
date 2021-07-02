@@ -1484,6 +1484,14 @@ Since v10, we recommend using the [Jest](https://jestjs.io/) testing framework. 
 [insert-file:./snippets/jest-test.js]
 ```
 
+### Using the `z` Object in Tests
+
+Introduced in `core@11.1.0`, `appTester` can now run arbitrary functions:
+
+```js
+[insert-file:./snippets/jest-adhoc-func.js]
+```
+
 ### Mocking Requests
 
 While testing, it's useful to test your code without actually hitting any external services. [Nock](https://github.com/node-nock/nock) is a node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with `z.request` by setting up your `nock` before calling `appTester`.
