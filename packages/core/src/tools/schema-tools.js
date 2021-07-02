@@ -2,9 +2,13 @@
 
 const dataTools = require('./data');
 
+// AsyncFunction is not a global object and can be obtained in this way
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncFunction
+const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor;
+
 const makeFunction = (source, args = []) => {
   try {
-    return Function(...args, source); // eslint-disable-line no-new-func
+    return new AsyncFunction(...args, source);
   } catch (err) {
     return () => {
       throw err;
