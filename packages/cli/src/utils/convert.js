@@ -167,7 +167,9 @@ const renderStep = (type, definition) => {
       if (func && func.source) {
         const args = func.args || ['z', 'bundle'];
         functionBlock.push(
-          `const ${funcName} = (${args.join(', ')}) => {\n${func.source}\n};`
+          `const ${funcName} = async (${args.join(', ')}) => {\n${
+            func.source
+          }\n};`
         );
 
         exportBlock.operation[funcName] = makePlaceholder(funcName);
@@ -188,7 +190,7 @@ const renderStep = (type, definition) => {
             funcNum ? funcNum++ : ++funcNum && ''
           }`;
           functionBlock.push(
-            `const ${funcName} = (${args.join(', ')}) => {\n${
+            `const ${funcName} = async (${args.join(', ')}) => {\n${
               maybeFunc.source
             }\n};`
           );
@@ -277,7 +279,7 @@ const renderAuth = async (appDefinition) => {
       if (func && func.source) {
         const args = func.args || ['z', 'bundle'];
         functionBlock.push(
-          `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
+          `const ${funcName} = async (${args.join(', ')}) => {${func.source}};`
         );
 
         exportBlock[key] = makePlaceholder(funcName);
@@ -302,7 +304,7 @@ const renderHydrators = async (appDefinition) => {
     if (func && func.source) {
       const args = func.args || ['z', 'bundle'];
       functionBlock.push(
-        `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
+        `const ${funcName} = async (${args.join(', ')}) => {${func.source}};`
       );
       exportBlock[funcName] = makePlaceholder(funcName);
     }
@@ -347,9 +349,8 @@ const renderIndex = async (appDefinition) => {
         importBlock.push(`const ${importName} = require('${filepath}');`);
 
         delete exportBlock[stepType][key];
-        exportBlock[stepType][
-          makePlaceholder(`[${importName}.key]`)
-        ] = makePlaceholder(importName);
+        exportBlock[stepType][makePlaceholder(`[${importName}.key]`)] =
+          makePlaceholder(importName);
       });
     }
   );
@@ -368,7 +369,7 @@ const renderIndex = async (appDefinition) => {
         const args = func.args || ['z', 'bundle'];
         const funcName = middlewareType;
         functionBlock.push(
-          `const ${funcName} = (${args.join(', ')}) => {${func.source}};`
+          `const ${funcName} = async (${args.join(', ')}) => {${func.source}};`
         );
 
         exportBlock[middlewareType][0] = makePlaceholder(funcName);
