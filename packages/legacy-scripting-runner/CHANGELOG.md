@@ -1,3 +1,7 @@
+## 3.7.17
+
+- :bug: Allow `pre_write` method to "cancel" multipart body by emptying `request.files` ([#394](https://github.com/zapier/zapier-platform/pull/394))
+
 ## 3.7.16
 
 - :bug: Allow `auth` to be an object for `z.request` ([#366](https://github.com/zapier/zapier-platform/pull/366))
