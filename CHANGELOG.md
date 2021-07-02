@@ -1,3 +1,11 @@
+## 11.1.0
+
+_unreleased_
+
+### core
+
+- :tada: Allow using `await` in inline function source ([#396](https://github.com/zapier/zapier-platform/pull/396))
+
 ## 11.0.1
 
 _released `2021-05-28`_
@@ -231,6 +239,8 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 - :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
 
 ## 9.5.0
+
+_released `2021-07-02`_
 
 ### cli
 
