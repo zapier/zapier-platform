@@ -230,6 +230,21 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 
 - :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
 
+## 9.5.0
+
+### cli
+
+- None!
+
+### core
+
+- :tada: Allow using `await` in inline function source ([#390](https://github.com/zapier/zapier-platform/pull/390))
+- :bug: Make sure all HTTP requests logged ([#390](https://github.com/zapier/zapier-platform/pull/390))
+
+### schema
+
+- None!
+
 ## 9.4.2
 
 ### cli
