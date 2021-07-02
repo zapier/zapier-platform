@@ -9,7 +9,7 @@ describe('schema-tools', () => {
   describe('makeFunction', () => {
     it('should make a function', () => {
       const func = schemaTools.makeFunction('return [{ id: 1234 }];');
-      func().should.deepEqual([{ id: 1234 }]);
+      return func().should.finally.deepEqual([{ id: 1234 }]);
     });
 
     it('should throw when node require is used', () => {
@@ -20,7 +20,7 @@ describe('schema-tools', () => {
       `;
 
       const func = schemaTools.makeFunction(body);
-      func.should.throw(ReferenceError, { message: 'require is not defined' });
+      return func().should.be.rejectedWith(/require is not defined/);
     });
 
     it('should gracefully handle bad code', () => {
@@ -54,7 +54,23 @@ describe('schema-tools', () => {
         beforeRequest: [{ source: 'return a - b;', args: ['a', 'b'] }]
       };
       const app = schemaTools.findSourceRequireFunctions(appRaw);
-      app.beforeRequest[0](123, 23).should.eql(100);
+      return app.beforeRequest[0](123, 23).should.finally.eql(100);
+    });
+
+    it('should replace async function source', () => {
+      const source = `
+        const one = await promiseOne;
+        const two = await promiseTwo;
+        return one + two;
+      `;
+      const appRaw = {
+        beforeRequest: [{ source, args: ['promiseOne', 'promiseTwo'] }]
+      };
+      const app = schemaTools.findSourceRequireFunctions(appRaw);
+      return app.beforeRequest[0](
+        Promise.resolve(123),
+        Promise.resolve(456)
+      ).should.finally.eql(579);
     });
   });
 });
