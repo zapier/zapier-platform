@@ -18,7 +18,7 @@ const commandHandlers = {
   commands like 'execute', 'validate', 'definition', 'request'.
 */
 const createCommandHandler = (compiledApp) => {
-  return (input) => {
+  return async (input) => {
     const command = input._zapier.event.command || 'execute'; // validate || definition || request
     const handler = commandHandlers[command];
     if (!handler) {
@@ -26,7 +26,7 @@ const createCommandHandler = (compiledApp) => {
     }
 
     try {
-      return handler(compiledApp, input);
+      return await handler(compiledApp, input);
     } catch (err) {
       return handleError(err);
     }
