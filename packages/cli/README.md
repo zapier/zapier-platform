@@ -2666,7 +2666,7 @@ describe('triggers', () => {
 
 ### Using the `z` Object in Tests
 
-Introduced in `core@11.1.0`, `appTester` can now run arbitrary functions:
+Introduced in `core@11.1.0`, `appTester` can now run arbitrary functions that are not in your app definition:
 
 ```js
 /* globals describe, expect, test */
