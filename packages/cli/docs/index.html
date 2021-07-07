@@ -351,6 +351,7 @@ a code {
 </li>
 <li><a href="#testing">Testing</a><ul>
 <li><a href="#writing-unit-tests">Writing Unit Tests</a></li>
+<li><a href="#using-the-z-object-in-tests">Using the <code>z</code> Object in Tests</a></li>
 <li><a href="#mocking-requests">Mocking Requests</a></li>
 <li><a href="#running-unit-tests">Running Unit Tests</a></li>
 <li><a href="#testing--environment-variables">Testing &amp; Environment Variables</a></li>
@@ -558,6 +559,7 @@ a code {
 </li>
 <li><a href="#testing">Testing</a><ul>
 <li><a href="#writing-unit-tests">Writing Unit Tests</a></li>
+<li><a href="#using-the-z-object-in-tests">Using the <code>z</code> Object in Tests</a></li>
 <li><a href="#mocking-requests">Mocking Requests</a></li>
 <li><a href="#running-unit-tests">Running Unit Tests</a></li>
 <li><a href="#testing--environment-variables">Testing &amp; Environment Variables</a></li>
@@ -4374,6 +4376,71 @@ describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
     <span class="hljs-keyword">const</span> firstRecipe = results[<span class="hljs-number">0</span>];
     expect(firstRecipe.id).toBe(<span class="hljs-number">1</span>);
     expect(firstRecipe.name).toBe(<span class="hljs-string">&apos;Baked Falafel&apos;</span>);
+  });
+});
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="using-the-z-object-in-tests">Using the <code>z</code> Object in Tests</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Introduced in <a href="mailto:`core@11.1.0">`core@11.1.0</a><code>,</code>appTester` can now run arbitrary functions:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-comment">/* globals describe, expect, test */</span>
+
+<span class="hljs-keyword">const</span> zapier = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>);
+
+<span class="hljs-keyword">const</span> App = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;../index&apos;</span>);
+<span class="hljs-keyword">const</span> appTester = zapier.createAppTester(App);
+
+describe(<span class="hljs-string">&apos;triggers&apos;</span>, () =&gt; {
+  test(<span class="hljs-string">&apos;load recipes&apos;</span>, <span class="hljs-keyword">async</span> () =&gt; {
+    <span class="hljs-keyword">const</span> adHodResult = <span class="hljs-keyword">await</span> appTester(
+      <span class="hljs-comment">// your in-line function takes the same [z, bundle] arguments as normal</span>
+      <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+        <span class="hljs-comment">// requests are made using your integration&apos;s actual middleware</span>
+        <span class="hljs-comment">// make sure to pass the normal `bundle` arg to `appTester` if your requests need auth</span>
+        <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(
+          <span class="hljs-string">&apos;https://example.com/some/setup/method&apos;</span>,
+          {
+            <span class="hljs-attr">params</span>: {
+              <span class="hljs-attr">numItems</span>: bundle.inputData.someValue,
+            },
+          }
+        );
+
+        <span class="hljs-keyword">return</span> {
+          <span class="hljs-comment">// you can use all the functions on the `z` object</span>
+          <span class="hljs-attr">someHash</span>: z.hash(<span class="hljs-string">&apos;md5&apos;</span>, <span class="hljs-string">&apos;mySecret&apos;</span>),
+          <span class="hljs-attr">data</span>: response.data,
+        };
+      },
+      {
+        <span class="hljs-comment">// you must provide auth data for authenticated requests</span>
+        <span class="hljs-comment">// (just like running a normal trigger)</span>
+        <span class="hljs-attr">authData</span>: { <span class="hljs-attr">token</span>: <span class="hljs-string">&apos;some-api-key&apos;</span> },
+        <span class="hljs-comment">// put arbitrary function params in `inputData`</span>
+        <span class="hljs-attr">inputData</span>: {
+          <span class="hljs-attr">someValue</span>: <span class="hljs-number">3</span>,
+        },
+      }
+    );
+
+    expect(adHodResult.someHash).toEqual(<span class="hljs-string">&apos;a5beb6624e092adf7be31176c3079e64&apos;</span>);
+    expect(adHodResult.data).toEqual({ <span class="hljs-attr">whatever</span>: <span class="hljs-literal">true</span> });
+
+    <span class="hljs-comment">// ... rest of test</span>
   });
 });
 

@@ -117,6 +117,7 @@ This doc describes the latest CLI version (**11.0.1**), as of this writing. If y
     + [v10 Breaking Change: Auth Refresh](#v10-breaking-change-auth-refresh)
 - [Testing](#testing)
   * [Writing Unit Tests](#writing-unit-tests)
+  * [Using the `z` Object in Tests](#using-the-z-object-in-tests)
   * [Mocking Requests](#mocking-requests)
   * [Running Unit Tests](#running-unit-tests)
   * [Testing & Environment Variables](#testing--environment-variables)
@@ -2658,6 +2659,60 @@ describe('triggers', () => {
     const firstRecipe = results[0];
     expect(firstRecipe.id).toBe(1);
     expect(firstRecipe.name).toBe('Baked Falafel');
+  });
+});
+
+```
+
+### Using the `z` Object in Tests
+
+Introduced in `core@11.1.0`, `appTester` can now run arbitrary functions that are not in your app definition:
+
+```js
+/* globals describe, expect, test */
+
+const zapier = require('zapier-platform-core');
+
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
+
+describe('triggers', () => {
+  test('load recipes', async () => {
+    const adHodResult = await appTester(
+      // your in-line function takes the same [z, bundle] arguments as normal
+      async (z, bundle) => {
+        // requests are made using your integration's actual middleware
+        // make sure to pass the normal `bundle` arg to `appTester` if your requests need auth
+        const response = await z.request(
+          'https://example.com/some/setup/method',
+          {
+            params: {
+              numItems: bundle.inputData.someValue,
+            },
+          }
+        );
+
+        return {
+          // you can use all the functions on the `z` object
+          someHash: z.hash('md5', 'mySecret'),
+          data: response.data,
+        };
+      },
+      {
+        // you must provide auth data for authenticated requests
+        // (just like running a normal trigger)
+        authData: { token: 'some-api-key' },
+        // put arbitrary function params in `inputData`
+        inputData: {
+          someValue: 3,
+        },
+      }
+    );
+
+    expect(adHodResult.someHash).toEqual('a5beb6624e092adf7be31176c3079e64');
+    expect(adHodResult.data).toEqual({ whatever: true });
+
+    // ... rest of test
   });
 });
 
