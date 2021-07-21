@@ -51,6 +51,10 @@ BasicHookOperationSchema.properties = {
       },
     },
   },
+  canPaginate: {
+    description: 'Does this endpoint support a page offset?',
+    type: 'boolean',
+  },
   performSubscribe: {
     description:
       'Takes a URL and any necessary data from the user and subscribes. ' +
