@@ -52,7 +52,8 @@ BasicHookOperationSchema.properties = {
     },
   },
   canPaginate: {
-    description: 'Does this endpoint support a page offset?',
+    description:
+      'Does this endpoint support pagination via temporary cursor storage?',
     type: 'boolean',
   },
   performSubscribe: {

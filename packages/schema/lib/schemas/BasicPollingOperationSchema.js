@@ -26,7 +26,8 @@ BasicPollingOperationSchema.properties = {
   resource: BasicPollingOperationSchema.properties.resource,
   perform: BasicPollingOperationSchema.properties.perform,
   canPaginate: {
-    description: 'Does this endpoint support a page offset?',
+    description:
+      'Does this endpoint support pagination via temporary cursor storage?',
     type: 'boolean',
   },
   inputFields: BasicPollingOperationSchema.properties.inputFields,
