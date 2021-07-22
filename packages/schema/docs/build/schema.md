@@ -466,6 +466,7 @@ Key | Required | Type | Description
 `resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | [/FunctionSchema](#functionschema) | A function that processes the inbound webhook request.
 `performList` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
+`canPaginate` | no | `boolean` | Does this endpoint support pagination via temporary cursor storage?
 `performSubscribe` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Takes a URL and any necessary data from the user and subscribes. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
 `performUnsubscribe` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Takes a URL and data from a previous subscribe call and unsubscribes. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
@@ -545,7 +546,7 @@ Key | Required | Type | Description
 `type` | no | `string` in (`'polling'`) | Clarify how this operation works (polling == pull or hook == push).
 `resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.
-`canPaginate` | no | `boolean` | Does this endpoint support a page offset?
+`canPaginate` | no | `boolean` | Does this endpoint support pagination via temporary cursor storage?
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
