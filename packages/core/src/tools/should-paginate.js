@@ -16,7 +16,11 @@ const shouldPaginate = (appRaw, method) => {
   const operation = get(appRaw, methodParts);
 
   if (methodParts[0] === 'triggers') {
-    if (operation.type === 'poll' && methodName === 'perform') {
+    // Polling operations may not specify type
+    if (
+      ['polling', undefined].includes(operation.type) &&
+      methodName === 'perform'
+    ) {
       return !!operation.canPaginate;
     }
 

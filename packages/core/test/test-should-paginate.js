@@ -11,7 +11,7 @@ describe('shouldPaginate', () => {
         triggers: {
           trigger: {
             operation: {
-              type: 'poll',
+              type: 'polling',
               perform: '$func$2$f$',
               canPaginate: true,
             },
@@ -28,7 +28,38 @@ describe('shouldPaginate', () => {
         triggers: {
           trigger: {
             operation: {
-              type: 'poll',
+              type: 'polling',
+              perform: '$func$2$f$',
+            },
+          },
+        },
+      },
+      'triggers.trigger.operation.perform'
+    ).should.eql(false);
+  });
+
+  it('should paginate a trigger without type with canPaginate', () => {
+    shouldPaginate(
+      {
+        triggers: {
+          trigger: {
+            operation: {
+              perform: '$func$2$f$',
+              canPaginate: true,
+            },
+          },
+        },
+      },
+      'triggers.trigger.operation.perform'
+    ).should.eql(true);
+  });
+
+  it('should not paginate a trigger without type without canPaginate', () => {
+    shouldPaginate(
+      {
+        triggers: {
+          trigger: {
+            operation: {
               perform: '$func$2$f$',
             },
           },
