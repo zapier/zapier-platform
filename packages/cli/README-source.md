@@ -864,9 +864,9 @@ const perform = async (z, bundle) => {
 
 ### `bundle.rawRequest`
 
-> `bundle.rawRequest` is only available in the `perform` for web hooks, `getAccessToken` for oauth authentication methods, and `performResume` in a callback action.
+> `bundle.rawRequest` is only available in the `perform` for webhooks, `getAccessToken` for OAuth authentication methods, and `performResume` in a callback action.
 
-`bundle.rawRequest` holds raw information about the HTTP request that triggered the `perform` method or that represents the users browser request that triggered the `getAccessToken` call:
+`bundle.rawRequest` holds raw information about the HTTP request that triggered the `perform` method or that represents the user's browser request that triggered the `getAccessToken` call:
 
 ```
 {
@@ -879,7 +879,7 @@ const perform = async (z, bundle) => {
 }
 ```
 
-
+In `bundle.rawRequest`, headers other than `Content-Length` and `Content-Type` will be prefixed with `Http-`, and all headers will be named in Camel-Case. For example, the header `X-Time-GMT` would become `Http-X-Time-Gmt`.
 
 ### `bundle.cleanedRequest`
 
@@ -907,7 +907,7 @@ const perform = async (z, bundle) => {
 
 > `bundle.outputData` is only available in the `performResume` in a callback action.
 
-`bundle.outputData` will return a whatever data you originally returned in the `perform` allowing you to mix that with `bundle.rawRequest` or `bundle.cleanedRequest`.
+`bundle.outputData` will return a whatever data you originally returned in the `perform`, allowing you to mix that with `bundle.rawRequest` or `bundle.cleanedRequest`.
 
 
 ### `bundle.targetUrl`
