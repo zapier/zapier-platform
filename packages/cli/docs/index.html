@@ -3059,8 +3059,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p><code>bundle.rawRequest</code> is only available in the <code>perform</code> for web hooks, <code>getAccessToken</code> for oauth authentication methods, and <code>performResume</code> in a callback action.</p>
-</blockquote><p><code>bundle.rawRequest</code> holds raw information about the HTTP request that triggered the <code>perform</code> method or that represents the users browser request that triggered the <code>getAccessToken</code> call:</p>
+<p><code>bundle.rawRequest</code> is only available in the <code>perform</code> for webhooks, <code>getAccessToken</code> for OAuth authentication methods, and <code>performResume</code> in a callback action.</p>
+</blockquote><p><code>bundle.rawRequest</code> holds raw information about the HTTP request that triggered the <code>perform</code> method or that represents the user&apos;s browser request that triggered the <code>getAccessToken</code> call:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code>{
@@ -3072,6 +3072,15 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   content: &apos;{&quot;hello&quot;: &quot;world&quot;}&apos;
 }
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>In <code>bundle.rawRequest</code>, headers other than <code>Content-Length</code> and <code>Content-Type</code> will be prefixed with <code>Http-</code>, and all headers will be named in Camel-Case. For example, the header <code>X-Time-GMT</code> would become <code>Http-X-Time-Gmt</code>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -3121,7 +3130,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p><code>bundle.outputData</code> is only available in the <code>performResume</code> in a callback action.</p>
-</blockquote><p><code>bundle.outputData</code> will return a whatever data you originally returned in the <code>perform</code> allowing you to mix that with <code>bundle.rawRequest</code> or <code>bundle.cleanedRequest</code>.</p>
+</blockquote><p><code>bundle.outputData</code> will return a whatever data you originally returned in the <code>perform</code>, allowing you to mix that with <code>bundle.rawRequest</code> or <code>bundle.cleanedRequest</code>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
