@@ -224,6 +224,7 @@ const convertBundleMeta = (meta) => {
       meta.first_poll === undefined ? meta.isPopulatingDedupe : meta.first_poll,
     limit: meta.limit,
     page: meta.page,
+    isBulkRead: meta.isBulkRead,
   };
   newMeta.standard_poll = !newMeta.test_poll;
   return newMeta;

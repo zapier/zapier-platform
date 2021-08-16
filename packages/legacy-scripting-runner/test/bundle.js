@@ -26,6 +26,7 @@ describe('bundleConverter', () => {
       standard_poll: true,
       page: 1,
       limit: 100,
+      isBulkRead: false,
     },
   };
 
@@ -52,6 +53,7 @@ describe('bundleConverter', () => {
       standard_poll: true,
       page: 1,
       limit: 100,
+      isBulkRead: false,
     },
   };
 
@@ -85,6 +87,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       zap: { id: 0 },
       url_raw: 'https://zapier.com',
@@ -148,6 +151,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       zap: {
         id: 0,
@@ -268,6 +272,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key',
@@ -324,6 +329,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key',
@@ -441,6 +447,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key',
@@ -494,6 +501,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       auth_fields: {
         apiKey: 'Zapier-API-Key',
@@ -559,6 +567,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       zap: {
         id: 0,
@@ -627,6 +636,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       zap: {
         id: 0,
@@ -701,6 +711,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       zap: {
         id: 0,
@@ -763,6 +774,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       zap: {
         id: 0,
@@ -830,6 +842,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       zap: {
         id: 0,
@@ -905,6 +918,7 @@ describe('bundleConverter', () => {
         standard_poll: true,
         page: 1,
         limit: 100,
+        isBulkRead: false,
       },
       zap: {
         id: 0,
