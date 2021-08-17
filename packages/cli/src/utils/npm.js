@@ -11,9 +11,7 @@ const getPackageLatestVersion = async (name) => {
 
 const getPackageSize = async (name, version) => {
   const baseUrl = `${BASE_URL}/${name}`;
-  const res = await fetch(`${baseUrl}/-/${name}-${version}.tgz`, {
-    method: 'HEAD',
-  });
+  const res = await fetch(`${baseUrl}/-/${name}-${version}.tgz`);
   return res.headers.get('content-length');
 };
 
