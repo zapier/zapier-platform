@@ -1,10 +1,33 @@
 ## 11.1.0
 
-_unreleased_
+_released `2021-08-05`_
+
+### cli
+
+- :bug: `convert` command should always generate async functions ([#397](https://github.com/zapier/zapier-platform/pull/397))
+- :bug: `init` command - fix typos in `session-auth` template ([#388](https://github.com/zapier/zapier-platform/pull/388))
+- :scroll: Add info about header format in `bundle.rawRequest` ([#401](https://github.com/zapier/zapier-platform/pull/401))
+- :scroll: An `afterResponse` middleware should return a response ([#383](https://github.com/zapier/zapier-platform/pull/383))
 
 ### core
 
 - :tada: Allow using `await` in inline function source ([#396](https://github.com/zapier/zapier-platform/pull/396))
+- :bug: Make sure all requests are logged ([#387](https://github.com/zapier/zapier-platform/pull/387))
+- :nail_care: Update app tester to support hook with `canPaginate` for `performList` ([#402](https://github.com/zapier/zapier-platform/pull/402))
+- :nail_care: Add `bundle.meta.isBulkRead` TypeScript type ([#400](https://github.com/zapier/zapier-platform/pull/400))
+- :nail_care: Allow app tester to run ad-hoc functions ([#385](https://github.com/zapier/zapier-platform/pull/385))
+- :hammer: Incorporate secret-scrubber package ([#393](https://github.com/zapier/zapier-platform/pull/393))
+
+### schema
+
+- :nail_care: Add `canPaginate` to `BasicHookOperationSchema` ([#399](https://github.com/zapier/zapier-platform/pull/399))
+
+### misc
+
+- Dependency updates:
+  - :hammer: Bump set-getter from 0.1.0 to 0.1.1 ([#389](https://github.com/zapier/zapier-platform/pull/389))
+  - :hammer: Bump glob-parent from 5.1.0 to 5.1.2 ([#386](https://github.com/zapier/zapier-platform/pull/386))
+  - :hammer: Bump tar from 4.4.13 to 4.4.15 ([#406](https://github.com/zapier/zapier-platform/pull/406))
 
 ## 11.0.1
 

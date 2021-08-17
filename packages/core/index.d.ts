@@ -37,6 +37,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
   inputData: InputData;
   inputDataRaw: { [x: string]: string };
   meta: {
+    isBulkRead: boolean;
     isFillingDynamicDropdown: boolean;
     isLoadingSample: boolean;
     isPopulatingDedupe: boolean;
