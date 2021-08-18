@@ -1,3 +1,7 @@
+## 3.7.18 (unreleased)
+
+- :bug: Fix `Cannot read property 'errors' of undefined` on auth refresh ([#410](https://github.com/zapier/zapier-platform/pull/410))
+
 ## 3.7.17
 
 - :bug: Allow `pre_write` method to "cancel" multipart body by emptying `request.files` ([#394](https://github.com/zapier/zapier-platform/pull/394))
