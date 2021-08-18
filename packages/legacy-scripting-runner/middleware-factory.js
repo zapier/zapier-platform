@@ -281,7 +281,7 @@ const createAfterResponse = (app) => {
   }
 
   return (response, z, bundle) => {
-    response = afterResponse(response);
+    response = afterResponse(response, z, bundle);
     return makeHeaderCaseInsensitive(response);
   };
 };
