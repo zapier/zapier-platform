@@ -580,6 +580,19 @@ describe('Integration Test', () => {
         should.not.exist(output.results.name);
       });
     });
+
+    it('throw for stale auth', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.test.operation.perform'
+      );
+      input.bundle.authData = { access_token: 'stale_token' };
+      return app(input).should.be.rejectedWith({ name: 'RefreshAuthError' });
+    });
   });
 
   describe('polling trigger', () => {
