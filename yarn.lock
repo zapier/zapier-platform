@@ -1589,10 +1589,10 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
-"@zapier/secret-scrubber@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@zapier/secret-scrubber/-/secret-scrubber-1.0.1.tgz#201491301c2d096ee9989ccbe1bbed47a7a86b79"
-  integrity sha512-9SfiIOUjEfNFNpIGsYHPbzMmkytWLQm1qD7Y4niRVEfL8L9wVaIlWWY6VcHm2T0XaL/97a9oj7vOV/eWB2yfrA==
+"@zapier/secret-scrubber@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@zapier/secret-scrubber/-/secret-scrubber-1.0.2.tgz#9aa52f31da03e93335cad625a17487c4cde23a58"
+  integrity sha512-y/EtM43+5zHgRHR/FbF+QXXRIxBdIeFOh3tttqwQ9YqTfyNwOYfaDJNGiwmw8aGHuiXPrFIPnNplehSUltDKRg==
   dependencies:
     lodash.isplainobject "^4.0.6"
 
@@ -7038,6 +7038,7 @@ minipass-fetch@^1.3.0, minipass-fetch@^1.3.2:
   resolved "https://registry.yarnpkg.com/minipass-fetch/-/minipass-fetch-1.3.3.tgz#34c7cea038c817a8658461bf35174551dce17a0a"
   integrity sha512-akCrLDWfbdAWkMLBxJEeWTdNsjML+dt5YgOI4gJ53vuO0vrmYQkUPxa6j6V65s9CcePIr2SSWqjT2EcrNseryQ==
   dependencies:
+    encoding "^0.1.12"
     minipass "^3.1.0"
     minipass-sized "^1.0.3"
     minizlib "^2.0.0"
