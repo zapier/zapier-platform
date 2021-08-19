@@ -75,7 +75,8 @@ module.exports = makeSchema(
             perform: '$func$2$f$',
           },
         },
-        reason: 'Missing required key in operation: sample. Note - this is valid if the associated resource has defined a sample.',
+        reason:
+          'Missing required key in operation: sample. Note - this is valid if the associated resource has defined a sample.',
       },
     ],
   },

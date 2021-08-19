@@ -285,6 +285,9 @@ describe('bundleConverter', () => {
       trigger_fields: {
         user: 'Zapier',
       },
+      trigger_data: {
+        user: 'Zapier',
+      },
       trigger_fields_raw: {
         user: 'Zapier',
       },
@@ -340,6 +343,9 @@ describe('bundleConverter', () => {
       url_raw: 'https://zapier.com',
       raw_url: 'https://zapier.com',
       trigger_fields: {
+        user: 'Zapier',
+      },
+      trigger_data: {
         user: 'Zapier',
       },
       trigger_fields_raw: {
@@ -401,6 +407,9 @@ describe('bundleConverter', () => {
       url_raw: 'https://zapier.com',
       raw_url: 'https://zapier.com',
       trigger_fields: {
+        user: 'Zapier',
+      },
+      trigger_data: {
         user: 'Zapier',
       },
       trigger_fields_raw: {
@@ -964,8 +973,8 @@ describe('bundleConverter', () => {
   // Authentication
   //
 
-  it('should convert a bundle for pre_oauthv2_token and pre_oauthv2_refresh', async () => {
-    const events = ['auth.oauth2.token.pre', 'auth.oauth2.refresh.pre'];
+  it('should convert a bundle for pre_oauthv2_token', async () => {
+    const eventName = 'auth.oauth2.token.pre';
     const bundle = {
       _legacyUrl: 'https://zapier.com',
       request: { url: 'https://zapier.com' },
@@ -982,7 +991,7 @@ describe('bundleConverter', () => {
           'Content-Type': 'application/json',
         },
         params: {},
-        data: '',
+        data: '', // should be a string for pre_oauthv2_token
       },
       auth_fields: {},
       load: {},
@@ -998,21 +1007,50 @@ describe('bundleConverter', () => {
       },
     };
 
-    const results = await Promise.all(
-      events.map((eventName) => {
-        const event = {
-          name: eventName,
-        };
-        return bundleConverter(bundle, event);
-      })
-    );
+    const event = { name: eventName };
+    const result = await bundleConverter(bundle, event);
 
-    _.zip(events, results).forEach(([eventName, result]) => {
-      result.should.eql(
-        expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
-      );
-    });
+    result.should.eql(expectedBundle);
+  });
+
+  it('should convert a bundle for pre_oauthv2_refresh', async () => {
+    const eventName = 'auth.oauth2.refresh.pre';
+    const bundle = {
+      _legacyUrl: 'https://zapier.com',
+      request: { url: 'https://zapier.com' },
+      inputData: {
+        user: 'Zapier',
+      },
+      authData: {},
+    };
+    const expectedBundle = {
+      request: {
+        method: 'POST',
+        url: 'https://zapier.com',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        params: {},
+        data: {},
+      },
+      auth_fields: {},
+      load: {},
+      meta: {},
+      zap: {
+        id: 0,
+      },
+      url_raw: 'https://zapier.com',
+      raw_url: 'https://zapier.com',
+      oauth_data: {
+        client_id: '1234',
+        client_secret: 'asdf',
+      },
+    };
+
+    const event = { name: eventName };
+    const result = await bundleConverter(bundle, event);
+
+    result.should.eql(expectedBundle);
   });
 
   it('should convert a bundle for post_oauthv2_token', async () => {

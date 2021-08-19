@@ -21,7 +21,7 @@ class UsersLinksCommand extends ZapierBaseCommand {
     this.log(`\n${cyan(inviteUrl)}\n`);
 
     this.log(
-      'You can invite users to specific an integration version using the following links:'
+      'You can invite users to a specific integration version using the following links:'
     );
     this.logTable({
       rows: Object.entries(versionInviteUrls).map(([version, url]) => ({

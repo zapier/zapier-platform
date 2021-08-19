@@ -38,16 +38,33 @@ const legacyScriptingSource = `
         };
       },
 
-      pre_oauthv2_token: function(bundle) {
+      pre_oauthv2_token_basic: function(bundle) {
         bundle.request.url += 'token';
+        bundle.request.data = bundle.request.params;
         return bundle.request;
       },
 
-      post_oauthv2_token: function(bundle) {
+      post_oauthv2_token_basic: function(bundle) {
         var data = z.JSON.parse(bundle.response.content);
         data.something_custom += '!!';
         data.name = 'Jane Doe';
         return data;
+      },
+
+      pre_oauthv2_token_payload_only_in_params: function(bundle) {
+        bundle.request.url += 'token';
+        if (bundle.request.params.grant_type) {
+          bundle.request.data = bundle.request.params;
+        } else {
+          throw new Error('should not reach here');
+        }
+        return bundle.request;
+      },
+
+      pre_oauthv2_token_yet_to_save_auth_fields: function(bundle) {
+        bundle.request.url = '${HTTPBIN_URL}/post';
+        bundle.request.data = bundle.auth_fields;
+        return bundle.request;
       },
 
       pre_oauthv2_refresh_auth_json_server: function(bundle) {
@@ -83,6 +100,14 @@ const legacyScriptingSource = `
           headers: bundle.request.headers,
           data: bundle.request.data
         };
+      },
+
+      pre_oauthv2_refresh_does_not_retry: function(bundle) {
+        if (bundle.request.data.client_id) {
+          bundle.request.url = '${HTTPBIN_URL}/post';
+          return bundle.request;
+        }
+        throw new Error('should not reach here');
       },
 
       pre_oauthv2_refresh_bundle_load: function(bundle) {
@@ -246,6 +271,11 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_urlencode: function(bundle) {
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/echo?url=' + encodeURIComponent('https://example.com');
+        return bundle.request;
+      },
+
       getMovesUrl: function() {
         return '${AUTH_JSON_SERVER_URL}/movies';
       },
@@ -287,6 +317,15 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_double_headers: function(bundle) {
+        bundle.request.url = '${HTTPBIN_URL}/get';
+        bundle.request.headers = {
+          'x-api-key': 'two',
+          'X-API-KEY': 'three'
+        };
+        return bundle.request;
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];
@@ -294,6 +333,21 @@ const legacyScriptingSource = `
 
       movie_post_poll_make_array: function(bundle) {
         return [z.JSON.parse(bundle.response.content)];
+      },
+
+      movie_post_poll_z_request_auth: function(bundle) {
+        var response = z.request({
+          url: '${HTTPBIN_URL}/get',
+          auth: {
+            bearer: bundle.auth_fields.api_key
+          }
+        });
+        var data = z.JSON.parse(response.content);
+        var authHeader = data.headers.Authorization;
+        return z.JSON.parse(bundle.response.content).map(function(movie) {
+          movie.authHeader = authHeader;
+          return movie;
+        });
       },
 
       movie_poll_default_headers: function(bundle) {
@@ -381,6 +435,7 @@ const legacyScriptingSource = `
         data.bundleTargetUrl = bundle.target_url;
         data.bundleEvent = bundle.event;
         data.bundleZap = bundle.zap;
+        data.bundleTriggerData = bundle.trigger_data;
 
         // Old alias for bundle.target_url
         data.bundleSubscriptionUrl = bundle.subscription_url;
@@ -393,6 +448,7 @@ const legacyScriptingSource = `
         // This will go to bundle.subscribe_data in pre_unsubscribe
         var data = z.JSON.parse(bundle.response.content);
         data.hiddenMessage = 'post_subscribe was here!';
+        data.bundleTriggerData2 = bundle.trigger_data;
         return data;
       },
 
@@ -542,9 +598,13 @@ const legacyScriptingSource = `
 
       movie_post_write_intercept_error: function(bundle) {
         if (bundle.response.status_code == 418) {
-          throw new HaltedException('teapot here, go find a coffee machine');
+          throw new ErrorException('teapot here, go find a coffee machine');
         }
         return z.JSON.parse(bundle.response.content);
+      },
+
+      movie_post_write_bad_code: function(bundle) {
+        throw new TypeError("You shouldn't see this if bundle.response is an error");
       },
 
       movie_pre_write_default_headers: function(bundle) {
@@ -784,6 +844,35 @@ const legacyScriptingSource = `
         bundle.request.files = {
           file: bundle.request.files.file_1
         };
+        return bundle.request;
+      },
+
+      file_pre_write_optional_file_field: function(bundle) {
+        if (_.isEmpty(bundle.request.files)) {
+          // Reach here when the optional file field is empty
+          bundle.request.headers['Content-Type'] = 'application/json';
+          bundle.request.url = '${HTTPBIN_URL}/post';
+          return bundle.request;
+        } else {
+          // Reach here when the optional file field is filled
+          bundle.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+          bundle.request.data = JSON.parse(bundle.request.data);
+          return bundle.request;
+        }
+      },
+
+      file_pre_write_cancel_multipart: function(bundle) {
+        var file = bundle.request.files.file;
+        var data = z.JSON.parse(bundle.request.data);
+        data.file = file;
+
+        bundle.request.url = '${HTTPBIN_URL}/post';
+
+        // This should make legacy-scripting-runner switch from multipart to
+        // JSON body
+        bundle.request.files = {};
+        bundle.request.data = z.JSON.stringify(data);
+
         return bundle.request;
       },
 
@@ -1097,6 +1186,7 @@ const FileUpload = {
     inputFields: [
       { key: 'filename', label: 'Filename', type: 'string' },
       { key: 'file', label: 'File', type: 'file' },
+      { key: 'yes', label: 'Yes', type: 'boolean' },
     ],
     outputFields: [{ key: 'id', label: 'ID', type: 'integer' }],
   },

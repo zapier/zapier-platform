@@ -159,7 +159,9 @@ const forceIncludeDumbPath = (appConfig, filePath) => {
   return (
     filePath.endsWith('package.json') ||
     filePath.endsWith('definition.json') ||
+    // include old async deasync versions so this runs seamlessly across node versions
     filePath.endsWith(path.join('bin', 'linux-x64-node-10', 'deasync.node')) ||
+    filePath.endsWith(path.join('bin', 'linux-x64-node-12', 'deasync.node')) ||
     filePath.endsWith(
       // Special, for zapier-platform-legacy-scripting-runner
       path.join('bin', `linux-x64-node-${nodeMajorVersion}`, 'deasync.node')
@@ -191,11 +193,11 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
     zip.pipe(output);
 
     paths.forEach(function (filePath) {
-      var basePath = path.dirname(filePath);
+      let basePath = path.dirname(filePath);
       if (basePath === '.') {
         basePath = undefined;
       }
-      var name = path.join(dir, filePath);
+      const name = path.join(dir, filePath);
       zip.file(name, { name: filePath, mode: 0o755 });
     });
 

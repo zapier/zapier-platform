@@ -16,7 +16,7 @@ const walkSchemas = (InitSchema, callback) => {
   const recurse = (Schema, parents) => {
     parents = parents || [];
     callback(Schema, parents);
-    Schema.dependencies.map((childSchema) => {
+    Schema.dependencies.forEach((childSchema) => {
       const newParents = parents.concat([InitSchema]);
       recurse(childSchema, newParents);
     });
@@ -103,14 +103,16 @@ const makeAntiExampleSection = (Schema) => {
   return `\
 #### Anti-Examples
 
-${antiExamples.map(({ example, reason }) => {
-  const formattedAntiExample = formatExample(example);
-  // If block quote, newline and indent the reason.
-  // Otherwise, show the reason inline w/ the anti-example and separated by a dash.
-  return formattedAntiExample.endsWith('```')
-    ? `${formattedAntiExample}\n  _${reason}_`
-    : `${formattedAntiExample} - _${reason}_`;
-}).join('\n')}
+${antiExamples
+  .map(({ example, reason }) => {
+    const formattedAntiExample = formatExample(example);
+    // If block quote, newline and indent the reason.
+    // Otherwise, show the reason inline w/ the anti-example and separated by a dash.
+    return formattedAntiExample.endsWith('```')
+      ? `${formattedAntiExample}\n  _${reason}_`
+      : `${formattedAntiExample} - _${reason}_`;
+  })
+  .join('\n')}
 `;
 };
 
@@ -165,8 +167,12 @@ ${Schema.schema.description || NO_DESCRIPTION}
 
 #### Details
 
-* **Type** - ${typeOrLink(Schema.schema)}${Schema.schema.pattern ? `
-* **Pattern** - ${quoteOrNa(Schema.schema.pattern)}` : ''}
+* **Type** - ${typeOrLink(Schema.schema)}${
+    Schema.schema.pattern
+      ? `
+* **Pattern** - ${quoteOrNa(Schema.schema.pattern)}`
+      : ''
+  }
 * [**Source Code**](${links.makeCodeLink(Schema.id)})
 
 ${makePropertiesSection(Schema)}

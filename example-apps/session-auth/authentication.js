@@ -47,19 +47,19 @@ module.exports = {
     // Define any input app's auth requires here. The user will be prompted to enter
     // this info when they connect their account.
     fields: [
-      { key: 'username', label: 'Username', required: 'true' },
+      { key: 'username', label: 'Username', required: true },
       {
         key: 'password',
         label: 'Password',
         required: true,
 
-        // this lets the user enter maksed data
+        // this lets the user enter masked data
         type: 'password',
       },
     ],
 
     // The test method allows Zapier to verify that the credentials a user provides
-    // are valid. We'll execute this method whenver a user connects their account for
+    // are valid. We'll execute this method whenever a user connects their account for
     // the first time.
     test,
 

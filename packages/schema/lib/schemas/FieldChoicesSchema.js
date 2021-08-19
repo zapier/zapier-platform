@@ -22,18 +22,17 @@ module.exports = makeSchema(
         },
       },
     ],
-    examples: [
-      { a: '1', b: '2', c: '3' },
-      ['first', 'second', 'third'],
-    ],
+    examples: [{ a: '1', b: '2', c: '3' }, ['first', 'second', 'third']],
     antiExamples: [
       {
         example: [1, 2, 3],
-        reason: 'If an array, must be of either type string or FieldChoiceWithLabelSchema',
+        reason:
+          'If an array, must be of either type string or FieldChoiceWithLabelSchema',
       },
       {
         example: [{ a: '1', b: '2', c: '3' }],
-        reason: 'If an array, must be of either type string or FieldChoiceWithLabelSchema',
+        reason:
+          'If an array, must be of either type string or FieldChoiceWithLabelSchema',
       },
     ],
   },

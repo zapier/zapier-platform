@@ -1,9 +1,9 @@
 {
   "name": "zapier-platform-core",
-  "version": "10.1.2",
+  "version": "11.1.0",
   "description": "The core SDK for CLI apps in the Zapier Developer Platform.",
-  "repository": "zapier/zapier-platform-core",
-  "homepage": "https://zapier.com/",
+  "repository": "zapier/zapier-platform",
+  "homepage": "https://platform.zapier.com/",
   "author": "Zapier Engineering <contact@zapier.com>",
   "license": "SEE LICENSE IN LICENSE",
   "main": "index.js",
@@ -18,15 +18,17 @@
     "preversion": "git pull && yarn test",
     "version": "node bin/bump-dependencies.js && yarn && git add package.json yarn.lock",
     "postversion": "git push && git push --tags",
-    "test": "mocha -t 20000 --recursive test",
+    "main-tests": "mocha -t 20000 --recursive test",
+    "solo-test": "test $(OPT_OUT_PATCH_TEST_ONLY=yes mocha --recursive test -g 'should be able to opt out of patch' -R json | jq '.stats.passes') -eq 1 && echo 'Ran 1 test and it passed!'",
+    "test": "yarn main-tests && yarn solo-test",
     "debug": "mocha -t 10000 --inspect-brk --recursive test",
     "test:w": "mocha -t 10000 --recursive test --watch",
-    "plain-test": "mocha -t 5000 --recursive test",
     "integration-test": "mocha -t 20000 integration-test",
     "local-integration-test": "mocha -t 10000 integration-test --local",
     "lambda-integration-test": "mocha -t 10000 integration-test --lambda",
     "smoke-test": "mocha -t 120000 smoke-test",
     "lint": "eslint src test",
+    "lint:fix": "eslint --fix src test",
     "build-integration-test": "bin/build.sh local.bundle.zip",
     "upload-integration-test": "bin/upload-lambda.js local.bundle.zip",
     "deploy-integration-test": "yarn build-integration-test && yarn upload-integration-test",
@@ -38,23 +40,24 @@
   },
   "engineStrict": true,
   "dependencies": {
+    "@zapier/secret-scrubber": "^1.0.2",
     "bluebird": "3.7.2",
     "content-disposition": "0.5.3",
-    "dotenv": "8.2.0",
-    "form-data": "3.0.0",
-    "lodash": "4.17.19",
+    "dotenv": "9.0.2",
+    "form-data": "4.0.0",
+    "lodash": "4.17.21",
     "node-fetch": "2.6.1",
     "oauth-sign": "0.9.0",
-    "semver": "7.3.2",
-    "zapier-platform-schema": "10.1.2"
+    "semver": "7.3.5",
+    "zapier-platform-schema": "11.1.0"
   },
   "devDependencies": {
-    "adm-zip": "0.4.14",
-    "aws-sdk": "^2",
-    "fs-extra": "^9",
-    "mock-fs": "^4"
+    "adm-zip": "0.5.5",
+    "aws-sdk": "^2.905.0",
+    "fs-extra": "^10.0.0",
+    "mock-fs": "^4.14.0"
   },
   "optionalDependencies": {
-    "@types/node": "^10"
+    "@types/node": "^14.14.35"
   }
 }

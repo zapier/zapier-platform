@@ -19,9 +19,7 @@ module.exports = makeSchema(
       },
     },
     additionalProperties: false,
-    examples: [
-      { perform: { require: 'some/path/to/file.js' }, },
-    ],
+    examples: [{ perform: { require: 'some/path/to/file.js' } }],
     antiExamples: [
       {
         example: {},

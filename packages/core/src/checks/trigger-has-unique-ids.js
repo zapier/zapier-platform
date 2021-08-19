@@ -14,6 +14,10 @@ const triggerHasUniqueIds = {
     const idCount = {};
     let doubleId;
     _.forEach(results, (result) => {
+      // this'll get caught elsewhere, but we don't want to blow up this check
+      if (result == null) {
+        return;
+      }
       const count = (idCount[result.id] = (idCount[result.id] || 0) + 1);
       if (count > 1) {
         doubleId = result.id;

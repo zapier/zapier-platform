@@ -37,6 +37,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
   inputData: InputData;
   inputDataRaw: { [x: string]: string };
   meta: {
+    isBulkRead: boolean;
     isFillingDynamicDropdown: boolean;
     isLoadingSample: boolean;
     isPopulatingDedupe: boolean;
@@ -117,18 +118,19 @@ export interface RawHttpResponse extends BaseHttpResponse {
 
 type DehydrateFunc = <T>(
   func: (z: ZObject, bundle: Bundle<T>) => any,
-  inputData: object
+  inputData: T
 ) => string;
 
 export interface ZObject {
   request: {
     // most specific overloads go first
-    (url: string, options: HttpRequestOptions & { raw: true }): Promise<
-      RawHttpResponse
-    >;
-    (options: HttpRequestOptions & { raw: true; url: string }): Promise<
-      RawHttpResponse
-    >;
+    (
+      url: string,
+      options: HttpRequestOptions & { raw: true }
+    ): Promise<RawHttpResponse>;
+    (
+      options: HttpRequestOptions & { raw: true; url: string }
+    ): Promise<RawHttpResponse>;
 
     (url: string, options?: HttpRequestOptions): Promise<HttpResponse>;
     (options: HttpRequestOptions & { url: string }): Promise<HttpResponse>;

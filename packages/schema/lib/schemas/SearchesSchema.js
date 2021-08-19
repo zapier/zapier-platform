@@ -47,7 +47,7 @@ module.exports = makeSchema(
           },
         },
         reason: 'Key must match the key of the associated /SearchSchema',
-      }
+      },
     ],
   },
   [SearchSchema]

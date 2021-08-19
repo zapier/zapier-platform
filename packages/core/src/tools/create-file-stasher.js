@@ -86,12 +86,14 @@ const createFileStasher = (input) => {
       return ZapierPromise.reject(new Error('rpc is not available'));
     }
 
-    const isRunningOnHydrator =
-      _.get(input, '_zapier.event.method', '').indexOf('hydrators.') === 0;
-    const isRunningOnCreate =
-      _.get(input, '_zapier.event.method', '').indexOf('creates.') === 0;
+    const method = _.get(input, ['_zapier', 'event', 'method'], '');
+    const isValidSource =
+      method.startsWith('hydrators.') ||
+      method.startsWith('creates.') ||
+      // key regex from KeySchema
+      method.match(/^resources\.[a-zA-Z][a-zA-Z0-9_]*\.create\./);
 
-    if (!isRunningOnHydrator && !isRunningOnCreate) {
+    if (!isValidSource) {
       return ZapierPromise.reject(
         new Error(
           'Files can only be stashed within a create or hydration function/method.'
@@ -103,70 +105,69 @@ const createFileStasher = (input) => {
 
     return rpc('get_presigned_upload_post_data', fileContentType).then(
       (result) => {
-        if (isPromise(bufferStringStream)) {
-          return bufferStringStream.then((maybeResponse) => {
-            const isStreamed = _.get(maybeResponse, 'request.raw', false);
+        const parseFinalResponse = (stream) => {
+          let newBufferStringStream = stream;
 
-            const parseFinalResponse = (response) => {
-              let newBufferStringStream = response;
-              if (_.isString(response)) {
-                newBufferStringStream = response;
-              } else if (response) {
-                if (Buffer.isBuffer(response)) {
-                  newBufferStringStream = response;
-                } else if (Buffer.isBuffer(response.dataBuffer)) {
-                  newBufferStringStream = response.dataBuffer;
-                } else if (
-                  response.body &&
-                  typeof response.body.pipe === 'function'
-                ) {
-                  newBufferStringStream = response.body;
-                } else {
-                  newBufferStringStream = response.content;
-                }
-
-                if (response.headers) {
-                  knownLength =
-                    knownLength || response.getHeader('content-length');
-                  const cd = response.getHeader('content-disposition');
-                  if (cd) {
-                    filename =
-                      filename ||
-                      contentDisposition.parse(cd).parameters.filename;
-                  }
-                }
-              } else {
-                throw new Error(
-                  'Cannot stash a Promise wrapped file of unknown type.'
-                );
-              }
-
-              return uploader(
-                result,
-                newBufferStringStream,
-                knownLength,
-                filename,
-                fileContentType
-              );
-            };
-
-            if (isStreamed) {
-              return maybeResponse.buffer().then((buffer) => {
-                maybeResponse.dataBuffer = buffer;
-                return parseFinalResponse(maybeResponse);
-              });
-            } else {
-              return parseFinalResponse(maybeResponse);
+          // if stream is string, don't update headers, just return as is
+          if (_.isString(stream)) {
+            newBufferStringStream = stream;
+          } else if (stream) {
+            if (Buffer.isBuffer(stream)) {
+              newBufferStringStream = stream;
+            } else if (Buffer.isBuffer(stream.dataBuffer)) {
+              newBufferStringStream = stream.dataBuffer;
+            } else if (stream.body && typeof stream.body.pipe === 'function') {
+              newBufferStringStream = stream.body;
+            } else if (stream.content) {
+              newBufferStringStream = stream.content;
             }
-          });
-        } else {
+
+            // if stream has headers update knownLength and filename to reflect the header values
+            if (stream.headers) {
+              knownLength = knownLength || stream.getHeader('content-length');
+              const cd = stream.getHeader('content-disposition');
+              if (cd) {
+                filename =
+                  filename || contentDisposition.parse(cd).parameters.filename;
+              }
+            }
+            // if stream is not defined, error
+          } else {
+            throw new Error('Cannot stash a file of unknown type.');
+          }
+
+          // send final response to uploader
           return uploader(
             result,
-            bufferStringStream,
+            newBufferStringStream,
             knownLength,
             filename,
             fileContentType
           );
+        };
+
+        const formResponse = (response) => {
+          // determine if string is streamed based on if raw:true
+          const isStreamed = _.get(response, 'request.raw', false);
+
+          // if it's streamed, buffer first
+          if (isStreamed) {
+            return response.buffer().then((buffer) => {
+              response.dataBuffer = buffer;
+              return parseFinalResponse(response);
+            });
+          } else {
+            return parseFinalResponse(response);
+          }
+        };
+
+        // if stream is a promise, wait until resolved
+        if (isPromise(bufferStringStream)) {
+          return bufferStringStream.then((maybeResponse) => {
+            return formResponse(maybeResponse);
+          });
+        } else {
+          return formResponse(bufferStringStream);
         }
       }
     );

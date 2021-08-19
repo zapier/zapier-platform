@@ -158,7 +158,12 @@ describe('smoke tests - setup will take some time', () => {
     const newTrigger = path.join(newAppDir, 'triggers', 'neat.js');
     fs.existsSync(newTrigger).should.be.true();
 
-    const newTriggerTest = path.join(newAppDir, 'test', 'triggers', 'neat.js');
+    const newTriggerTest = path.join(
+      newAppDir,
+      'test',
+      'triggers',
+      'neat.test.js'
+    );
     fs.existsSync(newTriggerTest).should.be.true();
 
     const pkg = JSON.parse(

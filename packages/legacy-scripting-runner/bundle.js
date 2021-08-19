@@ -98,6 +98,14 @@ const addInputData = (event, bundle, convertedBundle) => {
     }
   } else if (event.name === 'hydrate.method') {
     Object.assign(convertedBundle, bundle.inputData.bundle);
+  } else if (event.name.startsWith('auth.oauth2.token')) {
+    // Overwrite convertedBundle.auth_fields with bundle.inputData
+    convertedBundle.auth_fields = Object.keys(
+      convertedBundle.auth_fields
+    ).reduce((result, k) => {
+      result[k] = bundle.inputData[k] || convertedBundle.auth_fields[k];
+      return result;
+    }, {});
   }
 };
 
@@ -118,11 +126,13 @@ const addHookData = (event, bundle, convertedBundle) => {
     convertedBundle.target_url = bundle.targetUrl;
     convertedBundle.subscription_url = bundle.targetUrl;
     convertedBundle.event = bundle._legacyEvent;
+    convertedBundle.trigger_data = bundle.inputData;
   } else if (event.name.startsWith('trigger.hook.unsubscribe')) {
     convertedBundle.target_url = bundle.targetUrl;
     convertedBundle.subscription_url = bundle.targetUrl;
     convertedBundle.subscribe_data = bundle.subscribeData;
     convertedBundle.event = bundle._legacyEvent;
+    convertedBundle.trigger_data = bundle.inputData;
   }
 };
 
@@ -179,6 +189,9 @@ const addRequestData = async (event, z, bundle, convertedBundle) => {
       convertedBundle.request.files = files;
       delete convertedBundle.request.headers['Content-Type'];
     }
+  } else if (event.name.startsWith('auth.oauth2.refresh.pre')) {
+    // Make sure bundle.request.data is an object
+    convertedBundle.request.data = convertedBundle.request.data || {};
   } else if (event.name.startsWith('create')) {
     if (
       !_.isEmpty(bundle._unflatInputData) ||

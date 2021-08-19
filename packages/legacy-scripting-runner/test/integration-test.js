@@ -192,12 +192,76 @@ describe('Integration Test', () => {
       });
     });
 
+    it('oauth2 authorizeUrl, curly replacement', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.authentication.oauth2Config.authorizeUrl =
+        '{{base_url}}/authorize';
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.authorizeUrl'
+      );
+
+      // inputData should take precedence over authData for authorizeUrl. This
+      // is because on CLI authData always holds the *saved* auth fields, and
+      // when rendering authorizeUrl, auth fields are not saved yet.
+      input.bundle.authData = {
+        base_url: 'https://from.auth.data',
+      };
+      input.bundle.inputData = {
+        base_url: 'https://from.input.data',
+        redirect_uri: 'https://example.com',
+        state: 'qwerty',
+      };
+      return app(input).then((output) => {
+        should.equal(
+          output.results,
+          'https://from.input.data/authorize?' +
+            'client_id=1234&' +
+            'redirect_uri=https%3A%2F%2Fexample.com&' +
+            'response_type=code&state=qwerty'
+        );
+      });
+    });
+
+    it('oauth2 getAccessToken curly replacement', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl =
+        '{{base_url}}/oauth/access-token';
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.getAccessToken'
+      );
+      // inputData should take precedence over authData for getAccessToken. This
+      // is because on CLI authData always holds the *saved* auth fields, and
+      // when rendering accessToekUrl, auth fields are not saved yet.
+      input.bundle.authData = {
+        base_url: HTTPBIN_URL,
+      };
+      input.bundle.inputData = {
+        base_url: AUTH_JSON_SERVER_URL,
+        redirect_uri: 'https://example.com',
+        code: 'one_time_code',
+      };
+      return app(input).then((output) => {
+        should.equal(output.results.access_token, 'a_token');
+        should.equal(output.results.something_custom, 'alright!');
+        should.not.exist(output.results.name);
+      });
+    });
+
     it('pre_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'post_oauthv2_token',
-        'dont_care'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'pre_oauthv2_token_basic',
+          'pre_oauthv2_token'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -218,10 +282,11 @@ describe('Integration Test', () => {
 
     it('post_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'pre_oauthv2_token',
-        'dont_care'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'post_oauthv2_token_basic',
+          'post_oauthv2_token'
+        );
       appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl +=
         'token';
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -244,6 +309,16 @@ describe('Integration Test', () => {
 
     it('pre_oauthv2_token & post_oauthv2_token', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'pre_oauthv2_token_basic',
+          'pre_oauthv2_token'
+        );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'post_oauthv2_token_basic',
+          'post_oauthv2_token'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -262,12 +337,67 @@ describe('Integration Test', () => {
       });
     });
 
+    it('pre_oauthv2_token, payload only in params', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'pre_oauthv2_token_payload_only_in_params',
+          'pre_oauthv2_token'
+        );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.getAccessToken'
+      );
+      input.bundle.inputData = {
+        redirect_uri: 'https://example.com',
+        code: 'one_time_code',
+      };
+      return app(input).then((output) => {
+        should.equal(output.results.access_token, 'a_token');
+      });
+    });
+
+    it('pre_oauthv2_token, yet to save auth_fields', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'pre_oauthv2_token_yet_to_save_auth_fields',
+          'pre_oauthv2_token'
+        );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.getAccessToken'
+      );
+      // inputData should take precedence over authData
+      input.bundle.authData = {
+        something_custom: 'hi',
+      };
+      input.bundle.inputData = {
+        redirect_uri: 'https://example.com',
+        code: 'one_time_code',
+        something_custom: 'hey',
+      };
+      return app(input).then((output) => {
+        const echoed = output.results;
+        should.deepEqual(echoed.form, {
+          something_custom: ['hey'],
+        });
+      });
+    });
+
     it('pre_oauthv2_refresh', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'pre_oauthv2_refresh_auth_json_server',
-        'pre_oauthv2_refresh'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'pre_oauthv2_refresh_auth_json_server',
+          'pre_oauthv2_refresh'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -285,10 +415,11 @@ describe('Integration Test', () => {
 
     it('pre_oauthv2_refresh, form, access token should not involve', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'pre_oauthv2_refresh_httpbin_form',
-        'pre_oauthv2_refresh'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'pre_oauthv2_refresh_httpbin_form',
+          'pre_oauthv2_refresh'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -309,10 +440,11 @@ describe('Integration Test', () => {
 
     it('pre_oauthv2_refresh, json, access token should not involve', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'pre_oauthv2_refresh_httpbin_json',
-        'pre_oauthv2_refresh'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'pre_oauthv2_refresh_httpbin_json',
+          'pre_oauthv2_refresh'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -333,10 +465,11 @@ describe('Integration Test', () => {
 
     it('pre_oauthv2_refresh, request.data should be an object', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'pre_oauthv2_refresh_request_data',
-        'pre_oauthv2_refresh'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'pre_oauthv2_refresh_request_data',
+          'pre_oauthv2_refresh'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
       const input = createTestInput(
@@ -361,12 +494,44 @@ describe('Integration Test', () => {
       });
     });
 
+    it('pre_oauthv2_refresh, does not retry', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'pre_oauthv2_refresh_does_not_retry',
+          'pre_oauthv2_refresh'
+        );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+      const input = createTestInput(
+        compiledApp,
+        'authentication.oauth2Config.refreshAccessToken'
+      );
+      input.bundle.authData = {
+        refresh_token: 'my_refresh_token',
+        access_token: 'my_access_token',
+      };
+      return app(input).then((output) => {
+        const data = output.results.form;
+        const params = output.results.args;
+
+        should.deepEqual(data, {
+          client_id: [process.env.CLIENT_ID],
+          client_secret: [process.env.CLIENT_SECRET],
+          grant_type: ['refresh_token'],
+          refresh_token: ['my_refresh_token'],
+        });
+        should.deepEqual(params, {});
+      });
+    });
+
     it('pre_oauthv2_refresh, bundle.load', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'pre_oauthv2_refresh_bundle_load',
-        'pre_oauthv2_refresh'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'pre_oauthv2_refresh_bundle_load',
+          'pre_oauthv2_refresh'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
       const input = createTestInput(
@@ -391,14 +556,13 @@ describe('Integration Test', () => {
 
     it('post_oauthv2_token, returns nothing', () => {
       const appDefWithAuth = withAuth(appDefinition, oauth2Config);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'post_oauthv2_token:',
-        'dont_care:'
-      );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'post_oauthv2_token_returns_nothing',
-        'post_oauthv2_token'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'post_oauthv2_token_returns_nothing',
+          'post_oauthv2_token'
+        );
+      appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl +=
+        'token';
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -415,6 +579,19 @@ describe('Integration Test', () => {
         should.equal(output.results.something_custom, 'alright!');
         should.not.exist(output.results.name);
       });
+    });
+
+    it('throw for stale auth', () => {
+      const appDefWithAuth = withAuth(appDefinition, oauth2Config);
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'triggers.test.operation.perform'
+      );
+      input.bundle.authData = { access_token: 'stale_token' };
+      return app(input).should.be.rejectedWith({ name: 'RefreshAuthError' });
     });
   });
 
@@ -738,6 +915,29 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, hash in headers', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_urlencode',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        should.equal(echoed.query.url, 'https://example.com');
+      });
+    });
+
     it('KEY_pre_poll, this binding', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
@@ -936,6 +1136,33 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, double headers', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_double_headers',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = {
+        api_key: 'one',
+      };
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        should.deepEqual(echoed.headers['X-Api-Key'], ['three']);
+      });
+    });
+
     it('KEY_post_poll, jQuery utils', () => {
       const input = createTestInput(
         compiledApp,
@@ -1049,6 +1276,29 @@ describe('Integration Test', () => {
         should.equal(request.headers.foo, '1234');
         should.equal(request.params.bar, '5678');
         should.equal(request.data, '{"aa":"bb"}');
+      });
+    });
+
+    it('KEY_post_poll, z.request auth', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_z_request_auth',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = {
+        api_key: 'secret',
+      };
+      return _app(input).then((output) => {
+        const movie = output.results[0];
+        should.deepEqual(movie.authHeader, ['Bearer secret']);
       });
     });
 
@@ -1606,6 +1856,7 @@ describe('Integration Test', () => {
       input.bundle.inputData = { foo: 'bar' };
       input.bundle.targetUrl = 'https://foo.bar';
       input.bundle.meta = { zap: { id: 9511 } };
+
       return app(input).then((output) => {
         should.equal(output.results.json.event, 'contact.created');
         should.equal(
@@ -1615,6 +1866,12 @@ describe('Integration Test', () => {
         should.equal(output.results.headers['X-Api-Key'], 'hey hey');
         should.equal(output.results.hiddenMessage, 'post_subscribe was here!');
 
+        should.deepEqual(output.results.json.bundleTriggerData, {
+          foo: 'bar',
+        });
+        should.deepEqual(output.results.bundleTriggerData2, {
+          foo: 'bar',
+        });
         should.deepEqual(output.results.json.bundleAuthFields, {
           api_key: 'hey hey',
         });
@@ -1764,10 +2021,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_write_disabled',
-        'movie_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_write_disabled',
+          'movie_pre_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -1791,10 +2049,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_write, unflatten data', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_write_unflatten',
-        'movie_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_write_unflatten',
+          'movie_pre_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -1839,10 +2098,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_write, bundle.action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_write_unflatten',
-        'movie_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_write_unflatten',
+          'movie_pre_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -1903,10 +2163,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_write, _.template(bundle.url_raw)', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'recipe_pre_write_underscore_template',
-        'recipe_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'recipe_pre_write_underscore_template',
+          'recipe_pre_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -1929,10 +2190,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_write, request fallback', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_write_request_fallback',
-        'movie_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_write_request_fallback',
+          'movie_pre_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -1958,10 +2220,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_write, no content', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_write_no_content',
-        'movie_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_write_no_content',
+          'movie_pre_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -1978,10 +2241,11 @@ describe('Integration Test', () => {
     it('KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_write_disabled',
-        'movie_post_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_write_disabled',
+          'movie_post_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2007,10 +2271,11 @@ describe('Integration Test', () => {
     it('KEY_post_write, sloppy mode', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_write_sloppy_mode',
-        'movie_post_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_write_sloppy_mode',
+          'movie_post_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2038,10 +2303,11 @@ describe('Integration Test', () => {
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
       appDefWithAuth.legacy.scriptingSource =
         'use strict;\n' + appDefWithAuth.legacy.scriptingSource;
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_write_sloppy_mode',
-        'movie_post_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_write_sloppy_mode',
+          'movie_post_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2061,10 +2327,11 @@ describe('Integration Test', () => {
     it('KEY_post_write, require()', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_write_require',
-        'movie_post_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_write_require',
+          'movie_post_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2084,10 +2351,11 @@ describe('Integration Test', () => {
     it('KEY_post_write, returning nothing', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_write_returning_nothing',
-        'movie_post_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_write_returning_nothing',
+          'movie_post_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2109,10 +2377,11 @@ describe('Integration Test', () => {
     it('KEY_post_write, returning string', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_write_returning_string',
-        'movie_post_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_write_returning_string',
+          'movie_post_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2153,16 +2422,38 @@ describe('Integration Test', () => {
       );
     });
 
-    it('KEY_pre_write & KEY_post_write', () => {
-      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_write_disabled',
+    it('KEY_post_write, response error overrules script error', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_write_intercept_error',
         'movie_pre_write'
       );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_write_disabled',
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_write_bad_code',
         'movie_post_write'
       );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).should.be.rejectedWith(/I'm a teapot/);
+    });
+
+    it('KEY_pre_write & KEY_post_write', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_write_disabled',
+          'movie_pre_write'
+        );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_write_disabled',
+          'movie_post_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2187,10 +2478,11 @@ describe('Integration Test', () => {
 
     it('async KEY_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_write_async',
-        'movie_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_write_async',
+          'movie_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2215,10 +2507,11 @@ describe('Integration Test', () => {
 
     it('sync KEY_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_write_sync',
-        'movie_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_write_sync',
+          'movie_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2243,10 +2536,11 @@ describe('Integration Test', () => {
 
     it('sync KEY_write empty list', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_write_sync',
-        'movie_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_write_sync',
+          'movie_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2265,10 +2559,11 @@ describe('Integration Test', () => {
 
     it('sync KEY_write primitive', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_write_sync',
-        'movie_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_write_sync',
+          'movie_write'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2287,10 +2582,11 @@ describe('Integration Test', () => {
 
     it('sync KEY_write, curlies in URL', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_write_sync',
-        'movie_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_write_sync',
+          'movie_write'
+        );
       const legacyProps = appDefWithAuth.legacy.creates.movie.operation;
       legacyProps.url = legacyProps.url.replace(
         '/movie',
@@ -2370,10 +2666,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_custom_action_fields_disabled',
-        'movie_pre_custom_action_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_custom_action_fields_disabled',
+          'movie_pre_custom_action_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2394,10 +2691,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_action_fields, empty request.data', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_custom_action_fields_empty_request_data',
-        'movie_pre_custom_action_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_custom_action_fields_empty_request_data',
+          'movie_pre_custom_action_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2418,10 +2716,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_action_fields, _.template(bundle.raw_url)', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'recipe_pre_custom_action_fields_underscore_template',
-        'recipe_pre_custom_action_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'recipe_pre_custom_action_fields_underscore_template',
+          'recipe_pre_custom_action_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2446,10 +2745,11 @@ describe('Integration Test', () => {
     it('KEY_post_custom_action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.inputFieldsUrl += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_custom_action_fields_disabled',
-        'movie_post_custom_action_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_custom_action_fields_disabled',
+          'movie_post_custom_action_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2473,10 +2773,11 @@ describe('Integration Test', () => {
     it('KEY_post_custom_action_fields, dict field', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.inputFieldsUrl += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_custom_action_fields_dict_field',
-        'movie_post_custom_action_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_custom_action_fields_dict_field',
+          'movie_post_custom_action_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2499,10 +2800,11 @@ describe('Integration Test', () => {
     it('KEY_post_custom_action_fields, returning nothing', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.inputFieldsUrl += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_custom_action_fields_returning_nothing',
-        'movie_post_custom_action_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_custom_action_fields_returning_nothing',
+          'movie_post_custom_action_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2522,14 +2824,16 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_action_fields & KEY_post_custom_action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_custom_action_fields_disabled',
-        'movie_pre_custom_action_fields'
-      );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_custom_action_fields_disabled',
-        'movie_post_custom_action_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_custom_action_fields_disabled',
+          'movie_pre_custom_action_fields'
+        );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_custom_action_fields_disabled',
+          'movie_post_custom_action_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2552,10 +2856,11 @@ describe('Integration Test', () => {
 
     it('KEY_custom_action_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_custom_action_fields_disabled',
-        'movie_custom_action_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_custom_action_fields_disabled',
+          'movie_custom_action_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2602,10 +2907,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_action_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_custom_action_result_fields_disabled',
-        'movie_pre_custom_action_result_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_custom_action_result_fields_disabled',
+          'movie_pre_custom_action_result_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2630,10 +2936,11 @@ describe('Integration Test', () => {
     it('KEY_post_custom_action_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.outputFieldsUrl += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_custom_action_result_fields_disabled',
-        'movie_post_custom_action_result_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_custom_action_result_fields_disabled',
+          'movie_post_custom_action_result_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2659,14 +2966,16 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_action_result_fields & KEY_post_custom_action_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_custom_action_result_fields_disabled',
-        'movie_pre_custom_action_result_fields'
-      );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_custom_action_result_fields_disabled',
-        'movie_post_custom_action_result_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_custom_action_result_fields_disabled',
+          'movie_pre_custom_action_result_fields'
+        );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_custom_action_result_fields_disabled',
+          'movie_post_custom_action_result_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2692,10 +3001,11 @@ describe('Integration Test', () => {
 
     it('KEY_custom_action_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_custom_action_result_fields_disabled',
-        'movie_custom_action_result_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_custom_action_result_fields_disabled',
+          'movie_custom_action_result_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -2774,10 +3084,11 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write tweaks filename', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'file_pre_write_tweak_filename',
-        'file_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_tweak_filename',
+          'file_pre_write'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -2803,10 +3114,11 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write replaces hydrate url', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'file_pre_write_replace_hydrate_url',
-        'file_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_replace_hydrate_url',
+          'file_pre_write'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -2832,10 +3144,11 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write replaces with string content', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'file_pre_write_replace_with_string_content',
-        'file_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_replace_with_string_content',
+          'file_pre_write'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -2861,10 +3174,11 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write fully replaces URL', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'file_pre_write_fully_replace_url',
-        'file_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_fully_replace_url',
+          'file_pre_write'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -2890,10 +3204,11 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write fully replaces content', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'file_pre_write_fully_replace_content',
-        'file_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_fully_replace_content',
+          'file_pre_write'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -2919,10 +3234,11 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write, content disposition with quotes', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'file_pre_write_content_dispoistion_with_quotes',
-        'file_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_content_dispoistion_with_quotes',
+          'file_pre_write'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -2948,10 +3264,11 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write, content disposition without quotes', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'file_pre_write_content_dispoistion_no_quotes',
-        'file_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_content_dispoistion_no_quotes',
+          'file_pre_write'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -2977,10 +3294,11 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write, content disposition non-ascii', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'file_pre_write_content_dispoistion_non_ascii',
-        'file_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_content_dispoistion_non_ascii',
+          'file_pre_write'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -3006,10 +3324,11 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write, wrong content type', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'file_pre_write_wrong_content_type',
-        'file_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_wrong_content_type',
+          'file_pre_write'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -3033,10 +3352,11 @@ describe('Integration Test', () => {
 
     it('file upload, KEY_pre_write, rename file field', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'file2_pre_write_rename_file_field',
-        'file2_pre_write'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file2_pre_write_rename_file_field',
+          'file2_pre_write'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -3057,6 +3377,97 @@ describe('Integration Test', () => {
         const data = JSON.parse(output.results.data);
         should.equal(data.id, 'whatever');
         should.equal(data.name, 'a pig');
+      });
+    });
+
+    it('file upload, KEY_pre_write, optional file field is empty', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_optional_file_field',
+          'file_pre_write'
+        );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.file.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        filename: 'pig.png',
+      };
+      return app(input).then((output) => {
+        const echoed = output.results;
+        should.equal(echoed.headers['Content-Type'], 'application/json');
+        should.deepEqual(echoed.json, { filename: 'pig.png' });
+      });
+    });
+
+    it('file upload, KEY_pre_write, optional file field is filled', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_optional_file_field',
+          'file_pre_write'
+        );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.file.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        filename: 'pig.png',
+        file: `${HTTPBIN_URL}/robots.txt`,
+        yes: true,
+      };
+      return app(input).then((output) => {
+        const response = output.results;
+        const file = response.file;
+        should.equal(response.filename, 'pig.png');
+        should.equal(response.yes, 'True');
+        should.equal(file.sha1, '4becbe4770c949a40cb28f9d1c2b4910fbf7e37d');
+      });
+    });
+
+    it('file upload, KEY_pre_write, cancel multipart', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'file_pre_write_cancel_multipart',
+          'file_pre_write'
+        );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.file.operation.perform'
+      );
+      input.bundle.authData = { api_key: 'secret' };
+      input.bundle.inputData = {
+        filename: 'pig.png',
+        file: `${HTTPBIN_URL}/image/png`,
+        yes: true,
+      };
+      return app(input).then((output) => {
+        const response = output.results;
+
+        const contentType = response.headers['Content-Type'][0];
+        contentType.should.startWith('application/json');
+
+        const json = response.json;
+        should.deepEqual(json.file, [
+          'png',
+          `${HTTPBIN_URL}/image/png`,
+          'image/png',
+        ]);
+        should.equal(json.filename, 'pig.png');
+        should.equal(json.yes, true);
       });
     });
 
@@ -3155,13 +3566,8 @@ describe('Integration Test', () => {
           url: `${HTTPBIN_URL}/get`,
         };
         return app(input).then((output) => {
-          const {
-            response,
-            content,
-            knownLength,
-            filename,
-            contentType,
-          } = output.results;
+          const { response, content, knownLength, filename, contentType } =
+            output.results;
           should.equal(content.headers['X-Api-Key'], 'super secret');
           should.not.exist(knownLength);
           should.not.exist(filename);
@@ -3196,13 +3602,8 @@ describe('Integration Test', () => {
           },
         };
         return app(input).then((output) => {
-          const {
-            response,
-            content,
-            knownLength,
-            filename,
-            contentType,
-          } = output.results;
+          const { response, content, knownLength, filename, contentType } =
+            output.results;
 
           should.equal(content.args.foo, '1');
           should.equal(content.args.bar, 'hello');
@@ -3244,13 +3645,8 @@ describe('Integration Test', () => {
           },
         };
         return app(input).then((output) => {
-          const {
-            response,
-            content,
-            knownLength,
-            filename,
-            contentType,
-          } = output.results;
+          const { response, content, knownLength, filename, contentType } =
+            output.results;
 
           should.equal(content.args.foo, '1');
           should.equal(content.args.bar, 'hello');
@@ -3297,10 +3693,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_search', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_search_disabled',
-        'movie_pre_search'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_search_disabled',
+          'movie_pre_search'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -3325,10 +3722,11 @@ describe('Integration Test', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       const legacyProps = appDefWithAuth.legacy.searches.movie.operation;
       legacyProps.url = legacyProps.url.replace('movie?', 'movies?');
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_search_disabled',
-        'movie_post_search'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_search_disabled',
+          'movie_post_search'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -3351,14 +3749,16 @@ describe('Integration Test', () => {
 
     it('KEY_pre_search & KEY_post_search', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_search_disabled',
-        'movie_pre_search'
-      );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_search_disabled',
-        'movie_post_search'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_search_disabled',
+          'movie_pre_search'
+        );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_search_disabled',
+          'movie_post_search'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -3381,10 +3781,11 @@ describe('Integration Test', () => {
 
     it('KEY_search', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_search_disabled',
-        'movie_search'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_search_disabled',
+          'movie_search'
+        );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
@@ -3433,10 +3834,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_read_resource', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_read_resource_disabled',
-        'movie_pre_read_resource'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_read_resource_disabled',
+          'movie_pre_read_resource'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3461,10 +3863,11 @@ describe('Integration Test', () => {
         '/movie/',
         '/movies/'
       );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_read_resource_disabled',
-        'movie_post_read_resource'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_read_resource_disabled',
+          'movie_post_read_resource'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3493,10 +3896,11 @@ describe('Integration Test', () => {
         '/movie/',
         '/movies/'
       );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_read_resource_array',
-        'movie_post_read_resource'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_read_resource_array',
+          'movie_post_read_resource'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3516,14 +3920,16 @@ describe('Integration Test', () => {
 
     it('KEY_pre_read_resource & KEY_post_read_resource', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_read_resource_disabled',
-        'movie_pre_read_resource'
-      );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_read_resource_disabled',
-        'movie_post_read_resource'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_read_resource_disabled',
+          'movie_pre_read_resource'
+        );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_read_resource_disabled',
+          'movie_post_read_resource'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3547,10 +3953,11 @@ describe('Integration Test', () => {
 
     it('KEY_read_resource', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_read_resource_disabled',
-        'movie_read_resource'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_read_resource_disabled',
+          'movie_read_resource'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3590,10 +3997,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_search_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_custom_search_fields_disabled',
-        'movie_pre_custom_search_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_custom_search_fields_disabled',
+          'movie_pre_custom_search_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3614,10 +4022,11 @@ describe('Integration Test', () => {
     it('KEY_post_custom_search_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.searches.movie.operation.inputFieldsUrl += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_custom_search_fields_disabled',
-        'movie_post_custom_search_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_custom_search_fields_disabled',
+          'movie_post_custom_search_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3639,14 +4048,16 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_search_fields & KEY_post_custom_search_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_custom_search_fields_disabled',
-        'movie_pre_custom_search_fields'
-      );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_custom_search_fields_disabled',
-        'movie_post_custom_search_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_custom_search_fields_disabled',
+          'movie_pre_custom_search_fields'
+        );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_custom_search_fields_disabled',
+          'movie_post_custom_search_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3668,10 +4079,11 @@ describe('Integration Test', () => {
 
     it('KEY_custom_search_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_custom_search_fields_disabled',
-        'movie_custom_search_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_custom_search_fields_disabled',
+          'movie_custom_search_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3717,10 +4129,11 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_search_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_custom_search_result_fields_disabled',
-        'movie_pre_custom_search_result_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_custom_search_result_fields_disabled',
+          'movie_pre_custom_search_result_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3745,10 +4158,11 @@ describe('Integration Test', () => {
     it('KEY_post_custom_search_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.searches.movie.operation.outputFieldsUrl += 's';
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_custom_search_result_fields_disabled',
-        'movie_post_custom_search_result_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_custom_search_result_fields_disabled',
+          'movie_post_custom_search_result_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3774,14 +4188,16 @@ describe('Integration Test', () => {
 
     it('KEY_pre_custom_search_result_fields & KEY_post_custom_search_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_pre_custom_search_result_fields_disabled',
-        'movie_pre_custom_search_result_fields'
-      );
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_post_custom_search_result_fields_disabled',
-        'movie_post_custom_search_result_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_custom_search_result_fields_disabled',
+          'movie_pre_custom_search_result_fields'
+        );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_post_custom_search_result_fields_disabled',
+          'movie_post_custom_search_result_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
@@ -3807,10 +4223,11 @@ describe('Integration Test', () => {
 
     it('KEY_custom_search_result_fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.scriptingSource = appDefWithAuth.legacy.scriptingSource.replace(
-        'movie_custom_search_result_fields_disabled',
-        'movie_custom_search_result_fields'
-      );
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_custom_search_result_fields_disabled',
+          'movie_custom_search_result_fields'
+        );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);

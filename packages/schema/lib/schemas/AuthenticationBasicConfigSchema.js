@@ -10,7 +10,5 @@ module.exports = makeSchema({
   properties: {},
   additionalProperties: false,
   examples: [{}],
-  antiExamples: [
-    { example: { foo: true }, reason: 'Invalid key.' },
-  ],
+  antiExamples: [{ example: { foo: true }, reason: 'Invalid key.' }],
 });

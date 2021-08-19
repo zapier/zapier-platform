@@ -1,20 +1,157 @@
+## 11.1.0
+
+_released `2021-08-05`_
+
+### cli
+
+- :bug: `convert` command should always generate async functions ([#397](https://github.com/zapier/zapier-platform/pull/397))
+- :bug: `init` command - fix typos in `session-auth` template ([#388](https://github.com/zapier/zapier-platform/pull/388))
+- :scroll: Add info about header format in `bundle.rawRequest` ([#401](https://github.com/zapier/zapier-platform/pull/401))
+- :scroll: An `afterResponse` middleware should return a response ([#383](https://github.com/zapier/zapier-platform/pull/383))
+
+### core
+
+- :tada: Allow using `await` in inline function source ([#396](https://github.com/zapier/zapier-platform/pull/396))
+- :bug: Make sure all requests are logged ([#387](https://github.com/zapier/zapier-platform/pull/387))
+- :nail_care: Update app tester to support hook with `canPaginate` for `performList` ([#402](https://github.com/zapier/zapier-platform/pull/402))
+- :nail_care: Add `bundle.meta.isBulkRead` TypeScript type ([#400](https://github.com/zapier/zapier-platform/pull/400))
+- :nail_care: Allow app tester to run ad-hoc functions ([#385](https://github.com/zapier/zapier-platform/pull/385))
+- :hammer: Incorporate secret-scrubber package ([#393](https://github.com/zapier/zapier-platform/pull/393))
+
+### schema
+
+- :nail_care: Add `canPaginate` to `BasicHookOperationSchema` ([#399](https://github.com/zapier/zapier-platform/pull/399))
+
+### misc
+
+- Dependency updates:
+  - :hammer: Bump set-getter from 0.1.0 to 0.1.1 ([#389](https://github.com/zapier/zapier-platform/pull/389))
+  - :hammer: Bump glob-parent from 5.1.0 to 5.1.2 ([#386](https://github.com/zapier/zapier-platform/pull/386))
+  - :hammer: Bump tar from 4.4.13 to 4.4.15 ([#406](https://github.com/zapier/zapier-platform/pull/406))
+
+## 11.0.1
+
+_released `2021-05-28`_
+
+### cli
+
+- :bug: Handle missing versions better in env command ([#374](https://github.com/zapier/zapier-platform/pull/374))
+- :scroll: Fix incorrect snippet ([#378](https://github.com/zapier/zapier-platform/pull/378))
+- :scroll: Update historical releases section to include v10 ([#377](https://github.com/zapier/zapier-platform/pull/377))
+
+### core
+
+- None!
+
+### schema
+
+- :bug: skip checking keys on fields without the `key` property (fixes [zapier-platform#375](https://github.com/zapier/zapier-platform/pull/375) via [#376](https://github.com/zapier/zapier-platform/pull/376))
+
+## 11.0.0
+
+_released `2021-05-12`_
+
+Another spring, another `SEMVER-MAJOR` release of the Zapier CLI tools. Now that Node.js 10 has reached its scheduled end of life, version 12 is the minimum supported version for each of these packages locally.
+
+Additionally, any integrations that depend on `zapier-platform-core@11.0.0` will run on Node.js 14. Node versions are typically fairly compatible, but it's worth double-checking your unit tests during this upgrade (as always).
+
+Read on for a detailed set of release notes, paying special attention to any :exclamation: BREAKING CHANGEs.
+
+### cli
+
+- :exclamation: Remove the `-g | --grep` and `-t | --timeout` flags from `zapier test` ([#348](https://github.com/zapier/zapier-platform/pull/348)). You can now pass flags directly to your `test` script by adding `--` before them. To migrate existing scripts:
+  - Add `--` before any existing `grep` and `timeout` flags
+  - `zapier test -g 'cool' --timeout 5000` :arrow_right: `zapier test -- -g 'cool' --timeout 5000`
+
+### core
+
+- :exclamation: Run apps using Node.js v14.x ([#350](https://github.com/zapier/zapier-platform/pull/350))
+- :bug: Checks should properly handle possibly null values ([#371](https://github.com/zapier/zapier-platform/pull/371))
+- :bug: StashFile no longer throws 'source.on' error when a request that uses await is passed in ([#361](https://github.com/zapier/zapier-platform/pull/361))
+- :bug: Handle stashing files in resource create methods ([#349](https://github.com/zapier/zapier-platform/pull/349))
+- :hammer: Typescript target es2019 for node 12 ([#358](https://github.com/zapier/zapier-platform/pull/358))
+- :hammer: Typescript type of `inputData` for hydration function should be of type T as well ([#357](https://github.com/zapier/zapier-platform/pull/357))
+- :scroll: Fix typo in authentication.js ([#356](https://github.com/zapier/zapier-platform/pull/356))
+
+### schema
+
+- :exclamation: add validation to ensure globally unique input fields ([#347](https://github.com/zapier/zapier-platform/pull/347)).
+  - Your integration's input fields wouldn't have worked correctly if they didn't comply with this check, but now we're more explicit about it
+  - No action should be needed for migration
+
+### misc
+
+- Many under-the-hood dependency updates:
+  - :hammer: update deps ([#351](https://github.com/zapier/zapier-platform/pull/351), [#372](https://github.com/zapier/zapier-platform/pull/372))
+  - :hammer: Bump hosted-git-info from 2.8.5 to 2.8.9 ([#370](https://github.com/zapier/zapier-platform/pull/370))
+  - :hammer: bump handlebars from 4.7.6 to 4.7.7 ([#369](https://github.com/zapier/zapier-platform/pull/369))
+  - :hammer: Bump elliptic from 6.5.3 to 6.5.4 (PDE-2085) ([#343](https://github.com/zapier/zapier-platform/pull/343))
+  - :hammer: Update repo urls ([#339](https://github.com/zapier/zapier-platform/pull/339))
+
+## 10.2.0
+
+_released `2021-02-23`_
+
+### cli
+
+- :scroll: add architecture files ([#324](https://github.com/zapier/zapier-platform/pull/324))
+- :scroll: fix typos in README ([#328](https://github.com/zapier/zapier-platform/pull/328))
+- :scroll: Make file stashing snippets copy-paste-able ([#326](https://github.com/zapier/zapier-platform/pull/326))
+- :scroll: Fix broken README schema package link ([#325](https://github.com/zapier/zapier-platform/pull/325))
+- :bug: ensure test files can be run out of the box with jest ([#327](https://github.com/zapier/zapier-platform/pull/327))
+
+### core
+
+None!
+
+### schema
+
+- :nail_care: Add ability to specify "code" param to OAuth2 schema ([#333](https://github.com/zapier/zapier-platform/pull/333))
+
+## 10.1.3
+
+_released `2021-02-09`_
+
+### cli
+
+- :bug: Fix phrasing in `link` command ([#316](https://github.com/zapier/zapier-platform/pull/316))
+- :nail_care: Add warning if user counts are still being calculated ([#308](https://github.com/zapier/zapier-platform/pull/308))
+- :scroll: Mention `subscribeData` is available in `perform` ([#300](https://github.com/zapier/zapier-platform/pull/300))
+- :scroll: Add debugging info ([#318](https://github.com/zapier/zapier-platform/pull/318))
+- :scroll: Update readiness of UI → CLI conversion tool ([#307](https://github.com/zapier/zapier-platform/pull/307), [#311](https://github.com/zapier/zapier-platform/pull/311))
+- :scroll: Add details about when dynamic fields are loaded ([#303](https://github.com/zapier/zapier-platform/pull/303))
+- :scroll: Change 90-day limit for callbacks to 30-day ([#293](https://github.com/zapier/zapier-platform/pull/293))
+- :scroll: Fix typos in examples ([#296](https://github.com/zapier/zapier-platform/pull/296), [#297](https://github.com/zapier/zapier-platform/pull/297))
+
+### core
+
+- :bug: `ResponseError` no longer fails when request is `raw` ([#320](https://github.com/zapier/zapier-platform/pull/320))
+- :bug: Redirecting from `https` to `http` breaks when disabling SSL certificate checks ([#313](https://github.com/zapier/zapier-platform/pull/313))
+- :hammer: Log `trigger_subscription_id` field ([#317](https://github.com/zapier/zapier-platform/pull/317))
+
+### schema
+
+- :scroll: Add reasons to anti-examples, update README, rearrange schema layout ([#287](https://github.com/zapier/zapier-platform/pull/287))
+
 ## 10.1.2
+
+_released `2020-10-30`_
 
 This release mostly has internal features, but also ships a lot of documentation updates and a few bumped dependencies.
 
 ### cli
 
-* :nail_care: Improve logging for diagnostic info ([#282](https://github.com/zapier/zapier-platform/pull/282))
-* :scroll: Document the `$HOIST$` directive ([#273](https://github.com/zapier/zapier-platform/pull/273))
-* :scroll: Update oudated command references ([#274](https://github.com/zapier/zapier-platform/pull/274))
-* :scroll: Add docs for `callback_url` ([#278](https://github.com/zapier/zapier-platform/pull/278))
-* :hammer: Add new example app, `callbacks` ([#281](https://github.com/zapier/zapier-platform/pull/281))
-* :scroll: Replace Slack link with one for Community ([#286](https://github.com/zapier/zapier-platform/pull/286))
+- :nail_care: Improve logging for diagnostic info ([#282](https://github.com/zapier/zapier-platform/pull/282))
+- :scroll: Document the `$HOIST$` directive ([#273](https://github.com/zapier/zapier-platform/pull/273))
+- :scroll: Update oudated command references ([#274](https://github.com/zapier/zapier-platform/pull/274))
+- :scroll: Add docs for `callback_url` ([#278](https://github.com/zapier/zapier-platform/pull/278))
+- :hammer: Add new example app, `callbacks` ([#281](https://github.com/zapier/zapier-platform/pull/281))
+- :scroll: Replace Slack link with one for Community ([#286](https://github.com/zapier/zapier-platform/pull/286))
 
 ### core
 
-* :bug: Add `callback_url` during testing ([#280](https://github.com/zapier/zapier-platform/pull/280))
-* :nail_care: Relax type info for `response.json` to better match the actual TS definition ([#261](https://github.com/zapier/zapier-platform/pull/261))
+- :bug: Add `callback_url` during testing ([#280](https://github.com/zapier/zapier-platform/pull/280))
+- :nail_care: Relax type info for `response.json` to better match the actual TS definition ([#261](https://github.com/zapier/zapier-platform/pull/261))
 
 ### schema
 
@@ -22,13 +159,15 @@ None!
 
 ## 10.1.1
 
+_released `2020-09-02`_
+
 ### cli
 
-* :bug: `_zapier-build` should be optional ([#265](https://github.com/zapier/zapier-platform/pull/265))
+- :bug: `_zapier-build` should be optional ([#265](https://github.com/zapier/zapier-platform/pull/265))
 
 ### core
 
-* :bug: Don't censor safe URLs in logs ([#266](https://github.com/zapier/zapier-platform/pull/266))
+- :bug: Don't censor safe URLs in logs ([#266](https://github.com/zapier/zapier-platform/pull/266))
 
 ### schema
 
@@ -36,42 +175,48 @@ None!
 
 ## 10.1.0
 
+_released `2020-08-30`_
+
 ### cli
 
-* :nail_care: `build` command now accepts a custom build hook named `_zapier-build`. See [Using Transpilers](https://github.com/zapier/zapier-platform/blob/35072e38ee14f5dfaa2e4c6791e270f0257a2a2d/packages/cli/README.md#using-transpilers) for details. ([#262](https://github.com/zapier/zapier-platform/pull/262))
+- :nail_care: `build` command now accepts a custom build hook named `_zapier-build`. See [Using Transpilers](https://github.com/zapier/zapier-platform/blob/35072e38ee14f5dfaa2e4c6791e270f0257a2a2d/packages/cli/README.md#using-transpilers) for details. ([#262](https://github.com/zapier/zapier-platform/pull/262))
 
 ### core
 
-* :scroll: Remove legacy reference to `bundle.meta.zap` ([#255](https://github.com/zapier/zapier-platform/pull/255))
-* :hammer: Increase max payload size for hydration ([#257](https://github.com/zapier/zapier-platform/pull/257))
+- :scroll: Remove legacy reference to `bundle.meta.zap` ([#255](https://github.com/zapier/zapier-platform/pull/255))
+- :hammer: Increase max payload size for hydration ([#257](https://github.com/zapier/zapier-platform/pull/257))
 
 ### schema
 
-* None!
+- None!
 
 ## 10.0.1
 
+_released `2020-07-20`_
+
 ### cli
 
-* :bug: `convert` command now doesn't crash over an auth field name with special chars ([#241](https://github.com/zapier/zapier-platform/pull/241))
-* :bug: Fix missing `deasync` Node.js 10 binding ([#244](https://github.com/zapier/zapier-platform/pull/244))
-* :bug: Fix broken `oauth1-trello` project template ([#246](https://github.com/zapier/zapier-platform/pull/246))
-* :nail_care: Update `oauth2` and `session-auth` project templates to reflect v10's recommended way to handle auth refresh ([#246](https://github.com/zapier/zapier-platform/pull/246))
-* :scroll: Fix missing `init` command in CLI reference ([#243](https://github.com/zapier/zapier-platform/pull/243))
-* :hammer: Bump Lodash from 4.17.15 to 4.17.19 ([#248](https://github.com/zapier/zapier-platform/pull/248))
+- :bug: `convert` command now doesn't crash over an auth field name with special chars ([#241](https://github.com/zapier/zapier-platform/pull/241))
+- :bug: Fix missing `deasync` Node.js 10 binding ([#244](https://github.com/zapier/zapier-platform/pull/244))
+- :bug: Fix broken `oauth1-trello` project template ([#246](https://github.com/zapier/zapier-platform/pull/246))
+- :nail_care: Update `oauth2` and `session-auth` project templates to reflect v10's recommended way to handle auth refresh ([#246](https://github.com/zapier/zapier-platform/pull/246))
+- :scroll: Fix missing `init` command in CLI reference ([#243](https://github.com/zapier/zapier-platform/pull/243))
+- :hammer: Bump Lodash from 4.17.15 to 4.17.19 ([#248](https://github.com/zapier/zapier-platform/pull/248))
 
 ### core
 
-* :bug: Allow resource list methods to use cursors ([#247](https://github.com/zapier/zapier-platform/pull/247))
-* :nail_care: Improve types for `z.dehydrateFile` and `z.stashFile` ([#240](https://github.com/zapier/zapier-platform/pull/240))
-* :scroll: Clarify v10 breaking change on auth refresh ([#246](https://github.com/zapier/zapier-platform/pull/246))
-* :hammer: Bump Lodash from 4.17.15 to 4.17.19 ([#248](https://github.com/zapier/zapier-platform/pull/248))
+- :bug: Allow resource list methods to use cursors ([#247](https://github.com/zapier/zapier-platform/pull/247))
+- :nail_care: Improve types for `z.dehydrateFile` and `z.stashFile` ([#240](https://github.com/zapier/zapier-platform/pull/240))
+- :scroll: Clarify v10 breaking change on auth refresh ([#246](https://github.com/zapier/zapier-platform/pull/246))
+- :hammer: Bump Lodash from 4.17.15 to 4.17.19 ([#248](https://github.com/zapier/zapier-platform/pull/248))
 
 ### schema
 
-* :hammer: Bump Lodash from 4.17.15 to 4.17.19 ([#248](https://github.com/zapier/zapier-platform/pull/248))
+- :hammer: Bump Lodash from 4.17.15 to 4.17.19 ([#248](https://github.com/zapier/zapier-platform/pull/248))
 
 ## 10.0.0
+
+_released `2020-05-20`_
 
 Another major release! We have some great improvements in this version but also have breaking changes. Please review the following to see if you need to change anything to upgrade `zapier-platform-core` to v10.
 
@@ -93,51 +238,83 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 
 ### cli
 
-* :exclamation: We've improved and removed some templates from `init` command, see (e) above for a list of templates that were removed ([#206](https://github.com/zapier/zapier-platform/pull/206))
-* :nail_care: `build` command no longer needs login ([#216](https://github.com/zapier/zapier-platform/pull/216))
-* :nail_care: `promote` command becomes more receptive about the changelog format ([#209](https://github.com/zapier/zapier-platform/pull/209))
-* :nail_care: Regenerate [example apps](https://github.com/zapier/zapier-platform/tree/60eaabd04571df30a3c33e4ab5ec4fe0312ad701/example-apps) using the new `init` command ([#229](https://github.com/zapier/zapier-platform/pull/229))
-* :scroll: Update and clean up docs ([#222](https://github.com/zapier/zapier-platform/pull/222))
-* :scroll: Add some clarity around what we're sending for analytics ([#215](https://github.com/zapier/zapier-platform/pull/215))
-* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+- :exclamation: We've improved and removed some templates from `init` command, see (e) above for a list of templates that were removed ([#206](https://github.com/zapier/zapier-platform/pull/206))
+- :nail_care: `build` command no longer needs login ([#216](https://github.com/zapier/zapier-platform/pull/216))
+- :nail_care: `promote` command becomes more receptive about the changelog format ([#209](https://github.com/zapier/zapier-platform/pull/209))
+- :nail_care: Regenerate [example apps](https://github.com/zapier/zapier-platform/tree/60eaabd04571df30a3c33e4ab5ec4fe0312ad701/example-apps) using the new `init` command ([#229](https://github.com/zapier/zapier-platform/pull/229))
+- :scroll: Update and clean up docs ([#222](https://github.com/zapier/zapier-platform/pull/222))
+- :scroll: Add some clarity around what we're sending for analytics ([#215](https://github.com/zapier/zapier-platform/pull/215))
+- :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
 
 ### core
 
-* :exclamation: Integrations now run on Node.js 12!
-* :exclamation: `z.request` now always calls `response.throwForStatus` via a middleware by default ([#210](https://github.com/zapier/zapier-platform/pull/210))
-* :exclamation: Session and OAuth2 refresh now happens AFTER your `afterResponse` ([#210](https://github.com/zapier/zapier-platform/pull/210))
-* :exclamation: `response.throwForStatus` now only throws for 400 <= status <= 600 ([#192](https://github.com/zapier/zapier-platform/pull/192))
-* :exclamation: Introduce `response.data` with support for form-urlencoded and custom parsing ([#211](https://github.com/zapier/zapier-platform/pull/211))
-* :bug: Don't log request body when it's streaming data ([#214](https://github.com/zapier/zapier-platform/pull/214))
-* :bug: `z.request`'s `allowGetBody` option shouldn't send empty body ([#227](https://github.com/zapier/zapier-platform/pull/227))
-* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+- :exclamation: Integrations now run on Node.js 12!
+- :exclamation: `z.request` now always calls `response.throwForStatus` via a middleware by default ([#210](https://github.com/zapier/zapier-platform/pull/210))
+- :exclamation: Session and OAuth2 refresh now happens AFTER your `afterResponse` ([#210](https://github.com/zapier/zapier-platform/pull/210))
+- :exclamation: `response.throwForStatus` now only throws for 400 ≤ status ≤ 600 ([#192](https://github.com/zapier/zapier-platform/pull/192))
+- :exclamation: Introduce `response.data` with support for form-urlencoded and custom parsing ([#211](https://github.com/zapier/zapier-platform/pull/211))
+- :bug: Don't log request body when it's streaming data ([#214](https://github.com/zapier/zapier-platform/pull/214))
+- :bug: `z.request`'s `allowGetBody` option shouldn't send empty body ([#227](https://github.com/zapier/zapier-platform/pull/227))
+- :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
 
 ### schema
 
-* :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+- :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+
+## 9.5.0
+
+_released `2021-07-02`_
+
+### cli
+
+- None!
+
+### core
+
+- :tada: Allow using `await` in inline function source ([#390](https://github.com/zapier/zapier-platform/pull/390))
+- :bug: Make sure all HTTP requests logged ([#390](https://github.com/zapier/zapier-platform/pull/390))
+
+### schema
+
+- None!
+
+## 9.4.2
+
+### cli
+
+- None!
+
+### core
+
+- :bug: `ResponseError` no longer fails when request is `raw` ([#320](https://github.com/zapier/zapier-platform/pull/320))
+- :bug: Redirecting from `https` to `http` breaks when disabling SSL certificate checks ([#314](https://github.com/zapier/zapier-platform/pull/314))
+
+### schema
+
+- None!
 
 ## 9.4.0
 
 ### cli
 
-* :nail_care: `build` and `push` command now produces smaller zips (≈30% of the original size!) ([#202](https://github.com/zapier/zapier-platform/pull/202))
+- :nail_care: `build` and `push` command now produces smaller zips (≈30% of the original size!) ([#202](https://github.com/zapier/zapier-platform/pull/202))
 
 ### core
 
-* :nail_care: `z.request` now has an `allowGetBody` option that allows you to send a GET request with a body ([#195](https://github.com/zapier/zapier-platform/pull/195))
-* :scroll: Update examples to demonstrate `z.errors.Error` ([#198](https://github.com/zapier/zapier-platform/pull/198))
-* :scroll: Encourage use of `response.json` rather than `z.JSON.parse(response.content)` ([#200](https://github.com/zapier/zapier-platform/pull/200))
-* :hammer: Include `User-Agent` header for internal calls ([#204](https://github.com/zapier/zapier-platform/pull/204))
+- :nail_care: `z.request` now has an `allowGetBody` option that allows you to send a GET request with a body ([#195](https://github.com/zapier/zapier-platform/pull/195))
+- :scroll: Update examples to demonstrate `z.errors.Error` ([#198](https://github.com/zapier/zapier-platform/pull/198))
+- :scroll: Encourage use of `response.json` rather than `z.JSON.parse(response.content)` ([#200](https://github.com/zapier/zapier-platform/pull/200))
+- :hammer: Include `User-Agent` header for internal calls ([#204](https://github.com/zapier/zapier-platform/pull/204))
 
 ### schema
 
-* No changes
+- No changes
 
 ## 9.3.0
 
 ### cli
 
-* No changes
+- No changes
 
 ### core
 
@@ -409,13 +586,13 @@ We've changed the type of (the option formally known as) `omitEmptyParams` to ac
 // before
 z.request({
   url: 'https://site.com',
-  omitEmptyParams: true
+  omitEmptyParams: true,
 });
 
 // after:
 z.request({
   url: 'https://site.com',
-  removeMissingValuesFrom: { params: true }
+  removeMissingValuesFrom: { params: true },
 });
 ```
 

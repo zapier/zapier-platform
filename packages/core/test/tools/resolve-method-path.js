@@ -1,6 +1,6 @@
 'use strict';
 
-require('should');
+const should = require('should');
 
 const _ = require('lodash');
 
@@ -83,14 +83,31 @@ describe('resolve-method-path', () => {
     ).should.eql('authentication.oauth2Config.authorizeUrl');
   });
 
-  it('should resolve deep paths fastly', () => {
+  it('should resolve deep paths quickly', () => {
     // is >1000ms if not memoizedFindMapDeep, ~300ms after
     const authApp = schemaTools.prepareApp(oauthAppDef);
-    for (var i = 1000; i >= 0; i--) {
+    for (let i = 1000; i >= 0; i--) {
       resolveMethodPath(
         authApp,
         oauthAppDef.authentication.oauth2Config.authorizeUrl
       );
     }
+  });
+
+  it('should throw if it fails to find', () => {
+    const shouldThrow = () => resolveMethodPath(app, () => null);
+    shouldThrow.should.throw(/We could not find/);
+  });
+
+  it('should be able to skip throwing if it fails to find', () => {
+    should(resolveMethodPath(app, () => null, false)).eql(undefined);
+  });
+
+  it('should always error if it gets a wrong type', () => {
+    const shouldThrow = () => resolveMethodPath(app, undefined);
+    shouldThrow.should.throw(/You must pass in a function\/array\/object/);
+
+    const shouldThrow2 = () => resolveMethodPath(app, 'ok', false);
+    shouldThrow2.should.throw(/You must pass in a function\/array\/object/);
   });
 });

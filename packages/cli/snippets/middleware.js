@@ -11,6 +11,7 @@ const handleErrors = (response, z) => {
   } else if (response.status === 200 && response.data.success === false) {
     throw new z.errors.Error(response.data.message, response.data.code);
   }
+  return response;
 };
 
 // This example only works on core v10+!

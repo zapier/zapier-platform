@@ -137,7 +137,7 @@ describe('Tools', () => {
 
   describe('deepFreeze', () => {
     it('should not let you tweak stuff', () => {
-      var output = dataTools.deepFreeze({
+      const output = dataTools.deepFreeze({
         funcArity: (a, b, c) => {
           return c;
         },
@@ -219,33 +219,9 @@ describe('Tools', () => {
     });
   });
 
-  describe('recurseExtract', () => {
-    it('should extract values that match', () => {
-      const obj = {
-        secret_key: '1234',
-        another: {
-          secret_key: '5678',
-          deep: {
-            secret: 'abcd',
-          },
-        },
-        name: 'dont_care',
-        id: 88,
-      };
-      const matcher = (key, value) => {
-        if (typeof value === 'string') {
-          return key.indexOf('secret') >= 0;
-        }
-        return false;
-      };
-      const values = dataTools.recurseExtract(obj, matcher);
-      values.should.eql(['1234', '5678', 'abcd']);
-    });
-  });
-
   describe('recurseCleanFuncs', () => {
     it('should handle objects, arrays and function->str', () => {
-      var output = cleaner.recurseCleanFuncs({
+      const output = cleaner.recurseCleanFuncs({
         hello: 'world',
         number: 1234,
         arr: ['0', 1],
@@ -262,7 +238,7 @@ describe('Tools', () => {
           deeper: () => {},
         },
       });
-      var expected = {
+      const expected = {
         hello: 'world',
         number: 1234,
         arr: ['0', 1],
@@ -297,15 +273,15 @@ describe('Tools', () => {
 
   describe('recurseReplaceBank', () => {
     it('should replace stuff with recurseReplaceBank', () => {
-      var template = {
+      const template = {
         multi: '{{somekey}} {{somekey}} hi!',
         thing: '{{somekey}} hi!',
         arr: ['{{somekey}} hi!'],
       };
-      var bank = {
+      const bank = {
         '{{somekey}}': 'lolz',
       };
-      var out = cleaner.recurseReplaceBank(template, bank);
+      const out = cleaner.recurseReplaceBank(template, bank);
       out.should.eql({
         multi: 'lolz lolz hi!',
         thing: 'lolz hi!',

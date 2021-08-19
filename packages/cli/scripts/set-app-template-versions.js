@@ -28,7 +28,7 @@ newVersions.coreVersion = newCoreVersion;
 
 const exec = (cmd, cwd) => {
   return new Promise((resolve, reject) => {
-    childProcess.exec(cmd, { cwd }, err => {
+    childProcess.exec(cmd, { cwd }, (err) => {
       if (err) {
         console.error('error:', err);
         reject(err);
@@ -88,7 +88,7 @@ const setVersion = (template, rootTmpDir) => {
       travisYaml.node_js[0] = newVersions.nodeVersion;
       return fse.writeFile(travisYamlFile, yaml.stringify(travisYaml, null, 2));
     })
-    .then(result => {
+    .then((result) => {
       if (result === 'skip') {
         return result;
       }
@@ -96,7 +96,7 @@ const setVersion = (template, rootTmpDir) => {
       cmd = `git commit package.json .travis.yml -m "update ${PACKAGES_NAMES} versions to ${packagesVersions} respectively."`;
       return exec(cmd, repoDir);
     })
-    .then(result => {
+    .then((result) => {
       if (result === 'skip') {
         return result;
       }
@@ -104,7 +104,7 @@ const setVersion = (template, rootTmpDir) => {
       cmd = 'git push origin master';
       return exec(cmd, repoDir);
     })
-    .then(result => {
+    .then((result) => {
       if (result === 'skip') {
         console.log(
           `${template} is already set to ${packagesVersions} for ${PACKAGES_NAMES} respectively, skipping`
@@ -116,7 +116,7 @@ const setVersion = (template, rootTmpDir) => {
       );
       return null;
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(
         `Error setting ${PACKAGES_NAMES} versions for app template ${template}:`,
         err
@@ -129,14 +129,16 @@ const rootTmpDir = tmp.tmpNameSync();
 fse.removeSync(rootTmpDir);
 fse.ensureDirSync(rootTmpDir);
 
-const tasks = _.map(appTemplates, template => setVersion(template, rootTmpDir));
+const tasks = _.map(appTemplates, (template) =>
+  setVersion(template, rootTmpDir)
+);
 
-Promise.all(tasks).then(results => {
+Promise.all(tasks).then((results) => {
   const failures = _.filter(
     results,
-    result => result !== null && result !== 'skip'
+    (result) => result !== null && result !== 'skip'
   );
-  const skipped = _.filter(results, result => result === 'skip');
+  const skipped = _.filter(results, (result) => result === 'skip');
   const successCount = tasks.length - failures.length - skipped.length;
 
   if (failures.length) {

@@ -20,11 +20,13 @@ You may find docs duplicate or outdated across the Zapier site. The most up-to-d
 - [Latest CLI Reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
 - [Latest Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
 
-This doc decribes the latest CLI version **10.1.2**, as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+Our code is updated frequently. To see a full list of changes, look no further than [the CHANGELOG](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md).
 
-- CLI Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
-- CLI Reference: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
-- Schema Docs: [9.4.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.4.0/packages/schema/docs/build/schema.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@8.4.2/packages/schema/docs/build/schema.md)
+This doc describes the latest CLI version (**11.1.0**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+
+- CLI Docs: [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/README.md), [9.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.2/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
+- CLI Reference: [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/docs/cli.md), [9.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.4.2/packages/cli/docs/cli.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/docs/cli.md)
+- Schema Docs: [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.2.0/packages/schema/docs/build/schema.md), [9.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.4.2/packages/schema/docs/build/schema.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@8.4.2/packages/schema/docs/build/schema.md)
 
 ## Table of Contents
 
@@ -115,10 +117,12 @@ This doc decribes the latest CLI version **10.1.2**, as of this writing. If you'
     + [v10 Breaking Change: Auth Refresh](#v10-breaking-change-auth-refresh)
 - [Testing](#testing)
   * [Writing Unit Tests](#writing-unit-tests)
+  * [Using the `z` Object in Tests](#using-the-z-object-in-tests)
   * [Mocking Requests](#mocking-requests)
   * [Running Unit Tests](#running-unit-tests)
   * [Testing & Environment Variables](#testing--environment-variables)
   * [Testing in Your CI](#testing-in-your-ci)
+  * [Debugging Tests](#debugging-tests)
 - [Using `npm` Modules](#using-npm-modules)
 - [Building Native Packages with Docker](#building-native-packages-with-docker)
 - [Using Transpilers](#using-transpilers)
@@ -137,8 +141,9 @@ This doc decribes the latest CLI version **10.1.2**, as of this writing. If you'
   * [What's the Difference Between an "App" and an "Integration"?](#whats-the-difference-between-an-app-and-an-integration)
 - [Command Line Tab Completion](#command-line-tab-completion)
 - [The Zapier Platform Packages](#the-zapier-platform-packages)
-  * [Updating](#updating)
+  * [Updating These Packages](#updating-these-packages)
 - [Get Help!](#get-help)
+- [Developing on the CLI](#developing-on-the-cli)
 
 <!-- tocstop -->
 
@@ -166,33 +171,29 @@ For those not familiar with Zapier terminology, here is how concepts in the CLI 
 
 ### How does Zapier Platform CLI Work?
 
-Zapier takes the App you upload and sends it over to Amazon Web Service's Lambda.
-We then make calls to execute the operations your App defines as we execute Zaps.
-Your App takes the input data we provide (if any), makes the necessary HTTP calls,
-and returns the relevant data, which gets fed back into Zapier.
+Zapier takes the App you upload and sends it over to Amazon Web Service's Lambda. We then make calls to execute the operations your App defines as we execute Zaps. Your App takes the input data we provide (if any), makes the necessary HTTP calls, and returns the relevant data, which gets fed back into Zapier.
 
 ### Zapier Platform CLI vs UI
 
-The Zapier Platform includes two ways to build integrations: a CLI to build integrations in your local development environment and deploy them from the command line, and a UI to create integrations with a visual builder from your browser. Both use the same Zapier platform, so pick the one that fits your team's needs best, as the difference is in how you develop the integration.
+The Zapier Platform includes two ways to build integrations: a CLI (to build integrations in your local development environment and deploy them from the command line), and a Visual Builder (to create integrations with a visual builder from your browser). Both use the same underlying platform, so pick the one that fits your team's needs best. The main difference is how you make changes to your code.
 
 Zapier Platform CLI is designed to be used by development teams who collaborate with version control and CI, and can be used to build more advanced integrations with custom coding for every part of your API calls and response parsing.
 
-[Zapier Platform UI](https://zapier.com/app/developer/) is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It's the quickest way to start using the Zapier platform—and you can manage your CLI apps' core details from its online UI as well. Coming soon, you will be able to convert Zapier Platform UI integrations to CLI to start development in your browser then finish out the core features in your local development environment.
+[Zapier Platform UI](https://zapier.com/app/developer/) is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It's the quickest way to start using the Zapier platform—and you can manage your CLI apps' core details from its online UI as well. You can also [export](https://platform.zapier.com/docs/export) Zapier Platform UI integrations to CLI to start development in your browser, then finish out the core features in your local development environment.
 
 > Learn more in our [Zapier Platform UI vs CLI](https://platform.zapier.com/docs/vs) post.
 
 ### Requirements
 
-All Zapier CLI apps are run using Node.js `v12`.
+All Zapier CLI apps are run using Node.js `v14`.
 
-You can develop using any version of Node you'd like, but your eventual code must be compatible with `v12`. If you're using features not yet available in `v12`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
+You can develop using any version of Node you'd like, but your eventual code must be compatible with `v14`. If you're using features not yet available in `v14`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
 
-To ensure stability for our users, we strongly encourage you run tests on `v12` sometime before your code reaches users. This can be done multiple ways.
+To ensure stability for our users, we strongly encourage you run tests on `v14` sometime before your code reaches users. This can be done multiple ways.
 
 Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform/blob/master/example-apps/minimal/.travis.yml) file in our template apps to get you started.
 
-Alternatively, you can change your local node version with tools such as [nvm](https://github.com/nvm-sh/nvm#installation-and-update) or [n](https://github.com/tj/n#installation).
-Then you can either swap to that version with `nvm use v12`, or do `nvm exec v12 zapier test` so you can run tests without having to switch versions while developing.
+Alternatively, you can change your local node version with tools such as [nvm](https://github.com/nvm-sh/nvm#installation-and-update). Then you can either swap to that version with `nvm use v14`, or do `nvm exec v14 zapier test` so you can run tests without having to switch versions while developing.
 
 
 ### Quick Setup Guide
@@ -265,7 +266,7 @@ npm install
 If you'd like to manage your **local App**, use these commands:
 
 * `zapier init myapp` - initialize/start a local app project
-* `zapier convert 1234 .` - initialize/start from an existing app (alpha)
+* `zapier convert 1234 .` - initialize/start from an existing app
 * `zapier scaffold resource Contact` - auto-injects a new resource, trigger, etc.
 * `zapier test` - run the same tests as `npm test`
 * `zapier validate` - ensure your app is valid
@@ -1063,7 +1064,7 @@ You can find more details on the different field schema options at [our Field Sc
 
 In some cases, it might be necessary to provide fields that are dynamically generated - especially for custom fields. This is a common pattern for CRMs, form software, databases and more. Basically - you can provide a function instead of a field and we'll evaluate that function - merging the dynamic fields with the static fields.
 
-> You should see `bundle.inputData` partially filled in as users provide data - even in field retrieval. This allows you to build hierarchical relationships into fields (EG: only show issues from the previously selected project).
+> You should see `bundle.inputData` partially filled in as users provide data - even in field retrieval. This allows you to build hierarchical relationships into fields (e.g. only show issues from the previously selected project).
 
 > A function that returns a list of dynamic fields cannot include additional functions in that list to call for dynamic fields.
 
@@ -1141,6 +1142,14 @@ module.exports = {
 
 > Only dropdowns support `altersDynamicFields`.
 
+When using dynamic fields, the fields will be retrieved in three different contexts:
+
+* Whenever the value of a field with `altersDynamicFields` is changed, as described above.
+* Whenever Zap Editor opens the "Set up" section for the trigger or action.
+* Whenever the Refresh Fields button is used on the trigger or action.
+
+Be sure to set up your code accordingly - for example, don't rely on any input fields already having a value, since they won't have one the first time the "Set up" section loads.
+
 ### Dynamic Dropdowns
 
 Sometimes, API endpoints require clients to specify a parent object in order to create or access the child resources. For instance, specifying a spreadsheet id in order to retrieve its worksheets. Since people don't speak in auto-incremented ID's, it is necessary that Zapier offer a simple way to select that parent using human readable handles.
@@ -1190,7 +1199,7 @@ In the above code example the dynamic property makes reference to a trigger with
   { id: '1', name: 'First Option', dateCreated: '01/01/2000' },
   { id: '2', name: 'Second Option', dateCreated: '01/01/2000' },
   { id: '3', name: 'Third Option', dateCreated: '01/01/2000' },
-  { id: '4', name: 'Fourth Option', dateCreated: '01/01/2000' }
+  { id: '4', name: 'Fourth Option', dateCreated: '01/01/2000' },
 ];
 
 ```
@@ -1300,24 +1309,21 @@ const App = {
     issue: {
       key: 'new_records',
       // ...
-      create: {
-        // ...
-        operation: {
-          inputFields: [
-            {
-              key: 'spreadsheet_id',
-              required: true,
-              label: 'Spreadsheet',
-              dynamic: 'spreadsheet.id.name',
-            },
-            {
-              key: 'worksheet_id',
-              required: true,
-              label: 'Worksheet',
-              dynamic: 'worksheet.id.name',
-            },
-          ],
-        },
+      operation: {
+        inputFields: [
+          {
+            key: 'spreadsheet_id',
+            required: true,
+            label: 'Spreadsheet',
+            dynamic: 'spreadsheet.id.name',
+          },
+          {
+            key: 'worksheet_id',
+            required: true,
+            label: 'Worksheet',
+            dynamic: 'worksheet.id.name',
+          },
+        ],
       },
     },
   },
@@ -1690,7 +1696,7 @@ const performResume = async (z, bundle) => {
 };
 ```
 
-> The app will have a maximum of 90 days to `POST` to the callback URL. If a user deletes or modifies the Zap or Task in the meantime, we will not resume the task.
+> The app will have a maximum of 30 days to `POST` to the callback URL. If a user deletes or modifies the Zap or Task in the meantime, we will not resume the task.
 
 
 ## Bundle Object
@@ -1768,9 +1774,9 @@ const perform = async (z, bundle) => {
 
 ### `bundle.rawRequest`
 
-> `bundle.rawRequest` is only available in the `perform` for web hooks, `getAccessToken` for oauth authentication methods, and `performResume` in a callback action.
+> `bundle.rawRequest` is only available in the `perform` for webhooks, `getAccessToken` for OAuth authentication methods, and `performResume` in a callback action.
 
-`bundle.rawRequest` holds raw information about the HTTP request that triggered the `perform` method or that represents the users browser request that triggered the `getAccessToken` call:
+`bundle.rawRequest` holds raw information about the HTTP request that triggered the `perform` method or that represents the user's browser request that triggered the `getAccessToken` call:
 
 ```
 {
@@ -1783,7 +1789,7 @@ const perform = async (z, bundle) => {
 }
 ```
 
-
+In `bundle.rawRequest`, headers other than `Content-Length` and `Content-Type` will be prefixed with `Http-`, and all headers will be named in Camel-Case. For example, the header `X-Time-GMT` would become `Http-X-Time-Gmt`.
 
 ### `bundle.cleanedRequest`
 
@@ -1811,7 +1817,7 @@ const perform = async (z, bundle) => {
 
 > `bundle.outputData` is only available in the `performResume` in a callback action.
 
-`bundle.outputData` will return a whatever data you originally returned in the `perform` allowing you to mix that with `bundle.rawRequest` or `bundle.cleanedRequest`.
+`bundle.outputData` will return a whatever data you originally returned in the `perform`, allowing you to mix that with `bundle.rawRequest` or `bundle.cleanedRequest`.
 
 
 ### `bundle.targetUrl`
@@ -1848,7 +1854,7 @@ Read more in the [REST hook example](https://github.com/zapier/zapier-platform/b
 
 ### `bundle.subscribeData`
 
-> `bundle.subscribeData` is only available in the `performUnsubscribe` method for webhooks.
+> `bundle.subscribeData` is available in the `perform` and `performUnsubscribe` method for webhooks.
 
 This is an object that contains the data you returned from the `performSubscribe` function. It should contain whatever information you need send a `DELETE` request to your server to stop sending webhooks to Zapier.
 
@@ -1858,7 +1864,7 @@ Read more in the [REST hook example](https://github.com/zapier/zapier-platform/b
 
 Apps can define environment variables that are available when the app's code executes. They work just like environment
 variables defined on the command line. They are useful when you have data like an OAuth client ID and secret that you
-don't want to commit to source control. Environment variables can also be used as a quick way to toggle between a
+don't want to commit to source control. Environment variables can also be used as a quick way to toggle between
 a staging and production environment during app development.
 
 It is important to note that **variables are defined on a per-version basis!** When you push a new version, the
@@ -2111,6 +2117,7 @@ const handleErrors = (response, z) => {
   } else if (response.status === 200 && response.data.success === false) {
     throw new z.errors.Error(response.data.message, response.data.code);
   }
+  return response;
 };
 
 // This example only works on core v10+!
@@ -2248,7 +2255,7 @@ The method `z.dehydrate(func, inputData)` has two required arguments:
 * `func` - the function to call to fetch the extra data. Can be any raw `function`, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app's `hydrators` property
 * `inputData` - this is an object that contains things like a `path` or `id` - whatever you need to load data on the other side
 
-> **Why do I need to register my functions?** Because of how Javascript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to "automagically" (and sometimes incorrectly) infer code locations.
+> **Why do I need to register my functions?** Because of how JavaScript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to "automagically" (and sometimes incorrectly) infer code locations.
 
 Here is an example that pulls in extra data for a movie:
 
@@ -2350,8 +2357,8 @@ The interface `z.stashFile(bufferStringStream, [knownLength], [filename], [conte
 
 ```js
 const content = 'Hello world!';
-z.stashFile(content, content.length, 'hello.txt', 'text/plain')
-  .then(url => z.console.log(url));
+const url = await z.stashFile(content, content.length, 'hello.txt', 'text/plain');
+z.console.log(url);
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/f75e2819-05e2-41d0-b70e-9f8272f9eebf
 ```
 
@@ -2359,8 +2366,8 @@ Most likely you'd want to stream from another URL - note the usage of `z.request
 
 ```js
 const fileRequest = z.request({url: 'https://example.com/file.pdf', raw: true});
-z.stashFile(fileRequest) // knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream
-  .then(url => z.console.log(url));
+const url = await z.stashFile(fileRequest); // knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream
+z.console.log(url);
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7
 ```
 
@@ -2657,6 +2664,60 @@ describe('triggers', () => {
 
 ```
 
+### Using the `z` Object in Tests
+
+Introduced in `core@11.1.0`, `appTester` can now run arbitrary functions:
+
+```js
+/* globals describe, expect, test */
+
+const zapier = require('zapier-platform-core');
+
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
+
+describe('triggers', () => {
+  test('load recipes', async () => {
+    const adHodResult = await appTester(
+      // your in-line function takes the same [z, bundle] arguments as normal
+      async (z, bundle) => {
+        // requests are made using your integration's actual middleware
+        // make sure to pass the normal `bundle` arg to `appTester` if your requests need auth
+        const response = await z.request(
+          'https://example.com/some/setup/method',
+          {
+            params: {
+              numItems: bundle.inputData.someValue,
+            },
+          }
+        );
+
+        return {
+          // you can use all the functions on the `z` object
+          someHash: z.hash('md5', 'mySecret'),
+          data: response.data,
+        };
+      },
+      {
+        // you must provide auth data for authenticated requests
+        // (just like running a normal trigger)
+        authData: { token: 'some-api-key' },
+        // put arbitrary function params in `inputData`
+        inputData: {
+          someValue: 3,
+        },
+      }
+    );
+
+    expect(adHodResult.someHash).toEqual('a5beb6624e092adf7be31176c3079e64');
+    expect(adHodResult.data).toEqual({ whatever: true });
+
+    // ... rest of test
+  });
+});
+
+```
+
 ### Mocking Requests
 
 While testing, it's useful to test your code without actually hitting any external services. [Nock](https://github.com/node-nock/nock) is a node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with `z.request` by setting up your `nock` before calling `appTester`.
@@ -2726,7 +2787,7 @@ zapier.tools.env.inject(); // inject() can take a filename; defaults to ".env"
 // now process.env has all the values in your .env file
 ```
 
-> `.env` is the new recommended name for the environment file since v5.1.0. The old name `.environment` is depreated but will continue to work for backward compatibility.
+> `.env` is the new recommended name for the environment file since v5.1.0. The old name `.environment` is deprecated but will continue to work for backward compatibility.
 
 > Remember: **NEVER** add your secrets file to version control!
 
@@ -2755,7 +2816,7 @@ This makes it pretty straightforward to integrate into your testing interface. I
 ```yaml
 language: node_js
 node_js:
-  - "v12"
+  - "v14"
 before_script: npm install -g zapier-platform-cli
 script: CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
@@ -2764,6 +2825,60 @@ You can substitute `zapier test` with `npm test`, or a direct call to `node_modu
 
 As an alternative to reading the deploy key from root (the default location), you may set the `ZAPIER_DEPLOY_KEY` environment variable to run privileged commands without the human input needed for `zapier login`. We suggest encrypting your deploy key in whatever manner you CI provides (such as [these instructions](https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml), for Travis).
 
+### Debugging Tests
+
+Sometimes tests aren't enough and you may want to step through your code and set breakpoints. The testing suite is a regular Node.js process, so debugging it doesn't take anything special. Because we recommend `jest` for testing, these instructions will outline steps for debugging w/ jest, but other test runners will work similarly. You can also refer to [Jest's own docs on the subject](https://jestjs.io/docs/en/troubleshooting#tests-are-failing-and-you-dont-know-why).
+
+To start, add the following line to the `scripts` section of your `package.json`:
+
+```
+"test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
+```
+
+This will tell `node` to inspect the `jest` processes, which is exactly what we need.
+
+Next, add a `debugger;` statement somewhere in your code, probably in a `perform` method:
+
+```js
+// triggers on a new pizza with a certain tag
+const perform = async (z, bundle) => {
+  const response = await z.request({
+    url: "https://jsonplaceholder.typicode.com/posts",
+    params: {
+      tag: bundle.inputData.tagName,
+    },
+  });
+  debugger;
+  // this should return an array of objects
+  return response.data;
+};
+```
+
+This creates a _breakpoint_ while `inspect`ing, or a starting point for our manual inspection.
+
+Next, you'll need an inspection client. The most available one is probably the Google Chrome browser, but there are [lots of options](https://nodejs.org/en/docs/guides/debugging-getting-started/#inspector-clients). We'll use Chrome for this example. In your terminal (and in your integration's root directory), run `yarn test:debug` (or `npm run test:debug`). You should see the following:
+
+```
+% yarn test:debug
+yarn run v1.22.10
+$ node --inspect-brk node_modules/.bin/jest --runInBand
+Debugger listening on ws://127.0.0.1:9229/5edaab3c-a1d3-45e4-b374-0536095c559b
+For help, see: https://nodejs.org/en/docs/inspector
+```
+
+Now in Chrome, go to chrome://inspect. Make sure `Discover Network Targets` is checked and you should see a path to your `jest` file on your local machine:
+
+![](https://cdn.zappy.app/e2836d2950e1f8a03e3621a22452c3cd.png)
+
+Click `inspect`. A new window will open. Next, click the little blue arrow in the top right to actually run the code:
+
+![](https://cdn.zappy.app/a64e7963a7090e9730d9c8e7b3595a6a.png)
+
+After a few seconds, you'll see your code, the `debugger` statement, and info about the current environment on the right panel. You should see familiar data in the `Locals` section, such as the `response` variable, and the `z` object.
+
+![](https://cdn.zappy.app/4bfdfe079a344ab7aced64ad7728bc6a.png)
+
+Using debugging in combination with thorough unit tests, you will hopefully be able to keep your Zapier integration in smooth working order.
 
 ## Using `npm` Modules
 
@@ -2890,7 +3005,7 @@ There are a lot of details left out - check out the full example app for a worki
 
 ### Why doesn't Zapier support newer versions of Node.js?
 
-We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node (the latest of which is `v12`. As that updates, so too will we.
+We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node (the latest of which is `v14`. As that updates, so too will we.
 
 ### How do I manually set the Node.js version to run my app with?
 
@@ -3093,15 +3208,15 @@ const performWithoutAsync = (z, bundle) => {
         return z.cursor.get(); // Promise<string | null>
       }
     })
-    .then(cursor => {
+    .then((cursor) => {
       return z.request(
         'https://5ae7ad3547436a00143e104d.mockapi.io/api/recipes',
         {
-          params: { cursor: cursor } // if cursor is null, it's ignored here
+          params: { cursor: cursor }, // if cursor is null, it's ignored here
         }
       );
     })
-    .then(response => {
+    .then((response) => {
       // need to save the cursor and return a promise, but also need to pass the data along
       return Promise.all([response.items, z.cursor.set(response.nextPage)]);
     })
@@ -3123,7 +3238,7 @@ const performWithAsync = async (z, bundle) => {
     {
       // if cursor is null, it's sent as an empty query
       //   param and should be ignored by the server
-      params: { cursor: cursor }
+      params: { cursor: cursor },
     }
   );
 
@@ -3171,14 +3286,14 @@ InvalidParameterValueException An error occurred (InvalidParameterValueException
 
 ... then you need to update your `zapier-platform-core` dependency to a non-deprecated version that uses a newer version of Node.js. Complete the following instructions as soon as possible:
 
-1. Edit `package.json` to depend on the latest version of `zapier-platform-core`. There's a list of all breaking changes (marked with an :exclamation:) in the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md).
+1. Edit `package.json` to depend on a later major version of `zapier-platform-core`. There's a list of all breaking changes (marked with a :exclamation:) in the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md).
 2. Increment the `version` property in `package.json`
-3. Ensure you're using version `v12` (or greater) of node locally (`node -v`). Use [nvm](https://github.com/nvm-sh/nvm) to use a different one if need be.
+3. Ensure you're using version `v14` (or greater) of node locally (`node -v`). Use [nvm](https://github.com/nvm-sh/nvm) to use a different one if need be.
 4. Run `rm -rf node_modules && npm i` to get a fresh copy of everything
 5. Run `zapier test` to ensure your tests still pass
 6. Run `zapier push`
 7. Run `zapier promote YOUR_NEW_VERSION` (from step 2)
-8. Migrate your users from the previous version (`zapier migrate OLD_VERSION NEW_VERSION`)
+8. Migrate your users from the previous version (`zapier migrate OLD_VERSION YOUR_NEW_VERSION`)
 
 <a id="analytics"></a>
 ### What Analytics are Collected?
@@ -3222,29 +3337,37 @@ Follow those instructions to enable completion for `zapier` commands and flags!
 
 ## The Zapier Platform Packages
 
-The Zapier Platform consists of 3 npm packages that are released simultaneously as a trio.
+The Zapier Platform consists of 3 npm packages that are released simultaneously.
 
 - [`zapier-platform-cli`](https://github.com/zapier/zapier-platform/tree/master/packages/cli) is the code that powers the `zapier` command. You use it most commonly with the `test`, `scaffold`, and `push` commands. It's installed with `npm install -g zapier-platform-cli` and does not correspond to a particular app.
-
 - [`zapier-platform-core`](https://github.com/zapier/zapier-platform/tree/master/packages/core) is what allows your app to interact with Zapier. It holds the `z` object and app tester code. Your app depends on a specific version of `zapier-platform-core` in the `package.json` file. It's installed via `npm install` along with the rest of your app's dependencies.
+- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/master/packages/schema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
 
-- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/master/packages/clischema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
+To learn more about the structure of the code (especially if you're interested in contributing), check out the `ARCHITECTURE.md` file(s).
 
-### Updating
+### Updating These Packages
 
 The Zapier platform and its tools are under active development. While you don't need to install every release, we release new versions because they are better than the last. We do our best to adhere to [Semantic Versioning](https://semver.org/) wherein we won't break your code unless there's a `major` release. Otherwise, we're just fixing bugs (`patch`) and adding features (`minor`).
 
-Barring unforeseen circumstances, all released platform versions will continue to work for the foreseeable future. While you never *have* to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bug fixes are available.
+Broadly speaking, all releases will continue to work indefinitely. While you never *have* to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bug fixes are available.
+
+For more info about which Node versions are supported, see [the faq](#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with).
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is **10.1.2**. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is **11.1.0**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 
-To update the version of `core` your app depends on, set the `zapier-platform-core` dependency in your `package.json` to a version listed [here](https://www.npmjs.com/package/zapier-platform-core?activeTab=versions) and run `npm install`.
+To update the version of `core` your app depends on, set the `zapier-platform-core` dependency in your `package.json` to a version listed [here](https://www.npmjs.com/package/zapier-platform-core?activeTab=versions) and reinstall your dependencies (either `yarn` or `npm install`).
 
 For maximum compatibility, keep the versions of `cli` and `core` in sync.
 
 ## Get Help!
 
-You can get help by either emailing partners@zapier.com or by [joining our developer community here](https://community.zapier.com/developer-discussion-13).
+You can get help by either emailing `partners@zapier.com` or by [joining our developer community here](https://community.zapier.com/developer-discussion-13).
+
+---
+
+## Developing on the CLI
+
+For Zapier employees, see [this quip doc](https://zapier.quip.com/bns4AxqwaMIm/Working-on-the-CLI-Platform-CoreSchemaCLI) for info about creating releases.

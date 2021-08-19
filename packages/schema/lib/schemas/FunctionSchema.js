@@ -28,11 +28,13 @@ module.exports = makeSchema(
       },
       {
         example: { source: '1 + 2' },
-        reason: 'Invalid value for key: source (must end with a `return` statement)',
+        reason:
+          'Invalid value for key: source (must end with a `return` statement)',
       },
       {
         example: { source: '1 + 2', require: 'some/path/to/file.js' },
-        reason: 'Must be either /FunctionRequireSchema _or_ /FunctionSourceSchema',
+        reason:
+          'Must be either /FunctionRequireSchema _or_ /FunctionSourceSchema',
       },
     ],
   },

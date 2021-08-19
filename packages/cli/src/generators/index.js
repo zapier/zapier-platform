@@ -32,7 +32,7 @@ const writeGitignore = (gen) => {
 
 const writeGenericPackageJson = (gen, packageJsonExtension) => {
   gen.fs.writeJSON(
-    'package.json',
+    gen.destinationPath('package.json'),
     merge(
       {
         name: gen.options.packageName,
@@ -46,7 +46,7 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
           [PLATFORM_PACKAGE]: PACKAGE_VERSION,
         },
         devDependencies: {
-          jest: '^25.5.3',
+          jest: '^26.6.3',
         },
         private: true,
       },
@@ -75,7 +75,7 @@ const authTypes = {
 const writeGenericAuth = (gen) => {
   const authType = authTypes[gen.options.template];
   const content = authFilesCodegen[authType]();
-  gen.fs.write('authentication.js', content);
+  gen.fs.write(gen.destinationPath('authentication.js'), content);
 };
 
 const writeGenericAuthTest = (gen) => {
@@ -135,10 +135,10 @@ const writeForStandaloneTemplate = (gen) => {
         test: 'npm run build && jest --testTimeout 10000 --rootDir ./lib/test',
       },
       devDependencies: {
-        '@types/jest': '^25.2.1',
-        '@types/node': '^13.13.5',
+        '@types/jest': '^26.0.23',
+        '@types/node': '^14',
         rimraf: '^3.0.2',
-        typescript: '^3.8.3',
+        typescript: '4.2.4',
       },
     },
   }[gen.options.template];
@@ -174,7 +174,7 @@ class ProjectGenerator extends Generator {
     this.destinationRoot(path.resolve(this.options.path));
 
     const jsFilter = filter(['*.js', '*.json'], { restore: true });
-    this.registerTransformStream([
+    this.queueTransformStream([
       jsFilter,
       prettier({ singleQuote: true }),
       jsFilter.restore,

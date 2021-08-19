@@ -58,7 +58,7 @@ const authFileExport = (
           ),
           objProperty('fields', arr(...authFields)),
           comment(
-            "The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this method whenver a user connects their account for the first time."
+            "The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this method whenever a user connects their account for the first time."
           ),
           test,
           comment(
@@ -404,13 +404,13 @@ const sessionAuthFile = () => {
           obj(
             objProperty('key', strLiteral('username')),
             objProperty('label', strLiteral('Username')),
-            objProperty('required', strLiteral('true'))
+            objProperty('required', 'true')
           ),
           obj(
             objProperty('key', strLiteral('password')),
             objProperty('label', strLiteral('Password')),
             objProperty('required', 'true'),
-            comment('this lets the user enter maksed data'),
+            comment('this lets the user enter masked data'),
             objProperty('type', strLiteral('password'))
           ),
         ],

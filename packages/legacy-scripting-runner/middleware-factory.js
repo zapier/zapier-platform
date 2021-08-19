@@ -98,8 +98,19 @@ const createBeforeRequest = (app) => {
 
   const apiKeyInHeader = (req, z, bundle) => {
     if (!_.isEmpty(bundle.authData)) {
-      _.each(authMapping, (v, k) => {
-        req.headers[k] = req.headers[k] || renderTemplate(v, bundle.authData);
+      const lowerHeaders = Object.entries(req.headers).reduce(
+        (result, [k, v]) => {
+          result[k.toLowerCase()] = v;
+          return result;
+        },
+        {}
+      );
+
+      Object.entries(authMapping).forEach(([k, v]) => {
+        const lowerKey = k.toLowerCase();
+        if (!lowerHeaders[lowerKey]) {
+          req.headers[k] = renderTemplate(v, bundle.authData);
+        }
       });
     }
     return req;
@@ -270,7 +281,7 @@ const createAfterResponse = (app) => {
   }
 
   return (response, z, bundle) => {
-    response = afterResponse(response);
+    response = afterResponse(response, z, bundle);
     return makeHeaderCaseInsensitive(response);
   };
 };

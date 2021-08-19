@@ -6,7 +6,7 @@
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-WNQKTM5');</script>
+    })(window,document,'script','dataLayer','GTM-K7GFJTV');</script>
     <!-- End Google Tag Manager -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -224,7 +224,7 @@ a code {
     <!-- End Header -->
 
     <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WNQKTM5"
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K7GFJTV"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 
@@ -1010,16 +1010,15 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Test your integration via <code>npm test</code>.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier test</code></p><p>This command is effectively the same as <code>npm test</code>, except we also validate your integration and set up the environment. We recommend using mocha as your testing framework.</p><p><strong>Flags</strong></p><ul>
-<li><code>-t, --timeout</code> | Set test-case timeout in milliseconds.  Defaults to <code>2000</code>.</li>
-<li><code>--grep</code> | Only run tests matching pattern.</li>
-<li><code>--skip-validate</code> | Forgo running <code>zapier validate</code> before <code>npm test</code>.</li>
-<li><code>--yarn</code> | Use yarn instead of npm.</li>
+<p>Test your integration via the &quot;test&quot; script in your &quot;package.json&quot;.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier test</code></p><p>This command is a wrapper around <code>npm test</code> that also validates the structure of your integration and sets up extra environment variables.</p><p>You can pass any args/flags after a <code>--</code>; they will get forwarded onto your test script.</p><p><strong>Flags</strong></p><ul>
+<li><code>--skip-validate</code> | Forgo running <code>zapier validate</code> before tests are run. This will speed up tests if you&apos;re modifying functionality of an existing integration rather than adding new actions.</li>
+<li><code>--yarn</code> | Use <code>yarn</code> instead of <code>npm</code>. This happens automatically if there&apos;s a <code>yarn.lock</code> file, but you can manually force <code>yarn</code> if you run tests from a sub-directory.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier test</code></li>
-<li><code>zapier test -t 30000 --grep api --skip-validate</code></li>
+<li><code>zapier test --skip-validate -- -t 30000 --grep api</code></li>
+<li><code>zapier test -- -fo --testNamePattern &quot;auth pass&quot;</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

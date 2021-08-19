@@ -12,6 +12,16 @@ const {
 
 const { flattenPaths } = require('zapier-platform-core/src/tools/data');
 
+const {
+  ErrorException,
+  HaltedException,
+  StopRequestException,
+  ExpiredAuthException,
+  RefreshTokenException,
+  InvalidSessionException,
+  DEFINED_ERROR_NAMES,
+} = require('./exceptions');
+
 const createInternalRequestClient = (input) => {
   const addQueryParams = require('zapier-platform-core/src/http-middlewares/before/add-query-params');
   const createInjectInputMiddleware = require('zapier-platform-core/src/http-middlewares/before/inject-input');
@@ -42,7 +52,7 @@ const createInternalRequestClient = (input) => {
 const { bundleConverter, unflattenObject } = require('./bundle');
 const {
   markFileFieldsInBundle,
-  hasFileFields,
+  isAnyFileFieldSet,
   isFileField,
   LazyFile,
 } = require('./file');
@@ -81,6 +91,16 @@ const cleanCustomFields = (fields) => {
     });
 };
 
+const stringifyForFormData = (value) => {
+  const dataType = typeof value;
+  if (dataType === 'string') {
+    return value;
+  } else if (dataType === 'boolean') {
+    return value ? 'True' : 'False'; // mimic str(true) in Python
+  }
+  return JSON.stringify(value);
+};
+
 // Makes a multipart/form-data request body that can be set to request.body for
 // node-fetch.
 const makeMultipartBody = async (data, lazyFilesObject) => {
@@ -88,7 +108,9 @@ const makeMultipartBody = async (data, lazyFilesObject) => {
   if (data) {
     if (_.isPlainObject(data)) {
       _.each(data, (v, k) => {
-        form.append(k, v);
+        if (v !== undefined && v !== null) {
+          form.append(k, stringifyForFormData(v));
+        }
       });
     } else {
       if (typeof data !== 'string') {
@@ -226,7 +248,7 @@ const serializeValueForCurlies = (value) => {
   return value;
 };
 
-const createCurliesBank = (bundle) => {
+const createCurliesBank = (bundle, extra) => {
   const bank = {
     // This is for new curlies syntax, such as '{{bundle.inputData.var}}' and
     // '{{bundle.authData.var}}'
@@ -237,6 +259,7 @@ const createCurliesBank = (bundle) => {
     ...bundle.inputData,
     ...bundle.subscribeData,
     ...bundle.authData,
+    ...extra,
   };
   const flattenedBank = flattenPaths(bank, {
     perseve: {
@@ -249,8 +272,8 @@ const createCurliesBank = (bundle) => {
   }, {});
 };
 
-const replaceCurliesInRequest = (request, bundle) => {
-  const bank = createCurliesBank(bundle);
+const replaceCurliesInRequest = (request, bundle, extra) => {
+  const bank = createCurliesBank(bundle, extra);
   return recurseReplaceBank(request, bank);
 };
 
@@ -271,16 +294,29 @@ const cleanHeaders = (headers) => {
   return newHeaders;
 };
 
+// Header keys are considered case insensitive. This function removes duplicate
+// headers.
+// dedupeHeaders({'x-key': 'one', 'X-KEY': 'two'}) returns {'x-key': 'two'}
+const dedupeHeaders = (headers) => {
+  // lowerToFirstKeys stores the mapping from lowercased keys to the key that
+  // first appears in the headers
+  const lowerToFirstKeys = {};
+
+  const newHeaders = Object.entries(headers).reduce((result, [k, v]) => {
+    const lowerKey = k.toLowerCase();
+    if (lowerToFirstKeys[lowerKey] === undefined) {
+      lowerToFirstKeys[lowerKey] = k;
+    }
+    const firstKey = lowerToFirstKeys[lowerKey];
+    result[firstKey] = v;
+    return result;
+  }, {});
+
+  return newHeaders;
+};
+
 const compileLegacyScriptingSource = (source, zcli, app) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
-  const {
-    ErrorException,
-    HaltedException,
-    StopRequestException,
-    ExpiredAuthException,
-    RefreshTokenException,
-    InvalidSessionException,
-  } = require('./exceptions');
 
   const underscore = require('underscore');
   underscore.templateSettings = {
@@ -539,6 +575,15 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return out;
   };
 
+  const chooseBetterError = (responseError, scriptError) => {
+    if (scriptError) {
+      if (!responseError || DEFINED_ERROR_NAMES.includes(scriptError.name)) {
+        return scriptError;
+      }
+    }
+    return responseError;
+  };
+
   const runEvent = async (event, z, bundle) => {
     if (!Zap || _.isEmpty(Zap) || !event || !event.name || !z) {
       return;
@@ -659,17 +704,22 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       request = { ...bundle.request, ...request };
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
-      if (hasFileFields(bundle) && !isBodyStream) {
-        // Runs only when there's no KEY_pre_ method
+      if (!preMethod && !isBodyStream && isAnyFileFieldSet(bundle)) {
+        // Enter here only when there's no KEY_pre method. When a KEY_pre method
+        // is defined, addFilesToRequestBodyFromPreResult() already does the
+        // file handling, so we don't want to do it again here.
         await addFilesToRequestBodyFromBody(request, bundle);
       }
 
       // encode everything, but retain curlies - those are replaced in z.request
-      // important to maintain case here; new URL lowercases everything
+      // important to maintain case here; `new URL()` lowercases the hostname,
+      // which may contain a variable like '{{process.env.URL}}'
       request.url = encodeURI(request.url)
+        .replace(/%25/g, '%') // fixes double encoding
         .replace(/%7B/g, '{')
         .replace(/%7D/g, '}');
       request.headers = cleanHeaders(request.headers);
+      request.headers = dedupeHeaders(request.headers);
       request.allowGetBody = true;
       request.serializeValueForCurlies = serializeValueForCurlies;
       request.skipThrowForStatus = true;
@@ -678,6 +728,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
       if (!options.parseResponse) {
         if (options.checkResponseStatus) {
+          response.skipThrowForStatus = false;
           response.throwForStatus();
         }
         return response;
@@ -687,16 +738,30 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
       const postMethod = postMethodName ? Zap[postMethodName] : null;
       if (postMethod) {
-        result = await runEvent(
-          { key, name: postEventName, response },
-          zcli,
-          bundle
-        );
+        let scriptError, responseError;
+        try {
+          result = await runEvent(
+            { key, name: postEventName, response },
+            zcli,
+            bundle
+          );
+        } catch (error) {
+          scriptError = error;
+        }
 
         if (options.checkResponseStatus) {
           // Raising this error AFTER postMethod is executed allows devs to
           // intercept and throw another error from postMethod
-          response.throwForStatus();
+          response.skipThrowForStatus = false;
+          try {
+            response.throwForStatus();
+          } catch (error) {
+            responseError = error;
+          }
+        }
+
+        if (responseError || scriptError) {
+          throw chooseBetterError(responseError, scriptError);
         }
 
         if (options.defaultToResponse && !result) {
@@ -708,6 +773,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         }
       } else {
         if (options.checkResponseStatus) {
+          response.skipThrowForStatus = false;
           response.throwForStatus();
         }
 
@@ -730,6 +796,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       auth: authParams,
       skipThrowForStatus: true,
     });
+    response.skipThrowForStatus = false;
     response.throwForStatus();
     return querystring.parse(response.content);
   };
@@ -761,7 +828,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       return '';
     }
 
-    url = replaceCurliesInRequest({ url }, bundle).url;
+    url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
     const urlObj = new URL(url);
 
     if (!urlObj.searchParams.has('oauth_token')) {
@@ -772,7 +839,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   };
 
   const runOAuth1GetAccessToken = (bundle) => {
-    const url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
+    let url = _.get(app, 'legacy.authentication.oauth1Config.accessTokenUrl');
+    if (url) {
+      url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
+    }
 
     const templateContext = { ...bundle.authData, ...bundle.inputData };
     const consumerKey = renderTemplate(process.env.CLIENT_ID, templateContext);
@@ -796,7 +866,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       return '';
     }
 
-    url = replaceCurliesInRequest({ url }, bundle).url;
+    url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
     const urlObj = new URL(url);
 
     if (!urlObj.searchParams.has('client_id')) {
@@ -816,13 +886,18 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return urlObj.href;
   };
 
-  const runOAuth2GetAccessToken = (bundle) => {
-    const url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
+  const runOAuth2GetAccessToken = async (bundle) => {
+    let url = _.get(app, 'legacy.authentication.oauth2Config.accessTokenUrl');
+    if (url) {
+      url = replaceCurliesInRequest({ url }, bundle, bundle.inputData).url;
+    }
 
-    let request = bundle.request;
+    const request = bundle.request;
     request.method = 'POST';
     request.url = url;
     request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+    const origRequest = _.cloneDeep(request);
 
     const templateContext = { ...bundle.authData, ...bundle.inputData };
     const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
@@ -831,34 +906,30 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       templateContext
     );
 
-    // Try two ways to get the token: POST with parameters in a form-encoded body. If
-    // that returns a 4xx, retry a POST with parameters in querystring.
-    const body = request.body;
-    body.code = bundle.inputData.code;
-    body.client_id = clientId;
-    body.client_secret = clientSecret;
-    body.redirect_uri = bundle.inputData.redirect_uri;
-    body.grant_type = 'authorization_code';
+    const authFieldKeys = (_.get(app, 'authentication.fields') || []).map(
+      (f) => f.key
+    );
+    authFieldKeys.push('_zapier_account_id');
 
-    return runEventCombo(
-      bundle,
-      '',
-      'auth.oauth2.token.pre',
-      'auth.oauth2.token.post',
-      undefined,
-      { defaultToResponse: true }
-    ).catch(() => {
-      request = bundle.request;
-      request.body = {};
+    // In CLI, it's bundle.inputData instead of bundle.authData that has
+    // yet-to-save (auth hasn't been saved) auth fields. In WB,
+    // bundle.auth_fields always has yet-to-save auth fields.
+    bundle.authData = {
+      ..._.pick(bundle.inputData, authFieldKeys),
+      ...bundle.authData,
+    };
 
-      const params = request.params;
-      params.code = bundle.inputData.code;
-      params.client_id = clientId;
-      params.client_secret = clientSecret;
-      params.redirect_uri = bundle.inputData.redirect_uri;
-      params.grant_type = 'authorization_code';
+    const params = request.params;
+    params.code = bundle.inputData.code;
+    params.client_id = clientId;
+    params.client_secret = clientSecret;
+    params.redirect_uri = bundle.inputData.redirect_uri;
+    params.grant_type = 'authorization_code';
 
-      return runEventCombo(
+    let result;
+
+    try {
+      result = await runEventCombo(
         bundle,
         '',
         'auth.oauth2.token.pre',
@@ -866,19 +937,45 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         undefined,
         { defaultToResponse: true }
       );
-    });
+    } catch (err) {
+      if (err.name !== 'ResponseError' || Zap.pre_oauthv2_token) {
+        throw err;
+      }
+
+      bundle.request = origRequest;
+
+      const body = origRequest.body;
+      body.code = bundle.inputData.code;
+      body.client_id = clientId;
+      body.client_secret = clientSecret;
+      body.redirect_uri = bundle.inputData.redirect_uri;
+      body.grant_type = 'authorization_code';
+
+      result = await runEventCombo(
+        bundle,
+        '',
+        'auth.oauth2.token.pre',
+        'auth.oauth2.token.post',
+        undefined,
+        { defaultToResponse: true }
+      );
+    }
+
+    return result;
   };
 
-  const runOAuth2RefreshAccessToken = (bundle) => {
+  const runOAuth2RefreshAccessToken = async (bundle) => {
     const url = _.get(
       app,
       'legacy.authentication.oauth2Config.refreshTokenUrl'
     );
 
-    let request = bundle.request;
+    const request = bundle.request;
     request.method = 'POST';
     request.url = url;
     request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+    const origRequest = _.cloneDeep(request);
 
     const templateContext = { ...bundle.authData, ...bundle.inputData };
     const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
@@ -893,18 +990,27 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     body.refresh_token = bundle.authData.refresh_token;
     body.grant_type = 'refresh_token';
 
-    return runEventCombo(bundle, '', 'auth.oauth2.refresh.pre').catch(() => {
-      request = bundle.request;
-      request.body = {};
+    let result;
 
-      const params = request.params;
+    try {
+      result = await runEventCombo(bundle, '', 'auth.oauth2.refresh.pre');
+    } catch (err) {
+      if (err.name !== 'ResponseError' || Zap.pre_oauthv2_refresh) {
+        throw err;
+      }
+
+      bundle.request = origRequest;
+
+      const params = origRequest.params;
       params.client_id = clientId;
       params.client_secret = clientSecret;
       params.refresh_token = bundle.authData.refresh_token;
       params.grant_type = 'refresh_token';
 
-      return runEventCombo(bundle, '', 'auth.oauth2.refresh.pre');
-    });
+      result = await runEventCombo(bundle, '', 'auth.oauth2.refresh.pre');
+    }
+
+    return result;
   };
 
   const isTestingAuth = (bundle) => {

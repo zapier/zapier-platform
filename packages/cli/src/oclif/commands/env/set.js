@@ -37,6 +37,11 @@ class SetEnvCommand extends BaseCommand {
     }, {});
 
     const app = await this.getWritableApp();
+    if (!app.all_versions.includes(version)) {
+      this.error(
+        `Version ${version} doesn't exist on integration "${app.title}"`
+      );
+    }
 
     const url = `/apps/${app.id}/versions/${version}/multi-environment`;
 
@@ -58,7 +63,7 @@ class SetEnvCommand extends BaseCommand {
       const failedKeys = e.json.errors[0].split('update: ')[1].split(', ');
       const successfulResult = omit(payload, failedKeys);
       if (!Object.keys(successfulResult).length) {
-        this.error(e.json.errors);
+        this.error(e.json.errors[0]);
       }
 
       this.warn(successMessage(version));
