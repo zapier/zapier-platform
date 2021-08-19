@@ -850,6 +850,7 @@ describe('Integration Test', () => {
         isPopulatingDedupe: true,
         limit: 20,
         page: 1,
+        isBulkRead: false,
       };
       return _app(input).then((output) => {
         const echoed = output.results[0];
@@ -863,6 +864,7 @@ describe('Integration Test', () => {
           hydrate: true,
           limit: 20,
           page: 1,
+          isBulkRead: false,
         });
       });
     });
