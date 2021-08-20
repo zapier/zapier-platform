@@ -1,6 +1,8 @@
-## 3.7.18 (unreleased)
+## 3.8.0 (unreleased)
 
+- :tada: Include `isBulkRead` to `bundle.meta` ([#414](https://github.com/zapier/zapier-platform/pull/414))
 - :bug: Fix `Cannot read property 'errors' of undefined` on auth refresh ([#410](https://github.com/zapier/zapier-platform/pull/410))
+- :bug: Fix `JSON results array could not be located` when a trigger response is "null" ([#415](https://github.com/zapier/zapier-platform/pull/415))
 
 ## 3.7.17
 
