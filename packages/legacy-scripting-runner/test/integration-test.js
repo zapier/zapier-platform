@@ -623,6 +623,26 @@ describe('Integration Test', () => {
       });
     });
 
+    it('scriptingless, null response', () => {
+      if (!nock.isActive()) {
+        nock.activate();
+      }
+      // Mock the response with a string 'null'
+      nock(AUTH_JSON_SERVER_URL).get('/movies').reply(200, 'null');
+
+      const appDef = _.cloneDeep(appDefinition);
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        should.deepEqual(output.results, []);
+      });
+    });
+
     it('KEY_poll', () => {
       const input = createTestInput(
         compiledApp,
