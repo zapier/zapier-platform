@@ -472,6 +472,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
             }
           }
         }
+      } else if (!result) {
+        return [];
       }
       throw new Error('JSON results array could not be located.');
     } else if (type.startsWith('object-')) {
