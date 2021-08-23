@@ -1,4 +1,4 @@
-## 3.8.0 (unreleased)
+## 3.8.0
 
 - :tada: Include `isBulkRead` to `bundle.meta` ([#414](https://github.com/zapier/zapier-platform/pull/414))
 - :bug: Fix `Cannot read property 'errors' of undefined` on auth refresh ([#410](https://github.com/zapier/zapier-platform/pull/410))
