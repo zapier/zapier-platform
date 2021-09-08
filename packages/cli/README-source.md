@@ -812,7 +812,7 @@ This object holds the user's auth details and the data for the API requests.
 
 ### `bundle.inputDataRaw`
 
-`bundle.inputDataRaw` is kind of like `inputData`, but before rendering `{{curlies}}`:
+`bundle.inputDataRaw` is like `bundle.inputData`, but before rendering `{{curlies}}`:
 
 ```js
 {
@@ -821,7 +821,9 @@ This object holds the user's auth details and the data for the API requests.
 }
 ```
 
-> "curlies" are data mapped in from previous steps. They take the form `{{NODE_ID__key_name}}`. You'll usually want to use `bundle.inputData` instead.
+> "curlies" represent data mapped in from previous steps. They take the form `{{NODE_ID__key_name}}`. 
+
+You'll usually want to use `bundle.inputData` instead.
 
 ### `bundle.meta`
 
