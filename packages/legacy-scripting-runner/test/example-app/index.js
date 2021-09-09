@@ -678,6 +678,18 @@ const legacyScriptingSource = `
         });
       },
 
+      movie_write_json_true: function(bundle) {
+        var data = z.JSON.parse(bundle.request.data);
+        data.hello = 'world';
+        var response = z.request({
+          method: 'POST',
+          url: '${HTTPBIN_URL}/post',
+          json: true,
+          body: data
+        });
+        return response.content;
+      },
+
       // To be replaced with 'movie_pre_custom_action_fields' at runtime
       movie_pre_custom_action_fields_disabled: function(bundle) {
         bundle.request.url += 's';
