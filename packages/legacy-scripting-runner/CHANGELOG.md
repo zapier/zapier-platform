@@ -1,3 +1,7 @@
+## 3.8.1 (unreleased)
+
+- :bug: Add support for `z.reqeust({ json: true, body: {...} })` ([#418](https://github.com/zapier/zapier-platform/pull/418))
+
 ## 3.8.0
 
 - :tada: Include `isBulkRead` to `bundle.meta` ([#414](https://github.com/zapier/zapier-platform/pull/414))
