@@ -24,8 +24,12 @@ const convertBundleRequest = (bundleOrBundleRequest) => {
     };
   }
 
-  bundleRequest.qs = bundleRequest.params || {};
-  bundleRequest.body = bundleRequest.data || '';
+  if (!bundleRequest.qs && bundleRequest.params) {
+    bundleRequest.qs = bundleRequest.params;
+  }
+  if (!bundleRequest.body && bundleRequest.data) {
+    bundleRequest.body = bundleRequest.data;
+  }
 
   delete bundleRequest.params;
   delete bundleRequest.data;

@@ -2663,6 +2663,25 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_write, z.request({ json: true })', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_write_json_true',
+        'movie_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).then((output) => {
+        const echoed = output.results;
+        should.equal(echoed.json.hello, 'world');
+      });
+    });
+
     it('scriptingless input fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.inputFieldsUrl += 's';
