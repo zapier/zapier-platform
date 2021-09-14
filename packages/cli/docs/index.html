@@ -2908,12 +2908,13 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>bundle.inputData</code> is user-provided data for this particular run of the trigger/search/create, as defined by the inputFields. For example:</p>
+      <p><code>bundle.inputData</code> is user-provided data for this particular run of the trigger/search/create, as defined by the <code>inputFields</code>. For example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js">{
-  <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;his name is Bobby Flay&apos;</span>
-  <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;he cooks mediterranean&apos;</span>
+  <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;his name is Bobby Flay&apos;</span>,
+  <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;he cooks mediterranean&apos;</span>,
+  <span class="hljs-attr">scheduledAt</span>: <span class="hljs-string">&quot;2021-09-09T09:00:00-07:00&quot;</span>
 }
 </code></pre>
     </div>
@@ -2930,12 +2931,13 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>bundle.inputDataRaw</code> is kind of like <code>inputData</code>, but before rendering <code>{{curlies}}</code>:</p>
+      <p><code>bundle.inputDataRaw</code> is like <code>bundle.inputData</code>, but before processing such as interpreting friendly datetimes and rendering <code>{{curlies}}</code>:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js">{
-  <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;his name is {{123__chef_name}}&apos;</span>
-  <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;he cooks {{456__style}}&apos;</span>
+  <span class="hljs-attr">createdBy</span>: <span class="hljs-string">&apos;his name is {{123__chef_name}}&apos;</span>,
+  <span class="hljs-attr">style</span>: <span class="hljs-string">&apos;he cooks {{456__style}}&apos;</span>,
+  <span class="hljs-attr">scheduledAt</span>: <span class="hljs-string">&quot;today&quot;</span>
 }
 </code></pre>
     </div>
@@ -2944,8 +2946,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>&quot;curlies&quot; are data mapped in from previous steps. They take the form <code>{{NODE_ID__key_name}}</code>. You&apos;ll usually want to use <code>bundle.inputData</code> instead.</p>
-</blockquote>
+<p>&quot;curlies&quot; represent data mapped in from previous steps. They take the form <code>{{NODE_ID__key_name}}</code>. </p>
+</blockquote><p>You&apos;ll usually want to use <code>bundle.inputData</code> instead.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

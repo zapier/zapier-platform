@@ -801,27 +801,31 @@ This object holds the user's auth details and the data for the API requests.
 
 ### `bundle.inputData`
 
-`bundle.inputData` is user-provided data for this particular run of the trigger/search/create, as defined by the inputFields. For example:
+`bundle.inputData` is user-provided data for this particular run of the trigger/search/create, as defined by the `inputFields`. For example:
 
 ```js
 {
-  createdBy: 'his name is Bobby Flay'
-  style: 'he cooks mediterranean'
+  createdBy: 'his name is Bobby Flay',
+  style: 'he cooks mediterranean',
+  scheduledAt: "2021-09-09T09:00:00-07:00"
 }
 ```
 
 ### `bundle.inputDataRaw`
 
-`bundle.inputDataRaw` is kind of like `inputData`, but before rendering `{{curlies}}`:
+`bundle.inputDataRaw` is like `bundle.inputData`, but before processing such as interpreting friendly datetimes and rendering `{{curlies}}`:
 
 ```js
 {
-  createdBy: 'his name is {{123__chef_name}}'
-  style: 'he cooks {{456__style}}'
+  createdBy: 'his name is {{123__chef_name}}',
+  style: 'he cooks {{456__style}}',
+  scheduledAt: "today"
 }
 ```
 
-> "curlies" are data mapped in from previous steps. They take the form `{{NODE_ID__key_name}}`. You'll usually want to use `bundle.inputData` instead.
+> "curlies" represent data mapped in from previous steps. They take the form `{{NODE_ID__key_name}}`. 
+
+You'll usually want to use `bundle.inputData` instead.
 
 ### `bundle.meta`
 
