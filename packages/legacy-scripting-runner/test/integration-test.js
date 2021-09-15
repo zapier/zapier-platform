@@ -2258,6 +2258,27 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_write, request.data is an empty string', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_write_request_data_empty_string',
+          'movie_pre_write'
+        );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).then((output) => {
+        const echoed = output.results;
+        should.equal(echoed.textBody, '');
+      });
+    });
+
     it('KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';

@@ -1,6 +1,7 @@
 ## 3.8.1 (unreleased)
 
 - :bug: Add support for `z.reqeust({ json: true, body: {...} })` ([#418](https://github.com/zapier/zapier-platform/pull/418))
+- :bug: Empty `request.data` should send an empty request body instead of an empty object ([#423](https://github.com/zapier/zapier-platform/pull/423))
 
 ## 3.8.0
 

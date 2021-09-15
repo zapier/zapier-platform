@@ -196,13 +196,15 @@ const parseFinalResult = async (result, event) => {
       return addFilesToRequestBodyFromPreResult(result, event);
     }
 
-    if (result.data !== undefined) {
+    if (result.data) {
       // Old request was .data (string), new is .body (object), which matters for _pre
       try {
-        result.body = JSON.parse(result.data || '{}');
+        result.body = JSON.parse(result.data);
       } catch (e) {
         result.body = result.data;
       }
+    } else {
+      result.body = '';
     }
     return result;
   }
