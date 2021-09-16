@@ -294,7 +294,7 @@ const legacyScriptingSource = `
 
       movie_pre_poll_GET_with_body: function(bundle) {
         // Use postman-echo because httpbin doesn't echo a GET request's body
-        bundle.request.url = 'https://postman-echo.com/get';
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/echo';
         bundle.request.method = 'GET';
         bundle.request.data = JSON.stringify({
           name: 'Luke Skywalker'
@@ -313,7 +313,7 @@ const legacyScriptingSource = `
       },
 
       movie_pre_poll_env_var: function(bundle) {
-        bundle.request.url = 'https://{{process.env.SECRET_HTTPBIN_URL}}/get';
+        bundle.request.url = '{{process.env.SECRET_HTTPBIN_URL}}/get';
         return bundle.request;
       },
 
@@ -639,6 +639,12 @@ const legacyScriptingSource = `
 
       movie_pre_write_no_content: function(bundle) {
         bundle.request.url = '${HTTPBIN_URL}/status/204';
+        return bundle.request;
+      },
+
+      movie_pre_write_request_data_empty_string: function(bundle) {
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/echo';
+        bundle.request.data = '';
         return bundle.request;
       },
 

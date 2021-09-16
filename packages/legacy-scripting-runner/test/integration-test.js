@@ -1075,7 +1075,7 @@ describe('Integration Test', () => {
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
-        should.equal(echoed.args.name, 'Luke Skywalker');
+        should.equal(echoed.textBody, '{"name":"Luke Skywalker"}');
       });
     });
 
@@ -1128,7 +1128,7 @@ describe('Integration Test', () => {
     });
 
     it('KEY_pre_poll, env in url', () => {
-      process.env.SECRET_HTTPBIN_URL = HTTPBIN_URL.slice(8); // remove the protocol
+      process.env.SECRET_HTTPBIN_URL = HTTPBIN_URL;
 
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
@@ -1148,12 +1148,14 @@ describe('Integration Test', () => {
         'triggers.movie.operation.perform'
       );
 
-      delete process.env.MY_SECRET;
-
-      return _app(input).then((output) => {
-        const result = output.results[0];
-        should.equal(result.url, 'https://httpbin.zapier-tooling.com/get');
-      });
+      return _app(input)
+        .then((output) => {
+          const result = output.results[0];
+          should.equal(result.url, `${HTTPBIN_URL}/get`);
+        })
+        .finally(() => {
+          delete process.env.SECRET_HTTPBIN_URL;
+        });
     });
 
     it('KEY_pre_poll, double headers', () => {
@@ -2255,6 +2257,27 @@ describe('Integration Test', () => {
       );
       return app(input).then((output) => {
         should.deepEqual(output.results, {});
+      });
+    });
+
+    it('KEY_pre_write, request.data is an empty string', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_write_request_data_empty_string',
+          'movie_pre_write'
+        );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).then((output) => {
+        const echoed = output.results;
+        should.equal(echoed.textBody, '');
       });
     });
 
