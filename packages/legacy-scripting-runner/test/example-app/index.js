@@ -294,7 +294,7 @@ const legacyScriptingSource = `
 
       movie_pre_poll_GET_with_body: function(bundle) {
         // Use postman-echo because httpbin doesn't echo a GET request's body
-        bundle.request.url = 'https://postman-echo.com/get';
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/echo';
         bundle.request.method = 'GET';
         bundle.request.data = JSON.stringify({
           name: 'Luke Skywalker'
@@ -313,7 +313,7 @@ const legacyScriptingSource = `
       },
 
       movie_pre_poll_env_var: function(bundle) {
-        bundle.request.url = 'https://{{process.env.SECRET_HTTPBIN_URL}}/get';
+        bundle.request.url = '{{process.env.SECRET_HTTPBIN_URL}}/get';
         return bundle.request;
       },
 

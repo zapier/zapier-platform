@@ -203,7 +203,7 @@ const parseFinalResult = async (result, event) => {
       } catch (e) {
         result.body = result.data;
       }
-    } else {
+    } else if (result.data === null || result.data === '') {
       result.body = '';
     }
     return result;
