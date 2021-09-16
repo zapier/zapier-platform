@@ -1158,7 +1158,7 @@ describe('Integration Test', () => {
         });
     });
 
-    it('KEY_pre_poll, double headers', () => {
+    it('KEY_pre_poll, double headers with api key auth', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_double_headers',
@@ -1178,6 +1178,34 @@ describe('Integration Test', () => {
       );
       input.bundle.authData = {
         api_key: 'one',
+      };
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        should.deepEqual(echoed.headers['X-Api-Key'], ['three']);
+      });
+    });
+
+    it('KEY_pre_poll, double headers with session auth', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_double_headers',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, sessionAuthConfig);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = {
+        key1: 'only',
+        key2: 'one',
       };
       return _app(input).then((output) => {
         const echoed = output.results[0];

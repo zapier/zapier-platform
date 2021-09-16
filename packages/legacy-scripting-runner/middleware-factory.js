@@ -20,6 +20,28 @@ const renderTemplate = (templateString, context) => {
   return _.template(templateString, options)(finalContext);
 };
 
+const getLowerHeaders = (headers) =>
+  Object.entries(headers).reduce((result, [k, v]) => {
+    result[k.toLowerCase()] = v;
+    return result;
+  }, {});
+
+const applyAuthMappingInHeaders = (authMapping, req, authData) => {
+  const lowerHeaders = getLowerHeaders(req.headers);
+  Object.entries(authMapping).forEach(([k, v]) => {
+    const lowerKey = k.toLowerCase();
+    if (!lowerHeaders[lowerKey]) {
+      req.headers[k] = renderTemplate(v, authData);
+    }
+  });
+};
+
+const applyAuthMappingInQuerystring = (authMapping, req, authData) => {
+  Object.entries(authMapping).forEach(([k, v]) => {
+    req.params[k] = req.params[k] || renderTemplate(v, authData);
+  });
+};
+
 const createBeforeRequest = (app) => {
   const authType = _.get(app, 'authentication.type');
   const authMapping = _.get(app, 'legacy.authentication.mapping');
@@ -27,28 +49,22 @@ const createBeforeRequest = (app) => {
 
   const sessionAuthInHeader = (req, z, bundle) => {
     if (!_.isEmpty(bundle.authData)) {
-      _.each(authMapping, (v, k) => {
-        req.headers[k] = req.headers[k] || renderTemplate(v, bundle.authData);
-      });
+      applyAuthMappingInHeaders(authMapping, req, bundle.authData);
     }
     return req;
   };
 
   const sessionAuthInQuerystring = (req, z, bundle) => {
     if (!_.isEmpty(bundle.authData)) {
-      _.each(authMapping, (v, k) => {
-        req.params[k] = req.params[k] || renderTemplate(v, bundle.authData);
-      });
+      applyAuthMappingInQuerystring(authMapping, req, bundle.authData);
     }
     return req;
   };
 
   const sessionAuthInBoth = (req, z, bundle) => {
     if (!_.isEmpty(bundle.authData)) {
-      _.each(authMapping, (v, k) => {
-        req.headers[k] = req.headers[k] || renderTemplate(v, bundle.authData);
-        req.params[k] = req.params[k] || renderTemplate(v, bundle.authData);
-      });
+      applyAuthMappingInHeaders(authMapping, req, bundle.authData);
+      applyAuthMappingInQuerystring(authMapping, req, bundle.authData);
     }
     return req;
   };
@@ -98,29 +114,14 @@ const createBeforeRequest = (app) => {
 
   const apiKeyInHeader = (req, z, bundle) => {
     if (!_.isEmpty(bundle.authData)) {
-      const lowerHeaders = Object.entries(req.headers).reduce(
-        (result, [k, v]) => {
-          result[k.toLowerCase()] = v;
-          return result;
-        },
-        {}
-      );
-
-      Object.entries(authMapping).forEach(([k, v]) => {
-        const lowerKey = k.toLowerCase();
-        if (!lowerHeaders[lowerKey]) {
-          req.headers[k] = renderTemplate(v, bundle.authData);
-        }
-      });
+      applyAuthMappingInHeaders(authMapping, req, bundle.authData);
     }
     return req;
   };
 
   const apiKeyInQuerystring = (req, z, bundle) => {
     if (!_.isEmpty(bundle.authData)) {
-      _.each(authMapping, (v, k) => {
-        req.params[k] = req.params[k] || renderTemplate(v, bundle.authData);
-      });
+      applyAuthMappingInQuerystring(authMapping, req, bundle.authData);
     }
     return req;
   };
