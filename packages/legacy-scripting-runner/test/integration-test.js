@@ -2040,6 +2040,29 @@ describe('Integration Test', () => {
       });
     });
 
+    it('scriptingless perform, session auth', () => {
+      const appDefWithAuth = withAuth(appDefinition, sessionAuthConfig);
+      appDefWithAuth.legacy.creates.movie.operation.url = `${HTTPBIN_URL}/post`;
+      appDefWithAuth.legacy.authentication.mapping['content-type'] =
+        'hello/world';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = { key1: 'sec', key2: 'ret' };
+      return app(input).then((output) => {
+        const echoed = output.results;
+        // Only one content-type header should be sent
+        should.deepEqual(echoed.headers['Content-Type'], [
+          'application/json; charset=utf-8',
+        ]);
+      });
+    });
+
     it('scriptingless perform, curlies in URL', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       const legacyProps = appDefWithAuth.legacy.creates.movie.operation;
