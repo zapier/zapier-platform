@@ -384,4 +384,39 @@ describe('logger', () => {
       });
     });
   });
+
+  it('should handle null and nested values', () => {
+    const bundle = {
+      authData: {
+        password: 'hunter2',
+        token_tbd: null,
+        missing_secret: undefined,
+        nested: {
+          password: 'hunter2',
+          token_tbd: null,
+          missing_secret: undefined,
+        },
+      },
+    };
+    const logger = createlogger({ bundle }, options);
+
+    const data = bundle.authData;
+
+    return logger(`200 GET https://example.com/test`, data).then((response) => {
+      response.status.should.eql(200);
+      response.content.json.should.eql({
+        token: options.token,
+        message: '200 GET https://example.com/test',
+        data: {
+          log_type: 'console',
+          password: ':censored:31:0dbc81268a:',
+          // Only safe_url (no basic auth or query params) should be left
+          // uncensored
+          safe_url: 'https://example.com',
+          basic_auth_url: ':censored:27:bad5875ee0:',
+          param_url: ':censored:27:9d59e27abe:',
+        },
+      });
+    });
+  });
 });
