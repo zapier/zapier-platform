@@ -1850,7 +1850,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you&apos;re trying to pass the wrong type back. There&apos;s more info in each relevant <code>post_X</code> section of the <a href="https://zapier.com/developer/documentation/v2/scripting/#available-methods">v2 docs</a>. For reference, each expects:</p>
+      <p>Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you&apos;re trying to pass the wrong type back. For reference, each expects:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1871,12 +1871,12 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 <tr>
 <td>Trigger</td>
 <td>Array</td>
-<td>0 or more objects that will be passed to the <a href="https://zapier.com/developer/documentation/v2/deduplication/">deduper</a></td>
+<td>0 or more objects; passed to the <a href="https://zapier.com/developer/documentation/v2/deduplication/">deduper</a> if polling</td>
 </tr>
 <tr>
 <td>Search</td>
 <td>Array</td>
-<td>0 or more objects. If len &gt; 0, put the best match first</td>
+<td>0 or more objects. Only the first object will be returned, so if len &gt; 1, put the best match first</td>
 </tr>
 <tr>
 <td>Action</td>
@@ -1885,6 +1885,15 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </tr>
 </tbody>
 </table>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>When a trigger function returns an empty array, the Zap will not trigger. For REST Hook triggers, this can be used to filter data if the available subscription options are not specific enough for the Zap&apos;s needs.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
