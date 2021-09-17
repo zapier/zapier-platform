@@ -506,13 +506,15 @@ You can find more details on the definition for each by looking at the [Trigger 
 
 ### Return Types
 
-Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you're trying to pass the wrong type back. There's more info in each relevant `post_X` section of the [v2 docs](https://zapier.com/developer/documentation/v2/scripting/#available-methods). For reference, each expects:
+Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you're trying to pass the wrong type back. For reference, each expects:
 
 | Method  | Return Type | Notes                                                                                                                |
 |---------|-------------|----------------------------------------------------------------------------------------------------------------------|
-| Trigger | Array       | 0 or more objects that will be passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) |
-| Search  | Array       | 0 or more objects. If len > 0, put the best match first                                                              |
+| Trigger | Array       | 0 or more objects; passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) if polling  |
+| Search  | Array       | 0 or more objects. Only the first object will be returned, so if len > 1, put the best match first                   |
 | Action  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
+
+When a trigger function returns an empty array, the Zap will not trigger. For REST Hook triggers, this can be used to filter data if the available subscription options are not specific enough for the Zap's needs.
 
 ### Fallback Sample
 In cases where Zapier needs to show an example record to the user, but we are unable to get a live example from the API, Zapier will fallback to this hard-coded sample. This should reflect the data structure of the Trigger's perform method, and have dummy values that we can show to any user.
