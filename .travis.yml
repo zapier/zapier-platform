@@ -32,15 +32,6 @@ jobs:
     - name: "smoke tests - Node 14"
       script: "yarn smoke-test"
       node_js: "14"
-    - stage: "Deploy"
-      script: skip
-      deploy:
-        provider: script
-        script: ./scripts/publish.sh
-        on:
-          tags: true,
-          node: "14"
-        skip_cleanup: true
 notifications:
   email: false
 env:

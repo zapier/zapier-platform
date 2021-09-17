@@ -1,7 +1,8 @@
-## 3.8.1 (unreleased)
+## 3.8.1
 
 - :bug: Add support for `z.reqeust({ json: true, body: {...} })` ([#418](https://github.com/zapier/zapier-platform/pull/418))
 - :bug: Empty `request.data` should send an empty request body instead of an empty object ([#423](https://github.com/zapier/zapier-platform/pull/423))
+- :bug: Fix duplicate headers with session auth ([#424](https://github.com/zapier/zapier-platform/pull/424))
 
 ## 3.8.0
 
