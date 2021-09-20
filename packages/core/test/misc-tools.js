@@ -57,7 +57,7 @@ describe('Tools', () => {
 
   it('should truncate many things!', () => {
     const tests = [
-      { value: null, length: 5, suffix: undefined, expected: '' },
+      { value: null, length: 5, suffix: undefined, expected: null },
       { value: undefined, length: 5, suffix: '...', expected: undefined },
       { value: false, length: 5, suffix: '...', expected: '' },
       { value: '', length: 5, suffix: undefined, expected: '' },
