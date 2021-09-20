@@ -138,7 +138,6 @@ const sendLog = (options, event, message, data) => {
     truncate
   );
   const unsafeData = recurseReplace(data, truncate);
-
   // Keep safe log keys uncensored
   Object.keys(safeData).forEach((key) => {
     if (SAFE_LOG_KEYS.includes(key)) {

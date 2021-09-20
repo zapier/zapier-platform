@@ -288,7 +288,7 @@ describe('logger', () => {
 
   // this test fails because the function that creates the sensitive bank doesn't
   // recurse to find all sensitive values
-  it.skip('should replace sensitive data that nested', () => {
+  it('should replace sensitive data that nested', () => {
     const bundle = {
       authData: {
         nested: { secret: 8675309 },
@@ -313,11 +313,11 @@ describe('logger', () => {
         data: {
           response_json: {
             nested: {
-              secret: ':censored:9:9cb84e8ccc:',
+              secret: ':censored:7:b69a1db63d:',
             },
           },
           response_content: `{
-        nested: { secret: :censored:9:9cb84e8ccc: }
+        nested: { secret: :censored:7:b69a1db63d: }
       }`,
           log_type: 'console',
         },
@@ -385,17 +385,12 @@ describe('logger', () => {
     });
   });
 
-  it('should handle null and nested values', () => {
+  it('should handle nullish values', () => {
     const bundle = {
       authData: {
         password: 'hunter2',
-        token_tbd: null,
-        missing_secret: undefined,
-        nested: {
-          password: 'hunter2',
-          token_tbd: null,
-          missing_secret: undefined,
-        },
+        will_be_left_alone: null,
+        will_be_removed: undefined, // JSON.stringify removed keys set to `undefined`
       },
     };
     const logger = createlogger({ bundle }, options);
@@ -404,18 +399,10 @@ describe('logger', () => {
 
     return logger(`200 GET https://example.com/test`, data).then((response) => {
       response.status.should.eql(200);
-      response.content.json.should.eql({
-        token: options.token,
-        message: '200 GET https://example.com/test',
-        data: {
-          log_type: 'console',
-          password: ':censored:31:0dbc81268a:',
-          // Only safe_url (no basic auth or query params) should be left
-          // uncensored
-          safe_url: 'https://example.com',
-          basic_auth_url: ':censored:27:bad5875ee0:',
-          param_url: ':censored:27:9d59e27abe:',
-        },
+      response.content.json.data.should.eql({
+        log_type: 'console',
+        password: ':censored:7:850233b460:',
+        will_be_left_alone: null,
       });
     });
   });
