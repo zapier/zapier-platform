@@ -45,6 +45,12 @@ const recurseCleanFuncs = (obj, path) => {
 
 // Recurse a nested object replace all instances of keys->vals in the bank.
 const recurseReplaceBank = (obj, bank = {}) => {
+  const matchesCurlies = /({{.*?}})/;
+  const matchesKeyRegexMap = Object.keys(bank).reduce((acc, key) => {
+    // Escape characters (ex. {{foo}} => \\{\\{foo\\}\\} )
+    acc[key] = new RegExp(key.replace(/[-[\]/{}()\\*+?.^$|]/g, '\\$&'), 'g');
+    return acc;
+  }, {});
   const replacer = (out) => {
     if (!['string', 'number'].includes(typeof out)) {
       return out;
@@ -57,15 +63,11 @@ const recurseReplaceBank = (obj, bank = {}) => {
     let maybeChangedString = originalValueStr;
 
     Object.keys(bank).forEach((key) => {
-      // Escape characters (ex. {{foo}} => \\{\\{foo\\}\\} )
-      const escapedKey = key.replace(/[-[\]/{}()\\*+?.^$|]/g, '\\$&');
-      const matchesKey = new RegExp(escapedKey, 'g');
-
+      const matchesKey = matchesKeyRegexMap[key];
       if (!matchesKey.test(maybeChangedString)) {
         return;
       }
 
-      const matchesCurlies = /({{.*?}})/;
       const valueParts = maybeChangedString
         .split(matchesCurlies)
         .filter(Boolean);
