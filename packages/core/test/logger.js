@@ -288,7 +288,7 @@ describe('logger', () => {
 
   // this test fails because the function that creates the sensitive bank doesn't
   // recurse to find all sensitive values
-  it.skip('should replace sensitive data that nested', () => {
+  it('should replace sensitive data that nested', () => {
     const bundle = {
       authData: {
         nested: { secret: 8675309 },
@@ -313,11 +313,11 @@ describe('logger', () => {
         data: {
           response_json: {
             nested: {
-              secret: ':censored:9:9cb84e8ccc:',
+              secret: ':censored:7:b69a1db63d:',
             },
           },
           response_content: `{
-        nested: { secret: :censored:9:9cb84e8ccc: }
+        nested: { secret: :censored:7:b69a1db63d: }
       }`,
           log_type: 'console',
         },
@@ -381,6 +381,28 @@ describe('logger', () => {
           basic_auth_url: ':censored:27:bad5875ee0:',
           param_url: ':censored:27:9d59e27abe:',
         },
+      });
+    });
+  });
+
+  it('should handle nullish values', () => {
+    const bundle = {
+      authData: {
+        password: 'hunter2',
+        will_be_left_alone: null,
+        will_be_removed: undefined, // JSON.stringify removed keys set to `undefined`
+      },
+    };
+    const logger = createlogger({ bundle }, options);
+
+    const data = bundle.authData;
+
+    return logger(`200 GET https://example.com/test`, data).then((response) => {
+      response.status.should.eql(200);
+      response.content.json.data.should.eql({
+        log_type: 'console',
+        password: ':censored:7:850233b460:',
+        will_be_left_alone: null,
       });
     });
   });

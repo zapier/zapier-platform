@@ -11,7 +11,11 @@ const {
   SAFE_LOG_KEYS,
 } = require('../constants');
 const { unheader } = require('./http');
-const { scrub, findSensitiveValues } = require('@zapier/secret-scrubber');
+const {
+  scrub,
+  findSensitiveValues,
+  recurseExtract,
+} = require('@zapier/secret-scrubber');
 // not really a public function, but it came from here originally
 const { isUrlWithSecrets } = require('@zapier/secret-scrubber/lib/convenience');
 
@@ -101,12 +105,15 @@ const toStdout = (event, msg, data) => {
 
 const buildSensitiveValues = (event, data) => {
   const bundle = event.bundle || {};
-  const authData = Object.values(bundle.authData || {});
+  const authData = bundle.authData || {};
   // for the most part, we should censor all the values from authData
   // the exception is safe urls, which should be filtered out - we want those to be logged
-  const sensitiveAuthData = authData.filter(
-    (item) => !isUrl(item) || isUrlWithSecrets(item)
-  );
+  const sensitiveAuthData = recurseExtract(authData, (key, value) => {
+    if (isUrl(value) && !isUrlWithSecrets(value)) {
+      return false;
+    }
+    return true;
+  });
   return [
     ...sensitiveAuthData,
     ...findSensitiveValues(process.env),
@@ -131,7 +138,6 @@ const sendLog = (options, event, message, data) => {
     truncate
   );
   const unsafeData = recurseReplace(data, truncate);
-
   // Keep safe log keys uncensored
   Object.keys(safeData).forEach((key) => {
     if (SAFE_LOG_KEYS.includes(key)) {
