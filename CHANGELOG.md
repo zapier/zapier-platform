@@ -1,3 +1,20 @@
+## 11.1.1
+
+_released `2021-09-24`_
+
+### cli
+
+- none!
+
+### core
+
+- :bug: Improve performance of large requests ([#428](https://github.com/zapier/zapier-platform/pull/428)),
+- :bug: Handle nullish values in auth data ([#427](https://github.com/zapier/zapier-platform/pull/427)),
+
+### schema
+
+- none!
+
 ## 11.1.0
 
 _released `2021-08-05`_
