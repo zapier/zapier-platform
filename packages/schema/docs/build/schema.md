@@ -215,20 +215,16 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    getRequestToken: { require: 'some/path/to/file.js' },
+  { getRequestToken: { require: 'some/path/to/file.js' },
     authorizeUrl: { require: 'some/path/to/file2.js' },
-    getAccessToken: { require: 'some/path/to/file3.js' }
-  }
+    getAccessToken: { require: 'some/path/to/file3.js' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    getRequestToken: { require: 'some/path/to/file.js' },
-    authorizeUrl: { require: 'some/path/to/file2.js' }
-  }
+  { getRequestToken: { require: 'some/path/to/file.js' },
+    authorizeUrl: { require: 'some/path/to/file2.js' } }
   ```
   _Missing required key._
 
@@ -257,20 +253,16 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    authorizeUrl: { require: 'some/path/to/file.js' },
-    getAccessToken: { require: 'some/path/to/file2.js' }
-  }
+  { authorizeUrl: { require: 'some/path/to/file.js' },
+    getAccessToken: { require: 'some/path/to/file2.js' } }
   ```
 * ```
-  {
-    authorizeUrl: { require: 'some/path/to/file.js' },
+  { authorizeUrl: { require: 'some/path/to/file.js' },
     getAccessToken: { require: 'some/path/to/file2.js' },
     refreshAccessToken: { require: 'some/path/to/file3.js' },
     codeParam: 'unique_code',
     scope: 'read/write',
-    autoRefresh: true
-  }
+    autoRefresh: true }
   ```
 
 #### Anti-Examples
@@ -432,13 +424,11 @@ Key | Required | Type | Description
 * `{ hidden: true }`
 * `{ label: 'New Thing', description: 'Gets a new thing for you.' }`
 * ```
-  {
-    label: 'New Thing',
+  { label: 'New Thing',
     description: 'Gets a new thing for you.',
     directions: 'This is how you use the thing.',
     hidden: false,
-    important: true
-  }
+    important: true }
   ```
 
 #### Anti-Examples
@@ -462,7 +452,7 @@ Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. D
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`type` | **yes** (with exceptions, see description) | `string` in (`'hook'`) | Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it's optional.
+`type` | **yes** (with exceptions, see description) | `string` in (`'hook'`, `'hook_to_poll'`) | Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it's optional.
 `resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | [/FunctionSchema](#functionschema) | A function that processes the inbound webhook request.
 `performList` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
@@ -476,26 +466,22 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    type: 'hook',
+  { type: 'hook',
     perform: { require: 'some/path/to/file.js' },
     performList: { require: 'some/path/to/file2.js' },
     performSubscribe: { require: 'some/path/to/file3.js' },
     performUnsubscribe: { require: 'some/path/to/file4.js' },
-    sample: { id: 42, name: 'Hooli' }
-  }
+    sample: { id: 42, name: 'Hooli' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    type: 'hook',
+  { type: 'hook',
     perform: { require: 'some/path/to/file.js' },
     performList: { require: 'some/path/to/file2.js' },
     performSubscribe: { require: 'some/path/to/file3.js' },
-    performUnsubscribe: { require: 'some/path/to/file4.js' }
-  }
+    performUnsubscribe: { require: 'some/path/to/file4.js' } }
   ```
   _Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample._
 
@@ -582,24 +568,19 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    key: 'recipes',
+  { key: 'recipes',
     noun: 'Recipes',
     display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
-    operation: {
-      perform: '$func$0$f$',
-      sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' }
-    }
-  }
+    operation:
+     { perform: '$func$0$f$',
+       sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    display: { label: 'Get User', description: 'Retrieve a user.' },
-    operation: { description: 'Define how this search method will work.' }
-  }
+  { display: { label: 'Get User', description: 'Retrieve a user.' },
+    operation: { description: 'Define how this search method will work.' } }
   ```
   _Missing required keys: key and noun_
 
@@ -623,33 +604,25 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    recipes: {
-      key: 'recipes',
-      noun: 'Recipes',
-      display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
-      operation: {
-        perform: '$func$0$f$',
-        sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' }
-      }
-    }
-  }
+  { recipes:
+     { key: 'recipes',
+       noun: 'Recipes',
+       display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
+       operation:
+        { perform: '$func$0$f$',
+          sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' } } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    readRecipes: {
-      key: 'recipes',
-      noun: 'Recipes',
-      display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
-      operation: {
-        perform: '$func$0$f$',
-        sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' }
-      }
-    }
-  }
+  { readRecipes:
+     { key: 'recipes',
+       noun: 'Recipes',
+       display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
+       operation:
+        { perform: '$func$0$f$',
+          sample: { id: 1, firstName: 'Walter', lastName: 'Sobchak', occupation: 'Bowler' } } } }
   ```
   _Key must match the key of the associated BulkReadSchema_
 
@@ -676,49 +649,39 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 } }
-  }
+    operation: { perform: '$func$2$f$', sample: { id: 1 } } }
   ```
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 }, shouldLock: true }
-  }
+    operation: { perform: '$func$2$f$', sample: { id: 1 }, shouldLock: true } }
   ```
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.', hidden: true },
-    operation: { perform: '$func$2$f$' }
-  }
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Anti-Examples
 
 * `'abc'` - _Must be an object_
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$', shouldLock: 'yes' }
-  }
+    operation: { perform: '$func$2$f$', shouldLock: 'yes' } }
   ```
   _Invalid value for key on operation: shouldLock_
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$' }
-  }
+    operation: { perform: '$func$2$f$' } }
   ```
   _Missing required key on operation: sample. Note - this is valid if the resource has defined a sample._
 
@@ -742,48 +705,36 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    createRecipe: {
-      key: 'createRecipe',
-      noun: 'Recipe',
-      display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-      operation: { perform: '$func$2$f$', sample: { id: 1 } }
-    }
-  }
+  { createRecipe:
+     { key: 'createRecipe',
+       noun: 'Recipe',
+       display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+       operation: { perform: '$func$2$f$', sample: { id: 1 } } } }
   ```
 * ```
-  {
-    Create_Recipe_01: {
-      key: 'Create_Recipe_01',
-      noun: 'Recipe',
-      display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-      operation: { perform: '$func$2$f$', sample: { id: 1 } }
-    }
-  }
+  { Create_Recipe_01:
+     { key: 'Create_Recipe_01',
+       noun: 'Recipe',
+       display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+       operation: { perform: '$func$2$f$', sample: { id: 1 } } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    '01_Create_Recipe': {
-      key: '01_Create_Recipe',
-      noun: 'Recipe',
-      display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-      operation: { perform: '$func$2$f$', sample: { id: 1 } }
-    }
-  }
+  { '01_Create_Recipe':
+     { key: '01_Create_Recipe',
+       noun: 'Recipe',
+       display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+       operation: { perform: '$func$2$f$', sample: { id: 1 } } } }
   ```
   _Key must start with a letter_
 * ```
-  {
-    Create_Recipe: {
-      key: 'createRecipe',
-      noun: 'Recipe',
-      display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-      operation: { perform: '$func$2$f$', sample: { id: 1 } }
-    }
-  }
+  { Create_Recipe:
+     { key: 'createRecipe',
+       noun: 'Recipe',
+       display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+       operation: { perform: '$func$2$f$', sample: { id: 1 } } } }
   ```
   _Key must match the key field in CreateSchema_
 
@@ -1262,29 +1213,19 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    display: { label: 'Create Tag', description: 'Create a new Tag in your account.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 } }
-  }
+  { display: { label: 'Create Tag', description: 'Create a new Tag in your account.' },
+    operation: { perform: '$func$2$f$', sample: { id: 1 } } }
   ```
 * ```
-  {
-    display: {
-      label: 'Create Tag',
-      description: 'Create a new Tag in your account.',
-      hidden: true
-    },
-    operation: { perform: '$func$2$f$' }
-  }
+  { display: { label: 'Create Tag', description: 'Create a new Tag in your account.', hidden: true },
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    display: { label: 'Create Tag', description: 'Create a new Tag in your account.' },
-    operation: { perform: '$func$2$f$' }
-  }
+  { display: { label: 'Create Tag', description: 'Create a new Tag in your account.' },
+    operation: { perform: '$func$2$f$' } }
   ```
   _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
@@ -1309,25 +1250,19 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-    operation: { perform: { url: '$func$0$f$' }, sample: { id: 385, name: 'proactive enable ROI' } }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+    operation: { perform: { url: '$func$0$f$' }, sample: { id: 385, name: 'proactive enable ROI' } } }
   ```
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
-    operation: { perform: { url: '$func$0$f$' } }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
+    operation: { perform: { url: '$func$0$f$' } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-    operation: { perform: { url: '$func$0$f$' } }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+    operation: { perform: { url: '$func$0$f$' } } }
   ```
   _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
@@ -1352,29 +1287,19 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-    operation: {
-      type: 'hook',
-      perform: '$func$0$f$',
-      sample: { id: 385, name: 'proactive enable ROI' }
-    }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+    operation: { type: 'hook', perform: '$func$0$f$', sample: { id: 385, name: 'proactive enable ROI' } } }
   ```
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
-    operation: { type: 'hook', perform: '$func$0$f$' }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
+    operation: { type: 'hook', perform: '$func$0$f$' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-    operation: { type: 'hook', perform: '$func$0$f$' }
-  }
+  { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+    operation: { type: 'hook', perform: '$func$0$f$' } }
   ```
   _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
@@ -1399,38 +1324,24 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    display: {
-      label: 'New User',
-      description: 'Trigger when a new User is created in your account.'
-    },
-    operation: {
-      perform: { url: 'https://fake-crm.getsandbox.com/users' },
-      sample: { id: 49, name: 'Veronica Kuhn', email: 'veronica.kuhn@company.com' }
-    }
-  }
+  { display: { label: 'New User', description: 'Trigger when a new User is created in your account.' },
+    operation:
+     { perform: { url: 'https://fake-crm.getsandbox.com/users' },
+       sample: { id: 49, name: 'Veronica Kuhn', email: 'veronica.kuhn@company.com' } } }
   ```
 * ```
-  {
-    display: {
-      label: 'New User',
-      description: 'Trigger when a new User is created in your account.',
-      hidden: true
-    },
-    operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } }
-  }
+  { display:
+     { label: 'New User',
+       description: 'Trigger when a new User is created in your account.',
+       hidden: true },
+    operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    display: {
-      label: 'New User',
-      description: 'Trigger when a new User is created in your account.'
-    },
-    operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } }
-  }
+  { display: { label: 'New User', description: 'Trigger when a new User is created in your account.' },
+    operation: { perform: { url: 'https://fake-crm.getsandbox.com/users' } } }
   ```
   _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
@@ -1455,31 +1366,21 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 } }
-  }
+  { display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
+    operation: { perform: '$func$2$f$', sample: { id: 1 } } }
   ```
 * ```
-  {
-    display: {
-      label: 'Find a Recipe',
-      description: 'Search for recipe by cuisine style.',
-      hidden: true
-    },
-    operation: { perform: '$func$2$f$' }
-  }
+  { display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.', hidden: true },
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
-    operation: { perform: '$func$2$f$' }
-  }
+    operation: { perform: '$func$2$f$' } }
   ```
   _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
@@ -1511,61 +1412,43 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    key: 'tag',
+  { key: 'tag',
     noun: 'Tag',
-    get: {
-      display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-      operation: {
-        perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
-        sample: { id: 385, name: 'proactive enable ROI' }
-      }
-    }
-  }
+    get:
+     { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+       operation:
+        { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
+          sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
 * ```
-  {
-    key: 'tag',
+  { key: 'tag',
     noun: 'Tag',
     sample: { id: 385, name: 'proactive enable ROI' },
-    get: {
-      display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-      operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
-    }
-  }
+    get:
+     { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } }
   ```
 * ```
-  {
-    key: 'tag',
+  { key: 'tag',
     noun: 'Tag',
-    get: {
-      display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
-      operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
-    },
-    list: {
-      display: {
-        label: 'New Tag',
-        description: 'Trigger when a new Tag is created in your account.'
-      },
-      operation: {
-        perform: { url: 'https://fake-crm.getsandbox.com/tags' },
-        sample: { id: 385, name: 'proactive enable ROI' }
-      }
-    }
-  }
+    get:
+     { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.', hidden: true },
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } },
+    list:
+     { display: { label: 'New Tag', description: 'Trigger when a new Tag is created in your account.' },
+       operation:
+        { perform: { url: 'https://fake-crm.getsandbox.com/tags' },
+          sample: { id: 385, name: 'proactive enable ROI' } } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    key: 'tag',
+  { key: 'tag',
     noun: 'Tag',
-    get: {
-      display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-      operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
-    }
-  }
+    get:
+     { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+       operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } }
   ```
   _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
@@ -1589,50 +1472,36 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    tag: {
-      key: 'tag',
-      noun: 'Tag',
-      get: {
-        display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-        operation: {
-          perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
-          sample: { id: 385, name: 'proactive enable ROI' }
-        }
-      }
-    }
-  }
+  { tag:
+     { key: 'tag',
+       noun: 'Tag',
+       get:
+        { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+          operation:
+           { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
+             sample: { id: 385, name: 'proactive enable ROI' } } } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    getTag: {
-      key: 'tag',
-      noun: 'Tag',
-      get: {
-        display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-        operation: {
-          perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
-          sample: { id: 385, name: 'proactive enable ROI' }
-        }
-      }
-    }
-  }
+  { getTag:
+     { key: 'tag',
+       noun: 'Tag',
+       get:
+        { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+          operation:
+           { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' },
+             sample: { id: 385, name: 'proactive enable ROI' } } } } }
   ```
   _Key does not match key for associated /ResourceSchema_
 * ```
-  {
-    tag: {
-      key: 'tag',
-      noun: 'Tag',
-      get: {
-        display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
-        operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } }
-      }
-    }
-  }
+  { tag:
+     { key: 'tag',
+       noun: 'Tag',
+       get:
+        { display: { label: 'Get Tag by ID', description: 'Grab a specific Tag by ID.' },
+          operation: { perform: { url: 'https://fake-crm.getsandbox.com/tags/{{inputData.id}}' } } } } }
   ```
   _Missing key from operation: sample. Note – this is valid if the resource has defined a sample._
 
@@ -1680,47 +1549,38 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    key: 'searchOrCreateWidgets',
-    display: {
-      label: 'Search or Create Widgets',
-      description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-      important: true,
-      hidden: false
-    },
+  { key: 'searchOrCreateWidgets',
+    display:
+     { label: 'Search or Create Widgets',
+       description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+       important: true,
+       hidden: false },
     search: 'searchWidgets',
-    create: 'createWidget'
-  }
+    create: 'createWidget' }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    key: '01_Search_or_Create_Widgets',
-    display: {
-      label: 'Search or Create Widgets',
-      description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-      important: true,
-      hidden: false
-    },
+  { key: '01_Search_or_Create_Widgets',
+    display:
+     { label: 'Search or Create Widgets',
+       description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+       important: true,
+       hidden: false },
     search: 'searchWidgets',
-    create: 'createWidget'
-  }
+    create: 'createWidget' }
   ```
   _Invalid value for key: key (must start with a letter)_
 * ```
-  {
-    key: 'searchOrCreateWidgets',
-    display: {
-      label: 'Search or Create Widgets',
-      description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-      important: true,
-      hidden: false
-    },
+  { key: 'searchOrCreateWidgets',
+    display:
+     { label: 'Search or Create Widgets',
+       description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+       important: true,
+       hidden: false },
     search: { require: 'path/to/some/file.js' },
-    create: { require: 'path/to/some/file.js' }
-  }
+    create: { require: 'path/to/some/file.js' } }
   ```
   _Invalid values for keys: search and create (must be a string that matches the key of a registered search or create)_
 
@@ -1744,37 +1604,29 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    searchOrCreateWidgets: {
-      key: 'searchOrCreateWidgets',
-      display: {
-        label: 'Search or Create Widgets',
-        description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-        important: true,
-        hidden: false
-      },
-      search: 'searchWidgets',
-      create: 'createWidget'
-    }
-  }
+  { searchOrCreateWidgets:
+     { key: 'searchOrCreateWidgets',
+       display:
+        { label: 'Search or Create Widgets',
+          description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+          important: true,
+          hidden: false },
+       search: 'searchWidgets',
+       create: 'createWidget' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    searchOrCreateWidgets: {
-      key: 'socWidgets',
-      display: {
-        label: 'Search or Create Widgets',
-        description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-        important: true,
-        hidden: false
-      },
-      search: 'searchWidgets',
-      create: 'createWidget'
-    }
-  }
+  { searchOrCreateWidgets:
+     { key: 'socWidgets',
+       display:
+        { label: 'Search or Create Widgets',
+          description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+          important: true,
+          hidden: false },
+       search: 'searchWidgets',
+       create: 'createWidget' } }
   ```
   _Key must match the key of the associated /SearchOrCreateSchema_
 
@@ -1801,36 +1653,26 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 } }
-  }
+    operation: { perform: '$func$2$f$', sample: { id: 1 } } }
   ```
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
-    display: {
-      label: 'Find a Recipe',
-      description: 'Search for recipe by cuisine style.',
-      hidden: true
-    },
-    operation: { perform: '$func$2$f$' }
-  }
+    display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.', hidden: true },
+    operation: { perform: '$func$2$f$' } }
   ```
 
 #### Anti-Examples
 
 * `'abc'` - _Must be an object_
 * ```
-  {
-    key: 'recipe',
+  { key: 'recipe',
     noun: 'Recipe',
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
-    operation: { perform: '$func$2$f$' }
-  }
+    operation: { perform: '$func$2$f$' } }
   ```
   _Missing required key in operation: sample. Note - this is valid if the associated resource has defined a sample._
 
@@ -1854,35 +1696,21 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    recipe: {
-      key: 'recipe',
-      noun: 'Recipe',
-      display: {
-        label: 'Find a Recipe',
-        description: 'Search for recipe by cuisine style.',
-        hidden: true
-      },
-      operation: { perform: '$func$2$f$' }
-    }
-  }
+  { recipe:
+     { key: 'recipe',
+       noun: 'Recipe',
+       display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.', hidden: true },
+       operation: { perform: '$func$2$f$' } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    searchRecipe: {
-      key: 'recipe',
-      noun: 'Recipe',
-      display: {
-        label: 'Find a Recipe',
-        description: 'Search for recipe by cuisine style.',
-        hidden: true
-      },
-      operation: { perform: '$func$2$f$' }
-    }
-  }
+  { searchRecipe:
+     { key: 'recipe',
+       noun: 'Recipe',
+       display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.', hidden: true },
+       operation: { perform: '$func$2$f$' } } }
   ```
   _Key must match the key of the associated /SearchSchema_
 
@@ -1909,35 +1737,25 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    key: 'new_recipe',
+  { key: 'new_recipe',
     noun: 'Recipe',
     display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
-    operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } }
-  }
+    operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } } }
   ```
 * ```
-  {
-    key: 'new_recipe',
+  { key: 'new_recipe',
     noun: 'Recipe',
-    display: {
-      label: 'New Recipe',
-      description: 'Triggers when a new recipe is added.',
-      hidden: true
-    },
-    operation: { type: 'polling', perform: '$func$0$f$' }
-  }
+    display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.', hidden: true },
+    operation: { type: 'polling', perform: '$func$0$f$' } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    key: 'new_recipe',
+  { key: 'new_recipe',
     noun: 'Recipe',
     display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
-    operation: { perform: '$func$0$f$' }
-  }
+    operation: { perform: '$func$0$f$' } }
   ```
   _Missing required key from operation: sample. Note - this is valid if the Recipe resource has defined a sample._
 
@@ -1961,27 +1779,21 @@ Key | Required | Type | Description
 #### Examples
 
 * ```
-  {
-    newRecipe: {
-      key: 'newRecipe',
-      noun: 'Recipe',
-      display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
-      operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } }
-    }
-  }
+  { newRecipe:
+     { key: 'newRecipe',
+       noun: 'Recipe',
+       display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
+       operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } } } }
   ```
 
 #### Anti-Examples
 
 * ```
-  {
-    newRecipe: {
-      key: 'new_recipe',
-      noun: 'Recipe',
-      display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
-      operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } }
-    }
-  }
+  { newRecipe:
+     { key: 'new_recipe',
+       noun: 'Recipe',
+       display: { label: 'New Recipe', description: 'Triggers when a new recipe is added.' },
+       operation: { type: 'polling', perform: '$func$0$f$', sample: { id: 1 } } } }
   ```
   _Key must match the key on the associated /TriggerSchema_
 

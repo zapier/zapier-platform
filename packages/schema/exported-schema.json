@@ -699,7 +699,7 @@
         "type": {
           "description": "Must be explicitly set to `\"hook\"` unless this hook is defined as part of a resource, in which case it's optional.",
           "type": "string",
-          "enum": ["hook"],
+          "enum": ["hook", "hook_to_poll"],
           "docAnnotation": {
             "required": {
               "type": "replace",
