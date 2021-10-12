@@ -194,7 +194,7 @@ class DescribeCommand extends BaseCommand {
 }
 
 DescribeCommand.flags = buildFlags({ opts: { format: true } });
-DescribeCommand.description = `Describe the current integraiton.
+DescribeCommand.description = `Describe the current integration.
 
 This command prints a human readable enumeration of your integrations's
 triggers, searches, and creates as seen by Zapier. Useful to understand how your

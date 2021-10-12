@@ -133,7 +133,7 @@ Do not use this if you have non-breaking changes, such as fixing help text.
 
 ## describe
 
-> Describe the current integraiton.
+> Describe the current integration.
 
 **Usage**: `zapier describe`
 
