@@ -1063,6 +1063,87 @@
       },
       "additionalProperties": false
     },
+    "BasicHookToPollOperationSchema": {
+      "id": "/BasicHookToPollOperationSchema",
+      "description": "Represents the inbound mechanics of hook to poll style triggers. Defers to list for fields.",
+      "type": "object",
+      "required": ["performList"],
+      "properties": {
+        "type": {
+          "description": "Must be explicitly set to `\"hook\"` unless this hook is defined as part of a resource, in which case it's optional.",
+          "type": "string",
+          "enum": ["hook_to_poll"],
+          "required": {
+            "type": "replace",
+            "value": "**yes** (with exceptions, see description)"
+          }
+        },
+        "resource": {
+          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "$ref": "/KeySchema"
+        },
+        "performList": {
+          "description": "Similar a polling trigger, but checks for new data when a webhook is received, instead of every few minutes",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "canPaginate": {
+          "description": "Does this endpoint support pagination via temporary cursor storage?",
+          "type": "boolean"
+        },
+        "performSubscribe": {
+          "description": "Takes a URL and any necessary data from the user and subscribes. ",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "performUnsubscribe": {
+          "description": "Takes a URL and data from a previous subscribe call and unsubscribes. ",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "inputFields": {
+          "description": "What should the form a user sees and configures look like?",
+          "$ref": "/DynamicFieldsSchema"
+        },
+        "outputFields": {
+          "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
+          "$ref": "/DynamicFieldsSchema"
+        },
+        "sample": {
+          "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
+          "type": "object",
+          "minProperties": 1,
+          "docAnnotation": {
+            "required": {
+              "type": "replace",
+              "value": "**yes** (with exceptions, see description)"
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "docAnnotation": {
+        "hide": true
+      }
+    },
     "TriggerSchema": {
       "id": "/TriggerSchema",
       "description": "How will Zapier get notified of new objects?",

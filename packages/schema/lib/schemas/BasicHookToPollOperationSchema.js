@@ -18,42 +18,46 @@ BasicHookToPollOperationSchema.id = '/BasicHookToPollOperationSchema';
 BasicHookToPollOperationSchema.description =
   'Represents the inbound mechanics of hook to poll style triggers. Defers to list for fields.';
 
-BasicHookToPollOperationSchema.properties = {
-  type: {
-    description:
-      'Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it\'s optional.',
-    type: 'string',
-    enum: ['hook_to_poll'],
-    required: {
-      type: 'replace',
-      value: '**yes** (with exceptions, see description)',
+(BasicHookToPollOperationSchema.docAnnotation = {
+  hide: true,
+}),
+  (BasicHookToPollOperationSchema.required = ['performList']),
+  (BasicHookToPollOperationSchema.properties = {
+    type: {
+      description:
+        'Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it\'s optional.',
+      type: 'string',
+      enum: ['hook_to_poll'],
+      required: {
+        type: 'replace',
+        value: '**yes** (with exceptions, see description)',
+      },
     },
-  },
-  resource: BasicHookToPollOperationSchema.properties.resource,
-  performList: {
-    description:
-      'Similar a polling trigger, but checks for new data when a webhook is received, instead of every few minutes',
-    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
-  },
-  canPaginate: {
-    description:
-      'Does this endpoint support pagination via temporary cursor storage?',
-    type: 'boolean',
-  },
-  performSubscribe: {
-    description:
-      'Takes a URL and any necessary data from the user and subscribes. ',
-    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
-  },
-  performUnsubscribe: {
-    description:
-      'Takes a URL and data from a previous subscribe call and unsubscribes. ',
-    oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
-  },
-  inputFields: BasicHookToPollOperationSchema.properties.inputFields,
-  outputFields: BasicHookToPollOperationSchema.properties.outputFields,
-  sample: BasicHookToPollOperationSchema.properties.sample,
-};
+    resource: BasicHookToPollOperationSchema.properties.resource,
+    performList: {
+      description:
+        'Similar a polling trigger, but checks for new data when a webhook is received, instead of every few minutes',
+      oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
+    },
+    canPaginate: {
+      description:
+        'Does this endpoint support pagination via temporary cursor storage?',
+      type: 'boolean',
+    },
+    performSubscribe: {
+      description:
+        'Takes a URL and any necessary data from the user and subscribes. ',
+      oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
+    },
+    performUnsubscribe: {
+      description:
+        'Takes a URL and data from a previous subscribe call and unsubscribes. ',
+      oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
+    },
+    inputFields: BasicHookToPollOperationSchema.properties.inputFields,
+    outputFields: BasicHookToPollOperationSchema.properties.outputFields,
+    sample: BasicHookToPollOperationSchema.properties.sample,
+  });
 
 BasicHookToPollOperationSchema.examples = [
   {
