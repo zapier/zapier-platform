@@ -4,6 +4,7 @@ const makeSchema = require('../utils/makeSchema');
 
 const BasicDisplaySchema = require('./BasicDisplaySchema');
 const BasicHookOperationSchema = require('./BasicHookOperationSchema');
+const BasicHookToPollOperationSchema = require('./BasicHookToPollOperationSchema');
 const BasicPollingOperationSchema = require('./BasicPollingOperationSchema');
 const KeySchema = require('./KeySchema');
 
@@ -34,6 +35,7 @@ module.exports = makeSchema(
         anyOf: [
           { $ref: BasicPollingOperationSchema.id },
           { $ref: BasicHookOperationSchema.id },
+          { $ref: BasicHookToPollOperationSchema.id },
         ],
       },
     },

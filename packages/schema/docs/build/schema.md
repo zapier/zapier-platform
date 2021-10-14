@@ -462,7 +462,7 @@ Represents the inbound mechanics of hooks with optional subscribe/unsubscribe. D
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`type` | **yes** (with exceptions, see description) | `string` in (`'hook'`, `'hook_to_poll'`) | Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it's optional.
+`type` | **yes** (with exceptions, see description) | `string` in (`'hook'`) | Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it's optional.
 `resource` | no | [/KeySchema](#keyschema) | Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.
 `perform` | **yes** | [/FunctionSchema](#functionschema) | A function that processes the inbound webhook request.
 `performList` | **yes** (with exceptions, see description) | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods. Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.
@@ -1904,7 +1904,7 @@ Key | Required | Type | Description
 `key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this trigger.
 `noun` | **yes** | `string` | A noun for this trigger that completes the sentence "triggers on a new XXX".
 `display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this trigger.
-`operation` | **yes** | anyOf([/BasicPollingOperationSchema](#basicpollingoperationschema), [/BasicHookOperationSchema](#basichookoperationschema)) | Powers the functionality for this trigger.
+`operation` | **yes** | anyOf([/BasicPollingOperationSchema](#basicpollingoperationschema), [/BasicHookOperationSchema](#basichookoperationschema), [/BasicHookToPollOperationSchema](#basichooktopolloperationschema)) | Powers the functionality for this trigger.
 
 #### Examples
 
