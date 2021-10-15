@@ -1067,7 +1067,7 @@
       "id": "/BasicHookToPollOperationSchema",
       "description": "Represents the inbound mechanics of hook to poll style triggers. Defers to list for fields.",
       "type": "object",
-      "required": ["performList"],
+      "required": ["performList", "performSubscribe", "performUnsubscribe"],
       "properties": {
         "type": {
           "description": "Must be explicitly set to `\"hook\"` unless this hook is defined as part of a resource, in which case it's optional.",
