@@ -1904,7 +1904,7 @@ Key | Required | Type | Description
 `key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this trigger.
 `noun` | **yes** | `string` | A noun for this trigger that completes the sentence "triggers on a new XXX".
 `display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this trigger.
-`operation` | **yes** | anyOf([/BasicPollingOperationSchema](#basicpollingoperationschema), [/BasicHookOperationSchema](#basichookoperationschema), [/BasicHookToPollOperationSchema](#basichooktopolloperationschema)) | Powers the functionality for this trigger.
+`operation` | **yes** | anyOf([/BasicPollingOperationSchema](#basicpollingoperationschema), [/BasicHookOperationSchema](#basichookoperationschema)) | Powers the functionality for this trigger.
 
 #### Examples
 

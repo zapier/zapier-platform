@@ -18,10 +18,11 @@ BasicHookToPollOperationSchema.id = '/BasicHookToPollOperationSchema';
 BasicHookToPollOperationSchema.description =
   'Represents the inbound mechanics of hook to poll style triggers. Defers to list for fields.';
 
-(BasicHookToPollOperationSchema.docAnnotation = {
+BasicHookToPollOperationSchema.docAnnotation = {
   hide: true,
-}),
-  (BasicHookToPollOperationSchema.required = ['performList']),
+};
+
+(BasicHookToPollOperationSchema.required = ['performList']),
   (BasicHookToPollOperationSchema.properties = {
     type: {
       description:

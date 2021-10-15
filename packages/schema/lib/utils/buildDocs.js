@@ -11,6 +11,7 @@ const links = require('./links');
 const NO_DESCRIPTION = '_No description given._';
 const COMBOS = ['anyOf', 'allOf', 'oneOf'];
 const { SKIP_KEY } = require('../constants');
+const hiddenRefs = [];
 
 const walkSchemas = (InitSchema, callback) => {
   const recurse = (Schema, parents) => {
@@ -29,6 +30,8 @@ const collectSchemas = (InitSchema) => {
   walkSchemas(InitSchema, (Schema) => {
     if (!_.get(Schema, 'schema.docAnnotation.hide')) {
       schemas[Schema.id] = Schema;
+    } else {
+      hiddenRefs.push(Schema.id);
     }
   });
   return schemas;
@@ -66,12 +69,18 @@ const typeOrLink = (schema) => {
     return `${quoteOrNa(schema.type)}[${typeOrLink(schema.items)}]`;
   }
   if (schema.$ref) {
-    return `[${schema.$ref}](${links.anchor(schema.$ref)})`;
+    if (!hiddenRefs.includes(schema.$ref)) {
+      return `[${schema.$ref}](${links.anchor(schema.$ref)})`;
+    }
+    return;
   }
   for (let i = 0; i < COMBOS.length; i++) {
     const key = COMBOS[i];
     if (schema[key] && schema[key].length) {
-      return `${key}(${schema[key].map(typeOrLink).join(', ')})`;
+      return `${key}(${schema[key]
+        .map(typeOrLink)
+        .filter(Boolean)
+        .join(', ')})`;
     }
   }
   if (schema.enum && schema.enum.length) {
