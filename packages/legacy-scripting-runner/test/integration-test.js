@@ -1213,6 +1213,30 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, merge query params', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_merge_query_params',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, sessionAuthConfig);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        should.deepEqual(echoed.args['title[]'], ['null', 'dune', 'eternals']);
+      });
+    });
+
     it('KEY_post_poll, jQuery utils', () => {
       const input = createTestInput(
         compiledApp,

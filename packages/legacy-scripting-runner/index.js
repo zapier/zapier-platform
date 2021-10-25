@@ -317,6 +317,59 @@ const dedupeHeaders = (headers) => {
   return newHeaders;
 };
 
+// Move all the query params from req.url to req.params. Make arrays if there
+// are multiple values with the same name.
+const normalizeQueryParams = (req) => {
+  let url;
+  try {
+    url = new URL(req.url);
+  } catch {
+    return req;
+  }
+
+  const params = Array.from(url.searchParams).reduce(
+    (result, [name, value]) => {
+      if (result[name] === undefined) {
+        result[name] = value;
+        return result;
+      }
+      if (!Array.isArray(result[name])) {
+        result[name] = [result[name]];
+      }
+      result[name].push(value);
+      return result;
+    },
+    {}
+  );
+
+  if (_.isEmpty(params)) {
+    return req;
+  }
+
+  // Copy params collected from req.url to req.params
+  req.params = _.mergeWith(params, req.params, (dst, src) => {
+    if (Array.isArray(dst)) {
+      if (Array.isArray(src)) {
+        return dst.concat(src);
+      } else {
+        dst.push(src);
+        return dst;
+      }
+    } else {
+      if (Array.isArray(src)) {
+        return [dst].concat(src);
+      } else {
+        return [dst, src];
+      }
+    }
+  });
+
+  url.search = '';
+  req.url = url.href;
+
+  return req;
+};
+
 const compileLegacyScriptingSource = (source, zcli, app) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
 
@@ -727,6 +780,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       request.allowGetBody = true;
       request.serializeValueForCurlies = serializeValueForCurlies;
       request.skipThrowForStatus = true;
+
+      request = normalizeQueryParams(request);
 
       const response = await zcli.request(request);
 
