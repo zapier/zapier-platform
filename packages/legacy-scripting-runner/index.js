@@ -320,27 +320,32 @@ const dedupeHeaders = (headers) => {
 // Move all the query params from req.url to req.params. Make arrays if there
 // are multiple values with the same name.
 const normalizeQueryParams = (req) => {
-  let url;
-  try {
-    url = new URL(req.url);
-  } catch {
+  if (!req.url) {
     return req;
   }
 
-  const params = Array.from(url.searchParams).reduce(
-    (result, [name, value]) => {
-      if (result[name] === undefined) {
-        result[name] = value;
-        return result;
-      }
-      if (!Array.isArray(result[name])) {
-        result[name] = [result[name]];
-      }
-      result[name].push(value);
+  const sepIndex = req.url.indexOf('?');
+  if (sepIndex < 0) {
+    return req;
+  }
+
+  // Extract the querystring. Don't use `new URL()` because the url might have
+  // curlies.
+  const querystring = req.url.substring(sepIndex + 1);
+  const searchParams = new URLSearchParams(querystring);
+
+  // Make an object like {name: ['alice', 'bob'], team: 'test'}
+  const params = Array.from(searchParams).reduce((result, [name, value]) => {
+    if (result[name] === undefined) {
+      result[name] = value;
       return result;
-    },
-    {}
-  );
+    }
+    if (!Array.isArray(result[name])) {
+      result[name] = [result[name]];
+    }
+    result[name].push(value);
+    return result;
+  }, {});
 
   if (_.isEmpty(params)) {
     return req;
@@ -364,9 +369,8 @@ const normalizeQueryParams = (req) => {
     }
   });
 
-  url.search = '';
-  req.url = url.href;
-
+  // Remove query params from req.url as they all should be in req.params by now
+  req.url = req.url.substring(0, sepIndex);
   return req;
 };
 

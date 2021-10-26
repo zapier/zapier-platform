@@ -1151,7 +1151,8 @@ describe('Integration Test', () => {
       return _app(input)
         .then((output) => {
           const result = output.results[0];
-          should.equal(result.url, `${HTTPBIN_URL}/get`);
+          should.equal(result.url, `${HTTPBIN_URL}/get?a=1&a=1&a=2&a=2`);
+          should.deepEqual(result.args.a, ['1', '1', '2', '2']);
         })
         .finally(() => {
           delete process.env.SECRET_HTTPBIN_URL;
