@@ -1,42 +1,69 @@
+const { flags } = require('@oclif/command');
+
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
+const { callAPI } = require('../../utils/api');
 
-const { listVersions } = require('../../utils/api');
+// const { listVersions } = require('../../utils/api');
 
 class RunCommand extends BaseCommand {
   async perform() {
-    // let title = this.args.title;
-    // if (!title) {
-    //   title = await this.prompt('What is the title of your integration?');
-    // }
+    const { action } = this.args;
+    const auth = this.flags.auth || {};
+    const input = this.flags.input || {};
 
-    this.startSpinner('Running action');
-    const { versions } = await listVersions();
-    this.stopSpinner();
+    // TODO add some error handling for the input
 
-    this.logTable({
-      rows: versions,
-      headers: [
-        ['Version', 'version'],
-        ['Platform', 'platform_version'],
-        ['Users', 'user_count'],
-        ['Deployment', 'deployment'],
-        ['Deprecation Date', 'deprecation_date'],
-        ['Timestamp', 'date'],
-      ],
-      emptyMessage:
-        'No versions to show. Try adding one with the `zapier push` command',
-    });
+    const valuesToSet = JSON.parse(auth);
+    console.log(valuesToSet.api_key);
 
-    if (versions.map((v) => v.user_count).filter((c) => c === null).length) {
-      this.warn(
-        'Some user counts are still being calculated - run this command again in ~10 seconds (or longer if your integration has lots of users).'
+    const payload = {
+      params: JSON.parse(input),
+    }; // do we need to pass in the auth? or we could just add it to the bundle afterwards
+
+    // call the bundle API to construct the bundles
+    const app = await this.getWritableApp();
+    const url = `/apps/${app.id}/test-bundle/`; // TODO set this to the url for the bundle API once that is implemented
+    let response;
+    try {
+      response = await callAPI(
+        url,
+        {
+          body: payload,
+          method: 'POST',
+        },
+        true
       );
+      // this.logJSON(payload);
+    } catch (e) {
+      console.log(e); // TODO handle errors
     }
+    // currently this returns a 404 as the bundle API isn't ready yet
+
+    // run the action using the provided bundle
   }
 }
+RunCommand.flags = buildFlags({
+  commandFlags: {
+    auth: flags.string({
+      description:
+        'The authentication JSON for your integration, in the form `auth={}`. For example: `auth={"api_key": "your_api_key"}`',
+    }),
+    input: flags.string({
+      description:
+        'The input fields and values to use, in the form `input={}`. For example: `input={"account: "356234", status": "PENDING"}`',
+    }),
+  },
+});
 
-RunCommand.flags = buildFlags({ opts: { format: true } });
-RunCommand.description = `List the versions of your integration available for use in the Zapier editor.`;
+RunCommand.args = [
+  {
+    name: 'action',
+    description: 'The action key to run.',
+    required: true,
+  },
+];
+
+RunCommand.description = `Run an action for debug and testing purposes`;
 
 module.exports = RunCommand;
