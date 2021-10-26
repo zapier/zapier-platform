@@ -3,6 +3,7 @@ const { flags } = require('@oclif/command');
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 const { callAPI } = require('../../utils/api');
+const { localAppCommand } = require('../../utils/local');
 
 // const { listVersions } = require('../../utils/api');
 
@@ -41,6 +42,9 @@ class RunCommand extends BaseCommand {
     // currently this returns a 404 as the bundle API isn't ready yet
 
     // run the action using the provided bundle
+    // not super sure how to do this. maybe using the app tester? or maybe a local command? Just throwing out suggestions
+    // we can grab the definition - not sure if that's helpful at some point!
+    // const definition = await localAppCommand({ command: 'definition' })
   }
 }
 RunCommand.flags = buildFlags({
