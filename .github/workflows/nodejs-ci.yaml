@@ -3,7 +3,7 @@
 
 name: Zapier Dev Platform CI
 
-on: [push, pull_request]
+on: push
 
 jobs:
   ci:
@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install --frozen-lockfile
+      - run: yarn
       - run: npm test
         working-directory: packages/cli
       - run: npm test
