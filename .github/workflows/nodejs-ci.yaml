@@ -20,11 +20,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn
-      - run: npm test
+      - run: yarn test
         working-directory: packages/cli
-      - run: npm test
+      - run: yarn test
         working-directory: packages/core
-      - run: npm test
+      - run: yarn test
         working-directory: packages/legacy-scripting-runner
-      - run: npm test
+      - run: yarn test
         working-directory: packages/schema
