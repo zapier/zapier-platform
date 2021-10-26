@@ -1,6 +1,6 @@
 # Zapier Platform
 
-[![Build Status](https://travis-ci.com/zapier/zapier-platform.svg?branch=master)](https://travis-ci.com/zapier/zapier-platform)
+![CI Test Status](https://github.com/github/docs/actions/workflows/nodejs-ci.yml/badge.svg?branch=gh-actions-ci)]
 
 This is the main monorepo for all public code that powers the Zapier Platform Experience.
 
