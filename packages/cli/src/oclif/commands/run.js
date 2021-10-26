@@ -15,16 +15,17 @@ class RunCommand extends BaseCommand {
 
     // TODO add some error handling for the input
 
-    const valuesToSet = JSON.parse(auth);
-    console.log(valuesToSet.api_key);
-
     const payload = {
+      platformVersion: '11.1.0',
+      type: 'create',
+      method: 'perform',
+      auth: JSON.parse(auth),
       params: JSON.parse(input),
     }; // do we need to pass in the auth? or we could just add it to the bundle afterwards
 
     // call the bundle API to construct the bundles
-    const app = await this.getWritableApp();
-    const url = `/apps/${app.id}/test-bundle/`; // TODO set this to the url for the bundle API once that is implemented
+    // const app = await this.getWritableApp();
+    const url = '/bundle'; // TODO set this to the url for the bundle API once that is implemented
     let response;
     try {
       response = await callAPI(
@@ -39,6 +40,7 @@ class RunCommand extends BaseCommand {
     } catch (e) {
       console.log(e); // TODO handle errors
     }
+    console.log(response);
     // currently this returns a 404 as the bundle API isn't ready yet
 
     // run the action using the provided bundle
