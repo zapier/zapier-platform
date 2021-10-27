@@ -643,6 +643,34 @@ describe('Integration Test', () => {
       });
     });
 
+    it('scriptingless, empty auth mapping', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, sessionAuthConfig);
+      _appDefWithAuth.legacy.authentication.mapping = {};
+      _appDefWithAuth.legacy.authentication.placement = 'querystring';
+      _appDefWithAuth.legacy.triggers.movie.operation.url = `${HTTPBIN_URL}/get`;
+
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = {
+        api_key: 'hello',
+      };
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        // Default to authData if auth mapping is empty
+        should.deepEqual(echoed.args, { api_key: ['hello'] });
+      });
+    });
+
     it('KEY_poll', () => {
       const input = createTestInput(
         compiledApp,

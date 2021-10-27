@@ -26,19 +26,31 @@ const getLowerHeaders = (headers) =>
     return result;
   }, {});
 
+const renderAuthMapping = (authMapping, authData) => {
+  if (_.isEmpty(authMapping)) {
+    return authData;
+  }
+  return Object.entries(authMapping).reduce((result, [k, v]) => {
+    result[k] = renderTemplate(v, authData);
+    return result;
+  }, {});
+};
+
 const applyAuthMappingInHeaders = (authMapping, req, authData) => {
+  const rendered = renderAuthMapping(authMapping, authData);
   const lowerHeaders = getLowerHeaders(req.headers);
-  Object.entries(authMapping).forEach(([k, v]) => {
+  Object.entries(rendered).forEach(([k, v]) => {
     const lowerKey = k.toLowerCase();
     if (!lowerHeaders[lowerKey]) {
-      req.headers[k] = renderTemplate(v, authData);
+      req.headers[k] = v;
     }
   });
 };
 
 const applyAuthMappingInQuerystring = (authMapping, req, authData) => {
-  Object.entries(authMapping).forEach(([k, v]) => {
-    req.params[k] = req.params[k] || renderTemplate(v, authData);
+  const rendered = renderAuthMapping(authMapping, authData);
+  Object.entries(rendered).forEach(([k, v]) => {
+    req.params[k] = req.params[k] || v;
   });
 };
 
