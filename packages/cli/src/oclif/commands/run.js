@@ -1,9 +1,10 @@
 const { flags } = require('@oclif/command');
-
+const path = require('path');
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 const { callAPI } = require('../../utils/api');
 const { localAppCommand } = require('../../utils/local');
+const zapier = require('zapier-platform-core');
 
 // const { listVersions } = require('../../utils/api');
 
@@ -26,9 +27,9 @@ class RunCommand extends BaseCommand {
     // call the bundle API to construct the bundles
     // const app = await this.getWritableApp();
     const url = '/bundle'; // TODO set this to the url for the bundle API once that is implemented
-    let response;
+    let bundle = {};
     try {
-      response = await callAPI(
+      bundle = await callAPI(
         url,
         {
           body: payload,
@@ -40,13 +41,27 @@ class RunCommand extends BaseCommand {
     } catch (e) {
       console.log(e); // TODO handle errors
     }
-    console.log(response);
-    // currently this returns a 404 as the bundle API isn't ready yet
 
     // run the action using the provided bundle
     // not super sure how to do this. maybe using the app tester? or maybe a local command? Just throwing out suggestions
     // we can grab the definition - not sure if that's helpful at some point!
     // const definition = await localAppCommand({ command: 'definition' })
+
+    // get the index file for the app (maybe this can be soemthing other than index.js?)
+    const localAppPath = path.join(process.cwd(), 'index.js');
+
+    const App = require(localAppPath);
+    const appTester = zapier.createAppTester(App);
+
+    let result;
+    try {
+      result = await appTester(App.creates.customer.operation.perform, bundle);
+    } catch (e) {
+      console.log(e); // TODO handle errors
+    }
+
+    console.log(result);
+    return result;
   }
 }
 RunCommand.flags = buildFlags({
