@@ -46,7 +46,7 @@ const parseInput = (type, actionKey, input) => {
   // read the input from a json file if provided
   const inputDataPath = path.join(process.cwd(), 'run-input.json');
   if (fs.existsSync(inputDataPath)) {
-    testInputData = require(inputDataPath);
+    const testInputData = require(inputDataPath);
     if (type in testInputData && actionKey in testInputData[type]) {
       inputParams = testInputData[type][actionKey];
     }
@@ -115,12 +115,14 @@ class RunCommand extends BaseCommand {
     const appTester = zapier.createAppTester(App);
     let result;
     try {
+      // we may need to add another condition for input/output fields as I'm not exactly sure how the App Tester will run those.
       if (action) {
         result = await appTester(
           App[actionType][action].operation[method],
           bundle
         );
       } else {
+        // This is for runnig the Auth test if we implement that.
         result = await appTester(App[actionType][method], bundle);
       }
     } catch (e) {
