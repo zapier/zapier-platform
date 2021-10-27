@@ -5,8 +5,45 @@ const { buildFlags } = require('../buildFlags');
 const { callAPI } = require('../../utils/api');
 const { localAppCommand } = require('../../utils/local');
 const zapier = require('zapier-platform-core');
+const os = require('os');
+const fs = require('fs');
 
 // const { listVersions } = require('../../utils/api');
+
+const parseAuth = (authInput) => {
+  // inject the environment variables
+  zapier.tools.env.inject();
+  // try to grab some sensible auth looking defaults - should really use the auth that is specified by the user
+  let auth = {
+    access_token: process.env.ACCESS_TOKEN,
+    api_key: process.env.API_KEY,
+  };
+  // override any of the environment variables with the ones provided via the command line
+  if (authInput) {
+    auth = { ...auth, ...JSON.parse(authInput) };
+  }
+  return auth;
+};
+
+const parseInput = (type, actionKey, input) => {
+  let inputParams = {};
+
+  // read the input from a json file if provided
+  const inputDataPath = path.join(process.cwd(), 'run-input.json');
+  if (fs.existsSync(inputDataPath)) {
+    testInputData = require(inputDataPath);
+    if (type in testInputData && actionKey in testInputData[type]) {
+      inputParams = testInputData[type][actionKey];
+    }
+  }
+
+  // or provide JSON via the commandline, overriding any values from the run input file
+  if (input) {
+    inputParams = { ...inputParams, ...JSON.parse(input) };
+  }
+
+  return inputParams;
+};
 
 class RunCommand extends BaseCommand {
   async perform() {
@@ -14,8 +51,6 @@ class RunCommand extends BaseCommand {
       actionType, // EX: creates
       action = '', // set an empty default here in case developer is testing `authentication` actionType
     } = this.args;
-    const auth = this.flags.auth || {};
-    const input = this.flags.input || {};
     const method =
       this.flags.method ||
       (actionType === 'authentication' ? 'test' : 'perform');
@@ -24,14 +59,17 @@ class RunCommand extends BaseCommand {
       throw new Error(
         `method flag must be one of ['perform', 'inputFields', 'outputFields', 'test']`
       );
+
+    const auth = parseAuth(this.flags.auth);
+    const input = parseInput(actionType, action, this.flags.input);
     // TODO add some error handling for the input
 
     const payload = {
       platformVersion: '11.1.0',
       type: 'create',
       method: method,
-      auth: JSON.parse(auth),
-      params: JSON.parse(input),
+      auth,
+      params: input,
     }; // do we need to pass in the auth? or we could just add it to the bundle afterwards
 
     // call the bundle API to construct the bundles
@@ -77,7 +115,6 @@ class RunCommand extends BaseCommand {
       console.log(e); // TODO handle errors
     }
 
-    console.log(result);
     this.logJSON(result);
   }
 }
