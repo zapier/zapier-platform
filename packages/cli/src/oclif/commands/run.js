@@ -8,6 +8,12 @@ const zapier = require('zapier-platform-core');
 const os = require('os');
 const fs = require('fs');
 
+const METHODS = {
+  perform: 'perform',
+  inputFields: 'inputFields',
+  outputFields: 'outputFields',
+  test: 'test',
+};
 // const { listVersions } = require('../../utils/api');
 
 const authTypeFields = (type) => {
@@ -62,12 +68,10 @@ class RunCommand extends BaseCommand {
     } = this.args;
     const method =
       this.flags.method ||
-      (actionType === 'authentication' ? 'test' : 'perform');
+      (actionType === 'authentication' ? METHODS.test : METHODS.perform);
 
-    if (!['perform', 'inputFields', 'outputFields', 'test'].includes(method))
-      throw new Error(
-        `method flag must be one of ['perform', 'inputFields', 'outputFields', 'test']`
-      );
+    if (!Object.keys(METHODS).includes(method))
+      throw new Error(`method flag must be one of ${Object.keys(METHODS)}`);
 
     // get the index file for the app (maybe this can be soemthing other than index.js?)
     const localAppPath = path.join(process.cwd(), 'index.js');
@@ -137,8 +141,9 @@ RunCommand.flags = buildFlags({
         'The input fields and values to use, in the form `input={}`. For example: `input={"account: "356234", status": "PENDING"}`',
     }),
     method: flags.string({
+      options: Object.keys(METHODS),
       description:
-        'The function you would like to test, in the form `method=perform` (default). Alternate options: `inputFields`, `outputFields`',
+        'The function you would like to test, in the form `method=perform` (default).',
     }),
   },
 });
