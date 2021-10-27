@@ -1,3 +1,8 @@
+## 3.8.2
+
+- :bug: Merge `request.url` to `request.params` before making a request ([#435](https://github.com/zapier/zapier-platform/pull/435))
+- :bug: Default to auth fields if auth mapping is empty ([#438](https://github.com/zapier/zapier-platform/pull/438))
+
 ## 3.8.1
 
 - :bug: Add support for `z.reqeust({ json: true, body: {...} })` ([#418](https://github.com/zapier/zapier-platform/pull/418))
