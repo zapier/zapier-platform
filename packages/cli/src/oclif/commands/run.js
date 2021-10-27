@@ -12,17 +12,24 @@ class RunCommand extends BaseCommand {
   async perform() {
     const {
       actionType, // EX: creates
-      action,
+      action = '', // set an empty default here in case developer is testing `authentication` actionType
     } = this.args;
     const auth = this.flags.auth || {};
     const input = this.flags.input || {};
+    const method =
+      this.flags.method ||
+      (actionType === 'authentication' ? 'test' : 'perform');
 
+    if (!['perform', 'inputFields', 'outputFields', 'test'].includes(method))
+      throw new Error(
+        `method flag must be one of ['perform', 'inputFields', 'outputFields', 'test']`
+      );
     // TODO add some error handling for the input
 
     const payload = {
       platformVersion: '11.1.0',
       type: 'create',
-      method: 'perform',
+      method: method,
       auth: JSON.parse(auth),
       params: JSON.parse(input),
     }; // do we need to pass in the auth? or we could just add it to the bundle afterwards
@@ -58,10 +65,14 @@ class RunCommand extends BaseCommand {
 
     let result;
     try {
-      result = await appTester(
-        App[actionType][action].operation[operation],
-        bundle
-      );
+      if (action) {
+        result = await appTester(
+          App[actionType][action].operation[method],
+          bundle
+        );
+      } else {
+        result = await appTester(App[actionType][method], bundle);
+      }
     } catch (e) {
       console.log(e); // TODO handle errors
     }
@@ -80,9 +91,9 @@ RunCommand.flags = buildFlags({
       description:
         'The input fields and values to use, in the form `input={}`. For example: `input={"account: "356234", status": "PENDING"}`',
     }),
-    operation: flags.string({
+    method: flags.string({
       description:
-        'The function you would like to test, in the form `operation=perform` (default). Alternate options: `inputFields`, `outputFields`',
+        'The function you would like to test, in the form `method=perform` (default). Alternate options: `inputFields`, `outputFields`',
     }),
   },
 });
@@ -97,7 +108,6 @@ RunCommand.args = [
   {
     name: 'action',
     description: 'The action key to run.',
-    required: true,
   },
 ];
 
