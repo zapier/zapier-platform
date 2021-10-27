@@ -13,7 +13,6 @@ class RunCommand extends BaseCommand {
     const {
       actionType, // EX: creates
       action,
-      operation, // EX: perform, inputFields, outputFields
     } = this.args;
     const auth = this.flags.auth || {};
     const input = this.flags.input || {};
@@ -81,6 +80,10 @@ RunCommand.flags = buildFlags({
       description:
         'The input fields and values to use, in the form `input={}`. For example: `input={"account: "356234", status": "PENDING"}`',
     }),
+    operation: flags.string({
+      description:
+        'The function you would like to test, in the form `operation=perform` (default). Alternate options: `inputFields`, `outputFields`',
+    }),
   },
 });
 
@@ -94,11 +97,6 @@ RunCommand.args = [
   {
     name: 'action',
     description: 'The action key to run.',
-    required: true,
-  },
-  {
-    name: 'operation',
-    description: 'The part of the operation to run. (Ex: `perform`)',
     required: true,
   },
 ];
