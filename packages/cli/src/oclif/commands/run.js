@@ -10,14 +10,23 @@ const fs = require('fs');
 
 // const { listVersions } = require('../../utils/api');
 
-const parseAuth = (authInput) => {
+const authTypeFields = (type) => {
   // inject the environment variables
   zapier.tools.env.inject();
-  // try to grab some sensible auth looking defaults - should really use the auth that is specified by the user
-  let auth = {
-    access_token: process.env.ACCESS_TOKEN,
-    api_key: process.env.API_KEY,
+  // there are more auth options, I just picked a few
+  const authOptions = {
+    basic: { username: process.env.USERNAME, password: process.env.PASSWORD },
+    custom: { api_key: process.env.API_KEY },
+    oauth1: { access_token: process.env.ACCESS_TOKEN },
+    oauth2: { access_token: process.env.ACCESS_TOKEN },
   };
+  return authOptions[type] || {};
+};
+
+const parseAuth = (type, authInput) => {
+  // try to grab some sensible auth looking defaults - should really use the auth that is specified by the user
+  let auth = authTypeFields(type);
+
   // override any of the environment variables with the ones provided via the command line
   if (authInput) {
     auth = { ...auth, ...JSON.parse(authInput) };
@@ -60,7 +69,11 @@ class RunCommand extends BaseCommand {
         `method flag must be one of ['perform', 'inputFields', 'outputFields', 'test']`
       );
 
-    const auth = parseAuth(this.flags.auth);
+    // get the index file for the app (maybe this can be soemthing other than index.js?)
+    const localAppPath = path.join(process.cwd(), 'index.js');
+    const App = require(localAppPath);
+
+    const auth = parseAuth(App.authentication.type, this.flags.auth);
     const input = parseInput(actionType, action, this.flags.input);
     // TODO add some error handling for the input
 
@@ -95,12 +108,7 @@ class RunCommand extends BaseCommand {
     // we can grab the definition - not sure if that's helpful at some point!
     // const definition = await localAppCommand({ command: 'definition' })
 
-    // get the index file for the app (maybe this can be soemthing other than index.js?)
-    const localAppPath = path.join(process.cwd(), 'index.js');
-
-    const App = require(localAppPath);
     const appTester = zapier.createAppTester(App);
-
     let result;
     try {
       if (action) {
