@@ -313,7 +313,8 @@ const legacyScriptingSource = `
       },
 
       movie_pre_poll_env_var: function(bundle) {
-        bundle.request.url = '{{process.env.SECRET_HTTPBIN_URL}}/get';
+        bundle.request.url = '{{process.env.SECRET_HTTPBIN_URL}}/get?a=1&a=1';
+        bundle.request.params.a = [2, 2];
         return bundle.request;
       },
 
@@ -323,6 +324,12 @@ const legacyScriptingSource = `
           'x-api-key': 'two',
           'X-API-KEY': 'three'
         };
+        return bundle.request;
+      },
+
+      movie_pre_poll_merge_query_params: function(bundle) {
+        bundle.request.url = '${HTTPBIN_URL}/get?title[]=null';
+        bundle.request.params['title[]'] = ['dune', 'eternals'];
         return bundle.request;
       },
 

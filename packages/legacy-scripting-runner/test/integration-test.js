@@ -1151,7 +1151,8 @@ describe('Integration Test', () => {
       return _app(input)
         .then((output) => {
           const result = output.results[0];
-          should.equal(result.url, `${HTTPBIN_URL}/get`);
+          should.equal(result.url, `${HTTPBIN_URL}/get?a=1&a=1&a=2&a=2`);
+          should.deepEqual(result.args.a, ['1', '1', '2', '2']);
         })
         .finally(() => {
           delete process.env.SECRET_HTTPBIN_URL;
@@ -1210,6 +1211,30 @@ describe('Integration Test', () => {
       return _app(input).then((output) => {
         const echoed = output.results[0];
         should.deepEqual(echoed.headers['X-Api-Key'], ['three']);
+      });
+    });
+
+    it('KEY_pre_poll, merge query params', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_merge_query_params',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, sessionAuthConfig);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        should.deepEqual(echoed.args['title[]'], ['null', 'dune', 'eternals']);
       });
     });
 

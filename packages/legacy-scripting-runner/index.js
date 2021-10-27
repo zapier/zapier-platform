@@ -317,6 +317,63 @@ const dedupeHeaders = (headers) => {
   return newHeaders;
 };
 
+// Move all the query params from req.url to req.params. Make arrays if there
+// are multiple values with the same name.
+const normalizeQueryParams = (req) => {
+  if (!req.url) {
+    return req;
+  }
+
+  const sepIndex = req.url.indexOf('?');
+  if (sepIndex < 0) {
+    return req;
+  }
+
+  // Extract the querystring. Don't use `new URL()` because the url might have
+  // curlies.
+  const querystring = req.url.substring(sepIndex + 1);
+  const searchParams = new URLSearchParams(querystring);
+
+  // Make an object like {name: ['alice', 'bob'], team: 'test'}
+  const params = Array.from(searchParams).reduce((result, [name, value]) => {
+    if (result[name] === undefined) {
+      result[name] = value;
+      return result;
+    }
+    if (!Array.isArray(result[name])) {
+      result[name] = [result[name]];
+    }
+    result[name].push(value);
+    return result;
+  }, {});
+
+  if (_.isEmpty(params)) {
+    return req;
+  }
+
+  // Copy params collected from req.url to req.params
+  req.params = _.mergeWith(params, req.params, (dst, src) => {
+    if (Array.isArray(dst)) {
+      if (Array.isArray(src)) {
+        return dst.concat(src);
+      } else {
+        dst.push(src);
+        return dst;
+      }
+    } else {
+      if (Array.isArray(src)) {
+        return [dst].concat(src);
+      } else {
+        return [dst, src];
+      }
+    }
+  });
+
+  // Remove query params from req.url as they all should be in req.params by now
+  req.url = req.url.substring(0, sepIndex);
+  return req;
+};
+
 const compileLegacyScriptingSource = (source, zcli, app) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
 
@@ -727,6 +784,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       request.allowGetBody = true;
       request.serializeValueForCurlies = serializeValueForCurlies;
       request.skipThrowForStatus = true;
+
+      request = normalizeQueryParams(request);
 
       const response = await zcli.request(request);
 
