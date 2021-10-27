@@ -22,7 +22,10 @@ const authTypeFields = (type) => {
   // there are more auth options, I just picked a few
   const authOptions = {
     basic: { username: process.env.USERNAME, password: process.env.PASSWORD },
-    custom: { api_key: process.env.API_KEY },
+    custom: {
+      api_key: process.env.API_KEY || undefined,
+      apiKey: process.env.APIKEY || undefined,
+    },
     oauth1: { access_token: process.env.ACCESS_TOKEN },
     oauth2: { access_token: process.env.ACCESS_TOKEN },
   };
@@ -113,6 +116,7 @@ class RunCommand extends BaseCommand {
     // const definition = await localAppCommand({ command: 'definition' })
 
     const appTester = zapier.createAppTester(App);
+    zapier.tools.env.inject();
     let result;
     try {
       // we may need to add another condition for input/output fields as I'm not exactly sure how the App Tester will run those.
