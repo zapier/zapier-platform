@@ -10,7 +10,11 @@ const zapier = require('zapier-platform-core');
 
 class RunCommand extends BaseCommand {
   async perform() {
-    const { action } = this.args;
+    const {
+      actionType, // EX: creates
+      action,
+      operation, // EX: perform, inputFields, outputFields
+    } = this.args;
     const auth = this.flags.auth || {};
     const input = this.flags.input || {};
 
@@ -55,7 +59,10 @@ class RunCommand extends BaseCommand {
 
     let result;
     try {
-      result = await appTester(App.creates.customer.operation.perform, bundle);
+      result = await appTester(
+        App[actionType][action].operation[operation],
+        bundle
+      );
     } catch (e) {
       console.log(e); // TODO handle errors
     }
@@ -79,8 +86,19 @@ RunCommand.flags = buildFlags({
 
 RunCommand.args = [
   {
+    name: 'actionType',
+    description:
+      'The type of action (Only `creates` is currently supported). TODO: Add `triggers`, `searches`, `authentication`',
+    required: true,
+  },
+  {
     name: 'action',
     description: 'The action key to run.',
+    required: true,
+  },
+  {
+    name: 'operation',
+    description: 'The part of the operation to run. (Ex: `perform`)',
     required: true,
   },
 ];
