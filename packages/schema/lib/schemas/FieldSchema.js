@@ -45,7 +45,7 @@ module.exports = makeSchema(
       },
       type: {
         description:
-          'The type of this value.\n\nUse `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font.',
+          'The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font.',
         type: 'string',
         // string == unicode
         // text == a long textarea string
