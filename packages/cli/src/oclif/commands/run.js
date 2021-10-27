@@ -78,7 +78,7 @@ class RunCommand extends BaseCommand {
     }
 
     console.log(result);
-    return result;
+    this.logJSON(result);
   }
 }
 RunCommand.flags = buildFlags({
