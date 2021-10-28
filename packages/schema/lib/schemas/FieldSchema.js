@@ -14,9 +14,8 @@ const { INCOMPATIBLE_FIELD_SCHEMA_KEYS } = require('../constants');
 // ... etc
 const wrapInBackticks = (s) => `\`${s}\``;
 const formatBullet = (f) => `* ${f.map(wrapInBackticks).join(' & ')}`;
-const incompatibleFieldsList = INCOMPATIBLE_FIELD_SCHEMA_KEYS.map(
-  formatBullet
-).join('\n');
+const incompatibleFieldsList =
+  INCOMPATIBLE_FIELD_SCHEMA_KEYS.map(formatBullet).join('\n');
 
 module.exports = makeSchema(
   {
@@ -45,7 +44,8 @@ module.exports = makeSchema(
         maxLength: 1000,
       },
       type: {
-        description: 'The type of this value.',
+        description:
+          'The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font.',
         type: 'string',
         // string == unicode
         // text == a long textarea string
@@ -61,6 +61,7 @@ module.exports = makeSchema(
           'file',
           'password',
           'copy',
+          'code',
         ],
       },
       required: {
