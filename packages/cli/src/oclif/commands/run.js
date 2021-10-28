@@ -76,8 +76,12 @@ class RunCommand extends BaseCommand {
       this.flags.method ||
       (actionType === 'authentication' ? METHODS.test : METHODS.perform);
 
-    if (!Object.keys(METHODS).includes(method))
-      throw new Error(`method flag must be one of ${Object.keys(METHODS)}`);
+    if (method !== 'inputFields' && this.flags.requiredFieldsOnly)
+      throw new Error(
+        'Sorry, the requiredFieldsOnly flag can only be used wih the inputFields method.'
+      );
+
+    const requiredFieldsOnly = this.flags.requiredFieldsOnly;
 
     zapier.tools.env.inject(); // this must come before importing the App
     // get the index file for the app (maybe this can be soemthing other than index.js?)
@@ -115,19 +119,17 @@ class RunCommand extends BaseCommand {
     }
 
     // run the action using the provided bundle
-    // not super sure how to do this. maybe using the app tester? or maybe a local command? Just throwing out suggestions
-    // we can grab the definition - not sure if that's helpful at some point!
-    // const definition = await localAppCommand({ command: 'definition' })
-
     const appTester = zapier.createAppTester(App);
     let result;
     try {
-      // we may need to add another condition for input/output fields as I'm not exactly sure how the App Tester will run those.
       if (action) {
         result = await appTester(
           App[actionType][action].operation[method],
           bundle
         );
+        if (requiredFieldsOnly && method === 'inputFields') {
+          result = result.filter((field) => field.required === true);
+        }
       } else {
         // This is for runnig the Auth test if we implement that.
         result = await appTester(App[actionType][method], bundle);
@@ -153,6 +155,11 @@ RunCommand.flags = buildFlags({
       options: Object.keys(METHODS),
       description:
         'The function you would like to test, in the form `method=perform` (default).',
+    }),
+    requiredFieldsOnly: flags.boolean({
+      description:
+        "Use if you're running the inputFields method and want to see only the required fields.",
+      default: false,
     }),
   },
 });
