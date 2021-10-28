@@ -76,6 +76,7 @@ class RunCommand extends BaseCommand {
     if (!Object.keys(METHODS).includes(method))
       throw new Error(`method flag must be one of ${Object.keys(METHODS)}`);
 
+    zapier.tools.env.inject(); // this must come before importing the App
     // get the index file for the app (maybe this can be soemthing other than index.js?)
     const localAppPath = path.join(process.cwd(), 'index.js');
     const App = require(localAppPath);
@@ -116,7 +117,6 @@ class RunCommand extends BaseCommand {
     // const definition = await localAppCommand({ command: 'definition' })
 
     const appTester = zapier.createAppTester(App);
-    zapier.tools.env.inject();
     let result;
     try {
       // we may need to add another condition for input/output fields as I'm not exactly sure how the App Tester will run those.
