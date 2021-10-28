@@ -17,19 +17,22 @@ const METHODS = {
 // const { listVersions } = require('../../utils/api');
 
 const authTypeFields = (type) => {
-  // inject the environment variables
-  zapier.tools.env.inject();
-  // there are more auth options, I just picked a few
-  const authOptions = {
-    basic: { username: process.env.USERNAME, password: process.env.PASSWORD },
-    custom: {
-      api_key: process.env.API_KEY || undefined,
-      apiKey: process.env.APIKEY || undefined,
-    },
-    oauth1: { access_token: process.env.ACCESS_TOKEN },
-    oauth2: { access_token: process.env.ACCESS_TOKEN },
-  };
-  return authOptions[type] || {};
+  // another way for to find AuthOptions is by searching for the following phrases in keys:
+  const phrases = [
+    /.*api.*key.*/i,
+    /.*access.*token.*/i,
+    /.*token.*/i,
+    /.*user.*name.*/i,
+    /.*password.*/i,
+  ];
+  const authOptions = {};
+  phrases.forEach((phrase) => {
+    Object.keys(process.env).forEach((key) => {
+      if (key.match(phrase)) authOptions[key] = process.env[key];
+    });
+  });
+
+  return authOptions;
 };
 
 const parseAuth = (type, authInput) => {
