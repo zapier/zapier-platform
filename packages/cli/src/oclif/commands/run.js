@@ -69,29 +69,30 @@ const parseInput = (type, actionKey, input) => {
 class RunCommand extends BaseCommand {
   async perform() {
     const {
-      actionType, // EX: creates
       action = '', // set an empty default here in case developer is testing `authentication` actionType
     } = this.args;
-    const method =
-      this.flags.method ||
-      (actionType === 'authentication' ? METHODS.test : METHODS.perform);
+    // const method =
+    //   this.flags.method ||
+    //   (actionType === 'authentication' ? METHODS.test : METHODS.perform);
 
-    if (!Object.keys(METHODS).includes(method))
-      throw new Error(`method flag must be one of ${Object.keys(METHODS)}`);
+    // if (!Object.keys(METHODS).includes(method))
+    //   throw new Error(`method flag must be one of ${Object.keys(METHODS)}`);
 
     zapier.tools.env.inject(); // this must come before importing the App
     // get the index file for the app (maybe this can be soemthing other than index.js?)
-    const localAppPath = path.join(process.cwd(), 'index.js');
-    const App = require(localAppPath);
+    // const localAppPath = path.join(process.cwd(), 'index.js');
+    // const App = require(localAppPath);
 
-    const auth = parseAuth(App.authentication.type, this.flags.auth);
-    const input = parseInput(actionType, action, this.flags.input);
+    // const auth = parseAuth(App.authentication.type, this.flags.auth);
+    const auth = JSON.parse(this.flags.auth);
+    // const input = parseInput(actionType, action, this.flags.input);
+    const input = JSON.parse(this.flags.input);
     // TODO add some error handling for the input
 
     const payload = {
       platformVersion: '11.1.0',
       type: 'create',
-      method: method,
+      method: 'inputFields',
       auth,
       params: input,
     }; // do we need to pass in the auth? or we could just add it to the bundle afterwards
@@ -118,23 +119,30 @@ class RunCommand extends BaseCommand {
     // not super sure how to do this. maybe using the app tester? or maybe a local command? Just throwing out suggestions
     // we can grab the definition - not sure if that's helpful at some point!
     // const definition = await localAppCommand({ command: 'definition' })
+    //
+    const fields = await localAppCommand({
+      command: 'execute',
+      method: `${action}.operation.inputFields`,
+      bundle,
+    });
 
-    const appTester = zapier.createAppTester(App);
-    let result;
-    try {
-      // we may need to add another condition for input/output fields as I'm not exactly sure how the App Tester will run those.
-      if (action) {
-        result = await appTester(
-          App[actionType][action].operation[method],
-          bundle
-        );
-      } else {
-        // This is for runnig the Auth test if we implement that.
-        result = await appTester(App[actionType][method], bundle);
-      }
-    } catch (e) {
-      console.log(e); // TODO handle errors
-    }
+    payload.fields = fields;
+    payload.method = 'perform';
+
+    bundle = await callAPI(
+      url,
+      {
+        body: payload,
+        method: 'POST',
+      },
+      true
+    );
+
+    const result = await localAppCommand({
+      command: 'execute',
+      method: `${action}.operation.perform`,
+      bundle,
+    });
 
     this.logJSON(result);
   }
@@ -149,27 +157,18 @@ RunCommand.flags = buildFlags({
       description:
         'The input fields and values to use, in the form `input={}`. For example: `input={"account: "356234", status": "PENDING"}`',
     }),
-    method: flags.string({
-      options: Object.keys(METHODS),
-      description:
-        'The function you would like to test, in the form `method=perform` (default).',
-    }),
   },
 });
 
 RunCommand.args = [
   {
-    name: 'actionType',
-    description:
-      'The type of action (Only `creates` is currently supported). TODO: Add `triggers`, `searches`, `authentication`',
-    required: true,
-  },
-  {
     name: 'action',
-    description: 'The action key to run.',
+    description:
+      "The action key to run. You have to specify the full path '{type}.{key}', such as 'creates.task'. Only `creates` is currently supported. TODO: Add `triggers`, `searches`, `authentication`.",
+    required: true,
   },
 ];
 
-RunCommand.description = `Run an action for debug and testing purposes`;
+RunCommand.description = `Run an action _locally_ for debug and testing purposes.`;
 
 module.exports = RunCommand;
