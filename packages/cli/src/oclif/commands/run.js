@@ -6,6 +6,7 @@ const { callAPI } = require('../../utils/api');
 const { localAppCommand } = require('../../utils/local');
 const zapier = require('zapier-platform-core');
 const os = require('os');
+const fs = require('fs');
 
 const { parseAuth, parseInput } = require('../../utils/run');
 
