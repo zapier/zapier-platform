@@ -74,17 +74,13 @@ class RunCommand extends BaseCommand {
     const appTester = zapier.createAppTester(App);
     let result;
     try {
-      if (actionKey) {
-        result = await appTester(
-          App[actionType][actionKey].operation[method],
-          bundle
-        );
-        if (requiredFieldsOnly && method === 'inputFields') {
-          result = result.filter((field) => field.required === true);
-        }
-      } else {
-        // This is for running the Auth test if we implement that.
-        result = await appTester(App[actionType].test, bundle);
+      const appTesterMethod =
+        actionType === 'authentication'
+          ? App[actionType].test
+          : App[actionType][actionKey].operation[method];
+      result = await appTester(appTesterMethod, bundle);
+      if (requiredFieldsOnly && method === 'inputFields') {
+        result = result.filter((field) => field.required === true);
       }
       this.stopSpinner();
     } catch (e) {
