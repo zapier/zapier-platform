@@ -1,8 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const authTypeFields = (type) => {
-  // another way for to find AuthOptions is by searching for the following phrases in keys:
+const authFieldsFromProcessEnv = () => {
   const phrases = [
     /.*api.*key.*/i,
     /.*access.*token.*/i,
@@ -10,19 +9,19 @@ const authTypeFields = (type) => {
     /.*user.*name.*/i,
     /.*password.*/i,
   ];
-  const authOptions = {};
+  const authFields = {};
   phrases.forEach((phrase) => {
     Object.keys(process.env).forEach((key) => {
-      if (key.match(phrase)) authOptions[key] = process.env[key];
+      if (key.match(phrase)) authFields[key] = process.env[key];
     });
   });
 
-  return authOptions;
+  return authFields;
 };
 
 const parseAuth = (type, authInput) => {
   // try to grab some sensible auth looking defaults - should really use the auth that is specified by the user
-  let auth = authTypeFields(type);
+  let auth = authFieldsFromProcessEnv();
 
   // override any of the environment variables with the ones provided via the command line
   if (authInput) {
@@ -52,7 +51,7 @@ const parseInput = (type, actionKey, input) => {
 };
 
 module.exports = {
-  authTypeFields,
+  authFieldsFromProcessEnv,
   parseAuth,
   parseInput,
 };
