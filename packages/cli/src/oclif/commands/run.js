@@ -15,6 +15,12 @@ const METHODS = {
   inputFields: 'inputFields',
   outputFields: 'outputFields',
 };
+const ACTIONTYPES = {
+  triggers: 'triggers',
+  creates: 'creates',
+  searches: 'searches',
+  authentication: 'authentication',
+};
 // const { listVersions } = require('../../utils/api');
 
 class RunCommand extends BaseCommand {
@@ -130,7 +136,7 @@ RunCommand.flags = buildFlags({
 RunCommand.args = [
   {
     name: 'actionType',
-    options: ['triggers', 'creates', 'searches', 'authentication'],
+    options: Object.keys(ACTIONTYPES),
     description: 'The type of action.',
     required: true,
   },
