@@ -116,7 +116,7 @@ RunCommand.flags = buildFlags({
     method: flags.string({
       options: Object.keys(METHODS),
       description:
-        'The function you would like to test, in the form `method perform` (default).',
+        'The function you would like to test, in the form `method perform` (default). Omit if testing `authentication` - the method will be set to `test` in that case.',
     }),
     requiredFieldsOnly: flags.boolean({
       description:
