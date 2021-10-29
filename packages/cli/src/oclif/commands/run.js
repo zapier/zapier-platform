@@ -14,7 +14,6 @@ const METHODS = {
   perform: 'perform',
   inputFields: 'inputFields',
   outputFields: 'outputFields',
-  test: 'test',
 };
 // const { listVersions } = require('../../utils/api');
 
@@ -24,9 +23,7 @@ class RunCommand extends BaseCommand {
       actionType, // EX: creates
       actionKey = '', // set an empty default here in case developer is testing `authentication` actionType
     } = this.args;
-    const method =
-      this.flags.method ||
-      (actionType === 'authentication' ? METHODS.test : METHODS.perform);
+    const method = this.flags.method || METHODS.perform;
 
     if (method !== 'inputFields' && this.flags.requiredFieldsOnly)
       throw new Error(
@@ -87,20 +84,20 @@ class RunCommand extends BaseCommand {
         }
       } else {
         // This is for running the Auth test if we implement that.
-        result = await appTester(App[actionType][method], bundle);
+        result = await appTester(App[actionType].test, bundle);
       }
       this.stopSpinner();
     } catch (e) {
       console.log(e); // TODO handle errors
     }
     if (writeFile) {
-      fs.writeFile(
-        `run_${actionType}_${actionKey}_${method}_output.json`,
-        JSON.stringify(result, null, 2),
-        function (err) {
-          if (err) throw err;
-        }
-      );
+      const fileName =
+        actionType === 'authentication'
+          ? `run_${actionType}_test_output.json`
+          : `run_${actionType}_${actionKey}_${method}_output.json`;
+      fs.writeFile(fileName, JSON.stringify(result, null, 2), function (err) {
+        if (err) throw err;
+      });
     }
 
     this.logJSON(result);
@@ -138,7 +135,7 @@ RunCommand.args = [
   {
     name: 'actionType',
     options: ['triggers', 'creates', 'searches', 'authentication'],
-    description: 'The type of action.', //  TODO: Test `authentication` to see if that works
+    description: 'The type of action.',
     required: true,
   },
   {
