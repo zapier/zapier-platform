@@ -21,7 +21,7 @@ class RunCommand extends BaseCommand {
   async perform() {
     const {
       actionType, // EX: creates
-      action = '', // set an empty default here in case developer is testing `authentication` actionType
+      actionKey = '', // set an empty default here in case developer is testing `authentication` actionType
     } = this.args;
     const method =
       this.flags.method ||
@@ -32,7 +32,7 @@ class RunCommand extends BaseCommand {
         'Sorry, the requiredFieldsOnly flag can only be used wih the inputFields method.'
       );
 
-    const requiredFieldsOnly = this.flags.requiredFieldsOnly;
+    const { requiredFieldsOnly, writeFile } = this.flags;
 
     zapier.tools.env.inject(); // this must come before importing the App
     // get the index file for the app (maybe this can be soemthing other than index.js?)
@@ -40,7 +40,7 @@ class RunCommand extends BaseCommand {
     const App = require(localAppPath);
 
     const auth = parseAuth(App.authentication.type, this.flags.auth);
-    const input = parseInput(actionType, action, this.flags.input);
+    const input = parseInput(actionType, actionKey, this.flags.input);
     // TODO add some error handling for the input
 
     const payload = {
@@ -76,9 +76,9 @@ class RunCommand extends BaseCommand {
     const appTester = zapier.createAppTester(App);
     let result;
     try {
-      if (action) {
+      if (actionKey) {
         result = await appTester(
-          App[actionType][action].operation[method],
+          App[actionType][actionKey].operation[method],
           bundle
         );
         if (requiredFieldsOnly && method === 'inputFields') {
@@ -91,6 +91,15 @@ class RunCommand extends BaseCommand {
       this.stopSpinner();
     } catch (e) {
       console.log(e); // TODO handle errors
+    }
+    if (writeFile) {
+      fs.writeFile(
+        `run_${actionType}_${actionKey}_${method}_output.json`,
+        JSON.stringify(result, null, 2),
+        function (err) {
+          if (err) throw err;
+        }
+      );
     }
 
     this.logJSON(result);
@@ -109,11 +118,16 @@ RunCommand.flags = buildFlags({
     method: flags.string({
       options: Object.keys(METHODS),
       description:
-        'The function you would like to test, in the form `method=perform` (default).',
+        'The function you would like to test, in the form `method perform` (default).',
     }),
     requiredFieldsOnly: flags.boolean({
       description:
         "Use if you're running the inputFields method and want to see only the required fields.",
+      default: false,
+    }),
+    writeFile: flags.boolean({
+      description:
+        'Use to write the output of the method as a .json file named `run_[actionType]_[action]_[method]_output.json`.',
       default: false,
     }),
   },
@@ -122,15 +136,16 @@ RunCommand.flags = buildFlags({
 RunCommand.args = [
   {
     name: 'actionType',
+    options: ['triggers', 'creates', 'searches', 'authentication'],
     description: 'The type of action.', //  TODO: Test `authentication` to see if that works
     required: true,
   },
   {
-    name: 'action',
-    description: 'The action key to run.',
+    name: 'actionKey',
+    description: 'The trigger/search/action key to run.',
   },
 ];
 
-RunCommand.description = `Run an action for debug and testing purposes`;
+RunCommand.description = `Run a trigger/search/action for debug and testing purposes`;
 
 module.exports = RunCommand;
