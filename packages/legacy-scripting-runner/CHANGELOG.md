@@ -1,3 +1,7 @@
+## 3.8.3
+
+- :bug: Fix empty auth params when merging `request.url` and `reqeust.params` ([#441](https://github.com/zapier/zapier-platform/pull/441))
+
 ## 3.8.2
 
 - :bug: Merge `request.url` to `request.params` before making a request ([#435](https://github.com/zapier/zapier-platform/pull/435))
