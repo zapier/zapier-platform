@@ -353,6 +353,9 @@ const normalizeQueryParams = (req) => {
 
   // Copy params collected from req.url to req.params
   req.params = _.mergeWith(params, req.params, (dst, src) => {
+    if (dst === undefined) {
+      return src;
+    }
     if (Array.isArray(dst)) {
       if (Array.isArray(src)) {
         return dst.concat(src);

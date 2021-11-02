@@ -671,6 +671,35 @@ describe('Integration Test', () => {
       });
     });
 
+    it('scriptingless, no empty query params', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      _appDefWithAuth.legacy.authentication.mapping = {
+        api_key: '{{api_key}}',
+      };
+      _appDefWithAuth.legacy.authentication.placement = 'querystring';
+      _appDefWithAuth.legacy.triggers.movie.operation.url = `${HTTPBIN_URL}/get?other=foo`;
+
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      input.bundle.authData = {
+        api_key: 'secret',
+      };
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        should.deepEqual(echoed.args, { api_key: ['secret'], other: ['foo'] });
+      });
+    });
+
     it('KEY_poll', () => {
       const input = createTestInput(
         compiledApp,
