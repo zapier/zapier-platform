@@ -1,6 +1,10 @@
-## 3.8.3
+## 3.8.4
 
 - :bug: make sure `redirect_uri` is available during `oauth2.refresh` ([#444](https://github.com/zapier/zapier-platform/pull/444))
+
+## 3.8.3
+
+- :bug: Fix empty auth params when merging `request.url` and `reqeust.params` ([#441](https://github.com/zapier/zapier-platform/pull/441))
 
 ## 3.8.2
 
