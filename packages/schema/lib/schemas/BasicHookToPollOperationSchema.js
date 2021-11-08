@@ -30,8 +30,7 @@ BasicHookToPollOperationSchema.required = [
 
 BasicHookToPollOperationSchema.properties = {
   type: {
-    description:
-      'Must be explicitly set to `"hook"` unless this hook is defined as part of a resource, in which case it\'s optional.',
+    description: 'Must be explicitly set to `"hook_to_poll"`.',
     type: 'string',
     enum: ['hook_to_poll'],
     required: {
