@@ -1,3 +1,8 @@
+## 3.8.4
+
+- :bug: Make sure `redirect_uri` is available during `oauth2.refresh` ([#444](https://github.com/zapier/zapier-platform/pull/444))
+- :bug: Don't send auth with `z.dehydrateFile(url, {})` ([#445](https://github.com/zapier/zapier-platform/pull/445))
+
 ## 3.8.3
 
 - :bug: Fix empty auth params when merging `request.url` and `reqeust.params` ([#441](https://github.com/zapier/zapier-platform/pull/441))

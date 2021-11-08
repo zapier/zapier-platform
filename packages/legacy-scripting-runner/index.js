@@ -1054,6 +1054,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     body.client_id = clientId;
     body.client_secret = clientSecret;
     body.refresh_token = bundle.authData.refresh_token;
+    body.redirect_uri = bundle.inputData.redirect_uri;
     body.grant_type = 'refresh_token';
 
     let result;
@@ -1071,6 +1072,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       params.client_id = clientId;
       params.client_secret = clientSecret;
       params.refresh_token = bundle.authData.refresh_token;
+      params.redirect_uri = bundle.inputData.redirect_uri;
       params.grant_type = 'refresh_token';
 
       result = await runEventCombo(bundle, '', 'auth.oauth2.refresh.pre');

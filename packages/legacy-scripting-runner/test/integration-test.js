@@ -480,6 +480,9 @@ describe('Integration Test', () => {
         refresh_token: 'my_refresh_token',
         access_token: 'my_access_token',
       };
+      input.bundle.inputData = {
+        redirect_uri: 'https://zapier.rodeo/auth/abc123',
+      };
       return app(input).then((output) => {
         const data = output.results.form;
 
@@ -490,6 +493,7 @@ describe('Integration Test', () => {
           foo: ['hello'],
           grant_type: ['refresh_token'],
           refresh_token: ['my_refresh_token'],
+          redirect_uri: ['https://zapier.rodeo/auth/abc123'],
         });
       });
     });
@@ -511,6 +515,9 @@ describe('Integration Test', () => {
         refresh_token: 'my_refresh_token',
         access_token: 'my_access_token',
       };
+      input.bundle.inputData = {
+        redirect_uri: 'https://zapier.rodeo/auth/abc123',
+      };
       return app(input).then((output) => {
         const data = output.results.form;
         const params = output.results.args;
@@ -520,6 +527,7 @@ describe('Integration Test', () => {
           client_secret: [process.env.CLIENT_SECRET],
           grant_type: ['refresh_token'],
           refresh_token: ['my_refresh_token'],
+          redirect_uri: ['https://zapier.rodeo/auth/abc123'],
         });
         should.deepEqual(params, {});
       });
@@ -542,6 +550,9 @@ describe('Integration Test', () => {
         refresh_token: 'my_refresh_token',
         access_token: 'my_access_token',
       };
+      input.bundle.inputData = {
+        redirect_uri: 'https://zapier.rodeo/auth/abc123',
+      };
       return app(input).then((output) => {
         const response = output.results;
         should.not.exist(response.headers.Authorization);
@@ -550,6 +561,7 @@ describe('Integration Test', () => {
           client_secret: [process.env.CLIENT_SECRET],
           grant_type: ['refresh_token'],
           refresh_token: ['my_refresh_token'],
+          redirect_uri: ['https://zapier.rodeo/auth/abc123'],
         });
       });
     });
