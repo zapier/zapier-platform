@@ -3775,7 +3775,43 @@ describe('Integration Test', () => {
         return app(input).then((output) => {
           const { response, content, knownLength, filename, contentType } =
             output.results;
-          should.equal(content.headers['X-Api-Key'], 'super secret');
+          should.deepEqual(content.headers['X-Api-Key'], ['super secret']);
+          should.not.exist(knownLength);
+          should.not.exist(filename);
+          should.not.exist(contentType);
+
+          // Make sure prepareResponse middleware was run
+          response.getHeader.should.be.Function();
+          should.equal(
+            response.getHeader('content-type'),
+            'application/json; encoding=utf-8'
+          );
+        });
+      });
+
+      it('should not send auth when empty request options', () => {
+        const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+        const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+        const app = createAppWithCustomBefores(appDefWithAuth, [
+          mockFileStahser,
+        ]);
+
+        const input = createTestInput(
+          compiledApp,
+          'hydrators.legacyFileHydrator'
+        );
+        input.bundle.authData = { api_key: 'super secret' };
+        input.bundle.inputData = {
+          // This endpoint echoes what we send to it, so we know if auth info was sent
+          url: `${HTTPBIN_URL}/get`,
+          // An empty object should behave differently than an undefined request.
+          // An undefined request doesn't clear auth while an empty object does.
+          request: {},
+        };
+        return app(input).then((output) => {
+          const { response, content, knownLength, filename, contentType } =
+            output.results;
+          should.not.exist(content.headers['X-Api-Key']);
           should.not.exist(knownLength);
           should.not.exist(filename);
           should.not.exist(contentType);
