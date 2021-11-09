@@ -2876,6 +2876,29 @@ describe('Integration Test', () => {
       });
     });
 
+    it.only('KEY_write, returning array instead of object', () => {
+      // https://zapierorg.atlassian.net/browse/PDE-2875
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_returns_array',
+        'movie_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.inputData = {
+        title: 'Us',
+        genre: 'Horror',
+      };
+      return app(input).then((output) => {
+        should.deepEqual(output.results, { message: 'foo' });
+      });
+    });
+
     it('scriptingless input fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.inputFieldsUrl += 's';

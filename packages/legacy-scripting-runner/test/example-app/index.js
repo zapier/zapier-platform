@@ -713,6 +713,17 @@ const legacyScriptingSource = `
         return response.content;
       },
 
+      movie_returns_array: function(bundle) {
+        var data = z.JSON.parse(bundle.request.data);
+        var response = z.request({
+          method: 'POST',
+          url: '${HTTPBIN_URL}/post',
+          json: true,
+          body: data
+        });
+        return [ 'foo', 'bar' ];
+      },
+
       // To be replaced with 'movie_pre_custom_action_fields' at runtime
       movie_pre_custom_action_fields_disabled: function(bundle) {
         bundle.request.url += 's';
