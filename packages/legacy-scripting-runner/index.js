@@ -319,7 +319,7 @@ const dedupeHeaders = (headers) => {
 
 // Move all the query params from req.url to req.params. Make arrays if there
 // are multiple values with the same name.
-const normalizeQueryParams = (req) => {
+const mergeQueryParams = (req) => {
   if (!req.url) {
     return req;
   }
@@ -347,12 +347,12 @@ const normalizeQueryParams = (req) => {
     return result;
   }, {});
 
-  if (_.isEmpty(params)) {
-    return req;
-  }
-
   // Copy params collected from req.url to req.params
   req.params = _.mergeWith(params, req.params, (dst, src) => {
+    if (src === null) {
+      // Legacy WB relies on Python serializing null, ugh
+      src = 'None';
+    }
     if (dst === undefined) {
       return src;
     }
@@ -375,6 +375,18 @@ const normalizeQueryParams = (req) => {
   // Remove query params from req.url as they all should be in req.params by now
   req.url = req.url.substring(0, sepIndex);
   return req;
+};
+
+const pruneQueryParams = (params) => {
+  // Only prune nulls and undefined's. Keep empty strings.
+  return Object.entries(params).reduce((result, [name, value]) => {
+    if (Array.isArray(value)) {
+      result[name] = value.filter((v) => v != null);
+    } else if (value != null) {
+      result[name] = value;
+    }
+    return result;
+  }, {});
 };
 
 const compileLegacyScriptingSource = (source, zcli, app) => {
@@ -788,7 +800,10 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       request.serializeValueForCurlies = serializeValueForCurlies;
       request.skipThrowForStatus = true;
 
-      request = normalizeQueryParams(request);
+      request = mergeQueryParams(request);
+      if (request.params) {
+        request.params = pruneQueryParams(request.params);
+      }
 
       const response = await zcli.request(request);
 
@@ -1392,12 +1407,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   const runHydrateFile = (bundle) => {
     const meta = bundle.inputData.meta || {};
 
-    // Legacy z.dehydrateFile(url, request, meta) behavior: if request argument
-    // is provided, the dev is responsible for doing auth themselves, so we use
-    // an internal request client to avoid running the app's http middlewares.
+    // Legacy z.dehydrateFile(url, request, meta) behavior: if `request`
+    // argument is provided (not null nor undefined), the dev is responsible for
+    // doing auth themselves, so we use an internal request client to avoid
+    // running the app's http middlewares.
     const request =
-      bundle.inputData.request === null ||
-      bundle.inputData.request === undefined
+      bundle.inputData.request == null
         ? zcli.request
         : createInternalRequestClient(input);
 
