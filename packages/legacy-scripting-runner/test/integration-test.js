@@ -2877,22 +2877,25 @@ describe('Integration Test', () => {
     });
 
     it.only('KEY_write, returning array instead of object', () => {
-      // https://zapierorg.atlassian.net/browse/PDE-2875
-      const appDef = _.cloneDeep(appDefinition);
-      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
-        'movie_returns_array',
-        'movie_write'
-      );
-      const compiledApp = schemaTools.prepareApp(appDef);
-      const app = createApp(appDef);
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_returns_array',
+          'movie_post_write'
+        );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
         'creates.movie.operation.perform'
       );
+      input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
-        title: 'Us',
-        genre: 'Horror',
+        title: 'Men In Black',
+        genre: 'Sci Fi',
       };
       return app(input).then((output) => {
         should.deepEqual(output.results, { message: 'foo' });

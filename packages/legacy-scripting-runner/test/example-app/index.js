@@ -714,13 +714,6 @@ const legacyScriptingSource = `
       },
 
       movie_returns_array: function(bundle) {
-        var data = z.JSON.parse(bundle.request.data);
-        var response = z.request({
-          method: 'POST',
-          url: '${HTTPBIN_URL}/post',
-          json: true,
-          body: data
-        });
         return [ 'foo', 'bar' ];
       },
 
