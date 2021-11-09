@@ -2444,7 +2444,10 @@ describe('Integration Test', () => {
       return app(input).then((output) => {
         const echoed = output.results;
         should.deepEqual(echoed.args, {
+          foo: [''],
+          bar: ['', 'None'],
           baz: [''],
+          banana: ['None'],
         });
       });
     });

@@ -347,12 +347,12 @@ const mergeQueryParams = (req) => {
     return result;
   }, {});
 
-  if (_.isEmpty(params)) {
-    return req;
-  }
-
   // Copy params collected from req.url to req.params
   req.params = _.mergeWith(params, req.params, (dst, src) => {
+    if (src === null) {
+      // Legacy WB relies on Python serializing null, ugh
+      src = 'None';
+    }
     if (dst === undefined) {
       return src;
     }
@@ -380,7 +380,9 @@ const mergeQueryParams = (req) => {
 const pruneQueryParams = (params) => {
   // Only prune nulls and undefined's. Keep empty strings.
   return Object.entries(params).reduce((result, [name, value]) => {
-    if (value != null) {
+    if (Array.isArray(value)) {
+      result[name] = value.filter((v) => v != null);
+    } else if (value != null) {
       result[name] = value;
     }
     return result;
