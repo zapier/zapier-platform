@@ -655,6 +655,14 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_write_prune_empty_params: function(bundle) {
+        bundle.request.url = '${HTTPBIN_URL}/post';
+        bundle.request.params.foo = undefined;
+        bundle.request.params.bar = null;
+        bundle.request.params.baz = '';
+        return bundle.request;
+      },
+
       movie_write_default_headers: function(bundle) {
         bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({
