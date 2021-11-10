@@ -713,10 +713,6 @@ const legacyScriptingSource = `
         return response.content;
       },
 
-      movie_returns_array: function(bundle) {
-        return [ 'foo', 'bar' ];
-      },
-
       // To be replaced with 'movie_pre_custom_action_fields' at runtime
       movie_pre_custom_action_fields_disabled: function(bundle) {
         bundle.request.url += 's';

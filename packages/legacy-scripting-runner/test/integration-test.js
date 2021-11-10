@@ -2186,6 +2186,29 @@ describe('Integration Test', () => {
       });
     });
 
+    it('scriptingless perform, array of strings', () => {
+      if (!nock.isActive()) {
+        nock.activate();
+      }
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.inputData = {
+        title: 'Men in Black',
+      };
+      nock(AUTH_JSON_SERVER_URL).post('/movies').reply(200, ['foo', 'bar']);
+      return app(input).then((output) => {
+        should.deepEqual(output.results, { message: 'foo' });
+      });
+    });
+
     it('KEY_pre_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource =
@@ -2873,32 +2896,6 @@ describe('Integration Test', () => {
       return app(input).then((output) => {
         const echoed = output.results;
         should.equal(echoed.json.hello, 'world');
-      });
-    });
-
-    it.only('KEY_write, returning array instead of object', () => {
-      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
-      appDefWithAuth.legacy.creates.movie.operation.url += 's';
-      appDefWithAuth.legacy.scriptingSource =
-        appDefWithAuth.legacy.scriptingSource.replace(
-          'movie_returns_array',
-          'movie_post_write'
-        );
-
-      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
-      const app = createApp(appDefWithAuth);
-
-      const input = createTestInput(
-        compiledApp,
-        'creates.movie.operation.perform'
-      );
-      input.bundle.authData = { api_key: 'secret' };
-      input.bundle.inputData = {
-        title: 'Men In Black',
-        genre: 'Sci Fi',
-      };
-      return app(input).then((output) => {
-        should.deepEqual(output.results, { message: 'foo' });
       });
     });
 

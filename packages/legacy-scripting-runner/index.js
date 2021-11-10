@@ -860,6 +860,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
         try {
           result = zcli.JSON.parse(response.content);
+          if (postEventName) {
+            result = await parseFinalResult(result, {
+              key,
+              name: postEventName,
+            });
+          }
         } catch {
           result = {};
         }
