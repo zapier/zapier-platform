@@ -38,7 +38,6 @@ BasicHookToPollOperationSchema.properties = {
       value: '**yes** (with exceptions, see description)',
     },
   },
-  resource: BasicHookToPollOperationSchema.properties.resource,
   performList: {
     description:
       'Similar a polling trigger, but checks for new data when a webhook is received, instead of every few minutes',
@@ -76,7 +75,7 @@ BasicHookToPollOperationSchema.examples = [
 
 BasicHookToPollOperationSchema.antiExamples = [
   {
-    [SKIP_KEY]: true, // Cannot validate that sample is only required if display isn't true / top-level resource doesn't have sample
+    [SKIP_KEY]: true, // Cannot validate that sample is only required if display isn't true
     example: {
       type: 'hook_to_poll',
       performList: { require: 'some/path/to/file2.js' },
@@ -84,7 +83,7 @@ BasicHookToPollOperationSchema.antiExamples = [
       performUnsubscribe: { require: 'some/path/to/file4.js' },
     },
     reason:
-      'Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true and if it does not belong to a resource that has a sample.',
+      'Missing required key: sample. Note - This is only invalid if `display` is not explicitly set to true',
   },
 ];
 

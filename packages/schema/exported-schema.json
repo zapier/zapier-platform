@@ -1078,10 +1078,6 @@
             "value": "**yes** (with exceptions, see description)"
           }
         },
-        "resource": {
-          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
-          "$ref": "/KeySchema"
-        },
         "performList": {
           "description": "Similar a polling trigger, but checks for new data when a webhook is received, instead of every few minutes",
           "oneOf": [
