@@ -1,3 +1,9 @@
+## 3.8.5
+
+- :bug: Prune nulls and undefined's from query params ([#446](https://github.com/zapier/zapier-platform/pull/446))
+- :bug: Handle string array output from a scriptless create/action ([#447](https://github.com/zapier/zapier-platform/pull/447))
+- :bug: Encode `request.data` in `form-urlencoded` for `pre` methods ([#448](https://github.com/zapier/zapier-platform/pull/448))
+
 ## 3.8.4
 
 - :bug: Make sure `redirect_uri` is available during `oauth2.refresh` ([#444](https://github.com/zapier/zapier-platform/pull/444))
