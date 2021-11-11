@@ -213,11 +213,12 @@ const parseFinalResult = async (result, event) => {
           result.body = result.data;
         }
       }
-      // request.data isn't really used by CLI's z.request()
-      delete result.data;
     } else if (result.data === null || result.data === '') {
       result.body = '';
     }
+
+    // request.data isn't really used by CLI's z.request()
+    delete result.data;
     return result;
   }
 
