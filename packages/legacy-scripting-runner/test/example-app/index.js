@@ -665,6 +665,15 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_write_data_is_object: function(bundle) {
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/echo';
+        bundle.request.data = {
+          foo: 'bar',
+          apple: 123
+        };
+        return bundle.request;
+      },
+
       movie_write_default_headers: function(bundle) {
         bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({

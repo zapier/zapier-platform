@@ -197,12 +197,24 @@ const parseFinalResult = async (result, event) => {
     }
 
     if (result.data) {
-      // Old request was .data (string), new is .body (object), which matters for _pre
-      try {
-        result.body = JSON.parse(result.data);
-      } catch (e) {
-        result.body = result.data;
+      if (_.isPlainObject(result.data) && !event.name.startsWith('auth.')) {
+        // When a pre_(poll|write|search) gives an object for request.data, the
+        // data will always be form-urlencoded even if content-type is json. If
+        // the developer wants a JSON-encoded body, they need to encode the data
+        // using JSON.stringify().
+        const formParams = new URLSearchParams(result.data);
+        result.body = formParams.toString();
+      } else {
+        // Old request was .data (string), new is .body (object), which matters
+        // for _pre
+        try {
+          result.body = JSON.parse(result.data);
+        } catch (e) {
+          result.body = result.data;
+        }
       }
+      // request.data isn't really used by CLI's z.request()
+      delete result.data;
     } else if (result.data === null || result.data === '') {
       result.body = '';
     }
