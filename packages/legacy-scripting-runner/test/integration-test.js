@@ -2186,6 +2186,29 @@ describe('Integration Test', () => {
       });
     });
 
+    it('scriptingless perform, array of strings', () => {
+      if (!nock.isActive()) {
+        nock.activate();
+      }
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.inputData = {
+        title: 'Men in Black',
+      };
+      nock(AUTH_JSON_SERVER_URL).post('/movies').reply(200, ['foo', 'bar']);
+      return app(input).then((output) => {
+        should.deepEqual(output.results, { message: 'foo' });
+      });
+    });
+
     it('KEY_pre_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource =
