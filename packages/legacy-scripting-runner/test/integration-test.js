@@ -2496,7 +2496,11 @@ describe('Integration Test', () => {
           echoed.headers['content-type'],
           'application/json; charset=utf-8'
         );
-        should.equal(echoed.textBody, 'foo=bar&apple=123');
+        should.equal(
+          echoed.textBody,
+          'foo=bar&apple=123&dragonfruit=%26%3D&eggplant=1.11&eggplant=2.22&' +
+            'filbert=True&nest=foo&nest=hello'
+        );
       });
     });
 

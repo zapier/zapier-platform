@@ -669,7 +669,14 @@ const legacyScriptingSource = `
         bundle.request.url = '${AUTH_JSON_SERVER_URL}/echo';
         bundle.request.data = {
           foo: 'bar',
-          apple: 123
+          apple: 123,
+          banana: null,
+          dragonfruit: '&=',
+          eggplant: [1.11, 2.22, null],
+          filbert: true,
+          nest: {foo: 'bar', 'hello': {world: [1.1, 2.2]}},
+          empty_object: {},
+          empty_array: []
         };
         return bundle.request;
       },

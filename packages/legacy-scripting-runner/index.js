@@ -190,6 +190,38 @@ const addFilesToRequestBodyFromBody = async (request, bundle) => {
   return request;
 };
 
+const pythonSerialize = (value) => {
+  if (typeof value === 'boolean') {
+    return value ? 'True' : 'False';
+  }
+  return value.toString();
+};
+
+const encodeFormData = (data) => {
+  const parts = Object.entries(data).reduce((result, [name, value]) => {
+    let newItems;
+    if (Array.isArray(value)) {
+      newItems = value;
+    } else if (_.isPlainObject(value)) {
+      newItems = Object.keys(value);
+    } else if (value != null) {
+      newItems = [value];
+    }
+
+    if (newItems) {
+      newItems = newItems
+        .filter((v) => v != null)
+        .map(pythonSerialize)
+        .map(encodeURIComponent)
+        .map((v) => `${name}=${v}`);
+      result.push(...newItems);
+    }
+
+    return result;
+  }, []);
+  return parts.join('&');
+};
+
 const parseFinalResult = async (result, event) => {
   if (event.name.endsWith('.pre')) {
     if (!_.isEmpty(result.files)) {
@@ -202,8 +234,7 @@ const parseFinalResult = async (result, event) => {
         // data will always be form-urlencoded even if content-type is json. If
         // the developer wants a JSON-encoded body, they need to encode the data
         // using JSON.stringify().
-        const formParams = new URLSearchParams(result.data);
-        result.body = formParams.toString();
+        result.body = encodeFormData(result.data);
       } else {
         // Old request was .data (string), new is .body (object), which matters
         // for _pre
