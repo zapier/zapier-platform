@@ -665,6 +665,22 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_write_data_is_object: function(bundle) {
+        bundle.request.url = '${AUTH_JSON_SERVER_URL}/echo';
+        bundle.request.data = {
+          foo: 'bar',
+          apple: 123,
+          banana: null,
+          dragonfruit: '&=',
+          eggplant: [1.11, 2.22, null],
+          filbert: true,
+          nest: {foo: 'bar', 'hello': {world: [1.1, 2.2]}},
+          empty_object: {},
+          empty_array: []
+        };
+        return bundle.request;
+      },
+
       movie_write_default_headers: function(bundle) {
         bundle.request.url = '${HTTPBIN_URL}/post';
         bundle.request.data = z.JSON.stringify({

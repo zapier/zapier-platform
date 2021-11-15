@@ -2475,6 +2475,35 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_write, data is object', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_write_data_is_object',
+          'movie_pre_write'
+        );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).then((output) => {
+        const echoed = output.results;
+        should.equal(
+          echoed.headers['content-type'],
+          'application/json; charset=utf-8'
+        );
+        should.equal(
+          echoed.textBody,
+          'foo=bar&apple=123&dragonfruit=%26%3D&eggplant=1.11&eggplant=2.22&' +
+            'filbert=True&nest=foo&nest=hello'
+        );
+      });
+    });
+
     it('KEY_post_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.url += 's';

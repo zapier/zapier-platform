@@ -190,6 +190,38 @@ const addFilesToRequestBodyFromBody = async (request, bundle) => {
   return request;
 };
 
+const pythonSerialize = (value) => {
+  if (typeof value === 'boolean') {
+    return value ? 'True' : 'False';
+  }
+  return value.toString();
+};
+
+const encodeFormData = (data) => {
+  const parts = Object.entries(data).reduce((result, [name, value]) => {
+    let newItems;
+    if (Array.isArray(value)) {
+      newItems = value;
+    } else if (_.isPlainObject(value)) {
+      newItems = Object.keys(value);
+    } else if (value != null) {
+      newItems = [value];
+    }
+
+    if (newItems) {
+      newItems = newItems
+        .filter((v) => v != null)
+        .map(pythonSerialize)
+        .map(encodeURIComponent)
+        .map((v) => `${name}=${v}`);
+      result.push(...newItems);
+    }
+
+    return result;
+  }, []);
+  return parts.join('&');
+};
+
 const parseFinalResult = async (result, event) => {
   if (event.name.endsWith('.pre')) {
     if (!_.isEmpty(result.files)) {
@@ -197,15 +229,27 @@ const parseFinalResult = async (result, event) => {
     }
 
     if (result.data) {
-      // Old request was .data (string), new is .body (object), which matters for _pre
-      try {
-        result.body = JSON.parse(result.data);
-      } catch (e) {
-        result.body = result.data;
+      if (_.isPlainObject(result.data) && !event.name.startsWith('auth.')) {
+        // When a pre_(poll|write|search) gives an object for request.data, the
+        // data will always be form-urlencoded even if content-type is json. If
+        // the developer wants a JSON-encoded body, they need to encode the data
+        // using JSON.stringify().
+        result.body = encodeFormData(result.data);
+      } else {
+        // Old request was .data (string), new is .body (object), which matters
+        // for _pre
+        try {
+          result.body = JSON.parse(result.data);
+        } catch (e) {
+          result.body = result.data;
+        }
       }
     } else if (result.data === null || result.data === '') {
       result.body = '';
     }
+
+    // request.data isn't really used by CLI's z.request()
+    delete result.data;
     return result;
   }
 
