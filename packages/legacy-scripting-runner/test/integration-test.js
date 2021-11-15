@@ -2233,8 +2233,6 @@ describe('Integration Test', () => {
     });
 
     it('scriptingless perform, numeric response', () => {
-      // like this:
-      // https://cdn.zappy.app/c0d9acba5168c85b139f77f5f63729d2.png
       if (!nock.isActive()) {
         nock.activate();
       }
@@ -2283,8 +2281,6 @@ describe('Integration Test', () => {
     });
 
     it('scriptingless perform, object wrapped in string', () => {
-      // like this:
-      // https://cdn.zappy.app/57524b6fa98e6eba6b445a2137547ccd.png
       if (!nock.isActive()) {
         nock.activate();
       }
@@ -2309,8 +2305,6 @@ describe('Integration Test', () => {
     });
 
     it('scriptingless perform, email string', () => {
-      // like this:
-      // https://cdn.zappy.app/44a6fa9bd43d056c12bfafae05dfbf11.png
       if (!nock.isActive()) {
         nock.activate();
       }
