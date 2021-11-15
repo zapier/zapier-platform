@@ -2209,6 +2209,157 @@ describe('Integration Test', () => {
       });
     });
 
+    it('scriptingless perform, empty array', () => {
+      if (!nock.isActive()) {
+        nock.activate();
+      }
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.inputData = {
+        title: 'The Invisible Man',
+      };
+      nock(AUTH_JSON_SERVER_URL).post('/movies').reply(200, []);
+      return app(input).then((output) => {
+        should.deepEqual(output.results, {});
+      });
+    });
+
+    it('scriptingless perform, numeric response', () => {
+      // like this:
+      // https://cdn.zappy.app/c0d9acba5168c85b139f77f5f63729d2.png
+      if (!nock.isActive()) {
+        nock.activate();
+      }
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.inputData = {
+        title: 'Se7en',
+      };
+      nock(AUTH_JSON_SERVER_URL).post('/movies').reply(200, 777);
+      return app(input).then((output) => {
+        should.deepEqual(output.results, { message: 777 });
+      });
+    });
+
+    it('scriptingless perform, array with a single object', () => {
+      if (!nock.isActive()) {
+        nock.activate();
+      }
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.inputData = {
+        title: 'Oblivion',
+      };
+      nock(AUTH_JSON_SERVER_URL)
+        .post('/movies')
+        .reply(200, [{ status: '0', message: 'All good' }]);
+      return app(input).then((output) => {
+        should.deepEqual(output.results, { status: '0', message: 'All good' });
+      });
+    });
+
+    it('scriptingless perform, object wrapped in string', () => {
+      // like this:
+      // https://cdn.zappy.app/57524b6fa98e6eba6b445a2137547ccd.png
+      if (!nock.isActive()) {
+        nock.activate();
+      }
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.inputData = {
+        title: 'Wrapped Around You',
+      };
+      const objectAsString = JSON.stringify({ data: true });
+      nock(AUTH_JSON_SERVER_URL).post('/movies').reply(200, objectAsString);
+      return app(input).then((output) => {
+        should.deepEqual(output.results, { message: objectAsString });
+      });
+    });
+
+    it('scriptingless perform, email string', () => {
+      // like this:
+      // https://cdn.zappy.app/44a6fa9bd43d056c12bfafae05dfbf11.png
+      if (!nock.isActive()) {
+        nock.activate();
+      }
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.inputData = {
+        title: 'Eagle Eye',
+      };
+      const email = 'hello@world.com';
+      nock(AUTH_JSON_SERVER_URL).post('/movies').reply(200, email);
+      return app(input).then((output) => {
+        should.deepEqual(output.results, { message: email });
+      });
+    });
+
+    it('scriptingless perform, sensitive string', () => {
+      if (!nock.isActive()) {
+        nock.activate();
+      }
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.creates.movie.operation.url += 's';
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      input.bundle.authData = {
+        api_key: 'secret_api_key',
+      };
+      input.bundle.inputData = {
+        title: 'Top Secret',
+      };
+      nock(AUTH_JSON_SERVER_URL).post('/movies').reply(200, 'secret_api_key');
+      return app(input).then((output) => {
+        should.deepEqual(output.results, {});
+      });
+    });
+
     it('KEY_pre_write', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.scriptingSource =
