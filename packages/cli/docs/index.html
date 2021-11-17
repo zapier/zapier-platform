@@ -4349,8 +4349,7 @@ refresh:</p>
 This is useful if the API you&apos;re interfacing with is reports it is receiving too many requests, often indicated by
 receiving a response status code of 429.</p><p>If a response receives a status code of 429 and is not caught, Zapier will re-attempt the operation after a delay.
 The delay can be customized by the server response containing a
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After">Retry-After</a> header. The value must be a delay
-in seconds.</p><p>Another way to request Zapier retry an operation is to throw a <code>ThrottledError</code>, which may also optionally specify a
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After">Retry-After</a> header.</p><p>Another way to request Zapier retry an operation is to throw a <code>ThrottledError</code>, which may also optionally specify a
 delay in seconds:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
