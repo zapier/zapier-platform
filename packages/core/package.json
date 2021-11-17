@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-core",
-  "version": "11.1.1",
+  "version": "11.2.0",
   "description": "The core SDK for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -35,7 +35,7 @@
     "validate": "yarn test && yarn smoke-test && yarn lint"
   },
   "engines": {
-    "node": ">=10",
+    "node": ">=12",
     "npm": ">=5.6.0"
   },
   "engineStrict": true,

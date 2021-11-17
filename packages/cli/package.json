@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-cli",
-  "version": "11.1.1",
+  "version": "11.2.0",
   "description": "The CLI for managing integrations in Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -19,7 +19,7 @@
     "/oclif.manifest.json"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "scripts": {
     "docs": "ZAPIER_BASE_ENDPOINT='' node scripts/docs.js && cp -r docs ../..",
