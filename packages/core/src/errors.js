@@ -32,6 +32,7 @@ class ResponseError extends Error {
         status: response.status,
         headers: {
           'content-type': response.headers.get('content-type'),
+          'retry-after': response.headers.get('retry-after'),
         },
         content,
         request: {
@@ -40,6 +41,19 @@ class ResponseError extends Error {
       })
     );
     this.name = 'ResponseError';
+    this.doNotContextify = true;
+  }
+}
+
+class ThrottledError extends Error {
+  constructor(message, delay) {
+    super(
+      JSON.stringify({
+        message,
+        delay,
+      })
+    );
+    this.name = 'ThrottledError';
     this.doNotContextify = true;
   }
 }
@@ -77,6 +91,7 @@ const exceptions = _.reduce(
   {
     Error: AppError,
     ResponseError,
+    ThrottledError,
   }
 );
 

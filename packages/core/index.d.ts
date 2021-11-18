@@ -71,6 +71,9 @@ declare class AppError extends Error {
 declare class HaltedError extends Error {}
 declare class ExpiredAuthError extends Error {}
 declare class RefreshAuthError extends Error {}
+declare class ThrottledError extends Error {
+  constructor(message: string, delay?: number);
+}
 
 // copied http stuff from external typings
 export interface HttpRequestOptions {
@@ -188,5 +191,6 @@ export interface ZObject {
     HaltedError: typeof HaltedError;
     ExpiredAuthError: typeof ExpiredAuthError;
     RefreshAuthError: typeof RefreshAuthError;
+    ThrottledError: typeof ThrottledError;
   };
 }

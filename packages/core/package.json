@@ -35,7 +35,7 @@
     "validate": "yarn test && yarn smoke-test && yarn lint"
   },
   "engines": {
-    "node": ">=10",
+    "node": ">=12",
     "npm": ">=5.6.0"
   },
   "engineStrict": true,

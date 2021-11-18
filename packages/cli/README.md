@@ -115,6 +115,7 @@ This doc describes the latest CLI version (**11.1.1**), as of this writing. If y
   * [Halting Execution](#halting-execution)
   * [Stale Authentication Credentials](#stale-authentication-credentials)
     + [v10 Breaking Change: Auth Refresh](#v10-breaking-change-auth-refresh)
+  * [Handling Throttled Requests](#handling-throttled-requests)
 - [Testing](#testing)
   * [Writing Unit Tests](#writing-unit-tests)
   * [Using the `z` Object in Tests](#using-the-z-object-in-tests)
@@ -1640,6 +1641,7 @@ The available errors are:
 * `HaltedError` - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
 * `ExpiredAuthError` - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
 * `RefreshAuthError` - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
+* `ThrottledError` (_new in v11.2.0_) - Tells Zapier to retry the current operation after a delay specified in seconds. Read more on [Handling Throttled Requests](#handling-throttled-requests)
 
 For more details on error handling in general, see [here](#error-handling).
 
@@ -2618,6 +2620,28 @@ const yourAfterResponse = (resp) => {
   }
   if (resp.status !== 200) {
     throw new Error('hi');
+  }
+  return resp;
+};
+```
+
+### Handling Throttled Requests
+
+Since v11.2.0, there are two types of errors that can cause Zapier to throttle an operation and retry at a later time.
+This is useful if the API you're interfacing with is reports it is receiving too many requests, often indicated by
+receiving a response status code of 429.
+
+If a response receives a status code of 429 and is not caught, Zapier will re-attempt the operation after a delay.
+The delay can be customized by the server response containing a
+[Retry-After](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After) header.
+
+Another way to request Zapier retry an operation is to throw a `ThrottledError`, which may also optionally specify a
+delay in seconds:
+
+```js
+const yourAfterResponse = (resp) => {
+  if (resp.status === 429) {
+    throw new ThrottledError('message here', 60);  // Zapier will retry in 60 seconds
   }
   return resp;
 };

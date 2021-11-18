@@ -97,3 +97,5 @@ example-apps/typescript/lib
 boilerplate/build
 
 .vscode
+
+.idea/

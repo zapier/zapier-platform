@@ -347,6 +347,7 @@ a code {
 <li><a href="#v10-breaking-change-auth-refresh">v10 Breaking Change: Auth Refresh</a></li>
 </ul>
 </li>
+<li><a href="#handling-throttled-requests">Handling Throttled Requests</a></li>
 </ul>
 </li>
 <li><a href="#testing">Testing</a><ul>
@@ -555,6 +556,7 @@ a code {
 <li><a href="#v10-breaking-change-auth-refresh">v10 Breaking Change: Auth Refresh</a></li>
 </ul>
 </li>
+<li><a href="#handling-throttled-requests">Handling Throttled Requests</a></li>
 </ul>
 </li>
 <li><a href="#testing">Testing</a><ul>
@@ -2766,6 +2768,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 <li><code>HaltedError</code> - Stops current operation, but will never turn off Zap. Read more on <a href="#halting-execution">Halting Execution</a></li>
 <li><code>ExpiredAuthError</code> - Turns off Zap and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
 <li><code>RefreshAuthError</code> - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+<li><code>ThrottledError</code> (<em>new in v11.2.0</em>) - Tells Zapier to retry the current operation after a delay specified in seconds. Read more on <a href="#handling-throttled-requests">Handling Throttled Requests</a></li>
 </ul><p>For more details on error handling in general, see <a href="#error-handling">here</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -4324,6 +4327,35 @@ refresh:</p>
   }
   <span class="hljs-keyword">if</span> (resp.status !== <span class="hljs-number">200</span>) {
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">&apos;hi&apos;</span>);
+  }
+  <span class="hljs-keyword">return</span> resp;
+};
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="handling-throttled-requests">Handling Throttled Requests</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Since v11.2.0, there are two types of errors that can cause Zapier to throttle an operation and retry at a later time.
+This is useful if the API you&apos;re interfacing with is reports it is receiving too many requests, often indicated by
+receiving a response status code of 429.</p><p>If a response receives a status code of 429 and is not caught, Zapier will re-attempt the operation after a delay.
+The delay can be customized by the server response containing a
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After">Retry-After</a> header.</p><p>Another way to request Zapier retry an operation is to throw a <code>ThrottledError</code>, which may also optionally specify a
+delay in seconds:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> yourAfterResponse = <span class="hljs-function">(<span class="hljs-params">resp</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (resp.status === <span class="hljs-number">429</span>) {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ThrottledError(<span class="hljs-string">&apos;message here&apos;</span>, <span class="hljs-number">60</span>);  <span class="hljs-comment">// Zapier will retry in 60 seconds</span>
   }
   <span class="hljs-keyword">return</span> resp;
 };

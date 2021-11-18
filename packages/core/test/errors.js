@@ -29,7 +29,14 @@ describe('errors', () => {
       const response = {
         status: 400,
         headers: {
-          get: () => 'text/html; charset=utf-8',
+          get: (header) => {
+            switch (header) {
+              case 'retry-after':
+                return 60;
+              default:
+                return 'text/html; charset=utf-8';
+            }
+          },
         },
         content: '',
         request: {
@@ -41,7 +48,7 @@ describe('errors', () => {
       error.should.instanceOf(errors.ResponseError);
       error.name.should.eql('ResponseError');
       error.message.should.eql(
-        `{"status":400,"headers":{"content-type":"text/html; charset=utf-8"},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`
+        `{"status":400,"headers":{"content-type":"text/html; charset=utf-8","retry-after":60},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`
       );
     });
 
@@ -49,7 +56,14 @@ describe('errors', () => {
       const response = {
         status: 401,
         headers: {
-          get: () => 'application/json',
+          get: (header) => {
+            switch (header) {
+              case 'retry-after':
+                return 60;
+              default:
+                return 'application/json';
+            }
+          },
         },
         request: {
           url: 'https://example.com',
@@ -66,7 +80,7 @@ describe('errors', () => {
       error.should.instanceOf(errors.ResponseError);
       error.name.should.eql('ResponseError');
       error.message.should.eql(
-        `{"status":401,"headers":{"content-type":"application/json"},"content":null,"request":{"url":"https://example.com"}}`
+        `{"status":401,"headers":{"content-type":"application/json","retry-after":60},"content":null,"request":{"url":"https://example.com"}}`
       );
     });
   });

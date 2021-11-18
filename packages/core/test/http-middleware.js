@@ -424,7 +424,7 @@ describe('http throwForStatus after middleware', () => {
     }).should.be.rejectedWith(errors.ResponseError, {
       name: 'ResponseError',
       doNotContextify: true,
-      message: `{"status":400,"headers":{"content-type":null},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`,
+      message: `{"status":400,"headers":{"content-type":null,"retry-after":null},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`,
     });
   });
 
