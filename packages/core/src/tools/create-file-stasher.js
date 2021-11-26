@@ -1,14 +1,18 @@
 'use strict';
 
-const _ = require('lodash');
+const fs = require('fs');
+const os = require('os');
 const path = require('path');
-const FormData = require('form-data');
+const { pipeline } = require('stream');
+const { promisify } = require('util');
+const { randomBytes } = require('crypto');
+
+const _ = require('lodash');
 const contentDisposition = require('content-disposition');
+const FormData = require('form-data');
+const mime = require('mime-types');
 
 const request = require('./request-client-internal');
-const ZapierPromise = require('./promise');
-
-const isPromise = obj => obj && typeof obj.then === 'function';
 
 const UPLOAD_MAX_SIZE = 1000 * 1000 * 150; // 150mb, in zapier backend too
 
@@ -19,32 +23,152 @@ const LENGTH_ERR_MESSAGE =
 const DEFAULT_FILE_NAME = 'unnamedfile';
 const DEFAULT_CONTENT_TYPE = 'application/octet-stream';
 
-const uploader = (
+const streamPipeline = promisify(pipeline);
+
+const filenameFromURL = url => {
+  try {
+    return decodeURIComponent(path.posix.basename(new URL(url).pathname));
+  } catch (error) {
+    return null;
+  }
+};
+
+const resolveRemoteStream = async stream => {
+  // Download to a temp file, get the file size, and create a readable stream
+  // from the temp file.
+  //
+  // The streamPipeline usage is taken from
+  // https://github.com/node-fetch/node-fetch#streams
+  const tmpFilePath = path.join(
+    os.tmpdir(),
+    'stash-' + randomBytes(16).toString('hex')
+  );
+  await streamPipeline(stream, fs.createWriteStream(tmpFilePath));
+
+  const length = fs.statSync(tmpFilePath).size;
+  const readStream = fs.createReadStream(tmpFilePath);
+
+  return new Promise((resolve, reject) => {
+    readStream
+      .on('close', () => {
+        // Burn after reading
+        fs.unlinkSync(tmpFilePath);
+      })
+      .on('error', reject);
+    resolve({
+      streamOrData: readStream,
+      length
+    });
+  });
+};
+
+const resolveResponseToStream = async response => {
+  // Get filename from content-disposition header or URL
+  const cd = response.headers.get('content-disposition');
+  let filename =
+    (cd
+      ? contentDisposition.parse(cd).parameters.filename
+      : filenameFromURL(response.url)) || DEFAULT_FILE_NAME;
+
+  const contentType = response.headers.get('content-type');
+  if (contentType && !path.extname(filename)) {
+    const ext = mime.extension(contentType);
+    if (ext && ext !== 'bin') {
+      filename += '.' + ext;
+    }
+  }
+
+  return {
+    ...(await resolveRemoteStream(response.body)),
+    contentType: contentType || DEFAULT_CONTENT_TYPE,
+    filename: filename || DEFAULT_FILE_NAME
+  };
+};
+
+const resolveStreamWithMeta = async stream => {
+  const isLocalFile = stream.path && fs.existsSync(stream.path);
+  if (isLocalFile) {
+    const filename = path.basename(stream.path);
+    return {
+      streamOrData: stream,
+      length: fs.statSync(stream.path).size,
+      contentType: mime.lookup(filename) || DEFAULT_CONTENT_TYPE,
+      filename
+    };
+  }
+
+  return {
+    ...(await resolveRemoteStream(stream)),
+    contentType: DEFAULT_CONTENT_TYPE,
+    filename: DEFAULT_FILE_NAME
+  };
+};
+
+// Returns an object with fields:
+// * streamOrData: a readable stream, a string, or a Buffer
+// * length: content length in bytes
+// * contentType
+// * filename
+const resolveToBufferStringStream = async responseOrData => {
+  if (typeof responseOrData === 'string' || responseOrData instanceof String) {
+    // The .toString() call only makes a difference for the String object case.
+    // It converts a String object to a regular string.
+    const str = responseOrData.toString();
+    return {
+      streamOrData: str,
+      length: Buffer.byteLength(str),
+      contentType: 'text/plain',
+      filename: `${DEFAULT_FILE_NAME}.txt`
+    };
+  } else if (Buffer.isBuffer(responseOrData)) {
+    return {
+      streamOrData: responseOrData,
+      length: responseOrData.length,
+      contentType: DEFAULT_CONTENT_TYPE,
+      filename: DEFAULT_FILE_NAME
+    };
+  } else if (
+    responseOrData.body &&
+    typeof responseOrData.body.pipe === 'function'
+  ) {
+    return resolveResponseToStream(responseOrData);
+  } else if (typeof responseOrData.pipe === 'function') {
+    return resolveStreamWithMeta(responseOrData);
+  }
+
+  throw new TypeError(
+    `z.stashFile() cannot stash type '${typeof responseOrData}'. ` +
+      'Pass it a request, readable stream, string, or Buffer.'
+  );
+};
+
+const uploader = async (
   signedPostData,
   bufferStringStream,
   knownLength,
   filename,
   contentType
 ) => {
+  if (knownLength && knownLength > UPLOAD_MAX_SIZE) {
+    throw new Error(`${knownLength} is too big, ${UPLOAD_MAX_SIZE} is the max`);
+  }
+  filename = path.basename(filename).replace('"', '');
+
+  const fields = {
+    ...signedPostData.fields,
+    'Content-Disposition': contentDisposition(filename),
+    'Content-Type': contentType
+  };
+
   const form = new FormData();
 
-  if (knownLength && knownLength > UPLOAD_MAX_SIZE) {
-    return ZapierPromise.reject(
-      new Error(`${knownLength} is too big, ${UPLOAD_MAX_SIZE} is the max`)
-    );
-  }
-
-  _.each(signedPostData.fields, (value, key) => {
+  Object.entries(fields).forEach(([key, value]) => {
     form.append(key, value);
   });
 
-  filename = path.basename(filename || DEFAULT_FILE_NAME).replace('"', '');
-
-  form.append('Content-Disposition', contentDisposition(filename));
-
   form.append('file', bufferStringStream, {
-    contentType,
     knownLength,
+    contentType,
     filename
   });
 
@@ -56,120 +180,93 @@ const uploader = (
   }
 
   // Send to S3 with presigned request.
-  return request({
+  const response = await request({
     url: signedPostData.url,
     method: 'POST',
     body: form
-  }).then(res => {
-    if (res.status === 204) {
-      return `${signedPostData.url}${signedPostData.fields.key}`;
-    }
-    if (
-      res.content.indexOf(
-        'You must provide the Content-Length HTTP header.'
-      ) !== -1
-    ) {
-      throw new Error(LENGTH_ERR_MESSAGE);
-    }
-    throw new Error(`Got ${res.status} - ${res.content}`);
   });
+
+  if (response.status === 204) {
+    return new URL(signedPostData.fields.key, signedPostData.url).href;
+  }
+
+  if (
+    response.content &&
+    response.content.includes &&
+    response.content.includes(
+      'You must provide the Content-Length HTTP header.'
+    )
+  ) {
+    throw new Error(LENGTH_ERR_MESSAGE);
+  }
+
+  throw new Error(`Got ${response.status} - ${response.content}`);
 };
 
 // Designed to be some user provided function/api.
 const createFileStasher = input => {
   const rpc = _.get(input, '_zapier.rpc');
 
-  return (bufferStringStream, knownLength, filename, contentType) => {
+  return async (requestOrData, knownLength, filename, contentType) => {
     // TODO: maybe this could be smart?
     // if it is already a public url, do we pass through? or upload?
     if (!rpc) {
-      return ZapierPromise.reject(new Error('rpc is not available'));
+      throw new Error('rpc is not available');
     }
 
-    const isRunningOnHydrator =
-      _.get(input, '_zapier.event.method', '').indexOf('hydrators.') === 0;
-    const isRunningOnCreate =
-      _.get(input, '_zapier.event.method', '').indexOf('creates.') === 0;
+    const isRunningOnHydrator = _.get(
+      input,
+      '_zapier.event.method',
+      ''
+    ).startsWith('hydrators.');
+    const isRunningOnCreate = _.get(
+      input,
+      '_zapier.event.method',
+      ''
+    ).startsWith('creates.');
 
     if (!isRunningOnHydrator && !isRunningOnCreate) {
-      return ZapierPromise.reject(
-        new Error(
-          'Files can only be stashed within a create or hydration function/method.'
-        )
+      throw new Error(
+        'Files can only be stashed within a create or hydration function/method.'
       );
     }
 
-    const fileContentType = contentType || DEFAULT_CONTENT_TYPE;
+    // requestOrData can be one of these:
+    // * string
+    // * Buffer
+    // * z.request() - a Promise of a regular response
+    // * z.request({ raw: true }) - a Promise of a "streamable" response
+    // * await z.request() - a regular response
+    // * await z.request({ raw: true }) - a streamable response
+    //
+    // After the following, requestOrData is resolved to responseOrData, which
+    // is either:
+    // - string
+    // - Buffer
+    // - a regular response
+    // - a streamable response
+    const [signedPostData, responseOrData] = await Promise.all([
+      rpc('get_presigned_upload_post_data'),
+      requestOrData
+    ]);
 
-    return rpc('get_presigned_upload_post_data', fileContentType).then(
-      result => {
-        if (isPromise(bufferStringStream)) {
-          return bufferStringStream.then(maybeResponse => {
-            const isStreamed = _.get(maybeResponse, 'request.raw', false);
+    if (responseOrData.throwForStatus) {
+      responseOrData.throwForStatus();
+    }
 
-            const parseFinalResponse = response => {
-              let newBufferStringStream = response;
-              if (_.isString(response)) {
-                newBufferStringStream = response;
-              } else if (response) {
-                if (Buffer.isBuffer(response)) {
-                  newBufferStringStream = response;
-                } else if (Buffer.isBuffer(response.dataBuffer)) {
-                  newBufferStringStream = response.dataBuffer;
-                } else if (
-                  response.body &&
-                  typeof response.body.pipe === 'function'
-                ) {
-                  newBufferStringStream = response.body;
-                } else {
-                  newBufferStringStream = response.content;
-                }
+    const {
+      streamOrData,
+      length,
+      contentType: _contentType,
+      filename: _filename
+    } = await resolveToBufferStringStream(responseOrData);
 
-                if (response.headers) {
-                  knownLength =
-                    knownLength || response.getHeader('content-length');
-                  const cd = response.getHeader('content-disposition');
-                  if (cd) {
-                    filename =
-                      filename ||
-                      contentDisposition.parse(cd).parameters.filename;
-                  }
-                }
-              } else {
-                throw new Error(
-                  'Cannot stash a Promise wrapped file of unknown type.'
-                );
-              }
-
-              return uploader(
-                result,
-                newBufferStringStream,
-                knownLength,
-                filename,
-                fileContentType
-              );
-            };
-
-            if (isStreamed) {
-              maybeResponse.throwForStatus();
-              return maybeResponse.buffer().then(buffer => {
-                maybeResponse.dataBuffer = buffer;
-                return parseFinalResponse(maybeResponse);
-              });
-            } else {
-              return parseFinalResponse(maybeResponse);
-            }
-          });
-        } else {
-          return uploader(
-            result,
-            bufferStringStream,
-            knownLength,
-            filename,
-            fileContentType
-          );
-        }
-      }
+    return uploader(
+      signedPostData,
+      streamOrData,
+      knownLength || length,
+      filename || _filename,
+      contentType || _contentType
     );
   };
 };
