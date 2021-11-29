@@ -11,18 +11,18 @@ const {
   FAKE_S3_URL,
   makeRpc,
   mockRpcGetPresignedPostCall,
-  mockUpload
+  mockUpload,
 } = require('./mocky');
 
 const createFileStasher = require('../../src/tools/create-file-stasher');
 const createAppRequestClient = require('../../src/tools/create-app-request-client');
 const createInput = require('../../src/tools/create-input');
 
-const sha1 = stream =>
+const sha1 = (stream) =>
   new Promise((resolve, reject) => {
     const hash = crypto.createHash('sha1');
     stream
-      .on('data', d => hash.update(d))
+      .on('data', (d) => hash.update(d))
       .on('end', () => {
         const digest = hash.digest('hex');
         resolve(digest);
@@ -40,9 +40,9 @@ describe('file upload', () => {
     _zapier: {
       rpc,
       event: {
-        method: 'hydrators.test'
-      }
-    }
+        method: 'hydrators.test',
+      },
+    },
   });
 
   it('should upload a blob of text', async () => {
@@ -137,14 +137,12 @@ describe('file upload', () => {
     mockRpcGetPresignedPostCall('4444/deadbeef');
     mockUpload();
 
-    nock('https://example.com')
-      .get('/stream-bytes')
-      .reply(401);
+    nock('https://example.com').get('/stream-bytes').reply(401);
 
     const request = createAppRequestClient(input);
     const file = request({
       url: 'https://example.com/stream-bytes',
-      raw: true
+      raw: true,
     });
     await stashFile(file).should.be.rejectedWith(/"status":401/);
   });
@@ -174,9 +172,9 @@ describe('file upload', () => {
       _zapier: {
         rpc,
         event: {
-          method: 'triggers.test.operation.perform'
-        }
-      }
+          method: 'triggers.test.operation.perform',
+        },
+      },
     });
 
     const file = fs.createReadStream(path.join(__dirname, 'test.txt'));
@@ -190,9 +188,9 @@ describe('file upload', () => {
       _zapier: {
         rpc,
         event: {
-          method: 'search.test.operation.perform'
-        }
-      }
+          method: 'search.test.operation.perform',
+        },
+      },
     });
 
     const file = fs.createReadStream(path.join(__dirname, 'test.txt'));
@@ -209,9 +207,9 @@ describe('file upload', () => {
       _zapier: {
         rpc,
         event: {
-          method: 'creates.test.operation.perform'
-        }
-      }
+          method: 'creates.test.operation.perform',
+        },
+      },
     });
 
     const file = 'hello world this is a plain blob of text';
@@ -237,9 +235,9 @@ describe('file upload', () => {
     const file = request({
       url: 'https://httpbin.zapier-tooling.com/response-headers',
       params: {
-        'Content-Disposition': 'inline; filename="an example.json"'
+        'Content-Disposition': 'inline; filename="an example.json"',
       },
-      raw: true
+      raw: true,
     });
     const url = await stashFile(file);
     should(url).eql(`${FAKE_S3_URL}/1234/foo.json`);
@@ -257,7 +255,7 @@ describe('file upload', () => {
 
     const file = request({
       url: 'https://httpbin.zapier-tooling.com/image/png',
-      raw: true
+      raw: true,
     });
     const url = await stashFile(file);
     should(url).eql(`${FAKE_S3_URL}/1234/pig.png`);
@@ -283,7 +281,7 @@ describe('file upload', () => {
 
     const file = request({
       url: 'https://httpbin.zapier-tooling.com/gzip',
-      raw: true
+      raw: true,
     });
     const url = await stashFile(file);
     should(url).eql(`${FAKE_S3_URL}/5678/gzip.json`);
@@ -305,7 +303,7 @@ describe('file upload', () => {
     // This request is resolved early because of the "await"
     const file = await request({
       url: 'https://httpbin.zapier-tooling.com/xml',
-      raw: true
+      raw: true,
     });
     const url = await stashFile(file);
     should(url).eql(`${FAKE_S3_URL}/5678/document`);
@@ -345,5 +343,25 @@ describe('file upload', () => {
 
     const file = [1, 2, 3];
     await stashFile(file).should.be.rejectedWith(/cannot stash type 'object'/);
+  });
+
+  it('should upload regular response', async () => {
+    mockRpcGetPresignedPostCall('9999/document');
+    mockUpload();
+
+    const file = request('https://httpbin.zapier-tooling.com/html');
+    const url = await stashFile(file);
+    should(url).eql(`${FAKE_S3_URL}/9999/document`);
+
+    const s3Response = await request({ url, raw: true });
+    should(s3Response.getHeader('content-type')).startWith('text/html');
+    should(s3Response.getHeader('content-disposition')).eql(
+      'attachment; filename="html.html"'
+    );
+
+    // This is what you get when you:
+    // curl https://httpbin.zapier-tooling.com/html | sha1sum
+    const expectedHash = '5dfecf638c8ab7e2e9d3bca1d3f213d708aedb25';
+    should(await sha1(s3Response.body)).eql(expectedHash);
   });
 });

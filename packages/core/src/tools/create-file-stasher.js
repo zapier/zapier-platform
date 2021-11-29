@@ -25,7 +25,7 @@ const DEFAULT_CONTENT_TYPE = 'application/octet-stream';
 
 const streamPipeline = promisify(pipeline);
 
-const filenameFromURL = url => {
+const filenameFromURL = (url) => {
   try {
     return decodeURIComponent(path.posix.basename(new URL(url).pathname));
   } catch (error) {
@@ -33,7 +33,7 @@ const filenameFromURL = url => {
   }
 };
 
-const resolveRemoteStream = async stream => {
+const resolveRemoteStream = async (stream) => {
   // Download to a temp file, get the file size, and create a readable stream
   // from the temp file.
   //
@@ -57,18 +57,19 @@ const resolveRemoteStream = async stream => {
       .on('error', reject);
     resolve({
       streamOrData: readStream,
-      length
+      length,
     });
   });
 };
 
-const resolveResponseToStream = async response => {
+const resolveResponseToStream = async (response) => {
   // Get filename from content-disposition header or URL
   const cd = response.headers.get('content-disposition');
   let filename =
     (cd
       ? contentDisposition.parse(cd).parameters.filename
-      : filenameFromURL(response.url)) || DEFAULT_FILE_NAME;
+      : filenameFromURL(response.url || _.get(response, ['request', 'url']))) ||
+    DEFAULT_FILE_NAME;
 
   const contentType = response.headers.get('content-type');
   if (contentType && !path.extname(filename)) {
@@ -78,14 +79,25 @@ const resolveResponseToStream = async response => {
     }
   }
 
+  if (response.body && typeof response.body.pipe === 'function') {
+    // streamable response created by z.request({ raw: true })
+    return {
+      ...(await resolveRemoteStream(response.body)),
+      contentType: contentType || DEFAULT_CONTENT_TYPE,
+      filename: filename || DEFAULT_FILE_NAME,
+    };
+  }
+
+  // regular response created by z.request({ raw: false })
   return {
-    ...(await resolveRemoteStream(response.body)),
+    streamOrData: response.content,
+    length: Buffer.byteLength(response.content),
     contentType: contentType || DEFAULT_CONTENT_TYPE,
-    filename: filename || DEFAULT_FILE_NAME
+    filename: filename || DEFAULT_FILE_NAME,
   };
 };
 
-const resolveStreamWithMeta = async stream => {
+const resolveStreamWithMeta = async (stream) => {
   const isLocalFile = stream.path && fs.existsSync(stream.path);
   if (isLocalFile) {
     const filename = path.basename(stream.path);
@@ -93,14 +105,14 @@ const resolveStreamWithMeta = async stream => {
       streamOrData: stream,
       length: fs.statSync(stream.path).size,
       contentType: mime.lookup(filename) || DEFAULT_CONTENT_TYPE,
-      filename
+      filename,
     };
   }
 
   return {
     ...(await resolveRemoteStream(stream)),
     contentType: DEFAULT_CONTENT_TYPE,
-    filename: DEFAULT_FILE_NAME
+    filename: DEFAULT_FILE_NAME,
   };
 };
 
@@ -109,7 +121,7 @@ const resolveStreamWithMeta = async stream => {
 // * length: content length in bytes
 // * contentType
 // * filename
-const resolveToBufferStringStream = async responseOrData => {
+const resolveToBufferStringStream = async (responseOrData) => {
   if (typeof responseOrData === 'string' || responseOrData instanceof String) {
     // The .toString() call only makes a difference for the String object case.
     // It converts a String object to a regular string.
@@ -118,18 +130,18 @@ const resolveToBufferStringStream = async responseOrData => {
       streamOrData: str,
       length: Buffer.byteLength(str),
       contentType: 'text/plain',
-      filename: `${DEFAULT_FILE_NAME}.txt`
+      filename: `${DEFAULT_FILE_NAME}.txt`,
     };
   } else if (Buffer.isBuffer(responseOrData)) {
     return {
       streamOrData: responseOrData,
       length: responseOrData.length,
       contentType: DEFAULT_CONTENT_TYPE,
-      filename: DEFAULT_FILE_NAME
+      filename: DEFAULT_FILE_NAME,
     };
   } else if (
-    responseOrData.body &&
-    typeof responseOrData.body.pipe === 'function'
+    (responseOrData.body && typeof responseOrData.body.pipe === 'function') ||
+    typeof responseOrData.content === 'string'
   ) {
     return resolveResponseToStream(responseOrData);
   } else if (typeof responseOrData.pipe === 'function') {
@@ -157,7 +169,7 @@ const uploader = async (
   const fields = {
     ...signedPostData.fields,
     'Content-Disposition': contentDisposition(filename),
-    'Content-Type': contentType
+    'Content-Type': contentType,
   };
 
   const form = new FormData();
@@ -169,7 +181,7 @@ const uploader = async (
   form.append('file', bufferStringStream, {
     knownLength,
     contentType,
-    filename
+    filename,
   });
 
   // Try to catch the missing length early, before upload to S3 fails.
@@ -183,7 +195,7 @@ const uploader = async (
   const response = await request({
     url: signedPostData.url,
     method: 'POST',
-    body: form
+    body: form,
   });
 
   if (response.status === 204) {
@@ -204,7 +216,7 @@ const uploader = async (
 };
 
 // Designed to be some user provided function/api.
-const createFileStasher = input => {
+const createFileStasher = (input) => {
   const rpc = _.get(input, '_zapier.rpc');
 
   return async (requestOrData, knownLength, filename, contentType) => {
@@ -247,7 +259,7 @@ const createFileStasher = input => {
     // - a streamable response
     const [signedPostData, responseOrData] = await Promise.all([
       rpc('get_presigned_upload_post_data'),
-      requestOrData
+      requestOrData,
     ]);
 
     if (responseOrData.throwForStatus) {
@@ -258,7 +270,7 @@ const createFileStasher = input => {
       streamOrData,
       length,
       contentType: _contentType,
-      filename: _filename
+      filename: _filename,
     } = await resolveToBufferStringStream(responseOrData);
 
     return uploader(
