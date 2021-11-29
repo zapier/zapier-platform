@@ -122,7 +122,6 @@ const resolveStreamWithMeta = async (stream) => {
 // * contentType
 // * filename
 const resolveToBufferStringStream = async (responseOrData) => {
-  debugger;
   if (typeof responseOrData === 'string' || responseOrData instanceof String) {
     // The .toString() call only makes a difference for the String object case.
     // It converts a String object to a regular string.
