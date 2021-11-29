@@ -1,4 +1,4 @@
-const Dicer = require('Dicer');
+const Dicer = require('dicer');
 const nock = require('nock');
 
 const createRpcClient = require('../../src/tools/create-rpc-client');
