@@ -344,6 +344,6 @@ describe('file upload', () => {
     mockUpload();
 
     const file = [1, 2, 3];
-    await stashFile(file).should.be.rejectedWith(/cannot stash type 'number'/);
+    await stashFile(file).should.be.rejectedWith(/cannot stash type 'object'/);
   });
 });
