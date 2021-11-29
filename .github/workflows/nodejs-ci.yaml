@@ -80,7 +80,7 @@ jobs:
         working-directory: packages/cli
 
   smoke-test-libs:
-    name: Smoke test - core, schema, legacy-scripting-runner
+    name: Smoke test - core, schema
     runs-on: ubuntu-latest
     environment: ci
     env:
@@ -106,9 +106,6 @@ jobs:
       - name: Smoke test - schema
         run: yarn smoke-test
         working-directory: packages/schema
-      - name: Smoke test - legacy-scripting-runner
-        run: yarn smoke-test
-        working-directory: packages/legacy-scripting-runner
 
   smoke-test-cli:
     name: Smoke test - cli
