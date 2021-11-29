@@ -6,7 +6,7 @@ name: Zapier Dev Platform CI
 on: push
 
 jobs:
-  lint:
+  ci:
     runs-on: ubuntu-latest
 
     strategy:
