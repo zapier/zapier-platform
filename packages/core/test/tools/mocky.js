@@ -1,52 +1,161 @@
+const Dicer = require('dicer');
 const nock = require('nock');
 
 const createRpcClient = require('../../src/tools/create-rpc-client');
 
+const FAKE_ZAPIER_URL = 'https://mock.zapier.com';
+const FAKE_S3_URL = 'https://s3-fake.zapier.com';
+
+const RPC_URL_PATH = '/platform/rpc/cli';
+
 const makeRpc = () => {
   return createRpcClient({
-    rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
+    rpc_base: `${FAKE_ZAPIER_URL}${RPC_URL_PATH}`,
     token: 'debug:4001:1',
     storeKey: 'test_key',
   });
 };
 
 const mockRpcCall = (result) => {
-  nock('https://mock.zapier.com')
-    .post('/platform/rpc/cli')
+  nock(FAKE_ZAPIER_URL)
+    .post(RPC_URL_PATH)
     .reply(200, (uri, requestBody) => {
       const id = JSON.parse(requestBody).id;
-      return { result: result, id };
+      return { result, id };
+    });
+};
+
+const mockRpcGetPresignedPostCall = (key) => {
+  nock(FAKE_ZAPIER_URL)
+    .post(RPC_URL_PATH)
+    .reply(200, (uri, requestBody) => {
+      const id = JSON.parse(requestBody).id;
+      return {
+        id,
+        result: {
+          url: FAKE_S3_URL,
+          fields: {
+            key,
+            policy: 'bm8gZHJhbWE=',
+            AWSAccessKeyId: 'AKIAIKIAAKIAIKIAAKIA',
+            acl: 'public-read',
+            signature: 'c4GzkaCtrc0ruvbZh6aSmf/1k=',
+          },
+        },
+      };
     });
 };
 
 const mockRpcFail = (error) => {
-  nock('https://mock.zapier.com')
-    .post('/platform/rpc/cli')
+  nock(FAKE_ZAPIER_URL)
+    .post(RPC_URL_PATH)
     .reply(500, (uri, requestBody) => {
       const id = JSON.parse(requestBody).id;
-      return { error: error, id };
+      return { error, id };
     });
 };
 
-const fakeSignedPostData = {
-  url: 'https://s3-fake.zapier.com/',
-  fields: {
-    policy: 'bm8gZHJhbWE=',
-    AWSAccessKeyId: 'AKIAIKIAAKIAIKIAAKIA',
-    acl: 'public-read',
-    key: 'some-route/d362f087-1106-4847-9261-669ec340b580',
-    signature: 'c4GzkaCtrc0ruvbZh6aSmf/1k=',
-  },
+// A quick and dirty way to emulate how S3 parses presigned post data
+const parsePresignedPostData = (requestBody, contentType) => {
+  const boundary = /;boundary=([^\s]+)/i.exec(contentType)[1];
+  const d = new Dicer({ boundary });
+  return new Promise((resolve, reject) => {
+    const result = {};
+    d.on('part', function (p) {
+      const part = {
+        key: null,
+        value: null,
+      };
+      p.on('header', function (header) {
+        Object.entries(header).forEach(([key, value]) => {
+          if (key === 'content-disposition') {
+            value = value[0];
+            if (value.startsWith('form-data;')) {
+              part.key = /name="([^"]+)"/i.exec(value)[1];
+            }
+          }
+        });
+      })
+        .on('data', function (data) {
+          if (part.key === 'file') {
+            part.value = data;
+          } else {
+            part.value = data.toString();
+          }
+        })
+        .on('end', function () {
+          if (part.key) {
+            result[part.key] = part.value;
+          }
+        });
+    })
+      .on('finish', function () {
+        resolve(result);
+      })
+      .on('error', function (error) {
+        reject(error);
+      });
+
+    d.end(requestBody);
+  });
 };
 
-const mockUpload = (bodyMatcher) => {
-  nock('https://s3-fake.zapier.com').post('/', bodyMatcher).reply(204);
+const isHexString = (str) => {
+  const c0 = '0'.charCodeAt(0);
+  const cz = 'z'.charCodeAt(0);
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    if (c < c0 || c > cz) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const decodeStringToBuffer = (str) => {
+  const encoding = isHexString(str) ? 'hex' : 'utf8';
+  return Buffer.from(str, encoding);
+};
+
+// Emulates how S3 handles file uploads and downloads
+const mockUpload = () => {
+  // Mock file upload
+  nock(FAKE_S3_URL)
+    .post('/')
+    .reply(function (uri, requestBody, cb) {
+      const contentType = this.req.headers['content-type'][0];
+      // nock always coerces request body to a string, either in hex or utf8.
+      // We want raw binary data here so we need to decode it back to Buffer.
+      requestBody = decodeStringToBuffer(requestBody, contentType);
+
+      const contentLength = parseInt(this.req.headers['content-length'][0]);
+      if (requestBody.length !== contentLength) {
+        // This is what S3 gives you when the lengths don't match
+        cb(null, [400, 'MalformedPOSTRequest']);
+        return;
+      }
+
+      parsePresignedPostData(requestBody, contentType)
+        .then(function (result) {
+          // Mock file download
+          nock(FAKE_S3_URL).get(`/${result.key}`).reply(200, result.file, {
+            'Content-Disposition': result['Content-Disposition'],
+            'Content-Length': result.file.length,
+            'Content-Type': result['Content-Type'],
+          });
+          cb(null, [204, '']);
+        })
+        .catch(function (error) {
+          cb(null, [400, error.toString()]);
+        });
+    });
 };
 
 module.exports = {
   makeRpc,
   mockRpcCall,
   mockRpcFail,
-  fakeSignedPostData,
+  mockRpcGetPresignedPostCall,
   mockUpload,
+  FAKE_S3_URL,
 };
