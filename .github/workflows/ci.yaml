@@ -25,7 +25,6 @@ jobs:
   test-libs:
     name: Test - core, schema, legacy-scripting-runner
     runs-on: ubuntu-latest
-    environment: ci
     env:
       ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
       TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
@@ -57,7 +56,6 @@ jobs:
   test-cli:
     name: Test - cli
     runs-on: ${{ matrix.os }}
-    environment: ci
     env:
       ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
       TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
@@ -84,7 +82,6 @@ jobs:
   smoke-test-libs:
     name: Smoke test - core, schema
     runs-on: ubuntu-latest
-    environment: ci
     env:
       ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
       TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
@@ -114,7 +111,6 @@ jobs:
     name: Smoke test - cli
     runs-on: ${{ matrix.os }}
 
-    environment: ci
     env:
       ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
       TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
