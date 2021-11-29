@@ -338,4 +338,12 @@ describe('file upload', () => {
     );
     should(await s3Response.text()).eql('hello world');
   });
+
+  it('should fail for unknown type', async () => {
+    mockRpcGetPresignedPostCall('5678/string');
+    mockUpload();
+
+    const file = [1, 2, 3];
+    await stashFile(file).should.be.rejectedWith(/cannot stash type 'number'/);
+  });
 });
