@@ -10,9 +10,9 @@ const RPC_URL_PATH = '/platform/rpc/cli';
 
 const makeRpc = () => {
   return createRpcClient({
-    rpc_base: `${FAKE_ZAPIER_URL}${RPC_URL_PATH}`
-    // token: 'debug:4001:1',
-    // storeKey: 'test_key'
+    rpc_base: `${FAKE_ZAPIER_URL}${RPC_URL_PATH}`,
+    token: 'debug:4001:1',
+    storeKey: 'test_key'
   });
 };
 
