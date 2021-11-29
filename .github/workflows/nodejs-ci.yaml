@@ -22,11 +22,7 @@ jobs:
         run: yarn lint
 
   test-cli:
-    runs-on:
-      - ubuntu-latest
-      - macos-11
-      - windows-2022
-
+    runs-on: ${{ matrix.os }}
     environment: ci
     env:
       ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
@@ -34,6 +30,7 @@ jobs:
 
     strategy:
       matrix:
+        os: [macos-latest, ubuntu-latest, ubuntu-latest]
         node-version: [12.x, 14.x]
 
     steps:
@@ -98,10 +95,7 @@ jobs:
         working-directory: packages/schema
 
   smoke-test-cli:
-    runs-on:
-      - ubuntu-latest
-      - macos-11
-      - windows-2022
+    runs-on: ${{ matrix.os }}
 
     environment: ci
     env:
@@ -110,6 +104,7 @@ jobs:
 
     strategy:
       matrix:
+        os: [macos-latest, ubuntu-latest, ubuntu-latest]
         node-version: [12.x, 14.x]
 
     steps:
