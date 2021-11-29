@@ -1193,7 +1193,7 @@ Reference a resource by key and the data it returns. In the format of: `{resourc
 #### Details
 
 * **Type** - `string`
-* **Pattern** - `^[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+(,[a-zA-Z0-9_]+)*)?$`
+* **Pattern** - `^[a-zA-Z0-9_]+\.[a-zA-Z0-9_\s\[\]]+(\.[a-zA-Z0-9_\s\[\]]+(,[a-zA-Z0-9_\s\[\]]+)*)?$`
 * [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@11.1.1/packages/schema/lib/schemas/RefResourceSchema.js)
 
 
@@ -1203,10 +1203,14 @@ Reference a resource by key and the data it returns. In the format of: `{resourc
 * `'contact.id.name'`
 * `'contact.id.firstName,lastName'`
 * `'contact.id.first_name,last_name,email'`
+* `'contact.Contact Id.Full Name'`
+* `'contact.data[]id.data[]First Name,data[]Last Name'`
 
 #### Anti-Examples
 
-* `'Contact.list.id.full_name'` - _Does not match pattern_
+* `'Contact List'` - _Does not match resource_key pattern_
+* `'Contact.list,find.id'` - _Does not match foreign_key pattern_
+* `'Contact.list.id.full_name'` - _Does not match human_label_key pattern_
 
 -----
 
