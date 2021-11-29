@@ -8,6 +8,10 @@ on: push
 jobs:
   ci:
     runs-on: ubuntu-latest
+    environment: ci
+    env:
+      ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
+      TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
 
     strategy:
       matrix:
