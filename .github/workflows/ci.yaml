@@ -31,6 +31,7 @@ jobs:
       TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [12.x, 14.x]
 
@@ -62,6 +63,7 @@ jobs:
       TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         node-version: [12.x, 14.x]
@@ -88,6 +90,7 @@ jobs:
       TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: [12.x, 14.x]
 
@@ -117,6 +120,7 @@ jobs:
       TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
 
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         node-version: [12.x, 14.x]
