@@ -116,7 +116,7 @@ jobs:
           cache: yarn
       - name: Install dependencies
         run: yarn --frozen-lockfile
-      - name: Test
+      - name: Smoke test
         run: yarn smoke-test
         working-directory: packages/cli
 
@@ -140,7 +140,7 @@ jobs:
           cache: yarn
       - name: Install dependencies
         run: yarn --frozen-lockfile
-      - name: Test
+      - name: Smoke test
         run: yarn smoke-test
         working-directory: packages/core
 
@@ -164,6 +164,6 @@ jobs:
           cache: yarn
       - name: Install dependencies
         run: yarn --frozen-lockfile
-      - name: Test
+      - name: Smoke test
         run: yarn smoke-test
         working-directory: packages/schema
