@@ -6,7 +6,50 @@ name: Zapier Dev Platform CI
 on: push
 
 jobs:
-  ci:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+          cache: yarn
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Lint
+        run: yarn lint
+
+  test-cli:
+    runs-on:
+      - ubuntu-latest
+      - macos-11
+      - windows-2022
+
+    environment: ci
+    env:
+      ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
+      TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Test
+        run: yarn test
+        working-directory: packages/cli
+
+  test-core:
     runs-on: ubuntu-latest
     environment: ci
     env:
@@ -25,8 +68,107 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: yarn
       - name: Install dependencies
-        run: yarn
-      - name: Lint
-        run: yarn lint
+        run: yarn --frozen-lockfile
       - name: Test
-        run: yarn validate
+        run: yarn test
+        working-directory: packages/core
+
+  test-schema:
+    runs-on: ubuntu-latest
+    environment: ci
+    env:
+      ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
+      TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Test
+        run: yarn test
+        working-directory: packages/schema
+
+  smoke-test-cli:
+    runs-on:
+      - ubuntu-latest
+      - macos-11
+      - windows-2022
+
+    environment: ci
+    env:
+      ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
+      TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Test
+        run: yarn smoke-test
+        working-directory: packages/cli
+
+  smoke-test-core:
+    runs-on: ubuntu-latest
+    environment: ci
+    env:
+      ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
+      TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Test
+        run: yarn smoke-test
+        working-directory: packages/core
+
+  smoke-test-schema:
+    runs-on: ubuntu-latest
+    environment: ci
+    env:
+      ZAPIER_DEPLOY_KEY: ${{ secrets.ZAPIER_DEPLOY_KEY }}
+      TEST_APP_ID: ${{ secrets.TEST_APP_ID }}
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Test
+        run: yarn smoke-test
+        working-directory: packages/schema
