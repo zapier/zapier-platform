@@ -255,6 +255,28 @@ describe('file upload', () => {
     );
   });
 
+  it('should handle bad content-disposition', async () => {
+    mockRpcGetPresignedPostCall('1234/foo.json');
+    mockUpload();
+
+    const file = request({
+      url: 'https://httpbin.zapier-tooling.com/response-headers',
+      params: {
+        // Missing a closing quote at the end
+        'Content-Disposition': 'inline; filename="an example.json',
+      },
+      raw: true,
+    });
+    const url = await stashFile(file);
+    should(url).eql(`${FAKE_S3_URL}/1234/foo.json`);
+
+    const s3Response = await request({ url, raw: true });
+    should(s3Response.getHeader('content-type')).startWith('application/json');
+    should(s3Response.getHeader('content-disposition')).eql(
+      'attachment; filename="response-headers.json"'
+    );
+  });
+
   it('should upload a png image', async () => {
     mockRpcGetPresignedPostCall('1234/pig.png');
     mockUpload();
@@ -408,7 +430,6 @@ describe('file upload', () => {
 
     const expectedHash = await sha1(fileToHash);
     should(await sha1(s3Response.body)).eql(expectedHash);
-    should(getNumTempFiles()).eql(numTempFiles);
   });
 
   it('should delete temp file on error', async () => {
