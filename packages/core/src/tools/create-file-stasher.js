@@ -43,18 +43,22 @@ const resolveRemoteStream = async (stream) => {
     os.tmpdir(),
     'stash-' + randomBytes(16).toString('hex')
   );
-  await streamPipeline(stream, fs.createWriteStream(tmpFilePath));
+
+  try {
+    await streamPipeline(stream, fs.createWriteStream(tmpFilePath));
+  } catch (error) {
+    fs.unlinkSync(tmpFilePath);
+    throw error;
+  }
 
   const length = fs.statSync(tmpFilePath).size;
   const readStream = fs.createReadStream(tmpFilePath);
 
   return new Promise((resolve, reject) => {
-    readStream
-      .on('close', () => {
-        // Burn after reading
-        fs.unlinkSync(tmpFilePath);
-      })
-      .on('error', reject);
+    readStream.on('close', () => {
+      // Burn after reading
+      fs.unlinkSync(tmpFilePath);
+    });
     resolve({
       streamOrData: readStream,
       length,
