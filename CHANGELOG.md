@@ -1,3 +1,20 @@
+## 11.2.0
+
+_released `2021-11-30`_
+
+### cli
+
+- none!
+
+### core
+
+- :nail_care: Allow apps to pass along throttled errors ([#408](https://github.com/zapier/zapier-platform/pull/408))
+
+### schema
+
+- :bug: Correct dynamic RefResource to allow spaces and brackets ([#455](https://github.com/zapier/zapier-platform/pull/455)),
+- :nail_care: Support hook to poll triggers ([#432](https://github.com/zapier/zapier-platform/pull/432))
+
 ## 11.1.1
 
 _released `2021-09-24`_
