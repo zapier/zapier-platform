@@ -2,7 +2,9 @@
 
 const crypto = require('crypto');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
+const { Readable } = require('stream');
 
 const should = require('should');
 const nock = require('nock');
@@ -30,6 +32,10 @@ const sha1 = (stream) =>
       })
       .on('error', reject);
   });
+
+const getNumTempFiles = () =>
+  fs.readdirSync(os.tmpdir()).filter((name) => name.startsWith('stash-'))
+    .length;
 
 describe('file upload', () => {
   const testLogger = () => Promise.resolve({});
@@ -364,5 +370,68 @@ describe('file upload', () => {
     // curl ${HTTPBIN_URL}/html | sha1sum
     const expectedHash = '5dfecf638c8ab7e2e9d3bca1d3f213d708aedb25';
     should(await sha1(s3Response.body)).eql(expectedHash);
+  });
+
+  it('should upload custom stream', async () => {
+    mockRpcGetPresignedPostCall('3333/some-bytes');
+    mockUpload();
+
+    const fileToUpload = Readable();
+    const fileToHash = Readable();
+    let numBytesGenerated = 0;
+
+    fileToUpload._read = function () {
+      // Generate 100 random bytes
+      const byte = crypto.randomInt(0, 255);
+      const chunk = Buffer.from([byte]);
+      fileToUpload.push(chunk);
+      fileToHash.push(chunk);
+      numBytesGenerated++;
+      if (numBytesGenerated === 100) {
+        fileToUpload.push(null);
+        fileToHash.push(null);
+      }
+    };
+
+    const numTempFiles = getNumTempFiles();
+
+    const url = await stashFile(fileToUpload);
+    should(url).eql(`${FAKE_S3_URL}/3333/some-bytes`);
+    should(getNumTempFiles()).eql(numTempFiles);
+
+    const s3Response = await request({ url, raw: true });
+    should(s3Response.getHeader('content-type')).eql(
+      'application/octet-stream'
+    );
+    should(s3Response.getHeader('content-disposition')).eql(
+      'attachment; filename="unnamedfile"'
+    );
+
+    const expectedHash = await sha1(fileToHash);
+    should(await sha1(s3Response.body)).eql(expectedHash);
+    should(getNumTempFiles()).eql(numTempFiles);
+  });
+
+  it('should delete temp file on error', async () => {
+    mockRpcGetPresignedPostCall('3333/some-bytes');
+    mockUpload();
+
+    const file = Readable();
+    let numBytesGenerated = 0;
+
+    file._read = function () {
+      const byte = crypto.randomInt(0, 255);
+      const chunk = Buffer.from([byte]);
+      file.push(chunk);
+      numBytesGenerated++;
+      if (numBytesGenerated === 100) {
+        file.destroy(new Error('uh oh'));
+      }
+    };
+
+    const numTempFiles = getNumTempFiles();
+
+    await stashFile(file).should.be.rejectedWith(/uh oh/);
+    should(getNumTempFiles()).eql(numTempFiles);
   });
 });
