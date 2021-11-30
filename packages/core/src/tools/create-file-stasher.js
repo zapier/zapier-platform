@@ -33,6 +33,19 @@ const filenameFromURL = (url) => {
   }
 };
 
+const filenameFromHeader = (response) => {
+  const cd = response.headers.get('content-disposition');
+  let filename;
+  if (cd) {
+    try {
+      filename = contentDisposition.parse(cd).parameters.filename;
+    } catch (error) {
+      return null;
+    }
+  }
+  return filename || null;
+};
+
 const resolveRemoteStream = async (stream) => {
   // Download to a temp file, get the file size, and create a readable stream
   // from the temp file.
@@ -54,25 +67,22 @@ const resolveRemoteStream = async (stream) => {
   const length = fs.statSync(tmpFilePath).size;
   const readStream = fs.createReadStream(tmpFilePath);
 
-  return new Promise((resolve, reject) => {
-    readStream.on('close', () => {
-      // Burn after reading
-      fs.unlinkSync(tmpFilePath);
-    });
-    resolve({
-      streamOrData: readStream,
-      length,
-    });
+  readStream.on('end', () => {
+    // Burn after reading
+    fs.unlinkSync(tmpFilePath);
   });
+
+  return {
+    streamOrData: readStream,
+    length,
+  };
 };
 
 const resolveResponseToStream = async (response) => {
   // Get filename from content-disposition header or URL
-  const cd = response.headers.get('content-disposition');
   let filename =
-    (cd
-      ? contentDisposition.parse(cd).parameters.filename
-      : filenameFromURL(response.url || _.get(response, ['request', 'url']))) ||
+    filenameFromHeader(response) ||
+    filenameFromURL(response.url || _.get(response, ['request', 'url'])) ||
     DEFAULT_FILE_NAME;
 
   const contentType = response.headers.get('content-type');
@@ -88,7 +98,7 @@ const resolveResponseToStream = async (response) => {
     return {
       ...(await resolveRemoteStream(response.body)),
       contentType: contentType || DEFAULT_CONTENT_TYPE,
-      filename: filename || DEFAULT_FILE_NAME,
+      filename,
     };
   }
 
@@ -97,7 +107,7 @@ const resolveResponseToStream = async (response) => {
     streamOrData: response.content,
     length: Buffer.byteLength(response.content),
     contentType: contentType || DEFAULT_CONTENT_TYPE,
-    filename: filename || DEFAULT_FILE_NAME,
+    filename,
   };
 };
 
