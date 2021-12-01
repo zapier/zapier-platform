@@ -12,7 +12,8 @@ module.exports = makeSchema({
     'contact.id.name',
     'contact.id.firstName,lastName',
     'contact.id.first_name,last_name,email',
-    'contact.data[]ID.data[]First Name,data[]Last Name',
+    'contact.Contact Id.Full Name',
+    'contact.data[]id.data[]First Name,data[]Last Name',
   ],
   antiExamples: [
     'contact',
@@ -21,7 +22,8 @@ module.exports = makeSchema({
     'cont,act.id,name',
     'contact',
     'contact.id.,,',
-    'contact.id.a,,'
+    'contact.id.a,,',
   ],
-  pattern: '^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_\\s\\[\\]]+(\\.[a-zA-Z0-9_\\s\\[\\]]+(,[a-zA-Z0-9_\\s\\[\\]]+)*)?$'
+  pattern:
+    '^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_\\s\\[\\]]+(\\.[a-zA-Z0-9_\\s\\[\\]]+(,[a-zA-Z0-9_\\s\\[\\]]+)*)?$',
 });
