@@ -29,8 +29,8 @@
     "version": "yarn docs && git add docs/* README.md",
     "postversion": "git push && git push --tags",
     "lint": "eslint src snippets --fix",
-    "test": "NODE_ENV=test mocha -t 50000 --recursive src/tests",
-    "smoke-test": "NODE_ENV=test mocha -t 120000 --recursive src/smoke-tests",
+    "test": "cross-env NODE_ENV=test mocha -t 50000 --recursive src/tests",
+    "smoke-test": "cross-env NODE_ENV=test mocha -t 120000 --recursive src/smoke-tests",
     "validate-templates": "./scripts/validate-app-templates.js",
     "set-template-versions": "./scripts/set-app-template-versions.js",
     "validate": "yarn test && yarn smoke-test && yarn lint"

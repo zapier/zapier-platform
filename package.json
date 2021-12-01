@@ -3,6 +3,7 @@
   "private": true,
   "devDependencies": {
     "chalk": "2.4.2",
+    "cross-env": "7.0.3",
     "eslint": "6.2.2",
     "eslint-config-prettier": "6.1.0",
     "eslint-config-standard": "14.0.1",
@@ -16,7 +17,7 @@
     "lerna": "3.16.4",
     "lint-staged": "9.2.4",
     "mocha": "6.2.0",
-    "prettier": "1.18.2",
+    "prettier": "^2.3.0",
     "semver": "7.1.1",
     "should": "13.2.3"
   },

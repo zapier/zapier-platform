@@ -86,10 +86,7 @@ describe('smoke tests - setup will take some time', () => {
     const latestVersion = packageInfo['dist-tags'].latest;
 
     res = await fetch(
-      `${baseUrl}/-/zapier-platform-schema-${latestVersion}.tgz`,
-      {
-        method: 'HEAD'
-      }
+      `${baseUrl}/-/zapier-platform-schema-${latestVersion}.tgz`
     );
     const baselineSize = res.headers.get('content-length');
     const newSize = fs.statSync(context.package.path).size;
