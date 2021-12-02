@@ -1,5 +1,7 @@
 'use strict';
 
+const { Writable } = require('stream');
+
 const fetch = require('node-fetch');
 
 // XXX: PatchedRequest is to get past node-fetch's check that forbids GET requests
@@ -7,10 +9,10 @@ const fetch = require('node-fetch');
 // https://github.com/node-fetch/node-fetch/blob/v2.6.0/src/request.js#L75-L78
 class PatchedRequest extends fetch.Request {
   constructor(url, opts) {
-    const origMethod = (opts.method || 'GET').toUpperCase();
+    const origMethod = ((opts && opts.method) || 'GET').toUpperCase();
 
     const isGetWithBody =
-      (origMethod === 'GET' || origMethod === 'HEAD') && opts.body;
+      (origMethod === 'GET' || origMethod === 'HEAD') && opts && opts.body;
     let newOpts = opts;
     if (isGetWithBody) {
       // Temporary remove body to fool fetch.Request constructor
@@ -52,7 +54,17 @@ const newFetch = (url, opts) => {
   const request = new PatchedRequest(url, opts);
   // fetch actually accepts a Request object as an argument. It'll clone the
   // request internally, that's why the PatchedRequest.body hack works.
-  return fetch(request);
+  const responsePromise = fetch(request);
+
+  // if (request.body && typeof request.body.pipe === 'function') {
+  //   const nullStream = new Writable();
+  //   nullStream._write = function (chunk, encoding, done) {
+  //     done();
+  //   };
+  //   request.body.pipe(nullStream);
+  // }
+
+  return responsePromise;
 };
 
 newFetch.Promise = require('./promise');
