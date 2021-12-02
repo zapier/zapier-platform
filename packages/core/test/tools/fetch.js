@@ -1,6 +1,3 @@
-const { randomBytes } = require('crypto');
-const { Readable } = require('stream');
-
 const nock = require('nock');
 const should = require('should');
 
