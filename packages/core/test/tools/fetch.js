@@ -2,6 +2,8 @@ const nock = require('nock');
 const should = require('should');
 
 const fetch = require('../../src/tools/fetch');
+const FormData = require('form-data');
+
 const { HTTPBIN_URL } = require('../constants');
 
 describe('node-fetch patch', () => {
@@ -22,5 +24,21 @@ describe('node-fetch patch', () => {
 
     const result = await uploadResponse.json();
     should(result).eql({ length: 35000 });
+  });
+
+  it('should upload form data', async () => {
+    const downloadResponse = await fetch(`${HTTPBIN_URL}/stream-bytes/100`);
+
+    const form = new FormData();
+    form.append('name', 'hello');
+    form.append('data', downloadResponse.body);
+
+    const uploadResponse = await fetch(`${HTTPBIN_URL}/post`, {
+      method: 'POST',
+      body: form,
+    });
+
+    const result = await uploadResponse.json();
+    should(result.form.name).eql(['hello']);
   });
 });

@@ -52,17 +52,29 @@ class PatchedRequest extends fetch.Request {
 
 const newFetch = (url, opts) => {
   const request = new PatchedRequest(url, opts);
+
   // fetch actually accepts a Request object as an argument. It'll clone the
   // request internally, that's why the PatchedRequest.body hack works.
   const responsePromise = fetch(request);
 
-  // if (request.body && typeof request.body.pipe === 'function') {
-  //   const nullStream = new Writable();
-  //   nullStream._write = function (chunk, encoding, done) {
-  //     done();
-  //   };
-  //   request.body.pipe(nullStream);
-  // }
+  // node-fetch clones request.body and use the cloned body internally. We need
+  // to make sure to consume the original body stream so its internal buffer is
+  // not filled up, which causes it to pause.
+  // See https://github.com/node-fetch/node-fetch/issues/151
+  //
+  // Exclude form-data object to be consistent with
+  // https://github.com/node-fetch/node-fetch/blob/v2.6.6/src/body.js#L403-L412
+  if (
+    request.body &&
+    typeof request.body.pipe === 'function' &&
+    typeof request.body.getBoundary !== 'function'
+  ) {
+    const nullStream = new Writable();
+    nullStream._write = function (chunk, encoding, done) {
+      done();
+    };
+    request.body.pipe(nullStream);
+  }
 
   return responsePromise;
 };
