@@ -16,14 +16,15 @@ _released `2021-12-03`_
   - :bug: Fix `MalformedPOSTRequest` error when the reponse is gzipped and has a smaller `Content-Length`
   - :hammer: Better test coverage
   - See [#453](https://github.com/zapier/zapier-platform/pull/453) for more details
-* Bump node-fetch to 2.6.6 ([#458](https://github.com/zapier/zapier-platform/pull/458), [#460](https://github.com/zapier/zapier-platform/pull/460))
 
 ### schema
 
+* :bug: Fix backpressure issue when piping request bodies ([#462](https://github.com/zapier/zapier-platform/pull/462))
 * :nail_care: Allow spaces and sqaure brackets in [`RefResourceSchema`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.6.0/packages/schema/docs/build/schema.md) ([#456](https://github.com/zapier/zapier-platform/pull/456))
 
 ### misc
 
+* :hammer: Bump node-fetch to 2.6.6 ([#458](https://github.com/zapier/zapier-platform/pull/458), [#460](https://github.com/zapier/zapier-platform/pull/460))
 * :hammer: Move CI from Travis to GitHub Actions ([#453](https://github.com/zapier/zapier-platform/pull/453))
 
 ## 9.5.0
