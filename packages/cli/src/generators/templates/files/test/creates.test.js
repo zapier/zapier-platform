@@ -14,7 +14,7 @@ const FILE_URL =
 // This is what you get when doing `curl <FILE_URL> | sha1sum`
 const EXPECTED_SHA1 = '3cf58b42a0fb1b7cc58de8110096841ece967530';
 
-describe('uploadFile', () => {
+describe.skip('uploadFile', () => {
   test('upload file v10', async () => {
     if (CORE_VERSION[0] < 10) {
       console.warn(

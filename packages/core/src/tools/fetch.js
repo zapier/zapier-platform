@@ -1,5 +1,7 @@
 'use strict';
 
+const { Writable } = require('stream');
+
 const fetch = require('node-fetch');
 
 // XXX: PatchedRequest is to get past node-fetch's check that forbids GET requests
@@ -7,10 +9,10 @@ const fetch = require('node-fetch');
 // https://github.com/node-fetch/node-fetch/blob/v2.6.0/src/request.js#L75-L78
 class PatchedRequest extends fetch.Request {
   constructor(url, opts) {
-    const origMethod = (opts.method || 'GET').toUpperCase();
+    const origMethod = ((opts && opts.method) || 'GET').toUpperCase();
 
     const isGetWithBody =
-      (origMethod === 'GET' || origMethod === 'HEAD') && opts.body;
+      (origMethod === 'GET' || origMethod === 'HEAD') && opts && opts.body;
     let newOpts = opts;
     if (isGetWithBody) {
       // Temporary remove body to fool fetch.Request constructor
@@ -50,9 +52,31 @@ class PatchedRequest extends fetch.Request {
 
 const newFetch = (url, opts) => {
   const request = new PatchedRequest(url, opts);
+
   // fetch actually accepts a Request object as an argument. It'll clone the
   // request internally, that's why the PatchedRequest.body hack works.
-  return fetch(request);
+  const responsePromise = fetch(request);
+
+  // node-fetch clones request.body and use the cloned body internally. We need
+  // to make sure to consume the original body stream so its internal buffer is
+  // not filled up, which causes it to pause.
+  // See https://github.com/node-fetch/node-fetch/issues/151
+  //
+  // Exclude form-data object to be consistent with
+  // https://github.com/node-fetch/node-fetch/blob/v2.6.6/src/body.js#L403-L412
+  if (
+    request.body &&
+    typeof request.body.pipe === 'function' &&
+    typeof request.body.getBoundary !== 'function'
+  ) {
+    const nullStream = new Writable();
+    nullStream._write = function (chunk, encoding, done) {
+      done();
+    };
+    request.body.pipe(nullStream);
+  }
+
+  return responsePromise;
 };
 
 newFetch.Promise = require('./promise');
