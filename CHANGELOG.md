@@ -336,7 +336,7 @@ _released `2021-12-03`_
 
 ### misc
 
-* Bump node-fetch to 2.6.6 ([#458](https://github.com/zapier/zapier-platform/pull/458), [#460](https://github.com/zapier/zapier-platform/pull/460))
+* :hammer: Bump node-fetch to 2.6.6 ([#458](https://github.com/zapier/zapier-platform/pull/458), [#460](https://github.com/zapier/zapier-platform/pull/460))
 * :hammer: Move CI from Travis to GitHub Actions ([#453](https://github.com/zapier/zapier-platform/pull/453))
 
 ## 9.5.0
