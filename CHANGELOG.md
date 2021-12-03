@@ -1,19 +1,34 @@
 ## 11.2.0
 
-_released `2021-11-30`_
+_released `2021-12-03`_
 
 ### cli
 
-- none!
+* :scroll: Fix typos in docs ([#431](https://github.com/zapier/zapier-platform/pull/431))
 
 ### core
 
-- :nail_care: Allow apps to pass along throttled errors ([#408](https://github.com/zapier/zapier-platform/pull/408))
+* :bug: Fix backpressure issue when piping request bodies ([#461](https://github.com/zapier/zapier-platform/pull/461))
+* Rewrite `z.stashFile()` with various improvements and bugfixes ([#454](https://github.com/zapier/zapier-platform/pull/454))
+  - :nail_care: `knownLength` is no longer required for _any_ kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
+  - :nail_care: Detect file types more smartly
+  - :nail_care: Generate filenames more smartly
+  - :nail_care: Improve performance by making concurrent requests
+  - :bug: Fix `MalformedPOSTRequest` error when the reponse is gzipped and has a smaller `Content-Length`
+  - :hammer: Better test coverage
+  - See [#454](https://github.com/zapier/zapier-platform/pull/454) for more details
+* :nail_care: Allow apps to pass along throttled errors ([#408](https://github.com/zapier/zapier-platform/pull/408))
 
 ### schema
 
-- :bug: Correct dynamic RefResource to allow spaces and brackets ([#455](https://github.com/zapier/zapier-platform/pull/455)),
-- :nail_care: Support hook to poll triggers ([#432](https://github.com/zapier/zapier-platform/pull/432))
+* :tada: Add support for hook-to-poll triggers ([#432](https://github.com/zapier/zapier-platform/pull/432))
+* :nail_care: Allow spaces and square brackets in [`RefResourceSchema`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@11.2.0/packages/schema/docs/build/schema.md) ([#455](https://github.com/zapier/zapier-platform/pull/455))
+* :nail_care: Add `code` type for `inputField`s ([#439](https://github.com/zapier/zapier-platform/pull/439))
+
+### misc
+
+* :hammer: Bump node-fetch to 2.6.6 ([#459](https://github.com/zapier/zapier-platform/pull/459))
+* :hammer: Move CI from Travis to GitHub Actions ([#454](https://github.com/zapier/zapier-platform/pull/454))
 
 ## 11.1.1
 
@@ -294,6 +309,35 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 ### schema
 
 - :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+
+## 9.6.0
+
+_released `2021-12-03`_
+
+### cli
+
+- None!
+
+### core
+
+* :bug: Fix backpressure issue when piping request bodies ([#462](https://github.com/zapier/zapier-platform/pull/462))
+* Rewrite `z.stashFile()` with various improvements and bugfixes ([#453](https://github.com/zapier/zapier-platform/pull/453))
+  - :nail_care: `knownLength` is no longer required for _any_ kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
+  - :nail_care: Detect file types more smartly
+  - :nail_care: Generate filenames more smartly
+  - :nail_care: Improve performance by making concurrent requests
+  - :bug: Fix `MalformedPOSTRequest` error when the reponse is gzipped and has a smaller `Content-Length`
+  - :hammer: Better test coverage
+  - See [#453](https://github.com/zapier/zapier-platform/pull/453) for more details
+
+### schema
+
+* :nail_care: Allow spaces and sqaure brackets in [`RefResourceSchema`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.6.0/packages/schema/docs/build/schema.md) ([#456](https://github.com/zapier/zapier-platform/pull/456))
+
+### misc
+
+* Bump node-fetch to 2.6.6 ([#458](https://github.com/zapier/zapier-platform/pull/458), [#460](https://github.com/zapier/zapier-platform/pull/460))
+* :hammer: Move CI from Travis to GitHub Actions ([#453](https://github.com/zapier/zapier-platform/pull/453))
 
 ## 9.5.0
 
