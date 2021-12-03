@@ -8,6 +8,7 @@ _released `2021-12-03`_
 
 ### core
 
+* :bug: Fix backpressure issue when piping request bodies ([#462](https://github.com/zapier/zapier-platform/pull/462))
 * Rewrite `z.stashFile()` with various improvements and bugfixes ([#453](https://github.com/zapier/zapier-platform/pull/453))
   - :nail_care: `knownLength` is no longer required for _any_ kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
   - :nail_care: Detect file types more smartly
@@ -19,7 +20,6 @@ _released `2021-12-03`_
 
 ### schema
 
-* :bug: Fix backpressure issue when piping request bodies ([#462](https://github.com/zapier/zapier-platform/pull/462))
 * :nail_care: Allow spaces and sqaure brackets in [`RefResourceSchema`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.6.0/packages/schema/docs/build/schema.md) ([#456](https://github.com/zapier/zapier-platform/pull/456))
 
 ### misc
