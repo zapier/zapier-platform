@@ -60,7 +60,11 @@ const resolveRemoteStream = async (stream) => {
   try {
     await streamPipeline(stream, fs.createWriteStream(tmpFilePath));
   } catch (error) {
-    fs.unlinkSync(tmpFilePath);
+    try {
+      fs.unlinkSync(tmpFilePath);
+    } catch (e) {
+      // File doesn't exist? Probably okay
+    }
     throw error;
   }
 
@@ -69,7 +73,11 @@ const resolveRemoteStream = async (stream) => {
 
   readStream.on('end', () => {
     // Burn after reading
-    fs.unlinkSync(tmpFilePath);
+    try {
+      fs.unlinkSync(tmpFilePath);
+    } catch (e) {
+      // TODO: We probably want to log warning here
+    }
   });
 
   return {
