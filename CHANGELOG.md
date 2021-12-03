@@ -2,11 +2,11 @@
 
 _released `2021-12-03`_
 
-## cli
+### cli
 
 - None!
 
-## core
+### core
 
 * Rewrite `z.stashFile()` with various improvements and bugfixes ([#453](https://github.com/zapier/zapier-platform/pull/453))
   - :nail_care: `knownLength` is no longer required for _any_ kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
@@ -18,11 +18,11 @@ _released `2021-12-03`_
   - See [#453](https://github.com/zapier/zapier-platform/pull/453) for more details
 * Bump node-fetch to 2.6.6 ([#458](https://github.com/zapier/zapier-platform/pull/458), [#460](https://github.com/zapier/zapier-platform/pull/460))
 
-## schema
+### schema
 
 * :nail_care: Allow spaces and sqaure brackets in [`RefResourceSchema`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.6.0/packages/schema/docs/build/schema.md) ([#456](https://github.com/zapier/zapier-platform/pull/456))
 
-## misc
+### misc
 
 * :hammer: Move CI from Travis to GitHub Actions ([#453](https://github.com/zapier/zapier-platform/pull/453))
 
