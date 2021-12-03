@@ -3,6 +3,7 @@
   "private": true,
   "devDependencies": {
     "chalk": "^4.1.1",
+    "cross-env": "^7.0.3",
     "eslint": "^7.26.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard": "^16.0.2",
