@@ -1,3 +1,64 @@
+## 9.6.0
+
+_released `2021-12-03`_
+
+### cli
+
+- None!
+
+### core
+
+* :bug: Fix backpressure issue when piping request bodies ([#462](https://github.com/zapier/zapier-platform/pull/462))
+* Rewrite `z.stashFile()` with various improvements and bugfixes ([#453](https://github.com/zapier/zapier-platform/pull/453))
+  - :nail_care: `knownLength` is no longer required for _any_ kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
+  - :nail_care: Detect file types more smartly
+  - :nail_care: Generate filenames more smartly
+  - :nail_care: Improve performance by making concurrent requests
+  - :bug: Fix `MalformedPOSTRequest` error when the reponse is gzipped and has a smaller `Content-Length`
+  - :hammer: Better test coverage
+  - See [#453](https://github.com/zapier/zapier-platform/pull/453) for more details
+
+### schema
+
+* :nail_care: Allow spaces and sqaure brackets in [`RefResourceSchema`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.6.0/packages/schema/docs/build/schema.md) ([#456](https://github.com/zapier/zapier-platform/pull/456))
+
+### misc
+
+* :hammer: Bump node-fetch to 2.6.6 ([#458](https://github.com/zapier/zapier-platform/pull/458), [#460](https://github.com/zapier/zapier-platform/pull/460))
+* :hammer: Move CI from Travis to GitHub Actions ([#453](https://github.com/zapier/zapier-platform/pull/453))
+
+## 9.5.0
+
+_released `2021-07-02`_
+
+### cli
+
+- None!
+
+### core
+
+- :tada: Allow using `await` in inline function source ([#390](https://github.com/zapier/zapier-platform/pull/390))
+- :bug: Make sure all HTTP requests logged ([#390](https://github.com/zapier/zapier-platform/pull/390))
+
+### schema
+
+- None!
+
+## 9.4.2
+
+### cli
+
+- None!
+
+### core
+
+- :bug: `ResponseError` no longer fails when request is `raw` ([#320](https://github.com/zapier/zapier-platform/pull/320))
+- :bug: Redirecting from `https` to `http` breaks when disabling SSL certificate checks ([#314](https://github.com/zapier/zapier-platform/pull/314))
+
+### schema
+
+- None!
+
 ## 9.4.0
 
 ### cli
