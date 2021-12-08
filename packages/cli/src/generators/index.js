@@ -124,7 +124,7 @@ const writeForStandaloneTemplate = (gen) => {
     // names. This is going to used to extend the generic package.json.
     files: {
       dependencies: {
-        'form-data': '3.0.0',
+        'form-data': '4.0.0',
       },
     },
     typescript: {
