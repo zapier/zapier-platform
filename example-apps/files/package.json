@@ -8,10 +8,10 @@
   },
   "dependencies": {
     "zapier-platform-core": "11.2.0",
-    "form-data": "3.0.0"
+    "form-data": "4.0.0"
   },
   "devDependencies": {
-    "jest": "^25.5.3"
+    "jest": "^26.6.3"
   },
   "private": true
 }
