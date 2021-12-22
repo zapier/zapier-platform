@@ -7,7 +7,7 @@ const {
   flattenPaths,
   getObjectType,
   isPlainObj,
-  recurseReplace
+  recurseReplace,
 } = require('./data');
 
 const DEFAULT_BUNDLE = {
@@ -15,7 +15,7 @@ const DEFAULT_BUNDLE = {
   inputData: {},
   meta: {},
   subscribeData: {},
-  targetUrl: ''
+  targetUrl: '',
 };
 
 const isCurlies = /{{.*?}}/g;
@@ -34,7 +34,7 @@ const recurseCleanFuncs = (obj, path) => {
     });
   } else if (isPlainObj(obj)) {
     const newObj = {};
-    Object.keys(obj).forEach(key => {
+    Object.keys(obj).forEach((key) => {
       const value = obj[key];
       newObj[key] = recurseCleanFuncs(value, path.concat([key]));
     });
@@ -45,7 +45,7 @@ const recurseCleanFuncs = (obj, path) => {
 
 // Recurse a nested object replace all instances of keys->vals in the bank.
 const recurseReplaceBank = (obj, bank = {}) => {
-  const replacer = out => {
+  const replacer = (out) => {
     if (!['string', 'number'].includes(typeof out)) {
       return out;
     }
@@ -56,7 +56,7 @@ const recurseReplaceBank = (obj, bank = {}) => {
     const originalValueStr = String(out);
     let maybeChangedString = originalValueStr;
 
-    Object.keys(bank).forEach(key => {
+    Object.keys(bank).forEach((key) => {
       // Escape characters (ex. {{foo}} => \\{\\{foo\\}\\} )
       const escapedKey = key.replace(/[-[\]/{}()\\*+?.^$|]/g, '\\$&');
       const matchesKey = new RegExp(escapedKey, 'g');
@@ -106,12 +106,12 @@ const finalizeBundle = pipe(
 );
 
 // Takes a raw app and bundle and composes a bank of {{key}}->val
-const createBundleBank = (appRaw, event = {}, serializeFunc = x => x) => {
+const createBundleBank = (appRaw, event = {}, serializeFunc = (x) => x) => {
   const bank = {
     bundle: finalizeBundle(event.bundle),
     process: {
-      env: _.extend({}, process.env || {})
-    }
+      env: _.extend({}, process.env || {}),
+    },
   };
 
   const options = { preserve: { 'bundle.inputData': true } };
@@ -123,7 +123,7 @@ const createBundleBank = (appRaw, event = {}, serializeFunc = x => x) => {
   }, {});
 };
 
-const maskOutput = output => _.pick(output, 'results', 'status');
+const maskOutput = (output) => _.pick(output, 'results', 'status');
 
 // These normalize functions are called after the initial before middleware that
 // cleans the request. The reason is that we need to know why a value is empty
@@ -131,43 +131,40 @@ const maskOutput = output => _.pick(output, 'results', 'status');
 // don't know _why_ it was an empty string. Was it from a user supplied value in
 // an earlier Zap step? Or was it a null value? Each has different results depending
 // on how the partner has configued their integration.
-const normalizeEmptyRequestFields = (shouldCleanup, field, req) => {
-  const handleEmpty = key => {
-    const value = req[field][key] || '';
-    const cleaned = value.replace(isCurlies, '');
+const normalizeEmptyRequestFields = (field, req) => {
+  const removeMissing = req.removeMissingValuesFrom[field];
 
-    if (value !== cleaned) {
-      req[field][key] = cleaned;
-    }
-
-    if (!cleaned && req.removeMissingValuesFrom[field]) {
-      delete req[field][key];
+  const recurseReplaceEmpty = (obj) => {
+    if (Array.isArray(obj)) {
+      let array = obj.map((value) => recurseReplaceEmpty(value));
+      if (removeMissing) {
+        array = array.filter((value) => value);
+      }
+      return array;
+    } else if (_.isPlainObject(obj)) {
+      return Object.entries(obj).reduce((result, [key, value]) => {
+        const newValue = recurseReplaceEmpty(value);
+        if (newValue || !removeMissing) {
+          result[key] = newValue;
+        }
+        return result;
+      }, {});
+    } else if (typeof obj === 'string') {
+      return obj.replace(isCurlies, '');
+    } else {
+      return obj;
     }
   };
 
-  Object.entries(req[field]).forEach(([key, value]) => {
-    if (shouldCleanup(value)) {
-      handleEmpty(key);
-    }
-  });
+  req[field] = recurseReplaceEmpty(req[field]);
+  return req;
 };
-
-const isEmptyQueryParam = value =>
-  value === '' ||
-  value === null ||
-  value === undefined ||
-  isCurlies.test(value);
 
 const normalizeEmptyParamFields = normalizeEmptyRequestFields.bind(
   null,
-  isEmptyQueryParam,
   'params'
 );
-const normalizeEmptyBodyFields = normalizeEmptyRequestFields.bind(
-  null,
-  v => isCurlies.test(v),
-  'body'
-);
+const normalizeEmptyBodyFields = normalizeEmptyRequestFields.bind(null, 'body');
 
 module.exports = {
   createBundleBank,
@@ -175,5 +172,5 @@ module.exports = {
   normalizeEmptyBodyFields,
   normalizeEmptyParamFields,
   recurseCleanFuncs,
-  recurseReplaceBank
+  recurseReplaceBank,
 };
