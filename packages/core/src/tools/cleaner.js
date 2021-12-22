@@ -131,40 +131,43 @@ const maskOutput = (output) => _.pick(output, 'results', 'status');
 // don't know _why_ it was an empty string. Was it from a user supplied value in
 // an earlier Zap step? Or was it a null value? Each has different results depending
 // on how the partner has configued their integration.
-const normalizeEmptyRequestFields = (field, req) => {
-  const removeMissing = req.removeMissingValuesFrom[field];
+const normalizeEmptyRequestFields = (shouldCleanup, field, req) => {
+  const handleEmpty = (key) => {
+    const value = req[field][key] || '';
+    const cleaned = value.replace(isCurlies, '');
 
-  const recurseReplaceEmpty = (obj) => {
-    if (Array.isArray(obj)) {
-      let array = obj.map((value) => recurseReplaceEmpty(value));
-      if (removeMissing) {
-        array = array.filter((value) => value);
-      }
-      return array;
-    } else if (_.isPlainObject(obj)) {
-      return Object.entries(obj).reduce((result, [key, value]) => {
-        const newValue = recurseReplaceEmpty(value);
-        if (newValue || !removeMissing) {
-          result[key] = newValue;
-        }
-        return result;
-      }, {});
-    } else if (typeof obj === 'string') {
-      return obj.replace(isCurlies, '');
-    } else {
-      return obj;
+    if (value !== cleaned) {
+      req[field][key] = cleaned;
+    }
+
+    if (!cleaned && req.removeMissingValuesFrom[field]) {
+      delete req[field][key];
     }
   };
 
-  req[field] = recurseReplaceEmpty(req[field]);
-  return req;
+  Object.entries(req[field]).forEach(([key, value]) => {
+    if (shouldCleanup(value)) {
+      handleEmpty(key);
+    }
+  });
 };
+
+const isEmptyQueryParam = (value) =>
+  value === '' ||
+  value === null ||
+  value === undefined ||
+  (typeof value === 'string' && isCurlies.test(value));
 
 const normalizeEmptyParamFields = normalizeEmptyRequestFields.bind(
   null,
+  isEmptyQueryParam,
   'params'
 );
-const normalizeEmptyBodyFields = normalizeEmptyRequestFields.bind(null, 'body');
+const normalizeEmptyBodyFields = normalizeEmptyRequestFields.bind(
+  null,
+  (v) => typeof v === 'string' && isCurlies.test(v),
+  'body'
+);
 
 module.exports = {
   createBundleBank,
