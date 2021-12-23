@@ -156,7 +156,7 @@ const isEmptyQueryParam = (value) =>
   value === '' ||
   value === null ||
   value === undefined ||
-  (typeof value === 'string' && isCurlies.test(value));
+  (typeof value === 'string' && value.search(isCurlies) >= 0);
 
 const normalizeEmptyParamFields = normalizeEmptyRequestFields.bind(
   null,
@@ -165,7 +165,7 @@ const normalizeEmptyParamFields = normalizeEmptyRequestFields.bind(
 );
 const normalizeEmptyBodyFields = normalizeEmptyRequestFields.bind(
   null,
-  (v) => typeof v === 'string' && isCurlies.test(v),
+  (v) => typeof v === 'string' && v.search(isCurlies) >= 0,
   'body'
 );
 
