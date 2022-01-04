@@ -41,13 +41,13 @@ describe('build (runs slowly)', () => {
   });
 
   it('should list only required files', () => {
-    return build.requiredFiles(tmpDir, [entryPoint]).then(smartPaths => {
+    return build.requiredFiles(tmpDir, [entryPoint]).then((smartPaths) => {
       // check that only the required lodash files are grabbed
       smartPaths.should.containEql('index.js');
       smartPaths.should.containEql('lib/index.js');
       smartPaths.should.containEql('lib/resources/recipe.js');
 
-      smartPaths.filter(p => p.endsWith('.ts')).length.should.equal(0);
+      smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
       smartPaths.should.not.containEql('tsconfig.json');
 
       smartPaths.length.should.be.within(200, 300);
@@ -55,7 +55,7 @@ describe('build (runs slowly)', () => {
   });
 
   it('should list all the files', () => {
-    return build.listFiles(tmpDir).then(dumbPaths => {
+    return build.listFiles(tmpDir).then((dumbPaths) => {
       // check that way more than the required package files are grabbed
       dumbPaths.should.containEql('index.js');
       dumbPaths.should.containEql('lib/index.js');
@@ -65,7 +65,7 @@ describe('build (runs slowly)', () => {
       dumbPaths.should.containEql('src/resources/recipe.ts');
       dumbPaths.should.containEql('tsconfig.json');
 
-      dumbPaths.length.should.be.within(1500, 2000);
+      dumbPaths.length.should.be.within(1500, 2500);
     });
   });
 
@@ -77,8 +77,8 @@ describe('build (runs slowly)', () => {
       '.env',
       '.environment',
       '.git/HEAD',
-      'build/the-build.zip'
-    ].forEach(file => {
+      'build/the-build.zip',
+    ].forEach((file) => {
       const fileDir = file.split(path.sep);
       fileDir.pop();
       if (fileDir.length > 0) {
@@ -87,7 +87,7 @@ describe('build (runs slowly)', () => {
       fs.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
     });
 
-    return build.listFiles(tmpProjectDir).then(dumbPaths => {
+    return build.listFiles(tmpProjectDir).then((dumbPaths) => {
       dumbPaths.should.containEql('safe.js');
       dumbPaths.should.not.containEql('.env');
       dumbPaths.should.not.containEql('build/the-build.zip');
@@ -116,7 +116,7 @@ describe('build (runs slowly)', () => {
     return build
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(2);
 
         const indexFile = files.find(
@@ -157,7 +157,7 @@ describe('build (runs slowly)', () => {
     return build
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(2);
 
         const indexFile = files.find(
@@ -202,7 +202,7 @@ describe('build (runs slowly)', () => {
     return build
       .makeSourceZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(4);
 
         const indexFile = files.find(
@@ -261,7 +261,7 @@ describe('build (runs slowly)', () => {
     return build
       .makeSourceZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then(files => {
+      .then((files) => {
         files.length.should.equal(4);
 
         const indexFile = files.find(

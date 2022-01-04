@@ -696,6 +696,16 @@ describe('request client', () => {
           empty: '{{bundle.inputData.empty}}',
           partial: 'text {{bundle.inputData.partial}}',
           value: 'exists',
+          array: [
+            '{{bundle.inputData.empty}}',
+            'foo{{bundle.inputData.noMatch}}',
+            'bar',
+          ],
+          obj: {
+            empty: '{{bundle.inputData.empty}}',
+            partial: 'text {{bundle.inputData.partial}}',
+            value: 'exists',
+          },
         },
       }).then((response) => {
         const { json } = response.json;
@@ -703,6 +713,18 @@ describe('request client', () => {
         should(json.empty).eql('');
         should(json.partial).eql('text ');
         should(json.value).eql('exists');
+
+        // We don't do recursive replacement
+        should(json.array).eql([
+          '{{bundle.inputData.empty}}',
+          'foo{{bundle.inputData.noMatch}}',
+          'bar',
+        ]);
+        should(json.obj).eql({
+          empty: '{{bundle.inputData.empty}}',
+          partial: 'text {{bundle.inputData.partial}}',
+          value: 'exists',
+        });
       });
     });
 
