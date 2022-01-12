@@ -6,6 +6,8 @@ const createRpcClient = require('../../src/tools/create-rpc-client');
 const FAKE_ZAPIER_URL = 'https://mock.zapier.com';
 const FAKE_S3_URL = 'https://s3-fake.zapier.com';
 
+const FAKE_LOG_URL = 'https://fake-logger.zapier.com';
+
 const RPC_URL_PATH = '/platform/rpc/cli';
 
 const makeRpc = () => {
@@ -151,11 +153,32 @@ const mockUpload = () => {
     });
 };
 
+const mockLogServer = () => {
+  nock(FAKE_LOG_URL)
+    .post('/stream')
+    .reply(function (uri, requestBody, cb) {
+      const lines = requestBody.split('\n');
+      const logs = lines
+        .filter((line) => line.trim())
+        .map((line) => JSON.parse(line));
+      cb(null, [
+        200,
+        {
+          contentType: this.req.headers['content-type'][0],
+          token: this.req.headers['x-token'][0],
+          logs,
+        },
+      ]);
+    });
+};
+
 module.exports = {
   makeRpc,
+  mockLogServer,
   mockRpcCall,
   mockRpcFail,
   mockRpcGetPresignedPostCall,
   mockUpload,
+  FAKE_LOG_URL,
   FAKE_S3_URL,
 };

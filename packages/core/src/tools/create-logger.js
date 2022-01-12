@@ -130,9 +130,6 @@ class LogStream extends Transform {
   constructor(options) {
     super(options);
 
-    this.bytesWritten = 0;
-    this.response = null;
-
     const httpOptions = {
       url: options.url,
       method: 'POST',
@@ -142,20 +139,17 @@ class LogStream extends Transform {
       },
       body: this,
     };
-    request(httpOptions)
-      .then((res) => {
-        this.response = res;
-      })
-      .catch((err) => {
-        // Swallow logging errors.
-        // This will show up in AWS logs at least:
-        console.error(
-          'Error making log request:',
-          err,
-          'http options:',
-          httpOptions
-        );
-      });
+
+    this.request = request(httpOptions).catch((err) => {
+      // Swallow logging errors.
+      // This will show up in AWS logs at least:
+      console.error(
+        'Error making log request:',
+        err,
+        'http options:',
+        httpOptions
+      );
+    });
   }
 
   _transform(chunk, encoding, callback) {
@@ -185,9 +179,11 @@ class LogStreamFactory {
     return this._logStream;
   }
 
-  end() {
+  async end() {
     if (this._logStream) {
       this._logStream.end();
+      const response = await this._logStream.request;
+      return response;
     }
   }
 }
@@ -259,10 +255,10 @@ const createLogger = (event, options) => {
 
   const logger = sendLog.bind(undefined, options, event);
 
-  // Lambda handler must call logger.end() to at the end of an Lambda execution
+  // Lambda handler must call logger.end() to at the end of a Lambda invocation
   // to close the log stream. Otherwise, it will hang!
-  logger.end = () => {
-    logStreamFactory.end();
+  logger.end = async () => {
+    return logStreamFactory.end();
   };
   return logger;
 };
