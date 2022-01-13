@@ -431,7 +431,7 @@ describe('logger', () => {
     ]);
   });
 
-  it('should handle multiple logs in a request', async () => {
+  it('should send multiple logs in a request', async () => {
     const logger = createlogger({}, options);
 
     logger('hello 1', { customuser_id: 1 });
@@ -442,9 +442,9 @@ describe('logger', () => {
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
-      { message: 'hello 1', data: { log_type: 'console', customuser_id: '1' } },
-      { message: 'hello 2', data: { log_type: 'console', customuser_id: '2' } },
-      { message: 'hello 3', data: { log_type: 'console', customuser_id: '3' } },
+      { message: 'hello 1', data: { log_type: 'console', customuser_id: 1 } },
+      { message: 'hello 2', data: { log_type: 'console', customuser_id: 2 } },
+      { message: 'hello 3', data: { log_type: 'console', customuser_id: 3 } },
     ]);
   });
 });

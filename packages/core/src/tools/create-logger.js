@@ -130,6 +130,8 @@ class LogStream extends Transform {
   constructor(options) {
     super(options);
 
+    this.bytesWritten = 0;
+
     const httpOptions = {
       url: options.url,
       method: 'POST',
