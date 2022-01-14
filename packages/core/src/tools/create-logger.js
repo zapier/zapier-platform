@@ -161,6 +161,9 @@ class LogStream extends Transform {
   }
 }
 
+// Implements singleton for LogStream. The goal is for every sendLog() call we
+// reuse the same request until the request body grows too big and exceeds
+// LOG_STREAM_BYTES_LIMIT.
 class LogStreamFactory {
   constructor(url, token) {
     this._logStream = null;
@@ -185,14 +188,13 @@ class LogStreamFactory {
     if (this._logStream) {
       this._logStream.end();
       const response = await this._logStream.request;
+      this._logStream = null;
       return response;
     }
   }
 }
 
-const logStreamFactory = new LogStreamFactory();
-
-const sendLog = async (options, event, message, data) => {
+const sendLog = async (logStreamFactory, options, event, message, data) => {
   data = _.extend({}, data || {}, event.logExtra || {});
   data.log_type = data.log_type || 'console';
 
@@ -244,6 +246,19 @@ const sendLog = async (options, event, message, data) => {
 /*
   Creates low level logging function that POSTs to endpoint (GL by default).
   Use internally; do not expose to devs.
+
+  Usage:
+
+    const logger = createLogger(event, options);
+
+    // These will reuse the same request to the log server
+    logger('log message here', { log_type: 'console' });
+    logger('another log', { log_type: 'console' });
+    logger('200 GET https://example.com', { log_type: 'http' });
+
+    // After an invocation, the Lambda handler MUST call logger.end() to close
+    // the log stream. Otherwise, it will hang!
+    logger.end();
 */
 const createLogger = (event, options) => {
   options = options || {};
@@ -255,10 +270,9 @@ const createLogger = (event, options) => {
     token: process.env.LOGGING_TOKEN || event.token,
   });
 
-  const logger = sendLog.bind(undefined, options, event);
+  const logStreamFactory = new LogStreamFactory();
+  const logger = sendLog.bind(undefined, logStreamFactory, options, event);
 
-  // Lambda handler must call logger.end() to at the end of a Lambda invocation
-  // to close the log stream. Otherwise, it will hang!
   logger.end = async () => {
     return logStreamFactory.end();
   };
