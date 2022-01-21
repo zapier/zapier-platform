@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const marked = require('marked');
+const { marked } = require('marked');
 const TerminalRenderer = require('marked-terminal');
 const { stdtermwidth } = require('@oclif/plugin-help/lib/screen');
 
