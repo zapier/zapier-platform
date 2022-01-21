@@ -31,7 +31,7 @@
 
 - At runtime, a developer's `perform` function is invoked with the following signature: `perform(z, bundle)`.
 - The `z` object is a collection of functions used commonly by developers and is defined in `core/src/tools/create-lambda-handler.js`
-- Its functions are either Zapier-specific (such as `z.cursor` and `z.dehyrate`) or wrappers around common JS functionality (such as `z.JSON.parse` and `z.console.log`) with better error handling or extra logging
+- Its functions are either Zapier-specific (such as `z.cursor` and `z.dehydrate`) or wrappers around common JS functionality (such as `z.JSON.parse` and `z.console.log`) with better error handling or extra logging
 - Each of those functions has its own file in `core/src/tools`
 - The most important method is probably `z.request` (from `core/src/tools/create-app-request-client.js`), which devs use to make external requests. This is different from normal http requests in a number of ways:
   - there are `beforeRequest` and `afterResponse` functions that run before and after the request. They can be declared by the developer or inserted automatically based on the authentication type.
