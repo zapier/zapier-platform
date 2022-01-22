@@ -1,5 +1,3 @@
-const path = require('path');
-const { pathExists } = require('fs-extra');
 const { flags } = require('@oclif/command');
 const chalk = require('chalk');
 
@@ -9,6 +7,7 @@ const constants = require('../../constants');
 const { buildFlags } = require('../buildFlags');
 const { readCredentials } = require('../../utils/api');
 const { runCommand } = require('../../utils/misc');
+const { getPackageManager } = require('../../utils/package-manager');
 
 class TestCommand extends BaseCommand {
   async perform() {
@@ -35,9 +34,7 @@ class TestCommand extends BaseCommand {
 
     const env = Object.assign({}, process.env, extraEnv);
 
-    const useYarn =
-      this.flags.yarn ||
-      (await pathExists(path.join(process.cwd(), 'yarn.lock')));
+    const packageManager = await getPackageManager(this.flags);
 
     const passthroughArgs = this.argv.includes('--')
       ? this.argv.slice(this.argv.indexOf('--') + 1)
@@ -47,21 +44,22 @@ class TestCommand extends BaseCommand {
       'run',
       '--silent',
       'test',
-      useYarn ? '' : '--', // yarn gives a warning if we include `--`
+      packageManager.useDoubleHyphenBeforeArgs ? '--' : '',
       ...passthroughArgs,
     ].filter(Boolean);
-    const packageManager = useYarn ? 'yarn' : 'npm';
 
     this.log('Running test suite with the following command:');
     // some extra formatting happen w/ quotes so it's clear when they're already like that in the array,
     // but the space-joined array made that unclear
     this.log(
-      `\n  ${chalk.cyanBright.bold(packageManager)} ${chalk.cyanBright(
+      `\n  ${chalk.cyanBright.bold(
+        packageManager.executable
+      )} ${chalk.cyanBright(
         argv.map((a) => (a.includes(' ') ? `"${a}"` : a)).join(' ')
       )}\n`
     );
 
-    const output = await runCommand(packageManager, argv, {
+    const output = await runCommand(packageManager.executable, argv, {
       stdio: 'inherit',
       env,
     });
@@ -80,6 +78,10 @@ TestCommand.flags = buildFlags({
     yarn: flags.boolean({
       description:
         "Use `yarn` instead of `npm`. This happens automatically if there's a `yarn.lock` file, but you can manually force `yarn` if you run tests from a sub-directory.",
+    }),
+    pnpm: flags.boolean({
+      description:
+        "Use `pnpm` instead of `npm`. This happens automatically if there's a `pnpm-lock.yaml` file, but you can manually force `pnpm` if you run tests from a sub-directory.",
     }),
   },
 });
