@@ -526,6 +526,7 @@ You can pass any args/flags after a `--`; they will get forwarded onto your test
 **Flags**
 * `--skip-validate` | Forgo running `zapier validate` before tests are run. This will speed up tests if you're modifying functionality of an existing integration rather than adding new actions.
 * `--yarn` | Use `yarn` instead of `npm`. This happens automatically if there's a `yarn.lock` file, but you can manually force `yarn` if you run tests from a sub-directory.
+* `--pnpm` | Use `pnpm` instead of `npm`. This happens automatically if there's a `pnpm-lock.yaml` file, but you can manually force `pnpm` if you run tests from a sub-directory.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
