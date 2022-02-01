@@ -28,6 +28,7 @@ class PromoteCommand extends BaseCommand {
     const app = await this.getWritableApp();
 
     const version = this.args.version;
+    console.log('hey buddy!');
 
     let shouldContinue;
     const changelog = await getVersionChangelog(version);
@@ -60,19 +61,22 @@ class PromoteCommand extends BaseCommand {
       `Preparing to promote version ${version} of your integration "${app.title}".`
     );
 
-    const body = {};
+    const body = {
+      name: 'promote',
+      to_version: version, // This is done here: https://github.com/zapier/zapier/blob/develop/web/backend/zapier/app_platform/developer_cli/api/migration_resources.py#L584
+    };
     if (changelog) {
       body.changelog = changelog;
     }
 
     this.startSpinner(`Verifying and promoting ${version}`);
 
-    const url = `/apps/${app.id}/versions/${version}/promote/production`;
+    const url = `/apps/${app.id}/migrations`;
     try {
       await callAPI(
         url,
         {
-          method: 'PUT',
+          method: 'POST',
           body,
         },
         true
@@ -120,7 +124,7 @@ PromoteCommand.args = [
   {
     name: 'version',
     required: true,
-    description: 'The version you want promote.',
+    description: 'The version you want to promote.',
   },
 ];
 
