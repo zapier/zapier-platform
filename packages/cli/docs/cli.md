@@ -368,7 +368,7 @@ Promotes are an inherently safe operation for all existing users of your integra
 If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.
 
 **Arguments**
-* (required) `version` | The version you want promote.
+* (required) `version` | The version you want to promote.
 
 **Flags**
 * `-d, --debug` | Show extra debugging output.
