@@ -64,7 +64,7 @@ class PromoteCommand extends BaseCommand {
     const body = {
       job: {
         name: 'promote',
-        to_version: version, // This is done here: https://github.com/zapier/zapier/blob/develop/web/backend/zapier/app_platform/developer_cli/api/migration_resources.py#L584
+        to_version: version,
       },
     };
     if (changelog) {
