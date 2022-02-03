@@ -8,8 +8,11 @@ const semver = require('semver');
 const createLegacyScriptingRunner = (z, input) => {
   const app = _.get(input, '_zapier.app');
 
-  let source =
-    _.get(app, 'legacy.scriptingSource') || app.legacyScriptingSource;
+  // once we have node 14 everywhere, this can be:
+  // let source = _.get(app, 'legacy.scriptingSource') ?? app.legacyScriptingSource;
+  let source = _.get(app, 'legacy.scriptingSource');
+  source = source === undefined ? app.legacyScriptingSource : source;
+
   if (source === undefined) {
     // Don't initialize z.legacyScripting for a pure CLI app
     return null;
@@ -26,8 +29,8 @@ const createLegacyScriptingRunner = (z, input) => {
   let LegacyScriptingRunner, version;
   try {
     LegacyScriptingRunner = require('zapier-platform-legacy-scripting-runner');
-    version = require('zapier-platform-legacy-scripting-runner/package.json')
-      .version;
+    version =
+      require('zapier-platform-legacy-scripting-runner/package.json').version;
   } catch (e) {
     // Find it in cwd, in case we're developing legacy-scripting-runner itself
     const cwd = process.cwd();
