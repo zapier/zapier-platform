@@ -1424,15 +1424,18 @@ Example: `throw new z.errors.HaltedError('Your reason.');`
 
 For apps that require manual refresh of authorization on a regular basis, Zapier
 provides a mechanism to notify users of expired credentials. With the
-`ExpiredAuthError`, the current operation is interrupted, the Zap is turned off
-(to prevent more calls with expired credentials), and a predefined email is sent
-out informing the user to refresh the credentials.
+`ExpiredAuthError`, the current operation is interrupted and a predefined email
+is sent out asking the user to refresh the credentials. While the auth is
+disconnected, Zap runs will not be executed, to prevent more calls with expired
+credentials. (The runs will be
+[Held](https://zapier.com/help/manage/history/view-and-manage-your-zap-history#holding),
+and the user will be able to replay them after reconnecting.)
 
 Example: `throw new z.errors.ExpiredAuthError('Your message.');`
 
-For apps that use OAuth2 + refresh or Session Auth, the core injects a built-in
-`afterResponse` middleware that throws an error when the response status is 401.
-The error will signal Zapier to refresh the credentials and then repeat the
+For apps that use OAuth2 with `autoRefresh: true` or Session Auth, the core injects
+a built-in `afterResponse` middleware that throws an error when the response status
+is 401. The error will signal Zapier to refresh the credentials and then retry the
 failed operation. For some cases, e.g, your server doesn't use the 401 status
 for auth refresh, you may have to throw the `RefreshAuthError` on your own,
 which will also signal Zapier to refresh the credentials.
@@ -1441,7 +1444,7 @@ Example: `throw new z.errors.RefreshAuthError();`
 
 #### v10 Breaking Change: Auth Refresh
 
-A breaking change on v10+ is that the built-in `afterResponse` middleware the
+A breaking change on v10+ is that the built-in `afterResponse` middleware that
 handles auth refresh is changed to happen AFTER your app's `afterResponse`. On
 v9 and older, it happens before your app's `afterResponse`. So it will break if
 your `afterReponse` does something like:
