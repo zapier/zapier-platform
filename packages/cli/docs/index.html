@@ -1163,11 +1163,9 @@ zapier convert 1234 --version 1.0.1 my-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Useful if your app requires two pieces of information to authentication: <code>username</code> and <code>password</code> which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).</p><blockquote>
+      <p>Useful if your app requires two pieces of information to authenticate: <code>username</code> and <code>password</code>, which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).</p><blockquote>
 <p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth</a> for a working example app for basic auth.</p>
-</blockquote><blockquote>
-<p>Note: If you do the common API Key pattern like <code>Authorization: Basic APIKEYHERE:x</code> you should look at the &quot;Custom&quot; authentication method instead.</p>
-</blockquote>
+</blockquote><p>If your app uses Basic auth with an encoded API key rather than a username and password, like <code>Authorization: Basic APIKEYHERE:x</code>, consider the <a href="#custom">Custom</a> authentication method instead.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> authentication = {
@@ -1401,11 +1399,11 @@ zapier convert 1234 --version 1.0.1 my-app
       <p><em>New in <code>v7.5.0</code>.</em></p><p>Zapier&apos;s OAuth1 implementation matches <a href="https://developer.twitter.com/en/docs/basics/authentication/overview">Twitter&apos;s</a> and <a href="https://developers.trello.com/page/authorization">Trello&apos;s</a> implementation of the 3-legged OAuth flow.</p><blockquote>
 <p>Example Apps: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-trello">oauth1-trello</a>, <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-tumblr">oauth1-tumblr</a>, and <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-twitter">oauth1-twitter</a> for working example apps with OAuth1.</p>
 </blockquote><p>The flow works like this:</p><ol>
-<li>Zapier makes a call to your API requesting a &quot;request token&quot; (also known as &quot;temporary credentials&quot;)</li>
-<li>Zapier sends the user to the authorization URL, defined by your app, along with the request token</li>
+<li>Zapier makes a call to your API requesting a &quot;request token&quot; (also known as &quot;temporary credentials&quot;).</li>
+<li>Zapier sends the user to the authorization URL, defined by your app, along with the request token.</li>
 <li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png" alt></li>
-<li>Zapier makes a call on our backend to your API to exchange the request token for an &quot;access token&quot; (also known as &quot;long-lived credentials&quot;)</li>
-<li>Zapier remembers the access token and makes calls on behalf of the user</li>
+<li>Zapier makes a call on our backend to your API to exchange the request token for an &quot;access token&quot; (also known as &quot;long-lived credentials&quot;).</li>
+<li>Zapier stores the <code>access_token</code> and uses it to make calls on behalf of the user.</li>
 </ol><p>You are required to define:</p><ul>
 <li><code>getRequestToken</code>: The API call to fetch the request token</li>
 <li><code>authorizeUrl</code>: The authorization URL</li>
@@ -1536,13 +1534,16 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Zapier&apos;s OAuth2 implementation is based on the <code>authorization_code</code> flow, similar to <a href="https://developer.github.com/v3/oauth/">GitHub</a> and <a href="https://developers.facebook.com/docs/authentication/server-side/">Facebook</a>.</p><blockquote>
 <p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2">https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2</a> for a working example app for OAuth2.</p>
-</blockquote><p>It looks like this:</p><ol>
-<li>Zapier sends the user to the authorization URL defined by your app</li>
-<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png" alt></li>
-<li>Zapier makes a call on our backend to your API to exchange the <code>code</code> for an <code>access_token</code></li>
-<li>Zapier remembers the <code>access_token</code> and makes calls on behalf of the user</li>
-<li>(Optionally) Zapier can refresh the token if it expires</li>
-</ol><p>You are required to define the authorization URL and the API call to fetch the access token. You&apos;ll also likely want to set your <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> as environment variables:</p>
+</blockquote><p>If your app&apos;s OAuth2 flow uses a different grant type, such as <code>client_credentials</code>, try using <a href="#session">Session auth</a> instead.</p><p>The OAuth2 flow looks like this:</p><ol>
+<li>Zapier sends the user to the authorization URL defined by your app.</li>
+<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use the <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png" alt></li>
+<li>Zapier makes a backend call to your API to exchange the <code>code</code> for an <code>access_token</code>.</li>
+<li>Zapier stores the <code>access_token</code> and uses it to make calls on behalf of the user.</li>
+<li>(Optionally) Zapier can refresh the token if it expires.</li>
+</ol><p>You are required to define:</p><ul>
+<li><code>authorizeUrl</code>: The authorization URL</li>
+<li><code>getAccessToken</code>: The API call to fetch the access token</li>
+</ul><p>If the access token has a limited life and you want to refresh the token when it expires, you&apos;ll also need to define the API call to perform that refresh. You can choose to set <code>autoRefresh: true</code>, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See <a href="#stale-authentication-credentials">Stale Authentication Credentials</a> for more details on handling auth refresh.</p><p>You&apos;ll also likely want to set your <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> as environment variables:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># setting the environment variables on Zapier.com</span>

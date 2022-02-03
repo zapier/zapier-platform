@@ -307,11 +307,11 @@ Most applications require some sort of authentication - and Zapier provides a ha
 
 ### Basic
 
-Useful if your app requires two pieces of information to authentication: `username` and `password` which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).
+Useful if your app requires two pieces of information to authenticate: `username` and `password`, which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).
 
 > Example App: Check out https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth for a working example app for basic auth.
 
-> Note: If you do the common API Key pattern like `Authorization: Basic APIKEYHERE:x` you should look at the "Custom" authentication method instead.
+If your app uses Basic auth with an encoded API key rather than a username and password, like `Authorization: Basic APIKEYHERE:x`, consider the [Custom](#custom) authentication method instead.
 
 ```js
 [insert-file:./snippets/basic-auth.js]
@@ -363,11 +363,11 @@ Zapier's OAuth1 implementation matches [Twitter's](https://developer.twitter.com
 
 The flow works like this:
 
-  1. Zapier makes a call to your API requesting a "request token" (also known as "temporary credentials")
-  2. Zapier sends the user to the authorization URL, defined by your app, along with the request token
+  1. Zapier makes a call to your API requesting a "request token" (also known as "temporary credentials").
+  2. Zapier sends the user to the authorization URL, defined by your app, along with the request token.
   3. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png)
-  4. Zapier makes a call on our backend to your API to exchange the request token for an "access token" (also known as "long-lived credentials")
-  5. Zapier remembers the access token and makes calls on behalf of the user
+  4. Zapier makes a call on our backend to your API to exchange the request token for an "access token" (also known as "long-lived credentials").
+  5. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
 
 You are required to define:
 
@@ -400,15 +400,24 @@ Zapier's OAuth2 implementation is based on the `authorization_code` flow, simila
 
 > Example App: Check out https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2 for a working example app for OAuth2.
 
-It looks like this:
+If your app's OAuth2 flow uses a different grant type, such as `client_credentials`, try using [Session auth](#session) instead.
 
-  1. Zapier sends the user to the authorization URL defined by your app
-  2. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png)
-  3. Zapier makes a call on our backend to your API to exchange the `code` for an `access_token`
-  4. Zapier remembers the `access_token` and makes calls on behalf of the user
-  5. (Optionally) Zapier can refresh the token if it expires
+The OAuth2 flow looks like this:
 
-You are required to define the authorization URL and the API call to fetch the access token. You'll also likely want to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables:
+  1. Zapier sends the user to the authorization URL defined by your app.
+  2. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use the `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png)
+  3. Zapier makes a backend call to your API to exchange the `code` for an `access_token`.
+  4. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
+  5. (Optionally) Zapier can refresh the token if it expires.
+
+You are required to define:
+
+  * `authorizeUrl`: The authorization URL
+  * `getAccessToken`: The API call to fetch the access token
+
+If the access token has a limited life and you want to refresh the token when it expires, you'll also need to define the API call to perform that refresh. You can choose to set `autoRefresh: true`, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See [Stale Authentication Credentials](#stale-authentication-credentials) for more details on handling auth refresh.
+
+You'll also likely want to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables:
 
 ```bash
 # setting the environment variables on Zapier.com
