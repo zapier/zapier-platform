@@ -47,12 +47,14 @@ class MigrateCommand extends BaseCommand {
     }
 
     const body = {
-      name: 'migrate',
-      from_version: fromVersion,
-      to_version: toVersion,
+      job: {
+        name: 'migrate',
+        from_version: fromVersion,
+        to_version: toVersion,
+      },
     };
     if (user) {
-      body.user = user;
+      body.job.user = user;
       this.startSpinner(
         `Starting migration from ${fromVersion} to ${toVersion} for ${user}`
       );
@@ -62,13 +64,12 @@ class MigrateCommand extends BaseCommand {
       );
     }
     if (percent) {
-      body.percent_human = percent;
+      body.job.percent_human = percent;
     }
     if (email) {
-      body.email = email;
+      body.job.email = email;
     }
 
-    // const url = `/apps/${app.id}/versions/${fromVersion}/migrate-to/${toVersion}`;
     const url = `/apps/${app.id}/migrations`;
 
     try {
