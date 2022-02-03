@@ -129,22 +129,22 @@ const buildSensitiveValues = (event, data) => {
 class LogStream extends Transform {
   constructor(options) {
     super(options);
-
     this.bytesWritten = 0;
+    this.request = this._newRequest(options.url, options.token);
+  }
 
+  _newRequest(url, token) {
     const httpOptions = {
-      url: options.url,
+      url,
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-ndjson',
-        'X-Token': options.token,
+        'X-Token': token,
       },
       body: this,
     };
-
-    this.request = request(httpOptions).catch((err) => {
-      // Swallow logging errors.
-      // This will show up in AWS logs at least:
+    return request(httpOptions).catch((err) => {
+      // Swallow logging errors. This will show up in AWS logs at least.
       console.error(
         'Error making log request:',
         err,
@@ -165,7 +165,7 @@ class LogStream extends Transform {
 // reuse the same request until the request body grows too big and exceeds
 // LOG_STREAM_BYTES_LIMIT.
 class LogStreamFactory {
-  constructor(url, token) {
+  constructor() {
     this._logStream = null;
   }
 
@@ -258,7 +258,9 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
 
     // After an invocation, the Lambda handler MUST call logger.end() to close
     // the log stream. Otherwise, it will hang!
-    logger.end();
+    logger.end().finally(() => {
+      // anything else you want to do to finish an invocation
+    });
 */
 const createLogger = (event, options) => {
   options = options || {};

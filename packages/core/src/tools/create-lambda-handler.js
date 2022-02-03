@@ -147,38 +147,36 @@ const createLambdaHandler = (appRawOrPath) => {
 
     environmentTools.cleanEnvironment();
 
+    // Copy bundle environment into process.env *before* creating the logger and
+    // loading app code, so that the logger gets the endpoint from process.env,
+    // and top level app code can get bundle environment vars via process.env.
+    environmentTools.applyEnvironment(event);
+
     // Create logger outside of domain, so we can use in both error and run callbacks.
     const logBuffer = [];
     const logger = createLogger(event, { logBuffer });
 
     let isCallbackCalled = false;
     const callbackOnce = (err, resp) => {
-      logger.end();
-      if (!isCallbackCalled) {
-        isCallbackCalled = true;
-        callback(err, resp);
-      }
+      logger.end().finally(() => {
+        if (!isCallbackCalled) {
+          isCallbackCalled = true;
+          callback(err, resp);
+        }
+      });
     };
 
     const logErrorAndCallbackOnce = (logMsg, logData, err) => {
-      // Wait for logger to complete before callback. This isn't
-      // strictly necessary because callbacksWaitsForEmptyLoop is
-      // the default behavior with callbacks anyway, but don't want
-      // to rely on that.
-      logger(logMsg, logData).then(() => {
-        // Check for `.message` in case someone did `throw "My Error"`
-        if (
-          !constants.IS_TESTING &&
-          err &&
-          !err.doNotContextify &&
-          err.message
-        ) {
-          err.message += `\n\nConsole logs:\n${logBuffer
-            .map((s) => `  ${s.message}`)
-            .join('')}`;
-        }
-        callbackOnce(err);
-      });
+      logger(logMsg, logData);
+
+      // Check for `.message` in case someone did `throw "My Error"`
+      if (!constants.IS_TESTING && err && !err.doNotContextify && err.message) {
+        err.message += `\n\nConsole logs:\n${logBuffer
+          .map((s) => `  ${s.message}`)
+          .join('')}`;
+      }
+
+      callbackOnce(err);
     };
 
     const handlerDomain = domain.create();
@@ -192,10 +190,6 @@ const createLambdaHandler = (appRawOrPath) => {
     });
 
     handlerDomain.run(() => {
-      // Copy bundle environment into process.env *before* loading app code,
-      // so that top level app code can get bundle environment vars via process.env.
-      environmentTools.applyEnvironment(event);
-
       const rpc = createRpcClient(event);
 
       return loadApp(event, rpc, appRawOrPath)
