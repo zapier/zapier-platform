@@ -12,7 +12,7 @@ const { FAKE_LOG_URL, mockLogServer } = require('./tools/mocky');
 
 describe('logger', () => {
   const options = {
-    endpoint: `${FAKE_LOG_URL}/stream`,
+    endpoint: `${FAKE_LOG_URL}/input`,
     token: 'fake-token',
   };
 
