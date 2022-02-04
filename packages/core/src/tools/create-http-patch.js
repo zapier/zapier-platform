@@ -3,11 +3,7 @@ const _ = require('lodash');
 const constants = require('../constants');
 
 const createHttpPatch = (event) => {
-  const createLogger = require('./create-logger');
-  const logBuffer = [];
-  const logger = createLogger(event, { logBuffer });
-
-  const httpPatch = (object) => {
+  const httpPatch = (object, logger) => {
     const originalRequest = object.request;
 
     // Avoids multiple patching and memory leaks (mostly when running tests locally)
@@ -21,13 +17,15 @@ const createHttpPatch = (event) => {
     object.request = (options, callback) => {
       // `options` can be an object or a string. If options is a string, it is
       // automatically parsed with url.parse().
-      // See https://nodejs.org/docs/latest-v6.x/api/http.html#http_http_request_options_callback
+      // See https://nodejs.org/docs/latest-v14.x/api/http.html#http_http_request_options_callback
       let requestUrl;
       if (typeof options === 'string') {
         requestUrl = options;
       } else if (typeof options.url === 'string') {
-        // XXX: Somehow options.url is available for some requests although http.request doesn't really accept it.
-        // Without this else-if, many HTTP requests don't work. Should take a deeper look at this weirdness.
+        // XXX: Somehow options.url is available for some requests although
+        // http.request doesn't really accept it. Without this else-if, many
+        // HTTP requests don't work. Should take a deeper look at this
+        // weirdness.
         requestUrl = options.url;
       } else {
         requestUrl =

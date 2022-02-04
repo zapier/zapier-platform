@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
+const { promisify } = require('util');
 
 require('should');
 
@@ -10,6 +11,8 @@ const { runCommand, npmPackCore } = require('../tests/_helpers');
 const { PLATFORM_PACKAGE } = require('../constants');
 
 const REGEX_VERSION = /\d+\.\d+\.\d+/;
+
+const sleep = promisify(setTimeout);
 
 const setupZapierRC = () => {
   let hasRC = false;
@@ -65,7 +68,9 @@ const yarnInstall = (coreZipPath, workdir) => {
   }
 };
 
-describe('smoke tests - setup will take some time', () => {
+describe('smoke tests - setup will take some time', function () {
+  this.retries(3);
+
   const context = {
     // Global context that will be available for all test cases in this test suite
     package: {
@@ -100,6 +105,21 @@ describe('smoke tests - setup will take some time', () => {
   after(() => {
     fs.unlinkSync(context.package.path);
     fs.removeSync(context.workdir);
+  });
+
+  beforeEach(async function () {
+    // delay after first failure
+    const currentRetry = this.currentTest.currentRetry();
+    if (currentRetry > 0) {
+      await sleep(Math.pow(2, currentRetry) * 1000);
+    }
+  });
+
+  afterEach(function () {
+    const currentRetry = this.currentTest.currentRetry();
+    if (currentRetry >= 0) {
+      this.currentTest.title += ` (${currentRetry} retries)`;
+    }
   });
 
   it('package size should not change much', async function () {

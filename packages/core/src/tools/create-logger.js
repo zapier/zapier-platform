@@ -1,10 +1,11 @@
 'use strict';
 
+const { Transform } = require('stream');
+
 const _ = require('lodash');
 
 const request = require('./request-client-internal');
 const { simpleTruncate, recurseReplace } = require('./data');
-const ZapierPromise = require('./promise');
 const {
   DEFAULT_LOGGING_HTTP_API_KEY,
   DEFAULT_LOGGING_HTTP_ENDPOINT,
@@ -18,6 +19,10 @@ const {
 } = require('@zapier/secret-scrubber');
 // not really a public function, but it came from here originally
 const { isUrlWithSecrets } = require('@zapier/secret-scrubber/lib/convenience');
+
+// The payload size per request to stream logs. This should be slighly lower
+// than the limit (16 MB) on the server side.
+const LOG_STREAM_BYTES_LIMIT = 15 * 1024 * 1024;
 
 const isUrl = (url) => {
   try {
@@ -121,7 +126,75 @@ const buildSensitiveValues = (event, data) => {
   ];
 };
 
-const sendLog = (options, event, message, data) => {
+class LogStream extends Transform {
+  constructor(options) {
+    super(options);
+    this.bytesWritten = 0;
+    this.request = this._newRequest(options.url, options.token);
+  }
+
+  _newRequest(url, token) {
+    const httpOptions = {
+      url,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-ndjson',
+        'X-Token': token,
+      },
+      body: this,
+    };
+    return request(httpOptions).catch((err) => {
+      // Swallow logging errors. This will show up in AWS logs at least.
+      console.error(
+        'Error making log request:',
+        err,
+        'http options:',
+        httpOptions
+      );
+    });
+  }
+
+  _transform(chunk, encoding, callback) {
+    this.push(chunk);
+    this.bytesWritten += Buffer.byteLength(chunk, encoding);
+    callback();
+  }
+}
+
+// Implements singleton for LogStream. The goal is for every sendLog() call we
+// reuse the same request until the request body grows too big and exceeds
+// LOG_STREAM_BYTES_LIMIT.
+class LogStreamFactory {
+  constructor() {
+    this._logStream = null;
+  }
+
+  getOrCreate(url, token) {
+    if (this._logStream) {
+      if (this._logStream.bytesWritten < LOG_STREAM_BYTES_LIMIT) {
+        // Reuse the same request for efficiency
+        return this._logStream;
+      }
+
+      // End this one before creating another
+      this._logStream.end();
+    }
+
+    this._logStream = new LogStream({ url, token });
+    return this._logStream;
+  }
+
+  async end() {
+    if (this._logStream) {
+      this._logStream.end();
+      const response = await this._logStream.request;
+      this._logStream = null;
+      return response;
+    }
+  }
+}
+
+const sendLog = async (logStreamFactory, options, event, message, data) => {
   data = _.extend({}, data || {}, event.logExtra || {});
   data.log_type = data.log_type || 'console';
 
@@ -148,20 +221,6 @@ const sendLog = (options, event, message, data) => {
   safeData.request_headers = formatHeaders(safeData.request_headers);
   safeData.response_headers = formatHeaders(safeData.response_headers);
 
-  const body = {
-    message: safeMessage,
-    data: safeData,
-    token: options.token,
-  };
-
-  const httpOptions = {
-    url: options.endpoint,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-    timeout: 3000,
-  };
-
   if (event.logToStdout) {
     toStdout(event, message, unsafeData);
   }
@@ -172,24 +231,36 @@ const sendLog = (options, event, message, data) => {
   }
 
   if (options.token) {
-    return request(httpOptions).catch((err) => {
-      // Swallow logging errors.
-      // This will show up in AWS logs at least:
-      console.error(
-        'Error making log request:',
-        err,
-        'http options:',
-        httpOptions
-      );
-    });
-  } else {
-    return ZapierPromise.resolve();
+    const logStream = logStreamFactory.getOrCreate(
+      options.endpoint,
+      options.token
+    );
+    logStream.write(
+      // JSON Lines format: It's important the serialized JSON object itself has
+      // no line breaks, and after an object it ends with a line break.
+      JSON.stringify({ message: safeMessage, data: safeData }) + '\n'
+    );
   }
 };
 
 /*
   Creates low level logging function that POSTs to endpoint (GL by default).
   Use internally; do not expose to devs.
+
+  Usage:
+
+    const logger = createLogger(event, options);
+
+    // These will reuse the same request to the log server
+    logger('log message here', { log_type: 'console' });
+    logger('another log', { log_type: 'console' });
+    logger('200 GET https://example.com', { log_type: 'http' });
+
+    // After an invocation, the Lambda handler MUST call logger.end() to close
+    // the log stream. Otherwise, it will hang!
+    logger.end().finally(() => {
+      // anything else you want to do to finish an invocation
+    });
 */
 const createLogger = (event, options) => {
   options = options || {};
@@ -201,7 +272,13 @@ const createLogger = (event, options) => {
     token: process.env.LOGGING_TOKEN || event.token,
   });
 
-  return sendLog.bind(undefined, options, event);
+  const logStreamFactory = new LogStreamFactory();
+  const logger = sendLog.bind(undefined, logStreamFactory, options, event);
+
+  logger.end = async () => {
+    return logStreamFactory.end();
+  };
+  return logger;
 };
 
 module.exports = createLogger;

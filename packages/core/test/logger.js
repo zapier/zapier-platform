@@ -7,55 +7,55 @@ const { Headers } = require('node-fetch');
 const {
   replaceHeaders,
 } = require('../src/http-middlewares/after/middleware-utils');
-const { HTTPBIN_URL } = require('./constants');
+
+const { FAKE_LOG_URL, mockLogServer } = require('./tools/mocky');
 
 describe('logger', () => {
   const options = {
-    endpoint: `${HTTPBIN_URL}/post`,
+    endpoint: `${FAKE_LOG_URL}/input`,
     token: 'fake-token',
   };
 
-  // httpbin/post echoes all the input body and headers in the response
+  beforeEach(() => {
+    // This fake log server echoes the input request in the response
+    mockLogServer();
+  });
 
   it('should log to graylog', async () => {
     const event = {};
     const logger = createlogger(event, options);
     const data = { key: 'val' };
 
-    const response = await logger('test', data);
-    response.headers.get('content-type').should.containEql('application/json');
+    logger('test', data);
+    const response = await logger.end();
     response.status.should.eql(200);
-    response.content.json.should.eql({
-      token: options.token,
-      message: 'test',
-      data: {
-        log_type: 'console',
-        key: 'val',
-      },
-    });
+    response.content.contentType.should.containEql('application/x-ndjson');
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      { message: 'test', data: { log_type: 'console', key: 'val' } },
+    ]);
   });
 
-  it('should include bundle meta', () => {
+  it('should include bundle meta', async () => {
     const logExtra = {
       'meta-key': 'meta-value',
     };
 
     const logger = createlogger({ logExtra }, options);
 
-    return logger('test').then((response) => {
-      response.status.should.eql(200);
-      response.content.json.should.eql({
-        token: options.token,
+    logger('test');
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
         message: 'test',
-        data: {
-          log_type: 'console',
-          'meta-key': 'meta-value',
-        },
-      });
-    });
+        data: { log_type: 'console', 'meta-key': 'meta-value' },
+      },
+    ]);
   });
 
-  it('should replace auth data', () => {
+  it('should replace auth data', async () => {
     const bundle = {
       authData: {
         password: 'secret',
@@ -63,24 +63,25 @@ describe('logger', () => {
       },
     };
     const logger = createlogger({ bundle }, options);
-
     const data = bundle.authData;
 
-    return logger('test', data).then((response) => {
-      response.status.should.eql(200);
-      response.content.json.should.eql({
-        token: options.token,
+    logger('test', data);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
         message: 'test',
         data: {
           password: ':censored:6:57a71b6062:',
           log_type: 'console',
           key: ':censored:6:e3b0ee5182:',
         },
-      });
-    });
+      },
+    ]);
   });
 
-  it('should censor auth headers', () => {
+  it('should censor auth headers', async () => {
     const bundle = {
       authData: {
         key: 'verysecret',
@@ -96,21 +97,23 @@ describe('logger', () => {
     };
     const logger = createlogger({ bundle }, options);
 
-    return logger('123 from url google.com', bundle.headers).then(
-      (response) => {
-        response.status.should.eql(200);
-        const j = response.content.json;
-        j.data.request_headers.should.eql(
-          'authorization: basic :censored:10:cf265ec679:'
-        );
-        j.data.response_headers.should.eql(
-          'Authorization: :censored:30:2a1f21f809:'
-        );
-      }
-    );
+    logger('123 from google.com', bundle.headers);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
+        message: '123 from google.com',
+        data: {
+          log_type: 'console',
+          request_headers: 'authorization: basic :censored:10:cf265ec679:',
+          response_headers: 'Authorization: :censored:30:2a1f21f809:',
+        },
+      },
+    ]);
   });
 
-  it('should work with header class', () => {
+  it('should work with header class', async () => {
     const bundle = {
       authData: {
         key: 'verysecret',
@@ -130,22 +133,23 @@ describe('logger', () => {
     };
     const logger = createlogger({ bundle }, options);
 
-    return logger('123 from url google.com', bundle.headers).then(
-      (response) => {
-        response.status.should.eql(200);
-        const j = response.content.json;
-        j.data.request_headers.should.eql(
-          'authorization: basic :censored:10:cf265ec679:'
-        );
-        // Headers class downcases everything
-        j.data.response_headers.should.eql(
-          'authorization: :censored:30:2a1f21f809:'
-        );
-      }
-    );
+    logger('123 from url google.com', bundle.headers);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
+        message: '123 from url google.com',
+        data: {
+          log_type: 'console',
+          request_headers: 'authorization: basic :censored:10:cf265ec679:',
+          response_headers: 'authorization: :censored:30:2a1f21f809:',
+        },
+      },
+    ]);
   });
 
-  it('should refuse to log headers that arrived as strings', () => {
+  it('should refuse to log headers that arrived as strings', async () => {
     const bundle = {
       authData: {
         key: 'verysecret',
@@ -157,21 +161,23 @@ describe('logger', () => {
     };
     const logger = createlogger({ bundle }, options);
 
-    return logger('123 from url google.com', bundle.headers).then(
-      (response) => {
-        response.status.should.eql(200);
-        const j = response.content.json;
-        j.data.request_headers.should.eql(
-          'ERR - refusing to log possibly uncensored headers'
-        );
-        j.data.response_headers.should.eql(
-          'ERR - refusing to log possibly uncensored headers'
-        );
-      }
-    );
+    logger('123 from url google.com', bundle.headers);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
+        message: '123 from url google.com',
+        data: {
+          log_type: 'console',
+          request_headers: 'ERR - refusing to log possibly uncensored headers',
+          response_headers: 'ERR - refusing to log possibly uncensored headers',
+        },
+      },
+    ]);
   });
 
-  it('should replace sensitive data inside strings', () => {
+  it('should replace sensitive data inside strings', async () => {
     const bundle = {
       authData: {
         password: 'secret',
@@ -191,24 +197,26 @@ describe('logger', () => {
       })}`,
     };
 
-    return logger('test', data).then((response) => {
-      response.status.should.eql(200);
-      response.content.json.should.eql({
-        token: options.token,
+    logger('test', data);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
         message: 'test',
         data: {
+          log_type: 'console',
           response_content: `{
         "something": ":censored:6:57a71b6062:",
         "somethingElse": ":censored:6:e3b0ee5182:",
       }`,
           request_url: 'https://test.com/?api_key=:censored:8:89250e9365:',
-          log_type: 'console',
         },
-      });
-    });
+      },
+    ]);
   });
 
-  it('should replace sensitive data inside response', () => {
+  it('should replace sensitive data inside response', async () => {
     const bundle = {
       authData: {
         refresh_token: 'whatever',
@@ -229,10 +237,12 @@ describe('logger', () => {
       }`,
     };
 
-    return logger('test', data).then((response) => {
-      response.status.should.eql(200);
-      response.content.json.should.eql({
-        token: options.token,
+    logger('test', data);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
         message: 'test',
         data: {
           response_json: {
@@ -247,11 +257,11 @@ describe('logger', () => {
       }`,
           log_type: 'console',
         },
-      });
-    });
+      },
+    ]);
   });
 
-  it('should replace sensitive data that is not a string', () => {
+  it('should replace sensitive data that is not a string', async () => {
     const bundle = {
       authData: {
         numerical_token: 314159265,
@@ -268,10 +278,12 @@ describe('logger', () => {
       }`,
     };
 
-    return logger('test', data).then((response) => {
-      response.status.should.eql(200);
-      response.content.json.should.eql({
-        token: options.token,
+    logger('test', data);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
         message: 'test',
         data: {
           response_json: {
@@ -282,13 +294,13 @@ describe('logger', () => {
       }`,
           log_type: 'console',
         },
-      });
-    });
+      },
+    ]);
   });
 
   // this test fails because the function that creates the sensitive bank doesn't
   // recurse to find all sensitive values
-  it('should replace sensitive data that nested', () => {
+  it('should replace sensitive data that nested', async () => {
     const bundle = {
       authData: {
         nested: { secret: 8675309 },
@@ -305,10 +317,12 @@ describe('logger', () => {
       }`,
     };
 
-    return logger('test', data).then((response) => {
-      response.status.should.eql(200);
-      response.content.json.should.eql({
-        token: options.token,
+    logger('test', data);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
         message: 'test',
         data: {
           response_json: {
@@ -321,11 +335,11 @@ describe('logger', () => {
       }`,
           log_type: 'console',
         },
-      });
-    });
+      },
+    ]);
   });
 
-  it('should not replace safe log keys', () => {
+  it('should not replace safe log keys', async () => {
     const bundle = {
       authData: {
         password: 'secret',
@@ -339,10 +353,12 @@ describe('logger', () => {
 
     const data = bundle.authData;
 
-    return logger('test', data).then((response) => {
-      response.status.should.eql(200);
-      response.content.json.should.eql({
-        token: options.token,
+    logger('test', data);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
         message: 'test',
         data: {
           password: ':censored:6:57a71b6062:',
@@ -350,11 +366,11 @@ describe('logger', () => {
           key: ':censored:9:f0d5b7b789:',
           customuser_id: logExtra.customuser_id,
         },
-      });
-    });
+      },
+    ]);
   });
 
-  it('should not replace safe urls', () => {
+  it('should not replace safe urls', async () => {
     const bundle = {
       authData: {
         password: 'https://a-url-like.password.com',
@@ -367,10 +383,12 @@ describe('logger', () => {
 
     const data = bundle.authData;
 
-    return logger(`200 GET https://example.com/test`, data).then((response) => {
-      response.status.should.eql(200);
-      response.content.json.should.eql({
-        token: options.token,
+    logger('200 GET https://example.com/test', data);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
         message: '200 GET https://example.com/test',
         data: {
           log_type: 'console',
@@ -381,11 +399,11 @@ describe('logger', () => {
           basic_auth_url: ':censored:27:bad5875ee0:',
           param_url: ':censored:27:9d59e27abe:',
         },
-      });
-    });
+      },
+    ]);
   });
 
-  it('should handle nullish values', () => {
+  it('should handle nullish values', async () => {
     const bundle = {
       authData: {
         password: 'hunter2',
@@ -397,13 +415,36 @@ describe('logger', () => {
 
     const data = bundle.authData;
 
-    return logger(`200 GET https://example.com/test`, data).then((response) => {
-      response.status.should.eql(200);
-      response.content.json.data.should.eql({
-        log_type: 'console',
-        password: ':censored:7:850233b460:',
-        will_be_left_alone: null,
-      });
-    });
+    logger('200 GET https://example.com/test', data);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 GET https://example.com/test',
+        data: {
+          log_type: 'console',
+          password: ':censored:7:850233b460:',
+          will_be_left_alone: null,
+        },
+      },
+    ]);
+  });
+
+  it('should send multiple logs in a request', async () => {
+    const logger = createlogger({}, options);
+
+    logger('hello 1', { customuser_id: 1 });
+    logger('hello 2', { customuser_id: 2 });
+    logger('hello 3', { customuser_id: 3 });
+
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      { message: 'hello 1', data: { log_type: 'console', customuser_id: 1 } },
+      { message: 'hello 2', data: { log_type: 'console', customuser_id: 2 } },
+      { message: 'hello 3', data: { log_type: 'console', customuser_id: 3 } },
+    ]);
   });
 });
