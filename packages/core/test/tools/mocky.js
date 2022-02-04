@@ -6,17 +6,19 @@ const createRpcClient = require('../../src/tools/create-rpc-client');
 const FAKE_ZAPIER_URL = 'https://mock.zapier.com';
 const FAKE_S3_URL = 'https://s3-fake.zapier.com';
 
+const FAKE_LOG_URL = 'https://fake-logger.zapier.com';
+
 const RPC_URL_PATH = '/platform/rpc/cli';
 
 const makeRpc = () => {
   return createRpcClient({
     rpc_base: `${FAKE_ZAPIER_URL}${RPC_URL_PATH}`,
     token: 'debug:4001:1',
-    storeKey: 'test_key'
+    storeKey: 'test_key',
   });
 };
 
-const mockRpcCall = result => {
+const mockRpcCall = (result) => {
   nock(FAKE_ZAPIER_URL)
     .post(RPC_URL_PATH)
     .reply(200, (uri, requestBody) => {
@@ -25,7 +27,7 @@ const mockRpcCall = result => {
     });
 };
 
-const mockRpcGetPresignedPostCall = key => {
+const mockRpcGetPresignedPostCall = (key) => {
   nock(FAKE_ZAPIER_URL)
     .post(RPC_URL_PATH)
     .reply(200, (uri, requestBody) => {
@@ -39,14 +41,14 @@ const mockRpcGetPresignedPostCall = key => {
             policy: 'bm8gZHJhbWE=',
             AWSAccessKeyId: 'AKIAIKIAAKIAIKIAAKIA',
             acl: 'public-read',
-            signature: 'c4GzkaCtrc0ruvbZh6aSmf/1k='
-          }
-        }
+            signature: 'c4GzkaCtrc0ruvbZh6aSmf/1k=',
+          },
+        },
       };
     });
 };
 
-const mockRpcFail = error => {
+const mockRpcFail = (error) => {
   nock(FAKE_ZAPIER_URL)
     .post(RPC_URL_PATH)
     .reply(500, (uri, requestBody) => {
@@ -61,12 +63,12 @@ const parsePresignedPostData = (requestBody, contentType) => {
   const d = new Dicer({ boundary });
   return new Promise((resolve, reject) => {
     const result = {};
-    d.on('part', function(p) {
+    d.on('part', function (p) {
       const part = {
         key: null,
-        value: null
+        value: null,
       };
-      p.on('header', function(header) {
+      p.on('header', function (header) {
         Object.entries(header).forEach(([key, value]) => {
           if (key === 'content-disposition') {
             value = value[0];
@@ -76,23 +78,23 @@ const parsePresignedPostData = (requestBody, contentType) => {
           }
         });
       })
-        .on('data', function(data) {
+        .on('data', function (data) {
           if (part.key === 'file') {
             part.value = data;
           } else {
             part.value = data.toString();
           }
         })
-        .on('end', function() {
+        .on('end', function () {
           if (part.key) {
             result[part.key] = part.value;
           }
         });
     })
-      .on('finish', function() {
+      .on('finish', function () {
         resolve(result);
       })
-      .on('error', function(error) {
+      .on('error', function (error) {
         reject(error);
       });
 
@@ -100,7 +102,7 @@ const parsePresignedPostData = (requestBody, contentType) => {
   });
 };
 
-const isHexString = str => {
+const isHexString = (str) => {
   const c0 = '0'.charCodeAt(0);
   const cz = 'z'.charCodeAt(0);
   for (let i = 0; i < str.length; i++) {
@@ -112,7 +114,7 @@ const isHexString = str => {
   return true;
 };
 
-const decodeStringToBuffer = str => {
+const decodeStringToBuffer = (str) => {
   const encoding = isHexString(str) ? 'hex' : 'utf8';
   return Buffer.from(str, encoding);
 };
@@ -122,7 +124,7 @@ const mockUpload = () => {
   // Mock file upload
   nock(FAKE_S3_URL)
     .post('/')
-    .reply(function(uri, requestBody, cb) {
+    .reply(function (uri, requestBody, cb) {
       const contentType = this.req.headers['content-type'][0];
       // nock always coerces request body to a string, either in hex or utf8.
       // We want raw binary data here so we need to decode it back to Buffer.
@@ -136,28 +138,47 @@ const mockUpload = () => {
       }
 
       parsePresignedPostData(requestBody, contentType)
-        .then(function(result) {
+        .then(function (result) {
           // Mock file download
-          nock(FAKE_S3_URL)
-            .get(`/${result.key}`)
-            .reply(200, result.file, {
-              'Content-Disposition': result['Content-Disposition'],
-              'Content-Length': result.file.length,
-              'Content-Type': result['Content-Type']
-            });
+          nock(FAKE_S3_URL).get(`/${result.key}`).reply(200, result.file, {
+            'Content-Disposition': result['Content-Disposition'],
+            'Content-Length': result.file.length,
+            'Content-Type': result['Content-Type'],
+          });
           cb(null, [204, '']);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           cb(null, [400, error.toString()]);
         });
     });
 };
 
+const mockLogServer = () => {
+  nock(FAKE_LOG_URL)
+    .post('/input')
+    .reply(function (uri, requestBody, cb) {
+      const lines = requestBody.split('\n');
+      const logs = lines
+        .filter((line) => line.trim())
+        .map((line) => JSON.parse(line));
+      cb(null, [
+        200,
+        {
+          contentType: this.req.headers['content-type'][0],
+          token: this.req.headers['x-token'][0],
+          logs,
+        },
+      ]);
+    });
+};
+
 module.exports = {
   makeRpc,
+  mockLogServer,
   mockRpcCall,
   mockRpcFail,
   mockRpcGetPresignedPostCall,
   mockUpload,
-  FAKE_S3_URL
+  FAKE_LOG_URL,
+  FAKE_S3_URL,
 };

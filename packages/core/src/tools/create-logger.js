@@ -1,16 +1,21 @@
 'use strict';
 
+const { Transform } = require('stream');
+
 const _ = require('lodash');
 
 const request = require('./request-client-internal');
 const cleaner = require('./cleaner');
 const dataTools = require('./data');
 const hashing = require('./hashing');
-const ZapierPromise = require('./promise');
 const constants = require('../constants');
 const { unheader } = require('./http');
 
-const truncate = str => dataTools.simpleTruncate(str, 3500, ' [...]');
+// The payload size per request to stream logs. This should be slighly lower
+// than the limit (16 MB) on the server side.
+const LOG_STREAM_BYTES_LIMIT = 15 * 1024 * 1024;
+
+const truncate = (str) => dataTools.simpleTruncate(str, 3500, ' [...]');
 
 const formatHeaders = (headers = {}) => {
   if (_.isEmpty(headers)) {
@@ -28,7 +33,7 @@ const formatHeaders = (headers = {}) => {
     .join('\n');
 };
 
-const maybeStringify = d => {
+const maybeStringify = (d) => {
   if (_.isPlainObject(d) || Array.isArray(d)) {
     return JSON.stringify(d);
   }
@@ -36,7 +41,7 @@ const maybeStringify = d => {
 };
 
 // format HTTP request details into string suitable for printing to stdout
-const httpDetailsLogMessage = data => {
+const httpDetailsLogMessage = (data) => {
   if (data.log_type !== 'http') {
     return '';
   }
@@ -58,9 +63,9 @@ const httpDetailsLogMessage = data => {
   }
 
   return `\
-${trimmedData.request_method || 'GET'} ${
-    trimmedData.request_url
-  }${trimmedData.request_params || ''}
+${trimmedData.request_method || 'GET'} ${trimmedData.request_url}${
+    trimmedData.request_params || ''
+  }
 ${formatHeaders(trimmedData.request_headers) || ''}
 
 ${maybeStringify(trimmedData.request_data) || ''}
@@ -93,12 +98,12 @@ const makeSensitiveBank = (event, data) => {
   const matcher = (key, value) => {
     if (_.isString(value)) {
       const lowerKey = key.toLowerCase();
-      return _.some(constants.SENSITIVE_KEYS, k => lowerKey.indexOf(k) >= 0);
+      return _.some(constants.SENSITIVE_KEYS, (k) => lowerKey.indexOf(k) >= 0);
     }
     return false;
   };
 
-  dataTools.recurseExtract(data, matcher).forEach(value => {
+  dataTools.recurseExtract(data, matcher).forEach((value) => {
     sensitiveValues.push(value);
   });
 
@@ -126,7 +131,75 @@ const makeSensitiveBank = (event, data) => {
   );
 };
 
-const sendLog = (options, event, message, data) => {
+class LogStream extends Transform {
+  constructor(options) {
+    super(options);
+    this.bytesWritten = 0;
+    this.request = this._newRequest(options.url, options.token);
+  }
+
+  _newRequest(url, token) {
+    const httpOptions = {
+      url,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-ndjson',
+        'X-Token': token,
+      },
+      body: this,
+    };
+    return request(httpOptions).catch((err) => {
+      // Swallow logging errors. This will show up in AWS logs at least.
+      console.error(
+        'Error making log request:',
+        err,
+        'http options:',
+        httpOptions
+      );
+    });
+  }
+
+  _transform(chunk, encoding, callback) {
+    this.push(chunk);
+    this.bytesWritten += Buffer.byteLength(chunk, encoding);
+    callback();
+  }
+}
+
+// Implements singleton for LogStream. The goal is for every sendLog() call we
+// reuse the same request until the request body grows too big and exceeds
+// LOG_STREAM_BYTES_LIMIT.
+class LogStreamFactory {
+  constructor() {
+    this._logStream = null;
+  }
+
+  getOrCreate(url, token) {
+    if (this._logStream) {
+      if (this._logStream.bytesWritten < LOG_STREAM_BYTES_LIMIT) {
+        // Reuse the same request for efficiency
+        return this._logStream;
+      }
+
+      // End this one before creating another
+      this._logStream.end();
+    }
+
+    this._logStream = new LogStream({ url, token });
+    return this._logStream;
+  }
+
+  async end() {
+    if (this._logStream) {
+      this._logStream.end();
+      const response = await this._logStream.request;
+      this._logStream = null;
+      return response;
+    }
+  }
+}
+
+const sendLog = async (logStreamFactory, options, event, message, data) => {
   data = _.extend({}, data || {}, event.logExtra || {});
   data.log_type = data.log_type || 'console';
 
@@ -144,7 +217,7 @@ const sendLog = (options, event, message, data) => {
   const unsafeData = dataTools.recurseReplace(data, truncate);
 
   // Keep safe log keys uncensored
-  Object.keys(safeData).forEach(key => {
+  Object.keys(safeData).forEach((key) => {
     if (constants.SAFE_LOG_KEYS.indexOf(key) !== -1) {
       safeData[key] = unsafeData[key];
     }
@@ -152,20 +225,6 @@ const sendLog = (options, event, message, data) => {
 
   safeData.request_headers = formatHeaders(safeData.request_headers);
   safeData.response_headers = formatHeaders(safeData.response_headers);
-
-  const body = {
-    message: safeMessage,
-    data: safeData,
-    token: options.token
-  };
-
-  const httpOptions = {
-    url: options.endpoint,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-    timeout: 3000
-  };
 
   if (event.logToStdout) {
     toStdout(event, message, unsafeData);
@@ -177,24 +236,36 @@ const sendLog = (options, event, message, data) => {
   }
 
   if (options.token) {
-    return request(httpOptions).catch(err => {
-      // Swallow logging errors.
-      // This will show up in AWS logs at least:
-      console.error(
-        'Error making log request:',
-        err,
-        'http options:',
-        httpOptions
-      );
-    });
-  } else {
-    return ZapierPromise.resolve();
+    const logStream = logStreamFactory.getOrCreate(
+      options.endpoint,
+      options.token
+    );
+    logStream.write(
+      // JSON Lines format: It's important the serialized JSON object itself has
+      // no line breaks, and after an object it ends with a line break.
+      JSON.stringify({ message: safeMessage, data: safeData }) + '\n'
+    );
   }
 };
 
 /*
   Creates low level logging function that POSTs to endpoint (GL by default).
   Use internally; do not expose to devs.
+
+  Usage:
+
+    const logger = createLogger(event, options);
+
+    // These will reuse the same request to the log server
+    logger('log message here', { log_type: 'console' });
+    logger('another log', { log_type: 'console' });
+    logger('200 GET https://example.com', { log_type: 'http' });
+
+    // After an invocation, the Lambda handler MUST call logger.end() to close
+    // the log stream. Otherwise, it will hang!
+    logger.end().finally(() => {
+      // anything else you want to do to finish an invocation
+    });
 */
 const createLogger = (event, options) => {
   options = options || {};
@@ -205,10 +276,16 @@ const createLogger = (event, options) => {
       process.env.LOGGING_ENDPOINT || constants.DEFAULT_LOGGING_HTTP_ENDPOINT,
     apiKey:
       process.env.LOGGING_API_KEY || constants.DEFAULT_LOGGING_HTTP_API_KEY,
-    token: process.env.LOGGING_TOKEN || event.token
+    token: process.env.LOGGING_TOKEN || event.token,
   });
 
-  return sendLog.bind(undefined, options, event);
+  const logStreamFactory = new LogStreamFactory();
+  const logger = sendLog.bind(undefined, logStreamFactory, options, event);
+
+  logger.end = async () => {
+    return logStreamFactory.end();
+  };
+  return logger;
 };
 
 module.exports = createLogger;

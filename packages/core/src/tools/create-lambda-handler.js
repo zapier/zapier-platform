@@ -22,7 +22,7 @@ const ZapierPromise = require('./promise');
 const RequestSchema = require('zapier-platform-schema/lib/schemas/RequestSchema');
 const FunctionSchema = require('zapier-platform-schema/lib/schemas/FunctionSchema');
 
-const isRequestOrFunction = obj => {
+const isRequestOrFunction = (obj) => {
   return (
     RequestSchema.validate(obj).valid || FunctionSchema.validate(obj).valid
   );
@@ -34,7 +34,7 @@ const extendAppRaw = (base, extension) => {
     'perform',
     'performList',
     'performSubscribe',
-    'performUnsubscribe'
+    'performUnsubscribe',
   ];
   const concatArrayAndOverrideKeys = (objValue, srcValue, key) => {
     if (Array.isArray(objValue) && Array.isArray(srcValue)) {
@@ -99,7 +99,7 @@ const getAppRawOverride = (rpc, appRawOverride) => {
 
     // Otherwise just get it via RPC
     rpc('get_definition_override')
-      .then(fetchedOverride => {
+      .then((fetchedOverride) => {
         // "cache" it.
         fs.writeFileSync(hashPath, appRawOverride);
         fs.writeFileSync(overridePath, JSON.stringify(fetchedOverride));
@@ -108,7 +108,7 @@ const getAppRawOverride = (rpc, appRawOverride) => {
 
         resolve(fetchedOverride);
       })
-      .catch(err => reject(err));
+      .catch((err) => reject(err));
   });
 };
 
@@ -118,8 +118,8 @@ const loadApp = (event, rpc, appRawOrPath) => {
   return new ZapierPromise((resolve, reject) => {
     if (event && event.appRawOverride) {
       return getAppRawOverride(rpc, event.appRawOverride)
-        .then(appRawOverride => resolve(appRawOverride))
-        .catch(err => reject(err));
+        .then((appRawOverride) => resolve(appRawOverride))
+        .catch((err) => reject(err));
     }
 
     if (_.isString(appRawOrPath)) {
@@ -130,7 +130,7 @@ const loadApp = (event, rpc, appRawOrPath) => {
   });
 };
 
-const createLambdaHandler = appRawOrPath => {
+const createLambdaHandler = (appRawOrPath) => {
   const handler = (event, context, callback) => {
     // Wait for all async events to complete before callback returns.
     // This is not strictly necessary since this is the default now when
@@ -147,65 +147,61 @@ const createLambdaHandler = appRawOrPath => {
 
     environmentTools.cleanEnvironment();
 
+    // Copy bundle environment into process.env *before* creating the logger and
+    // loading app code, so that the logger gets the endpoint from process.env,
+    // and top level app code can get bundle environment vars via process.env.
+    environmentTools.applyEnvironment(event);
+
     // Create logger outside of domain, so we can use in both error and run callbacks.
     const logBuffer = [];
     const logger = createLogger(event, { logBuffer });
 
     let isCallbackCalled = false;
     const callbackOnce = (err, resp) => {
-      if (!isCallbackCalled) {
-        isCallbackCalled = true;
-        callback(err, resp);
-      }
+      logger.end().finally(() => {
+        if (!isCallbackCalled) {
+          isCallbackCalled = true;
+          callback(err, resp);
+        }
+      });
     };
 
     const logErrorAndCallbackOnce = (logMsg, logData, err) => {
-      // Wait for logger to complete before callback. This isn't
-      // strictly necessary because callbacksWaitsForEmptyLoop is
-      // the default behavior with callbacks anyway, but don't want
-      // to rely on that.
-      logger(logMsg, logData).then(() => {
-        // Check for `.message` in case someone did `throw "My Error"`
-        if (
-          !constants.IS_TESTING &&
-          err &&
-          !err.doNotContextify &&
-          err.message
-        ) {
-          err.message += `\n\nConsole logs:\n${logBuffer
-            .map(s => `  ${s.message}`)
-            .join('')}`;
-        }
-        callbackOnce(err);
-      });
+      logger(logMsg, logData);
+
+      // Check for `.message` in case someone did `throw "My Error"`
+      if (!constants.IS_TESTING && err && !err.doNotContextify && err.message) {
+        err.message += `\n\nConsole logs:\n${logBuffer
+          .map((s) => `  ${s.message}`)
+          .join('')}`;
+      }
+
+      callbackOnce(err);
     };
 
     const handlerDomain = domain.create();
 
-    handlerDomain.on('error', err => {
-      const logMsg = `Uncaught error: ${err}\n${(err && err.stack) ||
-        '<stack>'}`;
+    handlerDomain.on('error', (err) => {
+      const logMsg = `Uncaught error: ${err}\n${
+        (err && err.stack) || '<stack>'
+      }`;
       const logData = { err, log_type: 'error' };
       logErrorAndCallbackOnce(logMsg, logData, err);
     });
 
     handlerDomain.run(() => {
-      // Copy bundle environment into process.env *before* loading app code,
-      // so that top level app code can get bundle environment vars via process.env.
-      environmentTools.applyEnvironment(event);
-
       const rpc = createRpcClient(event);
 
       return loadApp(event, rpc, appRawOrPath)
-        .then(appRaw => {
+        .then((appRaw) => {
           const app = createApp(appRaw);
 
           const { skipHttpPatch } = appRaw.flags || {};
           // Adds logging for _all_ kinds of http(s) requests, no matter the library
-          if (!skipHttpPatch) {
+          if (!skipHttpPatch && !event.calledFromCli) {
             const httpPatch = createHttpPatch(event);
-            httpPatch(require('http'));
-            httpPatch(require('https')); // 'https' needs to be patched separately
+            httpPatch(require('http'), logger);
+            httpPatch(require('https'), logger); // 'https' needs to be patched separately
           }
 
           // TODO: Avoid calling prepareApp(appRaw) repeatedly here as createApp()
@@ -215,12 +211,13 @@ const createLambdaHandler = appRawOrPath => {
           const input = createInput(compiledApp, event, logger, logBuffer, rpc);
           return app(input);
         })
-        .then(output => {
+        .then((output) => {
           callbackOnce(null, cleaner.maskOutput(output));
         })
-        .catch(err => {
-          const logMsg = `Unhandled error: ${err}\n${(err && err.stack) ||
-            '<stack>'}`;
+        .catch((err) => {
+          const logMsg = `Unhandled error: ${err}\n${
+            (err && err.stack) || '<stack>'
+          }`;
           const logData = { err, log_type: 'error' };
           logErrorAndCallbackOnce(logMsg, logData, err);
         });

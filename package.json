@@ -16,7 +16,7 @@
     "inquirer": "7.0.3",
     "lerna": "3.16.4",
     "lint-staged": "9.2.4",
-    "mocha": "6.2.0",
+    "mocha": "^8.4.0",
     "prettier": "^2.3.0",
     "semver": "7.1.1",
     "should": "13.2.3"
