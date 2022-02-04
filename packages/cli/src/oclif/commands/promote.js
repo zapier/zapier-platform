@@ -28,7 +28,6 @@ class PromoteCommand extends BaseCommand {
     const app = await this.getWritableApp();
 
     const version = this.args.version;
-    console.log('hey buddy!');
 
     let shouldContinue;
     const changelog = await getVersionChangelog(version);
@@ -65,11 +64,9 @@ class PromoteCommand extends BaseCommand {
       job: {
         name: 'promote',
         to_version: version,
+        changelog,
       },
     };
-    if (changelog) {
-      body.job.changelog = changelog;
-    }
 
     this.startSpinner(`Verifying and promoting ${version}`);
 

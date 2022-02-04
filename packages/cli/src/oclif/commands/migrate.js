@@ -15,7 +15,6 @@ class MigrateCommand extends BaseCommand {
     const user = this.flags.user;
     const fromVersion = this.args.fromVersion;
     const toVersion = this.args.toVersion;
-    const email = this.args.email;
 
     if (user && percent !== 100) {
       this.error(
@@ -51,10 +50,10 @@ class MigrateCommand extends BaseCommand {
         name: 'migrate',
         from_version: fromVersion,
         to_version: toVersion,
+        email: user,
       },
     };
     if (user) {
-      body.job.user = user;
       this.startSpinner(
         `Starting migration from ${fromVersion} to ${toVersion} for ${user}`
       );
@@ -65,9 +64,6 @@ class MigrateCommand extends BaseCommand {
     }
     if (percent) {
       body.job.percent_human = percent;
-    }
-    if (email) {
-      body.job.email = email;
     }
 
     const url = `/apps/${app.id}/migrations`;
