@@ -320,6 +320,8 @@ const listHistory = () => listEndpoint('history');
 
 const listInvitees = () => listEndpoint('invitees');
 
+const listMigrations = () => listEndpoint('migrations');
+
 const listLogs = (opts) => {
   return listEndpoint(`logs?${qs.stringify(_.omit(opts, 'debug'))}`, 'logs');
 };
@@ -411,6 +413,7 @@ module.exports = {
   listInvitees,
   listLogs,
   listVersions,
+  listMigrations,
   readCredentials,
   upload,
   validateApp,
