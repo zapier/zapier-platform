@@ -1402,7 +1402,7 @@ zapier convert 1234 --version 1.0.1 my-app
 <li>Zapier makes a call to your API requesting a &quot;request token&quot; (also known as &quot;temporary credentials&quot;).</li>
 <li>Zapier sends the user to the authorization URL, defined by your app, along with the request token.</li>
 <li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png" alt></li>
-<li>Zapier makes a backend call to your API to your API to exchange the request token for an &quot;access token&quot; (also known as &quot;long-lived credentials&quot;).</li>
+<li>Zapier makes a backend call to your API to exchange the request token for an &quot;access token&quot; (also known as &quot;long-lived credentials&quot;).</li>
 <li>Zapier stores the <code>access_token</code> and uses it to make calls on behalf of the user.</li>
 </ol><p>You are required to define:</p><ul>
 <li><code>getRequestToken</code>: The API call to fetch the request token</li>
