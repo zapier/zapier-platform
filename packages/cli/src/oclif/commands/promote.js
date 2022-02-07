@@ -60,19 +60,22 @@ class PromoteCommand extends BaseCommand {
       `Preparing to promote version ${version} of your integration "${app.title}".`
     );
 
-    const body = {};
-    if (changelog) {
-      body.changelog = changelog;
-    }
+    const body = {
+      job: {
+        name: 'promote',
+        to_version: version,
+        changelog,
+      },
+    };
 
     this.startSpinner(`Verifying and promoting ${version}`);
 
-    const url = `/apps/${app.id}/versions/${version}/promote/production`;
+    const url = `/apps/${app.id}/migrations`;
     try {
       await callAPI(
         url,
         {
-          method: 'PUT',
+          method: 'POST',
           body,
         },
         true
@@ -120,7 +123,7 @@ PromoteCommand.args = [
   {
     name: 'version',
     required: true,
-    description: 'The version you want promote.',
+    description: 'The version you want to promote.',
   },
 ];
 

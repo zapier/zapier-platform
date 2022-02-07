@@ -46,10 +46,14 @@ class MigrateCommand extends BaseCommand {
     }
 
     const body = {
-      percent,
+      job: {
+        name: 'migrate',
+        from_version: fromVersion,
+        to_version: toVersion,
+        email: user,
+      },
     };
     if (user) {
-      body.user = user;
       this.startSpinner(
         `Starting migration from ${fromVersion} to ${toVersion} for ${user}`
       );
@@ -58,8 +62,12 @@ class MigrateCommand extends BaseCommand {
         `Starting migration from ${fromVersion} to ${toVersion} for ${percent}%`
       );
     }
+    if (percent) {
+      body.job.percent_human = percent;
+    }
 
-    const url = `/apps/${app.id}/versions/${fromVersion}/migrate-to/${toVersion}`;
+    const url = `/apps/${app.id}/migrations`;
+
     try {
       await callAPI(url, { method: 'POST', body });
     } finally {
