@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
+const { promisify } = require('util');
 
 require('should');
 
@@ -9,6 +10,8 @@ const { makeTempDir } = require('../utils/files');
 const { runCommand } = require('../tests/_helpers');
 
 const REGEX_VERSION = /\d+\.\d+\.\d+/;
+
+const sleep = promisify(setTimeout);
 
 const setupZapierRC = () => {
   let hasRC = false;
@@ -41,21 +44,23 @@ const npmPack = () => {
 
 const npmInstall = (packagePath, workdir) => {
   runCommand('npm', ['install', '--production', packagePath], {
-    cwd: workdir
+    cwd: workdir,
   });
 };
 
-describe('smoke tests - setup will take some time', () => {
+describe('smoke tests - setup will take some time', function () {
+  this.retries(3);
+
   const context = {
     // Global context that will be available for all test cases in this test suite
     package: {
       filename: null,
       version: null,
-      path: null
+      path: null,
     },
     workdir: null,
     cliBin: null,
-    hasRC: false
+    hasRC: false,
   };
 
   before(() => {
@@ -82,7 +87,22 @@ describe('smoke tests - setup will take some time', () => {
     fs.removeSync(context.workdir);
   });
 
-  it('package size should not change much', async function() {
+  beforeEach(async function () {
+    // delay after first failure
+    const currentRetry = this.currentTest.currentRetry();
+    if (currentRetry > 0) {
+      await sleep(Math.pow(2, currentRetry) * 1000);
+    }
+  });
+
+  afterEach(function () {
+    const currentRetry = this.currentTest.currentRetry();
+    if (currentRetry >= 0) {
+      this.currentTest.title += ` (${currentRetry} retries)`;
+    }
+  });
+
+  it('package size should not change much', async function () {
     const packageName = 'zapier-platform-cli';
     const latestVersion = await getPackageLatestVersion(packageName);
     const baselineSize = await getPackageSize(packageName, latestVersion);
@@ -105,7 +125,7 @@ describe('smoke tests - setup will take some time', () => {
 
   it('zapier init', () => {
     runCommand(context.cliBin, ['init', 'awesome-app'], {
-      cwd: context.workdir
+      cwd: context.workdir,
     });
 
     const newAppDir = path.join(context.workdir, 'awesome-app');
@@ -119,7 +139,7 @@ describe('smoke tests - setup will take some time', () => {
 
   it('zapier init --template=babel', () => {
     runCommand(context.cliBin, ['init', 'babel-app', '--template=babel'], {
-      cwd: context.workdir
+      cwd: context.workdir,
     });
 
     const newAppDir = path.join(context.workdir, 'babel-app');
@@ -138,7 +158,7 @@ describe('smoke tests - setup will take some time', () => {
 
   it('zapier scaffold trigger neat', () => {
     runCommand(context.cliBin, ['init', 'scaffold-town'], {
-      cwd: context.workdir
+      cwd: context.workdir,
     });
 
     const newAppDir = path.join(context.workdir, 'scaffold-town');
@@ -146,7 +166,7 @@ describe('smoke tests - setup will take some time', () => {
 
     // npm install was already run, so it'll run the validaion function
     runCommand(context.cliBin, ['scaffold', 'trigger', 'neat'], {
-      cwd: newAppDir
+      cwd: newAppDir,
     });
 
     const appIndexJs = path.join(newAppDir, 'index.js');
@@ -166,13 +186,13 @@ describe('smoke tests - setup will take some time', () => {
     pkg.name.should.containEql('minimal');
   });
 
-  it('zapier integrations', function() {
+  it('zapier integrations', function () {
     if (!context.hasRC) {
       this.skip();
     }
     const stdout = runCommand(context.cliBin, [
       'integrations',
-      '--format=json'
+      '--format=json',
     ]);
     const result = JSON.parse(stdout);
     result.should.be.Array();
