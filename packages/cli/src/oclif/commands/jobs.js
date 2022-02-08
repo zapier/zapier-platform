@@ -37,7 +37,6 @@ class JobsCommand extends BaseCommand {
           parseFloat(migration.progress.overall_progress * 100).toFixed(2) +
           '%',
         updated_at: migration.updated_at,
-        // error_message: migration.error.message ?? '-',
         error_message: migration.error ? migration.error.message : '-',
       }))
       .sortBy((migration) => migration.updated_at, 'asc')
