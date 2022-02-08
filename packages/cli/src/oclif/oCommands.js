@@ -15,6 +15,7 @@ module.exports = {
   'env:set': require('./commands/env/set'),
   'env:unset': require('./commands/env/unset'),
   history: require('./commands/history'),
+  jobs: require('./commands/jobs'),
   init: require('./commands/init'),
   integrations: require('./commands/integrations'),
   link: require('./commands/link'),
