@@ -118,7 +118,7 @@ Start a migration to move users between different versions of your integration. 
 
 Only use this command to migrate users between non-breaking versions, use \`zapier deprecate\` if you have breaking changes!
 
-Migration time varies based on the number of affected Zaps. Be patient and check \`zapier jobs\` to track the status.
+Migration time varies based on the number of affected Zaps. Be patient and check \`zapier jobs\` to track the status. Or use \`zapier history\` if you want to see older jobs.
 
 Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.
 

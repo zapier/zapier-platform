@@ -5,6 +5,7 @@ const { listMigrations } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
 
 const getVersion = (versionStr) => versionStr.split('@')[1];
+const getIsoDate = (unixTs) => (unixTs ? new Date(unixTs).toISOString() : '-');
 
 class JobsCommand extends BaseCommand {
   async perform() {
@@ -23,23 +24,37 @@ class JobsCommand extends BaseCommand {
         (migration) =>
           migration.job_kind === 'migrate' || migration.job_kind === 'promote'
       )
-      .map((migration) => ({
-        app_title: migration.app_title,
-        job_id: migration.job_id,
-        job_kind: migration.job_kind,
-        job_stage: migration.job_stage,
-        version_from: getVersion(migration.from_selected_api),
-        version_to: getVersion(migration.to_selected_api),
-        current_step: migration.progress.current_step.name,
-        current_progress: `${migration.progress.current_step.finished_points} finished, ${migration.progress.current_step.skipped_points} skipped, ${migration.progress.current_step.estimated_points} estimated`,
-        current_step_status: migration.progress.current_step.status,
-        overall_progress:
-          parseFloat(migration.progress.overall_progress * 100).toFixed(2) +
-          '%',
-        updated_at: migration.updated_at,
-        error_message: migration.error ? migration.error.message : '-',
-      }))
-      .sortBy((migration) => migration.updated_at, 'asc')
+      .map((migration) => {
+        const job = {
+          app_title: migration.app_title,
+          job_id: migration.job_id,
+          job_kind: migration.job_kind,
+          job_stage: migration.job_stage,
+          version_from: getVersion(migration.from_selected_api),
+          version_to: getVersion(migration.to_selected_api),
+          started_at: getIsoDate(migration.started_at),
+          updated_at: getIsoDate(migration.updated_at),
+        };
+
+        if (migration.progress) {
+          job.overall_progress =
+            parseFloat(migration.progress.overall_progress * 100).toFixed(2) +
+            '%';
+
+          if (migration.progress.current_step) {
+            job.current_step = migration.progress.current_step.name;
+            job.current_progress = `${migration.progress.current_step.finished_points} finished, ${migration.progress.current_step.skipped_points} skipped, ${migration.progress.current_step.estimated_points} estimated`;
+            job.current_step_status = migration.progress.current_step.status;
+          }
+        }
+
+        if (migration.error) {
+          job.error_message = migration.error.message;
+        }
+
+        return job;
+      })
+      .sortBy((migration) => migration.started_at)
       .value();
 
     this.logTable({
@@ -55,10 +70,12 @@ class JobsCommand extends BaseCommand {
         ['Current Progress', 'current_progress'],
         ['Current Step Status', 'current_step_status'],
         ['Progress', 'overall_progress'],
-        ['Last Updated', 'updated_at'],
+        ['Started At', 'started_at'],
+        ['Updated At', 'updated_at'],
         ['Errors', 'error_message'],
       ],
-      emptyMessage: 'No recent migration or promotion jobs found',
+      emptyMessage:
+        'No recent migration or promotion jobs found. Try `zapier history` if you see older jobs.',
     });
   }
 }
@@ -72,7 +89,7 @@ Each job will be added to the end of a queue of "promote" and "migration" jobs w
 
 Job stages will then move to "estimating", "in_progress" and finally one of four "end" stages: "complete", "aborted", "errored" or "paused".
 
-Job times will vary as it depends on the size of the queue.
+Job times will vary as it depends on the size of the queue and how many users your integration has.
 
 Jobs are returned from oldest to newest.
 `;

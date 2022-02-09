@@ -141,6 +141,6 @@ Promotes are an inherently safe operation for all existing users of your integra
 
 If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.
 
-Check \`zapier jobs\` to track the status of the promotion.`;
+Check \`zapier jobs\` to track the status of the promotion. Or use \`zapier history\` if you want to see older jobs.`;
 
 module.exports = PromoteCommand;

@@ -270,7 +270,7 @@ Each job will be added to the end of a queue of "promote" and "migration" jobs w
 
 Job stages will then move to "estimating", "in_progress" and finally one of four "end" stages: "complete", "aborted", "errored" or "paused".
 
-Job times will vary as it depends on the size of the queue.
+Job times will vary as it depends on the size of the queue and how many users your integration has.
 
 Jobs are returned from oldest to newest.
 
@@ -348,7 +348,7 @@ Start a migration to move users between different versions of your integration. 
 
 Only use this command to migrate users between non-breaking versions, use `zapier deprecate` if you have breaking changes!
 
-Migration time varies based on the number of affected Zaps. Be patient and check `zapier jobs` to track the status.
+Migration time varies based on the number of affected Zaps. Be patient and check `zapier jobs` to track the status. Or use `zapier history` if you want to see older jobs.
 
 Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.
 
@@ -391,7 +391,7 @@ Promotes are an inherently safe operation for all existing users of your integra
 
 If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.
 
-Check `zapier jobs` to track the status of the promotion.
+Check `zapier jobs` to track the status of the promotion. Or use `zapier history` if you want to see older jobs.
 
 **Arguments**
 * (required) `version` | The version you want to promote.
