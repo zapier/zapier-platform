@@ -258,6 +258,30 @@ This command also checks the current directory for a linked integration.
 * `apps`
 
 
+## jobs
+
+> Lists ongoing migration or promotion jobs for the current integration.
+
+**Usage**: `zapier jobs`
+
+A job represents a background process that will be queued up when users execute a "migrate" or "promote" command for the current integration.
+
+Each job will be added to the end of a queue of "promote" and "migration" jobs where the "Job Stage" will then be initialized with "requested". 
+
+Job stages will then move to "estimating", "in_progress" and finally one of four "end" stages: "complete", "aborted", "errored" or "paused".
+
+Job times will vary as it depends on the size of the queue and how many users your integration has.
+
+Jobs are returned from oldest to newest.
+
+**Flags**
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier jobs`
+
+
 ## link
 
 > Link the current directory with an existing integration.
@@ -324,7 +348,7 @@ Start a migration to move users between different versions of your integration. 
 
 Only use this command to migrate users between non-breaking versions, use `zapier deprecate` if you have breaking changes!
 
-Migration time varies based on the number of affected Zaps. Be patient and check `zapier history` to track the status.
+Migration time varies based on the number of affected Zaps. Be patient and check `zapier jobs` to track the status. Or use `zapier history` if you want to see older jobs.
 
 Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.
 
@@ -366,6 +390,8 @@ Promote an integration version into production (non-private) rotation, which mea
 Promotes are an inherently safe operation for all existing users of your integration.
 
 If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.
+
+Check `zapier jobs` to track the status of the promotion. Or use `zapier history` if you want to see older jobs.
 
 **Arguments**
 * (required) `version` | The version you want to promote.

@@ -245,6 +245,7 @@ a code {
 <li><a href="#history">history</a></li>
 <li><a href="#init">init</a></li>
 <li><a href="#integrations">integrations</a></li>
+<li><a href="#jobs">jobs</a></li>
 <li><a href="#link">link</a></li>
 <li><a href="#login">login</a></li>
 <li><a href="#logout">logout</a></li>
@@ -658,6 +659,31 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="jobs">jobs</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Lists ongoing migration or promotion jobs for the current integration.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier jobs</code></p><p>A job represents a background process that will be queued up when users execute a &quot;migrate&quot; or &quot;promote&quot; command for the current integration.</p><p>Each job will be added to the end of a queue of &quot;promote&quot; and &quot;migration&quot; jobs where the &quot;Job Stage&quot; will then be initialized with &quot;requested&quot;. </p><p>Job stages will then move to &quot;estimating&quot;, &quot;in_progress&quot; and finally one of four &quot;end&quot; stages: &quot;complete&quot;, &quot;aborted&quot;, &quot;errored&quot; or &quot;paused&quot;.</p><p>Job times will vary as it depends on the size of the queue and how many users your integration has.</p><p>Jobs are returned from oldest to newest.</p><p><strong>Flags</strong></p><ul>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier jobs</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h2 id="link">link</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -765,7 +791,7 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Migrate users from one version of your integration to another.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier migrate FROMVERSION TOVERSION [PERCENT]</code></p><p>Start a migration to move users between different versions of your integration. You may also &quot;revert&quot; by simply swapping the from/to verion strings in the command line arguments (i.e. <code>zapier migrate 1.0.1 1.0.0</code>).</p><p>Only use this command to migrate users between non-breaking versions, use <code>zapier deprecate</code> if you have breaking changes!</p><p>Migration time varies based on the number of affected Zaps. Be patient and check <code>zapier history</code> to track the status.</p><p>Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.</p><p>We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.</p><p>You can migrate a single user by using <code>--user</code> (i.e. <code>zapier migrate 1.0.0 1.0.1 --user=user@example.com</code>).</p><p><strong>Arguments</strong></p><ul>
+</blockquote><p><strong>Usage</strong>: <code>zapier migrate FROMVERSION TOVERSION [PERCENT]</code></p><p>Start a migration to move users between different versions of your integration. You may also &quot;revert&quot; by simply swapping the from/to verion strings in the command line arguments (i.e. <code>zapier migrate 1.0.1 1.0.0</code>).</p><p>Only use this command to migrate users between non-breaking versions, use <code>zapier deprecate</code> if you have breaking changes!</p><p>Migration time varies based on the number of affected Zaps. Be patient and check <code>zapier jobs</code> to track the status. Or use <code>zapier history</code> if you want to see older jobs.</p><p>Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.</p><p>We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.</p><p>You can migrate a single user by using <code>--user</code> (i.e. <code>zapier migrate 1.0.0 1.0.1 --user=user@example.com</code>).</p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>fromVersion</code> | The version FROM which to migrate users.</li>
 <li>(required) <code>toVersion</code> | The version TO which to migrate users.</li>
 <li><code>percent</code> | Percentage (between 1 and 100) of users to migrate.</li>
@@ -805,7 +831,7 @@ a code {
 </li>
 <li><p>This does <strong>NOT</strong> recommend old users stop using this version - <code>zapier deprecate 1.0.0 2017-01-01</code> does that.</p>
 </li>
-</ul><p>Promotes are an inherently safe operation for all existing users of your integration.</p><p>If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.</p><p><strong>Arguments</strong></p><ul>
+</ul><p>Promotes are an inherently safe operation for all existing users of your integration.</p><p>If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.</p><p>Check <code>zapier jobs</code> to track the status of the promotion. Or use <code>zapier history</code> if you want to see older jobs.</p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>version</code> | The version you want to promote.</li>
 </ul><p><strong>Flags</strong></p><ul>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
