@@ -1,3 +1,21 @@
+## 9.7.0
+
+_released `2022-02-14`_
+
+### cli
+
+* None!
+
+### core
+
+* :bug: Fix `value.replace is not a function` error when resolving missing curlies ([#467](https://github.com/zapier/zapier-platform/pull/467))
+* :bug: Handle case where `legacy.scriptingSource` is an empty string ([#478](https://github.com/zapier/zapier-platform/pull/478))
+* :nail_care: Improve `z.console.log` and HTTP logging performance ([#483](https://github.com/zapier/zapier-platform/pull/483))
+
+### schema
+
+* None!
+
 ## 9.6.0
 
 _released `2021-12-03`_
