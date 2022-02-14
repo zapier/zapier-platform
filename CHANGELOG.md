@@ -1,3 +1,33 @@
+## 11.3.0
+
+_released `2022-02-14`_
+
+### cli
+
+* :tada: New command: `jobs`. Now you can use `zapier jobs` to check `promote` and `migrate` progress! ([#484](https://github.com/zapier/zapier-platform/pull/484))
+* :tada: Add support for pnpm package manager in `test` command ([#476](https://github.com/zapier/zapier-platform/pull/476))
+* :bug: Fix byte missing issue with `files` example ([#465](https://github.com/zapier/zapier-platform/pull/465))
+* :nail_care: Update `promote` and `migrate` to use new endpoint ([#480](https://github.com/zapier/zapier-platform/pull/480))
+* :scroll: Clarify on OAuth2 refresh details ([#482](https://github.com/zapier/zapier-platform/pull/482))
+* :hammer: Dependency updates
+  - Bump shelljs from 0.8.4 to 0.8.5 ([#473](https://github.com/zapier/zapier-platform/pull/473))
+  - Bump marked from 2.0.3 to 4.0.10 ([#471](https://github.com/zapier/zapier-platform/pull/471))
+  - Bump cached-path-relative from 1.0.2 to 1.1.0 ([#477](https://github.com/zapier/zapier-platform/pull/477))
+
+### core
+
+* :bug: Fix `value.replace is not a function` error when resolving missing curlies ([#468](https://github.com/zapier/zapier-platform/pull/468))
+* :bug: Handle case where `legacy.scriptingSource` is an empty string ([#475](https://github.com/zapier/zapier-platform/pull/475))
+* :nail_care: Improve `z.console.log` and HTTP logging performance ([#469](https://github.com/zapier/zapier-platform/pull/469))
+
+### schema
+
+* None!
+
+### misc
+
+* :hammer: Bump trim-off-newlines from 1.0.1 to 1.0.3 ([#474](https://github.com/zapier/zapier-platform/pull/474))
+
 ## 11.2.0
 
 _released `2021-12-03`_
@@ -309,6 +339,24 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 ### schema
 
 - :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+
+## 9.7.0
+
+_released `2022-02-14`_
+
+### cli
+
+* None!
+
+### core
+
+* :bug: Fix `value.replace is not a function` error when resolving missing curlies ([#467](https://github.com/zapier/zapier-platform/pull/467))
+* :bug: Handle case where `legacy.scriptingSource` is an empty string ([#478](https://github.com/zapier/zapier-platform/pull/478))
+* :nail_care: Improve `z.console.log` and HTTP logging performance ([#483](https://github.com/zapier/zapier-platform/pull/483))
+
+### schema
+
+* None!
 
 ## 9.6.0
 
