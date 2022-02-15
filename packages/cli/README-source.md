@@ -436,7 +436,7 @@ Your auth definition would look something like this:
 [insert-file:./snippets/oauth2.js]
 ```
 
-For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken`  have fields like `redirect_uri` and `state` in `bundle.inputData`, instead of `bundle.authData`. After the code is exchanged for an access token and/or refresh token, those tokens are stored in `bundle.authData` for long-term use.
+For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken` have fields like `redirect_uri` and `state` in `bundle.inputData`, instead of `bundle.authData`. After the code is exchanged for an access token and/or refresh token, those tokens are stored in `bundle.authData` for long-term use.
 
 Also note that `authentication.oauth2Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
 
