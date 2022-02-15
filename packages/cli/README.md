@@ -443,9 +443,9 @@ zapier convert 1234 --version 1.0.1 my-app
 
 ## Authentication
 
-Most applications require some sort of authentication - and Zapier provides a handful of methods for helping your users authenticate with your application. Zapier will provide some of the core behaviors, but you'll likely need to handle the rest.
+Most applications require some sort of authentication. The Zapier platform provides core behaviors for several authentication methods that might be used with your application, as well as the ability to configure or customize authentication further for certain methods.
 
-> Hint: You can access the data tied to your authentication via the `bundle.authData` property in any method called in your app. Exceptions exist in OAuth and Session auth. Please see them below.
+Data tied to authentication is included in the [bundle object](#bundle-object). Data used on an ongoing basis to authenticate requests is included in `bundle.authData`, while temporary values used in the establishment of [OAuth](#oauth1) and [Session auth](#session) are stored in `bundle.inputData`.
 
 ### Basic
 
@@ -511,7 +511,7 @@ const App = {
 
 ### Custom
 
-Custom auth is most commonly used for apps that use API keys, although it also provides flexibility for any unusual authentication setup. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` (see [Making HTTP Requests](#making-http-requests)) to pass data returned from the authentication process by adding/computing needed headers.
+Custom auth is most commonly used for apps that authenticate with API keys, although it also provides flexibility for any unusual authentication setup. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` (see [Making HTTP Requests](#making-http-requests)) to pass in data returned from the authentication process, most commonly by adding/computing needed headers.
 
 > Example App: Check out https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth for a working example app for custom auth.
 
@@ -751,7 +751,7 @@ module.exports = App;
 
 For OAuth1, `authentication.oauth1Config.getRequestToken`, `authentication.oauth1Config.authorizeUrl`, and `authentication.oauth1Config.getAccessToken` will have fields like `redirect_uri` and the temporary credentials in `bundle.inputData` instead of `bundle.authData`. After `getAccessToken` runs, the resulting token value(s) will be stored in `bundle.authData` for long-term use.
 
-Also note that `authentication.oauth1Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example from the query string).
+Also note that `authentication.oauth1Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
 
 ### OAuth2
 
@@ -774,7 +774,7 @@ You are required to define:
   * `authorizeUrl`: The authorization URL
   * `getAccessToken`: The API call to fetch the access token
 
-If the access token has a limited life and you want to refresh the token when it expires, you'll also need to define the API call to perform that refresh. You can choose to set `autoRefresh: true`, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See [Stale Authentication Credentials](#stale-authentication-credentials) for more details on handling auth refresh.
+If the access token has a limited life and you want to refresh the token when it expires, you'll also need to define the API call to perform that refresh (`refreshAccessToken`). You can choose to set `autoRefresh: true`, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See [Stale Authentication Credentials](#stale-authentication-credentials) for more details on handling auth refresh.
 
 You'll also likely want to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables:
 
@@ -860,7 +860,7 @@ module.exports = App;
 
 For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken`  have fields like `redirect_uri` and `state` in `bundle.inputData`, instead of `bundle.authData`. After the code is exchanged for an access token and/or refresh token, those tokens are stored in `bundle.authData` for long-term use.
 
-Also note that `authentication.oauth2Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example from the query string).
+Also note that `authentication.oauth2Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
 
 
 ## Resources

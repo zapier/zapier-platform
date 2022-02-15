@@ -1143,9 +1143,7 @@ zapier convert 1234 --version 1.0.1 my-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Most applications require some sort of authentication - and Zapier provides a handful of methods for helping your users authenticate with your application. Zapier will provide some of the core behaviors, but you&apos;ll likely need to handle the rest.</p><blockquote>
-<p>Hint: You can access the data tied to your authentication via the <code>bundle.authData</code> property in any method called in your app. Exceptions exist in OAuth and Session auth. Please see them below.</p>
-</blockquote>
+      <p>Most applications require some sort of authentication. The Zapier platform provides core behaviors for several authentication methods that might be used with your application, as well as the ability to configure or customize authentication further for certain methods.</p><p>Data tied to authentication is included in the <a href="#bundle-object">bundle object</a>. Data used on an ongoing basis to authenticate requests is included in <code>bundle.authData</code>, while temporary values used in the establishment of <a href="#oauth1">OAuth</a> and <a href="#session">Session auth</a> are stored in <code>bundle.inputData</code>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1243,7 +1241,7 @@ zapier convert 1234 --version 1.0.1 my-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Custom auth is most commonly used for apps that use API keys, although it also provides flexibility for any unusual authentication setup. You&apos;ll likely provide some custom <code>beforeRequest</code> middleware or a <code>requestTemplate</code> (see <a href="#making-http-requests">Making HTTP Requests</a>) to pass data returned from the authentication process by adding/computing needed headers.</p><blockquote>
+      <p>Custom auth is most commonly used for apps that authenticate with API keys, although it also provides flexibility for any unusual authentication setup. You&apos;ll likely provide some custom <code>beforeRequest</code> middleware or a <code>requestTemplate</code> (see <a href="#making-http-requests">Making HTTP Requests</a>) to pass in data returned from the authentication process, most commonly by adding/computing needed headers.</p><blockquote>
 <p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth</a> for a working example app for custom auth.</p>
 </blockquote>
     </div>
@@ -1510,7 +1508,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For OAuth1, <code>authentication.oauth1Config.getRequestToken</code>, <code>authentication.oauth1Config.authorizeUrl</code>, and <code>authentication.oauth1Config.getAccessToken</code> will have fields like <code>redirect_uri</code> and the temporary credentials in <code>bundle.inputData</code> instead of <code>bundle.authData</code>. After <code>getAccessToken</code> runs, the resulting token value(s) will be stored in <code>bundle.authData</code> for long-term use.</p><p>Also note that <code>authentication.oauth1Config.getAccessToken</code> has access to the additional return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string).</p>
+      <p>For OAuth1, <code>authentication.oauth1Config.getRequestToken</code>, <code>authentication.oauth1Config.authorizeUrl</code>, and <code>authentication.oauth1Config.getAccessToken</code> will have fields like <code>redirect_uri</code> and the temporary credentials in <code>bundle.inputData</code> instead of <code>bundle.authData</code>. After <code>getAccessToken</code> runs, the resulting token value(s) will be stored in <code>bundle.authData</code> for long-term use.</p><p>Also note that <code>authentication.oauth1Config.getAccessToken</code> has access to the additional return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example, from the query string).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1539,7 +1537,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 </ol><p>You are required to define:</p><ul>
 <li><code>authorizeUrl</code>: The authorization URL</li>
 <li><code>getAccessToken</code>: The API call to fetch the access token</li>
-</ul><p>If the access token has a limited life and you want to refresh the token when it expires, you&apos;ll also need to define the API call to perform that refresh. You can choose to set <code>autoRefresh: true</code>, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See <a href="#stale-authentication-credentials">Stale Authentication Credentials</a> for more details on handling auth refresh.</p><p>You&apos;ll also likely want to set your <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> as environment variables:</p>
+</ul><p>If the access token has a limited life and you want to refresh the token when it expires, you&apos;ll also need to define the API call to perform that refresh (<code>refreshAccessToken</code>). You can choose to set <code>autoRefresh: true</code>, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See <a href="#stale-authentication-credentials">Stale Authentication Credentials</a> for more details on handling auth refresh.</p><p>You&apos;ll also likely want to set your <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> as environment variables:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># setting the environment variables on Zapier.com</span>
@@ -1629,7 +1627,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For OAuth2, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code>  have fields like <code>redirect_uri</code> and <code>state</code> in <code>bundle.inputData</code>, instead of <code>bundle.authData</code>. After the code is exchanged for an access token and/or refresh token, those tokens are stored in <code>bundle.authData</code> for long-term use.</p><p>Also note that <code>authentication.oauth2Config.getAccessToken</code> has access to the additional return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example from the query string).</p>
+      <p>For OAuth2, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code>  have fields like <code>redirect_uri</code> and <code>state</code> in <code>bundle.inputData</code>, instead of <code>bundle.authData</code>. After the code is exchanged for an access token and/or refresh token, those tokens are stored in <code>bundle.authData</code> for long-term use.</p><p>Also note that <code>authentication.oauth2Config.getAccessToken</code> has access to the additional return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example, from the query string).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
