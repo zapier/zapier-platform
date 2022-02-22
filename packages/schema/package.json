@@ -34,6 +34,6 @@
     "fs-extra": "8.1.0",
     "istanbul": "0.4.5",
     "markdown-toc": "1.2.0",
-    "node-fetch": "2.6.6"
+    "node-fetch": "2.6.7"
   }
 }
