@@ -11,7 +11,7 @@ _released `2022-02-23`_
 * :bug: Fix hanging issue where an action could be invoked multiple times ([#491](https://github.com/zapier/zapier-platform/pull/491))
 * :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
 
-## schema
+### schema
 
 * :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
 
