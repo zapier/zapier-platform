@@ -1,3 +1,20 @@
+## 9.7.1
+
+_released `2022-02-23`_
+
+### cli
+
+* :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
+
+### core
+
+* :bug: Fix hanging issue where an action could be invoked multiple times ([#491](https://github.com/zapier/zapier-platform/pull/491))
+* :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
+
+## schema
+
+* :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
+
 ## 9.7.0
 
 _released `2022-02-14`_
