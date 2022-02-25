@@ -295,7 +295,7 @@ describe('http prepareRequest', () => {
   });
 });
 
-describe('http querystring before middleware', () => {
+describe.only('http querystring before middleware', () => {
   it('should encode dollars by default', () => {
     const req = {
       url: 'https://example.com',
@@ -305,11 +305,11 @@ describe('http querystring before middleware', () => {
     should(req.url).eql('https://example.com?cool=qwer%24%24qwer');
   });
 
-  it('should skip encoding dollars by on request', () => {
+  it('should skip encoding dollars', () => {
     const req = {
       url: 'https://example.com',
       params: { cool: 'qwer$$qwer' },
-      skipEncodingChars: ['$'],
+      skipEncodingChars: '$',
     };
     addQueryParams(req);
     should(req.url).eql('https://example.com?cool=qwer$$qwer');
@@ -319,7 +319,7 @@ describe('http querystring before middleware', () => {
     const req = {
       url: 'https://example.com?name=asdf%24%24asdf',
       params: { cool: 'qwer$$qwer' },
-      skipEncodingChars: ['$'],
+      skipEncodingChars: '$',
     };
     addQueryParams(req);
     should(req.url).eql(
@@ -331,19 +331,20 @@ describe('http querystring before middleware', () => {
     const req = {
       url: 'https://example.com',
       params: { cool: 'qwer$$qwer' },
-      skipEncodingChars: ['q'],
+      skipEncodingChars: 'q',
     };
     addQueryParams(req);
     should(req.url).eql('https://example.com?cool=qwer%24%24qwer');
   });
 
-  it('should error when passing a multi-character string to skip', () => {
+  it('should skip encoding multiple chars', () => {
     const req = {
       url: 'https://example.com',
-      params: { cool: 'qwer$$qwer' },
-      skipEncodingChars: ['$$'],
+      params: { cool: '烏龜@$å' },
+      skipEncodingChars: '$å龜',
     };
-    should(() => addQueryParams(req)).throw();
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=%E7%83%8F龜%40$å');
   });
 });
 
