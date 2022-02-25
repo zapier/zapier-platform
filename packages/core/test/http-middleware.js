@@ -295,7 +295,7 @@ describe('http prepareRequest', () => {
   });
 });
 
-describe.only('http querystring before middleware', () => {
+describe('http querystring before middleware', () => {
   it('should encode dollars by default', () => {
     const req = {
       url: 'https://example.com',
