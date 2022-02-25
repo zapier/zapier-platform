@@ -87,6 +87,11 @@ module.exports = makeSchema(
         type: 'boolean',
         default: false,
       },
+      skipEncodingChars: {
+        description:
+          'Contains the characters that you want left unencoded in the query params (`req.params`). If unspecified, `z.request()` will percent-encode non-ascii characters and these reserved characters: ``:$/?#[]@$&+,;=^@`\\``.',
+        type: 'string',
+      },
     },
     additionalProperties: false,
     examples: [

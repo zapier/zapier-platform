@@ -1236,6 +1236,7 @@ Key | Required | Type | Description
 `removeMissingValuesFrom` | no | `object` | Should missing values be sent? (empty strings, `null`, and `undefined` only — `[]`, `{}`, and `false` will still be sent). Allowed fields are `params` and `body`. The default is `false`, ex: ```removeMissingValuesFrom: { params: false, body: false }```
 `serializeValueForCurlies` | no | [/FunctionSchema](#functionschema) | A function to customize how to serialize a value for curlies `{{var}}` in the request object. By default, when this is unspecified, the request client only replaces curlies where variables are strings, and would throw an error for non-strings. The function should accepts a single argument as the value to be serialized and return the string representation of the argument.
 `skipThrowForStatus` | no | `boolean` | If `true`, don't throw an exception for response 400 <= status < 600 automatically before resolving with the response. Defaults to `false`.
+`skipEncodingChars` | no | `string` | Contains the characters that you want left unencoded in the query params (`req.params`). If unspecified, `z.request()` will percent-encode non-ascii characters and these reserved characters: ``:$/?#[]@$&+,;=^@`\``.
 
 #### Examples
 
