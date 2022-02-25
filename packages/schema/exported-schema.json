@@ -417,6 +417,10 @@
           "description": "If `true`, don't throw an exception for response 400 <= status < 600 automatically before resolving with the response. Defaults to `false`.",
           "type": "boolean",
           "default": false
+        },
+        "skipEncodingChars": {
+          "description": "Contains the characters that you want left unencoded in the query params (`req.params`). If unspecified, `z.request()` will percent-encode non-ascii characters and these reserved characters: ``:$/?#[]@$&+,;=^@`\\``.",
+          "type": "string"
         }
       },
       "additionalProperties": false

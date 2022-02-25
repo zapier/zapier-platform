@@ -12,6 +12,7 @@ const createInput = require('../src/tools/create-input');
 const request = require('../src/tools/request-client');
 
 const prepareRequest = require('../src/http-middlewares/before/prepare-request');
+const addQueryParams = require('../src/http-middlewares/before/add-query-params');
 const addBasicAuthHeader = require('../src/http-middlewares/before/add-basic-auth-header');
 const addDigestAuthHeader = require('../src/http-middlewares/before/add-digest-auth-header');
 const prepareResponse = require('../src/http-middlewares/after/prepare-response');
@@ -291,6 +292,59 @@ describe('http prepareRequest', () => {
       'Content-Type': 'application/json',
       'user-agent': 'Zapier',
     });
+  });
+});
+
+describe('http querystring before middleware', () => {
+  it('should encode dollars by default', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: 'qwer$$qwer' },
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=qwer%24%24qwer');
+  });
+
+  it('should skip encoding dollars', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: 'qwer$$qwer' },
+      skipEncodingChars: '$',
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=qwer$$qwer');
+  });
+
+  it('should not replace existing characters in url', () => {
+    const req = {
+      url: 'https://example.com?name=asdf%24%24asdf',
+      params: { cool: 'qwer$$qwer' },
+      skipEncodingChars: '$',
+    };
+    addQueryParams(req);
+    should(req.url).eql(
+      'https://example.com?name=asdf%24%24asdf&cool=qwer$$qwer'
+    );
+  });
+
+  it('should no-op on non-encodable characters', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: 'qwer$$qwer' },
+      skipEncodingChars: 'q',
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=qwer%24%24qwer');
+  });
+
+  it('should skip encoding multiple chars', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: '烏龜@$å' },
+      skipEncodingChars: '$å龜',
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=%E7%83%8F龜%40$å');
   });
 });
 
