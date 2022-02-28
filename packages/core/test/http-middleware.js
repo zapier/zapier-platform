@@ -4,6 +4,7 @@ const should = require('should');
 const request = require('../src/tools/request-client');
 
 const prepareRequest = require('../src/http-middlewares/before/prepare-request');
+const addQueryParams = require('../src/http-middlewares/before/add-query-params');
 const addBasicAuthHeader = require('../src/http-middlewares/before/add-basic-auth-header');
 const addDigestAuthHeader = require('../src/http-middlewares/before/add-digest-auth-header');
 const prepareResponse = require('../src/http-middlewares/after/prepare-response');
@@ -12,8 +13,8 @@ const oauth1SignRequest = require('../src/http-middlewares/before/oauth1-sign-re
 const { parseDictHeader } = require('../src/tools/http');
 
 describe('http requests', () => {
-  it('should support async before middleware', done => {
-    const addRequestHeader = req => {
+  it('should support async before middleware', (done) => {
+    const addRequestHeader = (req) => {
       if (!req.headers) {
         req.headers = {};
       }
@@ -29,7 +30,7 @@ describe('http requests', () => {
     );
 
     wrappedRequest({ url: 'https://httpbin.org/get' })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         JSON.parse(response.content).headers.Customheader.should.eql(
           'custom value'
@@ -39,8 +40,8 @@ describe('http requests', () => {
       .catch(done);
   });
 
-  it('should support sync before middleware', done => {
-    const addRequestHeader = req => {
+  it('should support sync before middleware', (done) => {
+    const addRequestHeader = (req) => {
       if (!req.headers) {
         req.headers = {};
       }
@@ -56,7 +57,7 @@ describe('http requests', () => {
     );
 
     wrappedRequest({ url: 'https://httpbin.org/get' })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         JSON.parse(response.content).headers.Customheader.should.eql(
           'custom value'
@@ -66,8 +67,8 @@ describe('http requests', () => {
       .catch(done);
   });
 
-  it('should throw error when middleware does not return object', done => {
-    const addRequestHeader = req => {
+  it('should throw error when middleware does not return object', (done) => {
+    const addRequestHeader = (req) => {
       if (!req.headers) {
         req.headers = {};
       }
@@ -81,14 +82,14 @@ describe('http requests', () => {
       { skipEnvelope: true }
     );
 
-    wrappedRequest({ url: 'https://httpbin.org/get' }).catch(err => {
+    wrappedRequest({ url: 'https://httpbin.org/get' }).catch((err) => {
       err.message.should.containEql('Middleware should return an object.');
       done();
     });
   });
 
-  it('should support async after middleware', done => {
-    const addToResponseBody = response => {
+  it('should support async after middleware', (done) => {
+    const addToResponseBody = (response) => {
       const content = JSON.parse(response.content);
       content.customKey = 'custom value';
       response.content = JSON.stringify(content);
@@ -103,7 +104,7 @@ describe('http requests', () => {
     );
 
     wrappedRequest({ url: 'https://httpbin.org/get' })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         should.not.exist(response.results); // should not be 'enveloped'
         JSON.parse(response.content).customKey.should.eql('custom value');
@@ -112,8 +113,8 @@ describe('http requests', () => {
       .catch(done);
   });
 
-  it('should support sync after middleware', done => {
-    const addToResponseBody = response => {
+  it('should support sync after middleware', (done) => {
+    const addToResponseBody = (response) => {
       const content = JSON.parse(response.content);
       content.customKey = 'custom value';
       response.content = JSON.stringify(content);
@@ -128,7 +129,7 @@ describe('http requests', () => {
     );
 
     wrappedRequest({ url: 'https://httpbin.org/get' })
-      .then(response => {
+      .then((response) => {
         response.status.should.eql(200);
         JSON.parse(response.content).customKey.should.eql('custom value');
         done();
@@ -142,7 +143,7 @@ describe('http prepareRequest', () => {
     const req = prepareRequest({
       url: 'https://example.com',
       params: {
-        foo: '{{inputData.foo}}'
+        foo: '{{inputData.foo}}',
       },
       replace: true,
       body: '123',
@@ -151,18 +152,18 @@ describe('http prepareRequest', () => {
           event: {
             bundle: {
               inputData: {
-                foo: 'bar'
-              }
-            }
+                foo: 'bar',
+              },
+            },
           },
-          app: {}
-        }
-      }
+          app: {},
+        },
+      },
     });
 
     req.url.should.eql('https://example.com');
     req.headers.should.eql({
-      'user-agent': 'Zapier'
+      'user-agent': 'Zapier',
     });
     should.not.exist(req.body);
   });
@@ -176,13 +177,13 @@ describe('http prepareRequest', () => {
           event: {
             bundle: {
               inputData: {
-                foo: 'bar'
-              }
-            }
+                foo: 'bar',
+              },
+            },
           },
-          app: {}
-        }
-      }
+          app: {},
+        },
+      },
     };
     const brokenReq = prepareRequest(origReq);
     brokenReq.url.should.eql('https://example.com/{{inputData.foo}}');
@@ -195,8 +196,8 @@ describe('http prepareRequest', () => {
   const input = {
     _zapier: {
       event: {},
-      app: {}
-    }
+      app: {},
+    },
   };
 
   it('should coerce "json" into the body', () => {
@@ -204,7 +205,7 @@ describe('http prepareRequest', () => {
       method: 'POST',
       url: 'https://example.com',
       json: { hello: 'world' },
-      input
+      input,
     };
 
     const fixedReq = prepareRequest(origReq);
@@ -212,7 +213,7 @@ describe('http prepareRequest', () => {
     should(fixedReq.body).eql('{"hello":"world"}');
     fixedReq.headers.should.eql({
       'content-type': 'application/json; charset=utf-8',
-      'user-agent': 'Zapier'
+      'user-agent': 'Zapier',
     });
   });
 
@@ -221,7 +222,7 @@ describe('http prepareRequest', () => {
       method: 'POST',
       url: 'https://example.com',
       form: { hello: 'world' },
-      input
+      input,
     };
 
     const fixedReq = prepareRequest(origReq);
@@ -229,7 +230,7 @@ describe('http prepareRequest', () => {
     should(fixedReq.body).eql('hello=world');
     fixedReq.headers.should.eql({
       'content-type': 'application/x-www-form-urlencoded',
-      'user-agent': 'Zapier'
+      'user-agent': 'Zapier',
     });
   });
 
@@ -238,7 +239,7 @@ describe('http prepareRequest', () => {
       method: 'POST',
       url: 'https://example.com',
       body: { hello: 'world' },
-      input
+      input,
     };
 
     const fixedReq = prepareRequest(origReq);
@@ -246,7 +247,7 @@ describe('http prepareRequest', () => {
     should(fixedReq.body).eql('{"hello":"world"}');
     fixedReq.headers.should.eql({
       'content-type': 'application/json; charset=utf-8',
-      'user-agent': 'Zapier'
+      'user-agent': 'Zapier',
     });
   });
 
@@ -256,9 +257,9 @@ describe('http prepareRequest', () => {
       url: 'https://example.com',
       body: { hello: 'world' },
       headers: {
-        'content-type': 'application/x-www-form-urlencoded'
+        'content-type': 'application/x-www-form-urlencoded',
       },
-      input
+      input,
     };
 
     const fixedReq = prepareRequest(origReq);
@@ -266,7 +267,7 @@ describe('http prepareRequest', () => {
     should(fixedReq.body).eql('hello=world');
     fixedReq.headers.should.eql({
       'content-type': 'application/x-www-form-urlencoded',
-      'user-agent': 'Zapier'
+      'user-agent': 'Zapier',
     });
   });
 
@@ -276,9 +277,9 @@ describe('http prepareRequest', () => {
       url: 'https://example.com',
       body: { hello: 'world' },
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      input
+      input,
     };
 
     const fixedReq = prepareRequest(origReq);
@@ -286,8 +287,51 @@ describe('http prepareRequest', () => {
     should(fixedReq.body).eql('{"hello":"world"}');
     fixedReq.headers.should.eql({
       'Content-Type': 'application/json',
-      'user-agent': 'Zapier'
+      'user-agent': 'Zapier',
     });
+  });
+});
+
+describe('http querystring before middleware', () => {
+  it('should encode dollars by default', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: 'qwer$$qwer' },
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=qwer%24%24qwer');
+  });
+
+  it('should skip encoding dollars by on request', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: 'qwer$$qwer' },
+      skipEncodingChars: '$',
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=qwer$$qwer');
+  });
+
+  it('should not replace existing characters in url', () => {
+    const req = {
+      url: 'https://example.com?name=asdf%24%24asdf',
+      params: { cool: 'qwer$$qwer' },
+      skipEncodingChars: '$',
+    };
+    addQueryParams(req);
+    should(req.url).eql(
+      'https://example.com?name=asdf%24%24asdf&cool=qwer$$qwer'
+    );
+  });
+
+  it('should no-op on non-encodable characters', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: 'qwer$$qwer' },
+      skipEncodingChars: 'q',
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=qwer%24%24qwer');
   });
 });
 
@@ -296,14 +340,14 @@ describe('http addBasicAuthHeader before middelware', () => {
 
   it('computes the Authorization Header', () => {
     const origReq = {
-      headers: {}
+      headers: {},
     };
     const z = {};
     const bundle = {
       authData: {
         username: 'user',
-        password: 'pass'
-      }
+        password: 'pass',
+      },
     };
     const req = addBasicAuthHeader(origReq, z, bundle);
     req.headers.Authorization.should.eql(expectedValue);
@@ -315,8 +359,8 @@ describe('http addBasicAuthHeader before middelware', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: 'pass'
-      }
+        password: 'pass',
+      },
     };
     const req = addBasicAuthHeader(origReq, z, bundle);
     req.headers.Authorization.should.eql(expectedValue);
@@ -327,8 +371,8 @@ describe('http addBasicAuthHeader before middelware', () => {
     const bundle = {
       authData: {
         username: 'user',
-        password: ''
-      }
+        password: '',
+      },
     };
     let req = addBasicAuthHeader({}, z, bundle);
     req.headers.Authorization.should.eql('Basic dXNlcjo=');
@@ -347,14 +391,14 @@ describe('http addDigestAuthHeader before middleware', () => {
   it('computes the Authorization header', async () => {
     const origReq = {
       url: 'https://httpbin.zapier-tooling.com/digest-auth/auth/joe/mypass/MD5',
-      headers: {}
+      headers: {},
     };
     const z = {};
     const bundle = {
       authData: {
         username: 'joe',
-        password: 'mypass'
-      }
+        password: 'mypass',
+      },
     };
     const req = await addDigestAuthHeader(origReq, z, bundle);
     const res = await request(req);
@@ -372,7 +416,7 @@ describe('http oauth1SignRequest before middelware', () => {
       url: 'https://example.com/foo/bar?hello=world',
       params: {
         hi: 'earth',
-        name: 'alice'
+        name: 'alice',
       },
       body: 'number=555&message=hi',
       auth: {
@@ -383,11 +427,11 @@ describe('http oauth1SignRequest before middelware', () => {
         oauth_token: 'a_token',
         oauth_token_secret: 'a_token_secret',
         oauth_nonce: 'a_nonce',
-        oauth_timestamp: '1555555555'
+        oauth_timestamp: '1555555555',
       },
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     };
 
     const req = oauth1SignRequest(origReq);
@@ -405,7 +449,7 @@ describe('http oauth1SignRequest before middelware', () => {
       oauth_timestamp: '1555555555',
       oauth_token: 'a_token',
       oauth_version: '1.0A',
-      realm: 'a_realm'
+      realm: 'a_realm',
     });
   });
 });
