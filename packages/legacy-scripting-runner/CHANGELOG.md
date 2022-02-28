@@ -1,3 +1,8 @@
+## 3.8.6
+
+- :nail_care: Fix issues with file uploading ([#496](https://github.com/zapier/zapier-platform/pull/496))
+- :nail_care: Pass `legacy.skipEncodingChars` to `z.request()` ([#501](https://github.com/zapier/zapier-platform/pull/501))
+
 ## 3.8.5
 
 - :bug: Prune nulls and undefined's from query params ([#446](https://github.com/zapier/zapier-platform/pull/446))
