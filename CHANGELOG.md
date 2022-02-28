@@ -1,3 +1,23 @@
+## 9.7.2
+
+_released `2022-03-01`_
+
+### cli
+
+* None!
+
+### core
+
+* :nail_care: `z.request()` now accepts `skipEncodingChars` option to skip percent-encoding specific characters ([#499](https://github.com/zapier/zapier-platform/pull/499))
+
+### schema
+
+* :nail_care: Add `skipEncodingChars` to `RequestSchema` ([#499](https://github.com/zapier/zapier-platform/pull/499))
+
+### misc
+
+* :hammer: Improve build script ([#500](https://github.com/zapier/zapier-platform/pull/500))
+
 ## 9.7.1
 
 _released `2022-02-23`_
