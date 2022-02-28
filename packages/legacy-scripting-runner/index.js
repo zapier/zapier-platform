@@ -855,6 +855,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         request.params = pruneQueryParams(request.params);
       }
 
+      if (_.get(app, 'legacy.skipEncodingChars')) {
+        // skipEncodingChars is only supported on core ^9.7.2, ^11.3.2 and >=12.x.
+        // core versions that don't support it will just ignore it.
+        request.skipEncodingChars = app.legacy.skipEncodingChars;
+      }
+
       const response = await zcli.request(request);
 
       if (!options.parseResponse) {
