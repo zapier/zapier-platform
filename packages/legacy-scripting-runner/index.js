@@ -103,7 +103,7 @@ const stringifyForFormData = (value) => {
 
 // Makes a multipart/form-data request body that can be set to request.body for
 // node-fetch.
-const makeMultipartBody = async (data, lazyFilesObject) => {
+const makeMultipartForm = async (data, lazyFilesObject) => {
   const form = new FormData();
   if (data) {
     if (_.isPlainObject(data)) {
@@ -165,8 +165,11 @@ const addFilesToRequestBodyFromPreResult = async (request, event) => {
     {}
   );
 
-  request.body = await makeMultipartBody(request.data || '{}', lazyFiles);
   delete request.headers['Content-Type'];
+
+  const form = await makeMultipartForm(request.data || '{}', lazyFiles);
+  request.body = form;
+  request.headers = { ...request.headers, ...form.getHeaders() };
   return request;
 };
 
@@ -184,9 +187,12 @@ const addFilesToRequestBodyFromBody = async (request, bundle) => {
     }
   });
 
-  request.body = await makeMultipartBody(JSON.stringify(data), lazyFiles);
-  request.headers.Accept = '*/*';
   delete request.headers['Content-Type'];
+
+  const form = await makeMultipartForm(JSON.stringify(data), lazyFiles);
+  request.body = form;
+  request.headers.Accept = '*/*';
+  request.headers = { ...request.headers, ...form.getHeaders() };
   return request;
 };
 
