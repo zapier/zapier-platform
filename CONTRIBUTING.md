@@ -53,9 +53,10 @@ TBA
 
 ## Releasing a New Version
 
-**Zapier employees only.** Refer to this [internal doc](https://coda.io/d/Team-Developer-Platform_di0MgBhlCWf/Releasing-a-New-zapier-platform-Version_su5eD#_luJIF) for more detail.
+**Zapier employees only.** Refer to this [internal doc](releasing) on how to cut a release.
 
 
 [license]: https://github.com/zapier/zapier-platform/blob/master/LICENSE
 [yarn]: https://yarnpkg.com
 [ci]: https://github.com/zapier/zapier-platform/actions/workflows/ci.yaml
+[releasing]: https://coda.io/d/Team-Developer-Platform_di0MgBhlCWf
