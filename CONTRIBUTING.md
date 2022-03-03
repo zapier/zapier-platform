@@ -53,7 +53,7 @@ TBA
 
 ## Releasing a New Version
 
-**Zapier employees only.** Refer to this [internal doc](releasing) on how to cut a release.
+**Zapier employees only.** Refer to this [internal doc][releasing] on how to cut a release.
 
 
 [license]: https://github.com/zapier/zapier-platform/blob/master/LICENSE
