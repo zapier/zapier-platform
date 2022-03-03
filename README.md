@@ -14,23 +14,13 @@ It consists of a few main packages:
 - `zapier-platform-legacy-scripting-runner`: If your app started as a Legacy Web Builder app, this provides a shim that keeps your app running seamlessly
 - `example-apps/*`: A varied set of example apps to get you started
 
-## Getting Started
+## Docs
 
-```bash
-# Install Yarn if you haven't
-brew install yarn
-
-# Clone this repo
-git clone git@github.com:zapier/zapier-platform.git
-cd zapier-platform
-
-# Install dependencies
-yarn
-
-# Run tests for all packages
-yarn test
-
-# Run tests for an individual package
-cd packages/cli
-yarn test
-```
+* Public-facing docs:
+  - [Latest CLI developer guide](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md)
+  - [Latest CLI command reference](https://github.com/zapier/zapier-platform/blob/master/packages/cli/docs/cli.md)
+  - [Latest schema docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md)
+  - The :point_up: docs are also hosted at https://platform.zapier.com
+* Internal-facing docs:
+  - Learn about how this repo is structured in [ARCHITECTURE.md](ARCHITECTURE.md).
+  - Looking to contribute to this repo? See [CONTRIBUTING.md](CONTRIBUTING.md).
