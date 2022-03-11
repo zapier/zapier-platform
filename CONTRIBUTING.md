@@ -47,7 +47,7 @@ cd packages/cli
 yarn test
 ```
 
-### Using .only
+### Using `.only`
 
 TBA
 
@@ -59,4 +59,4 @@ TBA
 [license]: https://github.com/zapier/zapier-platform/blob/master/LICENSE
 [yarn]: https://yarnpkg.com
 [ci]: https://github.com/zapier/zapier-platform/actions/workflows/ci.yaml
-[releasing]: https://coda.io/d/Team-Developer-Platform_di0MgBhlCWf
+[releasing]: https://coda.io/d/_di0MgBhlCWf/Releasing-a-New-zapier-platform-Version_su5eD
