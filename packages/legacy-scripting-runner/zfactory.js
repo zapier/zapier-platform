@@ -4,8 +4,8 @@ const _ = require('lodash');
 const request = require('request');
 const { createSyncFn } = require('synckit');
 
-// So `zapier build` doesn't forget to include request_worker.js
-require('./request_worker');
+// So `zapier build` doesn't forget to include request-worker.js
+require('./request-worker');
 
 // Converts WB `bundle.request` format to something `request` can use
 const convertBundleRequest = (bundleOrBundleRequest) => {
@@ -65,7 +65,7 @@ const convertResponse = (response) => {
   return {};
 };
 
-const syncRequest = createSyncFn(require.resolve('./request_worker'));
+const syncRequest = createSyncFn(require.resolve('./request-worker'));
 
 const zfactory = (zcli, app) => {
   const AWS = () => {
