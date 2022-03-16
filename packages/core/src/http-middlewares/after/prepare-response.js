@@ -14,7 +14,9 @@ const prepareRawResponse = (resp, request) => {
     skipThrowForStatus: request.skipThrowForStatus,
   };
   const outResp = _.extend(resp, extendedResp, replaceHeaders(resp));
-  outResp.throwForStatus = () => throwForStatus(outResp) && undefined;
+  outResp.throwForStatus = () => {
+    throwForStatus(outResp);
+  };
   Object.defineProperty(outResp, 'content', {
     get: function () {
       throw new Error(
@@ -48,7 +50,9 @@ const prepareContentResponse = (resp, request) => {
         outResp.json = JSON.parse(content); // DEPRECATED (not using reference to isolate)
       }
     } catch (_e) {}
-    outResp.throwForStatus = () => throwForStatus(outResp) && undefined;
+    outResp.throwForStatus = () => {
+      throwForStatus(outResp);
+    };
     return outResp;
   });
 };

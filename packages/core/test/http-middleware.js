@@ -293,6 +293,55 @@ describe('http prepareRequest', () => {
       'user-agent': 'Zapier',
     });
   });
+
+  it('should not skipThrowForStatus by default', () => {
+    const request = prepareRequest({
+      url: 'https://example.com',
+      input: {
+        _zapier: {
+          app: {
+            version: '1.0.0',
+          },
+        },
+      },
+    });
+    should(request.skipThrowForStatus).eql(false);
+  });
+
+  it('should defer to the request for skipping throw', () => {
+    const request = prepareRequest({
+      url: 'https://example.com',
+      skipThrowForStatus: false,
+      input: {
+        _zapier: {
+          app: {
+            version: '1.0.0',
+            flags: {
+              skipThrowForStatus: true,
+            },
+          },
+        },
+      },
+    });
+    should(request.skipThrowForStatus).eql(false);
+  });
+
+  it('should read shouldSkip from the app if available', () => {
+    const request = prepareRequest({
+      url: 'https://example.com',
+      input: {
+        _zapier: {
+          app: {
+            version: '1.0.0',
+            flags: {
+              skipThrowForStatus: true,
+            },
+          },
+        },
+      },
+    });
+    should(request.skipThrowForStatus).eql(true);
+  });
 });
 
 describe('http querystring before middleware', () => {
@@ -618,6 +667,7 @@ describe('http prepareResponse', () => {
     should(response.getHeader(), 'application/json');
     should(response.throwForStatus).be.a.Function();
   });
+
   it('should set the expected properties when raw:true', async () => {
     const request = prepareRequest({
       raw: true,
@@ -659,6 +709,7 @@ describe('http prepareResponse', () => {
     should(response.getHeader(), 'application/json');
     should(response.throwForStatus).be.a.Function();
   });
+
   it('should default to parsing response.content as JSON', async () => {
     const request = prepareRequest({
       raw: false,
@@ -692,6 +743,7 @@ describe('http prepareResponse', () => {
     should(response.json).match(data); // DEPRECATED
     should(response.getHeader(), 'something/else');
   });
+
   it('should be able to parse response.content when application/x-www-form-urlencoded', async () => {
     const request = prepareRequest({
       raw: false,
