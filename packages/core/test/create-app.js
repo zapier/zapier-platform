@@ -320,143 +320,130 @@ describe('create-app', () => {
   });
 
   describe('HTTP after middleware for auth refresh', () => {
-    it('should be applied to OAuth2 refresh app on shorthand requests', (done) => {
-      const oauth2AppDefinition = dataTools.deepCopy(appDefinition);
-      oauth2AppDefinition.authentication = {
-        type: 'oauth2',
-        test: {},
-        oauth2Config: {
-          authorizeUrl: {}, // stub, not needed for this test
-          getAccessToken: {}, // stub, not needed for this test
-          autoRefresh: true,
-        },
-      };
-      const oauth2App = createApp(oauth2AppDefinition);
+    // general purpose response tester
+    const testResponse = (appDef, useShorthand, responseVerifier, done) => {
+      const methodPart = useShorthand
+        ? 'executeRequestAsShorthand'
+        : 'executeRequestAsFunc';
 
+      const app = createApp(appDef);
       const event = {
         command: 'execute',
         bundle: {
-          inputData: {
-            url: `${HTTPBIN_URL}/status/401`,
-          },
+          inputData: useShorthand
+            ? {
+                url: `${HTTPBIN_URL}/status/401`,
+              }
+            : {
+                options: {
+                  url: `${HTTPBIN_URL}/status/401`,
+                },
+              },
         },
-        method: 'resources.executeRequestAsShorthand.list.operation.perform',
+        method: `resources.${methodPart}.list.operation.perform`,
       };
-      oauth2App(createInput(oauth2AppDefinition, event, testLogger))
+
+      app(createInput(appDef, event, testLogger))
         .then(() => {
           done('expected an error, got success');
         })
         .catch((error) => {
-          should(error).instanceOf(errors.ResponseError);
-          error.name.should.eql('ResponseError');
-          const response = JSON.parse(error.message);
-          should(response.status).equal(401);
-          done();
-        });
+          responseVerifier(error, done);
+        })
+        .catch(done);
+    };
+    // the two types of error verification
+    const verifyRefreshAuthError = (error, done) => {
+      should(error).instanceOf(errors.RefreshAuthError);
+      error.name.should.eql('RefreshAuthError');
+      done();
+    };
+
+    const verifyResponseError = (error, done) => {
+      should(error).instanceOf(errors.ResponseError);
+      error.name.should.eql('ResponseError');
+      const response = JSON.parse(error.message);
+      should(response.status).equal(401);
+      done();
+    };
+
+    it('should be applied to OAuth2 refresh app on shorthand requests', (done) => {
+      testResponse(
+        {
+          ...appDefinition,
+          authentication: {
+            type: 'oauth2',
+            oauth2Config: {
+              autoRefresh: true,
+            },
+          },
+        },
+        true,
+        verifyRefreshAuthError,
+        done
+      );
     });
 
     it('should be applied to OAuth2 refresh app on z.request in functions', (done) => {
-      const oauth2AppDefinition = dataTools.deepCopy(appDefinition);
-      oauth2AppDefinition.authentication = {
-        type: 'oauth2',
-        test: {},
-        oauth2Config: {
-          authorizeUrl: {}, // stub, not needed for this test
-          getAccessToken: {}, // stub, not needed for this test
-          autoRefresh: true,
-        },
-      };
-      const oauth2App = createApp(oauth2AppDefinition);
-
-      const event = {
-        command: 'execute',
-        bundle: {
-          inputData: {
-            options: {
-              url: `${HTTPBIN_URL}/status/401`,
+      testResponse(
+        {
+          ...appDefinition,
+          authentication: {
+            type: 'oauth2',
+            oauth2Config: {
+              autoRefresh: true,
             },
           },
         },
-        method: 'resources.executeRequestAsFunc.list.operation.perform',
-      };
-      oauth2App(createInput(oauth2AppDefinition, event, testLogger))
-        .then(() => {
-          done('expected an error, got success');
-        })
-        .catch((error) => {
-          should(error).instanceOf(errors.ResponseError);
-          error.name.should.eql('ResponseError');
-          const response = JSON.parse(error.message);
-          should(response.status).equal(401);
-          done();
-        });
+        false,
+        verifyRefreshAuthError,
+        done
+      );
+    });
+
+    it('should not be applied to OAuth2 refresh app on z.request in functions by default', (done) => {
+      testResponse(
+        {
+          ...appDefinition,
+          authentication: {
+            type: 'oauth2',
+            oauth2Config: {
+              autoRefresh: false,
+            },
+          },
+        },
+        false,
+        verifyResponseError,
+        done
+      );
     });
 
     it('should be applied to session auth app on z.request in functions', (done) => {
-      const sessionAuthAppDefinition = dataTools.deepCopy(appDefinition);
-      sessionAuthAppDefinition.authentication = {
-        type: 'session',
-        test: {},
-        sessionConfig: {
-          perform: {}, // stub, not needed for this test
-        },
-      };
-      const sessionAuthApp = createApp(sessionAuthAppDefinition);
-
-      const event = {
-        command: 'execute',
-        bundle: {
-          inputData: {
-            options: {
-              url: `${HTTPBIN_URL}/status/401`,
-            },
+      testResponse(
+        {
+          ...appDefinition,
+          authentication: {
+            type: 'session',
           },
         },
-        method: 'resources.executeRequestAsFunc.list.operation.perform',
-      };
-      sessionAuthApp(createInput(sessionAuthAppDefinition, event, testLogger))
-        .then(() => {
-          done('expected an error, got success');
-        })
-        .catch((error) => {
-          should(error).instanceOf(errors.ResponseError);
-          error.name.should.eql('ResponseError');
-          const response = JSON.parse(error.message);
-          should(response.status).equal(401);
-          done();
-        });
+        false,
+        verifyRefreshAuthError,
+        done
+      );
     });
 
     it('should not be applied to custom auth app on z.request in functions', (done) => {
-      const customAuthAppDefinition = dataTools.deepCopy(appDefinition);
-      customAuthAppDefinition.authentication = {
-        type: 'custom',
-        test: {},
-      };
-      const customAuthApp = createApp(customAuthAppDefinition);
-
-      const event = {
-        command: 'execute',
-        bundle: {
-          inputData: {
-            options: {
-              url: `${HTTPBIN_URL}/status/401`,
-            },
+      testResponse(
+        {
+          ...appDefinition,
+          authentication: {
+            type: 'custom',
           },
         },
-        method: 'resources.executeRequestAsFunc.list.operation.perform',
-      };
-      customAuthApp(createInput(customAuthAppDefinition, event, testLogger))
-        .then(() => {
-          done('expected an error, got success');
-        })
-        .catch((error) => {
-          should(error).instanceOf(errors.ResponseError);
-          error.name.should.eql('ResponseError');
-          const response = JSON.parse(error.message);
-          should(response.status).equal(401);
-          done();
-        });
+        false,
+        verifyResponseError,
+        done
+      );
     });
   });
 
