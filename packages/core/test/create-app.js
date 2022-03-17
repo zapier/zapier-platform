@@ -426,6 +426,38 @@ describe('create-app', () => {
           done();
         });
     });
+
+    it('should not be applied to custom auth app on z.request in functions', (done) => {
+      const customAuthAppDefinition = dataTools.deepCopy(appDefinition);
+      customAuthAppDefinition.authentication = {
+        type: 'custom',
+        test: {},
+      };
+      const customAuthApp = createApp(customAuthAppDefinition);
+
+      const event = {
+        command: 'execute',
+        bundle: {
+          inputData: {
+            options: {
+              url: `${HTTPBIN_URL}/status/401`,
+            },
+          },
+        },
+        method: 'resources.executeRequestAsFunc.list.operation.perform',
+      };
+      customAuthApp(createInput(customAuthAppDefinition, event, testLogger))
+        .then(() => {
+          done('expected an error, got success');
+        })
+        .catch((error) => {
+          should(error).instanceOf(errors.ResponseError);
+          error.name.should.eql('ResponseError');
+          const response = JSON.parse(error.message);
+          should(response.status).equal(401);
+          done();
+        });
+    });
   });
 
   describe('inputFields', () => {

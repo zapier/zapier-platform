@@ -19,6 +19,7 @@ const prepareRequest = require('../http-middlewares/before/prepare-request');
 const logResponse = require('../http-middlewares/after/log-response');
 const prepareResponse = require('../http-middlewares/after/prepare-response');
 const throwForStatus = require('../http-middlewares/after/throw-for-status');
+const throwForStaleAuth = require('../http-middlewares/after/throw-for-stale-auth');
 
 const createAppRequestClient = (input, options) => {
   input = ensurePath(input, '_zapier.app');
@@ -51,9 +52,20 @@ const createAppRequestClient = (input, options) => {
     httpBefores.push(disableSSLCertCheck);
   }
 
+  let includeAutoRefresh = false;
+  if (
+    app.authentication &&
+    (app.authentication.type === 'session' ||
+      (app.authentication.type === 'oauth2' &&
+        _.get(app, 'authentication.oauth2Config.autoRefresh')))
+  ) {
+    includeAutoRefresh = true;
+  }
+
   const httpAfters = [
     prepareResponse,
     logResponse,
+    ...(includeAutoRefresh ? [throwForStaleAuth] : []),
     ...ensureArray(app.afterResponse),
     throwForStatus,
   ];
