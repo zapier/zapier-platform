@@ -2,6 +2,8 @@
 
 // an example app!
 
+const https = require('https');
+
 const _ = require('lodash');
 const helpers = require('./helpers');
 const { HTTPBIN_URL } = require('../constants');
@@ -514,6 +516,39 @@ const ExecuteCallbackRequest = {
   },
 };
 
+const BadCallback = {
+  key: 'bad_callback',
+  noun: 'Bad Callback',
+  create: {
+    display: {
+      label: 'Bad callback still running even after Lambda handler returns',
+      description:
+        'This is actually bad code because all the callbacks/promises should be ' +
+        'finished BEFORE the Lambda handler returns. We test it here because we ' +
+        'do not want a bad app implementation to hang the Lambda handler.',
+    },
+    operation: {
+      perform: (z, bundle) => {
+        https
+          .request(`${HTTPBIN_URL}/status/418`, (res) => {
+            let body = '';
+            res.on('data', (d) => {
+              body += d;
+            });
+            res.on('end', () => {
+              // Set a global variable so we have something to assert in the test
+              // to prove we can reach here
+              process.teapot = body;
+              // body === "I'm a teapot!"
+            });
+          })
+          .end();
+        return { message: 'ok' };
+      },
+    },
+  },
+};
+
 // custom HTTP middlewares /////
 
 /*
@@ -552,6 +587,7 @@ const App = {
     [ExecuteRequestAsShorthand.key]: ExecuteRequestAsShorthand,
     [ExecuteCallbackRequest.key]: ExecuteCallbackRequest,
     [EnvironmentVariable.key]: EnvironmentVariable,
+    [BadCallback.key]: BadCallback,
   },
   hydrators: {
     getBigStuff: () => {},
