@@ -97,56 +97,44 @@ describe('request client', () => {
       .catch(done);
   });
 
-  it('should support streaming another request', (done) => {
+  it('should support streaming another request', async () => {
     const fileUrl =
       'https://s3.amazonaws.com/zapier-downloads/just-a-few-lines.txt';
     const fileExpectedContent =
       '0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n';
     const request = createAppRequestClient(input);
-    request({
+    const response = await request({
       method: 'POST',
-      url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
+      url: 'https://httpbin.zapier-tooling.com/post',
       body: request({ url: fileUrl, raw: true }),
-    })
-      .then((response) => {
-        response.status.should.eql(200);
-        const body = JSON.parse(response.content);
-        body.postData.text.should.eql(fileExpectedContent);
-        done();
-      })
-      .catch(done);
+    });
+    response.status.should.eql(200);
+    const body = JSON.parse(response.content);
+    body.data.should.eql(fileExpectedContent);
   });
 
-  it('should handle a buffer upload fine', (done) => {
+  it('should handle a buffer upload fine', async () => {
     const request = createAppRequestClient(input);
-    request({
+    const response = await request({
       method: 'POST',
-      url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
+      url: 'https://httpbin.zapier-tooling.com/post',
       body: Buffer.from('hello world this is a cat (=^..^=)'),
-    })
-      .then((response) => {
-        response.status.should.eql(200);
-        const body = JSON.parse(response.content);
-        body.postData.text.should.eql('hello world this is a cat (=^..^=)');
-        done();
-      })
-      .catch(done);
+    });
+    response.status.should.eql(200);
+    const body = JSON.parse(response.content);
+    body.data.should.eql('hello world this is a cat (=^..^=)');
   });
 
-  it('should handle a stream upload fine', (done) => {
+  it('should handle a stream upload fine', async () => {
     const request = createAppRequestClient(input);
-    request({
+    const response = await request({
       method: 'POST',
-      url: 'https://zapier-mockbin.herokuapp.com/request', // httpbin doesn't handle chunked anything :-(
+      url: 'https://httpbin.zapier-tooling.com/post',
       body: fs.createReadStream(path.join(__dirname, 'test.txt')),
-    })
-      .then((response) => {
-        response.status.should.eql(200);
-        const body = JSON.parse(response.content);
-        body.postData.text.should.eql('hello world this is a cat (=^..^=)');
-        done();
-      })
-      .catch(done);
+    });
+    response.status.should.eql(200);
+    const body = JSON.parse(response.content);
+    body.data.should.eql('hello world this is a cat (=^..^=)');
   });
 
   it('should support single url param', (done) => {
