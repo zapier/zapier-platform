@@ -596,9 +596,7 @@ const doTest = (runner) => {
         logs.length.should.eql(1);
 
         const log = logs[0];
-        log.message.should.eql(
-          `418 GET https://httpbin.zapier-tooling.com/status/418`
-        );
+        log.message.should.startWith(`418 GET https://httpbin.`);
       });
     });
 
