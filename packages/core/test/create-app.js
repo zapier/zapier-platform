@@ -321,7 +321,7 @@ describe('create-app', () => {
 
   describe('HTTP after middleware for auth refresh', () => {
     // general purpose response tester
-    const testResponse = (appDef, useShorthand, responseVerifier, done) => {
+    const testResponse = async (appDef, useShorthand, errorVerifier) => {
       const methodPart = useShorthand
         ? 'executeRequestAsShorthand'
         : 'executeRequestAsFunc';
@@ -343,32 +343,26 @@ describe('create-app', () => {
         method: `resources.${methodPart}.list.operation.perform`,
       };
 
-      app(createInput(appDef, event, testLogger))
-        .then(() => {
-          done('expected an error, got success');
-        })
-        .catch((error) => {
-          responseVerifier(error, done);
-        })
-        .catch(done);
+      const input = createInput(appDef, event, testLogger);
+      const err = await app(input).should.be.rejected();
+
+      errorVerifier(err);
     };
     // the two types of error verification
-    const verifyRefreshAuthError = (error, done) => {
+    const verifyRefreshAuthError = (error) => {
       should(error).instanceOf(errors.RefreshAuthError);
       error.name.should.eql('RefreshAuthError');
-      done();
     };
 
-    const verifyResponseError = (error, done) => {
+    const verifyResponseError = (error) => {
       should(error).instanceOf(errors.ResponseError);
       error.name.should.eql('ResponseError');
       const response = JSON.parse(error.message);
       should(response.status).equal(401);
-      done();
     };
 
-    it('should be applied to OAuth2 refresh app on shorthand requests', (done) => {
-      testResponse(
+    it('should be applied to OAuth2 refresh app on shorthand requests', () => {
+      return testResponse(
         {
           ...appDefinition,
           authentication: {
@@ -379,13 +373,12 @@ describe('create-app', () => {
           },
         },
         true,
-        verifyRefreshAuthError,
-        done
+        verifyRefreshAuthError
       );
     });
 
-    it('should be applied to OAuth2 refresh app on z.request in functions', (done) => {
-      testResponse(
+    it('should be applied to OAuth2 refresh app on z.request in functions', () => {
+      return testResponse(
         {
           ...appDefinition,
           authentication: {
@@ -396,13 +389,12 @@ describe('create-app', () => {
           },
         },
         false,
-        verifyRefreshAuthError,
-        done
+        verifyRefreshAuthError
       );
     });
 
-    it('should not be applied to OAuth2 refresh app on z.request in functions by default', (done) => {
-      testResponse(
+    it('should not be applied to OAuth2 refresh app on z.request in functions by default', () => {
+      return testResponse(
         {
           ...appDefinition,
           authentication: {
@@ -413,13 +405,12 @@ describe('create-app', () => {
           },
         },
         false,
-        verifyResponseError,
-        done
+        verifyResponseError
       );
     });
 
-    it('should be applied to session auth app on z.request in functions', (done) => {
-      testResponse(
+    it('should be applied to session auth app on z.request in functions', () => {
+      return testResponse(
         {
           ...appDefinition,
           authentication: {
@@ -427,13 +418,12 @@ describe('create-app', () => {
           },
         },
         false,
-        verifyRefreshAuthError,
-        done
+        verifyRefreshAuthError
       );
     });
 
-    it('should not be applied to custom auth app on z.request in functions', (done) => {
-      testResponse(
+    it('should not be applied to custom auth app on z.request in functions', () => {
+      return testResponse(
         {
           ...appDefinition,
           authentication: {
@@ -441,8 +431,7 @@ describe('create-app', () => {
           },
         },
         false,
-        verifyResponseError,
-        done
+        verifyResponseError
       );
     });
   });
