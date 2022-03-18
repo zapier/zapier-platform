@@ -172,6 +172,7 @@ class LogStream extends Transform {
 class LogStreamFactory {
   constructor() {
     this._logStream = null;
+    this.ended = false;
   }
 
   getOrCreate(url, token) {
@@ -190,6 +191,10 @@ class LogStreamFactory {
   }
 
   async end() {
+    // Mark the factory as ended. This suggests that any logStream.write() that
+    // follows should end() right away.
+    this.ended = true;
+
     if (this._logStream) {
       this._logStream.end();
       const response = await this._logStream.request;
@@ -245,6 +250,14 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
       // no line breaks, and after an object it ends with a line break.
       JSON.stringify({ message: safeMessage, data: safeData }) + '\n'
     );
+
+    if (logStreamFactory.ended) {
+      // Lambda handler calls logger.end() at the end. But what if there's a
+      // (bad) callback that is still running after the Lambda handler returns?
+      // We need to make sure the bad callback ends the logger as well.
+      // Otherwise, it will hang!
+      logStreamFactory.end();
+    }
   }
 };
 
