@@ -39,35 +39,36 @@ const prepareRawResponse = (resp, request) => {
   return outResp;
 };
 
-const prepareContentResponse = (resp, request) => {
+const prepareContentResponse = async (resp, request) => {
   // TODO: does it make sense to not trim the signature? more equivalence to raw...
-  return resp.text().then((content) => {
-    // trim down the response signature a ton for simplicity
-    const preppedResp = {
-      status: resp.status,
-      json: undefined,
-      data: undefined,
-      content: content,
-      request: request,
-      // only controls if _we_ call throwForStatus automatically
-      skipThrowForStatus: request.skipThrowForStatus,
-    };
-    const outResp = _.extend(preppedResp, replaceHeaders(resp));
-    try {
-      if (outResp.headers.get('content-type') === FORM_TYPE) {
-        outResp.data = querystring.parse(content);
-      } else {
-        outResp.data = JSON.parse(content);
-        outResp.json = JSON.parse(content); // DEPRECATED (not using reference to isolate)
-      }
-    } catch (_e) {}
+  const content = await resp.text();
 
-    outResp.throwForStatus = () => {
-      _throwForStatus(outResp);
-    };
+  // trim down the response signature a ton for simplicity
+  const preppedResp = {
+    status: resp.status,
+    json: undefined,
+    data: undefined,
+    content: content,
+    request: request,
+    // only controls if _we_ call throwForStatus automatically
+    skipThrowForStatus: request.skipThrowForStatus,
+  };
+  const outResp = _.extend(preppedResp, replaceHeaders(resp));
 
-    return outResp;
-  });
+  try {
+    if (outResp.headers.get('content-type') === FORM_TYPE) {
+      outResp.data = querystring.parse(content);
+    } else {
+      outResp.data = JSON.parse(content);
+      outResp.json = JSON.parse(content); // DEPRECATED (not using reference to isolate)
+    }
+  } catch (_e) {}
+
+  outResp.throwForStatus = () => {
+    _throwForStatus(outResp);
+  };
+
+  return outResp;
 };
 
 // Provide a standardized plain JS responseObj for common consumption, or raw response for streaming.
@@ -75,11 +76,11 @@ const prepareResponse = (resp) => {
   const request = resp.input;
   delete resp.input;
 
-  if (request.raw) {
-    return prepareRawResponse(resp, request);
-  } else {
-    return prepareContentResponse(resp, request);
-  }
+  const responseFunc = request.raw
+    ? prepareRawResponse
+    : prepareContentResponse;
+
+  return responseFunc(resp, request);
 };
 
 module.exports = prepareResponse;
