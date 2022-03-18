@@ -2,9 +2,17 @@
 
 const _ = require('lodash');
 const querystring = require('querystring');
-const throwForStatus = require('./throw-for-status');
 const { replaceHeaders } = require('./middleware-utils');
 const { FORM_TYPE } = require('../../tools/http');
+const errors = require('../../errors');
+
+const _throwForStatus = (response) => {
+  // calling this always throws, regardless of the skipThrowForStatus value
+  // eslint-disable-next-line yoda
+  if (400 <= response.status && response.status < 600) {
+    throw new errors.ResponseError(response);
+  }
+};
 
 const prepareRawResponse = (resp, request) => {
   // TODO: if !2xx should we go ahead and get response.content for them?
@@ -14,9 +22,11 @@ const prepareRawResponse = (resp, request) => {
     skipThrowForStatus: request.skipThrowForStatus,
   };
   const outResp = _.extend(resp, extendedResp, replaceHeaders(resp));
+
   outResp.throwForStatus = () => {
-    throwForStatus(outResp);
+    _throwForStatus(outResp);
   };
+
   Object.defineProperty(outResp, 'content', {
     get: function () {
       throw new Error(
@@ -39,6 +49,7 @@ const prepareContentResponse = (resp, request) => {
       data: undefined,
       content: content,
       request: request,
+      // only controls if _we_ call throwForStatus automatically
       skipThrowForStatus: request.skipThrowForStatus,
     };
     const outResp = _.extend(preppedResp, replaceHeaders(resp));
@@ -50,9 +61,11 @@ const prepareContentResponse = (resp, request) => {
         outResp.json = JSON.parse(content); // DEPRECATED (not using reference to isolate)
       }
     } catch (_e) {}
+
     outResp.throwForStatus = () => {
-      throwForStatus(outResp);
+      _throwForStatus(outResp);
     };
+
     return outResp;
   });
 };

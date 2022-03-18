@@ -1,18 +1,10 @@
 'use strict';
 
-const errors = require('../../errors');
-
-const throwForStatus = (response) => {
-  if (response.skipThrowForStatus) {
-    return response;
+const throwForStatusMiddleware = (response) => {
+  if (!response.skipThrowForStatus) {
+    response.throwForStatus();
   }
-
-  // eslint-disable-next-line yoda
-  if (400 <= response.status && response.status < 600) {
-    throw new errors.ResponseError(response);
-  }
-
   return response;
 };
 
-module.exports = throwForStatus;
+module.exports = throwForStatusMiddleware;
