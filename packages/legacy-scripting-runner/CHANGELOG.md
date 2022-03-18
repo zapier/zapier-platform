@@ -1,3 +1,7 @@
+## 3.8.7
+
+- :bug: Replace deasync with synckit to fix hanging ([#509](https://github.com/zapier/zapier-platform/pull/509))
+
 ## 3.8.6
 
 - :bug: Fix issues with file uploading ([#496](https://github.com/zapier/zapier-platform/pull/496))
