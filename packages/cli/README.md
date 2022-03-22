@@ -2177,7 +2177,40 @@ The resulting response object is returned from `z.request()`.
 
 #### Error Response Handling
 
-Since v10, we call `response.throwForStatus()` before we return a response. You can prevent this by setting `skipThrowForStatus` on the request or response object. You can do this in `afterResponse` middleware if the API uses a status code >= 400 that should not be treated as an error.
+Since `v10.0.0`, `z.request()` calls `response.throwForStatus()` before it returns a response. You can disable automatic error throwing by setting `skipThrowForStatus` on the request object:
+
+```js
+// Disable automatic error throwing on the request object
+const perform = async (z, bundle) => {
+  const response = await z.request({
+    url: '...',
+    skipThrowForStatus: true
+  });
+  // Now you handle error response on your own.
+  // The following is equivalent to response.throwForStatus(), 
+  // but you have to remember to do it on every request
+  if (response.status >= 400) {
+    throw new z.errors.ResponseError(response);
+  }
+};
+```
+
+You can also do it in `afterResponse` if the API uses a status code >= 400 that should not be treated as an error.
+
+```js
+// Don't throw an error when response status is 456
+const disableAutoThrowOn456 = (response, z) => {
+  if (response.status === 456) {
+    response.skipThrowForStatus = true;
+  }
+  return response;
+};
+const App = {
+  // ...
+  afterResponse: [disableAutoThrowOn456],
+  // ...
+};
+```
 
 For developers using v9.x and below, it's your responsibility to throw an exception for an error response. That means you should call `response.throwForStatus()` or throw an error yourself, likely following the `z.request` call.
 
