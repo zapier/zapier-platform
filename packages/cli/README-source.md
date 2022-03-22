@@ -1486,62 +1486,14 @@ credentials. (The runs will be
 [Held](https://zapier.com/help/manage/history/view-and-manage-your-zap-history#holding),
 and the user will be able to replay them after reconnecting.)
 
-Example: `throw new z.errors.ExpiredAuthError('Your message.');`
+Example: `throw new z.errors.ExpiredAuthError('You must manually reconnect this auth.');`
 
-For apps that use OAuth2 with `autoRefresh: true` or Session Auth, the core injects
+For apps that use OAuth2 with `autoRefresh: true` or Session Auth, `core` injects
 a built-in `afterResponse` middleware that throws an error when the response status
 is 401. The error will signal Zapier to refresh the credentials and then retry the
-failed operation. For some cases, e.g, your server doesn't use the 401 status
-for auth refresh, you may have to throw the `RefreshAuthError` on your own,
-which will also signal Zapier to refresh the credentials.
+failed operation. You can also throw this error manually if your server doesn't use the 401 status or you want to trigger an auth refresh even if the credentials aren't stale.
 
 Example: `throw new z.errors.RefreshAuthError();`
-
-#### v10 Breaking Change: Auth Refresh
-
-A breaking change on v10+ is that the built-in `afterResponse` middleware that
-handles auth refresh is changed to happen AFTER your app's `afterResponse`. On
-v9 and older, it happens before your app's `afterResponse`. So it will break if
-your `afterReponse` does something like:
-
-```js
-// Auth refresh will stop working on v10 this way!
-const yourAfterResponse = (resp) => {
-  if (resp.status !== 200) {
-    throw new Error('hi');
-  }
-  return resp;
-};
-```
-
-This is because on v10 the `throw new Error('hi')` line will take precedence
-over the built-in middleware that does auth refresh. One way to fix is to let
-the 401 response fall back to the built-in middleware that does the auth
-refresh:
-
-```js
-const yourAfterResponse = (resp) => {
-  if (resp.status !== 200 && resp.status !== 401) {
-    throw new Error('hi');
-  }
-  return resp;
-};
-```
-
-Another way to fix is to handle the 401 response yourself by throwing a
-`RefreshAuthError`:
-
-```js
-const yourAfterResponse = (resp) => {
-  if (resp.status === 401) {
-    throw new z.errors.RefreshAuthError();
-  }
-  if (resp.status !== 200) {
-    throw new Error('hi');
-  }
-  return resp;
-};
-```
 
 ### Handling Throttled Requests
 
