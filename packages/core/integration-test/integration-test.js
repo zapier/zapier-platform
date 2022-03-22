@@ -3,6 +3,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { promisify } = require('util');
 
 const AWS = require('aws-sdk');
 const crypto = require('crypto');
@@ -12,6 +13,8 @@ const should = require('should');
 const createLambdaHandler = require('../src/tools/create-lambda-handler');
 const mocky = require('../test/tools/mocky');
 const { HTTPBIN_URL } = require('../test/constants');
+
+const sleep = promisify(setTimeout);
 
 const lambda = new AWS.Lambda({
   apiVersion: '2015-03-31',
@@ -55,8 +58,9 @@ const runLocally = (event) => {
     handler(event, {}, (err, data) => {
       if (err) {
         reject(err);
+      } else {
+        resolve(data);
       }
-      resolve(data);
     });
   });
 };
@@ -546,6 +550,53 @@ const doTest = (runner) => {
         .then((response) => {
           response.results.length.should.eql(0);
         });
+    });
+
+    describe('hang detection', () => {
+      let originalEnv;
+
+      before(() => {
+        originalEnv = process.env;
+        process.env = {
+          ...originalEnv,
+          LOGGING_ENDPOINT: `${mocky.FAKE_LOG_URL}/input`,
+          LOGGING_TOKEN: 'fake-token',
+        };
+      });
+
+      after(() => {
+        process.env = originalEnv;
+      });
+
+      beforeEach(() => {
+        mocky.clearLogs();
+      });
+
+      afterEach(() => {
+        mocky.clearLogs();
+      });
+
+      it('should end logger even a callback runs after lambda handler returns', async () => {
+        mocky.mockLogServer();
+
+        const event = {
+          method: 'resources.bad_callback.create.operation.perform',
+        };
+        const response = await runner(event);
+        response.results.message.should.eql('ok');
+        should.not.exist(process.teapot);
+
+        // Hopefully long enough for the callback to complete
+        await sleep(2000);
+
+        process.teapot.should.eql("I'm a teapot!");
+
+        const logs = mocky.getLogs();
+        logs.length.should.eql(1);
+
+        const log = logs[0];
+        log.message.should.eql(`418 GET ${HTTPBIN_URL}/status/418`);
+      });
     });
 
     describe('error handling', () => {

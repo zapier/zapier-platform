@@ -1,3 +1,19 @@
+## 11.3.3
+
+_released `2022-03-21`_
+
+### cli
+
+* :scroll: Update [README.md](README.md) and add [CONTRIBUTING.md](CONTRIBUTING.md) ([#506](https://github.com/zapier/zapier-platform/pull/506))
+
+### core
+
+* :bug: Fix another hanging issue where an action could be invoked multiple times ([#513](https://github.com/zapier/zapier-platform/pull/513))
+
+### schema
+
+* None!
+
 ## 11.3.2
 
 _released `2022-03-01`_
@@ -376,6 +392,22 @@ See below for a detailed changelog (**:exclamation: denotes a breaking change**)
 ### schema
 
 - :hammer: Mass dependency update and linting ([#218](https://github.com/zapier/zapier-platform/pull/218), [#220](https://github.com/zapier/zapier-platform/pull/220))
+
+## 9.7.3
+
+_released `2022-03-21`_
+
+### cli
+
+* None!
+
+### core
+
+* :bug: Fix another hanging issue where an action could be invoked multiple times ([#514](https://github.com/zapier/zapier-platform/pull/514))
+
+### schema
+
+* None!
 
 ## 9.7.2
 
