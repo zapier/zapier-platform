@@ -2127,7 +2127,15 @@ const addHeader = (request, z, bundle) => {
 };
 
 // This example only works on core v10+!
-const handleErrors = (response, z) => {
+const parseXML = (response, z, bundle) => {
+  // Parse content that is not JSON
+  // eslint-disable-next-line no-undef
+  response.data = xml.parse(response.content);
+  return response;
+};
+
+// This example only works on core v10+!
+const handleWeirdErrors = (response, z) => {
   // Prevent `throwForStatus` from throwing for a certain status.
   if (response.status === 456) {
     response.skipThrowForStatus = true;
@@ -2137,18 +2145,10 @@ const handleErrors = (response, z) => {
   return response;
 };
 
-// This example only works on core v10+!
-const parseXML = (response, z, bundle) => {
-  // Parse content that is not JSON
-  // eslint-disable-next-line no-undef
-  response.data = xml.parse(response.content);
-  return response;
-};
-
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [parseXML, handleErrors],
+  afterResponse: [parseXML, handleWeirdErrors],
   // ...
 };
 
@@ -2160,11 +2160,32 @@ Middleware functions can be asynchronous - just return a promise from the middle
 
 The second argument for middleware is the `z` object, but it does *not* include `z.request()` as using that would easily create infinite loops.
 
+Here is the full request lifecycle when you call `z.request({...})`:
+
+1. set defaults on the `request` object
+2. run your `beforeRequest` middleware functions in order
+3. add applicable auth headers (e.g. adding `Basic ...` for `basic` auth), if applicable
+4. add `request.params` to `request.url`
+5. execute the `request`, store the result in `response`
+6. try to auto-parse response body for non-raw requests, store result in `response.data`
+7. log the request to Zapier's logging server
+8. if the status code is `401`, you're using a refresh-able auth (such as `oauth2` or `session`) _and_ `autoRefresh` is `true` in your auth configuration, throw a `RefreshAuthError`. The server will attempt to refresh the authentication again and retry the whole step
+9. run your `afterResponse` middleware functions in order
+10. call `response.throwForStatus()` unless `response.skipThrowForStatus` is `true`
+
+The resulting response object is returned from `z.request()`.
+
 #### Error Response Handling
 
 Since v10, we call `response.throwForStatus()` before we return a response. You can prevent this by setting `skipThrowForStatus` on the request or response object. You can do this in `afterResponse` middleware if the API uses a status code >= 400 that should not be treated as an error.
 
 For developers using v9.x and below, it's your responsibility to throw an exception for an error response. That means you should call `response.throwForStatus()` or throw an error yourself, likely following the `z.request` call.
+
+This behavior has changed periodically across major versions, which changes how/when you have to worry about handling errors. Here's a diagram to illustrate that:
+
+![](https://cdn.zappy.app/e835d9beca1b6489a065d51a381613f3.png)
+
+Ensure you're handling errors correctly for your platform version. The latest released version is **11.3.2**.
 
 ### HTTP Request Options
 
@@ -2214,15 +2235,17 @@ The response object returned by `z.request([url], options)` supports the followi
 
 * `status`: The response status code, i.e. `200`, `404`, etc.
 * `content`: The response content as a String. For Buffer, try `options.raw = true`.
-* `data` (_new in v10.0.0_): The response content as an object if the content is JSON or ` application/x-www-form-urlencoded` (`undefined` otherwise).
-* `json`: The response content as an object if the content is JSON (`undefined` otherwise). Deprecated since v10.0.0: Use `data` instead.
-* `json()`: Get the response content as an object, if `options.raw = true` and content is JSON (returns a promise).
-* `body`: A stream available only if you provide `options.raw = true`.
+* `data` (_new in v10.0.0_): The response content as an object if the content is JSON or `application/x-www-form-urlencoded` (`undefined` otherwise).
 * `headers`: Response headers object. The header keys are all lower case.
 * `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
 * `skipThrowForStatus` (_new in v10.0.0_): don't call `throwForStatus()` before resolving the request with this response.
-* `throwForStatus()`: Throw error if 400 <= `status` < 600.
+* `throwForStatus()`: Throws an error if `400 <= statusCode < 600`.
 * `request`: The original request options object (see above).
+
+Additionally, if `request.raw` is `true`, the raw response has the following properties:
+
+* `json()`: Get the response content as an object, if `options.raw = true` and content is JSON (returns a promise). `undefined` in non-raw requests.
+* `body`: A stream available only if you provide `options.raw = true`.
 
 ```js
 const response = await z.request({
@@ -2256,7 +2279,6 @@ if (options.raw === false) { // (default)
   response.body.pipe(otherStream);
 }
 ```
-
 
 ## Dehydration
 
