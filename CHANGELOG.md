@@ -1,3 +1,19 @@
+## 9.7.3
+
+_released `2022-03-21`_
+
+### cli
+
+* None!
+
+### core
+
+* :bug: Fix another hanging issue where an action could be invoked multiple times ([#514](https://github.com/zapier/zapier-platform/pull/514))
+
+### schema
+
+* None!
+
 ## 9.7.2
 
 _released `2022-03-01`_
