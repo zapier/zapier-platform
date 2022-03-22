@@ -10,6 +10,9 @@ const FAKE_LOG_URL = 'https://fake-logger.zapier.com';
 
 const RPC_URL_PATH = '/platform/rpc/cli';
 
+// Stores logs produced by the mocked log server
+const logbox = [];
+
 const makeRpc = () => {
   return createRpcClient({
     rpc_base: `${FAKE_ZAPIER_URL}${RPC_URL_PATH}`,
@@ -161,6 +164,11 @@ const mockLogServer = () => {
       const logs = lines
         .filter((line) => line.trim())
         .map((line) => JSON.parse(line));
+
+      for (const log of logs) {
+        logbox.push(log);
+      }
+
       cb(null, [
         200,
         {
@@ -172,7 +180,15 @@ const mockLogServer = () => {
     });
 };
 
+const getLogs = () => logbox;
+
+const clearLogs = () => {
+  logbox.length = 0;
+};
+
 module.exports = {
+  clearLogs,
+  getLogs,
   makeRpc,
   mockLogServer,
   mockRpcCall,
