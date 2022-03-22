@@ -2215,9 +2215,11 @@ For developers using v9.x and below, it's your responsibility to throw an except
 
 This behavior has changed periodically across major versions, which changes how/when you have to worry about handling errors. Here's a diagram to illustrate that:
 
+<!-- diagram source: https://excalidraw.com/#json=stm4O1SLW3ko4FCX9rvsI,6NgRCAK81Cc8M3MuXhNDNA -->
+
 ![](https://cdn.zappy.app/e835d9beca1b6489a065d51a381613f3.png)
 
-Ensure you're handling errors correctly for your platform version. The latest released version is **11.3.2**.
+Ensure you're handling errors correctly for your platform version. The latest released version is **11.3.3**.
 
 ### HTTP Request Options
 
