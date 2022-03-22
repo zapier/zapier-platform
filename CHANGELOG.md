@@ -1,18 +1,39 @@
+## 12.0.0
+
+_Released `2022-03-23`_
+
+We're breaking slightly from our pattern of a single yearly major release. The `12.0.0` release contains some backwards-incompatible changes to how middleware and auth refreshes work. For the most part, you'll be able to upgrade to this version safely, but as always, it's worth re-running unit tests (especially those related to authentication).
+
+In the coming months, we'll follow up with a `13.0.0` release that will bump the Node.js runtime and dependencies (ending support for Node.js 12 as it reaches End of Life). We're hoping that by separating these releases, the upgrade process will be easier for developers (only worrying about the public API or the runtime, but not both).
+
+### cli
+
+- None!
+
+### core
+
+- :exclamation: calling `response.throwForStatus()` now **always** throws an error if the response status code is `>= 400`. Previously it was a no-op when `response.skipThrowForStatus` was `true`. Now, that flag only controls whether Zapier's built-in middleware calls `throwForStatus()`. This only affects you if you set `skipThrowForStatus` and always call `.throwForStatus()`, expecting it not to error. ([#511](https://github.com/zapier/zapier-platform/pull/511))
+- :exclamation: re-add the built-in auto-refresh middleware for `oauth2` and `session` auths. This runs _before_ your declared `afterResponse`, so you no longer have to account for stale credentials in your middleware (unless you want to). See [the README](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#using-http-middleware) for more info. ([#512](https://github.com/zapier/zapier-platform/pull/512), [#517](https://github.com/zapier/zapier-platform/pull/517))
+
+### schema
+
+- :nail_care: add app-wide skipThrowForStatus flag. This is helpful for backwards compatibility when migrating from `9.x` to `12.x`, but probably won't be relevant for most developers. ([#511](https://github.com/zapier/zapier-platform/pull/511))
+
 ## 11.3.3
 
 _released `2022-03-21`_
 
 ### cli
 
-* :scroll: Update [README.md](README.md) and add [CONTRIBUTING.md](CONTRIBUTING.md) ([#506](https://github.com/zapier/zapier-platform/pull/506))
+- :scroll: Update [README.md](README.md) and add [CONTRIBUTING.md](CONTRIBUTING.md) ([#506](https://github.com/zapier/zapier-platform/pull/506))
 
 ### core
 
-* :bug: Fix another hanging issue where an action could be invoked multiple times ([#513](https://github.com/zapier/zapier-platform/pull/513))
+- :bug: Fix another hanging issue where an action could be invoked multiple times ([#513](https://github.com/zapier/zapier-platform/pull/513))
 
 ### schema
 
-* None!
+- None!
 
 ## 11.3.2
 
@@ -20,19 +41,19 @@ _released `2022-03-01`_
 
 ### cli
 
-* None!
+- None!
 
 ### core
 
-* :nail_care: `z.request()` now accepts `skipEncodingChars` option to skip percent-encoding specific characters ([#497](https://github.com/zapier/zapier-platform/pull/497))
+- :nail_care: `z.request()` now accepts `skipEncodingChars` option to skip percent-encoding specific characters ([#497](https://github.com/zapier/zapier-platform/pull/497))
 
 ### schema
 
-* :nail_care: Add `skipEncodingChars` to `RequestSchema` ([#497](https://github.com/zapier/zapier-platform/pull/497))
+- :nail_care: Add `skipEncodingChars` to `RequestSchema` ([#497](https://github.com/zapier/zapier-platform/pull/497))
 
 ### misc
 
-* :hammer: Improve build script ([#496](https://github.com/zapier/zapier-platform/pull/496))
+- :hammer: Improve build script ([#496](https://github.com/zapier/zapier-platform/pull/496))
 
 ## 11.3.1
 
@@ -40,16 +61,16 @@ _released `2022-02-23`_
 
 ### cli
 
-* :hammer: Bump node-fetch to 2.6.7 ([#493](https://github.com/zapier/zapier-platform/pull/493))
+- :hammer: Bump node-fetch to 2.6.7 ([#493](https://github.com/zapier/zapier-platform/pull/493))
 
 ### core
 
-* :bug: Fix hanging issue where an action could be invoked multiple times ([#490](https://github.com/zapier/zapier-platform/pull/490))
-* :hammer: Bump node-fetch to 2.6.7 ([#493](https://github.com/zapier/zapier-platform/pull/493))
+- :bug: Fix hanging issue where an action could be invoked multiple times ([#490](https://github.com/zapier/zapier-platform/pull/490))
+- :hammer: Bump node-fetch to 2.6.7 ([#493](https://github.com/zapier/zapier-platform/pull/493))
 
 ### schema
 
-* :hammer: Bump node-fetch to 2.6.7 ([#493](https://github.com/zapier/zapier-platform/pull/493))
+- :hammer: Bump node-fetch to 2.6.7 ([#493](https://github.com/zapier/zapier-platform/pull/493))
 
 ## 11.3.0
 
@@ -57,29 +78,29 @@ _released `2022-02-14`_
 
 ### cli
 
-* :tada: New command: `jobs`. Now you can use `zapier jobs` to check `promote` and `migrate` progress! ([#484](https://github.com/zapier/zapier-platform/pull/484))
-* :tada: Add support for pnpm package manager in `test` command ([#476](https://github.com/zapier/zapier-platform/pull/476))
-* :bug: Fix byte missing issue with `files` example ([#465](https://github.com/zapier/zapier-platform/pull/465))
-* :nail_care: Update `promote` and `migrate` to use new endpoint ([#480](https://github.com/zapier/zapier-platform/pull/480))
-* :scroll: Clarify on OAuth2 refresh details ([#482](https://github.com/zapier/zapier-platform/pull/482))
-* :hammer: Dependency updates
+- :tada: New command: `jobs`. Now you can use `zapier jobs` to check `promote` and `migrate` progress! ([#484](https://github.com/zapier/zapier-platform/pull/484))
+- :tada: Add support for pnpm package manager in `test` command ([#476](https://github.com/zapier/zapier-platform/pull/476))
+- :bug: Fix byte missing issue with `files` example ([#465](https://github.com/zapier/zapier-platform/pull/465))
+- :nail_care: Update `promote` and `migrate` to use new endpoint ([#480](https://github.com/zapier/zapier-platform/pull/480))
+- :scroll: Clarify on OAuth2 refresh details ([#482](https://github.com/zapier/zapier-platform/pull/482))
+- :hammer: Dependency updates
   - Bump shelljs from 0.8.4 to 0.8.5 ([#473](https://github.com/zapier/zapier-platform/pull/473))
   - Bump marked from 2.0.3 to 4.0.10 ([#471](https://github.com/zapier/zapier-platform/pull/471))
   - Bump cached-path-relative from 1.0.2 to 1.1.0 ([#477](https://github.com/zapier/zapier-platform/pull/477))
 
 ### core
 
-* :bug: Fix `value.replace is not a function` error when resolving missing curlies ([#468](https://github.com/zapier/zapier-platform/pull/468))
-* :bug: Handle case where `legacy.scriptingSource` is an empty string ([#475](https://github.com/zapier/zapier-platform/pull/475))
-* :nail_care: Improve `z.console.log` and HTTP logging performance ([#469](https://github.com/zapier/zapier-platform/pull/469))
+- :bug: Fix `value.replace is not a function` error when resolving missing curlies ([#468](https://github.com/zapier/zapier-platform/pull/468))
+- :bug: Handle case where `legacy.scriptingSource` is an empty string ([#475](https://github.com/zapier/zapier-platform/pull/475))
+- :nail_care: Improve `z.console.log` and HTTP logging performance ([#469](https://github.com/zapier/zapier-platform/pull/469))
 
 ### schema
 
-* None!
+- None!
 
 ### misc
 
-* :hammer: Bump trim-off-newlines from 1.0.1 to 1.0.3 ([#474](https://github.com/zapier/zapier-platform/pull/474))
+- :hammer: Bump trim-off-newlines from 1.0.1 to 1.0.3 ([#474](https://github.com/zapier/zapier-platform/pull/474))
 
 ## 11.2.0
 
@@ -87,31 +108,31 @@ _released `2021-12-03`_
 
 ### cli
 
-* :scroll: Fix typos in docs ([#431](https://github.com/zapier/zapier-platform/pull/431))
+- :scroll: Fix typos in docs ([#431](https://github.com/zapier/zapier-platform/pull/431))
 
 ### core
 
-* :bug: Fix backpressure issue when piping request bodies ([#461](https://github.com/zapier/zapier-platform/pull/461))
-* Rewrite `z.stashFile()` with various improvements and bugfixes ([#454](https://github.com/zapier/zapier-platform/pull/454))
-  - :nail_care: `knownLength` is no longer required for _any_ kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
+- :bug: Fix backpressure issue when piping request bodies ([#461](https://github.com/zapier/zapier-platform/pull/461))
+- Rewrite `z.stashFile()` with various improvements and bugfixes ([#454](https://github.com/zapier/zapier-platform/pull/454))
+  - :nail*care: `knownLength` is no longer required for \_any* kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
   - :nail_care: Detect file types more smartly
   - :nail_care: Generate filenames more smartly
   - :nail_care: Improve performance by making concurrent requests
   - :bug: Fix `MalformedPOSTRequest` error when the reponse is gzipped and has a smaller `Content-Length`
   - :hammer: Better test coverage
   - See [#454](https://github.com/zapier/zapier-platform/pull/454) for more details
-* :nail_care: Allow apps to pass along throttled errors ([#408](https://github.com/zapier/zapier-platform/pull/408))
+- :nail_care: Allow apps to pass along throttled errors ([#408](https://github.com/zapier/zapier-platform/pull/408))
 
 ### schema
 
-* :tada: Add support for hook-to-poll triggers ([#432](https://github.com/zapier/zapier-platform/pull/432))
-* :nail_care: Allow spaces and square brackets in [`RefResourceSchema`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@11.2.0/packages/schema/docs/build/schema.md) ([#455](https://github.com/zapier/zapier-platform/pull/455))
-* :nail_care: Add `code` type for `inputField`s ([#439](https://github.com/zapier/zapier-platform/pull/439))
+- :tada: Add support for hook-to-poll triggers ([#432](https://github.com/zapier/zapier-platform/pull/432))
+- :nail_care: Allow spaces and square brackets in [`RefResourceSchema`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@11.2.0/packages/schema/docs/build/schema.md) ([#455](https://github.com/zapier/zapier-platform/pull/455))
+- :nail_care: Add `code` type for `inputField`s ([#439](https://github.com/zapier/zapier-platform/pull/439))
 
 ### misc
 
-* :hammer: Bump node-fetch to 2.6.6 ([#459](https://github.com/zapier/zapier-platform/pull/459))
-* :hammer: Move CI from Travis to GitHub Actions ([#454](https://github.com/zapier/zapier-platform/pull/454))
+- :hammer: Bump node-fetch to 2.6.6 ([#459](https://github.com/zapier/zapier-platform/pull/459))
+- :hammer: Move CI from Travis to GitHub Actions ([#454](https://github.com/zapier/zapier-platform/pull/454))
 
 ## 11.1.1
 
@@ -275,7 +296,7 @@ This release mostly has internal features, but also ships a lot of documentation
 
 - :nail_care: Improve logging for diagnostic info ([#282](https://github.com/zapier/zapier-platform/pull/282))
 - :scroll: Document the `$HOIST$` directive ([#273](https://github.com/zapier/zapier-platform/pull/273))
-- :scroll: Update oudated command references ([#274](https://github.com/zapier/zapier-platform/pull/274))
+- :scroll: Update outdated command references ([#274](https://github.com/zapier/zapier-platform/pull/274))
 - :scroll: Add docs for `callback_url` ([#278](https://github.com/zapier/zapier-platform/pull/278))
 - :hammer: Add new example app, `callbacks` ([#281](https://github.com/zapier/zapier-platform/pull/281))
 - :scroll: Replace Slack link with one for Community ([#286](https://github.com/zapier/zapier-platform/pull/286))
@@ -399,15 +420,15 @@ _released `2022-03-21`_
 
 ### cli
 
-* None!
+- None!
 
 ### core
 
-* :bug: Fix another hanging issue where an action could be invoked multiple times ([#514](https://github.com/zapier/zapier-platform/pull/514))
+- :bug: Fix another hanging issue where an action could be invoked multiple times ([#514](https://github.com/zapier/zapier-platform/pull/514))
 
 ### schema
 
-* None!
+- None!
 
 ## 9.7.2
 
@@ -415,19 +436,19 @@ _released `2022-03-01`_
 
 ### cli
 
-* None!
+- None!
 
 ### core
 
-* :nail_care: `z.request()` now accepts `skipEncodingChars` option to skip percent-encoding specific characters ([#499](https://github.com/zapier/zapier-platform/pull/499))
+- :nail_care: `z.request()` now accepts `skipEncodingChars` option to skip percent-encoding specific characters ([#499](https://github.com/zapier/zapier-platform/pull/499))
 
 ### schema
 
-* :nail_care: Add `skipEncodingChars` to `RequestSchema` ([#499](https://github.com/zapier/zapier-platform/pull/499))
+- :nail_care: Add `skipEncodingChars` to `RequestSchema` ([#499](https://github.com/zapier/zapier-platform/pull/499))
 
 ### misc
 
-* :hammer: Improve build script ([#500](https://github.com/zapier/zapier-platform/pull/500))
+- :hammer: Improve build script ([#500](https://github.com/zapier/zapier-platform/pull/500))
 
 ## 9.7.1
 
@@ -435,16 +456,16 @@ _released `2022-02-23`_
 
 ### cli
 
-* :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
+- :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
 
 ### core
 
-* :bug: Fix hanging issue where an action could be invoked multiple times ([#491](https://github.com/zapier/zapier-platform/pull/491))
-* :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
+- :bug: Fix hanging issue where an action could be invoked multiple times ([#491](https://github.com/zapier/zapier-platform/pull/491))
+- :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
 
 ### schema
 
-* :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
+- :hammer: Bump node-fetch to 2.6.7 ([#492](https://github.com/zapier/zapier-platform/pull/492))
 
 ## 9.7.0
 
@@ -452,17 +473,17 @@ _released `2022-02-14`_
 
 ### cli
 
-* None!
+- None!
 
 ### core
 
-* :bug: Fix `value.replace is not a function` error when resolving missing curlies ([#467](https://github.com/zapier/zapier-platform/pull/467))
-* :bug: Handle case where `legacy.scriptingSource` is an empty string ([#478](https://github.com/zapier/zapier-platform/pull/478))
-* :nail_care: Improve `z.console.log` and HTTP logging performance ([#483](https://github.com/zapier/zapier-platform/pull/483))
+- :bug: Fix `value.replace is not a function` error when resolving missing curlies ([#467](https://github.com/zapier/zapier-platform/pull/467))
+- :bug: Handle case where `legacy.scriptingSource` is an empty string ([#478](https://github.com/zapier/zapier-platform/pull/478))
+- :nail_care: Improve `z.console.log` and HTTP logging performance ([#483](https://github.com/zapier/zapier-platform/pull/483))
 
 ### schema
 
-* None!
+- None!
 
 ## 9.6.0
 
@@ -474,9 +495,9 @@ _released `2021-12-03`_
 
 ### core
 
-* :bug: Fix backpressure issue when piping request bodies ([#462](https://github.com/zapier/zapier-platform/pull/462))
-* Rewrite `z.stashFile()` with various improvements and bugfixes ([#453](https://github.com/zapier/zapier-platform/pull/453))
-  - :nail_care: `knownLength` is no longer required for _any_ kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
+- :bug: Fix backpressure issue when piping request bodies ([#462](https://github.com/zapier/zapier-platform/pull/462))
+- Rewrite `z.stashFile()` with various improvements and bugfixes ([#453](https://github.com/zapier/zapier-platform/pull/453))
+  - :nail*care: `knownLength` is no longer required for \_any* kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
   - :nail_care: Detect file types more smartly
   - :nail_care: Generate filenames more smartly
   - :nail_care: Improve performance by making concurrent requests
@@ -486,12 +507,12 @@ _released `2021-12-03`_
 
 ### schema
 
-* :nail_care: Allow spaces and sqaure brackets in [`RefResourceSchema`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.6.0/packages/schema/docs/build/schema.md) ([#456](https://github.com/zapier/zapier-platform/pull/456))
+- :nail_care: Allow spaces and sqaure brackets in [`RefResourceSchema`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.6.0/packages/schema/docs/build/schema.md) ([#456](https://github.com/zapier/zapier-platform/pull/456))
 
 ### misc
 
-* :hammer: Bump node-fetch to 2.6.6 ([#458](https://github.com/zapier/zapier-platform/pull/458), [#460](https://github.com/zapier/zapier-platform/pull/460))
-* :hammer: Move CI from Travis to GitHub Actions ([#453](https://github.com/zapier/zapier-platform/pull/453))
+- :hammer: Bump node-fetch to 2.6.6 ([#458](https://github.com/zapier/zapier-platform/pull/458), [#460](https://github.com/zapier/zapier-platform/pull/460))
+- :hammer: Move CI from Travis to GitHub Actions ([#453](https://github.com/zapier/zapier-platform/pull/453))
 
 ## 9.5.0
 
