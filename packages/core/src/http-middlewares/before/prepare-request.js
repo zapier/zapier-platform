@@ -113,7 +113,12 @@ const prepareRequest = function (req) {
       body: false,
     },
     replace: true, // always replace curlies
-    skipThrowForStatus: false,
+    // read default from app flags, but always defer to the request object if the value was set
+    skipThrowForStatus: _.get(
+      input,
+      ['_zapier', 'app', 'flags', 'skipThrowForStatus'],
+      false
+    ),
     _addContext: () => {},
   });
 
