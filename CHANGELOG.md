@@ -114,7 +114,7 @@ _released `2021-12-03`_
 
 - :bug: Fix backpressure issue when piping request bodies ([#461](https://github.com/zapier/zapier-platform/pull/461))
 - Rewrite `z.stashFile()` with various improvements and bugfixes ([#454](https://github.com/zapier/zapier-platform/pull/454))
-  - :nail*care: `knownLength` is no longer required for \_any* kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
+  - :nail_care: `knownLength` is no longer required for any kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
   - :nail_care: Detect file types more smartly
   - :nail_care: Generate filenames more smartly
   - :nail_care: Improve performance by making concurrent requests
@@ -497,7 +497,7 @@ _released `2021-12-03`_
 
 - :bug: Fix backpressure issue when piping request bodies ([#462](https://github.com/zapier/zapier-platform/pull/462))
 - Rewrite `z.stashFile()` with various improvements and bugfixes ([#453](https://github.com/zapier/zapier-platform/pull/453))
-  - :nail*care: `knownLength` is no longer required for \_any* kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
+  - :nail_care: `knownLength` is no longer required for any kinds of streams, including `z.request({ url, raw: true })` and `fs.createReadStream()`
   - :nail_care: Detect file types more smartly
   - :nail_care: Generate filenames more smartly
   - :nail_care: Improve performance by making concurrent requests
