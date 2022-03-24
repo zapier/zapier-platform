@@ -8,7 +8,7 @@ _released `2022-03-24`_
 
 ### core
 
-- Fix regression where the global `skipThrowForStatus` incorrectly applied to shorthand requests. It's only intended to modify the behavior of requests made with `z.request()`. The docs and changelog have been updated accordingly ([#520](https://github.com/zapier/zapier-platform/pull/520))
+- :bug: Fix regression where the global `skipThrowForStatus` incorrectly applied to shorthand requests. It's only intended to modify the behavior of requests made with `z.request()`. The docs and changelog have been updated accordingly ([#520](https://github.com/zapier/zapier-platform/pull/520))
 
 ### schema
 
