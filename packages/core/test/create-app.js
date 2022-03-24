@@ -814,6 +814,33 @@ describe('create-app', () => {
         results[0].status.should.eql(400);
         results[0].message.should.eql('mocked response');
       });
+
+      it('should skip throw if local flag is false and global flag is set', async () => {
+        const appDef = {
+          ...appDefinition,
+          flags: {
+            skipThrowForStatus: true,
+          },
+        };
+        const app = createApp(appDef);
+
+        const event = {
+          command: 'execute',
+          bundle: {
+            inputData: {
+              options: {
+                url: `${HTTPBIN_URL}/status/400`,
+                skipThrowForStatus: false,
+              },
+            },
+          },
+          method,
+        };
+        const err = await app(
+          createInput(appDefinition, event, testLogger)
+        ).should.be.rejected();
+        JSON.parse(err.message).status.should.eql(400);
+      });
     });
   });
 });
