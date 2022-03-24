@@ -11,7 +11,18 @@ const ZapierPromise = require('./tools/promise');
 const constants = require('./constants');
 
 const executeHttpRequest = (input, options) => {
-  options = _.extend({}, options, constants.REQUEST_OBJECT_SHORTHAND_OPTIONS);
+  options = _.extend(
+    {},
+    // shorthand requests should always throw _unless_ the object specifically opts out
+    // this covers godzilla devs who use shorthand requests (most of them) that rely on the throwing behavior
+    // when we set the app-wide skip for everyone, we don't want their behavior to change
+    // so, this line takes precedence over the global setting, but not the local one (`options`)
+    {
+      skipThrowForStatus: false,
+    },
+    options,
+    constants.REQUEST_OBJECT_SHORTHAND_OPTIONS
+  );
   return input.z.request(options).then((response) => {
     if (response.data === undefined) {
       throw new Error(
