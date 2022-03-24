@@ -815,7 +815,7 @@ describe('create-app', () => {
         results[0].message.should.eql('mocked response');
       });
 
-      it('should skip throw if local flag is false and global flag is set', async () => {
+      it('should throw if local flag is false and global flag is set', async () => {
         const appDef = {
           ...appDefinition,
           flags: {
