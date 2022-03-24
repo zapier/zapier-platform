@@ -3450,7 +3450,7 @@ zapier env:get 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>In the URL above, <code>{{bundle.authData.subdomain}}</code> is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.</p><p>An error will be raised if the response is not valid JSON, so <em>do not use shorthand HTTP requests with non-JSON responses</em>.</p>
+      <p>In the URL above, <code>{{bundle.authData.subdomain}}</code> is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.</p><p>An error will be raised if the response cannot be parsed as JSON or form-encoded. To use shorthand requests with other response types, add <a href="#using-http-middleware">middleware</a> that sets <code>response.data</code> to the parsed response.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

@@ -1,6 +1,22 @@
+## 12.0.1
+
+_released `2022-03-24`_
+
+### cli
+
+- None
+
+### core
+
+- :bug: Fix regression where the global `skipThrowForStatus` incorrectly applied to shorthand requests. It's only intended to modify the behavior of requests made with `z.request()`. The docs and changelog have been updated accordingly ([#520](https://github.com/zapier/zapier-platform/pull/520))
+
+### schema
+
+- None!
+
 ## 12.0.0
 
-_Released `2022-03-23`_
+_released `2022-03-23`_
 
 We're breaking slightly from our pattern of a single yearly major release. The `12.0.0` release contains some backwards-incompatible changes to how middleware and auth refreshes work. For the most part, you'll be able to upgrade to this version safely, but as always, it's worth re-running unit tests (especially those related to authentication).
 
@@ -17,7 +33,7 @@ In the coming months, we'll follow up with a `13.0.0` release that will bump the
 
 ### schema
 
-- :nail_care: add app-wide skipThrowForStatus flag. This is helpful for backwards compatibility when migrating from `9.x` to `12.x`, but probably won't be relevant for most developers. ([#511](https://github.com/zapier/zapier-platform/pull/511))
+- :nail_care: add app-wide skipThrowForStatus flag. This is helpful for backwards compatibility when migrating from `9.x` to `12.x`, but probably won't be relevant for most developers. Note that this flag **only affects requests made with `z.request()`** ([#511](https://github.com/zapier/zapier-platform/pull/511))
 
 ## 11.3.3
 

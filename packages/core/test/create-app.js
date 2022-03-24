@@ -665,4 +665,182 @@ describe('create-app', () => {
       );
     });
   });
+
+  describe('error skipping', () => {
+    describe('shorthand requests', () => {
+      const method =
+        'resources.executeRequestAsShorthand.create.operation.perform';
+      it('should throw on shorthand by default', async () => {
+        const app = createApp(appDefinition);
+
+        const event = {
+          command: 'execute',
+          bundle: {
+            inputData: {
+              url: `${HTTPBIN_URL}/status/400`,
+            },
+          },
+          method,
+        };
+        const err = await app(
+          createInput(appDefinition, event, testLogger)
+        ).should.be.rejected();
+        JSON.parse(err.message).status.should.eql(400);
+      });
+
+      it('should throw on shorthand even when global skip flag is present', async () => {
+        const appDef = {
+          ...appDefinition,
+          flags: {
+            // this is ignored for shorthand requests
+            skipThrowForStatus: true,
+          },
+        };
+        const app = createApp(appDef);
+
+        const event = {
+          command: 'execute',
+          bundle: {
+            inputData: {
+              url: `${HTTPBIN_URL}/status/400`,
+            },
+          },
+          method,
+        };
+        const err = await app(
+          createInput(appDef, event, testLogger)
+        ).should.be.rejected();
+        JSON.parse(err.message).status.should.eql(400);
+      });
+
+      it('should skip throw on shorthand if local flag is set', async () => {
+        const appDef = {
+          ...appDefinition,
+        };
+        appDef.resources.executeRequestAsShorthand.create.operation.perform.skipThrowForStatus = true;
+
+        const app = createApp(appDef);
+
+        // httpbin can't return a body w/ the status endpoint
+        const url = 'https://status-with-body.example.com';
+        nock(url)
+          .get('/')
+          .reply(400, { status: 400, message: 'mocked response' });
+
+        const event = {
+          command: 'execute',
+          bundle: { inputData: { url } },
+          method,
+        };
+        const { results } = await app(
+          createInput(appDef, event, testLogger)
+        ).should.be.fulfilled();
+
+        results.status.should.eql(400);
+        results.message.should.eql('mocked response');
+      });
+    });
+
+    describe('z.request requests', () => {
+      const method = 'resources.executeRequestAsFunc.list.operation.perform';
+      it('should throw on request by default', async () => {
+        const app = createApp(appDefinition);
+
+        const event = {
+          command: 'execute',
+          bundle: {
+            inputData: {
+              options: { url: `${HTTPBIN_URL}/status/400` },
+            },
+          },
+          method,
+        };
+        const err = await app(
+          createInput(appDefinition, event, testLogger)
+        ).should.be.rejected();
+
+        JSON.parse(err.message).status.should.eql(400);
+      });
+
+      it('should skip throw when global skip flag is present', async () => {
+        const appDef = {
+          ...appDefinition,
+          flags: {
+            skipThrowForStatus: true,
+          },
+        };
+        // httpbin can't return a body w/ the status endpoint
+        const url = 'https://status-with-body.example.com';
+        nock(url)
+          .get('/')
+          .reply(400, [{ id: 1, status: 400, message: 'mocked response' }]);
+
+        const app = createApp(appDef);
+        const event = {
+          command: 'execute',
+          bundle: {
+            inputData: { options: { url } },
+          },
+          method,
+        };
+        const { results } = await app(
+          createInput(appDef, event, testLogger)
+        ).should.be.fulfilled();
+
+        results[0].status.should.eql(400);
+        results[0].message.should.eql('mocked response');
+      });
+
+      it('should skip throw if local flag is set', async () => {
+        const app = createApp(appDefinition);
+
+        // httpbin can't return a body w/ the status endpoint
+        const url = 'https://status-with-body.example.com';
+        nock(url)
+          .get('/')
+          .reply(400, [{ id: 1, status: 400, message: 'mocked response' }]);
+
+        const event = {
+          command: 'execute',
+          bundle: {
+            inputData: { options: { url, skipThrowForStatus: true } },
+          },
+          method,
+        };
+        const { results } = await app(
+          createInput(appDefinition, event, testLogger)
+        ).should.be.fulfilled();
+
+        results[0].status.should.eql(400);
+        results[0].message.should.eql('mocked response');
+      });
+
+      it('should throw if local flag is false and global flag is set', async () => {
+        const appDef = {
+          ...appDefinition,
+          flags: {
+            skipThrowForStatus: true,
+          },
+        };
+        const app = createApp(appDef);
+
+        const event = {
+          command: 'execute',
+          bundle: {
+            inputData: {
+              options: {
+                url: `${HTTPBIN_URL}/status/400`,
+                skipThrowForStatus: false,
+              },
+            },
+          },
+          method,
+        };
+        const err = await app(
+          createInput(appDefinition, event, testLogger)
+        ).should.be.rejected();
+        JSON.parse(err.message).status.should.eql(400);
+      });
+    });
+  });
 });
