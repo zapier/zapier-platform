@@ -1,3 +1,19 @@
+## 12.0.2
+
+_released `2022-03-30`_
+
+### cli
+
+- None
+
+### core
+
+- :bug: Fix regression where consecutive successful curly replacements wouldn't happen correctly ([#522](https://github.com/zapier/zapier-platform/pull/522))
+
+### schema
+
+- None!
+
 ## 12.0.1
 
 _released `2022-03-24`_
