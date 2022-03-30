@@ -826,6 +826,9 @@ describe('request client', () => {
         },
         headers: {
           Authorization: 'Bearer {{bundle.authData.access_token}}',
+          'x-api-key': '{{bundle.authData.access_token}}',
+          'x-cool': '{{bundle.authData.access_token}}',
+          'x-another': '{{bundle.authData.access_token}}',
         },
       });
 
@@ -833,6 +836,10 @@ describe('request client', () => {
       const { url } = JSON.parse(response.content);
       url.should.eql(`${HTTPBIN_URL}/get?limit=20&id=123`);
       headers.Authorization.should.deepEqual(['Bearer Let me in']);
+      // covers the case where replacing the same value in multiple places didn't work
+      headers['X-Api-Key'].should.deepEqual(['Let me in']);
+      headers['X-Cool'].should.deepEqual(['Let me in']);
+      headers['X-Another'].should.deepEqual(['Let me in']);
     });
 
     it('should be able to interpolate arrays/objects to a string', async () => {

@@ -273,20 +273,45 @@ describe('Tools', () => {
 
   describe('recurseReplaceBank', () => {
     it('should replace stuff with recurseReplaceBank', () => {
-      const template = {
+      const obj = {
         multi: '{{somekey}} {{somekey}} hi!',
         thing: '{{somekey}} hi!',
         arr: ['{{somekey}} hi!'],
+        x: {
+          a: '{{somekey}}',
+          c: '{{somekey}} x',
+        },
       };
       const bank = {
         '{{somekey}}': 'lolz',
       };
-      const out = cleaner.recurseReplaceBank(template, bank);
+      const out = cleaner.recurseReplaceBank(obj, bank);
       out.should.eql({
         multi: 'lolz lolz hi!',
         thing: 'lolz hi!',
         arr: ['lolz hi!'],
+        x: {
+          a: 'lolz',
+          c: 'lolz x',
+        },
       });
+    });
+
+    it('should recursively resolve curlies', () => {
+      const req = {
+        headers: {
+          // 2 matches in a row caused a bug, so make sure to test that
+          a: '{{bundle.authData.access_token}}',
+          b: '{{bundle.authData.access_token}}',
+        },
+      };
+      const bank = {
+        '{{bundle.authData.access_token}}': 'Let me in',
+      };
+
+      const res = cleaner.recurseReplaceBank(req, bank);
+      res.headers.a.should.eql('Let me in');
+      res.headers.b.should.eql('Let me in');
     });
   });
 
