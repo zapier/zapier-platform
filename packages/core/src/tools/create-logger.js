@@ -17,8 +17,11 @@ const {
   findSensitiveValues,
   recurseExtract,
 } = require('@zapier/secret-scrubber');
-// not really a public function, but it came from here originally
-const { isUrlWithSecrets } = require('@zapier/secret-scrubber/lib/convenience');
+// not really public functions, but they came from here originally
+const {
+  isSensitiveKey,
+  isUrlWithSecrets,
+} = require('@zapier/secret-scrubber/lib/convenience');
 
 // The payload size per request to stream logs. This should be slighly lower
 // than the limit (16 MB) on the server side.
@@ -111,6 +114,7 @@ const toStdout = (event, msg, data) => {
 const buildSensitiveValues = (event, data) => {
   const bundle = event.bundle || {};
   const authData = bundle.authData || {};
+
   // for the most part, we should censor all the values from authData
   // the exception is safe urls, which should be filtered out - we want those to be logged
   const sensitiveAuthData = recurseExtract(authData, (key, value) => {
@@ -119,10 +123,18 @@ const buildSensitiveValues = (event, data) => {
     }
     return true;
   });
+
+  // For log extra data, we only want to censor with sensitive keys. URLs in log
+  // extra should be safe.
+  const sensitiveLogData = recurseExtract(
+    data,
+    (key, value) => _.isString(value) && isSensitiveKey(key)
+  );
+
   return [
     ...sensitiveAuthData,
+    ...sensitiveLogData,
     ...findSensitiveValues(process.env),
-    ...findSensitiveValues(data),
   ];
 };
 

@@ -403,6 +403,60 @@ describe('logger', () => {
     ]);
   });
 
+  it('should not replace urls from log extra', async () => {
+    const bundle = {
+      authData: {
+        password: 'hunter2',
+        will_be_left_alone: null,
+        will_be_removed: undefined, // JSON.stringify removed keys set to `undefined`
+      },
+    };
+    const logger = createlogger({ bundle }, options);
+
+    const data = {
+      input: {
+        response: {
+          json: {
+            data: [
+              // An app could have thousands of URLs in a response. We don't
+              // want these to be in the sensitive vallues and make secret
+              // scrubbing too slow.
+              'https://example.com/?q=1',
+              'https://example.com/?q=2',
+              'https://example.com/?q=3',
+            ],
+            token: 'something',
+          },
+        },
+      },
+    };
+
+    logger('Called something', data);
+    const response = await logger.end();
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
+        message: 'Called :censored:9:a468e1d9fc:',
+        data: {
+          log_type: 'console',
+          input: {
+            response: {
+              json: {
+                data: [
+                  'https://example.com/?q=1',
+                  'https://example.com/?q=2',
+                  'https://example.com/?q=3',
+                ],
+                token: ':censored:9:a468e1d9fc:',
+              },
+            },
+          },
+        },
+      },
+    ]);
+  });
+
   it('should handle nullish values', async () => {
     const bundle = {
       authData: {
