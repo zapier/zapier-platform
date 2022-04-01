@@ -407,8 +407,6 @@ describe('logger', () => {
     const bundle = {
       authData: {
         password: 'hunter2',
-        will_be_left_alone: null,
-        will_be_removed: undefined, // JSON.stringify removed keys set to `undefined`
       },
     };
     const logger = createlogger({ bundle }, options);
@@ -431,13 +429,13 @@ describe('logger', () => {
       },
     };
 
-    logger('Called something', data);
+    logger('Called something by hunter2', data);
     const response = await logger.end();
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
       {
-        message: 'Called :censored:9:a468e1d9fc:',
+        message: 'Called :censored:9:a468e1d9fc: by :censored:7:850233b460:',
         data: {
           log_type: 'console',
           input: {
