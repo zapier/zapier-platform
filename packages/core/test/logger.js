@@ -386,11 +386,11 @@ describe('logger', () => {
       {
         message: 'test',
         data: {
-          // whatever: {
-          //   nested: {
-          //     secret: ':censored:7:b69a1db63d:',
-          //   },
-          // },
+          whatever: {
+            nested: {
+              secret: ':censored:7:b69a1db63d:',
+            },
+          },
           response_content: `{
         nested: { secret: :censored:7:b69a1db63d: }
       }`,
