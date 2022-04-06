@@ -14,14 +14,21 @@ const {
 } = require('../src/http-middlewares/after/log-response');
 
 // little helper to prepare a req/res pair like the http logger does
-const prepareTestRequest = (reqBody = {}, resBody = {}) =>
+const prepareTestRequest = ({
+  reqBody = {},
+  resBody = {},
+  reqQueryParams = '',
+} = {}) =>
   prepareRequestLog(
     {
-      url: 'http://example.com',
+      url: `http://example.com${
+        reqQueryParams ? '?' + querystring.stringify(reqQueryParams) : ''
+      }`,
       method: 'POST',
       headers: {
         accept: 'application/json',
       },
+      // we usually stringify this in prepare-request.coerceBody, so mirror that behavior here
       body: JSON.stringify(reqBody),
     },
     {
@@ -29,7 +36,7 @@ const prepareTestRequest = (reqBody = {}, resBody = {}) =>
       headers: {
         'content-type': 'application/json',
       },
-      // we stringify this in prepare-request.coerceBody
+
       content: resBody,
     }
   );
@@ -250,17 +257,18 @@ describe('logger', () => {
     };
     const logger = createlogger({ bundle }, options);
 
-    const { message, data } = prepareTestRequest(
-      {
+    const { message, data } = prepareTestRequest({
+      reqBody: {
         // value appears only here; logger needs to parse this out of a string to censor it properly
         access_token: 'super_secret',
         refresh_token: bundle.authData.refresh_token,
       },
-      {
+      resBody: {
         // same here
         access_token: 'some new token',
-      }
-    );
+      },
+      reqQueryParams: { api_key: 'secret-key' },
+    });
 
     logger(message, data);
     const response = await logger.end();
@@ -273,6 +281,7 @@ describe('logger', () => {
           log_type: 'http',
           request_type: 'devplatform-outbound',
           request_url: 'http://example.com',
+          request_params: 'api_key=:censored:10:ad15d65bcc:',
           request_method: 'POST',
           request_headers: 'accept: application/json',
           request_data:
@@ -296,7 +305,9 @@ describe('logger', () => {
     const logger = createlogger({ bundle }, options);
 
     const { message, data } = prepareTestRequest({
-      refresh_token: bundle.authData.refresh_token,
+      reqBody: {
+        refresh_token: bundle.authData.refresh_token,
+      },
     });
 
     logger(message, data);
