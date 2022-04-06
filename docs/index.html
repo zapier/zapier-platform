@@ -1137,7 +1137,7 @@ zapier convert 1234 --version 1.0.1 my-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Most applications require some sort of authentication. The Zapier platform provides core behaviors for several authentication methods that might be used with your application, as well as the ability to configure or customize authentication further for certain methods.</p><p>Data tied to authentication is included in the <a href="#bundle-object">bundle object</a>. Data used on an ongoing basis to authenticate requests is included in <code>bundle.authData</code>, while temporary values used in the establishment of <a href="#oauth1">OAuth</a> and <a href="#session">Session auth</a> are stored in <code>bundle.inputData</code>.</p>
+      <p>Most applications require some sort of authentication. The Zapier platform provides core behaviors for several common authentication methods that might be used with your application, as well as the ability to customize authentication further.</p><p>When a user authenticates to your application through Zapier, a &quot;connection&quot; is created representing their authentication details. Data tied to a specific authentication connection is included in the <a href="#bundle-object">bundle object</a> under <code>bundle.authData</code>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1294,7 +1294,7 @@ zapier convert 1234 --version 1.0.1 my-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Session auth gives you the ability to exchange some user provided data for some authentication data; for example, username and password for a session key. It can be used to implement almost any authentication method that uses that pattern - for example, alternative OAuth flows.</p><blockquote>
+      <p>Session auth gives you the ability to exchange some user-provided data for some authentication data; for example, username and password for a session key. It can be used to implement almost any authentication method that uses that pattern - for example, alternative OAuth flows.</p><blockquote>
 <p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth</a> for a working example app for session auth.</p>
 </blockquote>
     </div>
@@ -1368,7 +1368,7 @@ zapier convert 1234 --version 1.0.1 my-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For Session auth, the function that fetches the additional authentication data needed to make API calls ( <code>authentication.sessionConfig.perform</code>) will have the user-provided fields in <code>bundle.inputData</code> instead of <code>bundle.authData</code>. Afterwards, <code>bundle.authData</code> will contain the data provided by that function (usually the session key or token).</p>
+      <p>For Session auth, the function that fetches the additional authentication data needed to make API calls (<code>authentication.sessionConfig.perform</code>) has the user-provided fields in <code>bundle.inputData</code>. Afterwards, <code>bundle.authData</code> contains the data returned by that function (usually the session key or token).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1502,7 +1502,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For OAuth1, <code>authentication.oauth1Config.getRequestToken</code>, <code>authentication.oauth1Config.authorizeUrl</code>, and <code>authentication.oauth1Config.getAccessToken</code> will have fields like <code>redirect_uri</code> and the temporary credentials in <code>bundle.inputData</code> instead of <code>bundle.authData</code>. After <code>getAccessToken</code> runs, the resulting token value(s) will be stored in <code>bundle.authData</code> for long-term use.</p><p>Also note that <code>authentication.oauth1Config.getAccessToken</code> has access to the additional return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example, from the query string).</p>
+      <p>For OAuth1, <code>authentication.oauth1Config.getRequestToken</code>, <code>authentication.oauth1Config.authorizeUrl</code>, and <code>authentication.oauth1Config.getAccessToken</code> have fields like <code>redirect_uri</code> and the temporary credentials in <code>bundle.inputData</code>. After <code>getAccessToken</code> runs, the resulting token value(s) will be stored in <code>bundle.authData</code> for the connection.</p><p>Also, <code>authentication.oauth1Config.getAccessToken</code> has access to the additional return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example, from the query string).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1621,7 +1621,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For OAuth2, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code> have fields like <code>redirect_uri</code> and <code>state</code> in <code>bundle.inputData</code>, instead of <code>bundle.authData</code>. After the code is exchanged for an access token and/or refresh token, those tokens are stored in <code>bundle.authData</code> for long-term use.</p><p>Also note that <code>authentication.oauth2Config.getAccessToken</code> has access to the additional return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example, from the query string).</p>
+      <p>For OAuth2, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code> have fields like <code>redirect_uri</code> and <code>state</code> in <code>bundle.inputData</code>. After the code is exchanged for an access token and/or refresh token, those tokens are stored in <code>bundle.authData</code> for the connection.</p><p>Also, <code>authentication.oauth2Config.getAccessToken</code> has access to the additional return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example, from the query string).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

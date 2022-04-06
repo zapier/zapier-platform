@@ -442,9 +442,9 @@ zapier convert 1234 --version 1.0.1 my-app
 
 ## Authentication
 
-Most applications require some sort of authentication. The Zapier platform provides core behaviors for several authentication methods that might be used with your application, as well as the ability to configure or customize authentication further for certain methods.
+Most applications require some sort of authentication. The Zapier platform provides core behaviors for several common authentication methods that might be used with your application, as well as the ability to customize authentication further.
 
-Data tied to authentication is included in the [bundle object](#bundle-object). Data used on an ongoing basis to authenticate requests is included in `bundle.authData`, while temporary values used in the establishment of [OAuth](#oauth1) and [Session auth](#session) are stored in `bundle.inputData`.
+When a user authenticates to your application through Zapier, a "connection" is created representing their authentication details. Data tied to a specific authentication connection is included in the [bundle object](#bundle-object) under `bundle.authData`.
 
 ### Basic
 
@@ -558,7 +558,7 @@ const App = {
 
 ### Session
 
-Session auth gives you the ability to exchange some user provided data for some authentication data; for example, username and password for a session key. It can be used to implement almost any authentication method that uses that pattern - for example, alternative OAuth flows.
+Session auth gives you the ability to exchange some user-provided data for some authentication data; for example, username and password for a session key. It can be used to implement almost any authentication method that uses that pattern - for example, alternative OAuth flows.
 
 > Example App: Check out https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth for a working example app for session auth.
 
@@ -628,7 +628,7 @@ const App = {
 
 ```
 
-For Session auth, the function that fetches the additional authentication data needed to make API calls ( `authentication.sessionConfig.perform`) will have the user-provided fields in `bundle.inputData` instead of `bundle.authData`. Afterwards, `bundle.authData` will contain the data provided by that function (usually the session key or token).
+For Session auth, the function that fetches the additional authentication data needed to make API calls (`authentication.sessionConfig.perform`) has the user-provided fields in `bundle.inputData`. Afterwards, `bundle.authData` contains the data returned by that function (usually the session key or token).
 
 ### OAuth1
 
@@ -748,9 +748,9 @@ module.exports = App;
 
 ```
 
-For OAuth1, `authentication.oauth1Config.getRequestToken`, `authentication.oauth1Config.authorizeUrl`, and `authentication.oauth1Config.getAccessToken` will have fields like `redirect_uri` and the temporary credentials in `bundle.inputData` instead of `bundle.authData`. After `getAccessToken` runs, the resulting token value(s) will be stored in `bundle.authData` for long-term use.
+For OAuth1, `authentication.oauth1Config.getRequestToken`, `authentication.oauth1Config.authorizeUrl`, and `authentication.oauth1Config.getAccessToken` have fields like `redirect_uri` and the temporary credentials in `bundle.inputData`. After `getAccessToken` runs, the resulting token value(s) will be stored in `bundle.authData` for the connection.
 
-Also note that `authentication.oauth1Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
+Also, `authentication.oauth1Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
 
 ### OAuth2
 
@@ -857,9 +857,9 @@ module.exports = App;
 
 ```
 
-For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken` have fields like `redirect_uri` and `state` in `bundle.inputData`, instead of `bundle.authData`. After the code is exchanged for an access token and/or refresh token, those tokens are stored in `bundle.authData` for long-term use.
+For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken` have fields like `redirect_uri` and `state` in `bundle.inputData`. After the code is exchanged for an access token and/or refresh token, those tokens are stored in `bundle.authData` for the connection.
 
-Also note that `authentication.oauth2Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
+Also, `authentication.oauth2Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
 
 
 ## Resources
