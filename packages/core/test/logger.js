@@ -9,6 +9,30 @@ const {
 } = require('../src/http-middlewares/after/middleware-utils');
 
 const { FAKE_LOG_URL, mockLogServer } = require('./tools/mocky');
+const {
+  prepareRequestLog,
+} = require('../src/http-middlewares/after/log-response');
+
+// little helper to prepare a req/res pair like the http logger does
+const prepareTestRequest = (reqBody = {}, resBody = {}) =>
+  prepareRequestLog(
+    {
+      url: 'http://example.com',
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+      },
+      body: JSON.stringify(reqBody),
+    },
+    {
+      status: 200,
+      headers: {
+        'content-type': 'application/json',
+      },
+      // we stringify this in prepare-request.coerceBody
+      content: resBody,
+    }
+  );
 
 describe('logger', () => {
   const options = {
@@ -193,7 +217,8 @@ describe('logger', () => {
         "somethingElse": "notell",
       }`,
       request_url: `https://test.com/?${querystring.stringify({
-        api_key: 'pa$$word',
+        // should be parsed out
+        api_key: 'uniquevalue',
       })}`,
     };
 
@@ -210,52 +235,88 @@ describe('logger', () => {
         "something": ":censored:6:57a71b6062:",
         "somethingElse": ":censored:6:e3b0ee5182:",
       }`,
-          request_url: 'https://test.com/?api_key=:censored:8:89250e9365:',
+          request_url: 'https://test.com/?api_key=:censored:11:94aca9077b:',
         },
       },
     ]);
   });
 
-  it('should replace sensitive data inside response', async () => {
+  it('should replace novel sensitive data', async () => {
+    // this test should, as closely as possible, match what we actually log after an http request from z.request
     const bundle = {
       authData: {
-        refresh_token: 'whatever',
+        refresh_token: 'very_secret',
       },
     };
     const logger = createlogger({ bundle }, options);
 
-    const data = {
-      response_json: {
+    const { message, data } = prepareTestRequest(
+      {
+        // value appears only here; logger needs to parse this out of a string to censor it properly
         access_token: 'super_secret',
-        PASSWORD: 'top_secret',
-        name: 'not so secret',
+        refresh_token: bundle.authData.refresh_token,
       },
-      response_content: `{
-        "access_token": "super_secret",
-        "PASSWORD": "top_secret",
-        "name": "not so secret"
-      }`,
-    };
+      {
+        // same here
+        access_token: 'some new token',
+      }
+    );
 
-    logger('test', data);
+    logger(message, data);
     const response = await logger.end();
     response.status.should.eql(200);
-    response.content.token.should.eql(options.token);
+
     response.content.logs.should.deepEqual([
       {
-        message: 'test',
+        message: '200 POST http://example.com',
         data: {
-          response_json: {
-            access_token: ':censored:12:94a59e640f:',
-            PASSWORD: ':censored:10:0c2fe1350e:',
-            name: 'not so secret',
-          },
-          response_content: `{
-        "access_token": ":censored:12:94a59e640f:",
-        "PASSWORD": ":censored:10:0c2fe1350e:",
-        "name": "not so secret"
-      }`,
-          log_type: 'console',
+          log_type: 'http',
+          request_type: 'devplatform-outbound',
+          request_url: 'http://example.com',
+          request_method: 'POST',
+          request_headers: 'accept: application/json',
+          request_data:
+            '{"access_token":":censored:12:94a59e640f:","refresh_token":":censored:11:abafa91900:"}',
+          request_via_client: true,
+          response_status_code: 200,
+          response_headers: 'content-type: application/json',
+          response_content: '{"access_token":":censored:14:777829d1c1:"}',
+        },
+      },
+    ]);
+  });
+
+  it('should handle missing bits of the request/response', async () => {
+    // this test should, as closely as possible, match what we actually log after an http request from z.request
+    const bundle = {
+      authData: {
+        refresh_token: 'very_secret',
+      },
+    };
+    const logger = createlogger({ bundle }, options);
+
+    const { message, data } = prepareTestRequest({
+      refresh_token: bundle.authData.refresh_token,
+    });
+
+    logger(message, data);
+    const response = await logger.end();
+    response.status.should.eql(200);
+
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 POST http://example.com',
+        data: {
+          log_type: 'http',
+          request_type: 'devplatform-outbound',
+          request_url: 'http://example.com',
+          request_method: 'POST',
+          request_headers: 'accept: application/json',
+          request_data: '{"refresh_token":":censored:11:abafa91900:"}',
+          request_via_client: true,
+          response_status_code: 200,
+          response_headers: 'content-type: application/json',
+          response_content: '{}',
         },
       },
     ]);
@@ -270,7 +331,7 @@ describe('logger', () => {
     const logger = createlogger({ bundle }, options);
 
     const data = {
-      response_json: {
+      whatever: {
         hello: 314159265,
       },
       response_content: `{
@@ -286,7 +347,7 @@ describe('logger', () => {
       {
         message: 'test',
         data: {
-          response_json: {
+          whatever: {
             hello: ':censored:9:0caea7fafe:',
           },
           response_content: `{
@@ -300,7 +361,7 @@ describe('logger', () => {
 
   // this test fails because the function that creates the sensitive bank doesn't
   // recurse to find all sensitive values
-  it('should replace sensitive data that nested', async () => {
+  it('should replace sensitive data that is nested', async () => {
     const bundle = {
       authData: {
         nested: { secret: 8675309 },
@@ -309,7 +370,7 @@ describe('logger', () => {
     const logger = createlogger({ bundle }, options);
 
     const data = {
-      response_json: {
+      whatever: {
         nested: { secret: 8675309 },
       },
       response_content: `{
@@ -325,7 +386,7 @@ describe('logger', () => {
       {
         message: 'test',
         data: {
-          response_json: {
+          whatever: {
             nested: {
               secret: ':censored:7:b69a1db63d:',
             },
@@ -347,7 +408,7 @@ describe('logger', () => {
       },
     };
     const logExtra = {
-      customuser_id: '123456789', // This is a safe log key
+      customuser_id: '123456789', // customuser_id is an explicit safe log key
     };
     const logger = createlogger({ bundle, logExtra }, options);
 

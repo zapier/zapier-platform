@@ -27,7 +27,9 @@ const createInternalRequestClient = (input) => {
   const createInjectInputMiddleware = require('zapier-platform-core/src/http-middlewares/before/inject-input');
   const createRequestClient = require('zapier-platform-core/src/tools/create-request-client');
   const disableSSLCertCheck = require('zapier-platform-core/src/http-middlewares/before/disable-ssl-cert-check');
-  const logResponse = require('zapier-platform-core/src/http-middlewares/after/log-response');
+  const {
+    logResponse,
+  } = require('zapier-platform-core/src/http-middlewares/after/log-response');
   const prepareRequest = require('zapier-platform-core/src/http-middlewares/before/prepare-request');
   const prepareResponse = require('zapier-platform-core/src/http-middlewares/after/prepare-response');
 
