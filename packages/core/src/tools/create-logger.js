@@ -108,6 +108,17 @@ const toStdout = (event, msg, data) => {
   }
 };
 
+// try to parse json; if successful, find secrets in it
+const attemptFindSecretsInStr = (s) => {
+  let parsedRespContent;
+  try {
+    parsedRespContent = JSON.parse(s);
+  } catch {
+    return [];
+  }
+  return findSensitiveValues(parsedRespContent);
+};
+
 const buildSensitiveValues = (event, data) => {
   const bundle = event.bundle || {};
   const authData = bundle.authData || {};
@@ -119,11 +130,24 @@ const buildSensitiveValues = (event, data) => {
     }
     return true;
   });
-  return [
+
+  const result = [
     ...sensitiveAuthData,
     ...findSensitiveValues(process.env),
     ...findSensitiveValues(data),
   ];
+
+  // for our http logs (genrated by prepareRequestLog), make sure that we try to parse the content to find any new strings
+  // (such as what comes back in the response during an auth refresh)
+
+  for (const prop of ['response_content', 'request_data']) {
+    if (data[prop]) {
+      result.push(...attemptFindSecretsInStr(data[prop]));
+    }
+  }
+
+  // unique- no point in duplicates
+  return [...new Set(result)];
 };
 
 class LogStream extends Transform {

@@ -76,4 +76,4 @@ const logResponse = (resp) => {
     .catch(() => resp);
 };
 
-module.exports = logResponse;
+module.exports = { logResponse, prepareRequestLog };

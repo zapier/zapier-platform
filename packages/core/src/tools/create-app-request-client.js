@@ -16,7 +16,7 @@ const oauth1SignRequest = require('../http-middlewares/before/oauth1-sign-reques
 const prepareRequest = require('../http-middlewares/before/prepare-request');
 
 // after middles
-const logResponse = require('../http-middlewares/after/log-response');
+const { logResponse } = require('../http-middlewares/after/log-response');
 const prepareResponse = require('../http-middlewares/after/prepare-response');
 const throwForStaleAuth = require('../http-middlewares/after/throw-for-stale-auth');
 const throwForStatusMiddleware = require('../http-middlewares/after/throw-for-status');
