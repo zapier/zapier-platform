@@ -1,6 +1,6 @@
 // Index of each item is equivalent to the major of zapier-platform-core version.
 
-// node version listed here: https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html
+// node version listed here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
 module.exports = [
   { nodeVersion: '4.3.2', npmVersion: '>=2.14.12' }, // 0.x
   { nodeVersion: '4.3.2', npmVersion: '>=2.14.12' }, // 1.x
@@ -14,4 +14,6 @@ module.exports = [
   { nodeVersion: '10', npmVersion: '>=5.6.0' }, // 9.x; it's no longer a specific version
   { nodeVersion: '12', npmVersion: '>=5.6.0' }, // 10.x
   { nodeVersion: '14', npmVersion: '>=5.6.0' }, // 11.x
+  { nodeVersion: '14', npmVersion: '>=5.6.0' }, // 12.x
+  // { nodeVersion: '16', npmVersion: '>=5.6.0' }, // 13.x
 ];

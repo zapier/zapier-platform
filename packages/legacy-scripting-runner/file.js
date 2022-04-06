@@ -3,7 +3,7 @@
 const urllib = require('url');
 
 const _ = require('lodash');
-const request = require('request');
+const fetch = require('node-fetch');
 
 const markFileFieldsInBundle = (bundle, inputFields) => {
   const fileFieldKeys = inputFields
@@ -94,28 +94,26 @@ const extractFilenameFromUrl = (url) => {
   return '';
 };
 
-const downloadFile = (url) =>
-  new Promise((resolve, reject) => {
-    request({ url, encoding: null }, (err, response, body) => {
-      if (err) {
-        reject(err);
-        return;
-      }
+const downloadFile = async (url) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Got ${response.statusText} when download file: ${url}`);
+  }
 
-      const disposition = response.headers['content-disposition'];
-      const filename = disposition
-        ? extractFilenameFromContentDisposition(disposition)
-        : extractFilenameFromUrl(response.request.uri.href);
-      const contentType =
-        response.headers['content-type'] || 'application/octet-stream';
+  const disposition = response.headers.get('content-disposition');
+  const filename = disposition
+    ? extractFilenameFromContentDisposition(disposition)
+    : extractFilenameFromUrl(response.url);
+  const contentType =
+    response.headers.get('content-type') || 'application/octet-stream';
 
-      const file = {
-        meta: { filename, contentType },
-        content: body,
-      };
-      resolve(file);
-    });
-  });
+  const buffer = await response.buffer();
+
+  return {
+    meta: { filename, contentType },
+    content: buffer,
+  };
+};
 
 const ContentBackedLazyFile = (content, fileMeta) => {
   const meta = async () => {

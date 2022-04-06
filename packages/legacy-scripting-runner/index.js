@@ -27,7 +27,9 @@ const createInternalRequestClient = (input) => {
   const createInjectInputMiddleware = require('zapier-platform-core/src/http-middlewares/before/inject-input');
   const createRequestClient = require('zapier-platform-core/src/tools/create-request-client');
   const disableSSLCertCheck = require('zapier-platform-core/src/http-middlewares/before/disable-ssl-cert-check');
-  const logResponse = require('zapier-platform-core/src/http-middlewares/after/log-response');
+  const {
+    logResponse,
+  } = require('zapier-platform-core/src/http-middlewares/after/log-response');
   const prepareRequest = require('zapier-platform-core/src/http-middlewares/before/prepare-request');
   const prepareResponse = require('zapier-platform-core/src/http-middlewares/after/prepare-response');
 
@@ -103,7 +105,7 @@ const stringifyForFormData = (value) => {
 
 // Makes a multipart/form-data request body that can be set to request.body for
 // node-fetch.
-const makeMultipartBody = async (data, lazyFilesObject) => {
+const makeMultipartForm = async (data, lazyFilesObject) => {
   const form = new FormData();
   if (data) {
     if (_.isPlainObject(data)) {
@@ -165,8 +167,11 @@ const addFilesToRequestBodyFromPreResult = async (request, event) => {
     {}
   );
 
-  request.body = await makeMultipartBody(request.data || '{}', lazyFiles);
   delete request.headers['Content-Type'];
+
+  const form = await makeMultipartForm(request.data || '{}', lazyFiles);
+  request.body = form;
+  request.headers = { ...request.headers, ...form.getHeaders() };
   return request;
 };
 
@@ -184,9 +189,12 @@ const addFilesToRequestBodyFromBody = async (request, bundle) => {
     }
   });
 
-  request.body = await makeMultipartBody(JSON.stringify(data), lazyFiles);
-  request.headers.Accept = '*/*';
   delete request.headers['Content-Type'];
+
+  const form = await makeMultipartForm(JSON.stringify(data), lazyFiles);
+  request.body = form;
+  request.headers.Accept = '*/*';
+  request.headers = { ...request.headers, ...form.getHeaders() };
   return request;
 };
 
@@ -847,6 +855,12 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       request = mergeQueryParams(request);
       if (request.params) {
         request.params = pruneQueryParams(request.params);
+      }
+
+      if (_.get(app, 'legacy.skipEncodingChars')) {
+        // skipEncodingChars is only supported on core ^9.7.2, ^11.3.2 and >=12.x.
+        // core versions that don't support it will just ignore it.
+        request.skipEncodingChars = app.legacy.skipEncodingChars;
       }
 
       const response = await zcli.request(request);

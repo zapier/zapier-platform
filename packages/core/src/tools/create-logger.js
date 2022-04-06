@@ -108,6 +108,17 @@ const toStdout = (event, msg, data) => {
   }
 };
 
+// try to parse json; if successful, find secrets in it
+const attemptFindSecretsInStr = (s) => {
+  let parsedRespContent;
+  try {
+    parsedRespContent = JSON.parse(s);
+  } catch {
+    return [];
+  }
+  return findSensitiveValues(parsedRespContent);
+};
+
 const buildSensitiveValues = (event, data) => {
   const bundle = event.bundle || {};
   const authData = bundle.authData || {};
@@ -119,11 +130,24 @@ const buildSensitiveValues = (event, data) => {
     }
     return true;
   });
-  return [
+
+  const result = [
     ...sensitiveAuthData,
     ...findSensitiveValues(process.env),
     ...findSensitiveValues(data),
   ];
+
+  // for our http logs (genrated by prepareRequestLog), make sure that we try to parse the content to find any new strings
+  // (such as what comes back in the response during an auth refresh)
+
+  for (const prop of ['response_content', 'request_data']) {
+    if (data[prop]) {
+      result.push(...attemptFindSecretsInStr(data[prop]));
+    }
+  }
+
+  // unique- no point in duplicates
+  return [...new Set(result)];
 };
 
 class LogStream extends Transform {
@@ -167,6 +191,7 @@ class LogStream extends Transform {
 class LogStreamFactory {
   constructor() {
     this._logStream = null;
+    this.ended = false;
   }
 
   getOrCreate(url, token) {
@@ -185,6 +210,10 @@ class LogStreamFactory {
   }
 
   async end() {
+    // Mark the factory as ended. This suggests that any logStream.write() that
+    // follows should end() right away.
+    this.ended = true;
+
     if (this._logStream) {
       this._logStream.end();
       const response = await this._logStream.request;
@@ -240,6 +269,14 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
       // no line breaks, and after an object it ends with a line break.
       JSON.stringify({ message: safeMessage, data: safeData }) + '\n'
     );
+
+    if (logStreamFactory.ended) {
+      // Lambda handler calls logger.end() at the end. But what if there's a
+      // (bad) callback that is still running after the Lambda handler returns?
+      // We need to make sure the bad callback ends the logger as well.
+      // Otherwise, it will hang!
+      logStreamFactory.end();
+    }
   }
 };
 

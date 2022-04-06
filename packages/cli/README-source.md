@@ -1072,7 +1072,7 @@ This features:
 
 In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.
 
-An error will be raised if the response is not valid JSON, so _do not use shorthand HTTP requests with non-JSON responses_.
+An error will be raised if the response cannot be parsed as JSON or form-encoded. To use shorthand requests with other response types, add [middleware](#using-http-middleware) that sets `response.data` to the parsed response.
 
 ### Manual HTTP Requests
 
@@ -1112,11 +1112,67 @@ Middleware functions can be asynchronous - just return a promise from the middle
 
 The second argument for middleware is the `z` object, but it does *not* include `z.request()` as using that would easily create infinite loops.
 
+Here is the full request lifecycle when you call `z.request({...})`:
+
+1. set defaults on the `request` object
+2. run your `beforeRequest` middleware functions in order
+3. add applicable auth headers (e.g. adding `Basic ...` for `basic` auth), if applicable
+4. add `request.params` to `request.url`
+5. execute the `request`, store the result in `response`
+6. try to auto-parse response body for non-raw requests, store result in `response.data`
+7. log the request to Zapier's logging server
+8. if the status code is `401`, you're using a refresh-able auth (such as `oauth2` or `session`) _and_ `autoRefresh` is `true` in your auth configuration, throw a `RefreshAuthError`. The server will attempt to refresh the authentication again and retry the whole step
+9. run your `afterResponse` middleware functions in order
+10. call `response.throwForStatus()` unless `response.skipThrowForStatus` is `true`
+
+The resulting response object is returned from `z.request()`.
+
 #### Error Response Handling
 
-Since v10, we call `response.throwForStatus()` before we return a response. You can prevent this by setting `skipThrowForStatus` on the request or response object. You can do this in `afterResponse` middleware if the API uses a status code >= 400 that should not be treated as an error.
+Since `v10.0.0`, `z.request()` calls `response.throwForStatus()` before it returns a response. You can disable automatic error throwing by setting `skipThrowForStatus` on the request object:
+
+```js
+// Disable automatic error throwing on the request object
+const perform = async (z, bundle) => {
+  const response = await z.request({
+    url: '...',
+    skipThrowForStatus: true
+  });
+  // Now you handle error response on your own.
+  // The following is equivalent to response.throwForStatus(), 
+  // but you have to remember to do it on every request
+  if (response.status >= 400) {
+    throw new z.errors.ResponseError(response);
+  }
+};
+```
+
+You can also do it in `afterResponse` if the API uses a status code >= 400 that should not be treated as an error.
+
+```js
+// Don't throw an error when response status is 456
+const disableAutoThrowOn456 = (response, z) => {
+  if (response.status === 456) {
+    response.skipThrowForStatus = true;
+  }
+  return response;
+};
+const App = {
+  // ...
+  afterResponse: [disableAutoThrowOn456],
+  // ...
+};
+```
 
 For developers using v9.x and below, it's your responsibility to throw an exception for an error response. That means you should call `response.throwForStatus()` or throw an error yourself, likely following the `z.request` call.
+
+This behavior has changed periodically across major versions, which changes how/when you have to worry about handling errors. Here's a diagram to illustrate that:
+
+<!-- diagram source: https://excalidraw.com/#json=stm4O1SLW3ko4FCX9rvsI,6NgRCAK81Cc8M3MuXhNDNA -->
+
+![](https://cdn.zappy.app/e835d9beca1b6489a065d51a381613f3.png)
+
+Ensure you're handling errors correctly for your platform version. The latest released version is **PACKAGE_VERSION**.
 
 ### HTTP Request Options
 
@@ -1166,15 +1222,17 @@ The response object returned by `z.request([url], options)` supports the followi
 
 * `status`: The response status code, i.e. `200`, `404`, etc.
 * `content`: The response content as a String. For Buffer, try `options.raw = true`.
-* `data` (_new in v10.0.0_): The response content as an object if the content is JSON or ` application/x-www-form-urlencoded` (`undefined` otherwise).
-* `json`: The response content as an object if the content is JSON (`undefined` otherwise). Deprecated since v10.0.0: Use `data` instead.
-* `json()`: Get the response content as an object, if `options.raw = true` and content is JSON (returns a promise).
-* `body`: A stream available only if you provide `options.raw = true`.
+* `data` (_new in v10.0.0_): The response content as an object if the content is JSON or `application/x-www-form-urlencoded` (`undefined` otherwise).
 * `headers`: Response headers object. The header keys are all lower case.
 * `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
 * `skipThrowForStatus` (_new in v10.0.0_): don't call `throwForStatus()` before resolving the request with this response.
-* `throwForStatus()`: Throw error if 400 <= `status` < 600.
+* `throwForStatus()`: Throws an error if `400 <= statusCode < 600`.
 * `request`: The original request options object (see above).
+
+Additionally, if `request.raw` is `true`, the raw response has the following properties:
+
+* `json()`: Get the response content as an object, if `options.raw = true` and content is JSON (returns a promise). `undefined` in non-raw requests.
+* `body`: A stream available only if you provide `options.raw = true`.
 
 ```js
 const response = await z.request({
@@ -1208,7 +1266,6 @@ if (options.raw === false) { // (default)
   response.body.pipe(otherStream);
 }
 ```
-
 
 ## Dehydration
 
@@ -1435,62 +1492,14 @@ credentials. (The runs will be
 [Held](https://zapier.com/help/manage/history/view-and-manage-your-zap-history#holding),
 and the user will be able to replay them after reconnecting.)
 
-Example: `throw new z.errors.ExpiredAuthError('Your message.');`
+Example: `throw new z.errors.ExpiredAuthError('You must manually reconnect this auth.');`
 
-For apps that use OAuth2 with `autoRefresh: true` or Session Auth, the core injects
+For apps that use OAuth2 with `autoRefresh: true` or Session Auth, `core` injects
 a built-in `afterResponse` middleware that throws an error when the response status
 is 401. The error will signal Zapier to refresh the credentials and then retry the
-failed operation. For some cases, e.g, your server doesn't use the 401 status
-for auth refresh, you may have to throw the `RefreshAuthError` on your own,
-which will also signal Zapier to refresh the credentials.
+failed operation. You can also throw this error manually if your server doesn't use the 401 status or you want to trigger an auth refresh even if the credentials aren't stale.
 
 Example: `throw new z.errors.RefreshAuthError();`
-
-#### v10 Breaking Change: Auth Refresh
-
-A breaking change on v10+ is that the built-in `afterResponse` middleware that
-handles auth refresh is changed to happen AFTER your app's `afterResponse`. On
-v9 and older, it happens before your app's `afterResponse`. So it will break if
-your `afterReponse` does something like:
-
-```js
-// Auth refresh will stop working on v10 this way!
-const yourAfterResponse = (resp) => {
-  if (resp.status !== 200) {
-    throw new Error('hi');
-  }
-  return resp;
-};
-```
-
-This is because on v10 the `throw new Error('hi')` line will take precedence
-over the built-in middleware that does auth refresh. One way to fix is to let
-the 401 response fall back to the built-in middleware that does the auth
-refresh:
-
-```js
-const yourAfterResponse = (resp) => {
-  if (resp.status !== 200 && resp.status !== 401) {
-    throw new Error('hi');
-  }
-  return resp;
-};
-```
-
-Another way to fix is to handle the 401 response yourself by throwing a
-`RefreshAuthError`:
-
-```js
-const yourAfterResponse = (resp) => {
-  if (resp.status === 401) {
-    throw new z.errors.RefreshAuthError();
-  }
-  if (resp.status !== 200) {
-    throw new Error('hi');
-  }
-  return resp;
-};
-```
 
 ### Handling Throttled Requests
 

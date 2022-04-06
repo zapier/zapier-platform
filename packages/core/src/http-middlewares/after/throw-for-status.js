@@ -1,17 +1,10 @@
 'use strict';
 
-const errors = require('../../errors');
-
-const throwForStatus = (response) => {
-  if (
-    !response.skipThrowForStatus &&
-    response.status >= 400 &&
-    response.status < 600
-  ) {
-    throw new errors.ResponseError(response);
+const throwForStatusMiddleware = (response) => {
+  if (!response.skipThrowForStatus) {
+    response.throwForStatus();
   }
-
   return response;
 };
 
-module.exports = throwForStatus;
+module.exports = throwForStatusMiddleware;

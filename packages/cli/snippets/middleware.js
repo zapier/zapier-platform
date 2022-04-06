@@ -4,7 +4,15 @@ const addHeader = (request, z, bundle) => {
 };
 
 // This example only works on core v10+!
-const handleErrors = (response, z) => {
+const parseXML = (response, z, bundle) => {
+  // Parse content that is not JSON
+  // eslint-disable-next-line no-undef
+  response.data = xml.parse(response.content);
+  return response;
+};
+
+// This example only works on core v10+!
+const handleWeirdErrors = (response, z) => {
   // Prevent `throwForStatus` from throwing for a certain status.
   if (response.status === 456) {
     response.skipThrowForStatus = true;
@@ -14,17 +22,9 @@ const handleErrors = (response, z) => {
   return response;
 };
 
-// This example only works on core v10+!
-const parseXML = (response, z, bundle) => {
-  // Parse content that is not JSON
-  // eslint-disable-next-line no-undef
-  response.data = xml.parse(response.content);
-  return response;
-};
-
 const App = {
   // ...
   beforeRequest: [addHeader],
-  afterResponse: [parseXML, handleErrors],
+  afterResponse: [parseXML, handleWeirdErrors],
   // ...
 };

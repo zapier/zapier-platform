@@ -12,6 +12,7 @@ const createInput = require('../src/tools/create-input');
 const request = require('../src/tools/request-client');
 
 const prepareRequest = require('../src/http-middlewares/before/prepare-request');
+const addQueryParams = require('../src/http-middlewares/before/add-query-params');
 const addBasicAuthHeader = require('../src/http-middlewares/before/add-basic-auth-header');
 const addDigestAuthHeader = require('../src/http-middlewares/before/add-digest-auth-header');
 const prepareResponse = require('../src/http-middlewares/after/prepare-response');
@@ -292,6 +293,108 @@ describe('http prepareRequest', () => {
       'user-agent': 'Zapier',
     });
   });
+
+  it('should not skipThrowForStatus by default', () => {
+    const request = prepareRequest({
+      url: 'https://example.com',
+      input: {
+        _zapier: {
+          app: {
+            version: '1.0.0',
+          },
+        },
+      },
+    });
+    should(request.skipThrowForStatus).eql(false);
+  });
+
+  it('should defer to the request for skipping throw', () => {
+    const request = prepareRequest({
+      url: 'https://example.com',
+      skipThrowForStatus: false,
+      input: {
+        _zapier: {
+          app: {
+            version: '1.0.0',
+            flags: {
+              skipThrowForStatus: true,
+            },
+          },
+        },
+      },
+    });
+    should(request.skipThrowForStatus).eql(false);
+  });
+
+  it('should read shouldSkip from the app if available', () => {
+    const request = prepareRequest({
+      url: 'https://example.com',
+      input: {
+        _zapier: {
+          app: {
+            version: '1.0.0',
+            flags: {
+              skipThrowForStatus: true,
+            },
+          },
+        },
+      },
+    });
+    should(request.skipThrowForStatus).eql(true);
+  });
+});
+
+describe('http querystring before middleware', () => {
+  it('should encode dollars by default', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: 'qwer$$qwer' },
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=qwer%24%24qwer');
+  });
+
+  it('should skip encoding dollars', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: 'qwer$$qwer' },
+      skipEncodingChars: '$',
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=qwer$$qwer');
+  });
+
+  it('should not replace existing characters in url', () => {
+    const req = {
+      url: 'https://example.com?name=asdf%24%24asdf',
+      params: { cool: 'qwer$$qwer' },
+      skipEncodingChars: '$',
+    };
+    addQueryParams(req);
+    should(req.url).eql(
+      'https://example.com?name=asdf%24%24asdf&cool=qwer$$qwer'
+    );
+  });
+
+  it('should no-op on non-encodable characters', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: 'qwer$$qwer' },
+      skipEncodingChars: 'q',
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=qwer%24%24qwer');
+  });
+
+  it('should skip encoding multiple chars', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: '烏龜@$å' },
+      skipEncodingChars: '$å龜',
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=%E7%83%8F龜%40$å');
+  });
 });
 
 describe('http addBasicAuthHeader before middelware', () => {
@@ -564,6 +667,7 @@ describe('http prepareResponse', () => {
     should(response.getHeader(), 'application/json');
     should(response.throwForStatus).be.a.Function();
   });
+
   it('should set the expected properties when raw:true', async () => {
     const request = prepareRequest({
       raw: true,
@@ -605,6 +709,7 @@ describe('http prepareResponse', () => {
     should(response.getHeader(), 'application/json');
     should(response.throwForStatus).be.a.Function();
   });
+
   it('should default to parsing response.content as JSON', async () => {
     const request = prepareRequest({
       raw: false,
@@ -638,6 +743,7 @@ describe('http prepareResponse', () => {
     should(response.json).match(data); // DEPRECATED
     should(response.getHeader(), 'something/else');
   });
+
   it('should be able to parse response.content when application/x-www-form-urlencoded', async () => {
     const request = prepareRequest({
       raw: false,

@@ -6,6 +6,10 @@ const createHttpPatch = (event) => {
   const httpPatch = (object, logger) => {
     const originalRequest = object.request;
 
+    // Important not to reuse logger between calls, because we always destroy
+    // the logger at the end of a Lambda call.
+    object.zapierLogger = logger;
+
     // Avoids multiple patching and memory leaks (mostly when running tests locally)
     if (object.patchedByZapier) {
       return;
@@ -65,7 +69,7 @@ const createHttpPatch = (event) => {
             response_content: responseBody,
           };
 
-          logger(
+          object.zapierLogger(
             `${logData.response_status_code} ${logData.request_method} ${logData.request_url}`,
             logData
           );

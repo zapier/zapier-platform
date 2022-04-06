@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-legacy-scripting-runner",
-  "version": "3.8.5",
+  "version": "3.8.7",
   "description": "Zapier's Legacy Scripting Runner, used by Web Builder apps converted to CLI.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -24,13 +24,14 @@
   },
   "dependencies": {
     "async": "2.6.1",
-    "deasync": "0.1.21",
     "flat": "4.1.0",
     "jquery": "2.1.4",
     "jsdom": "7.0.0",
     "lodash": "4.17.21",
     "moment-timezone": "0.5.28",
+    "node-fetch": "2.6.7",
     "request": "2.88.2",
+    "synckit": "0.6.0",
     "underscore": "1.4.4",
     "xmldom": "0.3.0"
   },

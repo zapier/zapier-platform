@@ -64,6 +64,11 @@ const recurseReplaceBank = (obj, bank = {}) => {
 
     Object.keys(bank).forEach((key) => {
       const matchesKey = matchesKeyRegexMap[key];
+      // RegExp.test modifies internal state of the regex object
+      // since we're re-using regexes, we have to reset that state between calls
+      // or the second time in a row that the key should match, it misses instead
+      // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex
+      matchesKey.lastIndex = 0;
       if (!matchesKey.test(maybeChangedString)) {
         return;
       }
