@@ -301,9 +301,9 @@ zapier convert 1234 --version 1.0.1 my-app
 
 ## Authentication
 
-Most applications require some sort of authentication - and Zapier provides a handful of methods for helping your users authenticate with your application. Zapier will provide some of the core behaviors, but you'll likely need to handle the rest.
+Most applications require some sort of authentication. The Zapier platform provides core behaviors for several common authentication methods that might be used with your application, as well as the ability to customize authentication further.
 
-> Hint: You can access the data tied to your authentication via the `bundle.authData` property in any method called in your app. Exceptions exist in OAuth and Session auth. Please see them below.
+When a user authenticates to your application through Zapier, a "connection" is created representing their authentication details. Data tied to a specific authentication connection is included in the [bundle object](#bundle-object) under `bundle.authData`.
 
 ### Basic
 
@@ -321,11 +321,11 @@ If your app uses Basic auth with an encoded API key rather than a username and p
 
 *New in v7.4.0.*
 
-The setup and user experience of Digest Auth is identical to Basic Auth. Users will provide Zapier their username and password and Zapier will handle all the nonce and quality of protection details automatically.
+The setup and user experience of Digest Auth is identical to Basic Auth. Users provide Zapier their username and password, and Zapier handles all the nonce and quality of protection details automatically.
 
 > Example App: Check out https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth for a working example app for digest auth.
 
-> Limitation: Currently, MD5-sess and SHA are not implemented. Only the MD5 algorithm is supported. In addition, server nonces are not reused. That means for every `z.request` call, Zapier will sends an additional request beforehand to get the server nonce.
+> Limitation: Currently, MD5-sess and SHA are not implemented. Only the MD5 algorithm is supported. In addition, server nonces are not reused. That means for every `z.request` call, Zapier will send an additional request beforehand to get the server nonce.
 
 ```js
 [insert-file:./snippets/digest-auth.js]
@@ -333,7 +333,7 @@ The setup and user experience of Digest Auth is identical to Basic Auth. Users w
 
 ### Custom
 
-This is what most "API Key" driven apps should default to using. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` to complete the authentication by adding/computing needed headers.
+Custom auth is most commonly used for apps that authenticate with API keys, although it also provides flexibility for any unusual authentication setup. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` (see [Making HTTP Requests](#making-http-requests)) to pass in data returned from the authentication process, most commonly by adding/computing needed headers.
 
 > Example App: Check out https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth for a working example app for custom auth.
 
@@ -343,7 +343,7 @@ This is what most "API Key" driven apps should default to using. You'll likely p
 
 ### Session
 
-Probably the most "powerful" mechanism for authentication - it gives you the ability to exchange some user provided data for some authentication data (IE: username & password for a session key).
+Session auth gives you the ability to exchange some user-provided data for some authentication data; for example, username and password for a session key. It can be used to implement almost any authentication method that uses that pattern - for example, alternative OAuth flows.
 
 > Example App: Check out https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth for a working example app for session auth.
 
@@ -351,13 +351,13 @@ Probably the most "powerful" mechanism for authentication - it gives you the abi
 [insert-file:./snippets/session-auth.js]
 ```
 
-> Note: For Session auth, `authentication.sessionConfig.perform` will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty the first time the Zap runs.
+For Session auth, the function that fetches the additional authentication data needed to make API calls (`authentication.sessionConfig.perform`) has the user-provided fields in `bundle.inputData`. Afterwards, `bundle.authData` contains the data returned by that function (usually the session key or token).
 
 ### OAuth1
 
 *New in `v7.5.0`.*
 
-Zapier's OAuth1 implementation matches [Twitter's](https://developer.twitter.com/en/docs/basics/authentication/overview) and [Trello's](https://developers.trello.com/page/authorization) implementation of the 3-legged OAuth flow.
+Zapier's OAuth1 implementation matches [Twitter](https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a) and [Trello](https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth) implementations of the 3-legged OAuth flow.
 
 > Example Apps: Check out [oauth1-trello](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-trello), [oauth1-tumblr](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-twitter) for working example apps with OAuth1.
 
@@ -392,7 +392,9 @@ Your auth definition would look something like this:
 [insert-file:./snippets/oauth1.js]
 ```
 
-> Note: For OAuth1, `authentication.oauth1Config.getRequestToken`, `authentication.oauth1Config.authorizeUrl`, and `authentication.oauth1Config.getAccessToken` will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty when the user hasn't connected their account on your service to Zapier. Also note that `authentication.oauth1Config.getAccessToken` has access to the users return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example from the query string).
+For OAuth1, `authentication.oauth1Config.getRequestToken`, `authentication.oauth1Config.authorizeUrl`, and `authentication.oauth1Config.getAccessToken` have fields like `redirect_uri` and the temporary credentials in `bundle.inputData`. After `getAccessToken` runs, the resulting token value(s) will be stored in `bundle.authData` for the connection.
+
+Also, `authentication.oauth1Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
 
 ### OAuth2
 
@@ -415,7 +417,7 @@ You are required to define:
   * `authorizeUrl`: The authorization URL
   * `getAccessToken`: The API call to fetch the access token
 
-If the access token has a limited life and you want to refresh the token when it expires, you'll also need to define the API call to perform that refresh. You can choose to set `autoRefresh: true`, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See [Stale Authentication Credentials](#stale-authentication-credentials) for more details on handling auth refresh.
+If the access token has a limited life and you want to refresh the token when it expires, you'll also need to define the API call to perform that refresh (`refreshAccessToken`). You can choose to set `autoRefresh: true`, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See [Stale Authentication Credentials](#stale-authentication-credentials) for more details on handling auth refresh.
 
 You'll also likely want to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables:
 
@@ -434,7 +436,9 @@ Your auth definition would look something like this:
 [insert-file:./snippets/oauth2.js]
 ```
 
-> Note: For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken`  will have the provided fields in `bundle.inputData` instead of `bundle.authData` because `bundle.authData` will only have "previously existing" values, which will be empty when the user hasn't connected their account on your service to Zapier. Also note that `authentication.oauth2Config.getAccessToken` has access to the users return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example from the query string).
+For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken` have fields like `redirect_uri` and `state` in `bundle.inputData`. After the code is exchanged for an access token and/or refresh token, those tokens are stored in `bundle.authData` for the connection.
+
+Also, `authentication.oauth2Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
 
 
 ## Resources
@@ -1046,7 +1050,7 @@ There are two primary ways to make HTTP requests in the Zapier platform:
 
 There are also a few helper constructs you can use to reduce boilerplate:
 
-1. `requestTemplate` which is an shorthand HTTP request that will be merged with every request.
+1. `requestTemplate` which is a shorthand HTTP request that will be merged with every request.
 2. `beforeRequest` middleware which is an array of functions to mutate a request before it is sent.
 3. `afterResponse` middleware which is an array of functions to mutate a response before it is completed.
 
@@ -1054,7 +1058,7 @@ There are also a few helper constructs you can use to reduce boilerplate:
 
 ### Shorthand HTTP Requests
 
-For simple HTTP requests that do not require special pre or post processing, you can specify the HTTP options as an object literal in your app definition.
+For simple HTTP requests that do not require special pre- or post-processing, you can specify the HTTP options as an object literal in your app definition.
 
 This features:
 
