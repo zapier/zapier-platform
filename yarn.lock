@@ -1590,9 +1590,9 @@
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
 "@zapier/secret-scrubber@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@zapier/secret-scrubber/-/secret-scrubber-1.0.3.tgz#7b272ec82afdfe501d69d1c6dc046c13597137b1"
-  integrity sha512-RmQ3c8gh0LMsWWPDyDytn0r4xQJPhfijtd3KP07g7cUuNGLjzYDiuvZU6H21XsGSdcKu90ntcuKq1lifVH2UDg==
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@zapier/secret-scrubber/-/secret-scrubber-1.0.6.tgz#d10fa24c3bea1cbf307997337af4d6bc353230fa"
+  integrity sha512-oaqIMiQ9U0UUd+24UXsx1a+xKmmP5q6SzqwOWpZ51lCS9McvsdEmwCAC6oLf7Q2PApER6At1kbKp1RQ9M5oXTQ==
   dependencies:
     lodash.isplainobject "^4.0.6"
 

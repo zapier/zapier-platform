@@ -1,6 +1,7 @@
 'use strict';
 
 const { Transform } = require('stream');
+const { parse: querystringParse } = require('querystring');
 
 const _ = require('lodash');
 
@@ -18,7 +19,10 @@ const {
   recurseExtract,
 } = require('@zapier/secret-scrubber');
 // not really a public function, but it came from here originally
-const { isUrlWithSecrets } = require('@zapier/secret-scrubber/lib/convenience');
+const {
+  isUrlWithSecrets,
+  isSensitiveKey,
+} = require('@zapier/secret-scrubber/lib/convenience');
 
 // The payload size per request to stream logs. This should be slighly lower
 // than the limit (16 MB) on the server side.
@@ -124,7 +128,13 @@ const buildSensitiveValues = (event, data) => {
   const authData = bundle.authData || {};
   // for the most part, we should censor all the values from authData
   // the exception is safe urls, which should be filtered out - we want those to be logged
+  // but, we _should_ censor-no-matter-what sensitive keys, even if their value is a safe url
+  // this covers the case where someone's password is a valid url ¯\_(ツ)_/¯
   const sensitiveAuthData = recurseExtract(authData, (key, value) => {
+    if (isSensitiveKey(key)) {
+      return true;
+    }
+
     if (isUrl(value) && !isUrlWithSecrets(value)) {
       return false;
     }
@@ -145,7 +155,9 @@ const buildSensitiveValues = (event, data) => {
       result.push(...attemptFindSecretsInStr(data[prop]));
     }
   }
-
+  if (data.request_params) {
+    result.push(...findSensitiveValues(querystringParse(data.request_params)));
+  }
   // unique- no point in duplicates
   return [...new Set(result)];
 };
