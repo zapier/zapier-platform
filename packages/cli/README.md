@@ -2673,14 +2673,14 @@ const yourAfterResponse = (resp) => {
 
 ## Testing
 
-You can write unit tests for your Zapier app that run locally, outside of the Zapier editor.
+You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.
 You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
 
 ### Writing Unit Tests
 
-Since v10, we recommend using the [Jest](https://jestjs.io/) testing framework. After running `zapier init` you should find an example test to start from in the `test` directory.
+From v10 of `zapier-platform-cli`, we recommend using the [Jest](https://jestjs.io/) testing framework. After running `zapier init` you should find an example test to start from in the `test` directory.
 
-> Note: On v9, the recommendation was [Mocha](https://mochajs.org/). You can still use it if you prefer Mocha.
+> Note: On v9, the recommendation was [Mocha](https://mochajs.org/). You can still use Mocha if you prefer.
 
 ```js
 /* globals describe, expect, test */
@@ -2697,7 +2697,7 @@ const appTester = zapier.createAppTester(App);
 zapier.tools.env.inject();
 
 describe('triggers', () => {
-  test('load recipes', async () => {
+  test('new recipe', async () => {
     const bundle = {
       inputData: {
         style: 'mediterranean',
@@ -2705,7 +2705,7 @@ describe('triggers', () => {
     };
 
     const results = await appTester(
-      App.triggers.species.operation.perform,
+      App.triggers.recipe.operation.perform,
       bundle
     );
     expect(results.length).toBeGreaterThan(1);
@@ -2731,8 +2731,8 @@ const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
-  test('load recipes', async () => {
-    const adHodResult = await appTester(
+  test('new recipe', async () => {
+    const adHocResult = await appTester(
       // your in-line function takes the same [z, bundle] arguments as normal
       async (z, bundle) => {
         // requests are made using your integration's actual middleware
@@ -2763,8 +2763,8 @@ describe('triggers', () => {
       }
     );
 
-    expect(adHodResult.someHash).toEqual('a5beb6624e092adf7be31176c3079e64');
-    expect(adHodResult.data).toEqual({ whatever: true });
+    expect(adHocResult.someHash).toEqual('a5beb6624e092adf7be31176c3079e64');
+    expect(adHocResult.data).toEqual({ whatever: true });
 
     // ... rest of test
   });
@@ -2774,7 +2774,7 @@ describe('triggers', () => {
 
 ### Mocking Requests
 
-While testing, it's useful to test your code without actually hitting any external services. [Nock](https://github.com/node-nock/nock) is a node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with `z.request` by setting up your `nock` before calling `appTester`.
+It's useful to test your code without actually hitting any external services. [Nock](https://github.com/node-nock/nock) is a Node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with `z.request` by setting up your `nock` before calling `appTester`.
 
 ```js
 /* globals describe, expect, test */
@@ -2787,7 +2787,7 @@ const appTester = zapier.createAppTester(App);
 const nock = require('nock');
 
 describe('triggers', () => {
-  test('load recipes', async () => {
+  test('new recipe', async () => {
     const bundle = {
       inputData: {
         style: 'mediterranean',
@@ -2818,7 +2818,7 @@ describe('triggers', () => {
 
 ```
 
-There's more info about nock and its usage in its [readme](https://github.com/node-nock/nock/blob/master/README.md).
+Here's more info about nock and its usage in the [README](https://github.com/node-nock/nock/blob/master/README.md).
 
 ### Running Unit Tests
 
@@ -2861,11 +2861,11 @@ zapier test
 
 ### Testing in Your CI
 
-Whether you use Travis, Circle, Jenkins, or anything else, we aim to make it painless to test in an automated environment.
+Whether you use Travis, Circle, Jenkins, or another service, we aim to make it painless to test in an automated environment.
 
-Behind the scenes `zapier test` is doing a pretty standard `npm test`, which could be [Jest](https://jestjs.io/) or [Mocha](https://mochajs.org/), based on your project setup.
+Behind the scenes `zapier test` does a standard `npm test`, which could be [Jest](https://jestjs.io/) or [Mocha](https://mochajs.org/), based on your project setup.
 
-This makes it pretty straightforward to integrate into your testing interface. If you'd like to test with [Travis CI](https://travis-ci.com/) for example - the `.travis.yml` would look something like this:
+This makes it straightforward to integrate into your testing interface. For example, if want to test with [Travis CI](https://travis-ci.com/), the `.travis.yml` would look something like this:
 
 ```yaml
 language: node_js
@@ -2875,13 +2875,13 @@ before_script: npm install -g zapier-platform-cli
 script: CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
 
-You can substitute `zapier test` with `npm test`, or a direct call to `node_modules/.bin/jest`. Also, we generally recommend putting the environment variables into whatever configuration screen Jenkins or Travis provides!
+You can substitute `zapier test` with `npm test`, or a direct call to `node_modules/.bin/jest`. We recommend putting environment variables directly into the configuration screens Jenkins, Travis, or other services provide.
 
-As an alternative to reading the deploy key from root (the default location), you may set the `ZAPIER_DEPLOY_KEY` environment variable to run privileged commands without the human input needed for `zapier login`. We suggest encrypting your deploy key in whatever manner you CI provides (such as [these instructions](https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml), for Travis).
+Alternatively to reading the deploy key from root (the default location), you may set the `ZAPIER_DEPLOY_KEY` environment variable to run privileged commands without the human input needed for `zapier login`. We suggest encrypting your deploy key in whatever manner your CI provides (such as [these instructions](https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml), for Travis).
 
 ### Debugging Tests
 
-Sometimes tests aren't enough and you may want to step through your code and set breakpoints. The testing suite is a regular Node.js process, so debugging it doesn't take anything special. Because we recommend `jest` for testing, these instructions will outline steps for debugging w/ jest, but other test runners will work similarly. You can also refer to [Jest's own docs on the subject](https://jestjs.io/docs/en/troubleshooting#tests-are-failing-and-you-dont-know-why).
+Sometimes tests aren't enough, and you may want to step through your code and set breakpoints. The testing suite is a regular Node.js process, so debugging it doesn't take anything special. Because we recommend `jest` for testing, these instructions will outline steps for debugging w/ jest, but other test runners will work similarly. You can also refer to [Jest's own docs on the subject](https://jestjs.io/docs/en/troubleshooting#tests-are-failing-and-you-dont-know-why).
 
 To start, add the following line to the `scripts` section of your `package.json`:
 
@@ -2932,7 +2932,7 @@ After a few seconds, you'll see your code, the `debugger` statement, and info ab
 
 ![](https://cdn.zappy.app/4bfdfe079a344ab7aced64ad7728bc6a.png)
 
-Using debugging in combination with thorough unit tests, you will hopefully be able to keep your Zapier integration in smooth working order.
+Debugging combined with thorough unit tests will hopefully equip you in keeping your Zapier integration in smooth working order.
 
 ## Using `npm` Modules
 
