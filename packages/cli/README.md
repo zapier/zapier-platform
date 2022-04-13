@@ -1040,7 +1040,7 @@ On each trigger, search, or create in the `operation` directive - you can provid
 
 ![gif of setting up an action field in Zap Editor](https://cdn.zapier.com/storage/photos/6bd938f7cad7e34c75ba1c1d3be75ac5.gif)
 
-You can find more details about setting action fields from a user perspective in [our help documentation](https://zapier.com/help/creating-zap/#set-up-action-template).
+You can find more details about setting action fields from a user perspective in [our help documentation](https://zapier.com/help/create/basics/set-up-your-zap-action#set-up-your-action).
 
 Those fields have various options you can provide, here is a succinct example:
 
