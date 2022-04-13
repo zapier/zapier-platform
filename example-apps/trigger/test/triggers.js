@@ -3,46 +3,44 @@
 require('should');
 
 const zapier = require('zapier-platform-core');
-
 const App = require('../index');
+
 const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
   describe('new recipe trigger', () => {
-    it('should load recipes', done => {
+    it('should load recipes', async () => {
       const bundle = {
         inputData: {
-          style: 'style 2'
-        }
+          style: 'style 2',
+        },
       };
 
-      appTester(App.triggers.recipe.operation.perform, bundle)
-        .then(results => {
-          results.length.should.above(0);
+      const results = await appTester(
+        App.triggers.recipe.operation.perform,
+        bundle
+      );
 
-          const firstRecipe = results[0];
-          firstRecipe.name.should.eql('name 2');
-          firstRecipe.directions.should.eql('directions 2');
+      results.length.should.above(0);
 
-          done();
-        })
-        .catch(done);
+      const firstRecipe = results[0];
+      firstRecipe.name.should.eql('name 2');
+      firstRecipe.directions.should.eql('directions 2');
     });
 
-    it('should load recipes without filters', done => {
+    it('should load recipes without filters', async () => {
       const bundle = {};
 
-      appTester(App.triggers.recipe.operation.perform, bundle)
-        .then(results => {
-          results.length.should.above(1);
+      const results = await appTester(
+        App.triggers.recipe.operation.perform,
+        bundle
+      );
 
-          const firstRecipe = results[0];
-          firstRecipe.name.should.eql('name 1');
-          firstRecipe.directions.should.eql('directions 1');
+      results.length.should.above(1);
 
-          done();
-        })
-        .catch(done);
+      const firstRecipe = results[0];
+      firstRecipe.name.should.eql('name 1');
+      firstRecipe.directions.should.eql('directions 1');
     });
   });
 });
