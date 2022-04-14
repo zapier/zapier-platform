@@ -31,7 +31,6 @@ This doc describes the latest CLI version (**PACKAGE_VERSION**), as of this writ
 <!-- toc -->
 <!-- tocstop -->
 
-
 ## Getting Started
 
 > If you're new to Zapier Platform CLI, we strongly recommend you to walk through the [Tutorial](https://zapier.com/developer/start) for a more thorough introduction.
@@ -47,12 +46,12 @@ what options to present end users in the Zap Editor.
 
 For those not familiar with Zapier terminology, here is how concepts in the CLI map to the end user experience:
 
- * [Authentication](#authentication), (usually) which lets us know what credentials to ask users
-   for. This is used during the "Connect Accounts" section of the Zap Editor.
- * [Triggers](#triggerssearchescreates), which read data *from* your API. These have their own section in the Zap Editor.
- * [Creates](#triggerssearchescreates), which send data *to* your API to create new records. These are listed under "Actions" in the Zap Editor.
- * [Searches](#triggerssearchescreates), which find specific records *in* your system. These are also listed under "Actions" in the Zap Editor.
- * [Resources](#resources), which define an object type in your API (say a contact) and the operations available to perform on it. These are automatically extracted into Triggers, Searches, and Creates.
+- [Authentication](#authentication), (usually) which lets us know what credentials to ask users
+  for. This is used during the "Connect Accounts" section of the Zap Editor.
+- [Triggers](#triggerssearchescreates), which read data _from_ your API. These have their own section in the Zap Editor.
+- [Creates](#triggerssearchescreates), which send data _to_ your API to create new records. These are listed under "Actions" in the Zap Editor.
+- [Searches](#triggerssearchescreates), which find specific records _in_ your system. These are also listed under "Actions" in the Zap Editor.
+- [Resources](#resources), which define an object type in your API (say a contact) and the operations available to perform on it. These are automatically extracted into Triggers, Searches, and Creates.
 
 ### How does Zapier Platform CLI Work?
 
@@ -79,7 +78,6 @@ To ensure stability for our users, we strongly encourage you run tests on `LAMBD
 Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform/blob/master/example-apps/trigger/.travis.yml) file in our template apps to get you started.
 
 Alternatively, you can change your local node version with tools such as [nvm](https://github.com/nvm-sh/nvm#installation-and-update). Then you can either swap to that version with `nvm use LAMBDA_VERSION`, or do `nvm exec LAMBDA_VERSION zapier test` so you can run tests without having to switch versions while developing.
-
 
 ### Quick Setup Guide
 
@@ -125,7 +123,6 @@ zapier push
 
 > Go check out our [full CLI reference documentation](https://zapier.github.io/zapier-platform/cli) to see all the other commands!
 
-
 ### Tutorial
 
 For a full tutorial, head over to our [Tutorial](https://zapier.com/developer/start) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
@@ -150,12 +147,12 @@ npm install
 
 If you'd like to manage your **local App**, use these commands:
 
-* `zapier init myapp` - initialize/start a local app project
-* `zapier convert 1234 .` - initialize/start from an existing app
-* `zapier scaffold resource Contact` - auto-injects a new resource, trigger, etc.
-* `zapier test` - run the same tests as `npm test`
-* `zapier validate` - ensure your app is valid
-* `zapier describe` - print some helpful information about your app
+- `zapier init myapp` - initialize/start a local app project
+- `zapier convert 1234 .` - initialize/start from an existing app
+- `zapier scaffold resource Contact` - auto-injects a new resource, trigger, etc.
+- `zapier test` - run the same tests as `npm test`
+- `zapier validate` - ensure your app is valid
+- `zapier describe` - print some helpful information about your app
 
 ### Local Project Structure
 
@@ -192,7 +189,6 @@ The core definition of your `App` will look something like this, and is what you
 
 > Tip: You can use higher order functions to create any part of your App definition!
 
-
 ## Registering an App
 
 Registering your App with Zapier is a necessary first step which only enables basic administrative functions. It should happen before `zapier push` which is to used to actually expose an App Version in the Zapier interface and editor.
@@ -209,12 +205,12 @@ zapier integrations
 
 If you'd like to manage your **App**, use these commands:
 
-* `zapier integrations` - list the apps in Zapier you can administer
-* `zapier register "App Title"` - creates a new app in Zapier
-* `zapier link` - lists and links a selected app in Zapier to your current folder
-* `zapier history` - print the history of your app
-* `zapier team:add user@example.com admin` - add an admin to help maintain/develop your app
-* `zapier users:add user@example.com 1.0.0` - invite a user try your app version 1.0.0
+- `zapier integrations` - list the apps in Zapier you can administer
+- `zapier register "App Title"` - creates a new app in Zapier
+- `zapier link` - lists and links a selected app in Zapier to your current folder
+- `zapier history` - print the history of your app
+- `zapier team:add user@example.com admin` - add an admin to help maintain/develop your app
+- `zapier users:add user@example.com 1.0.0` - invite a user try your app version 1.0.0
 
 ## Deploying an App Version
 
@@ -230,21 +226,19 @@ zapier versions
 
 If you'd like to manage your **Version**, use these commands:
 
-* `zapier versions` - list the versions for the current directory's app
-* `zapier push` - push the current version of current directory's app & version (read from `package.json`)
-* `zapier promote 1.0.0` - mark a version as the "production" version
-* `zapier migrate 1.0.0 1.0.1 [100%]` - move users between versions, regardless of deployment status
-* `zapier deprecate 1.0.0 2020-06-01` - mark a version as deprecated, but let users continue to use it (we'll email them)
-* `zapier env:set 1.0.0 KEY=VALUE` - set an environment variable to some value
-* `zapier delete:version 1.0.0` - delete a version entirely. This is mostly for clearing out old test apps you used personally. It will fail if there are any users. You probably want `deprecate` instead.
+- `zapier versions` - list the versions for the current directory's app
+- `zapier push` - push the current version of current directory's app & version (read from `package.json`)
+- `zapier promote 1.0.0` - mark a version as the "production" version
+- `zapier migrate 1.0.0 1.0.1 [100%]` - move users between versions, regardless of deployment status
+- `zapier deprecate 1.0.0 2020-06-01` - mark a version as deprecated, but let users continue to use it (we'll email them)
+- `zapier env:set 1.0.0 KEY=VALUE` - set an environment variable to some value
+- `zapier delete:version 1.0.0` - delete a version entirely. This is mostly for clearing out old test apps you used personally. It will fail if there are any users. You probably want `deprecate` instead.
 
 > Note: To see the changes that were just pushed reflected in the browser, you have to manually refresh the browser each time you push.
-
 
 ### Private App Version (default)
 
 A simple `zapier push` will only create the App Version in your editor. No one else using Zapier can see it or use it.
-
 
 ### Sharing an App Version
 
@@ -319,7 +313,7 @@ If your app uses Basic auth with an encoded API key rather than a username and p
 
 ### Digest
 
-*New in v7.4.0.*
+_New in v7.4.0._
 
 The setup and user experience of Digest Auth is identical to Basic Auth. Users provide Zapier their username and password, and Zapier handles all the nonce and quality of protection details automatically.
 
@@ -355,7 +349,7 @@ For Session auth, the function that fetches the additional authentication data n
 
 ### OAuth1
 
-*New in `v7.5.0`.*
+_New in `v7.5.0`._
 
 Zapier's OAuth1 implementation matches [Twitter](https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a) and [Trello](https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth) implementations of the 3-legged OAuth flow.
 
@@ -363,17 +357,17 @@ Zapier's OAuth1 implementation matches [Twitter](https://developer.twitter.com/e
 
 The flow works like this:
 
-  1. Zapier makes a call to your API requesting a "request token" (also known as "temporary credentials").
-  2. Zapier sends the user to the authorization URL, defined by your app, along with the request token.
-  3. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png)
-  4. Zapier makes a backend call to your API to exchange the request token for an "access token" (also known as "long-lived credentials").
-  5. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
+1. Zapier makes a call to your API requesting a "request token" (also known as "temporary credentials").
+2. Zapier sends the user to the authorization URL, defined by your app, along with the request token.
+3. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png)
+4. Zapier makes a backend call to your API to exchange the request token for an "access token" (also known as "long-lived credentials").
+5. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
 
 You are required to define:
 
-  * `getRequestToken`: The API call to fetch the request token
-  * `authorizeUrl`: The authorization URL
-  * `getAccessToken`: The API call to fetch the access token
+- `getRequestToken`: The API call to fetch the request token
+- `authorizeUrl`: The authorization URL
+- `getAccessToken`: The API call to fetch the access token
 
 You'll also likely need to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables. These are the consumer key and secret in OAuth1 terminology.
 
@@ -406,16 +400,16 @@ If your app's OAuth2 flow uses a different grant type, such as `client_credentia
 
 The OAuth2 flow looks like this:
 
-  1. Zapier sends the user to the authorization URL defined by your app.
-  2. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use the `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png)
-  3. Zapier makes a backend call to your API to exchange the `code` for an `access_token`.
-  4. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
-  5. (Optionally) Zapier can refresh the token if it expires.
+1. Zapier sends the user to the authorization URL defined by your app.
+2. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use the `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png)
+3. Zapier makes a backend call to your API to exchange the `code` for an `access_token`.
+4. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
+5. (Optionally) Zapier can refresh the token if it expires.
 
 You are required to define:
 
-  * `authorizeUrl`: The authorization URL
-  * `getAccessToken`: The API call to fetch the access token
+- `authorizeUrl`: The authorization URL
+- `getAccessToken`: The API call to fetch the access token
 
 If the access token has a limited life and you want to refresh the token when it expires, you'll also need to define the API call to perform that refresh (`refreshAccessToken`). You can choose to set `autoRefresh: true`, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See [Stale Authentication Credentials](#stale-authentication-credentials) for more details on handling auth refresh.
 
@@ -440,7 +434,6 @@ For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Co
 
 Also, `authentication.oauth2Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
 
-
 ## Resources
 
 A `resource` is a representation (as a JavaScript object) of one of the REST resources of your API. Say you have a `/recipes`
@@ -459,7 +452,6 @@ zapier scaffold resource "Recipe"
 
 This will generate the resource file and add the necessary statements to the `index.js` file to import it.
 
-
 ### Resource Definition
 
 A resource has a few basic properties. The first is the `key`, which allows Zapier to identify the resource on our backend.
@@ -471,8 +463,8 @@ After those, there is a set of optional properties that tell Zapier what methods
 The complete list of available methods can be found in the [Resource Schema Docs](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#resourceschema).
 For now, let's focus on two:
 
- * `list` - Tells Zapier how to fetch a set of this resource. This becomes a Trigger in the Zapier Editor.
- * `create` - Tells Zapier how to create a new instance of the resource. This becomes an Action in the Zapier Editor.
+- `list` - Tells Zapier how to fetch a set of this resource. This becomes a Trigger in the Zapier Editor.
+- `create` - Tells Zapier how to create a new instance of the resource. This becomes an Action in the Zapier Editor.
 
 Here is a complete example of what the list method might look like
 
@@ -492,7 +484,6 @@ Every method you define on a `resource` Zapier converts to the appropriate Trigg
 above would result in an app with a New Recipe Trigger and an Add Recipe Create.
 
 Note the keys for the Trigger, Create, Search, and Search or Create are automatically generated (in case you want to use them in a dynamic dropdown), like: `{resourceName}List`, `{resourceName}Create`, `{resourceName}Search`, and `{resourceName}SearchOrCreate`; in the examples above, `{resourceName}` would be `recipe`.
-
 
 ## Triggers/Searches/Creates
 
@@ -521,15 +512,16 @@ You can find more details on the definition for each by looking at the [Trigger 
 
 Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you're trying to pass the wrong type back. For reference, each expects:
 
-| Method  | Return Type | Notes                                                                                                                |
-|---------|-------------|----------------------------------------------------------------------------------------------------------------------|
-| Trigger | Array       | 0 or more objects; passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) if polling  |
-| Search  | Array       | 0 or more objects. Only the first object will be returned, so if len > 1, put the best match first                   |
-| Action  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
+| Method  | Return Type | Notes                                                                                                               |
+| ------- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
+| Trigger | Array       | 0 or more objects; passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) if polling |
+| Search  | Array       | 0 or more objects. Only the first object will be returned, so if len > 1, put the best match first                  |
+| Action  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                             |
 
 When a trigger function returns an empty array, the Zap will not trigger. For REST Hook triggers, this can be used to filter data if the available subscription options are not specific enough for the Zap's needs.
 
 ### Fallback Sample
+
 In cases where Zapier needs to show an example record to the user, but we are unable to get a live example from the API, Zapier will fallback to this hard-coded sample. This should reflect the data structure of the Trigger's perform method, and have dummy values that we can show to any user.
 
 ```js
@@ -577,9 +569,9 @@ Additionally, if there is a field that affects the generation of dynamic fields,
 
 When using dynamic fields, the fields will be retrieved in three different contexts:
 
-* Whenever the value of a field with `altersDynamicFields` is changed, as described above.
-* Whenever Zap Editor opens the "Set up" section for the trigger or action.
-* Whenever the Refresh Fields button is used on the trigger or action.
+- Whenever the value of a field with `altersDynamicFields` is changed, as described above.
+- Whenever Zap Editor opens the "Set up" section for the trigger or action.
+- Whenever the Refresh Fields button is used on the trigger or action.
 
 Be sure to set up your code accordingly - for example, don't rely on any input fields already having a value, since they won't have one the first time the "Set up" section loads.
 
@@ -684,7 +676,7 @@ On each trigger, search, or create in the operation directive - you can provide 
 
 Output Fields are optional, but can be used to:
 
-- Define friendly labels for the returned fields. By default, we will *humanize* for example `my_key` as *My Key*.
+- Define friendly labels for the returned fields. By default, we will _humanize_ for example `my_key` as _My Key_.
 - Make sure that custom fields that may not be found in every live sample and - since they're custom to the connected account - cannot be defined in the static sample, can still be mapped.
 
 The [schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#fieldschema) for `outputFields` is shared with `inputFields` but only the `key` and `required` properties are relevant.
@@ -739,11 +731,11 @@ We provide several methods off of the `z` object, which is provided as the first
 
 The available errors are:
 
-* `Error` (_new in v9.3.0_) - Stops the current operation, allowing for (auto) replay. Read more on [General Errors](#general-errors)
-* `HaltedError` - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
-* `ExpiredAuthError` - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
-* `RefreshAuthError` - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
-* `ThrottledError` (_new in v11.2.0_) - Tells Zapier to retry the current operation after a delay specified in seconds. Read more on [Handling Throttled Requests](#handling-throttled-requests)
+- `Error` (_new in v9.3.0_) - Stops the current operation, allowing for (auto) replay. Read more on [General Errors](#general-errors)
+- `HaltedError` - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
+- `ExpiredAuthError` - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
+- `RefreshAuthError` - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
+- `ThrottledError` (_new in v11.2.0_) - Tells Zapier to retry the current operation after a delay specified in seconds. Read more on [Handling Throttled Requests](#handling-throttled-requests)
 
 For more details on error handling in general, see [here](#error-handling).
 
@@ -751,8 +743,8 @@ For more details on error handling in general, see [here](#error-handling).
 
 The `z.cursor` object exposes two methods:
 
-* `z.cursor.get(): Promise<string|null>`
-* `z.cursor.set(string): Promise<null>`
+- `z.cursor.get(): Promise<string|null>`
+- `z.cursor.set(string): Promise<null>`
 
 Any data you `set` will be available to that Zap for about an hour (or until it's overwritten). For more information, see: [paging](#paging).
 
@@ -775,7 +767,7 @@ const perform = async (z, bundle) => {
       url: callbackUrl,
     },
   });
-  return {"hello": "world"}; // available later in bundle.outputData
+  return { hello: 'world' }; // available later in bundle.outputData
 };
 ```
 
@@ -791,19 +783,18 @@ Content-Type: application/json
 
 And finally, in a `performResume` to handle the final step which will receive three bundle properties:
 
-* `bundle.outputData` is `{"hello": "world"}`, the data returned from the initial `perform`
-* `bundle.cleanedRequest` is `{"foo": "bar"}`, the payload from the callback URL
-* `bundle.rawRequest` is the full request object corresponding to `bundle.cleanedRequest`
+- `bundle.outputData` is `{"hello": "world"}`, the data returned from the initial `perform`
+- `bundle.cleanedRequest` is `{"foo": "bar"}`, the payload from the callback URL
+- `bundle.rawRequest` is the full request object corresponding to `bundle.cleanedRequest`
 
 ```js
 const performResume = async (z, bundle) => {
   // this will give a final value of: {"hello": "world", "foo": "bar"}
-  return  { ...bundle.outputData, ...bundle.cleanedRequest };
+  return { ...bundle.outputData, ...bundle.cleanedRequest };
 };
 ```
 
 > The app will have a maximum of 30 days to `POST` to the callback URL. If a user deletes or modifies the Zap or Task in the meantime, we will not resume the task.
-
 
 ## Bundle Object
 
@@ -847,14 +838,14 @@ You'll usually want to use `bundle.inputData` instead.
 
 `bundle.meta` contains extra information useful for doing advanced behaviors depending on what the user is doing. It has the following options:
 
-| key | default | description |
-| --- | --- | --- |
-| `isLoadingSample` | `false` | If true, this run was initiated manually via the Zap Editor |
-| `isFillingDynamicDropdown` | `false` | If true, this poll is being used to populate a dynamic dropdown. You only need to return the fields you specified (such as `id` and `name`), though returning everything is fine too |
-| `isPopulatingDedupe` | `false` | If true, the results of this poll will be used to initialize the deduplication list rather than trigger a zap. You should grab as many items as possible. See also: [deduplication](#dedup) |
-| `limit` | `-1` | The number of items you should fetch. `-1` indicates there's no limit. Build this into your calls insofar as you are able |
-| `page` | `0` | Used in [paging](#paging) to uniquely identify which page of results should be returned |
-| `isTestingAuth` | `false` | (legacy property) If true, the poll was triggered by a user testing their account (via [clicking "test"](https://cdn.zapier.com/storage/photos/5c94c304ce11b02c073a973466a7b846.png) or during setup). We use this data to populate the auth label, but it's mostly used to verify we made a successful authenticated request |
+| key                        | default | description                                                                                                                                                                                                                                                                                                                   |
+| -------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `isLoadingSample`          | `false` | If true, this run was initiated manually via the Zap Editor                                                                                                                                                                                                                                                                   |
+| `isFillingDynamicDropdown` | `false` | If true, this poll is being used to populate a dynamic dropdown. You only need to return the fields you specified (such as `id` and `name`), though returning everything is fine too                                                                                                                                          |
+| `isPopulatingDedupe`       | `false` | If true, the results of this poll will be used to initialize the deduplication list rather than trigger a zap. You should grab as many items as possible. See also: [deduplication](#dedup)                                                                                                                                   |
+| `limit`                    | `-1`    | The number of items you should fetch. `-1` indicates there's no limit. Build this into your calls insofar as you are able                                                                                                                                                                                                     |
+| `page`                     | `0`     | Used in [paging](#paging) to uniquely identify which page of results should be returned                                                                                                                                                                                                                                       |
+| `isTestingAuth`            | `false` | (legacy property) If true, the poll was triggered by a user testing their account (via [clicking "test"](https://cdn.zapier.com/storage/photos/5c94c304ce11b02c073a973466a7b846.png) or during setup). We use this data to populate the auth label, but it's mostly used to verify we made a successful authenticated request |
 
 > Before v8.0.0, the information in `bundle.meta` was different. See [the old docs](https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta) for the previous values and [the wiki](https://github.com/zapier/zapier-platform/wiki/bundle.meta-changes) for a mapping of old values to new.
 
@@ -877,10 +868,8 @@ const perform = async (z, bundle) => {
 
   return response.json;
 };
-  // ...
+// ...
 ```
-
-
 
 ### `bundle.rawRequest`
 
@@ -929,7 +918,6 @@ In `bundle.rawRequest`, headers other than `Content-Length` and `Content-Type` w
 
 `bundle.outputData` will return a whatever data you originally returned in the `perform`, allowing you to mix that with `bundle.rawRequest` or `bundle.cleanedRequest`.
 
-
 ### `bundle.targetUrl`
 
 > `bundle.targetUrl` is only available in the `performSubscribe` and `performUnsubscribe` methods for webhooks.
@@ -940,7 +928,6 @@ For example:
 
 ```js
 const subscribeHook = async (z, bundle) => {
-
   const options = {
     url: 'https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks',
     method: 'POST',
@@ -1020,7 +1007,6 @@ should('some tests', () => {
 
 > **NOTE** Variables defined via `zapier env:set` will _always_ be uppercased. For example, you would access the variable defined by `zapier env:set 1.0.0 foo_bar=1234` with `process.env.FOO_BAR`.
 
-
 ### Accessing Environment Variables
 
 To view existing environment variables, use the `env` command.
@@ -1039,7 +1025,6 @@ For example, you can access the `process.env` in your perform functions and in t
 ```
 
 > Note! Be sure to lazily access your environment variables - see [When to use placeholders or curlies?](#when-to-use-placeholders-or-curlies).
-
 
 ## Making HTTP Requests
 
@@ -1110,7 +1095,7 @@ A `beforeRequest` middleware function takes a request options object, and return
 
 Middleware functions can be asynchronous - just return a promise from the middleware function.
 
-The second argument for middleware is the `z` object, but it does *not* include `z.request()` as using that would easily create infinite loops.
+The second argument for middleware is the `z` object, but it does _not_ include `z.request()` as using that would easily create infinite loops.
 
 Here is the full request lifecycle when you call `z.request({...})`:
 
@@ -1136,10 +1121,10 @@ Since `v10.0.0`, `z.request()` calls `response.throwForStatus()` before it retur
 const perform = async (z, bundle) => {
   const response = await z.request({
     url: '...',
-    skipThrowForStatus: true
+    skipThrowForStatus: true,
   });
   // Now you handle error response on your own.
-  // The following is equivalent to response.throwForStatus(), 
+  // The following is equivalent to response.throwForStatus(),
   // but you have to remember to do it on every request
   if (response.status >= 400) {
     throw new z.errors.ResponseError(response);
@@ -1178,33 +1163,33 @@ Ensure you're handling errors correctly for your platform version. The latest re
 
 Shorthand requests and manual `z.request([url], options)` calls support the following HTTP `options`:
 
-* `url`: HTTP url, you can provide it both `z.request(url, options)` or `z.request({url: url, ...})`.
-* `method`: HTTP method, default is `GET`.
-* `headers`: request headers object, format `{'header-key': 'header-value'}`.
-* `params`: URL query params object, format `{'query-key': 'query-value'}`.
-* `body`: request body, can be a string, buffer, readable stream or plain object. When it is an object/array and the `Content-Type` header is `application/x-www-form-urlencoded` the body will be transformed to query string parameters, otherwise we'll set the header to `application/json; charset=utf-8` and JSON encode the body. Default is `null`.
-* `json`: shortcut object/array/etc. you want to JSON encode into body. Default is `null`.
-* `form`: shortcut object. you want to form encode into body. Default is `null`.
-* `raw`: set this to stream the response instead of consuming it immediately. Default is `false`.
-* `redirect`: set to `manual` to extract redirect headers, `error` to reject redirect, default is `follow`.
-* `follow`: maximum redirect count, set to `0` to not follow redirects. default is `20`.
-* `compress`: support gzip/deflate content encoding. Set to `false` to disable. Default is `true`.
-* `agent`: Node.js `http.Agent` instance, allows custom proxy, certificate etc. Default is `null`.
-* `timeout`: request / response timeout in ms. Set to `0` to disable (OS limit still applies), timeout reset on `redirect`. Default is `0` (disabled).
-* `size`: maximum response body size in bytes. Set to `0` to disable. Default is `0` (disabled).
-* `skipThrowForStatus` (_new in v10.0.0_): don't call `response.throwForStatus()` before resolving the request with `response`. See [HTTP Response Object](#http-response-object).
+- `url`: HTTP url, you can provide it both `z.request(url, options)` or `z.request({url: url, ...})`.
+- `method`: HTTP method, default is `GET`.
+- `headers`: request headers object, format `{'header-key': 'header-value'}`.
+- `params`: URL query params object, format `{'query-key': 'query-value'}`.
+- `body`: request body, can be a string, buffer, readable stream or plain object. When it is an object/array and the `Content-Type` header is `application/x-www-form-urlencoded` the body will be transformed to query string parameters, otherwise we'll set the header to `application/json; charset=utf-8` and JSON encode the body. Default is `null`.
+- `json`: shortcut object/array/etc. you want to JSON encode into body. Default is `null`.
+- `form`: shortcut object. you want to form encode into body. Default is `null`.
+- `raw`: set this to stream the response instead of consuming it immediately. Default is `false`.
+- `redirect`: set to `manual` to extract redirect headers, `error` to reject redirect, default is `follow`.
+- `follow`: maximum redirect count, set to `0` to not follow redirects. default is `20`.
+- `compress`: support gzip/deflate content encoding. Set to `false` to disable. Default is `true`.
+- `agent`: Node.js `http.Agent` instance, allows custom proxy, certificate etc. Default is `null`.
+- `timeout`: request / response timeout in ms. Set to `0` to disable (OS limit still applies), timeout reset on `redirect`. Default is `0` (disabled).
+- `size`: maximum response body size in bytes. Set to `0` to disable. Default is `0` (disabled).
+- `skipThrowForStatus` (_new in v10.0.0_): don't call `response.throwForStatus()` before resolving the request with `response`. See [HTTP Response Object](#http-response-object).
 
 ```js
 const response = await z.request({
   url: 'https://example.com',
   method: 'POST',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   },
   // only provide body, json or form...
-  body: {hello: 'world'}, // or '{"hello": "world"}' or 'hello=world'
-  json: {hello: 'world'},
-  form: {hello: 'world'},
+  body: { hello: 'world' }, // or '{"hello": "world"}' or 'hello=world'
+  json: { hello: 'world' },
+  form: { hello: 'world' },
   // access node-fetch style response.body
   raw: false,
   redirect: 'follow',
@@ -1213,26 +1198,26 @@ const response = await z.request({
   agent: null,
   timeout: 0,
   size: 0,
-})
+});
 ```
 
 ### HTTP Response Object
 
 The response object returned by `z.request([url], options)` supports the following fields and methods:
 
-* `status`: The response status code, i.e. `200`, `404`, etc.
-* `content`: The response content as a String. For Buffer, try `options.raw = true`.
-* `data` (_new in v10.0.0_): The response content as an object if the content is JSON or `application/x-www-form-urlencoded` (`undefined` otherwise).
-* `headers`: Response headers object. The header keys are all lower case.
-* `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
-* `skipThrowForStatus` (_new in v10.0.0_): don't call `throwForStatus()` before resolving the request with this response.
-* `throwForStatus()`: Throws an error if `400 <= statusCode < 600`.
-* `request`: The original request options object (see above).
+- `status`: The response status code, i.e. `200`, `404`, etc.
+- `content`: The response content as a String. For Buffer, try `options.raw = true`.
+- `data` (_new in v10.0.0_): The response content as an object if the content is JSON or `application/x-www-form-urlencoded` (`undefined` otherwise).
+- `headers`: Response headers object. The header keys are all lower case.
+- `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
+- `skipThrowForStatus` (_new in v10.0.0_): don't call `throwForStatus()` before resolving the request with this response.
+- `throwForStatus()`: Throws an error if `400 <= statusCode < 600`.
+- `request`: The original request options object (see above).
 
 Additionally, if `request.raw` is `true`, the raw response has the following properties:
 
-* `json()`: Get the response content as an object, if `options.raw = true` and content is JSON (returns a promise). `undefined` in non-raw requests.
-* `body`: A stream available only if you provide `options.raw = true`.
+- `json()`: Get the response content as an object, if `options.raw = true` and content is JSON (returns a promise). `undefined` in non-raw requests.
+- `body`: A stream available only if you provide `options.raw = true`.
 
 ```js
 const response = await z.request({
@@ -1246,14 +1231,15 @@ response.getHeader('content-type');
 response.request; // original request options
 response.throwForStatus();
 
-if (options.raw === false) { // (default)
+if (options.raw === false) {
+  // (default)
   // If you're core v10+
   response.data; // same as...
   z.JSON.parse(response.content); // or...
   querystring.parse(response.content);
 
   // If you're core v9 or older...
-  response.json;  // same as
+  response.json; // same as
   z.JSON.parse(response.content);
 } else {
   const buf = await response.buffer();
@@ -1271,15 +1257,15 @@ if (options.raw === false) { // (default)
 
 Dehydration, and its counterpart Hydration, is a tool that can lazily load data that might be otherwise expensive to retrieve aggressively.
 
-* **Dehydration** - think of this as "make a pointer", you control the creation of pointers with `z.dehydrate(func, inputData)` (or `z.dehydrateFile(func, inputData)` for files). This usually happens in a trigger step.
-* **Hydration** - think of this as an automatic step that "consumes a pointer" and "returns some data", Zapier does this automatically behind the scenes. This usually happens in an action step.
+- **Dehydration** - think of this as "make a pointer", you control the creation of pointers with `z.dehydrate(func, inputData)` (or `z.dehydrateFile(func, inputData)` for files). This usually happens in a trigger step.
+- **Hydration** - think of this as an automatic step that "consumes a pointer" and "returns some data", Zapier does this automatically behind the scenes. This usually happens in an action step.
 
 > This is very common when [Stashing Files](#stashing-files) - but that isn't their only use!
 
 The method `z.dehydrate(func, inputData)` has two required arguments:
 
-* `func` - the function to call to fetch the extra data. Can be any raw `function`, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app's `hydrators` property
-* `inputData` - this is an object that contains things like a `path` or `id` - whatever you need to load data on the other side
+- `func` - the function to call to fetch the extra data. Can be any raw `function`, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app's `hydrators` property
+- `inputData` - this is an object that contains things like a `path` or `id` - whatever you need to load data on the other side
 
 > **Why do I need to register my functions?** Because of how JavaScript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to "automagically" (and sometimes incorrectly) infer code locations.
 
@@ -1312,13 +1298,13 @@ Using `$HOIST$` as the key will signal to Zapier that the results should be merg
 ```js
 movie.details = {
   title: movie.title,
-  $HOIST$: z.dehydrate(getMovieDetails, { id: movie.id })
+  $HOIST$: z.dehydrate(getMovieDetails, { id: movie.id }),
 };
 ```
 
 ### File Dehydration
 
-*New in v7.3.0.*
+_New in v7.3.0._
 
 The method `z.dehydrateFile(func, inputData)` allows you to download a file lazily. It takes the identical arguments as `z.dehydrate(func, inputData)` does.
 
@@ -1336,7 +1322,12 @@ The interface `z.stashFile(bufferStringStream, [knownLength], [filename], [conte
 
 ```js
 const content = 'Hello world!';
-const url = await z.stashFile(content, content.length, 'hello.txt', 'text/plain');
+const url = await z.stashFile(
+  content,
+  content.length,
+  'hello.txt',
+  'text/plain'
+);
 z.console.log(url);
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/f75e2819-05e2-41d0-b70e-9f8272f9eebf
 ```
@@ -1344,7 +1335,10 @@ z.console.log(url);
 Most likely you'd want to stream from another URL - note the usage of `z.request({raw: true})`:
 
 ```js
-const fileRequest = z.request({url: 'https://example.com/file.pdf', raw: true});
+const fileRequest = z.request({
+  url: 'https://example.com/file.pdf',
+  raw: true,
+});
 const url = await z.stashFile(fileRequest); // knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream
 z.console.log(url);
 // https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7
@@ -1359,7 +1353,6 @@ See a full example with dehydration/hydration wired in correctly:
 ```
 
 > Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/files for a working example app using files.
-
 
 ## Logging
 
@@ -1404,11 +1397,12 @@ zapier logs --type=bundle
 If you are using the `z.request()` shortcut that we provide - HTTP logging is handled automatically for you. For example:
 
 ```js
-z.request('https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
-  .then((res) => {
+z.request('https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes').then(
+  (res) => {
     // do whatever you like, this request is already getting logged! :-D
     return res;
-  })
+  }
+);
 ```
 
 ### Viewing HTTP Logs
@@ -1418,12 +1412,12 @@ To see the HTTP logs, do:
 ```bash
 zapier logs --type=http
 ```
+
 To see detailed http logs including headers, request and response bodies, etc, do:
 
 ```bash
 zapier logs --type=http --detailed
 ```
-
 
 ## Error Handling
 
@@ -1454,11 +1448,11 @@ Example: `throw new z.errors.Error('Contact name is too long.', 'InvalidData', 4
 
 A couple best practices to keep in mind:
 
-  * Elaborate on terse messages. "not_authenticated" -> "Your API Key is invalid. Please reconnect your account."
-  * If the error calls out a specific field, surface that information to the user. "Provided data is invalid" -> "Contact name is invalid"
-  * If the error provides details about why a field is invalid, add that in too! "Contact name is invalid" -> "Contact name is too long"
-  * The second, optional argument should be a code that a computer could use to identify the type of error.
-  * The last, optional argument should be the HTTP status code, if any.
+- Elaborate on terse messages. "not_authenticated" -> "Your API Key is invalid. Please reconnect your account."
+- If the error calls out a specific field, surface that information to the user. "Provided data is invalid" -> "Contact name is invalid"
+- If the error provides details about why a field is invalid, add that in too! "Contact name is invalid" -> "Contact name is too long"
+- The second, optional argument should be a code that a computer could use to identify the type of error.
+- The last, optional argument should be the HTTP status code, if any.
 
 The code and status can be used by us to provide relevant troubleshooting to the
 user when we communicate the error.
@@ -1517,7 +1511,7 @@ delay in seconds:
 ```js
 const yourAfterResponse = (resp) => {
   if (resp.status === 429) {
-    throw new ThrottledError('message here', 60);  // Zapier will retry in 60 seconds
+    throw new ThrottledError('message here', 60); // Zapier will retry in 60 seconds
   }
   return resp;
 };
@@ -1606,7 +1600,7 @@ This makes it pretty straightforward to integrate into your testing interface. I
 ```yaml
 language: node_js
 node_js:
-  - "LAMBDA_VERSION"
+  - 'LAMBDA_VERSION'
 before_script: npm install -g zapier-platform-cli
 script: CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
@@ -1633,7 +1627,7 @@ Next, add a `debugger;` statement somewhere in your code, probably in a `perform
 // triggers on a new pizza with a certain tag
 const perform = async (z, bundle) => {
   const response = await z.request({
-    url: "https://jsonplaceholder.typicode.com/posts",
+    url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       tag: bundle.inputData.tagName,
     },
@@ -1694,12 +1688,8 @@ During the `zapier build` or `zapier push` step - we'll copy all your code to a 
 {
   "id": 1,
   "key": "App1",
-  "includeInBuild": [
-    "test.txt",
-    "testing.json"
-  ]
+  "includeInBuild": ["test.txt", "testing.json"]
 }
-
 ```
 
 > Warning: Do not use compiled libraries unless you run your build on the AWS AMI `ami-4fffc834`, or follow the Docker instructions below.
@@ -1753,11 +1743,10 @@ volumes:
 
 Now you should be able to run `docker-compose run pusher` and see the build and push successfully complete!
 
-
 ## Using Transpilers
 
 If you would like to use a transpiler like `babel`, you can add a script named `_zapier-build` to your `package.json`, which will be run during `zapier build`,
-`zapier push`, and `zapier upload`.  See the following example:
+`zapier push`, and `zapier upload`. See the following example:
 
 ```json
 {
@@ -1799,7 +1788,7 @@ We run your code on AWS Lambda, which only supports a few [versions](https://doc
 
 ### How do I manually set the Node.js version to run my app with?
 
-Update your `zapier-platform-core` dependency in `package.json`.  Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform/blob/master/packages/cli/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html).
+Update your `zapier-platform-core` dependency in `package.json`. Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform/blob/master/packages/cli/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html).
 
 **IMPORTANT CAVEAT**: AWS periodically deprecates Node versions as they reach EOL. They announce this[on their blog](https://aws.amazon.com/blogs/developer/node-js-6-is-approaching-end-of-life-upgrade-your-aws-lambda-functions-to-the-node-js-10-lts/). Similar info and dates are available on [github](https://github.com/nodejs/Release). Well before this date, we'll have a version of `core` that targets the newer Node version.
 
@@ -1819,9 +1808,9 @@ Placeholders get evaluated as soon as the line of code is evaluated. This means 
 
 Not natively, but it can! Users have reported that the following `npm` modules are compatible with the CLI Platform:
 
-* [pixl-xml](https://github.com/jhuckaby/pixl-xml)
-* [xml2js](https://github.com/Leonidas-from-XIV/node-xml2js)
-* [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser)
+- [pixl-xml](https://github.com/jhuckaby/pixl-xml)
+- [xml2js](https://github.com/Leonidas-from-XIV/node-xml2js)
+- [fast-xml-parser](https://github.com/NaturalIntelligence/fast-xml-parser)
 
 Since core v10, it's possible for [shorthand requests](#shorthand-http-requests) to parse XML. Use an `afterResponse` [middleware](#using-http-middleware) that sets `response.data` to the parsed XML:
 
@@ -1847,7 +1836,7 @@ If you need to do more requests conditionally based on the results of an HTTP ca
 
 To understand search-powered fields, we have to have a good understanding of dynamic dropdowns.
 
-When users are selecting specific resources (for instance, a Google Sheet), it's important they're able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via `id` instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a **dynamic dropdown**. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app.  It provides a list of ids with labels that show the item's name:
+When users are selecting specific resources (for instance, a Google Sheet), it's important they're able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via `id` instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a **dynamic dropdown**. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app. It provides a list of ids with labels that show the item's name:
 
 ![screenshot of the Zap editor, showing a dropdown of spreadsheet names and their corresponding IDs](https://cdn.zappy.app/2d7eeda63ff34b70f1d1788de0117181.png)
 
@@ -1862,11 +1851,12 @@ The field's value reaches your app as an id. You define this connection with the
 
 If the connection between steps 3 and 4 is a common one, you can indicate that in your field by specifying `search` as a `search_key.id_key`. When paired **with a dynamic dropdown**, this will add a button to the editor that will add the search step to the user's Zap and map the id field correctly.
 
-![screenshot of Zap editor, showing the add a search step button](https://cdn.zapier.com/storage/photos/d263fd3a56cf8108cb89195163e7c9aa.png)
+![screenshot of Zap editor, showing the add a search step button](https://cdn.zappy.app/081e63141ff05c131dadb8ebbea727b0.png)
 
 This is paired most often with "update" actions, where a required parameter will be a resource id.
 
 <a id="paging"></a>
+
 ### What's the deal with pagination? When is it used and how does it work?
 
 Paging is **only used when a trigger is part of a dynamic dropdown**. Depending on how many items exist and how many are returned in the first poll, it's possible that the resource the user is looking for isn't in the initial poll. If they hit the "see more" button, we'll increment the value of `bundle.meta.page` and poll again.
@@ -1879,8 +1869,8 @@ const perform = async (z, bundle) => {
     url: 'https://example.com/api/list.json',
     params: {
       limit: 100,
-      offset: 100 * bundle.meta.page
-    }
+      offset: 100 * bundle.meta.page,
+    },
   });
   return response.data; // or response.json you're using core v9 or older
 };
@@ -1897,6 +1887,7 @@ Cursors are stored per-zap and last about an hour. Per the above, make sure to o
 Lastly, you need to set `canPaginate` to `true` in your polling definition (per the [schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#basicpollingoperationschema)) for the `z.cursor` methods to work as expected.
 
 <a id="dedup"></a>
+
 ### How does deduplication work?
 
 Each time a polling Zap runs, Zapier needs to decide which of the items in the response should trigger the zap. To do this, we compare the `id`s to all those we've seen before, trigger on new objects, and update the list of seen `id`s. When a Zap is turned on, we initialize the list of seen `id`s with a single poll. When it's turned off, we clear that list. For this reason, it's important that calls to a polling endpoint always return the newest items.
@@ -1938,6 +1929,7 @@ InvalidParameterValueException An error occurred (InvalidParameterValueException
 8. Migrate your users from the previous version (`zapier migrate OLD_VERSION YOUR_NEW_VERSION`)
 
 <a id="analytics"></a>
+
 ### What Analytics are Collected?
 
 Starting with v8.4.0, Zapier collects information about each invocation of the CLI tool.
@@ -1948,18 +1940,18 @@ This data is collected purely to improve the CLI experience and will **never** b
 
 When you run a command with analytics in `anonymous` mode, the following data is sent to Zapier:
 
-* which command you ran
-* if that command is a known command
-* how many arguments you supplied (but not the contents of the arguments)
-* which flags you used (but not their contents)
-* the version of CLI that you're using
+- which command you ran
+- if that command is a known command
+- how many arguments you supplied (but not the contents of the arguments)
+- which flags you used (but not their contents)
+- the version of CLI that you're using
 
 **Enabled** (the default)
 
 When analytics are fully `enabled`, the above is sent, plus:
 
-* your operating system (the result of calling [`process.platform`](https://nodejs.org/api/process.html#process_process_platform))
-* your Zapier user id
+- your operating system (the result of calling [`process.platform`](https://nodejs.org/api/process.html#process_process_platform))
+- your Zapier user id
 
 **Disabled**
 
@@ -1991,11 +1983,12 @@ To learn more about the structure of the code (especially if you're interested i
 
 The Zapier platform and its tools are under active development. While you don't need to install every release, we release new versions because they are better than the last. We do our best to adhere to [Semantic Versioning](https://semver.org/) wherein we won't break your code unless there's a `major` release. Otherwise, we're just fixing bugs (`patch`) and adding features (`minor`).
 
-Broadly speaking, all releases will continue to work indefinitely. While you never *have* to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bug fixes are available.
+Broadly speaking, all releases will continue to work indefinitely. While you never _have_ to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md) to see what new features and bug fixes are available.
 
 For more info about which Node versions are supported, see [the faq](#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with).
 
 <!-- TODO: if we decouple releases, change this -->
+
 The most recently released version of `cli` and `core` is **PACKAGE_VERSION**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.

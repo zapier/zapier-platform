@@ -635,8 +635,8 @@ what options to present end users in the Zap Editor.</p><p>For those not familia
 <li><a href="#authentication">Authentication</a>, (usually) which lets us know what credentials to ask users
 for. This is used during the &quot;Connect Accounts&quot; section of the Zap Editor.</li>
 <li><a href="#triggerssearchescreates">Triggers</a>, which read data <em>from</em> your API. These have their own section in the Zap Editor.</li>
-<li><a href="#triggerssearchescreates">Creates</a>, which send data <em>to</em> your API to create new records. These are listed under &quot;Actions&quot; in the Zap Editor.</li>
-<li><a href="#triggerssearchescreates">Searches</a>, which find specific records <em>in</em> your system. These are also listed under &quot;Actions&quot; in the Zap Editor.</li>
+<li><a href="#triggerssearchescreates">Creates</a>, which send data _to_ your API to create new records. These are listed under &quot;Actions&quot; in the Zap Editor.</li>
+<li><a href="#triggerssearchescreates">Searches</a>, which find specific records _in_ your system. These are also listed under &quot;Actions&quot; in the Zap Editor.</li>
 <li><a href="#resources">Resources</a>, which define an object type in your API (say a contact) and the operations available to perform on it. These are automatically extracted into Triggers, Searches, and Creates.</li>
 </ul>
     </div>
@@ -2810,7 +2810,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <span class="hljs-attr">url</span>: callbackUrl,
     },
   });
-  <span class="hljs-keyword">return</span> {<span class="hljs-string">&quot;hello&quot;</span>: <span class="hljs-string">&quot;world&quot;</span>}; <span class="hljs-comment">// available later in bundle.outputData</span>
+  <span class="hljs-keyword">return</span> { <span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span> }; <span class="hljs-comment">// available later in bundle.outputData</span>
 };
 </code></pre>
     </div>
@@ -2841,7 +2841,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> performResume = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-comment">// this will give a final value of: {&quot;hello&quot;: &quot;world&quot;, &quot;foo&quot;: &quot;bar&quot;}</span>
-  <span class="hljs-keyword">return</span>  { ...bundle.outputData, ...bundle.cleanedRequest };
+  <span class="hljs-keyword">return</span> { ...bundle.outputData, ...bundle.cleanedRequest };
 };
 </code></pre>
     </div>
@@ -3043,7 +3043,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 
   <span class="hljs-keyword">return</span> response.json;
 };
-  <span class="hljs-comment">// ...</span>
+<span class="hljs-comment">// ...</span>
 </code></pre>
     </div>
   </div>
@@ -3155,7 +3155,6 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> subscribeHook = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
-
   <span class="hljs-keyword">const</span> options = {
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://57b20fb546b57d1100a3c405.mockapi.io/api/hooks&apos;</span>,
     <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
@@ -3649,10 +3648,10 @@ zapier env:get 1.0.0
 <span class="hljs-keyword">const</span> perform = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;...&apos;</span>,
-    <span class="hljs-attr">skipThrowForStatus</span>: <span class="hljs-literal">true</span>
+    <span class="hljs-attr">skipThrowForStatus</span>: <span class="hljs-literal">true</span>,
   });
   <span class="hljs-comment">// Now you handle error response on your own.</span>
-  <span class="hljs-comment">// The following is equivalent to response.throwForStatus(), </span>
+  <span class="hljs-comment">// The following is equivalent to response.throwForStatus(),</span>
   <span class="hljs-comment">// but you have to remember to do it on every request</span>
   <span class="hljs-keyword">if</span> (response.status &gt;= <span class="hljs-number">400</span>) {
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> z.errors.ResponseError(response);
@@ -3726,12 +3725,12 @@ zapier env:get 1.0.0
   <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com&apos;</span>,
   <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
   <span class="hljs-attr">headers</span>: {
-    <span class="hljs-string">&apos;Content-Type&apos;</span>: <span class="hljs-string">&apos;application/json&apos;</span>
+    <span class="hljs-string">&apos;Content-Type&apos;</span>: <span class="hljs-string">&apos;application/json&apos;</span>,
   },
   <span class="hljs-comment">// only provide body, json or form...</span>
-  <span class="hljs-attr">body</span>: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>}, <span class="hljs-comment">// or &apos;{&quot;hello&quot;: &quot;world&quot;}&apos; or &apos;hello=world&apos;</span>
-  <span class="hljs-attr">json</span>: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>},
-  <span class="hljs-attr">form</span>: {<span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span>},
+  <span class="hljs-attr">body</span>: { <span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span> }, <span class="hljs-comment">// or &apos;{&quot;hello&quot;: &quot;world&quot;}&apos; or &apos;hello=world&apos;</span>
+  <span class="hljs-attr">json</span>: { <span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span> },
+  <span class="hljs-attr">form</span>: { <span class="hljs-attr">hello</span>: <span class="hljs-string">&apos;world&apos;</span> },
   <span class="hljs-comment">// access node-fetch style response.body</span>
   <span class="hljs-attr">raw</span>: <span class="hljs-literal">false</span>,
   <span class="hljs-attr">redirect</span>: <span class="hljs-string">&apos;follow&apos;</span>,
@@ -3740,7 +3739,7 @@ zapier env:get 1.0.0
   <span class="hljs-attr">agent</span>: <span class="hljs-literal">null</span>,
   <span class="hljs-attr">timeout</span>: <span class="hljs-number">0</span>,
   <span class="hljs-attr">size</span>: <span class="hljs-number">0</span>,
-})
+});
 </code></pre>
     </div>
   </div>
@@ -3782,14 +3781,15 @@ response.getHeader(<span class="hljs-string">&apos;content-type&apos;</span>);
 response.request; <span class="hljs-comment">// original request options</span>
 response.throwForStatus();
 
-<span class="hljs-keyword">if</span> (options.raw === <span class="hljs-literal">false</span>) { <span class="hljs-comment">// (default)</span>
+<span class="hljs-keyword">if</span> (options.raw === <span class="hljs-literal">false</span>) {
+  <span class="hljs-comment">// (default)</span>
   <span class="hljs-comment">// If you&apos;re core v10+</span>
   response.data; <span class="hljs-comment">// same as...</span>
   z.JSON.parse(response.content); <span class="hljs-comment">// or...</span>
   querystring.parse(response.content);
 
   <span class="hljs-comment">// If you&apos;re core v9 or older...</span>
-  response.json;  <span class="hljs-comment">// same as</span>
+  response.json; <span class="hljs-comment">// same as</span>
   z.JSON.parse(response.content);
 } <span class="hljs-keyword">else</span> {
   <span class="hljs-keyword">const</span> buf = <span class="hljs-keyword">await</span> response.buffer();
@@ -3928,7 +3928,7 @@ response.throwForStatus();
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js">movie.details = {
   <span class="hljs-attr">title</span>: movie.title,
-  <span class="hljs-attr">$HOIST$</span>: z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id })
+  <span class="hljs-attr">$HOIST$</span>: z.dehydrate(getMovieDetails, { <span class="hljs-attr">id</span>: movie.id }),
 };
 </code></pre>
     </div>
@@ -3969,7 +3969,12 @@ response.throwForStatus();
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> content = <span class="hljs-string">&apos;Hello world!&apos;</span>;
-<span class="hljs-keyword">const</span> url = <span class="hljs-keyword">await</span> z.stashFile(content, content.length, <span class="hljs-string">&apos;hello.txt&apos;</span>, <span class="hljs-string">&apos;text/plain&apos;</span>);
+<span class="hljs-keyword">const</span> url = <span class="hljs-keyword">await</span> z.stashFile(
+  content,
+  content.length,
+  <span class="hljs-string">&apos;hello.txt&apos;</span>,
+  <span class="hljs-string">&apos;text/plain&apos;</span>
+);
 z.console.log(url);
 <span class="hljs-comment">// https://zapier-dev-files.s3.amazonaws.com/cli-platform/f75e2819-05e2-41d0-b70e-9f8272f9eebf</span>
 </code></pre>
@@ -3981,7 +3986,10 @@ z.console.log(url);
       <p>Most likely you&apos;d want to stream from another URL - note the usage of <code>z.request({raw: true})</code>:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> fileRequest = z.request({<span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/file.pdf&apos;</span>, <span class="hljs-attr">raw</span>: <span class="hljs-literal">true</span>});
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> fileRequest = z.request({
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/file.pdf&apos;</span>,
+  <span class="hljs-attr">raw</span>: <span class="hljs-literal">true</span>,
+});
 <span class="hljs-keyword">const</span> url = <span class="hljs-keyword">await</span> z.stashFile(fileRequest); <span class="hljs-comment">// knownLength and filename will be sniffed from the request. contentType will be binary/octet-stream</span>
 z.console.log(url);
 <span class="hljs-comment">// https://zapier-dev-files.s3.amazonaws.com/cli-platform/74bc623c-d94d-4cac-81f1-f71d7d517bc7</span>
@@ -4161,11 +4169,12 @@ z.console.log(url);
       <p>If you are using the <code>z.request()</code> shortcut that we provide - HTTP logging is handled automatically for you. For example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js">z.request(<span class="hljs-string">&apos;https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes&apos;</span>)
-  .then(<span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
+      <pre><code class="lang-js">z.request(<span class="hljs-string">&apos;https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes&apos;</span>).then(
+  <span class="hljs-function">(<span class="hljs-params">res</span>) =&gt;</span> {
     <span class="hljs-comment">// do whatever you like, this request is already getting logged! :-D</span>
     <span class="hljs-keyword">return</span> res;
-  })
+  }
+);
 </code></pre>
     </div>
   </div>
@@ -4332,7 +4341,7 @@ delay in seconds:</p>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> yourAfterResponse = <span class="hljs-function">(<span class="hljs-params">resp</span>) =&gt;</span> {
   <span class="hljs-keyword">if</span> (resp.status === <span class="hljs-number">429</span>) {
-    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ThrottledError(<span class="hljs-string">&apos;message here&apos;</span>, <span class="hljs-number">60</span>);  <span class="hljs-comment">// Zapier will retry in 60 seconds</span>
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ThrottledError(<span class="hljs-string">&apos;message here&apos;</span>, <span class="hljs-number">60</span>); <span class="hljs-comment">// Zapier will retry in 60 seconds</span>
   }
   <span class="hljs-keyword">return</span> resp;
 };
@@ -4637,7 +4646,7 @@ zapier <span class="hljs-built_in">test</span>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-yaml"><span class="hljs-attr">language:</span> <span class="hljs-string">node_js</span>
 <span class="hljs-attr">node_js:</span>
-  <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;v14&quot;</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-string">&apos;v14&apos;</span>
 <span class="hljs-attr">before_script:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span> <span class="hljs-string">-g</span> <span class="hljs-string">zapier-platform-cli</span>
 <span class="hljs-attr">script:</span> <span class="hljs-string">CLIENT_ID=1234</span> <span class="hljs-string">CLIENT_SECRET=abcd</span> <span class="hljs-string">zapier</span> <span class="hljs-string">test</span>
 </code></pre>
@@ -4680,7 +4689,7 @@ zapier <span class="hljs-built_in">test</span>
       <pre><code class="lang-js"><span class="hljs-comment">// triggers on a new pizza with a certain tag</span>
 <span class="hljs-keyword">const</span> perform = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;https://jsonplaceholder.typicode.com/posts&quot;</span>,
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://jsonplaceholder.typicode.com/posts&apos;</span>,
     <span class="hljs-attr">params</span>: {
       <span class="hljs-attr">tag</span>: bundle.inputData.tagName,
     },
@@ -4757,12 +4766,8 @@ For help, see: https://nodejs.org/en/docs/inspector
       <pre><code class="lang-json">{
   <span class="hljs-attr">&quot;id&quot;</span>: <span class="hljs-number">1</span>,
   <span class="hljs-attr">&quot;key&quot;</span>: <span class="hljs-string">&quot;App1&quot;</span>,
-  <span class="hljs-attr">&quot;includeInBuild&quot;</span>: [
-    <span class="hljs-string">&quot;test.txt&quot;</span>,
-    <span class="hljs-string">&quot;testing.json&quot;</span>
-  ]
+  <span class="hljs-attr">&quot;includeInBuild&quot;</span>: [<span class="hljs-string">&quot;test.txt&quot;</span>, <span class="hljs-string">&quot;testing.json&quot;</span>]
 }
-
 </code></pre>
     </div>
   </div>
@@ -4859,7 +4864,7 @@ For help, see: https://nodejs.org/en/docs/inspector
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>If you would like to use a transpiler like <code>babel</code>, you can add a script named <code>_zapier-build</code> to your <code>package.json</code>, which will be run during <code>zapier build</code>,
-<code>zapier push</code>, and <code>zapier upload</code>.  See the following example:</p>
+<code>zapier push</code>, and <code>zapier upload</code>. See the following example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-json">{
@@ -4948,7 +4953,7 @@ zapier push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Update your <code>zapier-platform-core</code> dependency in <code>package.json</code>.  Each major version ties to a specific version of Node.js. You can find the mapping <a href="https://github.com/zapier/zapier-platform/blob/master/packages/cli/src/version-store.js">here</a>. We only support the version(s) supported by <a href="https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html">AWS Lambda</a>.</p><p><strong>IMPORTANT CAVEAT</strong>: AWS periodically deprecates Node versions as they reach EOL. They announce this<a href="https://aws.amazon.com/blogs/developer/node-js-6-is-approaching-end-of-life-upgrade-your-aws-lambda-functions-to-the-node-js-10-lts/">on their blog</a>. Similar info and dates are available on <a href="https://github.com/nodejs/Release">github</a>. Well before this date, we&apos;ll have a version of <code>core</code> that targets the newer Node version.</p><p>If you don&apos;t upgrade before the cutoff date, there&apos;s a chance that AWS will throw an error when attempting to run your app&apos;s code. If that&apos;s the case, we&apos;ll instead run it under the oldest Node version still supported. All that is to say, <strong>we may run your code on a newer version of Node.js than you intend</strong> if you don&apos;t update your app&apos;s dependencies periodically.</p>
+      <p>Update your <code>zapier-platform-core</code> dependency in <code>package.json</code>. Each major version ties to a specific version of Node.js. You can find the mapping <a href="https://github.com/zapier/zapier-platform/blob/master/packages/cli/src/version-store.js">here</a>. We only support the version(s) supported by <a href="https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html">AWS Lambda</a>.</p><p><strong>IMPORTANT CAVEAT</strong>: AWS periodically deprecates Node versions as they reach EOL. They announce this<a href="https://aws.amazon.com/blogs/developer/node-js-6-is-approaching-end-of-life-upgrade-your-aws-lambda-functions-to-the-node-js-10-lts/">on their blog</a>. Similar info and dates are available on <a href="https://github.com/nodejs/Release">github</a>. Well before this date, we&apos;ll have a version of <code>core</code> that targets the newer Node version.</p><p>If you don&apos;t upgrade before the cutoff date, there&apos;s a chance that AWS will throw an error when attempting to run your app&apos;s code. If that&apos;s the case, we&apos;ll instead run it under the oldest Node version still supported. All that is to say, <strong>we may run your code on a newer version of Node.js than you intend</strong> if you don&apos;t update your app&apos;s dependencies periodically.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -5134,12 +5139,12 @@ zapier push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To understand search-powered fields, we have to have a good understanding of dynamic dropdowns.</p><p>When users are selecting specific resources (for instance, a Google Sheet), it&apos;s important they&apos;re able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via <code>id</code> instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a <strong>dynamic dropdown</strong>. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app.  It provides a list of ids with labels that show the item&apos;s name:</p><p><img src="https://cdn.zappy.app/2d7eeda63ff34b70f1d1788de0117181.png" alt="screenshot of the Zap editor, showing a dropdown of spreadsheet names and their corresponding IDs"></p><p>The field&apos;s value reaches your app as an id. You define this connection with the <code>dynamic</code> property, which is a string: <code>trigger_key.id_key.label_key</code>. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.</p><p><strong>Search fields</strong> take this connection a step further. Rather than set the spreadsheet id at setup, the user could precede the action with a search field to make the id dynamic. For instance, let&apos;s say you have a different spreadsheet for every day of the week. You could build the following zap:</p><ol>
+      <p>To understand search-powered fields, we have to have a good understanding of dynamic dropdowns.</p><p>When users are selecting specific resources (for instance, a Google Sheet), it&apos;s important they&apos;re able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via <code>id</code> instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a <strong>dynamic dropdown</strong>. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app. It provides a list of ids with labels that show the item&apos;s name:</p><p><img src="https://cdn.zappy.app/2d7eeda63ff34b70f1d1788de0117181.png" alt="screenshot of the Zap editor, showing a dropdown of spreadsheet names and their corresponding IDs"></p><p>The field&apos;s value reaches your app as an id. You define this connection with the <code>dynamic</code> property, which is a string: <code>trigger_key.id_key.label_key</code>. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.</p><p><strong>Search fields</strong> take this connection a step further. Rather than set the spreadsheet id at setup, the user could precede the action with a search field to make the id dynamic. For instance, let&apos;s say you have a different spreadsheet for every day of the week. You could build the following zap:</p><ol>
 <li>Some Trigger</li>
 <li>Calculate what day of the week it is today (Code)</li>
 <li>Find the spreadsheet that matches the day from Step 2</li>
 <li>Update the spreadsheet (with the id from step 3) with some data</li>
-</ol><p>If the connection between steps 3 and 4 is a common one, you can indicate that in your field by specifying <code>search</code> as a <code>search_key.id_key</code>. When paired <strong>with a dynamic dropdown</strong>, this will add a button to the editor that will add the search step to the user&apos;s Zap and map the id field correctly.</p><p><img src="https://cdn.zapier.com/storage/photos/d263fd3a56cf8108cb89195163e7c9aa.png" alt="screenshot of Zap editor, showing the add a search step button"></p><p>This is paired most often with &quot;update&quot; actions, where a required parameter will be a resource id.</p><p><a id="paging"></a></p>
+</ol><p>If the connection between steps 3 and 4 is a common one, you can indicate that in your field by specifying <code>search</code> as a <code>search_key.id_key</code>. When paired <strong>with a dynamic dropdown</strong>, this will add a button to the editor that will add the search step to the user&apos;s Zap and map the id field correctly.</p><p><img src="https://cdn.zappy.app/081e63141ff05c131dadb8ebbea727b0.png" alt="screenshot of Zap editor, showing the add a search step button"></p><p>This is paired most often with &quot;update&quot; actions, where a required parameter will be a resource id.</p><p><a id="paging"></a></p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -5165,8 +5170,8 @@ zapier push
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/list.json&apos;</span>,
     <span class="hljs-attr">params</span>: {
       <span class="hljs-attr">limit</span>: <span class="hljs-number">100</span>,
-      <span class="hljs-attr">offset</span>: <span class="hljs-number">100</span> * bundle.meta.page
-    }
+      <span class="hljs-attr">offset</span>: <span class="hljs-number">100</span> * bundle.meta.page,
+    },
   });
   <span class="hljs-keyword">return</span> response.data; <span class="hljs-comment">// or response.json you&apos;re using core v9 or older</span>
 };
