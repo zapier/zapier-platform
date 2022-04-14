@@ -817,7 +817,7 @@ This object holds the user's auth details and the data for the API requests.
 
 ### `bundle.inputData`
 
-`bundle.inputData` is user-provided data for this particular run of the trigger/search/create, as defined by the `inputFields`. For example:
+`bundle.inputData` is user-provided data for this particular run of the trigger/search/create, as defined by the [`inputFields`](#input-fields). For example:
 
 ```js
 {
@@ -1043,22 +1043,22 @@ For example, you can access the `process.env` in your perform functions and in t
 
 ## Making HTTP Requests
 
-There are two primary ways to make HTTP requests in the Zapier platform:
+There are two ways to make HTTP requests:
 
-1. **Shorthand HTTP Requests** - these are simple object literals that make it easy to define simple requests.
-2. **Manual HTTP Requests** - you use `z.request([url], options)` to make the requests and control the response. Use this when you need to change options for certain requests (for all requests, use middleware).
+1. [**Shorthand HTTP Requests**](#shorthand-http-requests) - Easy to use, but limits what you can control. Best for simple requests.
+2. [**Manual HTTP Requests**](#manual-http-requests) - Gives you full control over the request and response.
 
-There are also a few helper constructs you can use to reduce boilerplate:
+Use these helper constructs to reduce boilerplate:
 
-1. `requestTemplate` which is a shorthand HTTP request that will be merged with every request.
-2. `beforeRequest` middleware which is an array of functions to mutate a request before it is sent.
-3. `afterResponse` middleware which is an array of functions to mutate a response before it is completed.
+1. `requestTemplate` - an object literal of [HTTP request options](#http-request-options) that will be merged with every request.
+2. `beforeRequest` - [middleware](#using-http-middleware) that mutates every request before it is sent.
+3. `afterResponse` - [middleware](#using-http-middleware) that mutates every response before it is completed.
 
 > Note: you can install any HTTP client you like - but this is greatly discouraged as you lose [automatic HTTP logging](#http-logging) and middleware.
 
 ### Shorthand HTTP Requests
 
-For simple HTTP requests that do not require special pre- or post-processing, you can specify the HTTP options as an object literal in your app definition.
+For simple HTTP requests that do not require special pre- or post-processing, you can specify the [HTTP request options](#http-request-options) as an object literal in your app definition.
 
 This features:
 
@@ -1070,19 +1070,25 @@ This features:
 [insert-file:./snippets/shorthand-request.js]
 ```
 
-In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.
+In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON or form-encoded and returned.
 
 An error will be raised if the response cannot be parsed as JSON or form-encoded. To use shorthand requests with other response types, add [middleware](#using-http-middleware) that sets `response.data` to the parsed response.
 
 ### Manual HTTP Requests
 
-When you need to do custom processing of the response, or need to process non-JSON responses, you can make manual HTTP requests. This approach does not perform any magic - no status code checking, no automatic JSON parsing. Use this method when you need more control. Manual requests do perform lazy `{{curly}}` replacement.
+Use this when you need full control over the request/response. For example:
 
-To make a manual HTTP request, use the `request` method of the `z` object:
+1. To do processing (usually involving [`bundle.inputData`](#bundleinputdata)) before a request is made
+2. To do processing of an API's response before you return data to Zapier
+3. To process a non-JSON response
+
+To make a manual request, pass your [request options](#http-request-options) to `z.request()` then use the resulting [response object](#http-response-object) to return the data you want:
 
 ```js
 [insert-file:./snippets/manual-request.js]
 ```
+
+Manual requests perform lazy `{{curly}}` replacement. In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle.
 
 #### POST and PUT Requests
 
@@ -1096,11 +1102,9 @@ To POST or PUT data to your API you can do this:
 
 ### Using HTTP middleware
 
-If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions.
+To process all HTTP requests in a certain way, use the `beforeRequest` and `afterResponse` middleware functions.
 
-> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware for a working example app using HTTP middleware.
-
-Try putting them in your app definition:
+Middleware functions go in your app definition:
 
 ```js
 [insert-file:./snippets/middleware.js]
@@ -1126,6 +1130,8 @@ Here is the full request lifecycle when you call `z.request({...})`:
 10. call `response.throwForStatus()` unless `response.skipThrowForStatus` is `true`
 
 The resulting response object is returned from `z.request()`.
+
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware for a working example app using HTTP middleware.
 
 #### Error Response Handling
 
@@ -1176,9 +1182,9 @@ Ensure you're handling errors correctly for your platform version. The latest re
 
 ### HTTP Request Options
 
-Shorthand requests and manual `z.request([url], options)` calls support the following HTTP `options`:
+[Shorthand requests](#shorthand-http-requests) and [manual requests](#manual-http-requests) support the following HTTP `options`:
 
-* `url`: HTTP url, you can provide it both `z.request(url, options)` or `z.request({url: url, ...})`.
+* `url`: HTTP url, you can provide it as a separate argument `z.request(url, options)` or as part of the `options` object `z.request({url: url, ...})`.
 * `method`: HTTP method, default is `GET`.
 * `headers`: request headers object, format `{'header-key': 'header-value'}`.
 * `params`: URL query params object, format `{'query-key': 'query-value'}`.
@@ -1239,7 +1245,7 @@ const response = await z.request({
   // options
 });
 
-// A bunch of examples lines for cherry picking
+// A bunch of examples for demonstration
 response.status;
 response.headers['Content-Type'];
 response.getHeader('content-type');

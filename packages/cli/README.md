@@ -1727,7 +1727,7 @@ This object holds the user's auth details and the data for the API requests.
 
 ### `bundle.inputData`
 
-`bundle.inputData` is user-provided data for this particular run of the trigger/search/create, as defined by the `inputFields`. For example:
+`bundle.inputData` is user-provided data for this particular run of the trigger/search/create, as defined by the [`inputFields`](#input-fields). For example:
 
 ```js
 {
@@ -1981,22 +1981,22 @@ const App = {
 
 ## Making HTTP Requests
 
-There are two primary ways to make HTTP requests in the Zapier platform:
+There are two ways to make HTTP requests:
 
-1. **Shorthand HTTP Requests** - these are simple object literals that make it easy to define simple requests.
-2. **Manual HTTP Requests** - you use `z.request([url], options)` to make the requests and control the response. Use this when you need to change options for certain requests (for all requests, use middleware).
+1. [**Shorthand HTTP Requests**](#shorthand-http-requests) - Easy to use, but limits what you can control. Best for simple requests.
+2. [**Manual HTTP Requests**](#manual-http-requests) - Gives you full control over the request and response.
 
-There are also a few helper constructs you can use to reduce boilerplate:
+Use these helper constructs to reduce boilerplate:
 
-1. `requestTemplate` which is a shorthand HTTP request that will be merged with every request.
-2. `beforeRequest` middleware which is an array of functions to mutate a request before it is sent.
-3. `afterResponse` middleware which is an array of functions to mutate a response before it is completed.
+1. `requestTemplate` - an object literal of [HTTP request options](#http-request-options) that will be merged with every request.
+2. `beforeRequest` - [middleware](#using-http-middleware) that mutates every request before it is sent.
+3. `afterResponse` - [middleware](#using-http-middleware) that mutates every response before it is completed.
 
 > Note: you can install any HTTP client you like - but this is greatly discouraged as you lose [automatic HTTP logging](#http-logging) and middleware.
 
 ### Shorthand HTTP Requests
 
-For simple HTTP requests that do not require special pre- or post-processing, you can specify the HTTP options as an object literal in your app definition.
+For simple HTTP requests that do not require special pre- or post-processing, you can specify the [HTTP request options](#http-request-options) as an object literal in your app definition.
 
 This features:
 
@@ -2006,8 +2006,8 @@ This features:
 
 ```js
 const triggerShorthandRequest = {
-  method: 'GET',
   url: 'https://{{bundle.authData.subdomain}}.example.com/v2/api/recipes.json',
+  method: 'GET',
   params: {
     sort_by: 'id',
     sort_order: 'DESC',
@@ -2029,28 +2029,36 @@ const App = {
 
 ```
 
-In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.
+In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON or form-encoded and returned.
 
 An error will be raised if the response cannot be parsed as JSON or form-encoded. To use shorthand requests with other response types, add [middleware](#using-http-middleware) that sets `response.data` to the parsed response.
 
 ### Manual HTTP Requests
 
-When you need to do custom processing of the response, or need to process non-JSON responses, you can make manual HTTP requests. This approach does not perform any magic - no status code checking, no automatic JSON parsing. Use this method when you need more control. Manual requests do perform lazy `{{curly}}` replacement.
+Use this when you need full control over the request/response. For example:
 
-To make a manual HTTP request, use the `request` method of the `z` object:
+1. To do processing (usually involving [`bundle.inputData`](#bundleinputdata)) before a request is made
+2. To do processing of an API's response before you return data to Zapier
+3. To process a non-JSON response
+
+To make a manual request, pass your [request options](#http-request-options) to `z.request()` then use the resulting [response object](#http-response-object) to return the data you want:
 
 ```js
-const listExample = async (z, bundle) => {
-  const customHttpOptions = {
-    url: 'https://example.com/api/v2/recipes.json',
-    headers: {
-      'my-header': 'from zapier',
+const listRecipes = async (z, bundle) => {
+  // Custom processing of bundle.inputData would go here...
+
+  const httpRequestOptions = {
+    url: 'https://{{bundle.authData.subdomain}}.example.com/v2/api/recipes.json',
+    method: 'GET',
+    params: {
+      cuisine: bundle.inputData.cuisine,
     },
   };
-  const response = await z.request(customHttpOptions);
+  const response = await z.request(httpRequestOptions);
+  const recipes = response.data; // or response.json if using core v9 or older
 
-  const recipes = response.data; // or response.json if you're using core v9 or older
-  // You can do any custom processing of recipes here...
+  // Custom processing of recipes would go here...
+
   return recipes;
 };
 
@@ -2061,13 +2069,15 @@ const App = {
       // ...
       operation: {
         // ...
-        perform: listExample,
+        perform: listRecipes,
       },
     },
   },
 };
 
 ```
+
+Manual requests perform lazy `{{curly}}` replacement. In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle.
 
 #### POST and PUT Requests
 
@@ -2117,11 +2127,9 @@ const App = {
 
 ### Using HTTP middleware
 
-If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions.
+To process all HTTP requests in a certain way, use the `beforeRequest` and `afterResponse` middleware functions.
 
-> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware for a working example app using HTTP middleware.
-
-Try putting them in your app definition:
+Middleware functions go in your app definition:
 
 ```js
 const addHeader = (request, z, bundle) => {
@@ -2178,6 +2186,8 @@ Here is the full request lifecycle when you call `z.request({...})`:
 
 The resulting response object is returned from `z.request()`.
 
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware for a working example app using HTTP middleware.
+
 #### Error Response Handling
 
 Since `v10.0.0`, `z.request()` calls `response.throwForStatus()` before it returns a response. You can disable automatic error throwing by setting `skipThrowForStatus` on the request object:
@@ -2227,9 +2237,9 @@ Ensure you're handling errors correctly for your platform version. The latest re
 
 ### HTTP Request Options
 
-Shorthand requests and manual `z.request([url], options)` calls support the following HTTP `options`:
+[Shorthand requests](#shorthand-http-requests) and [manual requests](#manual-http-requests) support the following HTTP `options`:
 
-* `url`: HTTP url, you can provide it both `z.request(url, options)` or `z.request({url: url, ...})`.
+* `url`: HTTP url, you can provide it as a separate argument `z.request(url, options)` or as part of the `options` object `z.request({url: url, ...})`.
 * `method`: HTTP method, default is `GET`.
 * `headers`: request headers object, format `{'header-key': 'header-value'}`.
 * `params`: URL query params object, format `{'query-key': 'query-value'}`.
@@ -2290,7 +2300,7 @@ const response = await z.request({
   // options
 });
 
-// A bunch of examples lines for cherry picking
+// A bunch of examples for demonstration
 response.status;
 response.headers['Content-Type'];
 response.getHeader('content-type');
