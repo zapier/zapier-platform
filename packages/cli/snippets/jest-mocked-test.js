@@ -8,7 +8,7 @@ const appTester = zapier.createAppTester(App);
 const nock = require('nock');
 
 describe('triggers', () => {
-  test('load recipes', async () => {
+  test('new recipe', async () => {
     const bundle = {
       inputData: {
         style: 'mediterranean',
