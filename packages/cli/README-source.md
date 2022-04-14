@@ -1601,7 +1601,7 @@ Whether you use Travis, Circle, Jenkins, or another service, we aim to make it p
 
 Behind the scenes `zapier test` does a standard `npm test`, which could be [Jest](https://jestjs.io/) or [Mocha](https://mochajs.org/), based on your project setup.
 
-This makes it straightforward to integrate into your testing interface. For example, if you want to test with [Travis CI](https://travis-ci.com/),the `.travis.yml` would look something like this:
+This makes it straightforward to integrate into your testing interface. For example, if you want to test with [Travis CI](https://travis-ci.com/), the `.travis.yml` would look something like this:
 
 ```yaml
 language: node_js
