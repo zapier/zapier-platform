@@ -557,7 +557,7 @@ You can find more details on the different field schema options at [our Field Sc
 
 ### Custom/Dynamic Fields
 
-In some cases, it might be necessary to provide fields that are dynamically generated - especially for custom fields. This is a common pattern for CRMs, form software, databases and more. Basically - you can provide a function instead of a field and we'll evaluate that function - merging the dynamic fields with the static fields.
+In some cases, you may need to provide dynamically-generated fields - especially for custom ones. This is common functionality for CRMs, form software, databases, and other highly-customizable platforms. Instead of an explicit field definition, you can provide a function we'll evaluate to return a list of fields - merging the dynamic with the static fields.
 
 > You should see `bundle.inputData` partially filled in as users provide data - even in field retrieval. This allows you to build hierarchical relationships into fields (e.g. only show issues from the previously selected project).
 
@@ -567,7 +567,7 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 [insert-file:./snippets/custom-fields.js]
 ```
 
-Additionally, if there is a field that affects the generation of dynamic fields, you can set the `altersDynamicFields: true` property. This informs the Zapier UI that whenever the value of that field changes, fields need to be recomputed. An example could be a static dropdown of "dessert type" that will change whether the function that generates dynamic fields includes a field "with sprinkles." If your field affects others, this is an important property to set.
+Additionally, if there is a field that affects the generation of dynamic fields, you can set the property `altersDynamicFields: true`. This informs the Zapier UI whenever the value of that field changes, the input fields need to be recomputed. For example, imagine the selection on a static dropdown called "Dessert Type" determining whether the function generating dynamic fields includes the field "With Sprinkles?" or not. If the value in one input field affects others, this is an important property to set.
 
 ```js
 [insert-file:./snippets/alters-dynamic-fields.js]
@@ -578,8 +578,8 @@ Additionally, if there is a field that affects the generation of dynamic fields,
 When using dynamic fields, the fields will be retrieved in three different contexts:
 
 * Whenever the value of a field with `altersDynamicFields` is changed, as described above.
-* Whenever Zap Editor opens the "Set up" section for the trigger or action.
-* Whenever the Refresh Fields button is used on the trigger or action.
+* Whenever the Zap Editor opens the "Set up" section for the trigger or action.
+* Whenever the "Refresh fields" button at the bottom of the Editor's "Set up" section is clicked.
 
 Be sure to set up your code accordingly - for example, don't rely on any input fields already having a value, since they won't have one the first time the "Set up" section loads.
 
