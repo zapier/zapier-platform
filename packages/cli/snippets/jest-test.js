@@ -12,7 +12,7 @@ const appTester = zapier.createAppTester(App);
 zapier.tools.env.inject();
 
 describe('triggers', () => {
-  test('load recipes', async () => {
+  test('new recipe', async () => {
     const bundle = {
       inputData: {
         style: 'mediterranean',
@@ -20,7 +20,7 @@ describe('triggers', () => {
     };
 
     const results = await appTester(
-      App.triggers.species.operation.perform,
+      App.triggers.recipe.operation.perform,
       bundle
     );
     expect(results.length).toBeGreaterThan(1);

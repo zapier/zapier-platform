@@ -557,7 +557,7 @@ You can find more details on the different field schema options at [our Field Sc
 
 ### Custom/Dynamic Fields
 
-In some cases, it might be necessary to provide fields that are dynamically generated - especially for custom fields. This is a common pattern for CRMs, form software, databases and more. Basically - you can provide a function instead of a field and we'll evaluate that function - merging the dynamic fields with the static fields.
+In some cases, you may need to provide dynamically-generated fields - especially for custom ones. This is common functionality for CRMs, form software, databases, and other highly-customizable platforms. Instead of an explicit field definition, you can provide a function we'll evaluate to return a list of fields - merging the dynamic with the static fields.
 
 > You should see `bundle.inputData` partially filled in as users provide data - even in field retrieval. This allows you to build hierarchical relationships into fields (e.g. only show issues from the previously selected project).
 
@@ -567,7 +567,7 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 [insert-file:./snippets/custom-fields.js]
 ```
 
-Additionally, if there is a field that affects the generation of dynamic fields, you can set the `altersDynamicFields: true` property. This informs the Zapier UI that whenever the value of that field changes, fields need to be recomputed. An example could be a static dropdown of "dessert type" that will change whether the function that generates dynamic fields includes a field "with sprinkles." If your field affects others, this is an important property to set.
+Additionally, if there is a field that affects the generation of dynamic fields, you can set the property `altersDynamicFields: true`. This informs the Zapier UI whenever the value of that field changes, the input fields need to be recomputed. For example, imagine the selection on a static dropdown called "Dessert Type" determining whether the function generating dynamic fields includes the field "With Sprinkles?" or not. If the value in one input field affects others, this is an important property to set.
 
 ```js
 [insert-file:./snippets/alters-dynamic-fields.js]
@@ -578,8 +578,8 @@ Additionally, if there is a field that affects the generation of dynamic fields,
 When using dynamic fields, the fields will be retrieved in three different contexts:
 
 * Whenever the value of a field with `altersDynamicFields` is changed, as described above.
-* Whenever Zap Editor opens the "Set up" section for the trigger or action.
-* Whenever the Refresh Fields button is used on the trigger or action.
+* Whenever the Zap Editor opens the "Set up" section for the trigger or action.
+* Whenever the "Refresh fields" button at the bottom of the Editor's "Set up" section is clicked.
 
 Be sure to set up your code accordingly - for example, don't rely on any input fields already having a value, since they won't have one the first time the "Set up" section loads.
 
@@ -1525,14 +1525,14 @@ const yourAfterResponse = (resp) => {
 
 ## Testing
 
-You can write unit tests for your Zapier app that run locally, outside of the Zapier editor.
+You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.
 You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
 
 ### Writing Unit Tests
 
-Since v10, we recommend using the [Jest](https://jestjs.io/) testing framework. After running `zapier init` you should find an example test to start from in the `test` directory.
+From v10 of `zapier-platform-cli`, we recommend using the [Jest](https://jestjs.io/) testing framework. After running `zapier init` you should find an example test to start from in the `test` directory.
 
-> Note: On v9, the recommendation was [Mocha](https://mochajs.org/). You can still use it if you prefer Mocha.
+> Note: On v9, the recommendation was [Mocha](https://mochajs.org/). You can still use Mocha if you prefer.
 
 ```js
 [insert-file:./snippets/jest-test.js]
@@ -1548,13 +1548,13 @@ Introduced in `core@11.1.0`, `appTester` can now run arbitrary functions:
 
 ### Mocking Requests
 
-While testing, it's useful to test your code without actually hitting any external services. [Nock](https://github.com/node-nock/nock) is a node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with `z.request` by setting up your `nock` before calling `appTester`.
+It's useful to test your code without actually hitting any external services. [Nock](https://github.com/node-nock/nock) is a Node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with `z.request` by setting up your `nock` before calling `appTester`.
 
 ```js
 [insert-file:./snippets/jest-mocked-test.js]
 ```
 
-There's more info about nock and its usage in its [readme](https://github.com/node-nock/nock/blob/master/README.md).
+Here's more info about nock and its usage in the [README](https://github.com/node-nock/nock/blob/master/README.md).
 
 ### Running Unit Tests
 
@@ -1597,11 +1597,11 @@ zapier test
 
 ### Testing in Your CI
 
-Whether you use Travis, Circle, Jenkins, or anything else, we aim to make it painless to test in an automated environment.
+Whether you use Travis, Circle, Jenkins, or another service, we aim to make it painless to test in an automated environment.
 
-Behind the scenes `zapier test` is doing a pretty standard `npm test`, which could be [Jest](https://jestjs.io/) or [Mocha](https://mochajs.org/), based on your project setup.
+Behind the scenes `zapier test` does a standard `npm test`, which could be [Jest](https://jestjs.io/) or [Mocha](https://mochajs.org/), based on your project setup.
 
-This makes it pretty straightforward to integrate into your testing interface. If you'd like to test with [Travis CI](https://travis-ci.com/) for example - the `.travis.yml` would look something like this:
+This makes it straightforward to integrate into your testing interface. For example, if you want to test with [Travis CI](https://travis-ci.com/), the `.travis.yml` would look something like this:
 
 ```yaml
 language: node_js
@@ -1611,13 +1611,13 @@ before_script: npm install -g zapier-platform-cli
 script: CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
 
-You can substitute `zapier test` with `npm test`, or a direct call to `node_modules/.bin/jest`. Also, we generally recommend putting the environment variables into whatever configuration screen Jenkins or Travis provides!
+You can substitute `zapier test` with `npm test`, or a direct call to `node_modules/.bin/jest`. We recommend putting environment variables directly into the configuration screens Jenkins, Travis, or other services provide.
 
-As an alternative to reading the deploy key from root (the default location), you may set the `ZAPIER_DEPLOY_KEY` environment variable to run privileged commands without the human input needed for `zapier login`. We suggest encrypting your deploy key in whatever manner you CI provides (such as [these instructions](https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml), for Travis).
+Alternatively to reading the deploy key from root (the default location), you may set the `ZAPIER_DEPLOY_KEY` environment variable to run privileged commands without the human input needed for `zapier login`. We suggest encrypting your deploy key in the manner your CI provides (such as [these instructions](https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml), for Travis).
 
 ### Debugging Tests
 
-Sometimes tests aren't enough and you may want to step through your code and set breakpoints. The testing suite is a regular Node.js process, so debugging it doesn't take anything special. Because we recommend `jest` for testing, these instructions will outline steps for debugging w/ jest, but other test runners will work similarly. You can also refer to [Jest's own docs on the subject](https://jestjs.io/docs/en/troubleshooting#tests-are-failing-and-you-dont-know-why).
+Sometimes tests aren't enough, and you may want to step through your code and set breakpoints. The testing suite is a regular Node.js process, so debugging it doesn't take anything special. Because we recommend `jest` for testing, these instructions will outline steps for debugging w/ jest, but other test runners will work similarly. You can also refer to [Jest's own docs on the subject](https://jestjs.io/docs/en/troubleshooting#tests-are-failing-and-you-dont-know-why).
 
 To start, add the following line to the `scripts` section of your `package.json`:
 
@@ -1668,7 +1668,7 @@ After a few seconds, you'll see your code, the `debugger` statement, and info ab
 
 ![](https://cdn.zappy.app/4bfdfe079a344ab7aced64ad7728bc6a.png)
 
-Using debugging in combination with thorough unit tests, you will hopefully be able to keep your Zapier integration in smooth working order.
+Debugging combined with thorough unit tests will hopefully equip you in keeping your Zapier integration in smooth working order.
 
 ## Using `npm` Modules
 

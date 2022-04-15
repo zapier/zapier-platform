@@ -3,6 +3,7 @@ const subscribeHook = (z, bundle) => {
   z.console.log('console says hello world!');
 
   // bundle.targetUrl has the Hook URL this app should call when a recipe is created.
+  // https://platform.zapier.com/docs/advanced#targeturl
   const data = {
     url: bundle.targetUrl,
     style: bundle.inputData.style,
@@ -21,8 +22,7 @@ const subscribeHook = (z, bundle) => {
 };
 
 const unsubscribeHook = (z, bundle) => {
-  // bundle.subscribeData contains the parsed response JSON from the subscribe
-  // request made initially.
+  // bundle.subscribeData contains the parsed response JSON from the subscribe request.
   const hookId = bundle.subscribeData.id;
 
   // You can build requests and our client will helpfully inject all the variables
