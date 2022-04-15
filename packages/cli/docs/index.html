@@ -2907,7 +2907,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>bundle.inputData</code> is user-provided data for this particular run of the trigger/search/create, as defined by the <code>inputFields</code>. For example:</p>
+      <p><code>bundle.inputData</code> is user-provided data for this particular run of the trigger/search/create, as defined by the <a href="#input-fields"><code>inputFields</code></a>. For example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js">{
@@ -3380,13 +3380,13 @@ zapier env:get 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>There are two primary ways to make HTTP requests in the Zapier platform:</p><ol>
-<li><strong>Shorthand HTTP Requests</strong> - these are simple object literals that make it easy to define simple requests.</li>
-<li><strong>Manual HTTP Requests</strong> - you use <code>z.request([url], options)</code> to make the requests and control the response. Use this when you need to change options for certain requests (for all requests, use middleware).</li>
-</ol><p>There are also a few helper constructs you can use to reduce boilerplate:</p><ol>
-<li><code>requestTemplate</code> which is a shorthand HTTP request that will be merged with every request.</li>
-<li><code>beforeRequest</code> middleware which is an array of functions to mutate a request before it is sent.</li>
-<li><code>afterResponse</code> middleware which is an array of functions to mutate a response before it is completed.</li>
+      <p>There are two ways to make HTTP requests:</p><ol>
+<li><a href="#shorthand-http-requests"><strong>Shorthand HTTP Requests</strong></a> - Easy to use, but limits what you can control. Best for simple requests.</li>
+<li><a href="#manual-http-requests"><strong>Manual HTTP Requests</strong></a> - Gives you full control over the request and response.</li>
+</ol><p>Use these helper constructs to reduce boilerplate:</p><ol>
+<li><code>requestTemplate</code> - an object literal of <a href="#http-request-options">HTTP request options</a> that will be merged with every request.</li>
+<li><code>beforeRequest</code> - <a href="#using-http-middleware">middleware</a> that mutates every request before it is sent.</li>
+<li><code>afterResponse</code> - <a href="#using-http-middleware">middleware</a> that mutates every response before it is completed.</li>
 </ol><blockquote>
 <p>Note: you can install any HTTP client you like - but this is greatly discouraged as you lose <a href="#http-logging">automatic HTTP logging</a> and middleware.</p>
 </blockquote>
@@ -3407,7 +3407,7 @@ zapier env:get 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For simple HTTP requests that do not require special pre- or post-processing, you can specify the HTTP options as an object literal in your app definition.</p><p>This features:</p><ol>
+      <p>For simple HTTP requests that do not require special pre- or post-processing, you can specify the <a href="#http-request-options">HTTP request options</a> as an object literal in your app definition.</p><p>This features:</p><ol>
 <li>Lazy <code>{{curly}}</code> replacement.</li>
 <li>JSON and form body de-serialization.</li>
 <li>Automatic non-2xx error raising.</li>
@@ -3415,8 +3415,8 @@ zapier env:get 1.0.0
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> triggerShorthandRequest = {
-  <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;GET&apos;</span>,
   <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/v2/api/recipes.json&apos;</span>,
+  <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;GET&apos;</span>,
   <span class="hljs-attr">params</span>: {
     <span class="hljs-attr">sort_by</span>: <span class="hljs-string">&apos;id&apos;</span>,
     <span class="hljs-attr">sort_order</span>: <span class="hljs-string">&apos;DESC&apos;</span>,
@@ -3442,7 +3442,7 @@ zapier env:get 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>In the URL above, <code>{{bundle.authData.subdomain}}</code> is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.</p><p>An error will be raised if the response cannot be parsed as JSON or form-encoded. To use shorthand requests with other response types, add <a href="#using-http-middleware">middleware</a> that sets <code>response.data</code> to the parsed response.</p>
+      <p>In the URL above, <code>{{bundle.authData.subdomain}}</code> is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON or form-encoded and returned.</p><p>An error will be raised if the response cannot be parsed as JSON or form-encoded. To use shorthand requests with other response types, add <a href="#using-http-middleware">middleware</a> that sets <code>response.data</code> to the parsed response.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3460,20 +3460,28 @@ zapier env:get 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>When you need to do custom processing of the response, or need to process non-JSON responses, you can make manual HTTP requests. This approach does not perform any magic - no status code checking, no automatic JSON parsing. Use this method when you need more control. Manual requests do perform lazy <code>{{curly}}</code> replacement.</p><p>To make a manual HTTP request, use the <code>request</code> method of the <code>z</code> object:</p>
+      <p>Use this when you need full control over the request/response. For example:</p><ol>
+<li>To do processing (usually involving <a href="#bundleinputdata"><code>bundle.inputData</code></a>) before a request is made</li>
+<li>To do processing of an API&apos;s response before you return data to Zapier</li>
+<li>To process an unusual response type, such as XML</li>
+</ol><p>To make a manual request, pass your <a href="#http-request-options">request options</a> to <code>z.request()</code> then use the resulting <a href="#http-response-object">response object</a> to return the data you want:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> listExample = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
-  <span class="hljs-keyword">const</span> customHttpOptions = {
-    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/v2/recipes.json&apos;</span>,
-    <span class="hljs-attr">headers</span>: {
-      <span class="hljs-string">&apos;my-header&apos;</span>: <span class="hljs-string">&apos;from zapier&apos;</span>,
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> listRecipes = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+  <span class="hljs-comment">// Custom processing of bundle.inputData would go here...</span>
+
+  <span class="hljs-keyword">const</span> httpRequestOptions = {
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/v2/api/recipes.json&apos;</span>,
+    <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;GET&apos;</span>,
+    <span class="hljs-attr">params</span>: {
+      <span class="hljs-attr">cuisine</span>: bundle.inputData.cuisine,
     },
   };
-  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(customHttpOptions);
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request(httpRequestOptions);
+  <span class="hljs-keyword">const</span> recipes = response.data;
 
-  <span class="hljs-keyword">const</span> recipes = response.data; <span class="hljs-comment">// or response.json if you&apos;re using core v9 or older</span>
-  <span class="hljs-comment">// You can do any custom processing of recipes here...</span>
+  <span class="hljs-comment">// Custom processing of recipes would go here...</span>
+
   <span class="hljs-keyword">return</span> recipes;
 };
 
@@ -3484,13 +3492,22 @@ zapier env:get 1.0.0
       <span class="hljs-comment">// ...</span>
       <span class="hljs-attr">operation</span>: {
         <span class="hljs-comment">// ...</span>
-        <span class="hljs-attr">perform</span>: listExample,
+        <span class="hljs-attr">perform</span>: listRecipes,
       },
     },
   },
 };
 
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Manual requests perform lazy <code>{{curly}}</code> replacement. In the URL above, <code>{{bundle.authData.subdomain}}</code> is automatically replaced with the live value from the bundle.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -3571,9 +3588,7 @@ zapier env:get 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions.</p><blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware">https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware</a> for a working example app using HTTP middleware.</p>
-</blockquote><p>Try putting them in your app definition:</p>
+      <p>To process all HTTP requests in a certain way, use the <code>beforeRequest</code> and <code>afterResponse</code> middleware functions.</p><p>Middleware functions go in your app definition:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> addHeader = <span class="hljs-function">(<span class="hljs-params">request, z, bundle</span>) =&gt;</span> {
@@ -3624,7 +3639,9 @@ zapier env:get 1.0.0
 <li>if the status code is <code>401</code>, you&apos;re using a refresh-able auth (such as <code>oauth2</code> or <code>session</code>) <em>and</em> <code>autoRefresh</code> is <code>true</code> in your auth configuration, throw a <code>RefreshAuthError</code>. The server will attempt to refresh the authentication again and retry the whole step</li>
 <li>run your <code>afterResponse</code> middleware functions in order</li>
 <li>call <code>response.throwForStatus()</code> unless <code>response.skipThrowForStatus</code> is <code>true</code></li>
-</ol><p>The resulting response object is returned from <code>z.request()</code>.</p>
+</ol><p>The resulting response object is returned from <code>z.request()</code>.</p><blockquote>
+<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware">https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware</a> for a working example app using HTTP middleware.</p>
+</blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3703,8 +3720,8 @@ zapier env:get 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Shorthand requests and manual <code>z.request([url], options)</code> calls support the following HTTP <code>options</code>:</p><ul>
-<li><code>url</code>: HTTP url, you can provide it both <code>z.request(url, options)</code> or <code>z.request({url: url, ...})</code>.</li>
+      <p><a href="#shorthand-http-requests">Shorthand requests</a> and <a href="#manual-http-requests">manual requests</a> support the following HTTP <code>options</code>:</p><ul>
+<li><code>url</code>: HTTP url, you can provide it as a separate argument (<code>z.request(url, options)</code>) or as part of the <code>options</code> object (<code>z.request({url: url, ...})</code>).</li>
 <li><code>method</code>: HTTP method, default is <code>GET</code>.</li>
 <li><code>headers</code>: request headers object, format <code>{&apos;header-key&apos;: &apos;header-value&apos;}</code>.</li>
 <li><code>params</code>: URL query params object, format <code>{&apos;query-key&apos;: &apos;query-value&apos;}</code>.</li>
@@ -3775,7 +3792,7 @@ zapier env:get 1.0.0
   <span class="hljs-comment">// options</span>
 });
 
-<span class="hljs-comment">// A bunch of examples lines for cherry picking</span>
+<span class="hljs-comment">// A bunch of examples for demonstration</span>
 response.status;
 response.headers[<span class="hljs-string">&apos;Content-Type&apos;</span>];
 response.getHeader(<span class="hljs-string">&apos;content-type&apos;</span>);
