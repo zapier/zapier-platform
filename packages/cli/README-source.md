@@ -1080,7 +1080,7 @@ Use this when you need full control over the request/response. For example:
 
 1. To do processing (usually involving [`bundle.inputData`](#bundleinputdata)) before a request is made
 2. To do processing of an API's response before you return data to Zapier
-3. To process a non-JSON response
+3. To process an unusual response type, such as XML
 
 To make a manual request, pass your [request options](#http-request-options) to `z.request()` then use the resulting [response object](#http-response-object) to return the data you want:
 
@@ -1184,7 +1184,7 @@ Ensure you're handling errors correctly for your platform version. The latest re
 
 [Shorthand requests](#shorthand-http-requests) and [manual requests](#manual-http-requests) support the following HTTP `options`:
 
-* `url`: HTTP url, you can provide it as a separate argument `z.request(url, options)` or as part of the `options` object `z.request({url: url, ...})`.
+* `url`: HTTP url, you can provide it as a separate argument (`z.request(url, options)`) or as part of the `options` object (`z.request({url: url, ...})`).
 * `method`: HTTP method, default is `GET`.
 * `headers`: request headers object, format `{'header-key': 'header-value'}`.
 * `params`: URL query params object, format `{'query-key': 'query-value'}`.

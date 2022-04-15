@@ -9,7 +9,7 @@ const listRecipes = async (z, bundle) => {
     },
   };
   const response = await z.request(httpRequestOptions);
-  const recipes = response.data; // or response.json if using core v9 or older
+  const recipes = response.data;
 
   // Custom processing of recipes would go here...
 
