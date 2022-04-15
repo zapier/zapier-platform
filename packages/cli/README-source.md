@@ -509,8 +509,9 @@ The definition for each of these follows the same structure. Here is an example 
 You can find more details on the definition for each by looking at the [Trigger Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#triggerschema),
 [Search Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#searchschema), and [Create Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#createschema).
 
-> To create a new integration with a premade trigger, search, or create, run `zapier init [your app name]` and select from the list that appears. You can also check out our working example apps [here](https://github.com/zapier/zapier-platform/tree/master/example-apps).
+> To create a new integration with a premade trigger, search, or create, run `zapier init [your app name]` and select from the list that appears. You can also check out our working example apps [here](https://github.com/zapier/zapier-platform/tree/master/example-apps). 
 
+> To add a trigger, search, or create to an existing integration, run `zapier scaffold [trigger|search|create] [noun]` to create the necessary files to your project. For example, `zapier scaffold trigger post` will create a new trigger called "New Post".
 ### Return Types
 
 Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you're trying to pass the wrong type back. For reference, each expects:
