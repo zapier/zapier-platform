@@ -450,7 +450,7 @@ When a user authenticates to your application through Zapier, a "connection" is 
 
 Useful if your app requires two pieces of information to authenticate: `username` and `password`, which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).
 
-> To create a new integration with basic authentication, run `zapier init [your app name]` and select "basic-auth" from the list that appears. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth).
+> To create a new integration with basic authentication, run `zapier init [your app name] --template basic-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth).
 
 If your app uses Basic auth with an encoded API key rather than a username and password, like `Authorization: Basic APIKEYHERE:x`, consider the [Custom](#custom) authentication method instead.
 
@@ -479,7 +479,7 @@ const App = {
 
 The setup and user experience of Digest Auth is identical to Basic Auth. Users provide Zapier their username and password, and Zapier handles all the nonce and quality of protection details automatically.
 
-> To create a new integration with digest authentication, run `zapier init [your app name]` and select "digest-auth" from the list that appears. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth).
+> To create a new integration with digest authentication, run `zapier init [your app name] --template digest-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth).
 
 > Limitation: Currently, MD5-sess and SHA are not implemented. Only the MD5 algorithm is supported. In addition, server nonces are not reused. That means for every `z.request` call, Zapier will send an additional request beforehand to get the server nonce.
 
@@ -512,7 +512,7 @@ const App = {
 
 Custom auth is most commonly used for apps that authenticate with API keys, although it also provides flexibility for any unusual authentication setup. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` (see [Making HTTP Requests](#making-http-requests)) to pass in data returned from the authentication process, most commonly by adding/computing needed headers.
 
-> To create a new integration with custom authentication, run `zapier init [your app name]` and select "custom-auth" from the list that appears. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth).
+> To create a new integration with custom authentication, run `zapier init [your app name] --custom-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth).
 
 ```js
 const authentication = {
@@ -560,7 +560,7 @@ const App = {
 
 Session auth gives you the ability to exchange some user-provided data for some authentication data; for example, username and password for a session key. It can be used to implement almost any authentication method that uses that pattern - for example, alternative OAuth flows.
 
-> To create a new integration with session authentication, run `zapier init [your app name]` and select "session-auth" from the list that appears. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth).
+> To create a new integration with session authentication, run `zapier init [your app name] --template session-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth).
 
 ```js
 const getSessionKey = async (z, bundle) => {
@@ -636,7 +636,7 @@ For Session auth, the function that fetches the additional authentication data n
 
 Zapier's OAuth1 implementation matches [Twitter](https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a) and [Trello](https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth) implementations of the 3-legged OAuth flow.
 
-> To create a new integration with OAuth1, run `zapier init [your app name]` and select "oauth1-trello". You can also check out [oauth1-trello](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-trello), [oauth1-tumblr](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-twitter) for working example apps with OAuth1.
+> To create a new integration with OAuth1, run `zapier init [your app name] --template oauth1-trello`. You can also check out [oauth1-trello](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-trello), [oauth1-tumblr](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-twitter) for working example apps with OAuth1.
 
 The flow works like this:
 
@@ -756,7 +756,7 @@ Also, `authentication.oauth1Config.getAccessToken` has access to the additional 
 
 Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](https://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
 
-> To create a new integration with OAuth2, run `zapier init [your app name]` and select "oauth2". You can also check out [our working example app](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2).
+> To create a new integration with OAuth2, run `zapier init [your app name] --template oauth2`. You can also check out [our working example app](https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2).
 
 If your app's OAuth2 flow uses a different grant type, such as `client_credentials`, try using [Session auth](#session) instead.
 
@@ -2501,7 +2501,7 @@ module.exports = App;
 
 ```
 
-> To create a new integration for handling files, run `zapier init [your app name]` and select "files". You can also check out our working example app [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/files).
+> To create a new integration for handling files, run `zapier init [your app name] --template files`. You can also check out our working example app [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/files).
 
 
 ## Logging
@@ -3048,7 +3048,7 @@ zapier push
 
 There are a lot of details left out - check out the full example app for a working setup.
 
-> To create a new integration with Babel, run `zapier init [your app name]` and select "babel". You can also check out our working example app [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/babel).
+> To create a new integration with Babel, run `zapier init [your app name] --template babel`. You can also check out our working example app [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/babel).
 
 ## FAQs
 
