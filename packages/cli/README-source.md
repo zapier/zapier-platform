@@ -544,7 +544,7 @@ In cases where Zapier needs to show an example record to the user, but we are un
 
 On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a "Create Contact" action with fields like "First name", "Last name", "Email", etc. These fields will be able to accept input from previous steps in a Zap, for example:
 
-![gif of setting up an action field in Zap Editor](https://cdn.zapier.com/storage/photos/6bd938f7cad7e34c75ba1c1d3be75ac5.gif)
+![gif of setting up an action field in Zap Editor](https://cdn.zappy.app/52721a3cb202446b7c298e303b710471.gif)
 
 You can find more details about setting action fields from a user perspective in [our help documentation](https://zapier.com/help/creating-zap/#set-up-action-template).
 
@@ -609,7 +609,7 @@ In the above code example the dynamic property makes reference to a trigger with
 ```
 
 The dynamic dropdown would look something like this.
-![screenshot of dynamic dropdown in Zap Editor](https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png)
+![screenshot of dynamic dropdown in Zap Editor](https://cdn.zappy.app/6a90fcc532704f6c14b91586f5cd1d5b.png)
 
 In the first code example the dynamic dropdown is powered by a trigger. You can also use a resource to power a dynamic dropdown. To do this combine the resource key and the resource method using camel case.
 
@@ -1856,7 +1856,7 @@ To understand search-powered fields, we have to have a good understanding of dyn
 
 When users are selecting specific resources (for instance, a Google Sheet), it's important they're able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via `id` instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a **dynamic dropdown**. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app.  It provides a list of ids with labels that show the item's name:
 
-![](https://cdn.zapier.com/storage/photos/fb56bdc2aab91504be0e51800bec4d64.png)
+![](https://cdn.zappy.app/2d7eeda63ff34b70f1d1788de0117181.png)
 
 The field's value reaches your app as an id. You define this connection with the `dynamic` property, which is a string: `trigger_key.id_key.label_key`. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.
 
@@ -1869,7 +1869,7 @@ The field's value reaches your app as an id. You define this connection with the
 
 If the connection between steps 3 and 4 is a common one, you can indicate that in your field by specifying `search` as a `search_key.id_key`. When paired **with a dynamic dropdown**, this will add a button to the editor that will add the search step to the user's Zap and map the id field correctly.
 
-![](https://cdn.zapier.com/storage/photos/d263fd3a56cf8108cb89195163e7c9aa.png)
+![](https://cdn.zappy.app/081e63141ff05c131dadb8ebbea727b0.png)
 
 This is paired most often with "update" actions, where a required parameter will be a resource id.
 

@@ -3,4 +3,5 @@ package.json
 package-lock.json
 packages/cli/snippets/next.js
 packages/cli/src/generators/templates/
+packages/cli/README-source.md
 .yarn
