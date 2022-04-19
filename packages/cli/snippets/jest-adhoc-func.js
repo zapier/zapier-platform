@@ -6,8 +6,8 @@ const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
-  test('load recipes', async () => {
-    const adHodResult = await appTester(
+  test('new recipe', async () => {
+    const adHocResult = await appTester(
       // your in-line function takes the same [z, bundle] arguments as normal
       async (z, bundle) => {
         // requests are made using your integration's actual middleware
@@ -38,8 +38,8 @@ describe('triggers', () => {
       }
     );
 
-    expect(adHodResult.someHash).toEqual('a5beb6624e092adf7be31176c3079e64');
-    expect(adHodResult.data).toEqual({ whatever: true });
+    expect(adHocResult.someHash).toEqual('a5beb6624e092adf7be31176c3079e64');
+    expect(adHocResult.data).toEqual({ whatever: true });
 
     // ... rest of test
   });

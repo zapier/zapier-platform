@@ -207,6 +207,7 @@ npm install -g zapier-platform-cli
 # setup auth to Zapier's platform with a deploy key
 zapier login
 ```
+> Note: If you log into Zapier via the single sign-on (Google, Facebook, or Microsoft), you may not have a Zapier password. If that's the case, you'll need to generate a deploy key, go to [your Zapier developer accont here](https://zapier.com/developer/partner-settings/deploy-keys/) and create/copy a key, then run ```zapier login``` command with the --sso flag.
 
 Your Zapier CLI should be installed and ready to go at this point. Next up, we'll create our first app!
 
@@ -1033,7 +1034,7 @@ In cases where Zapier needs to show an example record to the user, but we are un
 
 On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a "Create Contact" action with fields like "First name", "Last name", "Email", etc. These fields will be able to accept input from previous steps in a Zap, for example:
 
-![gif of setting up an action field in Zap Editor](https://cdn.zapier.com/storage/photos/6bd938f7cad7e34c75ba1c1d3be75ac5.gif)
+![gif of setting up an action field in Zap Editor](https://cdn.zappy.app/52721a3cb202446b7c298e303b710471.gif)
 
 You can find more details about setting action fields from a user perspective in [our help documentation](https://zapier.com/help/creating-zap/#set-up-action-template).
 
@@ -1072,7 +1073,7 @@ You can find more details on the different field schema options at [our Field Sc
 
 ### Custom/Dynamic Fields
 
-In some cases, it might be necessary to provide fields that are dynamically generated - especially for custom fields. This is a common pattern for CRMs, form software, databases and more. Basically - you can provide a function instead of a field and we'll evaluate that function - merging the dynamic fields with the static fields.
+In some cases, you may need to provide dynamically-generated fields - especially for custom ones. This is common functionality for CRMs, form software, databases, and other highly-customizable platforms. Instead of an explicit field definition, you can provide a function we'll evaluate to return a list of fields - merging the dynamic with the static fields.
 
 > You should see `bundle.inputData` partially filled in as users provide data - even in field retrieval. This allows you to build hierarchical relationships into fields (e.g. only show issues from the previously selected project).
 
@@ -1082,7 +1083,7 @@ In some cases, it might be necessary to provide fields that are dynamically gene
 const recipeFields = async (z, bundle) => {
   const response = await z.request('https://example.com/api/v2/fields.json');
 
-  // Call reponse.throwForStatus() if you're using core v9 or older
+  // Call response.throwForStatus() if you're using zapier-platform-core v9 or older
 
   // Should return an array like [{"key":"field_1"},{"key":"field_2"}]
   return response.data; // response.json if you're using core v9 or older
@@ -1117,7 +1118,7 @@ const App = {
 
 ```
 
-Additionally, if there is a field that affects the generation of dynamic fields, you can set the `altersDynamicFields: true` property. This informs the Zapier UI that whenever the value of that field changes, fields need to be recomputed. An example could be a static dropdown of "dessert type" that will change whether the function that generates dynamic fields includes a field "with sprinkles." If your field affects others, this is an important property to set.
+Additionally, if there is a field that affects the generation of dynamic fields, you can set the property `altersDynamicFields: true`. This informs the Zapier UI whenever the value of that field changes, the input fields need to be recomputed. For example, imagine the selection on a static dropdown called "Dessert Type" determining whether the function generating dynamic fields includes the field "With Sprinkles?" or not. If the value in one input field affects others, this is an important property to set.
 
 ```js
 module.exports = {
@@ -1155,8 +1156,8 @@ module.exports = {
 When using dynamic fields, the fields will be retrieved in three different contexts:
 
 * Whenever the value of a field with `altersDynamicFields` is changed, as described above.
-* Whenever Zap Editor opens the "Set up" section for the trigger or action.
-* Whenever the Refresh Fields button is used on the trigger or action.
+* Whenever the Zap Editor opens the "Set up" section for the trigger or action.
+* Whenever the "Refresh fields" button at the bottom of the Editor's "Set up" section is clicked.
 
 Be sure to set up your code accordingly - for example, don't rely on any input fields already having a value, since they won't have one the first time the "Set up" section loads.
 
@@ -1215,7 +1216,7 @@ In the above code example the dynamic property makes reference to a trigger with
 ```
 
 The dynamic dropdown would look something like this.
-![screenshot of dynamic dropdown in Zap Editor](https://cdn.zapier.com/storage/photos/dd31fa761e0cf9d0abc9b50438f95210.png)
+![screenshot of dynamic dropdown in Zap Editor](https://cdn.zappy.app/6a90fcc532704f6c14b91586f5cd1d5b.png)
 
 In the first code example the dynamic dropdown is powered by a trigger. You can also use a resource to power a dynamic dropdown. To do this combine the resource key and the resource method using camel case.
 
@@ -1722,7 +1723,7 @@ This object holds the user's auth details and the data for the API requests.
 
 ### `bundle.inputData`
 
-`bundle.inputData` is user-provided data for this particular run of the trigger/search/create, as defined by the `inputFields`. For example:
+`bundle.inputData` is user-provided data for this particular run of the trigger/search/create, as defined by the [`inputFields`](#input-fields). For example:
 
 ```js
 {
@@ -1976,22 +1977,22 @@ const App = {
 
 ## Making HTTP Requests
 
-There are two primary ways to make HTTP requests in the Zapier platform:
+There are two ways to make HTTP requests:
 
-1. **Shorthand HTTP Requests** - these are simple object literals that make it easy to define simple requests.
-2. **Manual HTTP Requests** - you use `z.request([url], options)` to make the requests and control the response. Use this when you need to change options for certain requests (for all requests, use middleware).
+1. [**Shorthand HTTP Requests**](#shorthand-http-requests) - Easy to use, but limits what you can control. Best for simple requests.
+2. [**Manual HTTP Requests**](#manual-http-requests) - Gives you full control over the request and response.
 
-There are also a few helper constructs you can use to reduce boilerplate:
+Use these helper constructs to reduce boilerplate:
 
-1. `requestTemplate` which is a shorthand HTTP request that will be merged with every request.
-2. `beforeRequest` middleware which is an array of functions to mutate a request before it is sent.
-3. `afterResponse` middleware which is an array of functions to mutate a response before it is completed.
+1. `requestTemplate` - an object literal of [HTTP request options](#http-request-options) that will be merged with every request.
+2. `beforeRequest` - [middleware](#using-http-middleware) that mutates every request before it is sent.
+3. `afterResponse` - [middleware](#using-http-middleware) that mutates every response before it is completed.
 
 > Note: you can install any HTTP client you like - but this is greatly discouraged as you lose [automatic HTTP logging](#http-logging) and middleware.
 
 ### Shorthand HTTP Requests
 
-For simple HTTP requests that do not require special pre- or post-processing, you can specify the HTTP options as an object literal in your app definition.
+For simple HTTP requests that do not require special pre- or post-processing, you can specify the [HTTP request options](#http-request-options) as an object literal in your app definition.
 
 This features:
 
@@ -2001,8 +2002,8 @@ This features:
 
 ```js
 const triggerShorthandRequest = {
-  method: 'GET',
   url: 'https://{{bundle.authData.subdomain}}.example.com/v2/api/recipes.json',
+  method: 'GET',
   params: {
     sort_by: 'id',
     sort_order: 'DESC',
@@ -2024,28 +2025,36 @@ const App = {
 
 ```
 
-In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON and returned.
+In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle. If the call returns a non 2xx return code, an error is automatically raised. The response body is automatically parsed as JSON or form-encoded and returned.
 
 An error will be raised if the response cannot be parsed as JSON or form-encoded. To use shorthand requests with other response types, add [middleware](#using-http-middleware) that sets `response.data` to the parsed response.
 
 ### Manual HTTP Requests
 
-When you need to do custom processing of the response, or need to process non-JSON responses, you can make manual HTTP requests. This approach does not perform any magic - no status code checking, no automatic JSON parsing. Use this method when you need more control. Manual requests do perform lazy `{{curly}}` replacement.
+Use this when you need full control over the request/response. For example:
 
-To make a manual HTTP request, use the `request` method of the `z` object:
+1. To do processing (usually involving [`bundle.inputData`](#bundleinputdata)) before a request is made
+2. To do processing of an API's response before you return data to Zapier
+3. To process an unusual response type, such as XML
+
+To make a manual request, pass your [request options](#http-request-options) to `z.request()` then use the resulting [response object](#http-response-object) to return the data you want:
 
 ```js
-const listExample = async (z, bundle) => {
-  const customHttpOptions = {
-    url: 'https://example.com/api/v2/recipes.json',
-    headers: {
-      'my-header': 'from zapier',
+const listRecipes = async (z, bundle) => {
+  // Custom processing of bundle.inputData would go here...
+
+  const httpRequestOptions = {
+    url: 'https://{{bundle.authData.subdomain}}.example.com/v2/api/recipes.json',
+    method: 'GET',
+    params: {
+      cuisine: bundle.inputData.cuisine,
     },
   };
-  const response = await z.request(customHttpOptions);
+  const response = await z.request(httpRequestOptions);
+  const recipes = response.data;
 
-  const recipes = response.data; // or response.json if you're using core v9 or older
-  // You can do any custom processing of recipes here...
+  // Custom processing of recipes would go here...
+
   return recipes;
 };
 
@@ -2056,13 +2065,15 @@ const App = {
       // ...
       operation: {
         // ...
-        perform: listExample,
+        perform: listRecipes,
       },
     },
   },
 };
 
 ```
+
+Manual requests perform lazy `{{curly}}` replacement. In the URL above, `{{bundle.authData.subdomain}}` is automatically replaced with the live value from the bundle.
 
 #### POST and PUT Requests
 
@@ -2112,11 +2123,9 @@ const App = {
 
 ### Using HTTP middleware
 
-If you need to process all HTTP requests in a certain way, you may be able to use one of utility HTTP middleware functions.
+To process all HTTP requests in a certain way, use the `beforeRequest` and `afterResponse` middleware functions.
 
-> Check out https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware for a working example app using HTTP middleware.
-
-Try putting them in your app definition:
+Middleware functions go in your app definition:
 
 ```js
 const addHeader = (request, z, bundle) => {
@@ -2173,6 +2182,8 @@ Here is the full request lifecycle when you call `z.request({...})`:
 
 The resulting response object is returned from `z.request()`.
 
+> Example App: check out https://github.com/zapier/zapier-platform/tree/master/example-apps/middleware for a working example app using HTTP middleware.
+
 #### Error Response Handling
 
 Since `v10.0.0`, `z.request()` calls `response.throwForStatus()` before it returns a response. You can disable automatic error throwing by setting `skipThrowForStatus` on the request object:
@@ -2222,9 +2233,9 @@ Ensure you're handling errors correctly for your platform version. The latest re
 
 ### HTTP Request Options
 
-Shorthand requests and manual `z.request([url], options)` calls support the following HTTP `options`:
+[Shorthand requests](#shorthand-http-requests) and [manual requests](#manual-http-requests) support the following HTTP `options`:
 
-* `url`: HTTP url, you can provide it both `z.request(url, options)` or `z.request({url: url, ...})`.
+* `url`: HTTP url, you can provide it as a separate argument (`z.request(url, options)`) or as part of the `options` object (`z.request({url: url, ...})`).
 * `method`: HTTP method, default is `GET`.
 * `headers`: request headers object, format `{'header-key': 'header-value'}`.
 * `params`: URL query params object, format `{'query-key': 'query-value'}`.
@@ -2285,7 +2296,7 @@ const response = await z.request({
   // options
 });
 
-// A bunch of examples lines for cherry picking
+// A bunch of examples for demonstration
 response.status;
 response.headers['Content-Type'];
 response.getHeader('content-type');
@@ -2668,14 +2679,14 @@ const yourAfterResponse = (resp) => {
 
 ## Testing
 
-You can write unit tests for your Zapier app that run locally, outside of the Zapier editor.
+You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.
 You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
 
 ### Writing Unit Tests
 
-Since v10, we recommend using the [Jest](https://jestjs.io/) testing framework. After running `zapier init` you should find an example test to start from in the `test` directory.
+From v10 of `zapier-platform-cli`, we recommend using the [Jest](https://jestjs.io/) testing framework. After running `zapier init` you should find an example test to start from in the `test` directory.
 
-> Note: On v9, the recommendation was [Mocha](https://mochajs.org/). You can still use it if you prefer Mocha.
+> Note: On v9, the recommendation was [Mocha](https://mochajs.org/). You can still use Mocha if you prefer.
 
 ```js
 /* globals describe, expect, test */
@@ -2692,7 +2703,7 @@ const appTester = zapier.createAppTester(App);
 zapier.tools.env.inject();
 
 describe('triggers', () => {
-  test('load recipes', async () => {
+  test('new recipe', async () => {
     const bundle = {
       inputData: {
         style: 'mediterranean',
@@ -2700,7 +2711,7 @@ describe('triggers', () => {
     };
 
     const results = await appTester(
-      App.triggers.species.operation.perform,
+      App.triggers.recipe.operation.perform,
       bundle
     );
     expect(results.length).toBeGreaterThan(1);
@@ -2726,8 +2737,8 @@ const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
-  test('load recipes', async () => {
-    const adHodResult = await appTester(
+  test('new recipe', async () => {
+    const adHocResult = await appTester(
       // your in-line function takes the same [z, bundle] arguments as normal
       async (z, bundle) => {
         // requests are made using your integration's actual middleware
@@ -2758,8 +2769,8 @@ describe('triggers', () => {
       }
     );
 
-    expect(adHodResult.someHash).toEqual('a5beb6624e092adf7be31176c3079e64');
-    expect(adHodResult.data).toEqual({ whatever: true });
+    expect(adHocResult.someHash).toEqual('a5beb6624e092adf7be31176c3079e64');
+    expect(adHocResult.data).toEqual({ whatever: true });
 
     // ... rest of test
   });
@@ -2769,7 +2780,7 @@ describe('triggers', () => {
 
 ### Mocking Requests
 
-While testing, it's useful to test your code without actually hitting any external services. [Nock](https://github.com/node-nock/nock) is a node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with `z.request` by setting up your `nock` before calling `appTester`.
+It's useful to test your code without actually hitting any external services. [Nock](https://github.com/node-nock/nock) is a Node.js utility that intercepts requests before they ever leave your computer. You can specify a response code, body, headers, and more. It works out of the box with `z.request` by setting up your `nock` before calling `appTester`.
 
 ```js
 /* globals describe, expect, test */
@@ -2782,7 +2793,7 @@ const appTester = zapier.createAppTester(App);
 const nock = require('nock');
 
 describe('triggers', () => {
-  test('load recipes', async () => {
+  test('new recipe', async () => {
     const bundle = {
       inputData: {
         style: 'mediterranean',
@@ -2813,7 +2824,7 @@ describe('triggers', () => {
 
 ```
 
-There's more info about nock and its usage in its [readme](https://github.com/node-nock/nock/blob/master/README.md).
+Here's more info about nock and its usage in the [README](https://github.com/node-nock/nock/blob/master/README.md).
 
 ### Running Unit Tests
 
@@ -2856,11 +2867,11 @@ zapier test
 
 ### Testing in Your CI
 
-Whether you use Travis, Circle, Jenkins, or anything else, we aim to make it painless to test in an automated environment.
+Whether you use Travis, Circle, Jenkins, or another service, we aim to make it painless to test in an automated environment.
 
-Behind the scenes `zapier test` is doing a pretty standard `npm test`, which could be [Jest](https://jestjs.io/) or [Mocha](https://mochajs.org/), based on your project setup.
+Behind the scenes `zapier test` does a standard `npm test`, which could be [Jest](https://jestjs.io/) or [Mocha](https://mochajs.org/), based on your project setup.
 
-This makes it pretty straightforward to integrate into your testing interface. If you'd like to test with [Travis CI](https://travis-ci.com/) for example - the `.travis.yml` would look something like this:
+This makes it straightforward to integrate into your testing interface. For example, if you want to test with [Travis CI](https://travis-ci.com/), the `.travis.yml` would look something like this:
 
 ```yaml
 language: node_js
@@ -2870,13 +2881,13 @@ before_script: npm install -g zapier-platform-cli
 script: CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
 
-You can substitute `zapier test` with `npm test`, or a direct call to `node_modules/.bin/jest`. Also, we generally recommend putting the environment variables into whatever configuration screen Jenkins or Travis provides!
+You can substitute `zapier test` with `npm test`, or a direct call to `node_modules/.bin/jest`. We recommend putting environment variables directly into the configuration screens Jenkins, Travis, or other services provide.
 
-As an alternative to reading the deploy key from root (the default location), you may set the `ZAPIER_DEPLOY_KEY` environment variable to run privileged commands without the human input needed for `zapier login`. We suggest encrypting your deploy key in whatever manner you CI provides (such as [these instructions](https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml), for Travis).
+Alternatively to reading the deploy key from root (the default location), you may set the `ZAPIER_DEPLOY_KEY` environment variable to run privileged commands without the human input needed for `zapier login`. We suggest encrypting your deploy key in the manner your CI provides (such as [these instructions](https://docs.travis-ci.com/user/environment-variables/#Defining-encrypted-variables-in-.travis.yml), for Travis).
 
 ### Debugging Tests
 
-Sometimes tests aren't enough and you may want to step through your code and set breakpoints. The testing suite is a regular Node.js process, so debugging it doesn't take anything special. Because we recommend `jest` for testing, these instructions will outline steps for debugging w/ jest, but other test runners will work similarly. You can also refer to [Jest's own docs on the subject](https://jestjs.io/docs/en/troubleshooting#tests-are-failing-and-you-dont-know-why).
+Sometimes tests aren't enough, and you may want to step through your code and set breakpoints. The testing suite is a regular Node.js process, so debugging it doesn't take anything special. Because we recommend `jest` for testing, these instructions will outline steps for debugging w/ jest, but other test runners will work similarly. You can also refer to [Jest's own docs on the subject](https://jestjs.io/docs/en/troubleshooting#tests-are-failing-and-you-dont-know-why).
 
 To start, add the following line to the `scripts` section of your `package.json`:
 
@@ -2927,7 +2938,7 @@ After a few seconds, you'll see your code, the `debugger` statement, and info ab
 
 ![](https://cdn.zappy.app/4bfdfe079a344ab7aced64ad7728bc6a.png)
 
-Using debugging in combination with thorough unit tests, you will hopefully be able to keep your Zapier integration in smooth working order.
+Debugging combined with thorough unit tests will hopefully equip you in keeping your Zapier integration in smooth working order.
 
 ## Using `npm` Modules
 
@@ -3204,7 +3215,7 @@ To understand search-powered fields, we have to have a good understanding of dyn
 
 When users are selecting specific resources (for instance, a Google Sheet), it's important they're able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via `id` instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a **dynamic dropdown**. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app.  It provides a list of ids with labels that show the item's name:
 
-![](https://cdn.zapier.com/storage/photos/fb56bdc2aab91504be0e51800bec4d64.png)
+![](https://cdn.zappy.app/2d7eeda63ff34b70f1d1788de0117181.png)
 
 The field's value reaches your app as an id. You define this connection with the `dynamic` property, which is a string: `trigger_key.id_key.label_key`. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.
 
@@ -3217,7 +3228,7 @@ The field's value reaches your app as an id. You define this connection with the
 
 If the connection between steps 3 and 4 is a common one, you can indicate that in your field by specifying `search` as a `search_key.id_key`. When paired **with a dynamic dropdown**, this will add a button to the editor that will add the search step to the user's Zap and map the id field correctly.
 
-![](https://cdn.zapier.com/storage/photos/d263fd3a56cf8108cb89195163e7c9aa.png)
+![](https://cdn.zappy.app/081e63141ff05c131dadb8ebbea727b0.png)
 
 This is paired most often with "update" actions, where a required parameter will be a resource id.
 

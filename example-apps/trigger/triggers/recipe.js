@@ -1,4 +1,4 @@
-const listRecipes = (z, bundle) => {
+const listRecipes = async (z, bundle) => {
   // `z.console.log()` is similar to `console.log()`.
   z.console.log('console says hello world!');
 
@@ -14,8 +14,10 @@ const listRecipes = (z, bundle) => {
     params: params,
   };
 
-  // You may return a promise or a normal data structure from any perform method.
-  return z.request(requestOptions).then((response) => response.data);
+  // z.request() returns an HTTP Response Object https://github.com/zapier/zapier-platform/tree/master/packages/cli#http-response-object
+  const response = await z.request(requestOptions);
+
+  return response.data;
 };
 
 // We recommend writing your triggers separate like this and rolling them
@@ -63,7 +65,7 @@ module.exports = {
     //    () => { return []; }
     //   ]
     // For a more complete example of using dynamic fields see
-    // https://github.com/zapier/zapier-platform-cli#customdynamic-fields.
+    // https://github.com/zapier/zapier-platform/tree/master/packages/cli#customdynamic-fields.
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
       { key: 'id', label: 'ID' },
