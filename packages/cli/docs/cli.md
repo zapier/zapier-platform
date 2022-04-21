@@ -512,7 +512,7 @@ These users come in two levels:
 
   * `admin`, who can edit everything about the integration
 
-  * `subscriber`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health socores and more.
+  * `collaborator`, who has read-only access for the app, but will receive periodic email updates. These updates include quarterly health scores and more.
 
 Use the `zapier team:add` and `zapier team:remove` commands to modify your team.
 
