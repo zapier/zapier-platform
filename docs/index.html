@@ -744,7 +744,7 @@ npm install
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note: there are plenty of templates &amp; example apps to choose from! <a href="#example-apps">View all Example Apps here.</a>.</p>
+<p>Note: When you run <code>zapier init</code>, you&apos;ll be presented with a list of templates to start with. Pick the one that matches a feature you&apos;ll need (such as &quot;dynamic-dropdown&quot; for an integration with <a href="#dynamic-dropdowns">dynamic dropdown fields</a>), or select &quot;minimal&quot; for an integration with only the essentials. <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps">View more example apps here</a>.</p>
 </blockquote><p>You should now have a working local app. You can run several local commands to try it out.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1156,7 +1156,7 @@ zapier convert 1234 --version 1.0.1 my-app
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Useful if your app requires two pieces of information to authenticate: <code>username</code> and <code>password</code>, which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).</p><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth</a> for a working example app for basic auth.</p>
+<p>To create a new integration with basic authentication, run <code>zapier init [your app name] --template basic-auth</code>. You can also review an example of that code <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/basic-auth">here</a>.</p>
 </blockquote><p>If your app uses Basic auth with an encoded API key rather than a username and password, like <code>Authorization: Basic APIKEYHERE:x</code>, consider the <a href="#custom">Custom</a> authentication method instead.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1192,7 +1192,7 @@ zapier convert 1234 --version 1.0.1 my-app
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p><em>New in v7.4.0.</em></p><p>The setup and user experience of Digest Auth is identical to Basic Auth. Users provide Zapier their username and password, and Zapier handles all the nonce and quality of protection details automatically.</p><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth</a> for a working example app for digest auth.</p>
+<p>To create a new integration with digest authentication, run <code>zapier init [your app name] --template digest-auth</code>. You can also review an example of that code <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth">here</a>.</p>
 </blockquote><blockquote>
 <p>Limitation: Currently, MD5-sess and SHA are not implemented. Only the MD5 algorithm is supported. In addition, server nonces are not reused. That means for every <code>z.request</code> call, Zapier will send an additional request beforehand to get the server nonce.</p>
 </blockquote>
@@ -1236,7 +1236,7 @@ zapier convert 1234 --version 1.0.1 my-app
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Custom auth is most commonly used for apps that authenticate with API keys, although it also provides flexibility for any unusual authentication setup. You&apos;ll likely provide some custom <code>beforeRequest</code> middleware or a <code>requestTemplate</code> (see <a href="#making-http-requests">Making HTTP Requests</a>) to pass in data returned from the authentication process, most commonly by adding/computing needed headers.</p><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth</a> for a working example app for custom auth.</p>
+<p>To create a new integration with custom authentication, run <code>zapier init [your app name] --custom-auth</code>. You can also review an example of that code <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth">here</a>.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1295,7 +1295,7 @@ zapier convert 1234 --version 1.0.1 my-app
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Session auth gives you the ability to exchange some user-provided data for some authentication data; for example, username and password for a session key. It can be used to implement almost any authentication method that uses that pattern - for example, alternative OAuth flows.</p><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth">https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth</a> for a working example app for session auth.</p>
+<p>To create a new integration with session authentication, run <code>zapier init [your app name] --template session-auth</code>. You can also review an example of that code <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/session-auth">here</a>.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1387,7 +1387,7 @@ zapier convert 1234 --version 1.0.1 my-app
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p><em>New in <code>v7.5.0</code>.</em></p><p>Zapier&apos;s OAuth1 implementation matches <a href="https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a">Twitter</a> and <a href="https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth">Trello</a> implementations of the 3-legged OAuth flow.</p><blockquote>
-<p>Example Apps: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-trello">oauth1-trello</a>, <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-tumblr">oauth1-tumblr</a>, and <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-twitter">oauth1-twitter</a> for working example apps with OAuth1.</p>
+<p>To create a new integration with OAuth1, run <code>zapier init [your app name] --template oauth1-trello</code>. You can also check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-trello">oauth1-trello</a>, <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-tumblr">oauth1-tumblr</a>, and <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-twitter">oauth1-twitter</a> for working example apps with OAuth1.</p>
 </blockquote><p>The flow works like this:</p><ol>
 <li>Zapier makes a call to your API requesting a &quot;request token&quot; (also known as &quot;temporary credentials&quot;).</li>
 <li>Zapier sends the user to the authorization URL, defined by your app, along with the request token.</li>
@@ -1521,7 +1521,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Zapier&apos;s OAuth2 implementation is based on the <code>authorization_code</code> flow, similar to <a href="https://developer.github.com/v3/oauth/">GitHub</a> and <a href="https://developers.facebook.com/docs/authentication/server-side/">Facebook</a>.</p><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2">https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2</a> for a working example app for OAuth2.</p>
+<p>To create a new integration with OAuth2, run <code>zapier init [your app name] --template oauth2</code>. You can also check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth2">our working example app</a>.</p>
 </blockquote><p>If your app&apos;s OAuth2 flow uses a different grant type, such as <code>client_credentials</code>, try using <a href="#session">Session auth</a> instead.</p><p>The OAuth2 flow looks like this:</p><ol>
 <li>Zapier sends the user to the authorization URL defined by your app.</li>
 <li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided. Use the <code>zapier describe</code> command to find out what it is: <img src="https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png" alt></li>
@@ -1694,7 +1694,7 @@ read, and search operations on that resource.</p>
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>A resource has a few basic properties. The first is the <code>key</code>, which allows Zapier to identify the resource on our backend.
 The second is the <code>noun</code>, the user-friendly name of the resource that is presented to users throughout the Zapier UI.</p><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/resource">https://github.com/zapier/zapier-platform/tree/master/example-apps/resource</a> for a working example app using resources.</p>
+<p>Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/resource">this working example app</a> to see resources in action.</p>
 </blockquote><p>After those, there is a set of optional properties that tell Zapier what methods can be performed on the resource.
 The complete list of available methods can be found in the <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#resourceschema">Resource Schema Docs</a>.
 For now, let&apos;s focus on two:</p><ul>
@@ -1814,13 +1814,9 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>You can find more details on the definition for each by looking at the <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#triggerschema">Trigger Schema</a>,
 <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#searchschema">Search Schema</a>, and <a href="https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#createschema">Create Schema</a>.</p><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/trigger">https://github.com/zapier/zapier-platform/tree/master/example-apps/trigger</a> for a working example app using triggers.</p>
+<p>To create a new integration with a premade trigger, search, or create, run <code>zapier init [your app name]</code> and select from the list that appears. You can also check out our working example apps <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps">here</a>. </p>
 </blockquote><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/rest-hooks">https://github.com/zapier/zapier-platform/tree/master/example-apps/rest-hooks</a> for a working example app using REST hook triggers.</p>
-</blockquote><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/search">https://github.com/zapier/zapier-platform/tree/master/example-apps/search</a> for a working example app using searches.</p>
-</blockquote><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/create">https://github.com/zapier/zapier-platform/tree/master/example-apps/create</a> for a working example app using creates.</p>
+<p>To add a trigger, search, or create to an existing integration, run <code>zapier scaffold [trigger|search|create] [noun]</code> to create the necessary files to your project. For example, <code>zapier scaffold trigger post</code> will create a new trigger called &quot;New Post&quot;.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -4071,7 +4067,7 @@ z.console.log(url);
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Example App: check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/files">https://github.com/zapier/zapier-platform/tree/master/example-apps/files</a> for a working example app using files.</p>
+<p>To create a new integration for handling files, run <code>zapier init [your app name] --template files</code>. You can also check out our working example app <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/files">here</a>.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -4919,7 +4915,7 @@ zapier push
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>There are a lot of details left out - check out the full example app for a working setup.</p><blockquote>
-<p>Example App: Check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/babel">https://github.com/zapier/zapier-platform/tree/master/example-apps/babel</a> for a working example app using Babel.</p>
+<p>To create a new integration with Babel, run <code>zapier init [your app name] --template babel</code>. You can also check out our working example app <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/babel">here</a>.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
