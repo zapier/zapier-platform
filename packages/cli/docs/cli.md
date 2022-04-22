@@ -508,9 +508,11 @@ Team members can be freely added and removed.
 
 **Usage**: `zapier team:get`
 
-These users come in two levels:
+These users come in three levels:
 
   * `admin`, who can edit everything about the integration
+
+  * `subscriber`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.
 
   * `collaborator`, who has read-only access for the app, but will receive periodic email updates. These updates include quarterly health scores and more.
 
