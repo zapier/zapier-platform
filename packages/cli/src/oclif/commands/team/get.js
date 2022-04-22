@@ -7,31 +7,37 @@ const { BASE_ENDPOINT } = require('../../../constants');
 class TeamListCommand extends ZapierBaseCommand {
   async perform() {
     this.startSpinner('Loading team members');
-    const { admins, limitedCollaborators } = await listEndpointMulti(
-      { endpoint: 'collaborators', keyOverride: 'admins' },
-      {
-        endpoint: (app) =>
-          `${BASE_ENDPOINT}/api/platform/v3/integrations/${app.id}/subscribers`,
-        keyOverride: 'subscribers',
-      },
-      { endpoint: 'limited_collaborators', keyOverride: 'limitedCollaborators' }
-    );
+    const { admins, subscribers, limitedCollaborators } =
+      await listEndpointMulti(
+        { endpoint: 'collaborators', keyOverride: 'admins' },
+        {
+          endpoint: (app) =>
+            `${BASE_ENDPOINT}/api/platform/v3/integrations/${app.id}/subscribers`,
+          keyOverride: 'subscribers',
+        },
+        {
+          endpoint: 'limited_collaborators',
+          keyOverride: 'limitedCollaborators',
+        }
+      );
 
     this.stopSpinner();
 
-    const cleanedUsers = [...admins, ...limitedCollaborators].map(
-      ({ status, name, role, email }) => ({
-        status,
-        name,
-        role:
-          role === 'collaborator'
-            ? 'admin'
-            : role === 'subscriber'
-            ? 'subscriber'
-            : 'collaborator',
-        email,
-      })
-    );
+    const cleanedUsers = [
+      ...admins,
+      ...subscribers,
+      ...limitedCollaborators,
+    ].map(({ status, name, role, email }) => ({
+      status,
+      name,
+      role:
+        role === 'collaborator'
+          ? 'admin'
+          : role === 'subscriber'
+          ? 'subscriber'
+          : 'collaborator',
+      email,
+    }));
 
     this.logTable({
       rows: cleanedUsers,
