@@ -478,7 +478,7 @@ You can mix and match several options to customize the created scaffold for your
 
 **Usage**: `zapier team:add EMAIL ROLE [MESSAGE]`
 
-These users come in two levels:
+These users come in three levels:
 
   * `admin`, who can edit everything about the integration
 

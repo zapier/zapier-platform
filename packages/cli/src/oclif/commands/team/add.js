@@ -69,7 +69,7 @@ TeamAddCommand.args = [
 TeamAddCommand.flags = buildFlags();
 TeamAddCommand.description = `Add a team member to your integration.
 
-These users come in two levels:
+These users come in three levels:
 
   * \`admin\`, who can edit everything about the integration
   * \`subscriber\`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.
