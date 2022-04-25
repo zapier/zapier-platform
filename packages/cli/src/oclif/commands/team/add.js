@@ -56,8 +56,8 @@ TeamAddCommand.args = [
   {
     name: 'role',
     description:
-      'The level the invited team member should be at. Admins can edit everything and get email updates. Subscribers only get email updates. Collaborators has read-access to the app and get email updates.',
-    options: ['admin', 'subscriber', 'collaborator'],
+      'The level the invited team member should be at. Admins can edit everything and get email updates. Collaborators has read-access to the app and get email updates. Subscribers only get email updates.',
+    options: ['admin', 'collaborator', 'subscriber'],
     required: true,
   },
   {
@@ -72,15 +72,15 @@ TeamAddCommand.description = `Add a team member to your integration.
 These users come in three levels:
 
   * \`admin\`, who can edit everything about the integration
+  * \`collaborator\`, who has read-only access for the app, and will receive periodic email updates. These updates include quarterly health scores and more.
   * \`subscriber\`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.
-  * \`collaborator\`, who has read-only access for the app, but will receive periodic email updates. These updates include quarterly health scores and more.
 
 Team members can be freely added and removed.`;
 
 TeamAddCommand.examples = [
   'zapier team:add bruce@wayne.com admin',
-  'zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."',
   'zapier team:add robin@wayne.com collaborator "Hey Robin, check out this app."',
+  'zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."',
 ];
 TeamAddCommand.aliases = ['team:invite'];
 

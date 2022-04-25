@@ -482,15 +482,15 @@ These users come in three levels:
 
   * `admin`, who can edit everything about the integration
 
-  * `subscriber`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.
+  * `collaborator`, who has read-only access for the app, and will receive periodic email updates. These updates include quarterly health scores and more.
 
-  * `collaborator`, who has read-only access for the app, but will receive periodic email updates. These updates include quarterly health scores and more.
+  * `subscriber`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.
 
 Team members can be freely added and removed.
 
 **Arguments**
 * (required) `email` | The user to be invited. If they don't have a Zapier account, they'll be prompted to create one.
-* (required) `role` | The level the invited team member should be at. Admins can edit everything and get email updates. Subscribers only get email updates. Collaborators has read-access to the app and get email updates.
+* (required) `role` | The level the invited team member should be at. Admins can edit everything and get email updates. Collaborators has read-access to the app and get email updates. Subscribers only get email updates.
 * `message` | A message sent in the email to your team member, if you need to provide context. Wrap the message in quotes to ensure spaces get saved.
 
 **Flags**
@@ -498,8 +498,8 @@ Team members can be freely added and removed.
 
 **Examples**
 * `zapier team:add bruce@wayne.com admin`
-* `zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."`
 * `zapier team:add robin@wayne.com collaborator "Hey Robin, check out this app."`
+* `zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."`
 
 **Aliases**
 * `team:invite`
