@@ -33,7 +33,10 @@ class TeamAddCommand extends ZapierBaseCommand {
 
     const url = roleIsAdmin
       ? `/apps/${id}/collaborators`
-      : `https://zapier.com/api/platform/v3/integrations/${id}/subscribers`;
+      : this.args.role === 'subscriber'
+      ? `https://zapier.com/api/platform/v3/integrations/${id}/subscribers`
+      : `/apps/${id}/limited_collaborators`;
+
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,
       method: 'POST',
@@ -53,8 +56,8 @@ TeamAddCommand.args = [
   {
     name: 'role',
     description:
-      'The level the invited team member should be at. Admins can edit everything and get email updates. Subscribers only get email updates.',
-    options: ['admin', 'subscriber'],
+      'The level the invited team member should be at. Admins can edit everything and get email updates. Collaborators has read-access to the app and get email updates. Subscribers only get email updates.',
+    options: ['admin', 'collaborator', 'subscriber'],
     required: true,
   },
   {
@@ -66,15 +69,17 @@ TeamAddCommand.args = [
 TeamAddCommand.flags = buildFlags();
 TeamAddCommand.description = `Add a team member to your integration.
 
-These users come in two levels:
+These users come in three levels:
 
   * \`admin\`, who can edit everything about the integration
-  * \`subscriber\`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health socores and more.
+  * \`collaborator\`, who has read-only access for the app, and will receive periodic email updates. These updates include quarterly health scores and more.
+  * \`subscriber\`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.
 
 Team members can be freely added and removed.`;
 
 TeamAddCommand.examples = [
   'zapier team:add bruce@wayne.com admin',
+  'zapier team:add robin@wayne.com collaborator "Hey Robin, check out this app."',
   'zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."',
 ];
 TeamAddCommand.aliases = ['team:invite'];
