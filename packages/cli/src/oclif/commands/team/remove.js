@@ -8,21 +8,31 @@ const {
 } = require('../../../utils/api');
 const { BASE_ENDPOINT } = require('../../../constants');
 
-const roleName = (role) => (role === 'collaborator' ? 'admin' : 'subscriber');
+const roleName = (role) =>
+  role === 'collaborator'
+    ? 'admin'
+    : role === 'subscriber'
+    ? 'subscriber'
+    : 'collaborator';
 
 class TeamRemoveCommand extends ZapierBaseCommand {
   async perform() {
     this.startSpinner('Loading team members');
-    const { admins, subscribers } = await listEndpointMulti(
-      { endpoint: 'collaborators', keyOverride: 'admins' },
-      {
-        endpoint: (app) =>
-          `${BASE_ENDPOINT}/api/platform/v3/integrations/${app.id}/subscribers`,
-        keyOverride: 'subscribers',
-      }
-    );
+    const { admins, subscribers, limitedCollaborators } =
+      await listEndpointMulti(
+        { endpoint: 'collaborators', keyOverride: 'admins' },
+        {
+          endpoint: (app) =>
+            `${BASE_ENDPOINT}/api/platform/v3/integrations/${app.id}/subscribers`,
+          keyOverride: 'subscribers',
+        },
+        {
+          endpoint: 'limited_collaborators',
+          keyOverride: 'limitedCollaborators',
+        }
+      );
 
-    const choices = [...admins, ...subscribers].map(
+    const choices = [...admins, ...subscribers, ...limitedCollaborators].map(
       ({ status, name, role, email, id }) => ({
         status,
         value: { id, email, role: roleName(role) },
@@ -33,7 +43,11 @@ class TeamRemoveCommand extends ZapierBaseCommand {
 
     this.stopSpinner();
 
-    const { role, email, id: invitationId } = await this.promptWithList(
+    const {
+      role,
+      email,
+      id: invitationId,
+    } = await this.promptWithList(
       'Which team member do you want to remove?',
       choices
     );
@@ -50,18 +64,19 @@ class TeamRemoveCommand extends ZapierBaseCommand {
       return;
     }
 
-    const roleIsAdmin = role === 'admin';
-
     this.startSpinner('Removing Team Member');
     const { id: appId } = await getWritableApp();
-    const url = roleIsAdmin
-      ? `/apps/${appId}/collaborators/${invitationId}`
-      : `${BASE_ENDPOINT}/api/platform/v3/integrations/${appId}/subscribers/${invitationId}`;
+    const url =
+      role === 'admin'
+        ? `/apps/${appId}/collaborators/${invitationId}`
+        : role === 'subscriber'
+        ? `${BASE_ENDPOINT}/api/platform/v3/integrations/${appId}/subscribers/${invitationId}`
+        : `/apps/${appId}/limited_collaborators`;
 
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,
       method: 'DELETE',
-      body: { email: this.args.email },
+      body: { email: this.args.email, email_id: invitationId },
     });
 
     this.stopSpinner();
@@ -71,7 +86,10 @@ class TeamRemoveCommand extends ZapierBaseCommand {
 TeamRemoveCommand.flags = buildFlags();
 TeamRemoveCommand.description = `Remove a team member from all versions of your integration.
 
-Admins will immediately lose write access to the integration. Subscribers won't receive future email updates.`;
+Admins will immediately lose write access to the integration.
+Collaborators will immediately lose read access to the integration.
+Subscribers won't receive future email updates.`;
+
 TeamRemoveCommand.aliases = ['team:delete'];
 
 module.exports = TeamRemoveCommand;
