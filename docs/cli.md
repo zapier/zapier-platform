@@ -490,7 +490,7 @@ Team members can be freely added and removed.
 
 **Arguments**
 * (required) `email` | The user to be invited. If they don't have a Zapier account, they'll be prompted to create one.
-* (required) `role` | The level the invited team member should be at. Admins can edit everything and get email updates. Collaborators has read-access to the app and get email updates. Subscribers only get email updates.
+* (required) `role` | The level the invited team member should be at. Admins can edit everything and get email updates. Collaborators have read-access to the app and get email updates. Subscribers only get email updates.
 * `message` | A message sent in the email to your team member, if you need to provide context. Wrap the message in quotes to ensure spaces get saved.
 
 **Flags**
