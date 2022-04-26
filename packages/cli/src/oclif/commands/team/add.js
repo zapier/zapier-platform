@@ -56,7 +56,7 @@ TeamAddCommand.args = [
   {
     name: 'role',
     description:
-      'The level the invited team member should be at. Admins can edit everything and get email updates. Collaborators has read-access to the app and get email updates. Subscribers only get email updates.',
+      'The level the invited team member should be at. Admins can edit everything and get email updates. Collaborators have read-access to the app and get email updates. Subscribers only get email updates.',
     options: ['admin', 'collaborator', 'subscriber'],
     required: true,
   },
