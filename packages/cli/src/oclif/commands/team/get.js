@@ -1,26 +1,14 @@
 const ZapierBaseCommand = require('../../ZapierBaseCommand');
 const { cyan } = require('colors/safe');
-const { listEndpointMulti } = require('../../../utils/api');
+const { listTeamMembers } = require('../../../utils/team');
 const { buildFlags } = require('../../buildFlags');
-const { BASE_ENDPOINT } = require('../../../constants');
+const { transformUserRole } = require('../../../utils/team');
 
 class TeamListCommand extends ZapierBaseCommand {
   async perform() {
     this.startSpinner('Loading team members');
     const { admins, subscribers, limitedCollaborators } =
-      await listEndpointMulti(
-        { endpoint: 'collaborators', keyOverride: 'admins' },
-        {
-          endpoint: (app) =>
-            `${BASE_ENDPOINT}/api/platform/v3/integrations/${app.id}/subscribers`,
-          keyOverride: 'subscribers',
-        },
-        {
-          endpoint: 'limited_collaborators',
-          keyOverride: 'limitedCollaborators',
-        }
-      );
-
+      await listTeamMembers();
     this.stopSpinner();
 
     const cleanedUsers = [
@@ -30,12 +18,7 @@ class TeamListCommand extends ZapierBaseCommand {
     ].map(({ status, name, role, email }) => ({
       status,
       name,
-      role:
-        role === 'collaborator'
-          ? 'admin'
-          : role === 'subscriber'
-          ? 'subscriber'
-          : 'collaborator',
+      role: transformUserRole(role),
       email,
     }));
 

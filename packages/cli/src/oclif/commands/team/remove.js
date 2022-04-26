@@ -1,42 +1,21 @@
 const ZapierBaseCommand = require('../../ZapierBaseCommand');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
-const {
-  callAPI,
-  getWritableApp,
-  listEndpointMulti,
-} = require('../../../utils/api');
+const { callAPI, getWritableApp } = require('../../../utils/api');
 const { BASE_ENDPOINT } = require('../../../constants');
-
-const roleName = (role) =>
-  role === 'collaborator'
-    ? 'admin'
-    : role === 'subscriber'
-    ? 'subscriber'
-    : 'collaborator';
+const { listTeamMembers, transformUserRole } = require('../../../utils/team');
 
 class TeamRemoveCommand extends ZapierBaseCommand {
   async perform() {
     this.startSpinner('Loading team members');
     const { admins, subscribers, limitedCollaborators } =
-      await listEndpointMulti(
-        { endpoint: 'collaborators', keyOverride: 'admins' },
-        {
-          endpoint: (app) =>
-            `${BASE_ENDPOINT}/api/platform/v3/integrations/${app.id}/subscribers`,
-          keyOverride: 'subscribers',
-        },
-        {
-          endpoint: 'limited_collaborators',
-          keyOverride: 'limitedCollaborators',
-        }
-      );
+      await listTeamMembers();
 
     const choices = [...admins, ...subscribers, ...limitedCollaborators].map(
       ({ status, name, role, email, id }) => ({
         status,
-        value: { id, email, role: roleName(role) },
-        name: `${email} (${roleName(role)})`,
+        value: { id, email, role: transformUserRole(role) },
+        name: `${email} (${transformUserRole(role)})`,
         short: email,
       })
     );
@@ -76,7 +55,7 @@ class TeamRemoveCommand extends ZapierBaseCommand {
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,
       method: 'DELETE',
-      body: { email: this.args.email, email_id: invitationId },
+      body: { email_id: invitationId },
     });
 
     this.stopSpinner();

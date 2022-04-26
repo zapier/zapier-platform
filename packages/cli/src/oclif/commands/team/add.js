@@ -3,18 +3,25 @@ const ZapierBaseCommand = require('../../ZapierBaseCommand');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
 const { callAPI } = require('../../../utils/api');
+const { BASE_ENDPOINT } = require('../../../constants');
 
-const inviteMessage = (roleIsAdmin, title) =>
-  roleIsAdmin
-    ? `I would like you to help manage ${title}'s Zapier integration and get access to see how it's performing.`
-    : `I would like you to get reports and updates about ${title}'s Zapier integration.`;
+const inviteMessage = (role, title) => {
+  switch (role) {
+    case 'admin':
+      return `I would like you to help manage ${title}'s Zapier integration and get access to see how it's performing.`;
+    case 'collaborator':
+      return `I would like you to view ${title}'s Zapier integration and get access to see how it's performing.`;
+    case 'subscriber':
+      return `I would like you to get reports and updates about ${title}'s Zapier integration.`;
+  }
+};
 
 class TeamAddCommand extends ZapierBaseCommand {
   async perform() {
     const { id, title } = await this.getWritableApp();
 
-    const roleIsAdmin = this.args.role === 'admin';
-    const message = this.args.message || inviteMessage(roleIsAdmin, title);
+    const role = this.args.role;
+    const message = this.args.message || inviteMessage(role, title);
 
     if (
       !this.flags.force &&
@@ -31,11 +38,12 @@ class TeamAddCommand extends ZapierBaseCommand {
 
     this.startSpinner('Inviting team member');
 
-    const url = roleIsAdmin
-      ? `/apps/${id}/collaborators`
-      : this.args.role === 'subscriber'
-      ? `https://zapier.com/api/platform/v3/integrations/${id}/subscribers`
-      : `/apps/${id}/limited_collaborators`;
+    const url =
+      role === 'admin'
+        ? `/apps/${id}/collaborators`
+        : role === 'subscriber'
+        ? `${BASE_ENDPOINT}/api/platform/v3/integrations/${id}/subscribers`
+        : `/apps/${id}/limited_collaborators`;
 
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,
