@@ -244,6 +244,12 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
   data.response_headers = unheader(data.response_headers);
 
   const sensitiveValues = buildSensitiveValues(event, data);
+
+  // data.input and data.output have the ability to grow unbounded; the following caps the size to a reasonable amount
+  if (data.log_type === 'bundle') {
+    data.input = truncateData(data.input, MAX_LENGTH);
+    data.output = truncateData(data.output, MAX_LENGTH);
+  }
   // scrub throws an error if there are no secrets
   const safeMessage = truncateString(
     sensitiveValues.length ? scrub(message, sensitiveValues) : message

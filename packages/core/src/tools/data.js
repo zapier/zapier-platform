@@ -172,6 +172,127 @@ const simpleTruncate = (string, length, suffix) => {
   return string;
 };
 
+const truncateData = (item, maxLength) => {
+  if (!item || typeof item !== 'object') {
+    // the following code is only meant to work on objects and arrays
+    return item;
+  }
+  if (JSON.stringify(item).length <= maxLength) {
+    // no need to truncate
+    return item;
+  }
+  const root = Array.isArray(item) ? [] : {};
+  let length = 2; // '{}' or '[]'
+  const queue = [];
+  let itemToAdd; // used to hold the item to be written
+  let wasTruncated = false; // used during iteration to track if a string was truncated
+  const truncateMessageSize = Array.isArray(root) ? 38 : 39;
+
+  if (maxLength < truncateMessageSize) {
+    // ^ how much space it takes to add '"NOTE":"This data has been truncated.",' to the output
+    throw new Error(`maxLength must be at least ${truncateMessageSize}`);
+  }
+
+  if (Array.isArray(item)) {
+    item.forEach((value) => {
+      queue.unshift([root, '', value]);
+    });
+  } else {
+    Object.entries(item).forEach(([key, value]) => {
+      queue.push([root, key, value]);
+    });
+  }
+
+  // if the current parent is an array, we need to push values to said array;
+  // if the current parent is an object, we need to set key / values on said object
+  const _addItem = (parent, key, value) => {
+    if (Array.isArray(parent)) {
+      parent.push(value);
+    } else {
+      parent[key] = value;
+    }
+  };
+
+  // iterate over the queue
+  while (queue.length > 0) {
+    let itemLength = 0;
+
+    const [parent, key, value] = queue.shift();
+    itemLength += key.length; // array keys are empty strings, so this is a noop
+    itemLength += key.length ? 3 : 0; // objects get +2 for "" around the key and +1 for the :
+    itemLength += 1; // arrays and objects both have +1 for commas between entries
+    if (parent && typeof parent === 'object' && _.isEmpty(parent)) {
+      itemLength -= 1; // this is the first entry for an object or array; remove the count for a comma
+    }
+
+    if (
+      typeof value === 'number' ||
+      typeof value === 'boolean' ||
+      value == null
+    ) {
+      itemLength += String(value).length;
+      itemToAdd = value;
+    } else if (typeof value === 'string') {
+      const overhead = length + itemLength + 2 + truncateMessageSize; // the minimum amount of space needed after truncation
+      if (value.length + overhead > maxLength) {
+        // this string is going to push us over the edge; truncate it
+        const truncated = simpleTruncate(value, maxLength - overhead, ' [...]'); // maxLength - overhead = truncated.length
+        itemLength += truncated.length + 2; // 2 for quotes
+        itemToAdd = truncated;
+      } else {
+        // this string should fit!
+        itemLength += value.length + 2; // 2 for quotes
+        itemToAdd = value;
+      }
+    } else if (typeof value === 'object') {
+      itemLength += 2; // '{}' or '[]'
+
+      let entries;
+      if (Array.isArray(value)) {
+        const newArr = [];
+        itemToAdd = newArr;
+        entries = value.map((subValue) => [newArr, '', subValue]);
+      } else {
+        const newObj = {};
+        itemToAdd = newObj;
+        entries = Object.entries(value).map(([subKey, subValue]) => [
+          newObj,
+          subKey,
+          subValue,
+        ]);
+      }
+      queue.unshift(...entries);
+    } else {
+      // JSON.stringify doesn't _usually_ do anything for other typeofs
+    }
+
+    if (length + itemLength + truncateMessageSize >= maxLength) {
+      // we can fit this item + the truncate message, so let's add it
+      if (length + itemLength + truncateMessageSize === maxLength) {
+        _addItem(parent, key, itemToAdd);
+        length += itemLength;
+      }
+      wasTruncated = true;
+      break;
+    } else {
+      // this fits with room to spare! add it and keep moving on. :)
+      _addItem(parent, key, itemToAdd);
+      length += itemLength;
+    }
+  }
+
+  // we can hit the following even if we got through all the items in the queue in the case that any strings were truncated
+  if (wasTruncated) {
+    if (Array.isArray(root)) {
+      root.push('NOTE: This data has been truncated.');
+    } else {
+      root.NOTE = 'This data has been truncated.';
+    }
+  }
+
+  return root;
+};
+
 const genId = () => parseInt(Math.random() * 100000000);
 
 module.exports = {
@@ -186,4 +307,5 @@ module.exports = {
   memoizedFindMapDeep,
   recurseReplace,
   simpleTruncate,
+  truncateData,
 };
