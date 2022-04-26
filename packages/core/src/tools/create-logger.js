@@ -6,7 +6,7 @@ const { parse: querystringParse } = require('querystring');
 const _ = require('lodash');
 
 const request = require('./request-client-internal');
-const { simpleTruncate, recurseReplace } = require('./data');
+const { simpleTruncate, recurseReplace, truncateData } = require('./data');
 const {
   DEFAULT_LOGGING_HTTP_API_KEY,
   DEFAULT_LOGGING_HTTP_ENDPOINT,
@@ -38,7 +38,8 @@ const isUrl = (url) => {
   }
 };
 
-const truncate = (str) => simpleTruncate(str, 3500, ' [...]');
+const MAX_LENGTH = 3500;
+const truncateString = (str) => simpleTruncate(str, MAX_LENGTH, ' [...]');
 
 const formatHeaders = (headers = {}) => {
   if (_.isEmpty(headers)) {
@@ -74,7 +75,7 @@ const httpDetailsLogMessage = (data) => {
     (result, value, key) => {
       result[key] = value;
       if (typeof value === 'string') {
-        result[key] = truncate(value);
+        result[key] = truncateString(value);
       }
       return result;
     },
@@ -244,14 +245,14 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
 
   const sensitiveValues = buildSensitiveValues(event, data);
   // scrub throws an error if there are no secrets
-  const safeMessage = truncate(
+  const safeMessage = truncateString(
     sensitiveValues.length ? scrub(message, sensitiveValues) : message
   );
   const safeData = recurseReplace(
     sensitiveValues.length ? scrub(data, sensitiveValues) : data,
-    truncate
+    truncateString
   );
-  const unsafeData = recurseReplace(data, truncate);
+  const unsafeData = recurseReplace(data, truncateString);
   // Keep safe log keys uncensored
   Object.keys(safeData).forEach((key) => {
     if (SAFE_LOG_KEYS.includes(key)) {
