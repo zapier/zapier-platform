@@ -535,7 +535,11 @@ Use the `zapier team:add` and `zapier team:remove` commands to modify your team.
 
 **Usage**: `zapier team:remove`
 
-Admins will immediately lose write access to the integration. Subscribers won't receive future email updates.
+Admins will immediately lose write access to the integration.
+
+Collaborators will immediately lose read access to the integration.
+
+Subscribers won't receive future email updates.
 
 **Flags**
 * `-d, --debug` | Show extra debugging output.
