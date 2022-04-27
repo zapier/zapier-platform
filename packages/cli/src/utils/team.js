@@ -17,13 +17,13 @@ const listTeamMembers = async () => {
   return listEndpointMulti(
     { endpoint: 'collaborators', keyOverride: 'admins' },
     {
+      endpoint: 'limited_collaborators',
+      keyOverride: 'limitedCollaborators',
+    },
+    {
       endpoint: (app) =>
         `${constants.BASE_ENDPOINT}/api/platform/v3/integrations/${app.id}/subscribers`,
       keyOverride: 'subscribers',
-    },
-    {
-      endpoint: 'limited_collaborators',
-      keyOverride: 'limitedCollaborators',
     }
   );
 };

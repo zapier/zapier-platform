@@ -8,10 +8,10 @@ const { listTeamMembers, transformUserRole } = require('../../../utils/team');
 class TeamRemoveCommand extends ZapierBaseCommand {
   async perform() {
     this.startSpinner('Loading team members');
-    const { admins, subscribers, limitedCollaborators } =
+    const { admins, limitedCollaborators, subscribers } =
       await listTeamMembers();
 
-    const choices = [...admins, ...subscribers, ...limitedCollaborators].map(
+    const choices = [...admins, ...limitedCollaborators, ...subscribers].map(
       ({ status, name, role, email, id }) => ({
         status,
         value: { id, email, role: transformUserRole(role) },
