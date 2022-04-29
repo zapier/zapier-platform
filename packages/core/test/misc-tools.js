@@ -98,6 +98,34 @@ describe('Tools', () => {
     });
   });
 
+  describe('truncateData', () => {
+    const testData = require('./fixtures/truncate-test-data.json');
+
+    it('should check maxLength limitations', () => {
+      const tooShort = (o) => () => dataTools.truncateData(o, 0);
+      tooShort({}).should.throw(/maxLength must be at least 40/);
+      tooShort([]).should.throw(/maxLength must be at least 40/);
+    });
+
+    it('should truncate data to improve logging efficiency', () => {
+      testData.forEach((test) => {
+        const truncated = dataTools.truncateData(test.input, test.maxLength);
+        truncated.should.deepEqual(test.output);
+        if (test.expectedLength) {
+          JSON.stringify(truncated).length.should.eql(test.expectedLength);
+        }
+      });
+    });
+
+    it('should always result in output with a stringified length <= to maxLength', () => {
+      const totalLength = JSON.stringify(testData).length;
+      for (let i = 40; i < totalLength; i += 1) {
+        const truncated = dataTools.truncateData(testData, i);
+        JSON.stringify(truncated).length.should.lessThanOrEqual(i);
+      }
+    });
+  });
+
   // it('should prepareRequestLog', () => {
   //   const request = {
   //     url: 'https://www.google.com',
