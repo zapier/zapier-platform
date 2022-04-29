@@ -1,3 +1,24 @@
+## 12.0.3
+
+_released `2022-05-02`_
+
+### cli
+
+<!-- this is included in this release, but isn't quite ready on the server side. We'll "release" this in a semver.minor sometime soon -->
+<!-- - :nails: add support for limited collaborators to the `team:get`, `team:add`, and `team:remove` commands. More info about this new role will be coming soon ([#538](https://github.com/zapier/zapier-platform/pull/538), [#541](https://github.com/zapier/zapier-platform/pull/541), [#539](https://github.com/zapier/zapier-platform/pull/539), [#540](https://github.com/zapier/zapier-platform/pull/540)) -->
+
+- None!
+
+### core
+
+- :bug: greatly improve secret-scrubbing speed in logger ([#542](https://github.com/zapier/zapier-platform/pull/542))
+- :bug: ensure string content is parsed pre-logging in case it contains secrets ([#525](https://github.com/zapier/zapier-platform/pull/525))
+- :bug: censor novel secrets in querystring ([#526](https://github.com/zapier/zapier-platform/pull/526))
+
+### schema
+
+- None!
+
 ## 12.0.2
 
 _released `2022-03-30`_
