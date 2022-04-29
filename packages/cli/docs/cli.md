@@ -55,24 +55,22 @@ This command is typically followed by `zapier upload`.
 
 ## convert
 
-> Convert a Legacy Web Builder app or Visual Builder integration to a CLI integration.
+> Convert a Visual Builder integration to a CLI integration.
 
 **Usage**: `zapier convert INTEGRATIONID PATH`
 
-If you're converting a **Legacy Web Builder** app: the new integration will have a dependency named zapier-platform-legacy-scripting-runner, a shim used to simulate behaviors that are specific to Legacy Web Builder. There could be differences on how the shim simulates and how Legacy Web Builder actually behaves on some edge cases, especially you have custom scripting code.
-
-If you're converting a **Visual Builder** app, then it will be identical and ready to push and use immediately!
+The resulting CLI integraiton will be identical to its Visual Builder version and ready to push and use immediately!
 
 If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
 You'll need to do a `zapier push` before the new version is visible in the editor, but otherwise you're good to go.
 
 **Arguments**
-* (required) `integrationId` | To get the integration/app ID, go to "https://zapier.com/app/developer", click on an integration, and copy the number directly after "/app/" in the URL.
+* (required) `integrationId` | To get the integration/app ID, go to "https://developer.zapier.com//app/developer", click on an integration, and copy the number directly after "/app/" in the URL.
 * (required) `path` | Relative to your current path - IE: `.` for current directory.
 
 **Flags**
-* `-v, --version` | Convert a specific version. Required when converting a Visual Builder integration.
+* (required) `-v, --version` | Convert a specific version. Required when converting a Visual Builder integration.
 * `-d, --debug` | Show extra debugging output.
 
 

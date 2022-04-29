@@ -136,8 +136,7 @@ const visualAppDefinition = {
     },
     oauth2Config: {
       authorizeUrl: {
-        url:
-          'https://app.wistia.com/oauth/authorize?client_id=03e84930b97011c7bd674f6d02c04ec9c1a430325a73a0501eb443ef07b6b99c&redirect_uri=https%3A%2F%2Fzapier.com%2Fdashboard%2Fauth%2Foauth%2Freturn%2FApp17741CLIAPI%2F&response_type=code',
+        url: 'https://app.wistia.com/oauth/authorize?client_id=03e84930b97011c7bd674f6d02c04ec9c1a430325a73a0501eb443ef07b6b99c&redirect_uri=https%3A%2F%2Fzapier.com%2Fdashboard%2Fauth%2Foauth%2Freturn%2FApp17741CLIAPI%2F&response_type=code',
         params: {
           state: '{{bundle.inputData.state}}',
           redirect_uri: '{{bundle.inputData.redirect_uri}}',
@@ -298,24 +297,6 @@ describe('convert', () => {
     fs.removeSync(tempAppDir);
   });
 
-  describe('legacy web builder apps', () => {
-    it('should create separate files', async () => {
-      await convertApp(legacyApp, legacyAppDefinition, tempAppDir);
-      [
-        '.zapierapprc',
-        '.gitignore',
-        '.env',
-        'package.json',
-        'index.js',
-        'triggers/movie.js',
-        'test/triggers/movie.js',
-      ].forEach((filename) => {
-        const filepath = path.join(tempAppDir, filename);
-        fs.existsSync(filepath).should.be.true(`failed to create ${filename}`);
-      });
-    });
-  });
-
   describe('visual builder apps', () => {
     it('should create separate files', async () => {
       await convertApp(visualApp, visualAppDefinition, tempAppDir);
@@ -389,22 +370,6 @@ describe('convert', () => {
       appDefinition.triggers.codemode.operation.perform.source +=
         '\n// a comment';
       await convertApp(visualApp, appDefinition, tempAppDir);
-    });
-
-    it('should include legacy stuff if it was from web builder', async () => {
-      const appDefinition = cloneDeep(visualAppDefinition);
-      appDefinition.legacy = {}; // 'legacy' property makes it, well, "legacy"
-
-      await convertApp(visualApp, appDefinition, tempAppDir);
-
-      const rcFile = JSON.parse(readTempFile('.zapierapprc'));
-      const packageJson = JSON.parse(readTempFile('package.json'));
-
-      should(rcFile.id).equal(visualApp.id);
-      should(rcFile.includeInBuild).deepEqual(['scripting.js']);
-      should.exist(
-        packageJson.dependencies['zapier-platform-legacy-scripting-runner']
-      );
     });
   });
 });
