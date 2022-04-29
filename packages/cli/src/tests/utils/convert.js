@@ -8,40 +8,6 @@ const should = require('should');
 
 const { convertApp } = require('../../utils/convert');
 
-const legacyAppDefinition = {
-  beforeRequest: [
-    {
-      args: ['request', 'z', 'bundle'],
-      source: 'return request;',
-    },
-  ],
-  afterResponse: [
-    {
-      args: ['response', 'z', 'bundle'],
-      source: 'return response;',
-    },
-  ],
-  authentication: {
-    type: 'custom',
-    test: {
-      source: "return 'test';",
-    },
-    fields: [{ key: 'api_key', required: true, type: 'string' }],
-  },
-  triggers: {
-    movie: {
-      key: 'movie',
-      noun: 'Movie',
-      display: {},
-      operation: {
-        perform: {
-          source: "return 'test';",
-        },
-      },
-    },
-  },
-};
-
 const visualAppDefinition = {
   platformVersion: '8.0.1',
   creates: {
@@ -219,14 +185,6 @@ const visualAppDefinition = {
       },
       key: 'codemode',
     },
-  },
-};
-
-const legacyApp = {
-  general: {
-    title: 'My Name Is',
-    description: 'Just an example app.',
-    app_id: 888,
   },
 };
 
