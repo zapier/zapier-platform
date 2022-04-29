@@ -98,86 +98,31 @@ describe('Tools', () => {
     });
   });
 
-  it('should check truncateData length limitations', () => {
-    const tooShort = (o) => () => dataTools.truncateData(o, 0);
-    tooShort({}).should.throw(/maxLength must be at least 39/);
-    tooShort([]).should.throw(/maxLength must be at least 38/);
-  });
+  describe('truncateData', () => {
+    const testData = require('./fixtures/truncate-test-data.json');
 
-  it('should truncate data to improve efficiency', () => {
-    const tests = [
-      {
-        value:
-          '{"authData":{"api_key":"b81ed2f2-52c7-4c0b-80c7-f5142133172c"},"inputData":{},"inputDataRaw":{},"met' +
-          'a":{"isLoadingSample":false,"isFillingDynamicDropdown":false,"isTestingAuth":false,"isPopulatingDedu' +
-          'pe":false,"limit":-1,"page":0,"isBulkRead":false,"zap":{"help":["This data structure is provided for' +
-          ' backwards compatibility,","and should not be relied upon in a Zapier integration."],"id":"subscript' +
-          'ion:17256840","link":"https://zapier.com/app/editor/subscription:17256840","live":true,"name":"A Zap' +
-          '","user":{"timezone":"America/Indiana/Indianapolis"},"trigger":{"service":{"logos":{"16x16":"https:/' +
-          '/cdn.zapier.com/storage/photos/73a6433488cca7c5bd6ed9836fd6d9c8.png","32x32":"https://cdn.zapier.com' +
-          '/storage/photos/73a6433488cca7c5bd6ed9836fd6d9c8.png","64x64":"https://cdn.zapier.com/storage/photos' +
-          '/73a6433488cca7c5bd6ed9836fd6d9c8.png","128x128":"https://cdn.zapier.com/storage/photos/73a6433488cc' +
-          'a7c5bd6ed9836fd6d9c8.png"},"name":"A Zapier App"}},"action":{"service":{"logos":{"16x16":"https://cd' +
-          'n.zapier.com/storage/photos/73a6433488cca7c5bd6ed9836fd6d9c8.png","32x32":"https://cdn.zapier.com/st' +
-          'orage/photos/73a6433488cca7c5bd6ed9836fd6d9c8.png","64x64":"https://cdn.zapier.com/storage/photos/73' +
-          'a6433488cca7c5bd6ed9836fd6d9c8.png","128x128":"https://cdn.zapier.com/storage/photos/73a6433488cca7c' +
-          '5bd6ed9836fd6d9c8.png"},"name":"A Zapier App"}}}}}',
-        length: 250,
-        expected:
-          '{"authData":{"api_key":"b81ed2f2-52c7-4c0b-80c7-f5142133172c"},"inputData":{},"inputDataRaw":{},"met' +
-          'a":{"isLoadingSample":false,"isFillingDynamicDropdown":false,"isTestingAuth":false,"isPopulatingDedu' +
-          'pe":false},"NOTE":"This data has been truncated."}',
-      },
-      {
-        value:
-          '[{"id":1,"first_name":"Alvis","last_name":"Baish","ip_address":"152.55.253.129"},{"id":2,"first_name' +
-          '":"Roxine","last_name":"Meah","ip_address":"194.125.26.25"},{"id":3,"first_name":"Olva","last_name":' +
-          '"Copins","ip_address":"61.163.179.10"},{"id":4,"first_name":"Thomas","last_name":"Jury","ip_address"' +
-          ':"63.200.70.181"},{"id":5,"first_name":"Leoline","last_name":"Barthorpe","ip_address":"82.41.102.177' +
-          '"},{"id":6,"first_name":"Benjamen","last_name":"Bynert","ip_address":"40.242.37.77"},{"id":7,"first_' +
-          'name":"Hillyer","last_name":"Brighouse","ip_address":"81.130.27.24"},{"id":8,"first_name":"Inger","l' +
-          'ast_name":"Bavin","ip_address":"159.53.220.53"},{"id":9,"first_name":"Brier","last_name":"Drover","i' +
-          'p_address":"128.160.157.77"},{"id":10,"first_name":"Garrett","last_name":"Broddle","ip_address":"229' +
-          '.80.187.137"},{"id":11,"first_name":"Marwin","last_name":"Espie","ip_address":"222.102.146.189"},{"i' +
-          'd":12,"first_name":"Lucian","last_name":"Catley","ip_address":"251.72.199.116"},{"id":13,"first_name' +
-          '":"Diarmid","last_name":"Scothorne","ip_address":"14.244.169.107"},{"id":14,"first_name":"Ricca","la' +
-          'st_name":"Ollerearnshaw","ip_address":"132.88.63.202"},{"id":15,"first_name":"Jacquenette","last_nam' +
-          'e":"Cowcha","ip_address":"163.126.95.174"}]',
-        length: 250,
-        expected:
-          '[{"id":15,"first_name":"Jacquenette","last_name":"Cowcha","ip_address":"163.126.95.174"},{"id":14,"f' +
-          'irst_name":"Ricca","last_name":"Ollerearnshaw","ip_address":"132.88.63.202"},{"id":13,"first_name":"' +
-          'Diarmid"},"NOTE: This data has been truncated."]',
-      },
-    ];
-    tests.forEach((test) => {
-      const data = JSON.parse(test.value);
-      const expected = JSON.parse(test.expected);
-      const truncated = dataTools.truncateData(data, test.length);
-      should(truncated).deepEqual(expected);
-      should(JSON.stringify(truncated).length).lessThanOrEqual(test.length);
+    it('should check maxLength limitations', () => {
+      const tooShort = (o) => () => dataTools.truncateData(o, 0);
+      tooShort({}).should.throw(/maxLength must be at least 40/);
+      tooShort([]).should.throw(/maxLength must be at least 40/);
     });
-  });
 
-  it('should not mangle data when truncating', () => {
-    const tests = [
-      '{}',
-      '{"a":null}',
-      '{"a":null,"b":1}',
-      '{"a":null,"b":1,"c":true}',
-      '{"a":null,"b":1,"c":true,"d":"hello"}',
-      '{"a":null,"b":1,"c":true,"d":"hello","e":{}}',
-      '{"a":null,"b":1,"c":true,"d":"hello","e":{"f":"world"}}',
-      '{"a":null,"b":1,"c":true,"d":"hello","e":{"f":"world","g":[1,2,3]}}',
-      '{"a":null,"b":1,"c":true,"d":"hello","e":{"f":"world","g":[1,2,3]},"h":[4,5,6]}',
-      '[{"a":null,"b":1,"c":true,"d":"hello","e":{"f":"world","g":[1,2,3]},"h":[4,5,6]}]',
-    ];
+    it('should truncate data to improve logging efficiency', () => {
+      testData.forEach((test) => {
+        const truncated = dataTools.truncateData(test.input, test.maxLength);
+        truncated.should.deepEqual(test.output);
+        if (test.expectedLength) {
+          JSON.stringify(truncated).length.should.eql(test.expectedLength);
+        }
+      });
+    });
 
-    tests.forEach((test) => {
-      const expected = JSON.parse(test);
-      const truncated = dataTools.truncateData(expected, 1000);
-      should(truncated).deepEqual(expected);
-      should(JSON.stringify(truncated).length).lessThanOrEqual(1000);
+    it('should always result in output with a stringified length <= to maxLength', () => {
+      const totalLength = JSON.stringify(testData).length;
+      for (let i = 40; i < totalLength; i += 1) {
+        const truncated = dataTools.truncateData(testData, i);
+        JSON.stringify(truncated).length.should.lessThanOrEqual(i);
+      }
     });
   });
 

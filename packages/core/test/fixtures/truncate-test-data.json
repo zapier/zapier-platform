@@ -1,0 +1,64 @@
+[
+  {
+    "description": "contains all of the types of JSON-supported structures to make sure nothing gets lost",
+    "input": {
+      "nested object": { "hello": "world" },
+      "array": [1, 2, 3],
+      "string": "hello world",
+      "number": 1,
+      "exponential number": 1e10,
+      "boolean": true,
+      "other boolean": false,
+      "null": null,
+      "replace me w/ the truncated note": "ok"
+    },
+    "maxLength": 206,
+    "output": {
+      "nested object": { "hello": "world" },
+      "array": [1, 2, 3],
+      "string": "hello world",
+      "number": 1,
+      "exponential number": 1e10,
+      "boolean": true,
+      "other boolean": false,
+      "null": null,
+      "NOTE": "This data has been truncated."
+    },
+    "expectedLength": 206
+  },
+  {
+    "description": "has a really long string to make sure we truncate the exact amount needed for a long string to hit our goal length",
+    "input": {
+      "string": "hello! this object (stringified) is 67 characters long"
+    },
+    "maxLength": 64,
+    "output": {
+      "string": "hello! [...]",
+      "NOTE": "This data has been truncated."
+    },
+    "expectedLength": 64
+  },
+  {
+    "description": "truncateData will do its best to truncate a big string that would push it past the maxLength, but in a case where the last evaluated item isn't a string, it will just 'drop' the last evaluated item and the output length won't match the maxLength. that's okay! here's an example.",
+    "input": [
+      1234567890,
+      2345678901,
+      3456789012,
+      4567890123,
+      5678901234,
+      6789012345,
+      7890123456,
+      8901234567,
+      9012345678
+    ],
+    "maxLength": 94,
+    "output": [
+      1234567890,
+      2345678901,
+      3456789012,
+      4567890123,
+      "NOTE : This data has been truncated."
+    ],
+    "expectedLength": 84
+  }
+]
