@@ -64,7 +64,7 @@ ConvertCommand.args = [
   {
     name: 'integrationId',
     required: true,
-    description: `To get the integration/app ID, go to "https://developer.zapier.com//app/developer", click on an integration, and copy the number directly after "/app/" in the URL.`,
+    description: `To get the integration/app ID, go to "https://developer.zapier.com", click on an integration, and copy the number directly after "/app/" in the URL.`,
     parse: (input) => Number(input),
   },
   {
