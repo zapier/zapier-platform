@@ -441,7 +441,31 @@ const pruneQueryParams = (params) => {
   }, {});
 };
 
+/**
+ * Potentially require and return a module, dependent on whether or not the given source includes the argument string.
+ *
+ * One tradeoff here is that we can't search for `${argument}.` in the source because JavaScript allows for whitespace
+ * between objects and their properties (i.e. '_\n  .map(...)' is a valid usage of underscore). This means that we'll
+ * be requiring some modules that don't actually get called.
+ *
+ * @param {string} source the scripting source
+ * @param {string} argument the argument provided to the scripting source (e.g. '_' for underscore)
+ * @param {string} moduleName the module name to potentially require and return (e.g. 'underscore')
+ * @returns {string | undefined} the module if the source includes the matching argument; otherwise returns undefined
+ */
+const maybeRequire = (source, argument, moduleName) => {
+  if (source.includes(argument)) {
+    return require(moduleName);
+  }
+  return undefined;
+};
+
 const compileLegacyScriptingSource = (source, zcli, app) => {
+  // short-circuit if scripting is blank
+  if (source === 'var Zap = {};') {
+    return () => ({});
+  }
+
   const { DOMParser, XMLSerializer } = require('xmldom');
 
   const underscore = require('underscore');
@@ -473,13 +497,13 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
     underscore,
     require('crypto'),
     require('async'),
-    require('moment-timezone'),
+    maybeRequire(source, 'moment', 'moment-timezone'),
     DOMParser,
     XMLSerializer,
     require('./atob'),
     require('./btoa'),
-    require('./zfactory')(zcli, app),
-    require('./$'),
+    source.includes('z') ? require('./zfactory')(zcli, app) : undefined,
+    maybeRequire(source, '$', './$'),
     zcli.console,
     require,
     ErrorException,
