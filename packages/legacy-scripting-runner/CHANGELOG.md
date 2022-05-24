@@ -1,3 +1,7 @@
+## 3.8.8
+
+- :bug: Make `logResponse` import backward compatible to fix `func.apply is not a function` error ([#548](https://github.com/zapier/zapier-platform/pull/548))
+
 ## 3.8.7
 
 - :bug: Replace deasync with synckit to fix hanging ([#509](https://github.com/zapier/zapier-platform/pull/509))
