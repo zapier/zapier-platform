@@ -27,11 +27,19 @@ const createInternalRequestClient = (input) => {
   const createInjectInputMiddleware = require('zapier-platform-core/src/http-middlewares/before/inject-input');
   const createRequestClient = require('zapier-platform-core/src/tools/create-request-client');
   const disableSSLCertCheck = require('zapier-platform-core/src/http-middlewares/before/disable-ssl-cert-check');
-  const {
-    logResponse,
-  } = require('zapier-platform-core/src/http-middlewares/after/log-response');
+  const logResponseModule = require('zapier-platform-core/src/http-middlewares/after/log-response');
   const prepareRequest = require('zapier-platform-core/src/http-middlewares/before/prepare-request');
   const prepareResponse = require('zapier-platform-core/src/http-middlewares/after/prepare-response');
+
+  // Before core 12.0.3, log-response.js module exported the logResponse()
+  // function, and it's the only export. Since core 12.0.3, logResponse()
+  // function is inside an exported object. So we do the following to make sure
+  // legacy-scripting-runner works before and after 12.0.3.
+  // Related PR: https://github.com/zapier/zapier-platform/pull/525
+  const logResponse =
+    typeof logResponseModule === 'function'
+      ? logResponseModule
+      : logResponseModule.logResponse;
 
   const options = {
     skipDefaultMiddle: true,
