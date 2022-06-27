@@ -41,7 +41,7 @@
     "@oclif/command": "1.8.0",
     "@oclif/config": "1.17.0",
     "@oclif/plugin-autocomplete": "0.3.0",
-    "@oclif/plugin-help": "3.2.2",
+    "@oclif/plugin-help": "^3.2.14",
     "@oclif/plugin-not-found": "1.2.4",
     "adm-zip": "0.5.5",
     "archiver": "5.3.0",
