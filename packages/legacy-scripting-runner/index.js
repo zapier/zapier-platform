@@ -834,9 +834,20 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       result = await runEvent({ key, name: fullEventName }, zcli, bundle);
     } else {
       const preMethod = preMethodName ? Zap[preMethodName] : null;
-      let request = preMethod
-        ? await runEvent({ key, name: preEventName }, zcli, bundle)
-        : {};
+      let request;
+      if (preMethod) {
+        try {
+          request = await runEvent({ key, name: preEventName }, zcli, bundle);
+        } catch (error) {
+          if (error.name === 'StopRequestError') {
+            return ensureIsType(null, options.ensureType);
+          }
+          throw error;
+        }
+      } else {
+        request = {};
+      }
+
       request = { ...bundle.request, ...request };
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';

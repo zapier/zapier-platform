@@ -1304,6 +1304,30 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_poll, StopRequestException', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_pre_poll_stop_request',
+        'movie_pre_poll'
+      );
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll'
+      );
+      const _appDefWithAuth = withAuth(appDef, sessionAuthConfig);
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        output.results.should.be.an.Array();
+        output.results.length.should.equal(0);
+      });
+    });
+
     it('KEY_pre_poll, merge query params', () => {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
@@ -2522,6 +2546,26 @@ describe('Integration Test', () => {
           'foo=bar&apple=123&dragonfruit=%26%3D&eggplant=1.11&eggplant=2.22&' +
             'filbert=True&nest=foo&nest=hello'
         );
+      });
+    });
+
+    it('KEY_pre_write, StopRequestException', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_write_stop_request',
+          'movie_pre_write'
+        );
+
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).then((output) => {
+        should.deepEqual(output.results, {});
       });
     });
 

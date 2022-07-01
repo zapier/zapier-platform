@@ -333,6 +333,10 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_poll_stop_request: function(bundle) {
+        throw new StopRequestException("don't do it");
+      },
+
       movie_post_poll_request_options: function(bundle) {
         // To make sure bundle.request is still available in post_poll
         return [bundle.request];
@@ -679,6 +683,10 @@ const legacyScriptingSource = `
           empty_array: []
         };
         return bundle.request;
+      },
+
+      movie_pre_write_stop_request: function(bundle) {
+        throw new StopRequestException('stop');
       },
 
       movie_write_default_headers: function(bundle) {
