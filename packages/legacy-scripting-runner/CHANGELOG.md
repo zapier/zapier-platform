@@ -1,3 +1,7 @@
+## 3.8.9
+
+- :bug: `StopRequestException` should be caught instead of thrown ([#558](https://github.com/zapier/zapier-platform/pull/558))
+
 ## 3.8.8
 
 - :bug: Make `logResponse` import backward compatible to fix `func.apply is not a function` error ([#548](https://github.com/zapier/zapier-platform/pull/548))
