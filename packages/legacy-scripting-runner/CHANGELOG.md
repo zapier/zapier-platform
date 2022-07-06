@@ -1,3 +1,7 @@
+## 3.8.10
+
+- :bug: Add support for `StopRequestException` in more methods ([#561](https://github.com/zapier/zapier-platform/pull/561))
+
 ## 3.8.9
 
 - :bug: `StopRequestException` should be caught instead of thrown ([#558](https://github.com/zapier/zapier-platform/pull/558))
