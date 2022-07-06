@@ -372,6 +372,10 @@ const legacyScriptingSource = `
         return [z.JSON.parse(response.content)];
       },
 
+      movie_poll_stop_request: function(bundle) {
+        throw new StopRequestException('stop');
+      },
+
       recipe_pre_poll_underscore_template: function(bundle) {
         bundle.request.url = _.template(bundle.request.url, {
           urlPath: '/recipes'
@@ -407,6 +411,10 @@ const legacyScriptingSource = `
           querystring: bundle.request.querystring,
           content: bundle.request.content
         };
+      },
+
+      contact_hook_scripting_catch_hook_stop_request: function(bundle) {
+        throw new StopRequestException('stop');
       },
 
       // To be replaced with 'contact_hook_scripting_pre_hook' at runtime to enable
@@ -737,6 +745,10 @@ const legacyScriptingSource = `
         return response.content;
       },
 
+      movie_write_stop_request: function(bundle) {
+        throw new StopRequestException('nothing for you');
+      },
+
       // To be replaced with 'movie_pre_custom_action_fields' at runtime
       movie_pre_custom_action_fields_disabled: function(bundle) {
         bundle.request.url += 's';
@@ -945,6 +957,10 @@ const legacyScriptingSource = `
         return bundle.request;
       },
 
+      movie_pre_search_stop_request: function(bundle) {
+        throw new StopRequestException("don't do it");
+      },
+
       // To be replaced with 'movie_post_search' at runtime
       movie_post_search_disabled: function(bundle) {
         var results = z.JSON.parse(bundle.response.content);
@@ -959,6 +975,10 @@ const legacyScriptingSource = `
         var results = z.JSON.parse(response.content);
         results[0].title += ' (movie_search was here)';
         return results;
+      },
+
+      movie_search_stop_request: function(bundle) {
+        throw new StopRequestException('nothing for you');
       },
 
       // To be replaced with 'movie_pre_read_resource' at runtime

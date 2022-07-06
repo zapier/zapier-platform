@@ -823,6 +823,24 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_poll, StopRequestException', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_poll_stop_request',
+        'movie_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        should.deepEqual(output.results, []);
+      });
+    });
+
     it('KEY_pre_poll', () => {
       const input = createTestInput(
         compiledApp,
@@ -1824,6 +1842,23 @@ describe('Integration Test', () => {
         should.equal(result.headers['Http-X-Custom'], 'hello');
         should.equal(result.content, '<name>Tom</name>');
         should.equal(result.querystring, 'foo=bar');
+      });
+    });
+
+    it('KEY_catch_hook, StopRequestException', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'contact_hook_scripting_catch_hook_stop_request',
+        'contact_hook_scripting_catch_hook'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
+      const input = createTestInput(
+        compiledApp,
+        'triggers.contact_hook_scripting.operation.perform'
+      );
+      return app(input).then((output) => {
+        should.deepEqual(output.results, []);
       });
     });
 
@@ -2993,6 +3028,24 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_write, StopRequestException', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_write_stop_request',
+        'movie_write'
+      );
+      const compiledApp = schemaTools.prepareApp(appDef);
+      const app = createApp(appDef);
+
+      const input = createTestInput(
+        compiledApp,
+        'creates.movie.operation.perform'
+      );
+      return app(input).then((output) => {
+        should.deepEqual(output.results, {});
+      });
+    });
+
     it('scriptingless input fields', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       appDefWithAuth.legacy.creates.movie.operation.inputFieldsUrl += 's';
@@ -4104,6 +4157,25 @@ describe('Integration Test', () => {
       });
     });
 
+    it('KEY_pre_search, StopRequestException', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_pre_search_stop_request',
+          'movie_pre_search'
+        );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'searches.movie.operation.perform'
+      );
+      return app(input).then((output) => {
+        should.deepEqual(output.results, []);
+      });
+    });
+
     it('KEY_post_search', () => {
       const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
       const legacyProps = appDefWithAuth.legacy.searches.movie.operation;
@@ -4189,6 +4261,25 @@ describe('Integration Test', () => {
         const movie = output.results[0];
         should.equal(movie.id, 12);
         should.equal(movie.title, 'title 12 (movie_search was here)');
+      });
+    });
+
+    it('KEY_search, StopRequestException', () => {
+      const appDefWithAuth = withAuth(appDefinition, apiKeyAuth);
+      appDefWithAuth.legacy.scriptingSource =
+        appDefWithAuth.legacy.scriptingSource.replace(
+          'movie_search_stop_request',
+          'movie_search'
+        );
+      const compiledApp = schemaTools.prepareApp(appDefWithAuth);
+      const app = createApp(appDefWithAuth);
+
+      const input = createTestInput(
+        compiledApp,
+        'searches.movie.operation.perform'
+      );
+      return app(input).then((output) => {
+        should.deepEqual(output.results, []);
       });
     });
 
