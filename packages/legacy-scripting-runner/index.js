@@ -831,7 +831,14 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       }
 
       // Running "full" scripting method like KEY_poll
-      result = await runEvent({ key, name: fullEventName }, zcli, bundle);
+      try {
+        result = await runEvent({ key, name: fullEventName }, zcli, bundle);
+      } catch (error) {
+        if (error.name === 'StopRequestError') {
+          return ensureIsType(null, options.ensureType);
+        }
+        throw error;
+      }
     } else {
       const preMethod = preMethodName ? Zap[preMethodName] : null;
       let request;
@@ -1226,17 +1233,26 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     return result;
   };
 
-  const runCatchHook = (bundle, key) => {
+  const runCatchHook = async (bundle, key) => {
     const methodName = `${key}_catch_hook`;
-    const promise = Zap[methodName]
-      ? runEvent({ key, name: 'trigger.hook' }, zcli, bundle)
-      : Promise.resolve(bundle.cleanedRequest);
-    return promise.then((result) => {
-      if (!Array.isArray(result)) {
-        result = [result];
+    let result;
+    if (Zap[methodName]) {
+      try {
+        result = await runEvent({ key, name: 'trigger.hook' }, zcli, bundle);
+      } catch (error) {
+        if (error.name === 'StopRequestError') {
+          return [];
+        }
+        throw error;
       }
-      return result;
-    });
+    } else {
+      result = bundle.cleanedRequest;
+    }
+
+    if (!Array.isArray(result)) {
+      result = [result];
+    }
+    return result;
   };
 
   const runPrePostHook = (bundle, key) => {
