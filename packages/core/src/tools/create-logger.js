@@ -30,6 +30,8 @@ const {
 // than the limit (16 MB) on the server side.
 const LOG_STREAM_BYTES_LIMIT = 15 * 1024 * 1024;
 
+const DEFAULT_LOGGER_TIMEOUT = 200;
+
 const sleep = promisify(setTimeout);
 
 const isUrl = (url) => {
@@ -245,7 +247,7 @@ class LogStreamFactory {
   // timeoutToAbort to specify how many milliseconds we want to wait before
   // force aborting the connection to the log server. timeoutToAbort defaults to
   // 0, meaning to immediately abort.
-  async end(timeoutToAbort) {
+  async end(timeoutToAbort = DEFAULT_LOGGER_TIMEOUT) {
     // Mark the factory as ended. This suggests that any logStream.write() that
     // follows should end() right away.
     this.ended = true;
@@ -262,9 +264,12 @@ class LogStreamFactory {
       const isTimeout = !result;
       if (isTimeout) {
         this._logStream.abort();
+        // Expect to get a `{content: 'aborted'}` response
+        response = await responsePromise;
+      } else {
+        response = result;
       }
 
-      response = await responsePromise;
       this._logStream = null;
     }
     return response;
@@ -329,7 +334,7 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
       // (bad) callback that is still running after the Lambda handler returns?
       // We need to make sure the bad callback ends the logger as well.
       // Otherwise, it will hang!
-      logStreamFactory.end();
+      logStreamFactory.end(DEFAULT_LOGGER_TIMEOUT);
     }
   }
 };
@@ -366,7 +371,7 @@ const createLogger = (event, options) => {
   const logStreamFactory = new LogStreamFactory();
   const logger = sendLog.bind(undefined, logStreamFactory, options, event);
 
-  logger.end = async (timeoutToAbort) => {
+  logger.end = async (timeoutToAbort = DEFAULT_LOGGER_TIMEOUT) => {
     return logStreamFactory.end(timeoutToAbort);
   };
   return logger;
