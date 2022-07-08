@@ -245,8 +245,7 @@ class LogStreamFactory {
 
   // Ends the logger and gets a response from the log server. Optionally takes
   // timeoutToAbort to specify how many milliseconds we want to wait before
-  // force aborting the connection to the log server. timeoutToAbort defaults to
-  // 0, meaning to immediately abort.
+  // force aborting the connection to the log server.
   async end(timeoutToAbort = DEFAULT_LOGGER_TIMEOUT) {
     // Mark the factory as ended. This suggests that any logStream.write() that
     // follows should end() right away.
