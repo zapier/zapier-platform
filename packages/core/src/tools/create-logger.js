@@ -199,12 +199,7 @@ class LogStream extends Transform {
       // Swallow logging errors. This will show up in AWS logs at least.
       // Don't need to log for AbortError because that happens when we abort
       // on purpose.
-      console.error(
-        'Error making log request:',
-        err,
-        'http options:',
-        httpOptions
-      );
+      console.error('Error making log request:', err);
     });
   }
 
