@@ -1,9 +1,11 @@
 'use strict';
 
+const { promisify } = require('util');
 const { Transform } = require('stream');
 const { parse: querystringParse } = require('querystring');
 
 const _ = require('lodash');
+const { AbortController } = require('node-abort-controller');
 
 const request = require('./request-client-internal');
 const { simpleTruncate, recurseReplace, truncateData } = require('./data');
@@ -27,6 +29,8 @@ const {
 // The payload size per request to stream logs. This should be slighly lower
 // than the limit (16 MB) on the server side.
 const LOG_STREAM_BYTES_LIMIT = 15 * 1024 * 1024;
+
+const sleep = promisify(setTimeout);
 
 const isUrl = (url) => {
   try {
@@ -167,6 +171,7 @@ class LogStream extends Transform {
   constructor(options) {
     super(options);
     this.bytesWritten = 0;
+    this.controller = new AbortController();
     this.request = this._newRequest(options.url, options.token);
   }
 
@@ -179,9 +184,19 @@ class LogStream extends Transform {
         'X-Token': token,
       },
       body: this,
+      signal: this.controller.signal,
     };
     return request(httpOptions).catch((err) => {
+      if (err.name === 'AbortError') {
+        return {
+          status: 200,
+          content: 'aborted',
+        };
+      }
+
       // Swallow logging errors. This will show up in AWS logs at least.
+      // Don't need to log for AbortError because that happens when we abort
+      // on purpose.
       console.error(
         'Error making log request:',
         err,
@@ -195,6 +210,10 @@ class LogStream extends Transform {
     this.push(chunk);
     this.bytesWritten += Buffer.byteLength(chunk, encoding);
     callback();
+  }
+
+  abort() {
+    this.controller.abort();
   }
 }
 
@@ -222,17 +241,33 @@ class LogStreamFactory {
     return this._logStream;
   }
 
-  async end() {
+  // Ends the logger and gets a response from the log server. Optionally takes
+  // timeoutToAbort to specify how many milliseconds we want to wait before
+  // force aborting the connection to the log server. timeoutToAbort defaults to
+  // 0, meaning to immediately abort.
+  async end(timeoutToAbort) {
     // Mark the factory as ended. This suggests that any logStream.write() that
     // follows should end() right away.
     this.ended = true;
+    let response;
 
     if (this._logStream) {
       this._logStream.end();
-      const response = await this._logStream.request;
+
+      const clock =
+        timeoutToAbort > 0 ? sleep(timeoutToAbort) : Promise.resolve(undefined);
+      const responsePromise = this._logStream.request;
+
+      const result = await Promise.race([clock, responsePromise]);
+      const isTimeout = !result;
+      if (isTimeout) {
+        this._logStream.abort();
+      }
+
+      response = await responsePromise;
       this._logStream = null;
-      return response;
     }
+    return response;
   }
 }
 
@@ -331,8 +366,8 @@ const createLogger = (event, options) => {
   const logStreamFactory = new LogStreamFactory();
   const logger = sendLog.bind(undefined, logStreamFactory, options, event);
 
-  logger.end = async () => {
-    return logStreamFactory.end();
+  logger.end = async (timeoutToAbort) => {
+    return logStreamFactory.end(timeoutToAbort);
   };
   return logger;
 };

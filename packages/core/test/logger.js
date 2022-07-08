@@ -1,6 +1,8 @@
 'use strict';
 
 require('should');
+const nock = require('nock');
+
 const createlogger = require('../src/tools/create-logger');
 const querystring = require('querystring');
 const { Headers } = require('node-fetch');
@@ -58,7 +60,7 @@ describe('logger', () => {
     const data = { key: 'val' };
 
     logger('test', data);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.contentType.should.containEql('application/x-ndjson');
     response.content.token.should.eql(options.token);
@@ -75,7 +77,7 @@ describe('logger', () => {
     const logger = createlogger({ logExtra }, options);
 
     logger('test');
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -97,7 +99,7 @@ describe('logger', () => {
     const data = bundle.authData;
 
     logger('test', data);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -129,7 +131,7 @@ describe('logger', () => {
     const logger = createlogger({ bundle }, options);
 
     logger('123 from google.com', bundle.headers);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -165,7 +167,7 @@ describe('logger', () => {
     const logger = createlogger({ bundle }, options);
 
     logger('123 from url google.com', bundle.headers);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -193,7 +195,7 @@ describe('logger', () => {
     const logger = createlogger({ bundle }, options);
 
     logger('123 from url google.com', bundle.headers);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -230,7 +232,7 @@ describe('logger', () => {
     };
 
     logger('test', data);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -271,7 +273,7 @@ describe('logger', () => {
     });
 
     logger(message, data);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
 
     response.content.logs.should.deepEqual([
@@ -311,7 +313,7 @@ describe('logger', () => {
     });
 
     logger(message, data);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
 
     response.content.logs.should.deepEqual([
@@ -351,7 +353,7 @@ describe('logger', () => {
     };
 
     logger('test', data);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -390,7 +392,7 @@ describe('logger', () => {
     };
 
     logger('test', data);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -426,7 +428,7 @@ describe('logger', () => {
     const data = bundle.authData;
 
     logger('test', data);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -456,7 +458,7 @@ describe('logger', () => {
     const data = bundle.authData;
 
     logger('200 GET https://example.com/test', data);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -488,7 +490,7 @@ describe('logger', () => {
     const data = bundle.authData;
 
     logger('200 GET https://example.com/test', data);
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -510,7 +512,7 @@ describe('logger', () => {
     logger('hello 2', { customuser_id: 2 });
     logger('hello 3', { customuser_id: 3 });
 
-    const response = await logger.end();
+    const response = await logger.end(1000);
     response.status.should.eql(200);
     response.content.token.should.eql(options.token);
     response.content.logs.should.deepEqual([
@@ -518,5 +520,23 @@ describe('logger', () => {
       { message: 'hello 2', data: { log_type: 'console', customuser_id: 2 } },
       { message: 'hello 3', data: { log_type: 'console', customuser_id: 3 } },
     ]);
+  });
+
+  it('should not wait for server to respond', async function () {
+    nock.cleanAll();
+    mockLogServer(1000); // simulates a slow server
+
+    // This test should be fast
+    this.timeout(100);
+
+    const logger = createlogger({}, options);
+
+    logger('hello 1', { customuser_id: 1 });
+    logger('hello 2', { customuser_id: 2 });
+    logger('hello 3', { customuser_id: 3 });
+
+    const response = await logger.end(0); // should return immediately
+    response.status.should.eql(200);
+    response.content.should.eql('aborted');
   });
 });
