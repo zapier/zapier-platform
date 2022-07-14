@@ -156,9 +156,10 @@ const mockUpload = () => {
     });
 };
 
-const mockLogServer = () => {
+const mockLogServer = (delay = 0) => {
   nock(FAKE_LOG_URL)
     .post('/input')
+    .delay(delay)
     .reply(function (uri, requestBody, cb) {
       const lines = requestBody.split('\n');
       const logs = lines
