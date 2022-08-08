@@ -445,7 +445,7 @@ Also, `authentication.oauth2Config.getAccessToken` has access to the additional 
 
 When a user connects to your app via Zapier and a connection is created to hold the related data in `bundle.authData`, the connection is automatically labeled with the app name. You also have the option of setting a connection label (`connectionLabel`), which can be extremely helpful to identify information like which user is connected or what instance of your app they are connected to. That way, users don't get confused if they have multiple connections to your app.
 
-When setting a connection label, you can use either a string (as shown in [Basic Auth](#basic)) or a function (as shown in [Digest Auth](#digest)).
+When setting a connection label, you can use either a string with variable references (as shown in [Basic Auth](#basic)) or a function (as shown in [Digest Auth](#digest)).
 
 When using a string, you have access to the information in `bundle.authData` and the information returned from the test request in `bundle.inputData`, all at the top level. So in Basic auth, if `connectionLabel` is `{{username}}`, that refers to the username used for authentication.
 
