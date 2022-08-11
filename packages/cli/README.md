@@ -55,6 +55,7 @@ This doc describes the latest CLI version (**12.0.3**), as of this writing. If y
   * [Session](#session)
   * [OAuth1](#oauth1)
   * [OAuth2](#oauth2)
+  * [Connection Label](#connection-label)
 - [Resources](#resources)
   * [Resource Definition](#resource-definition)
 - [Triggers/Searches/Creates](#triggerssearchescreates)
@@ -861,6 +862,18 @@ module.exports = App;
 For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Config.getAccessToken`, and `authentication.oauth2Config.refreshAccessToken` have fields like `redirect_uri` and `state` in `bundle.inputData`. After the code is exchanged for an access token and/or refresh token, those tokens are stored in `bundle.authData` for the connection.
 
 Also, `authentication.oauth2Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
+
+### Connection Label
+
+When a user connects to your app via Zapier and a connection is created to hold the related data in `bundle.authData`, the connection is automatically labeled with the app name. You also have the option of setting a connection label (`connectionLabel`), which can be extremely helpful to identify information like which user is connected or what instance of your app they are connected to. That way, users don't get confused if they have multiple connections to your app.
+
+When setting a connection label, you can use either a string with variable references (as shown in [Basic Auth](#basic)) or a function (as shown in [Digest Auth](#digest)).
+
+When using a string, you have access to the information in `bundle.authData` and the information returned from the test request in `bundle.inputData`, all at the top level. So in Basic auth, if `connectionLabel` is `{{username}}`, that refers to the username used for authentication.
+
+When using a function, this "hoisting" of data to the top level is skipped, and you must refer to data items by their fully qualified name, as shown in the line `return bundle.inputData.username;` in the Digest Auth snippet. `return username;` would not work in this context.
+
+**NOTE:** Do not use sensitive authentication data such as passwords or API keys in the connection label. It's visible in plain text on Zapier. The purpose of the label is to identify the connection for the user, so stick with data such as username or instance identifier that is meaningful but not sensitive.
 
 
 ## Resources
