@@ -4,4 +4,5 @@ package-lock.json
 packages/cli/snippets/next.js
 packages/cli/src/generators/templates/
 packages/cli/README-source.md
+docs/lib/eventsToolkit.custom.min.js
 .yarn
