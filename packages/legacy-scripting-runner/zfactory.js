@@ -67,7 +67,7 @@ const convertResponse = (response) => {
 
 const syncRequest = createSyncFn(require.resolve('./request-worker'));
 
-const zfactory = (zcli, app) => {
+const zfactory = (zcli, app, logger) => {
   const AWS = () => {
     // Direct require breaks the build as the module isn't found by browserify
     const moduleName = 'aws-sdk';
@@ -96,6 +96,28 @@ const zfactory = (zcli, app) => {
     }
   };
 
+  const sendHttpLog = (req, res) => {
+    // Log fields here intend to match the ones in createHttpPatch in core
+    const method = (req.method || 'GET').toUpperCase();
+    const url = req.url || req.uri;
+    const responseBody =
+      typeof res.content === 'string'
+        ? res.content
+        : 'Could not show response content';
+    logger(`${res.status_code} ${method} ${url}`, {
+      log_type: 'http',
+      request_type: 'devplatform-outbound',
+      request_url: url,
+      request_method: method,
+      request_headers: req.headers,
+      request_data: req.data,
+      request_via_client: false,
+      response_status_code: res.status_code,
+      response_headers: res.headers,
+      response_content: responseBody,
+    });
+  };
+
   const requestMethod = (bundleRequest, callback) => {
     const options = convertBundleRequest(bundleRequest);
 
@@ -105,8 +127,18 @@ const zfactory = (zcli, app) => {
       );
     }
 
-    const response = syncRequest(options);
-    return convertResponse(response);
+    const normalizedOptions = request.initParams(options);
+    const response = syncRequest(normalizedOptions);
+
+    const convertedResponse = convertResponse(response);
+
+    // syncRequest() is done by a worker thread, which isn't httpPatch'ed, so we
+    // need to explicit write the http log here
+    if (logger) {
+      sendHttpLog(normalizedOptions, convertedResponse);
+    }
+
+    return convertedResponse;
   };
 
   const hash = (

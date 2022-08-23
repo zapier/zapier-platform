@@ -138,6 +138,11 @@ const legacyScriptingSource = `
         return contacts;
       },
 
+      contact_full_poll_z_request_with_url: function(bundle) {
+        var response = z.request({uri: '${HTTPBIN_URL}/get'});
+        return z.JSON.parse(response.content);
+      },
+
       contact_full_pre_custom_trigger_fields: function(bundle) {
         bundle.request.url += 's';
         return bundle.request;
@@ -374,6 +379,11 @@ const legacyScriptingSource = `
 
       movie_poll_stop_request: function(bundle) {
         throw new StopRequestException('stop');
+      },
+
+      movie_poll_z_request_uri: function(bundle) {
+        var response = z.request({ uri: '${HTTPBIN_URL}/get', method: 'get' });
+        return [z.JSON.parse(response.content)];
       },
 
       recipe_pre_poll_underscore_template: function(bundle) {

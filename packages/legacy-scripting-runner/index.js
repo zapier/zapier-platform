@@ -449,7 +449,7 @@ const pruneQueryParams = (params) => {
   }, {});
 };
 
-const compileLegacyScriptingSource = (source, zcli, app) => {
+const compileLegacyScriptingSource = (source, zcli, app, logger) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
 
   const underscore = require('underscore');
@@ -486,7 +486,7 @@ const compileLegacyScriptingSource = (source, zcli, app) => {
     XMLSerializer,
     require('./atob'),
     require('./btoa'),
-    require('./zfactory')(zcli, app),
+    require('./zfactory')(zcli, app, logger),
     require('./$'),
     zcli.console,
     require,
@@ -574,7 +574,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   const logger = _.get(input, '_zapier.logger');
 
   if (typeof Zap === 'string') {
-    Zap = compileLegacyScriptingSource(Zap, zcli, app);
+    Zap = compileLegacyScriptingSource(Zap, zcli, app, logger);
   }
 
   // Does string replacement ala WB, using bundle and a potential result object
@@ -734,6 +734,9 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
     const convertedBundle = await bundleConverter(bundle, event, z);
 
+    // In case the scripting method mutates the bundle
+    const bundleForLog = _.cloneDeep(convertedBundle);
+
     // To know if request.files is changed by scripting
     event.originalFiles = _.cloneDeep(
       _.get(convertedBundle, 'request.files') || {}
@@ -762,8 +765,8 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
     logger(`Called legacy scripting ${methodName}`, {
       log_type: 'bundle',
-      input: convertedBundle,
-      output: result,
+      input: bundleForLog,
+      output: _.cloneDeep(result),
     });
 
     return parseFinalResult(result, event);
