@@ -138,11 +138,6 @@ const legacyScriptingSource = `
         return contacts;
       },
 
-      contact_full_poll_z_request_with_url: function(bundle) {
-        var response = z.request({uri: '${HTTPBIN_URL}/get'});
-        return z.JSON.parse(response.content);
-      },
-
       contact_full_pre_custom_trigger_fields: function(bundle) {
         bundle.request.url += 's';
         return bundle.request;
