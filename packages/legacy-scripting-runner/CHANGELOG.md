@@ -1,3 +1,7 @@
+## 3.8.11
+
+- :bug: sync `z.request` doesn't produce an HTTP log ([#566](https://github.com/zapier/zapier-platform/pull/566))
+
 ## 3.8.10
 
 - :bug: Add support for `StopRequestException` in more methods ([#561](https://github.com/zapier/zapier-platform/pull/561))

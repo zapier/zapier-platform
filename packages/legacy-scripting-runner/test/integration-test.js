@@ -1,3 +1,6 @@
+const http = require('http');
+const https = require('https');
+
 const _ = require('lodash');
 const should = require('should');
 const nock = require('nock');
@@ -8,6 +11,7 @@ const appDefinition = require('./example-app');
 const oauth2Config = require('./example-app/oauth2');
 const sessionAuthConfig = require('./example-app/session-auth');
 const createApp = require('zapier-platform-core/src/create-app');
+const createHttpPatch = require('zapier-platform-core/src/tools/create-http-patch');
 const createInput = require('zapier-platform-core/src/tools/create-input');
 const schemaTools = require('zapier-platform-core/src/tools/schema');
 
@@ -36,8 +40,9 @@ const createAppWithCustomBefores = (appRaw, customBefores) => {
 };
 
 describe('Integration Test', () => {
-  const testLogger = (/* message, data */) => {
-    // console.log(message, data);
+  const logs = [];
+  const testLogger = (message, data) => {
+    logs.push({ ...data, message });
     return Promise.resolve({});
   };
 
@@ -54,6 +59,12 @@ describe('Integration Test', () => {
     if (nock.isActive()) {
       nock.restore();
     }
+
+    const httpPatch = createHttpPatch({});
+    httpPatch(http, testLogger);
+    httpPatch(https, testLogger);
+
+    logs.length = 0; // clear logs
   });
 
   describe('session auth', () => {
@@ -748,6 +759,42 @@ describe('Integration Test', () => {
         const firstContact = output.results[0];
         should.equal(firstContact.name, 'Patched by KEY_poll!');
         should.equal(firstContact.zapTitle, 'My Awesome Zap');
+
+        // There should be a log for the http request and the bundle
+        should.equal(logs.length, 2);
+
+        // http log
+        logs[0].should.containDeep({
+          message: `200 GET ${AUTH_JSON_SERVER_URL}/users`,
+          log_type: 'http',
+          request_url: `${AUTH_JSON_SERVER_URL}/users`,
+          request_method: 'GET',
+          request_headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'X-Api-Key': 'secret',
+          },
+          response_status_code: 200,
+          response_headers: {
+            'content-type': 'application/json; charset=utf-8',
+          },
+        });
+
+        const loggedResponseData = JSON.parse(logs[0].response_content);
+        loggedResponseData.length.should.greaterThan(1);
+        loggedResponseData[0].should.containEql({ id: 1, username: 'Bret' });
+
+        // bundle log
+        logs[1].should.containDeep({
+          message: 'Called legacy scripting contact_full_poll',
+          log_type: 'bundle',
+          input: {
+            request: {
+              url: '',
+            },
+            auth_fields: { api_key: 'secret' },
+          },
+          output: [{ id: 1, username: 'Bret', name: 'Patched by KEY_poll!' }],
+        });
       });
     });
 
@@ -838,6 +885,30 @@ describe('Integration Test', () => {
       );
       return _app(input).then((output) => {
         should.deepEqual(output.results, []);
+      });
+    });
+
+    it('KEY_poll, z.request using uri', () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_poll_z_request_uri',
+        'movie_poll'
+      );
+      const _compiledApp = schemaTools.prepareApp(appDef);
+      const _app = createApp(appDef);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform'
+      );
+      return _app(input).then((output) => {
+        const echoed = output.results[0];
+        should.equal(echoed.url, `${HTTPBIN_URL}/get`);
+
+        // There should be a log for the http request and the bundle
+        should.equal(logs.length, 2);
+        should.equal(logs[0].message, `200 GET ${HTTPBIN_URL}/get`);
+        should.equal(logs[1].message, `Called legacy scripting movie_poll`);
       });
     });
 
@@ -2839,6 +2910,71 @@ describe('Integration Test', () => {
         should.equal(movie.title, 'Phantom Thread');
         should.equal(movie.genre, 'Drama');
         should.equal(movie.year, 2017);
+
+        // pre_write bundle log, http log, post_write bundle log
+        should.equal(logs.length, 3);
+
+        logs[0].should.containDeep({
+          message: 'Called legacy scripting movie_pre_write',
+          log_type: 'bundle',
+          input: {
+            auth_fields: {
+              api_key: 'secret',
+            },
+            action_fields_full: {
+              title: 'Phantom Thread',
+              genre: 'Drama',
+            },
+            request: {
+              url: `${AUTH_JSON_SERVER_URL}/movie`,
+              method: 'POST',
+              data: '{"genre":"Drama"}',
+            },
+          },
+          output: {
+            url: `${AUTH_JSON_SERVER_URL}/movies`,
+            method: 'POST',
+            data: '{"title":"Phantom Thread","genre":"Drama"}',
+          },
+        });
+
+        logs[1].should.containDeep({
+          message: `201 POST ${AUTH_JSON_SERVER_URL}/movies`,
+          log_type: 'http',
+          request_url: `${AUTH_JSON_SERVER_URL}/movies`,
+          request_method: 'POST',
+          request_headers: {
+            'X-Api-Key': 'secret',
+          },
+          response_status_code: 201,
+        });
+
+        let loggedResponseData = JSON.parse(logs[1].response_content);
+        loggedResponseData.should.containEql({
+          title: 'Phantom Thread',
+          genre: 'Drama',
+        });
+
+        logs[2].should.containDeep({
+          message: 'Called legacy scripting movie_post_write',
+          log_type: 'bundle',
+          input: {
+            response: {
+              status_code: 201,
+            },
+          },
+          output: {
+            title: 'Phantom Thread',
+            genre: 'Drama',
+            year: 2017,
+          },
+        });
+
+        loggedResponseData = JSON.parse(logs[2].input.response.content);
+        loggedResponseData.should.containEql({
+          title: 'Phantom Thread',
+          genre: 'Drama',
+        });
       });
     });
 
@@ -2868,6 +3004,40 @@ describe('Integration Test', () => {
         should.equal(movie.title, 'Room');
         should.equal(movie.genre, 'Drama');
         should.equal(movie.year, 2015);
+
+        // http log and bundle log
+        should.equal(logs.length, 2);
+
+        logs[0].should.containDeep({
+          message: `201 POST ${AUTH_JSON_SERVER_URL}/movies`,
+          log_type: 'http',
+          request_url: `${AUTH_JSON_SERVER_URL}/movies`,
+          request_method: 'POST',
+          response_status_code: 201,
+        });
+
+        const loggedResponseData = JSON.parse(logs[0].response_content);
+        loggedResponseData.should.containEql({
+          title: 'Room',
+          genre: 'Drama',
+        });
+
+        logs[1].should.containDeep({
+          message: 'Called legacy scripting movie_write',
+          log_type: 'bundle',
+          input: {
+            request: {
+              url: `${AUTH_JSON_SERVER_URL}/movie`,
+              method: 'POST',
+              data: '{"genre":"Drama"}',
+            },
+          },
+          output: {
+            title: 'Room',
+            genre: 'Drama',
+            year: 2015,
+          },
+        });
       });
     });
 

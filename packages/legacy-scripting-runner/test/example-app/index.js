@@ -376,6 +376,11 @@ const legacyScriptingSource = `
         throw new StopRequestException('stop');
       },
 
+      movie_poll_z_request_uri: function(bundle) {
+        var response = z.request({ uri: '${HTTPBIN_URL}/get', method: 'get' });
+        return [z.JSON.parse(response.content)];
+      },
+
       recipe_pre_poll_underscore_template: function(bundle) {
         bundle.request.url = _.template(bundle.request.url, {
           urlPath: '/recipes'
