@@ -1,9 +1,13 @@
 <!-- GENERATED! ONLY EDIT `README-source.md` -->
 
 <h1 align="center">
-  <a href="https://zapier.com"><img src="https://raw.githubusercontent.com/zapier/zapier-platform/master/packages/cli/goodies/zapier-logomark.png" alt="Zapier" width="200"></a>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.zappy.app/11069978ee4a9b1eeeeb62b11f541b7c.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://cdn.zappy.app/2602734341239f1b82ef0ff4ca160430.png">
+    <img alt="Zapier Logo" src="https://cdn.zappy.app/2602734341239f1b82ef0ff4ca160430.png" width="300px">
+  </picture>
   <br>
-  Zapier Platform CLI
+  Platform CLI
   <br>
   <br>
 </h1>
@@ -1018,7 +1022,7 @@ const App = {
 You can find more details on the definition for each by looking at the [Trigger Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#triggerschema),
 [Search Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#searchschema), and [Create Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#createschema).
 
-> To create a new integration with a premade trigger, search, or create, run `zapier init [your app name]` and select from the list that appears. You can also check out our working example apps [here](https://github.com/zapier/zapier-platform/tree/master/example-apps). 
+> To create a new integration with a premade trigger, search, or create, run `zapier init [your app name]` and select from the list that appears. You can also check out our working example apps [here](https://github.com/zapier/zapier-platform/tree/master/example-apps).
 
 > To add a trigger, search, or create to an existing integration, run `zapier scaffold [trigger|search|create] [noun]` to create the necessary files to your project. For example, `zapier scaffold trigger post` will create a new trigger called "New Post".
 ### Return Types
@@ -2209,7 +2213,7 @@ const perform = async (z, bundle) => {
     skipThrowForStatus: true
   });
   // Now you handle error response on your own.
-  // The following is equivalent to response.throwForStatus(), 
+  // The following is equivalent to response.throwForStatus(),
   // but you have to remember to do it on every request
   if (response.status >= 400) {
     throw new z.errors.ResponseError(response);
@@ -3443,4 +3447,4 @@ You can get help by either emailing `partners@zapier.com` or by [joining our dev
 
 ## Developing on the CLI
 
-For Zapier employees, see [this quip doc](https://zapier.quip.com/bns4AxqwaMIm/Working-on-the-CLI-Platform-CoreSchemaCLI) for info about creating releases.
+See [CONTRIBUTING.md](https://github.com/zapier/zapier-platform/blob/master/CONTRIBUTING.md).
