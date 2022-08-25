@@ -91,9 +91,19 @@ writeCliDocs({
   markdownPath: './docs/cli.md',
 });
 
+// The generated html is only for light theme. Let's just use the same image for
+// both light and dark mode.
+let markdownContent = fs.readFileSync(path.join(__dirname, '../README.md'), {
+  encoding: 'utf8',
+});
+markdownContent = markdownContent.replace(
+  '11069978ee4a9b1eeeeb62b11f541b7c.png', // <- logo for dark theme
+  '2602734341239f1b82ef0ff4ca160430.png' // <- logo for light theme
+);
+
 litdoc({
   title: 'Zapier Platform CLI Documentation',
-  markdownPath: path.join(__dirname, '../README.md'),
+  markdown: markdownContent,
   outputPath: path.join(__dirname, '../docs/index.html'),
   templatePath: path.join(__dirname, '../docs/template.jst'),
 });
