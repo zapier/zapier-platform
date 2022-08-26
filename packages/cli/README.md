@@ -2688,7 +2688,7 @@ delay in seconds:
 ```js
 const yourAfterResponse = (resp) => {
   if (resp.status === 429) {
-    throw new ThrottledError('message here', 60);  // Zapier will retry in 60 seconds
+    throw new z.errors.ThrottledError('message here', 60);  // Zapier will retry in 60 seconds
   }
   return resp;
 };
