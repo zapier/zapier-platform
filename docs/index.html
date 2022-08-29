@@ -4371,7 +4371,7 @@ delay in seconds:</p>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> yourAfterResponse = <span class="hljs-function">(<span class="hljs-params">resp</span>) =&gt;</span> {
   <span class="hljs-keyword">if</span> (resp.status === <span class="hljs-number">429</span>) {
-    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> ThrottledError(<span class="hljs-string">&apos;message here&apos;</span>, <span class="hljs-number">60</span>);  <span class="hljs-comment">// Zapier will retry in 60 seconds</span>
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> z.errors.ThrottledError(<span class="hljs-string">&apos;message here&apos;</span>, <span class="hljs-number">60</span>);  <span class="hljs-comment">// Zapier will retry in 60 seconds</span>
   }
   <span class="hljs-keyword">return</span> resp;
 };
