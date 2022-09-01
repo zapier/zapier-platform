@@ -28,7 +28,7 @@
     "jquery": "2.1.4",
     "jsdom": "7.0.0",
     "lodash": "4.17.21",
-    "moment-timezone": "0.5.28",
+    "moment-timezone": "0.5.35",
     "node-fetch": "2.6.7",
     "request": "2.88.2",
     "synckit": "0.6.0",
