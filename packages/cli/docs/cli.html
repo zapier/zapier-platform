@@ -790,18 +790,20 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Migrate users from one version of your integration to another.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier migrate FROMVERSION TOVERSION [PERCENT]</code></p><p>Start a migration to move users between different versions of your integration. You may also &quot;revert&quot; by simply swapping the from/to verion strings in the command line arguments (i.e. <code>zapier migrate 1.0.1 1.0.0</code>).</p><p>Only use this command to migrate users between non-breaking versions, use <code>zapier deprecate</code> if you have breaking changes!</p><p>Migration time varies based on the number of affected Zaps. Be patient and check <code>zapier jobs</code> to track the status. Or use <code>zapier history</code> if you want to see older jobs.</p><p>Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.</p><p>We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.</p><p>You can migrate a single user by using <code>--user</code> (i.e. <code>zapier migrate 1.0.0 1.0.1 --user=user@example.com</code>).</p><p><strong>Arguments</strong></p><ul>
+<p>Migrate users or accounts from one version of your integration to another.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier migrate FROMVERSION TOVERSION [PERCENT]</code></p><p>Start a migration to move users between different versions of your integration. You may also &quot;revert&quot; by simply swapping the from/to verion strings in the command line arguments (i.e. <code>zapier migrate 1.0.1 1.0.0</code>).</p><p>Only use this command to migrate users between non-breaking versions, use <code>zapier deprecate</code> if you have breaking changes!</p><p>Migration time varies based on the number of affected Zaps. Be patient and check <code>zapier jobs</code> to track the status. Or use <code>zapier history</code> if you want to see older jobs.</p><p>Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.</p><p>We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.</p><p>You can migrate a single user by using <code>--user</code> (i.e. <code>zapier migrate 1.0.0 1.0.1 --user=user@example.com</code>).</p><p>You can migrate all Zaps, regardless of Zap owner, using your integration in an account by using <code>--account</code> (i.e. <code>zapier migrate 1.0.0 1.0.1 --account=account@example.com</code>).</p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>fromVersion</code> | The version FROM which to migrate users.</li>
 <li>(required) <code>toVersion</code> | The version TO which to migrate users.</li>
 <li><code>percent</code> | Percentage (between 1 and 100) of users to migrate.</li>
 </ul><p><strong>Flags</strong></p><ul>
 <li><code>--user</code> | Migrate only this user</li>
+<li><code>--account</code> | Migrate all Zaps using the integration in this account</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier migrate 1.0.0 1.0.1</code></li>
 <li><code>zapier migrate 1.0.1 2.0.0 10</code></li>
 <li><code>zapier migrate 2.0.0 2.0.1 --user=user@example.com</code></li>
+<li><code>zapier migrate 2.0.0 2.0.1 --account=account@example.com</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

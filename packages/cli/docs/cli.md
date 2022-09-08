@@ -340,7 +340,7 @@ This won't show logs from running locally with `zapier test`, since those never 
 
 ## migrate
 
-> Migrate users from one version of your integration to another.
+> Migrate users or accounts from one version of your integration to another.
 
 **Usage**: `zapier migrate FROMVERSION TOVERSION [PERCENT]`
 
@@ -356,6 +356,8 @@ We recommend migrating a small subset of users first, then watching error logs o
 
 You can migrate a single user by using `--user` (i.e. `zapier migrate 1.0.0 1.0.1 --user=user@example.com`).
 
+You can migrate all Zaps, regardless of Zap owner, using your integration in an account by using `--account` (i.e. `zapier migrate 1.0.0 1.0.1 --account=account@example.com`).
+
 **Arguments**
 * (required) `fromVersion` | The version FROM which to migrate users.
 * (required) `toVersion` | The version TO which to migrate users.
@@ -363,12 +365,14 @@ You can migrate a single user by using `--user` (i.e. `zapier migrate 1.0.0 1.0.
 
 **Flags**
 * `--user` | Migrate only this user
+* `--account` | Migrate all Zaps using the integration in this account
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
 * `zapier migrate 1.0.0 1.0.1`
 * `zapier migrate 1.0.1 2.0.0 10`
 * `zapier migrate 2.0.0 2.0.1 --user=user@example.com`
+* `zapier migrate 2.0.0 2.0.1 --account=account@example.com`
 
 
 ## promote

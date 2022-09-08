@@ -12,13 +12,21 @@ class MigrateCommand extends BaseCommand {
       this.error('`PERCENT` must be a number between 1 and 100.');
     }
 
+    const account = this.flags.account;
     const user = this.flags.user;
     const fromVersion = this.args.fromVersion;
     const toVersion = this.args.toVersion;
 
-    if (user && percent !== 100) {
+    if (user && account) {
       this.error(
-        'Cannot specify both `PERCENT` and `--user`. Use only one or the other.'
+        'Cannot specify both `--user` and `--account`. Use only one or the other.'
+      );
+    }
+
+    if ((user || account) && percent !== 100) {
+      const otherFlag = user ? 'user' : 'account';
+      this.error(
+        `Cannot specify both \`PERCENT\` and \`--${otherFlag}\`. Use only one or the other.`
       );
     }
 
@@ -28,6 +36,7 @@ class MigrateCommand extends BaseCommand {
     if (
       percent === 100 &&
       !user &&
+      !account &&
       (app.public || app.public_ish) &&
       toVersion !== app.latest_version
     ) {
@@ -51,11 +60,14 @@ class MigrateCommand extends BaseCommand {
         from_version: fromVersion,
         to_version: toVersion,
         email: user,
+        accountEmail: account,
       },
     };
-    if (user) {
+    if (user || account) {
       this.startSpinner(
-        `Starting migration from ${fromVersion} to ${toVersion} for ${user}`
+        `Starting migration from ${fromVersion} to ${toVersion} for ${
+          user || account
+        }`
       );
     } else {
       this.startSpinner(
@@ -85,6 +97,9 @@ MigrateCommand.flags = buildFlags({
     user: flags.string({
       description: 'Migrate only this user',
     }),
+    account: flags.string({
+      description: 'Migrate all Zaps using the integration in this account',
+    }),
   },
 });
 
@@ -111,8 +126,9 @@ MigrateCommand.examples = [
   'zapier migrate 1.0.0 1.0.1',
   'zapier migrate 1.0.1 2.0.0 10',
   'zapier migrate 2.0.0 2.0.1 --user=user@example.com',
+  'zapier migrate 2.0.0 2.0.1 --account=account@example.com',
 ];
-MigrateCommand.description = `Migrate users from one version of your integration to another.
+MigrateCommand.description = `Migrate users or accounts from one version of your integration to another.
 
 Start a migration to move users between different versions of your integration. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. \`zapier migrate 1.0.1 1.0.0\`).
 
@@ -124,6 +140,8 @@ Since a migration is only for non-breaking changes, users are not emailed about 
 
 We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
-You can migrate a single user by using \`--user\` (i.e. \`zapier migrate 1.0.0 1.0.1 --user=user@example.com\`).`;
+You can migrate a single user by using \`--user\` (i.e. \`zapier migrate 1.0.0 1.0.1 --user=user@example.com\`).
+
+You can migrate all Zaps, regardless of Zap owner, using your integration in an account by using \`--account\` (i.e. \`zapier migrate 1.0.0 1.0.1 --account=account@example.com\`).`;
 
 module.exports = MigrateCommand;
