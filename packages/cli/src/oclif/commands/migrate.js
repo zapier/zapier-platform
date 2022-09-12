@@ -14,6 +14,7 @@ class MigrateCommand extends BaseCommand {
 
     const account = this.flags.account;
     const user = this.flags.user;
+    const flagType = user ? 'user' : 'account';
     const fromVersion = this.args.fromVersion;
     const toVersion = this.args.toVersion;
 
@@ -24,9 +25,8 @@ class MigrateCommand extends BaseCommand {
     }
 
     if ((user || account) && percent !== 100) {
-      const otherFlag = user ? 'user' : 'account';
       this.error(
-        `Cannot specify both \`PERCENT\` and \`--${otherFlag}\`. Use only one or the other.`
+        `Cannot specify both \`PERCENT\` and \`--${flagType}\`. Use only one or the other.`
       );
     }
 
@@ -59,8 +59,8 @@ class MigrateCommand extends BaseCommand {
         name: 'migrate',
         from_version: fromVersion,
         to_version: toVersion,
-        email: user,
-        accountEmail: account,
+        email: user || account,
+        accountType: flagType,
       },
     };
     if (user || account) {
