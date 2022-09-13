@@ -340,23 +340,35 @@ This won't show logs from running locally with `zapier test`, since those never 
 
 ## migrate
 
-> Migrate users or accounts from one version of your integration to another.
+> Migrate a percentage of users or a single user from one version of your integration to another.
 
 **Usage**: `zapier migrate FROMVERSION TOVERSION [PERCENT]`
 
 Start a migration to move users between different versions of your integration. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. `zapier migrate 1.0.1 1.0.0`).
 
-Only use this command to migrate users between non-breaking versions, use `zapier deprecate` if you have breaking changes!
+**Only use this command to migrate users between non-breaking versions, use `zapier deprecate` if you have breaking changes!**
 
 Migration time varies based on the number of affected Zaps. Be patient and check `zapier jobs` to track the status. Or use `zapier history` if you want to see older jobs.
 
 Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.
 
-We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
+We recommend migrating a small subset of users first, via the percent argument, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
-You can migrate a single user by using `--user` (i.e. `zapier migrate 1.0.0 1.0.1 --user=user@example.com`).
+You can migrate a specific user's Zaps by using `--user` (i.e. `zapier migrate 1.0.0 1.0.1 --user=user@example.com`). This will migrate Zaps in any account the user is part of where the following criteria is met.  
 
-You can migrate all Zaps, regardless of Zap owner, using your integration in an account by using `--account` (i.e. `zapier migrate 1.0.0 1.0.1 --account=account@example.com`).
+  - The Zap is owned by the user.  
+
+  - The Zap is not shared.  
+
+  - The integration auth used is not shared.  
+
+Alternatively, you can pass the `--account` flag, (i.e. `zapier migrate 1.0.0 1.0.1 --account=account@example.com`). This will migrate all the user's Zap steps in any account the user is part of, regardless of Zap owner.
+
+**The `--account` flag should be used cautiously as it can break shared Zaps for other users in Team or Company accounts.**  
+
+You cannot pass both `PERCENT` and `--user` or `--account`.
+
+You cannot pass both `--user` and `--account`.
 
 **Arguments**
 * (required) `fromVersion` | The version FROM which to migrate users.
@@ -364,8 +376,8 @@ You can migrate all Zaps, regardless of Zap owner, using your integration in an 
 * `percent` | Percentage (between 1 and 100) of users to migrate.
 
 **Flags**
-* `--user` | Migrate only this user
-* `--account` | Migrate all Zaps using the integration in this account
+* `--user` | Migrate a users private Zaps using the integration
+* `--account` | Migrate all a users Zaps using the integration, incl. shared Zaps
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
