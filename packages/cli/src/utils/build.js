@@ -448,6 +448,7 @@ const _buildFunc = async ({
           console.log(colors.yellow(`- ${issue.description}`));
         }
       }
+      console.log(colors.yellow('Run `zapier validate` for more details.'));
     }
   } else {
     debug('\nWarning: Skipping Validation');
