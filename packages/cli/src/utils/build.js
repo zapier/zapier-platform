@@ -29,7 +29,12 @@ const {
   removeDir,
 } = require('./files');
 
-const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
+const {
+  prettyJSONstringify,
+  startSpinner,
+  endSpinner,
+  flattenCheckResult,
+} = require('./display');
 
 const {
   getLinkedAppConfig,
@@ -434,6 +439,17 @@ const _buildFunc = async ({
       );
     }
     endSpinner();
+
+    if (_.get(styleChecksResponse, ['warnings', 'total_failures'])) {
+      console.log(colors.yellow('WARNINGS:'));
+      const checkIssues = flattenCheckResult(styleChecksResponse);
+      for (const issue of checkIssues) {
+        if (issue.category != 'Errors') {
+          console.log(colors.yellow(`- ${issue.description}`));
+        }
+      }
+      console.log(colors.yellow('Run `zapier validate` for more details.'));
+    }
   } else {
     debug('\nWarning: Skipping Validation');
   }
