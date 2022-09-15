@@ -444,7 +444,7 @@ const _buildFunc = async ({
       console.log(colors.yellow('WARNINGS:'));
       const checkIssues = flattenCheckResult(styleChecksResponse);
       for (const issue of checkIssues) {
-        if (issue.category != 'Errors') {
+        if (issue.category !== 'Errors') {
           console.log(colors.yellow(`- ${issue.description}`));
         }
       }
