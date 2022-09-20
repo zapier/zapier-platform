@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
+const { flags } = require('@oclif/command');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
@@ -28,6 +29,7 @@ class PromoteCommand extends BaseCommand {
     const app = await this.getWritableApp();
 
     const version = this.args.version;
+    const skipChangelog = 'skip-changelog' in this.flags;
 
     let shouldContinue;
     const changelog = await getVersionChangelog(version);
@@ -35,9 +37,11 @@ class PromoteCommand extends BaseCommand {
       this.log(colors.green(`Changelog found for ${version}`));
       this.log(`\n---\n${changelog}\n---\n`);
 
-      shouldContinue = await this.confirm(
-        'Would you like to continue promoting with this changelog?'
-      );
+      shouldContinue =
+        skipChangelog ||
+        (await this.confirm(
+          'Would you like to continue promoting with this changelog?'
+        ));
     } else {
       this.log(
         `${colors.yellow(
@@ -47,9 +51,11 @@ class PromoteCommand extends BaseCommand {
         )} with user-facing descriptions.`
       );
 
-      shouldContinue = await this.confirm(
-        'Would you like to continue promoting without a changelog?'
-      );
+      shouldContinue =
+        skipChangelog ||
+        (await this.confirm(
+          'Would you like to continue promoting without a changelog?'
+        ));
     }
 
     if (!shouldContinue) {
@@ -117,7 +123,14 @@ class PromoteCommand extends BaseCommand {
   }
 }
 
-PromoteCommand.flags = buildFlags();
+PromoteCommand.flags = buildFlags({
+  commandFlags: {
+    'skip-changelog': flags.boolean({
+      description:
+        'Suppress prompts asking to confirm a corresponding changelog entry for the version you are attempting to promote. ',
+    }),
+  },
+});
 
 PromoteCommand.args = [
   {

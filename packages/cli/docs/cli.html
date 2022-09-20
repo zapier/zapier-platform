@@ -834,6 +834,7 @@ a code {
 </ul><p>Promotes are an inherently safe operation for all existing users of your integration.</p><p>If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.</p><p>Check <code>zapier jobs</code> to track the status of the promotion. Or use <code>zapier history</code> if you want to see older jobs.</p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>version</code> | The version you want to promote.</li>
 </ul><p><strong>Flags</strong></p><ul>
+<li><code>--skip-changelog</code> | Suppress prompts asking to confirm a corresponding changelog entry for the version you are attempting to promote.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier promote 1.0.0</code></li>

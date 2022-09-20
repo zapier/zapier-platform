@@ -397,6 +397,7 @@ Check `zapier jobs` to track the status of the promotion. Or use `zapier history
 * (required) `version` | The version you want to promote.
 
 **Flags**
+* `--skip-changelog` | Suppress prompts asking to confirm a corresponding changelog entry for the version you are attempting to promote.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
