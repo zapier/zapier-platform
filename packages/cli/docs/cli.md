@@ -354,7 +354,7 @@ Since a migration is only for non-breaking changes, users are not emailed about 
 
 We recommend migrating a small subset of users first, via the percent argument, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
-You can migrate a specific user's Zaps by using `--user` (i.e. `zapier migrate 1.0.0 1.0.1 --user=user@example.com`). This will migrate Zaps in any account the user is part of where the following criteria is met.  
+You can migrate a specific user's Zaps by using `--user` (i.e. `zapier migrate 1.0.0 1.0.1 --user=user@example.com`). This will migrate Zaps in any account the user is a member of where the following criteria is met.  
 
   - The Zap is owned by the user.  
 
@@ -362,7 +362,7 @@ You can migrate a specific user's Zaps by using `--user` (i.e. `zapier migrate 1
 
   - The integration auth used is not shared.  
 
-Alternatively, you can pass the `--account` flag, (i.e. `zapier migrate 1.0.0 1.0.1 --account=account@example.com`). This will migrate all the user's Zap steps in any account the user is part of, regardless of Zap owner.
+Alternatively, you can pass the `--account` flag, (i.e. `zapier migrate 1.0.0 1.0.1 --account=account@example.com`). This will migrate all users' Zaps, Private & Shared, within all accounts for which the specified user is a member.
 
 **The `--account` flag should be used cautiously as it can break shared Zaps for other users in Team or Company accounts.**  
 
@@ -376,8 +376,8 @@ You cannot pass both `--user` and `--account`.
 * `percent` | Percentage (between 1 and 100) of users to migrate.
 
 **Flags**
-* `--user` | Migrate a users private Zaps using the integration
-* `--account` | Migrate all a users Zaps using the integration, incl. shared Zaps
+* `--user` | Migrates all of a users' Private Zaps within all accounts for which the specified user is a member
+* `--account` | Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
