@@ -397,7 +397,7 @@ Check `zapier jobs` to track the status of the promotion. Or use `zapier history
 * (required) `version` | The version you want to promote.
 
 **Flags**
-* `--skip-changelog` | Suppress prompts asking to confirm a corresponding changelog entry for the version you are attempting to promote.
+* `-y, --yes` | Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**

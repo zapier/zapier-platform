@@ -29,7 +29,7 @@ class PromoteCommand extends BaseCommand {
     const app = await this.getWritableApp();
 
     const version = this.args.version;
-    const skipChangelog = 'skip-changelog' in this.flags;
+    const assumeYes = 'yes' in this.flags;
 
     let shouldContinue;
     const changelog = await getVersionChangelog(version);
@@ -38,7 +38,7 @@ class PromoteCommand extends BaseCommand {
       this.log(`\n---\n${changelog}\n---\n`);
 
       shouldContinue =
-        skipChangelog ||
+        assumeYes ||
         (await this.confirm(
           'Would you like to continue promoting with this changelog?'
         ));
@@ -52,7 +52,7 @@ class PromoteCommand extends BaseCommand {
       );
 
       shouldContinue =
-        skipChangelog ||
+        assumeYes ||
         (await this.confirm(
           'Would you like to continue promoting without a changelog?'
         ));
@@ -125,9 +125,10 @@ class PromoteCommand extends BaseCommand {
 
 PromoteCommand.flags = buildFlags({
   commandFlags: {
-    'skip-changelog': flags.boolean({
+    yes: flags.boolean({
+      char: 'y',
       description:
-        'Suppress prompts asking to confirm a corresponding changelog entry for the version you are attempting to promote. ',
+        'Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.',
     }),
   },
 });
