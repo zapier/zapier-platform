@@ -12,13 +12,25 @@ class MigrateCommand extends BaseCommand {
       this.error('`PERCENT` must be a number between 1 and 100.');
     }
 
+    const account = this.flags.account;
     const user = this.flags.user;
     const fromVersion = this.args.fromVersion;
     const toVersion = this.args.toVersion;
+    let flagType;
 
-    if (user && percent !== 100) {
+    if (user || account) {
+      flagType = user ? 'user' : 'account';
+    }
+
+    if (user && account) {
       this.error(
-        'Cannot specify both `PERCENT` and `--user`. Use only one or the other.'
+        'Cannot specify both `--user` and `--account`. Use only one or the other.'
+      );
+    }
+
+    if ((user || account) && percent !== 100) {
+      this.error(
+        `Cannot specify both \`PERCENT\` and \`--${flagType}\`. Use only one or the other.`
       );
     }
 
@@ -28,6 +40,7 @@ class MigrateCommand extends BaseCommand {
     if (
       percent === 100 &&
       !user &&
+      !account &&
       (app.public || app.public_ish) &&
       toVersion !== app.latest_version
     ) {
@@ -50,12 +63,15 @@ class MigrateCommand extends BaseCommand {
         name: 'migrate',
         from_version: fromVersion,
         to_version: toVersion,
-        email: user,
+        email: user || account,
+        email_type: flagType,
       },
     };
-    if (user) {
+    if (user || account) {
       this.startSpinner(
-        `Starting migration from ${fromVersion} to ${toVersion} for ${user}`
+        `Starting migration from ${fromVersion} to ${toVersion} for ${
+          user || account
+        }`
       );
     } else {
       this.startSpinner(
@@ -83,7 +99,12 @@ class MigrateCommand extends BaseCommand {
 MigrateCommand.flags = buildFlags({
   commandFlags: {
     user: flags.string({
-      description: 'Migrate only this user',
+      description:
+        "Migrates all of a users' Private Zaps within all accounts for which the specified user is a member",
+    }),
+    account: flags.string({
+      description:
+        "Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member",
     }),
   },
 });
@@ -111,19 +132,32 @@ MigrateCommand.examples = [
   'zapier migrate 1.0.0 1.0.1',
   'zapier migrate 1.0.1 2.0.0 10',
   'zapier migrate 2.0.0 2.0.1 --user=user@example.com',
+  'zapier migrate 2.0.0 2.0.1 --account=account@example.com',
 ];
-MigrateCommand.description = `Migrate users from one version of your integration to another.
+MigrateCommand.description = `Migrate a percentage of users or a single user from one version of your integration to another.
 
 Start a migration to move users between different versions of your integration. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. \`zapier migrate 1.0.1 1.0.0\`).
 
-Only use this command to migrate users between non-breaking versions, use \`zapier deprecate\` if you have breaking changes!
+**Only use this command to migrate users between non-breaking versions, use \`zapier deprecate\` if you have breaking changes!**
 
 Migration time varies based on the number of affected Zaps. Be patient and check \`zapier jobs\` to track the status. Or use \`zapier history\` if you want to see older jobs.
 
 Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.
 
-We recommend migrating a small subset of users first, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
+We recommend migrating a small subset of users first, via the percent argument, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
-You can migrate a single user by using \`--user\` (i.e. \`zapier migrate 1.0.0 1.0.1 --user=user@example.com\`).`;
+You can migrate a specific user's Zaps by using \`--user\` (i.e. \`zapier migrate 1.0.0 1.0.1 --user=user@example.com\`). This will migrate Zaps in any account the user is a member of where the following criteria is met.  
+
+  - The Zap is owned by the user.  
+  - The Zap is not shared.  
+  - The integration auth used is not shared.  
+
+Alternatively, you can pass the \`--account\` flag, (i.e. \`zapier migrate 1.0.0 1.0.1 --account=account@example.com\`). This will migrate all users' Zaps, Private & Shared, within all accounts for which the specified user is a member.
+
+**The \`--account\` flag should be used cautiously as it can break shared Zaps for other users in Team or Company accounts.**  
+
+You cannot pass both \`PERCENT\` and \`--user\` or \`--account\`.
+
+You cannot pass both \`--user\` and \`--account\`.`;
 
 module.exports = MigrateCommand;
