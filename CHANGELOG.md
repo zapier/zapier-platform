@@ -1,3 +1,25 @@
+## 12.1.0
+
+_released `2022-09-29`_
+
+### cli
+
+- :nail_care: Add `--account` flag to `migrate` command ([#574](https://github.com/zapier/zapier-platform/pull/574))
+- :nail_care: Add `--yes` flag to zapier `promote` CLI command to suppress prompts asking to confirm a corresponding changelog entry when running zapier promote ([#576](https://github.com/zapier/zapier-platform/pull/576))
+- :nail_care: Log warnings at build time during validation ([#573](https://github.com/zapier/zapier-platform/pull/573))
+- :scroll: Update Zapier logo in docs ([#567](https://github.com/zapier/zapier-platform/pull/567)
+- :scroll: Provide additional information about the connection label in the doc text ([#564](https://github.com/zapier/zapier-platform/pull/564))
+- :hammer: Dependency updates
+  - Bump shell-quote from 1.7.2 to 1.7.3 ([#560](https://github.com/zapier/zapier-platform/pull/560))
+
+### core
+
+- :bug: Abort logger connection at the end of invocation ([#562](https://github.com/zapier/zapier-platform/pull/562))
+
+### schema
+
+- None!
+
 ## 12.0.3
 
 _released `2022-05-02`_
