@@ -9,7 +9,7 @@ Since 2022-09-28, "migrate-by-email" has behaved differently on both UI and CLI.
 - :nail_care: Add `--account` flag to `migrate` command ([#574](https://github.com/zapier/zapier-platform/pull/574))
 - :nail_care: Add `--yes` flag to `promote` command to suppress interactive prompts by assuming "yes" to all prompts ([#576](https://github.com/zapier/zapier-platform/pull/576))
 - :nail_care: Print validation warnings at `build` time ([#573](https://github.com/zapier/zapier-platform/pull/573))
-- :scroll: Update Zapier logo in docs ([#567](https://github.com/zapier/zapier-platform/pull/567)
+- :scroll: Update Zapier logo in docs ([#567](https://github.com/zapier/zapier-platform/pull/567))
 - :scroll: Provide additional information about the connection label in docs ([#564](https://github.com/zapier/zapier-platform/pull/564))
 - :hammer: Dependency updates
   - Bump shell-quote from 1.7.2 to 1.7.3 ([#560](https://github.com/zapier/zapier-platform/pull/560))
