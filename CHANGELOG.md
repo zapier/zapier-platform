@@ -2,7 +2,7 @@
 
 _released `2022-09-29`_
 
-Since 2022-09-28, "migrate-by-email" has behaved differently on both UI and CLI. Now `zapier migrate --user` only migrates Zaps that are **private to the user**. This change affects all the previous CLI versions, not just 12.1.0. The old behavior was to migrate all the user's team members, which was inconsistent with the docs and often caused confusion. So we consider this change a bug fix instead of a breaking change. If you want the old behavior, use `zapier migrate --account`.
+We rolled out a change to "migrate-by-email" on 2022-09-28. Now `zapier migrate --user` in CLI and "migrate-by-email" on UI only migrate Zaps that are **private to the user**. This change affects UI and all the CLI versions, not just 12.1.0. The old behavior was to migrate all the user's team members, which was inconsistent with the docs and often caused confusion. So we consider this change a bug fix instead of a breaking change. If you want the old behavior, use `zapier migrate --account`.
 
 ### cli
 
