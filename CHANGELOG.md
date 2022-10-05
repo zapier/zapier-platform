@@ -1,3 +1,27 @@
+## 12.1.0
+
+_released `2022-09-29`_
+
+We rolled out a change to "migrate-by-email" on 2022-09-28. Now `zapier migrate --user` in CLI and "migrate-by-email" on UI only migrate Zaps that are **private to the user**. This change affects UI and all the CLI versions, not just 12.1.0. The old behavior was to migrate all the user's team members, which was inconsistent with the docs and often caused confusion. So we consider this change a bug fix instead of a breaking change. If you want the old behavior, use `zapier migrate --account`.
+
+### cli
+
+- :nail_care: Add `--account` flag to `migrate` command ([#574](https://github.com/zapier/zapier-platform/pull/574))
+- :nail_care: Add `--yes` flag to `promote` command to suppress interactive prompts by assuming "yes" to all prompts ([#576](https://github.com/zapier/zapier-platform/pull/576))
+- :nail_care: Print validation warnings at `build` time ([#573](https://github.com/zapier/zapier-platform/pull/573))
+- :scroll: Update Zapier logo in docs ([#567](https://github.com/zapier/zapier-platform/pull/567))
+- :scroll: Provide additional information about the connection label in docs ([#564](https://github.com/zapier/zapier-platform/pull/564))
+- :hammer: Dependency updates
+  - Bump shell-quote from 1.7.2 to 1.7.3 ([#560](https://github.com/zapier/zapier-platform/pull/560))
+
+### core
+
+- :bug: Fix another hanging issue by aborting logger connection early ([#562](https://github.com/zapier/zapier-platform/pull/562))
+
+### schema
+
+- None!
+
 ## 12.0.3
 
 _released `2022-05-02`_

@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
+const { flags } = require('@oclif/command');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
@@ -32,6 +33,7 @@ class PromoteCommand extends BaseCommand {
     const app = await this.getWritableApp();
 
     const version = this.args.version;
+    const assumeYes = 'yes' in this.flags;
 
     let shouldContinue;
     const changelog = await getVersionChangelog(version);
@@ -39,9 +41,11 @@ class PromoteCommand extends BaseCommand {
       this.log(colors.green(`Changelog found for ${version}`));
       this.log(`\n---\n${changelog}\n---\n`);
 
-      shouldContinue = await this.confirm(
-        'Would you like to continue promoting with this changelog?'
-      );
+      shouldContinue =
+        assumeYes ||
+        (await this.confirm(
+          'Would you like to continue promoting with this changelog?'
+        ));
     } else {
       this.log(
         `${colors.yellow(
@@ -51,9 +55,11 @@ class PromoteCommand extends BaseCommand {
         )} with user-facing descriptions.`
       );
 
-      shouldContinue = await this.confirm(
-        'Would you like to continue promoting without a changelog?'
-      );
+      shouldContinue =
+        assumeYes ||
+        (await this.confirm(
+          'Would you like to continue promoting without a changelog?'
+        ));
     }
 
     if (!shouldContinue) {
@@ -121,7 +127,15 @@ class PromoteCommand extends BaseCommand {
   }
 }
 
-PromoteCommand.flags = buildFlags();
+PromoteCommand.flags = buildFlags({
+  commandFlags: {
+    yes: flags.boolean({
+      char: 'y',
+      description:
+        'Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.',
+    }),
+  },
+});
 
 PromoteCommand.args = [
   {
