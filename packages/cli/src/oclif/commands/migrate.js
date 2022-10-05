@@ -6,6 +6,10 @@ const { callAPI } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
 
 class MigrateCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     const percent = this.args.percent;
     if (isNaN(percent) || percent < 1 || percent > 100) {

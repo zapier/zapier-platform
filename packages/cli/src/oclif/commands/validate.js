@@ -8,6 +8,10 @@ const { localAppCommand } = require('../../utils/local');
 const { validateApp } = require('../../utils/api');
 
 class ValidateCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     this.log('Validating project locally');
 

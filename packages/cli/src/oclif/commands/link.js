@@ -11,6 +11,10 @@ const {
 const { CURRENT_APP_FILE } = require('../../constants');
 
 class LinkCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     this.startSpinner('Loading integrations');
     const linkedAppId = (await getLinkedAppConfig(undefined, false)).id;

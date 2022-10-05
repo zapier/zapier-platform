@@ -24,6 +24,10 @@ const serializeErrors = (errors) => {
 };
 
 class PromoteCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     const app = await this.getWritableApp();
 

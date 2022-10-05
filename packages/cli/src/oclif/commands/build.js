@@ -10,6 +10,10 @@ const {
 const { buildAndOrUpload } = require('../../utils/build');
 
 class BuildCommand extends BaseCommand {
+  requiresCore() {
+    return true;
+  }
+
   async perform() {
     await buildAndOrUpload(
       { build: true },

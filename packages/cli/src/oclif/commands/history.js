@@ -4,6 +4,10 @@ const { buildFlags } = require('../buildFlags');
 const { listHistory } = require('../../utils/api');
 
 class HistoryCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     this.startSpinner('Loading history');
     const { history } = await listHistory();

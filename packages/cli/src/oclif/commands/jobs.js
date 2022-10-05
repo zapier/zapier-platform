@@ -8,6 +8,10 @@ const getVersion = (versionStr) => versionStr.split('@')[1];
 const getIsoDate = (unixTs) => (unixTs ? new Date(unixTs).toISOString() : '-');
 
 class JobsCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     /**
      * Migrations and Jobs are used somewhat interchangeably here.

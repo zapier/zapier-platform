@@ -24,6 +24,10 @@ class TestBaseCommand extends BaseCommand {
 }
 // logs both text and a table, which behave differently baed on the format flag
 class TestSampleCommand extends TestBaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     this.log(MESSAGE);
     if (!this.flags.skipTable) {
@@ -43,6 +47,10 @@ TestSampleCommand.flags = buildFlags({
 
 // logs and doesn't populate the `format` flag
 class NoFormatCommand extends TestBaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     this.log(MESSAGE);
   }

@@ -4,6 +4,10 @@ const { buildFlags } = require('../buildFlags');
 const { listVersions } = require('../../utils/api');
 
 class VersionCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     this.startSpinner('Loading versions');
     const { versions } = await listVersions();

@@ -41,6 +41,10 @@ const commandFlags = {
 };
 
 class LogsCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     this.startSpinner('Loading logs');
 

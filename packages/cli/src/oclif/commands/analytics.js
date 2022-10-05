@@ -9,6 +9,10 @@ const {
 const colors = require('colors/safe');
 
 class AnalyticsCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     const currentMode = await currentAnalyticsMode();
     this.log(

@@ -4,6 +4,10 @@ const { buildFlags } = require('../buildFlags');
 const { callAPI } = require('../../utils/api');
 
 class DeprecateCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     const app = await this.getWritableApp();
     const { version, date } = this.args;

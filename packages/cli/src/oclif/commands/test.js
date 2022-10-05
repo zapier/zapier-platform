@@ -10,6 +10,10 @@ const { runCommand } = require('../../utils/misc');
 const { getPackageManager } = require('../../utils/package-manager');
 
 class TestCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     if (!this.flags['skip-validate']) {
       await ValidateCommand.run(['--invokedFromAnotherCommand']);

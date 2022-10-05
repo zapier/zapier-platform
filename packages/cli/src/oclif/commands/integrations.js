@@ -4,6 +4,10 @@ const { buildFlags } = require('../buildFlags');
 const { listApps } = require('../../utils/api');
 
 class IntegrationsCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     this.startSpinner('Loading integrations');
     const { apps } = await listApps();

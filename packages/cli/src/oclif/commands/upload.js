@@ -6,6 +6,10 @@ const { BUILD_PATH, SOURCE_PATH } = require('../../constants');
 const { buildAndOrUpload } = require('../../utils/build');
 
 class UploadCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     // it would be cool if we differentiated between new/updated here
     await buildAndOrUpload({ upload: true });

@@ -8,6 +8,10 @@ const { buildFlags } = require('../buildFlags');
 const { TEMPLATE_CHOICES, ProjectGenerator } = require('../../generators');
 
 class InitCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   async perform() {
     const { path } = this.args;
     const { template } = this.flags;

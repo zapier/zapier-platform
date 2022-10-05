@@ -60,6 +60,10 @@ const typeMap = {
 };
 
 class DescribeCommand extends BaseCommand {
+  requiresCore() {
+    return false;
+  }
+
   logTitle(s) {
     this.log(bold(s) + '\n');
   }
