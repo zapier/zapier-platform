@@ -17,6 +17,7 @@ const validateSearchOrCreateKeys = (definition) => {
     const searchOrCreateKey = searchOrCreateDef.key;
     const searchKey = searchOrCreateDef.search;
     const createKey = searchOrCreateDef.create;
+    const updateKey = searchOrCreateDef.update;
 
     // Confirm searchOrCreate.key matches a searches.key (current Zapier editor limitation)
     if (!definition.searches[searchOrCreateKey]) {
@@ -56,6 +57,20 @@ const validateSearchOrCreateKeys = (definition) => {
           `instance.searchOrCreates.${key}.create`,
           'invalidKey',
           'create'
+        )
+      );
+    }
+
+    // Confirm searchOrCreate.update matches a creates.key, if it is defined
+    if (updateKey && !definition.creates[updateKey]) {
+      errors.push(
+        new jsonschema.ValidationError(
+          `must match a "key" from a create (options: ${createKeys})`,
+          searchOrCreateDef,
+          '/SearchOrCreateSchema',
+          `instance.searchOrCreates.${key}.update`,
+          'invalidKey',
+          'update'
         )
       );
     }
