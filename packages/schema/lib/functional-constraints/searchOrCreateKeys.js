@@ -74,6 +74,34 @@ const validateSearchOrCreateKeys = (definition) => {
         )
       );
     }
+
+    // Confirm searchOrCreate.updateInputFromSearchOutput existing implies searchOrCreate.update is defined
+    if (searchOrCreateDef.updateInputFromSearchOutput && !updateKey) {
+      errors.push(
+        new jsonschema.ValidationError(
+          `update must be defined`,
+          searchOrCreateDef,
+          '/SearchOrCreateSchema',
+          `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
+          'invalid',
+          'updateInputFromSearchOutput'
+        )
+      );
+    }
+
+    // Confirm searchOrCreate.searchUniqueInputToOutputConstraint existing implies searchOrCreate.update is defined
+    if (searchOrCreateDef.searchUniqueInputToOutputConstraint && !updateKey) {
+      errors.push(
+        new jsonschema.ValidationError(
+          `update must be defined`,
+          searchOrCreateDef,
+          '/SearchOrCreateSchema',
+          `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
+          'invalid',
+          'searchUniqueInputToOutputConstraint'
+        )
+      );
+    }
   });
 
   return errors;
