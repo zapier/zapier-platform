@@ -32,17 +32,20 @@ module.exports = makeSchema(
         $ref: KeySchema.id,
       },
       update: {
-        description: 'The key of the create that will be used if a search succeeds, having a value here converts this search-or-create into a search-and-create',
+        description:
+          'The key of the create that will be used if a search succeeds, having a value here converts this search-or-create into a search-and-create',
         $ref: KeySchema.id,
       },
       updateInputFromSearchOutput: {
-        description: 'A mapping where the key represents the input field for the update action, and the value represents the field from the search action\'s output that should be mapped to the update action\'s input field.',
+        description:
+          "A mapping where the key represents the input field for the update action, and the value represents the field from the search action's output that should be mapped to the update action's input field.",
         $ref: FlatObjectSchema.id,
       },
       searchUniqueInputToOutputConstraint: {
-        description: 'A mapping where the key represents an input field for the search action, and the value represents how that field\'s value will be used to filter down the search output for an exact match.',
+        description:
+          "A mapping where the key represents an input field for the search action, and the value represents how that field's value will be used to filter down the search output for an exact match.",
         $ref: FlatObjectSchema.id,
-      }
+      },
     },
     additionalProperties: false,
     examples: [
@@ -71,11 +74,11 @@ module.exports = makeSchema(
         create: 'createWidget',
         update: 'updateExistingWidget',
         updateInputFromSearchOutput: {
-          widget_id: 'id'
+          widget_id: 'id',
         },
         searchUniqueInputToOutputConstraint: {
-          widget_name: 'name'
-        }
+          widget_name: 'name',
+        },
       },
     ],
     antiExamples: [
@@ -123,16 +126,16 @@ module.exports = makeSchema(
           search: 'searchWidgets',
           create: 'createWidget',
           updateInputFromSearchOutput: {
-            widget_id: 'id'
+            widget_id: 'id',
           },
           searchUniqueInputToOutputConstraint: {
-            widget_name: 'name'
+            widget_name: 'name',
           },
         },
         reason:
           'If either the updateInputFromSearchOutput or searchUniqueInputToOutputConstraint keys are present, then the update key must be present as well.',
-      }
+      },
     ],
   },
-  [BasicDisplaySchema, KeySchema]
+  [BasicDisplaySchema, KeySchema, FlatObjectSchema]
 );
