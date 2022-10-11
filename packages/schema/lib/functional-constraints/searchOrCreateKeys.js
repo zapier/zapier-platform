@@ -19,6 +19,33 @@ const validateSearchOrCreateKeys = (definition) => {
     const createKey = searchOrCreateDef.create;
     const updateKey = searchOrCreateDef.update;
 
+    const updateInputFields = _.get(
+      definition.creates,
+      `${updateKey}.operation.inputFields`,
+      []
+    );
+    const updateInputKeys = updateInputFields.map(
+      (inputField) => inputField.key
+    );
+
+    const searchOutputFields = _.get(
+      definition.searches,
+      `${searchKey}.operation.outputFields`,
+      []
+    );
+    const searchOutputKeys = searchOutputFields.map(
+      (outputField) => outputField.key
+    );
+
+    const searchOutputSampleKeys = _.keys(
+      _.get(definition.searches, `${searchKey}.operation.sample`, {})
+    );
+
+    const allSearchOutputKeys = _.concat(
+      searchOutputKeys,
+      searchOutputSampleKeys
+    );
+
     // Confirm searchOrCreate.key matches a searches.key (current Zapier editor limitation)
     if (!definition.searches[searchOrCreateKey]) {
       errors.push(
@@ -102,6 +129,47 @@ const validateSearchOrCreateKeys = (definition) => {
         )
       );
     }
+
+    // Confirm searchOrCreate.updateInputFromSearchOutput contains objects with:
+    // keys existing in creates[update].operation.inputFields.key
+    // values existing in searches[search].operation.(outputFields.key|sample keys)
+    if (searchOrCreateDef.updateInputFromSearchOutput && updateKey) {
+      // Note that _.each({key: value}) provides the following callback method signature: (value, key) => {}
+      _.each(
+        searchOrCreateDef.updateInputFromSearchOutput,
+        (searchOutputField, updateInputField) => {
+          // Confirm searchOrCreate.updateInputFromSearchOutput's key exists in creates[update].operation.inputFields.key
+          if (!updateInputKeys.includes(updateInputField)) {
+            errors.push(
+              new jsonschema.ValidationError(
+                `must match a "key" from a creates.operation.inputFields (options: ${updateInputKeys})`,
+                searchOrCreateDef,
+                '/SearchOrCreateSchema',
+                `instance.searchOrCreates.${key}.updateInputFromSearchOutputConstraint`,
+                'invalidKey',
+                'updateInputFromSearchOutput'
+              )
+            );
+          }
+
+          // Confirm searchOrCreate.updateInputFromSearchOutput's value exists in searches[search].operation.(outputFields.key|sample keys)
+          if (!allSearchOutputKeys.includes(searchOutputField)) {
+            errors.push(
+              new jsonschema.ValidationError(
+                `must match a "key" from searches.operation.(outputFields.key|sample keys). (options: ${allSearchOutputKeys})`,
+                searchOrCreateDef,
+                '/SearchOrCreateSchema',
+                `instance.searchOrCreates.${key}.updateInputFromSearchOutputConstraint`,
+                'invalidKey',
+                'updateInputFromSearchOutput'
+              )
+            );
+          }
+        }
+      );
+    }
+
+    return errors;
   });
 
   return errors;
