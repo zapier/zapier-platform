@@ -213,7 +213,7 @@ describe('app', () => {
 
 describe('auto test', () => {
   const _exportedSchema = schema.exportSchema();
-  Object.keys(_exportedSchema.schemas).map((id) => {
-    testUtils.testInlineSchemaExamples(id);
-  });
+  Object.keys(_exportedSchema.schemas).map((id) =>
+    testUtils.testInlineSchemaExamples(id)
+  );
 });
