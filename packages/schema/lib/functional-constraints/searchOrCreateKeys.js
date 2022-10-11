@@ -79,7 +79,7 @@ const validateSearchOrCreateKeys = (definition) => {
     if (searchOrCreateDef.updateInputFromSearchOutput && !updateKey) {
       errors.push(
         new jsonschema.ValidationError(
-          `update must be defined`,
+          `requires instance.searchOrCreates.${key}.update to be defined`,
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
@@ -93,7 +93,7 @@ const validateSearchOrCreateKeys = (definition) => {
     if (searchOrCreateDef.searchUniqueInputToOutputConstraint && !updateKey) {
       errors.push(
         new jsonschema.ValidationError(
-          `update must be defined`,
+          `requires instance.searchOrCreates.${key}.update to be defined`,
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
