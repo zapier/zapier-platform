@@ -1,5 +1,6 @@
 'use strict';
 
+const { SKIP_KEY } = require('../constants');
 const makeSchema = require('../utils/makeSchema');
 
 const BasicDisplaySchema = require('./BasicDisplaySchema');
@@ -33,7 +34,7 @@ module.exports = makeSchema(
       },
       update: {
         description:
-          'The key of the create that will be used if a search succeeds, having a value here converts this search-or-create into a search-and-create',
+          'The key of the create that will be used if a search succeeds; having a value here converts this search-or-create into a search-and-create',
         $ref: KeySchema.id,
       },
       updateInputFromSearchOutput: {
@@ -114,6 +115,7 @@ module.exports = makeSchema(
           'Invalid values for keys: search and create (must be a string that matches the key of a registered search or create)',
       },
       {
+        [SKIP_KEY]: true, // Cannot validate field dependency between updateInputFromSearchOutput / searchUniqueInputToOutputConstraint and update
         example: {
           key: 'upsertWidgets',
           display: {
