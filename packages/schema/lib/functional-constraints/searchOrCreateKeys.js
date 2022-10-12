@@ -89,7 +89,8 @@ const validateSearchOrCreateKeys = (definition) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.key`,
-          'invalidKey'
+          'invalidKey',
+          'key'
         )
       );
     }
@@ -102,7 +103,8 @@ const validateSearchOrCreateKeys = (definition) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.search`,
-          'invalidKey'
+          'invalidKey',
+          'search'
         )
       );
     }
@@ -115,7 +117,8 @@ const validateSearchOrCreateKeys = (definition) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.create`,
-          'invalidKey'
+          'invalidKey',
+          'create'
         )
       );
     }
