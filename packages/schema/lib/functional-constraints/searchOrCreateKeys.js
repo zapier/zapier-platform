@@ -3,6 +3,45 @@
 const _ = require('lodash');
 const jsonschema = require('jsonschema');
 
+const getUpdateInputKeys = ({ definition, updateKey }) => {
+  const updateInputFields = _.get(
+    definition.creates,
+    `${updateKey}.operation.inputFields`,
+    []
+  );
+
+  return updateInputFields.map((inputField) => inputField.key);
+};
+
+const getSearchInputKeys = ({ definition, searchKey }) => {
+  const searchInputFields = _.get(
+    definition.searches,
+    `${searchKey}.operation.inputFields`,
+    []
+  );
+  return searchInputFields.map((inputField) => inputField.key);
+};
+
+const getSearchOutputKeys = ({ definition, searchKey }) => {
+  const searchOutputFields = _.get(
+    definition.searches,
+    `${searchKey}.operation.outputFields`,
+    []
+  );
+
+  return searchOutputFields.map((outputField) => outputField.key);
+};
+
+const getSearchOutputSampleKeys = ({ definition, searchKey }) => {
+  const searchOutputSampleFields = _.get(
+    definition.searches,
+    `${searchKey}.operation.sample`,
+    {}
+  );
+
+  return _.keys(searchOutputSampleFields);
+};
+
 const validateSearchOrCreateKeys = (definition) => {
   if (!definition.searchOrCreates) {
     return [];
@@ -19,47 +58,27 @@ const validateSearchOrCreateKeys = (definition) => {
     const createKey = searchOrCreateDef.create;
     const updateKey = searchOrCreateDef.update;
 
-    const updateInputFields = _.get(
-      definition.creates,
-      `${updateKey}.operation.inputFields`,
-      []
-    );
-    const updateInputKeys = updateInputFields.map(
-      (inputField) => inputField.key
+    const updateInputKeys = getUpdateInputKeys({ definition, updateKey });
+    const searchInputKeys = getSearchInputKeys({ definition, searchKey });
+    const searchOutputKeys = getSearchOutputKeys({ definition, searchKey });
+    const searchOutputSampleKeys = getSearchOutputSampleKeys({
+      definition,
+      searchKey,
+    });
+
+    // There are constraints where we check for keys in either outputFields or sample, so combining them is a shortcut
+    const allSearchOutputKeys = _.concat(
+      searchOutputKeys,
+      searchOutputSampleKeys
     );
 
-    const searchInputFields = _.get(
-      definition.searches,
-      `${searchKey}.operation.inputFields`,
-      []
-    );
-    const searchInputKeys = searchInputFields.map(
-      (inputField) => inputField.key
-    );
-
+    // For some constraints, there is a difference between not "having" a key defined versus having one but with empty values
     const hasSearchOutputFields = _.has(
       definition.searches,
       `${searchKey}.operation.outputFields`
     );
-    const searchOutputFields = _.get(
-      definition.searches,
-      `${searchKey}.operation.outputFields`,
-      []
-    );
-    const searchOutputKeys = searchOutputFields.map(
-      (outputField) => outputField.key
-    );
-
     const hasSearchOutputSample = _.has(
       _.get(definition.searches, `${searchKey}.operation.sample`)
-    );
-    const searchOutputSampleKeys = _.keys(
-      _.get(definition.searches, `${searchKey}.operation.sample`, {})
-    );
-
-    const allSearchOutputKeys = _.concat(
-      searchOutputKeys,
-      searchOutputSampleKeys
     );
 
     // Confirm searchOrCreate.key matches a searches.key (current Zapier editor limitation)
@@ -150,6 +169,7 @@ const validateSearchOrCreateKeys = (definition) => {
         (searchOutputField, updateInputField) => {
           // Confirm searchOrCreate.updateInputFromSearchOutput's key exists in creates[update].operation.inputFields.key
           if (_.isEmpty(updateInputKeys)) {
+            // Provide a specific error if no possible keys were found
             errors.push(
               new jsonschema.ValidationError(
                 `must match a "key" from a creates.operation.inputFields (no "key" found in inputFields)`,
@@ -200,6 +220,7 @@ const validateSearchOrCreateKeys = (definition) => {
         (searchOutputField, searchInputField) => {
           // Confirm searchOrCreate.searchUniqueInputToOutputConstraint's key exists in searches[search].operation.inputFields.key
           if (_.isEmpty(searchInputKeys)) {
+            // Provide a specific error if no possible keys were found
             errors.push(
               new jsonschema.ValidationError(
                 `must match a "key" from a searches.operation.inputFields (no "key" found in inputFields)`,
@@ -221,7 +242,7 @@ const validateSearchOrCreateKeys = (definition) => {
             );
           }
 
-          // Confirm searchOrCreate.searchUniqueInputToOutputConstraint's value exists in searches[search].operation.(outputFields.key|sample keys), if they are defined
+          // Confirm searchOrCreate.searchUniqueInputToOutputConstraint's value exists in searches[search].operation.(outputFields.key|sample keys), if any of them are defined
           if (
             (hasSearchOutputFields || hasSearchOutputSample) &&
             !allSearchOutputKeys.includes(searchOutputField)
