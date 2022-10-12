@@ -28,6 +28,19 @@ const validateSearchOrCreateKeys = (definition) => {
       (inputField) => inputField.key
     );
 
+    const searchInputFields = _.get(
+      definition.searches,
+      `${searchKey}.operation.inputFields`,
+      []
+    );
+    const searchInputKeys = searchInputFields.map(
+      (inputField) => inputField.key
+    );
+
+    const hasSearchOutputFields = _.has(
+      definition.searches,
+      `${searchKey}.operation.outputFields`
+    );
     const searchOutputFields = _.get(
       definition.searches,
       `${searchKey}.operation.outputFields`,
@@ -37,6 +50,9 @@ const validateSearchOrCreateKeys = (definition) => {
       (outputField) => outputField.key
     );
 
+    const hasSearchOutputSample = _.has(
+      _.get(definition.searches, `${searchKey}.operation.sample`)
+    );
     const searchOutputSampleKeys = _.keys(
       _.get(definition.searches, `${searchKey}.operation.sample`, {})
     );
@@ -54,8 +70,7 @@ const validateSearchOrCreateKeys = (definition) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.key`,
-          'invalidKey',
-          'key'
+          'invalidKey'
         )
       );
     }
@@ -68,8 +83,7 @@ const validateSearchOrCreateKeys = (definition) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.search`,
-          'invalidKey',
-          'search'
+          'invalidKey'
         )
       );
     }
@@ -82,8 +96,7 @@ const validateSearchOrCreateKeys = (definition) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.create`,
-          'invalidKey',
-          'create'
+          'invalidKey'
         )
       );
     }
@@ -96,8 +109,7 @@ const validateSearchOrCreateKeys = (definition) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.update`,
-          'invalidKey',
-          'update'
+          'invalidKey'
         )
       );
     }
@@ -110,8 +122,7 @@ const validateSearchOrCreateKeys = (definition) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
-          'invalid',
-          'updateInputFromSearchOutput'
+          'invalid'
         )
       );
     }
@@ -124,44 +135,104 @@ const validateSearchOrCreateKeys = (definition) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
-          'invalid',
-          'searchUniqueInputToOutputConstraint'
+          'invalid'
         )
       );
     }
 
     // Confirm searchOrCreate.updateInputFromSearchOutput contains objects with:
     // keys existing in creates[update].operation.inputFields.key
-    // values existing in searches[search].operation.(outputFields.key|sample keys)
+    // values existing in searches[search].operation.(outputFields.key|sample keys), if they are defined
     if (searchOrCreateDef.updateInputFromSearchOutput && updateKey) {
       // Note that _.each({key: value}) provides the following callback method signature: (value, key) => {}
       _.each(
         searchOrCreateDef.updateInputFromSearchOutput,
         (searchOutputField, updateInputField) => {
           // Confirm searchOrCreate.updateInputFromSearchOutput's key exists in creates[update].operation.inputFields.key
-          if (!updateInputKeys.includes(updateInputField)) {
+          if (_.isEmpty(updateInputKeys)) {
+            errors.push(
+              new jsonschema.ValidationError(
+                `must match a "key" from a creates.operation.inputFields (no "key" found in inputFields)`,
+                searchOrCreateDef,
+                '/SearchOrCreateSchema',
+                `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
+                'invalidKey'
+              )
+            );
+          } else if (!updateInputKeys.includes(updateInputField)) {
             errors.push(
               new jsonschema.ValidationError(
                 `must match a "key" from a creates.operation.inputFields (options: ${updateInputKeys})`,
                 searchOrCreateDef,
                 '/SearchOrCreateSchema',
-                `instance.searchOrCreates.${key}.updateInputFromSearchOutputConstraint`,
-                'invalidKey',
-                'updateInputFromSearchOutput'
+                `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
+                'invalidKey'
               )
             );
           }
 
-          // Confirm searchOrCreate.updateInputFromSearchOutput's value exists in searches[search].operation.(outputFields.key|sample keys)
-          if (!allSearchOutputKeys.includes(searchOutputField)) {
+          // Confirm searchOrCreate.updateInputFromSearchOutput's value exists in searches[search].operation.(outputFields.key|sample keys), if they are defined
+          if (
+            (hasSearchOutputFields || hasSearchOutputSample) &&
+            !allSearchOutputKeys.includes(searchOutputField)
+          ) {
             errors.push(
               new jsonschema.ValidationError(
                 `must match a "key" from searches.operation.(outputFields.key|sample keys). (options: ${allSearchOutputKeys})`,
                 searchOrCreateDef,
                 '/SearchOrCreateSchema',
-                `instance.searchOrCreates.${key}.updateInputFromSearchOutputConstraint`,
-                'invalidKey',
-                'updateInputFromSearchOutput'
+                `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
+                'invalidKey'
+              )
+            );
+          }
+        }
+      );
+    }
+
+    // Confirm searchOrCreate.searchUniqueInputToOutputConstraint contains objects with:
+    // keys existing in searches[search].operation.inputFields.key
+    // values existing in searches[search].operation.(outputFields.key|sample keys), if they are defined
+    if (searchOrCreateDef.searchUniqueInputToOutputConstraint && updateKey) {
+      // Note that _.each({key: value}) provides the following callback method signature: (value, key) => {}
+      _.each(
+        searchOrCreateDef.searchUniqueInputToOutputConstraint,
+        (searchOutputField, searchInputField) => {
+          // Confirm searchOrCreate.searchUniqueInputToOutputConstraint's key exists in searches[search].operation.inputFields.key
+          if (_.isEmpty(searchInputKeys)) {
+            errors.push(
+              new jsonschema.ValidationError(
+                `must match a "key" from a searches.operation.inputFields (no "key" found in inputFields)`,
+                searchOrCreateDef,
+                '/SearchOrCreateSchema',
+                `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
+                'invalidKey'
+              )
+            );
+          } else if (!searchInputKeys.includes(searchInputField)) {
+            errors.push(
+              new jsonschema.ValidationError(
+                `must match a "key" from a searches.operation.inputFields (options: ${searchInputKeys})`,
+                searchOrCreateDef,
+                '/SearchOrCreateSchema',
+                `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
+                'invalidKey'
+              )
+            );
+          }
+
+          // Confirm searchOrCreate.searchUniqueInputToOutputConstraint's value exists in searches[search].operation.(outputFields.key|sample keys), if they are defined
+          if (
+            (hasSearchOutputFields || hasSearchOutputSample) &&
+            !allSearchOutputKeys.includes(searchOutputField)
+          ) {
+            errors.push(
+              new jsonschema.ValidationError(
+                `must match a "key" from searches.operation.(outputFields.key|sample keys). (options: ${allSearchOutputKeys})`,
+                searchOrCreateDef,
+                '/SearchOrCreateSchema',
+                `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
+                'invalidKey'
               )
             );
           }
