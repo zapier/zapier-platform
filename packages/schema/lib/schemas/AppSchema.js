@@ -10,6 +10,7 @@ const ReadBulksSchema = require('./BulkReadsSchema');
 const SearchesSchema = require('./SearchesSchema');
 const CreatesSchema = require('./CreatesSchema');
 const SearchOrCreatesSchema = require('./SearchOrCreatesSchema');
+const SearchAndCreatesSchema = require('./SearchAndCreatesSchema');
 const RequestSchema = require('./RequestSchema');
 const VersionSchema = require('./VersionSchema');
 const MiddlewaresSchema = require('./MiddlewaresSchema');
@@ -96,6 +97,10 @@ module.exports = makeSchema(
           'All the search-or-create combos for your app. You can create your own here, or Zapier will automatically register any from resources that define a search, a create, and a get (or define a searchOrCreate directly). Register non-resource search-or-creates here as well.',
         $ref: SearchOrCreatesSchema.id,
       },
+      searchAndCreates: {
+        description: 'An alias for "searchOrCreates".',
+        $ref: SearchAndCreatesSchema.id,
+      },
       flags: {
         description: 'Top-level app options',
         $ref: AppFlagsSchema.id,
@@ -139,6 +144,7 @@ module.exports = makeSchema(
     SearchesSchema,
     CreatesSchema,
     SearchOrCreatesSchema,
+    SearchAndCreatesSchema,
     RequestSchema,
     VersionSchema,
     MiddlewaresSchema,
