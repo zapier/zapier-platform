@@ -171,7 +171,7 @@ const validateSearchOrCreateKeys = (definition) => {
         if (!updateInputKeys.includes(updateInputField)) {
           errors.push(
             new jsonschema.ValidationError(
-              `must match a "key" from a creates.${updateKey}.operation.inputFields ${updateInputOptionHint}`,
+              `object key must match a "key" from a creates.${updateKey}.operation.inputFields ${updateInputOptionHint}`,
               searchOrCreateDef,
               '/SearchOrCreateSchema',
               `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
@@ -186,7 +186,7 @@ const validateSearchOrCreateKeys = (definition) => {
         ) {
           errors.push(
             new jsonschema.ValidationError(
-              `must match a "key" from searches.${searchKey}.operation.(outputFields|sample) ${searchOutputOptionHint}`,
+              `object value must match a "key" from searches.${searchKey}.operation.(outputFields|sample) ${searchOutputOptionHint}`,
               searchOrCreateDef,
               '/SearchOrCreateSchema',
               `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
@@ -213,7 +213,7 @@ const validateSearchOrCreateKeys = (definition) => {
         if (!searchInputKeys.includes(searchInputField)) {
           errors.push(
             new jsonschema.ValidationError(
-              `must match a "key" from a searches.${searchKey}.operation.inputFields ${searchInputOptionHint}`,
+              `object key must match a "key" from a searches.${searchKey}.operation.inputFields ${searchInputOptionHint}`,
               searchOrCreateDef,
               '/SearchOrCreateSchema',
               `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
@@ -228,7 +228,7 @@ const validateSearchOrCreateKeys = (definition) => {
         ) {
           errors.push(
             new jsonschema.ValidationError(
-              `must match a "key" from searches.${searchKey}.operation.(outputFields|sample) ${searchOutputOptionHint}`,
+              `object value must match a "key" from searches.${searchKey}.operation.(outputFields|sample) ${searchOutputOptionHint}`,
               searchOrCreateDef,
               '/SearchOrCreateSchema',
               `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
