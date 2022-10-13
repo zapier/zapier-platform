@@ -39,12 +39,12 @@ module.exports = makeSchema(
       },
       updateInputFromSearchOutput: {
         description:
-          "A mapping where the key represents the input field for the update action, and the value represents the field from the search action's output that should be mapped to the update action's input field.",
+          "EXPERIMENTAL: A mapping where the key represents the input field for the update action, and the value represents the field from the search action's output that should be mapped to the update action's input field.",
         $ref: FlatObjectSchema.id,
       },
       searchUniqueInputToOutputConstraint: {
         description:
-          "A mapping where the key represents an input field for the search action, and the value represents how that field's value will be used to filter down the search output for an exact match.",
+          "EXPERIMENTAL: A mapping where the key represents an input field for the search action, and the value represents how that field's value will be used to filter down the search output for an exact match.",
         $ref: FlatObjectSchema.id,
       },
     },
