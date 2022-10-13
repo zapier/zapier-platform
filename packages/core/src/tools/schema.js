@@ -132,11 +132,21 @@ const compileApp = (appRaw) => {
   appRaw.triggers = _.extend({}, extras.triggers, appRaw.triggers || {});
   appRaw.searches = _.extend({}, extras.searches, appRaw.searches || {});
   appRaw.creates = _.extend({}, extras.creates, appRaw.creates || {});
+
+  // searchAndCreates is an alias for searchOrCreates. Schema validation makes sure only one of them is defined.
+  // If searchAndCreates is not empty, its content should be moved over to the searchOrCreates key for consistency.
+  const appRawSearchOrCreates = appRaw.searchAndCreates
+    ? appRaw.searchAndCreates
+    : appRaw.searchOrCreates;
+
   appRaw.searchOrCreates = _.extend(
     {},
     extras.searchOrCreates,
-    appRaw.searchOrCreates || {}
+    appRawSearchOrCreates || {}
   );
+
+  // Remove searchAndCreates key, now that its content (if it existed) was migrated over to searchOrCreates
+  delete appRaw.searchAndCreates;
 
   _.each(appRaw.triggers, (trigger) => {
     appRaw.triggers[trigger.key] = copyPropertiesFromResource(

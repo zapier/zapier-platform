@@ -20,7 +20,13 @@ const getSearchOutputSampleKeys = (definition, searchKey) => {
 };
 
 const validateSearchOrCreateKeys = (definition) => {
-  if (!definition.searchOrCreates) {
+  // searchAndCreates is an alias for searchOrCreates. Schema validation makes sure only one of them is defined.
+  // If searchAndCreates is not empty, its content should be moved over to the searchOrCreates key for consistency.
+  const searchOrCreates = definition.searchAndCreates
+    ? definition.searchAndCreates
+    : definition.searchOrCreates;
+
+  if (!searchOrCreates) {
     return [];
   }
 
@@ -29,7 +35,7 @@ const validateSearchOrCreateKeys = (definition) => {
   const searchKeys = Object.keys(definition.searches);
   const createKeys = Object.keys(definition.creates);
 
-  _.each(definition.searchOrCreates, (searchOrCreateDef, key) => {
+  _.each(searchOrCreates, (searchOrCreateDef, key) => {
     const searchOrCreateKey = searchOrCreateDef.key;
     const searchKey = searchOrCreateDef.search;
     const createKey = searchOrCreateDef.create;
