@@ -10,8 +10,7 @@ const searchAndCreatesAliasConstraint = (definition) => {
   // Ensure that 'searchOrCreates' and 'searchAndCreates' don't appear together, since one is an alias of the other
   const errors = [];
   if (
-    _.has(definition, searchOrCreatesKey) &&
-    _.has(definition, searchAndCreatesKey)
+    definition.searchOrCreates && definition.searchAndCreates
   ) {
     errors.push(
       new jsonschema.ValidationError(
