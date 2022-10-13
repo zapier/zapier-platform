@@ -20,8 +20,7 @@ const getSearchOutputSampleKeys = (definition, searchKey) => {
 };
 
 const validateSearchOrCreateKeys = (definition) => {
-  // searchAndCreates is an alias for searchOrCreates. Schema validation makes sure only one of them is defined.
-  // If searchAndCreates is not empty, its content should be moved over to the searchOrCreates key for consistency.
+  // searchAndCreates is an alias for searchOrCreates. Another functional constraint makes sure only one of them is defined.
   const searchOrCreates = definition.searchAndCreates
     ? definition.searchAndCreates
     : definition.searchOrCreates;
