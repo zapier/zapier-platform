@@ -8,7 +8,8 @@ const getFieldKeys = (definition, path) => {
   return fields.map((field) => field.key);
 };
 
-const getSearchOutputSampleKeys = ({ definition, searchKey }) => {
+// This method differs from 'getFieldKeys' since here we obtain the actual object keys with Object.keys()
+const getSearchOutputSampleKeys = (definition, searchKey) => {
   const searchOutputSampleFields = _.get(
     definition.searches,
     `${searchKey}.operation.sample`,
@@ -25,8 +26,8 @@ const validateSearchOrCreateKeys = (definition) => {
 
   const errors = [];
 
-  const searchKeys = _.keys(definition.searches);
-  const createKeys = _.keys(definition.creates);
+  const searchKeys = Object.keys(definition.searches);
+  const createKeys = Object.keys(definition.creates);
 
   _.each(definition.searchOrCreates, (searchOrCreateDef, key) => {
     const searchOrCreateKey = searchOrCreateDef.key;
@@ -34,16 +35,28 @@ const validateSearchOrCreateKeys = (definition) => {
     const createKey = searchOrCreateDef.create;
     const updateKey = searchOrCreateDef.update;
 
-    const updateInputKeys = getUpdateInputKeys({ definition, updateKey });
-    const searchInputKeys = getSearchInputKeys({ definition, searchKey });
-    const searchOutputKeys = getSearchOutputKeys({ definition, searchKey });
-    const searchOutputSampleKeys = getSearchOutputSampleKeys({
+    const updateInputKeys = getFieldKeys(
+      definition.creates,
+      `${updateKey}.operation.inputFields`
+    );
+    const searchInputKeys = getFieldKeys(
+      definition.searches,
+      `${searchKey}.operation.inputFields`
+    );
+    const searchOutputKeys = getFieldKeys(
+      definition.searches,
+      `${searchKey}.operation.outputFields`
+    );
+    const searchOutputSampleKeys = getSearchOutputSampleKeys(
       definition,
-      searchKey,
-    });
+      searchKey
+    );
 
     // There are constraints where we check for keys in either outputFields or sample, so combining them is a shortcut
-    const allSearchOutputKeys = new Set([...searchOutputKey, ...searchOutputSampleKeys]);
+    const allSearchOutputKeys = new Set([
+      ...searchOutputKeys,
+      ...searchOutputSampleKeys,
+    ]);
 
     // For some constraints, there is a difference between not "having" a key defined versus having one but with empty values
     const hasSearchOutputFields = _.has(
@@ -51,7 +64,8 @@ const validateSearchOrCreateKeys = (definition) => {
       `${searchKey}.operation.outputFields`
     );
     const hasSearchOutputSample = _.has(
-      definition.searches, `${searchKey}.operation.sample`
+      definition.searches,
+      `${searchKey}.operation.sample`
     );
 
     // Confirm searchOrCreate.key matches a searches.key (current Zapier editor limitation)
@@ -139,102 +153,84 @@ const validateSearchOrCreateKeys = (definition) => {
     // keys existing in creates[update].operation.inputFields.key
     // values existing in searches[search].operation.(outputFields.key|sample keys), if they are defined
     if (searchOrCreateDef.updateInputFromSearchOutput && updateKey) {
-      // Note that _.each({key: value}) provides the following callback method signature: (value, key) => {}
-      _.each(
-        searchOrCreateDef.updateInputFromSearchOutput,
-        (searchOutputField, updateInputField) => {
-          // Confirm searchOrCreate.updateInputFromSearchOutput's key exists in creates[update].operation.inputFields.key
-          if (_.isEmpty(updateInputKeys)) {
-            // Provide a specific error if no possible keys were found
-            errors.push(
-              new jsonschema.ValidationError(
-                `must match a "key" from a creates.operation.inputFields (no "key" found in inputFields)`,
-                searchOrCreateDef,
-                '/SearchOrCreateSchema',
-                `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
-                'invalidKey'
-              )
-            );
-          } else if (!updateInputKeys.includes(updateInputField)) {
-            errors.push(
-              new jsonschema.ValidationError(
-                `must match a "key" from a creates.operation.inputFields (options: ${updateInputKeys})`,
-                searchOrCreateDef,
-                '/SearchOrCreateSchema',
-                `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
-                'invalidKey'
-              )
-            );
-          }
+      const updateInputOptionHint = _.isEmpty(updateInputKeys)
+        ? '(no "key" found in inputFields)'
+        : `(options: ${updateInputKeys})`;
 
-          // Confirm searchOrCreate.updateInputFromSearchOutput's value exists in searches[search].operation.(outputFields.key|sample keys), if they are defined
-          if (
-            (hasSearchOutputFields || hasSearchOutputSample) &&
-            !allSearchOutputKeys.includes(searchOutputField)
-          ) {
-            errors.push(
-              new jsonschema.ValidationError(
-                `must match a "key" from searches.operation.(outputFields.key|sample keys). (options: ${allSearchOutputKeys})`,
-                searchOrCreateDef,
-                '/SearchOrCreateSchema',
-                `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
-                'invalidKey'
-              )
-            );
-          }
+      const searchOutputOptionHint = `(options: ${[...allSearchOutputKeys]})`;
+
+      for (const [updateInputField, searchOutputField] of Object.entries(
+        searchOrCreateDef.updateInputFromSearchOutput
+      )) {
+        if (!updateInputKeys.includes(updateInputField)) {
+          errors.push(
+            new jsonschema.ValidationError(
+              `must match a "key" from a creates.${updateKey}.operation.inputFields ${updateInputOptionHint}`,
+              searchOrCreateDef,
+              '/SearchOrCreateSchema',
+              `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
+              'invalidKey'
+            )
+          );
         }
-      );
+
+        if (
+          (hasSearchOutputFields || hasSearchOutputSample) &&
+          !allSearchOutputKeys.has(searchOutputField)
+        ) {
+          errors.push(
+            new jsonschema.ValidationError(
+              `must match a "key" from searches.${searchKey}.operation.(outputFields|sample) ${searchOutputOptionHint}`,
+              searchOrCreateDef,
+              '/SearchOrCreateSchema',
+              `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
+              'invalidKey'
+            )
+          );
+        }
+      }
     }
 
     // Confirm searchOrCreate.searchUniqueInputToOutputConstraint contains objects with:
     // keys existing in searches[search].operation.inputFields.key
     // values existing in searches[search].operation.(outputFields.key|sample keys), if they are defined
     if (searchOrCreateDef.searchUniqueInputToOutputConstraint && updateKey) {
-      // Note that _.each({key: value}) provides the following callback method signature: (value, key) => {}
-      _.each(
-        searchOrCreateDef.searchUniqueInputToOutputConstraint,
-        (searchOutputField, searchInputField) => {
-          // Confirm searchOrCreate.searchUniqueInputToOutputConstraint's key exists in searches[search].operation.inputFields.key
-          if (_.isEmpty(searchInputKeys)) {
-            // Provide a specific error if no possible keys were found
-            errors.push(
-              new jsonschema.ValidationError(
-                `must match a "key" from a searches.operation.inputFields (no "key" found in inputFields)`,
-                searchOrCreateDef,
-                '/SearchOrCreateSchema',
-                `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
-                'invalidKey'
-              )
-            );
-          } else if (!searchInputKeys.includes(searchInputField)) {
-            errors.push(
-              new jsonschema.ValidationError(
-                `must match a "key" from a searches.operation.inputFields (options: ${searchInputKeys})`,
-                searchOrCreateDef,
-                '/SearchOrCreateSchema',
-                `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
-                'invalidKey'
-              )
-            );
-          }
+      const searchInputOptionHint = _.isEmpty(searchInputKeys)
+        ? '(no "key" found in inputFields)'
+        : `(options: ${searchInputKeys})`;
 
-          // Confirm searchOrCreate.searchUniqueInputToOutputConstraint's value exists in searches[search].operation.(outputFields.key|sample keys), if any of them are defined
-          if (
-            (hasSearchOutputFields || hasSearchOutputSample) &&
-            !allSearchOutputKeys.includes(searchOutputField)
-          ) {
-            errors.push(
-              new jsonschema.ValidationError(
-                `must match a "key" from searches.operation.(outputFields.key|sample keys). (options: ${allSearchOutputKeys})`,
-                searchOrCreateDef,
-                '/SearchOrCreateSchema',
-                `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
-                'invalidKey'
-              )
-            );
-          }
+      const searchOutputOptionHint = `(options: ${[...allSearchOutputKeys]})`;
+
+      for (const [searchInputField, searchOutputField] of Object.entries(
+        searchOrCreateDef.searchUniqueInputToOutputConstraint
+      )) {
+        if (!searchInputKeys.includes(searchInputField)) {
+          errors.push(
+            new jsonschema.ValidationError(
+              `must match a "key" from a searches.${searchKey}.operation.inputFields ${searchInputOptionHint}`,
+              searchOrCreateDef,
+              '/SearchOrCreateSchema',
+              `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
+              'invalidKey'
+            )
+          );
         }
-      );
+
+        if (
+          (hasSearchOutputFields || hasSearchOutputSample) &&
+          !allSearchOutputKeys.has(searchOutputField)
+        ) {
+          errors.push(
+            new jsonschema.ValidationError(
+              `must match a "key" from searches.${searchKey}.operation.(outputFields|sample) ${searchOutputOptionHint}`,
+              searchOrCreateDef,
+              '/SearchOrCreateSchema',
+              `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
+              'invalidKey'
+            )
+          );
+        }
+      }
     }
 
     return errors;

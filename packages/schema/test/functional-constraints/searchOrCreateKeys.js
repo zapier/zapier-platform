@@ -422,7 +422,7 @@ describe('searchOrCreateKeys', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.searchOrCreates.findOrCreateProduct.updateInputFromSearchOutput requires instance.searchOrCreates.findOrCreateProduct.update to be defined'
+      'instance.searchOrCreates.findOrCreateProduct.updateInputFromSearchOutput requires searchOrCreates.findOrCreateProduct.update to be defined'
     );
   });
 
@@ -485,7 +485,7 @@ describe('searchOrCreateKeys', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.searchOrCreates.findOrCreateProduct.searchUniqueInputToOutputConstraint requires instance.searchOrCreates.findOrCreateProduct.update to be defined'
+      'instance.searchOrCreates.findOrCreateProduct.searchUniqueInputToOutputConstraint requires searchOrCreates.findOrCreateProduct.update to be defined'
     );
   });
 
@@ -564,7 +564,7 @@ describe('searchOrCreateKeys', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.searchOrCreates.findOrCreateProduct.updateInputFromSearchOutput must match a "key" from a creates.operation.inputFields (options: product_identity)'
+      'instance.searchOrCreates.findOrCreateProduct.updateInputFromSearchOutput must match a "key" from a creates.update_product.operation.inputFields (options: product_identity)'
     );
   });
 
@@ -643,7 +643,7 @@ describe('searchOrCreateKeys', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.searchOrCreates.findOrCreateProduct.updateInputFromSearchOutput must match a "key" from searches.operation.(outputFields.key|sample keys). (options: product_title,identity,title)'
+      'instance.searchOrCreates.findOrCreateProduct.updateInputFromSearchOutput must match a "key" from searches.find_product.operation.(outputFields|sample) (options: product_title,identity,title)'
     );
   });
 
@@ -798,7 +798,7 @@ describe('searchOrCreateKeys', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.searchOrCreates.findOrCreateProduct.searchUniqueInputToOutputConstraint must match a "key" from a searches.operation.inputFields (no "key" found in inputFields)'
+      'instance.searchOrCreates.findOrCreateProduct.searchUniqueInputToOutputConstraint must match a "key" from a searches.find_product.operation.inputFields (no "key" found in inputFields)'
     );
   });
 
@@ -878,7 +878,7 @@ describe('searchOrCreateKeys', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.searchOrCreates.findOrCreateProduct.searchUniqueInputToOutputConstraint must match a "key" from a searches.operation.inputFields (options: product_title)'
+      'instance.searchOrCreates.findOrCreateProduct.searchUniqueInputToOutputConstraint must match a "key" from a searches.find_product.operation.inputFields (options: product_title)'
     );
   });
 
@@ -957,7 +957,7 @@ describe('searchOrCreateKeys', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.searchOrCreates.findOrCreateProduct.updateInputFromSearchOutput must match a "key" from searches.operation.(outputFields.key|sample keys). (options: product_title,identity,title)'
+      'instance.searchOrCreates.findOrCreateProduct.updateInputFromSearchOutput must match a "key" from searches.find_product.operation.(outputFields|sample) (options: product_title,identity,title)'
     );
   });
 
