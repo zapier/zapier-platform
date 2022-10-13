@@ -34,7 +34,7 @@ module.exports = makeSchema(
       },
       update: {
         description:
-          'The key of the create that will be used if a search succeeds; having a value here converts this search-or-create into a search-and-create',
+          'EXPERIMENTAL: The key of the create that will be used if a search succeeds; having a value here converts this search-or-create into a search-and-create',
         $ref: KeySchema.id,
       },
       updateInputFromSearchOutput: {

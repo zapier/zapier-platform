@@ -3,33 +3,9 @@
 const _ = require('lodash');
 const jsonschema = require('jsonschema');
 
-const getUpdateInputKeys = ({ definition, updateKey }) => {
-  const updateInputFields = _.get(
-    definition.creates,
-    `${updateKey}.operation.inputFields`,
-    []
-  );
-
-  return updateInputFields.map((inputField) => inputField.key);
-};
-
-const getSearchInputKeys = ({ definition, searchKey }) => {
-  const searchInputFields = _.get(
-    definition.searches,
-    `${searchKey}.operation.inputFields`,
-    []
-  );
-  return searchInputFields.map((inputField) => inputField.key);
-};
-
-const getSearchOutputKeys = ({ definition, searchKey }) => {
-  const searchOutputFields = _.get(
-    definition.searches,
-    `${searchKey}.operation.outputFields`,
-    []
-  );
-
-  return searchOutputFields.map((outputField) => outputField.key);
+const getFieldKeys = (definition, path) => {
+  const fields = _.get(definition, path, []);
+  return fields.map((field) => field.key);
 };
 
 const getSearchOutputSampleKeys = ({ definition, searchKey }) => {
@@ -39,7 +15,7 @@ const getSearchOutputSampleKeys = ({ definition, searchKey }) => {
     {}
   );
 
-  return _.keys(searchOutputSampleFields);
+  return Object.keys(searchOutputSampleFields);
 };
 
 const validateSearchOrCreateKeys = (definition) => {
@@ -67,10 +43,7 @@ const validateSearchOrCreateKeys = (definition) => {
     });
 
     // There are constraints where we check for keys in either outputFields or sample, so combining them is a shortcut
-    const allSearchOutputKeys = _.concat(
-      searchOutputKeys,
-      searchOutputSampleKeys
-    );
+    const allSearchOutputKeys = new Set([...searchOutputKey, ...searchOutputSampleKeys]);
 
     // For some constraints, there is a difference between not "having" a key defined versus having one but with empty values
     const hasSearchOutputFields = _.has(
@@ -78,7 +51,7 @@ const validateSearchOrCreateKeys = (definition) => {
       `${searchKey}.operation.outputFields`
     );
     const hasSearchOutputSample = _.has(
-      _.get(definition.searches, `${searchKey}.operation.sample`)
+      definition.searches, `${searchKey}.operation.sample`
     );
 
     // Confirm searchOrCreate.key matches a searches.key (current Zapier editor limitation)
@@ -140,7 +113,7 @@ const validateSearchOrCreateKeys = (definition) => {
     if (searchOrCreateDef.updateInputFromSearchOutput && !updateKey) {
       errors.push(
         new jsonschema.ValidationError(
-          `requires instance.searchOrCreates.${key}.update to be defined`,
+          `requires searchOrCreates.${key}.update to be defined`,
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
@@ -153,7 +126,7 @@ const validateSearchOrCreateKeys = (definition) => {
     if (searchOrCreateDef.searchUniqueInputToOutputConstraint && !updateKey) {
       errors.push(
         new jsonschema.ValidationError(
-          `requires instance.searchOrCreates.${key}.update to be defined`,
+          `requires searchOrCreates.${key}.update to be defined`,
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
