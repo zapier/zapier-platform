@@ -62,7 +62,8 @@ alias zapier-dev="/path/to/zapier-platform/packages/cli/src/bin/run"
 
 This way you can keep stable and development versions separate:
 
-- the `zapier` command keeps pointing the stable version that you installed using `npm install -g zapier-platform-cli`
+- the `zapier` command keeps pointing to the stable version that you installed using
+  `npm install -g zapier-platform-cli`
 - `zapier-dev` points to the development version
 
 Restart your shell. The `zapier-dev` command should be available.
@@ -74,6 +75,26 @@ zapier-platform-core and schema from npm. But for development, you may want to l
 and schema to the ones in your local copy of zapier-platform repo. To do that, you use the
 [`yarn link`][yarn-link] command.
 
+First, in zapier-platform/packages/core and zapier-platform/packages/schema, run `yarn link`
+to "register" the links:
+
+```
+cd /path/to/zapier-platform/packages/core
+yarn link
+cd /path/to/zapier-platform/packages/schema
+yarn link
+```
+
+Then, in the integration project, run `yarn link <package_name>` to link core and schema.
+This can be done before or after installing dependencies with `npm install` or `yarn` in
+your integration project:
+
+```
+cd /path/to/your/awesome-app
+yarn link zapier-platform-core
+yarn link zapier-platform-schema
+```
+
 
 You can verify that it's working by checking if the core and schema are symlinked.
 
@@ -83,8 +104,8 @@ $ ls -hl node_modules/zapier-platform-*
 ... node_modules/zapier-platform-schema -> .../.config/yarn/link/zapier-platform-schema
 ```
 
-To unlink, you use the `yarn unlink <package_name>` command. The integration project will
-go back to use the packages downloaded from npm.
+To unlink, you use the `yarn unlink <package_name>` command to make the integration
+project go back to use the packages downloaded from npm.
 
 ## Releasing a New Version
 
