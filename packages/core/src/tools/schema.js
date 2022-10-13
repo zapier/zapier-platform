@@ -67,7 +67,7 @@ const convertResourceDos = (appRaw) => {
           search: search.key,
           create: create.key,
         };
-        searchOrCreates[searchAndCreate.key] = searchAndCreate;
+        searchAndCreates[searchAndCreate.key] = searchAndCreate;
       } else {
         const searchOrCreate = {
           // key: `${resource.key}SearchOrCreate`,
@@ -79,7 +79,7 @@ const convertResourceDos = (appRaw) => {
           search: search.key,
           create: create.key,
         };
-        searchAndCreates[searchOrCreate.key] = searchOrCreate;
+        searchOrCreates[searchOrCreate.key] = searchOrCreate;
       }
     }
   });
