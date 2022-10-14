@@ -8,7 +8,7 @@ const searchAndCreatesAliasConstraint = (definition) => {
   if (definition.searchOrCreates && definition.searchAndCreates) {
     errors.push(
       new jsonschema.ValidationError(
-        `should not be used at the same time as its alias, instance.searchAndCreates`,
+        `should not be used at the same time as its alias, searchAndCreates`,
         definition,
         `/AppSchema`,
         `instance.searchOrCreates`,
