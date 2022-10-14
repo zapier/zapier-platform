@@ -11,10 +11,6 @@ const {
 const { CURRENT_APP_FILE } = require('../../constants');
 
 class LinkCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   async perform() {
     this.startSpinner('Loading integrations');
     const linkedAppId = (await getLinkedAppConfig(undefined, false)).id;
@@ -45,6 +41,7 @@ class LinkCommand extends BaseCommand {
   }
 }
 
+LinkCommand.skipValidInstallCheck = true;
 LinkCommand.flags = buildFlags();
 LinkCommand.description = `Link the current directory with an existing integration.
 
