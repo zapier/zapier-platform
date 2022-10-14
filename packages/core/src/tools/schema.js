@@ -61,7 +61,6 @@ const convertResourceDos = (appRaw) => {
         : appRaw.searchOrCreates;
 
       searchCreates[search.key] = {
-        // key: `${resource.key}SearchAndCreate`,
         key: `${search.key}`, // For now this is a Zapier editor limitation (has to match search)
         display: {
           label: appRaw.searchAndCreates
