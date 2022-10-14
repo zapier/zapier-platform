@@ -5,7 +5,9 @@ const jsonschema = require('jsonschema');
 
 const getFieldKeys = (definition, path) => {
   const fields = _.get(definition, path, []);
-  return fields.map((field) => field.key).filter((k) => k);
+  // Filter out any `undefined` values using .filter(), which may happen due to incoming inputFields
+  // containing functions instead of plain Objects.
+  return fields.map((field) => field.key).filter((key) => key);
 };
 
 // This method differs from 'getFieldKeys' since here we obtain the actual object keys with Object.keys()
@@ -21,11 +23,12 @@ const getSearchOutputSampleKeys = (definition, searchKey) => {
 
 const validateSearchOrCreateKeys = (definition) => {
   // searchAndCreates is an alias for searchOrCreates. Another functional constraint makes sure only one of them is defined.
-  const searchOrCreates = definition.searchAndCreates
-    ? definition.searchAndCreates
-    : definition.searchOrCreates;
+  const searchCreatesKey = definition.searchAndCreates
+    ? 'searchAndCreates'
+    : 'searchOrCreates';
+  const searchCreates = definition[searchCreatesKey];
 
-  if (!searchOrCreates) {
+  if (!searchCreates) {
     return [];
   }
 
@@ -34,7 +37,7 @@ const validateSearchOrCreateKeys = (definition) => {
   const searchKeys = Object.keys(definition.searches);
   const createKeys = Object.keys(definition.creates);
 
-  _.each(searchOrCreates, (searchOrCreateDef, key) => {
+  _.each(searchCreates, (searchOrCreateDef, key) => {
     const searchOrCreateKey = searchOrCreateDef.key;
     const searchKey = searchOrCreateDef.search;
     const createKey = searchOrCreateDef.create;
@@ -80,7 +83,7 @@ const validateSearchOrCreateKeys = (definition) => {
           `must match a "key" from a search (options: ${searchKeys})`,
           searchOrCreateDef,
           '/SearchOrCreateSchema',
-          `instance.searchOrCreates.${key}.key`,
+          `instance.${searchCreatesKey}.${key}.key`,
           'invalidKey',
           'key'
         )
@@ -94,7 +97,7 @@ const validateSearchOrCreateKeys = (definition) => {
           `must match a "key" from a search (options: ${searchKeys})`,
           searchOrCreateDef,
           '/SearchOrCreateSchema',
-          `instance.searchOrCreates.${key}.search`,
+          `instance.${searchCreatesKey}.${key}.search`,
           'invalidKey',
           'search'
         )
@@ -108,7 +111,7 @@ const validateSearchOrCreateKeys = (definition) => {
           `must match a "key" from a create (options: ${createKeys})`,
           searchOrCreateDef,
           '/SearchOrCreateSchema',
-          `instance.searchOrCreates.${key}.create`,
+          `instance.${searchCreatesKey}.${key}.create`,
           'invalidKey',
           'create'
         )
@@ -122,7 +125,7 @@ const validateSearchOrCreateKeys = (definition) => {
           `must match a "key" from a create (options: ${createKeys})`,
           searchOrCreateDef,
           '/SearchOrCreateSchema',
-          `instance.searchOrCreates.${key}.update`,
+          `instance.${searchCreatesKey}.${key}.update`,
           'invalidKey'
         )
       );
@@ -135,7 +138,7 @@ const validateSearchOrCreateKeys = (definition) => {
           `requires searchOrCreates.${key}.update to be defined`,
           searchOrCreateDef,
           '/SearchOrCreateSchema',
-          `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
+          `instance.${searchCreatesKey}.${key}.updateInputFromSearchOutput`,
           'invalid'
         )
       );
@@ -148,7 +151,7 @@ const validateSearchOrCreateKeys = (definition) => {
           `requires searchOrCreates.${key}.update to be defined`,
           searchOrCreateDef,
           '/SearchOrCreateSchema',
-          `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
+          `instance.${searchCreatesKey}.${key}.searchUniqueInputToOutputConstraint`,
           'invalid'
         )
       );
@@ -173,7 +176,7 @@ const validateSearchOrCreateKeys = (definition) => {
               `object key must match a "key" from a creates.${updateKey}.operation.inputFields ${updateInputOptionHint}`,
               searchOrCreateDef,
               '/SearchOrCreateSchema',
-              `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
+              `instance.${searchCreatesKey}.${key}.updateInputFromSearchOutput`,
               'invalidKey'
             )
           );
@@ -188,7 +191,7 @@ const validateSearchOrCreateKeys = (definition) => {
               `object value must match a "key" from searches.${searchKey}.operation.(outputFields|sample) ${searchOutputOptionHint}`,
               searchOrCreateDef,
               '/SearchOrCreateSchema',
-              `instance.searchOrCreates.${key}.updateInputFromSearchOutput`,
+              `instance.${searchCreatesKey}.${key}.updateInputFromSearchOutput`,
               'invalidKey'
             )
           );
@@ -215,7 +218,7 @@ const validateSearchOrCreateKeys = (definition) => {
               `object key must match a "key" from a searches.${searchKey}.operation.inputFields ${searchInputOptionHint}`,
               searchOrCreateDef,
               '/SearchOrCreateSchema',
-              `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
+              `instance.${searchCreatesKey}.${key}.searchUniqueInputToOutputConstraint`,
               'invalidKey'
             )
           );
@@ -230,7 +233,7 @@ const validateSearchOrCreateKeys = (definition) => {
               `object value must match a "key" from searches.${searchKey}.operation.(outputFields|sample) ${searchOutputOptionHint}`,
               searchOrCreateDef,
               '/SearchOrCreateSchema',
-              `instance.searchOrCreates.${key}.searchUniqueInputToOutputConstraint`,
+              `instance.${searchCreatesKey}.${key}.searchUniqueInputToOutputConstraint`,
               'invalidKey'
             )
           );

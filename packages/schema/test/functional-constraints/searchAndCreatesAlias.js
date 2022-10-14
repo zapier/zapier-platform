@@ -109,7 +109,7 @@ describe('searchAndCreatesAlias', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.searchOrCreates should not be used at the same time as its alias, instance.searchAndCreates'
+      'instance.searchOrCreates should not be used at the same time as its alias, searchAndCreates'
     );
   });
 

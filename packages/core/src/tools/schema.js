@@ -56,31 +56,22 @@ const convertResourceDos = (appRaw) => {
 
     if (search && create && isVisible(search) && isVisible(create)) {
       // searchAndCreates is an alias for searchOrCreates. Schema validation makes sure only one of them is defined.
-      if (appRaw.searchAndCreate) {
-        const searchAndCreate = {
-          // key: `${resource.key}SearchAndCreate`,
-          key: `${search.key}`, // For now this is a Zapier editor limitation (has to match search)
-          display: {
-            label: `Upsert ${resource.noun}`,
-            description: _.get(search, ['display', 'description'], ''),
-          },
-          search: search.key,
-          create: create.key,
-        };
-        searchAndCreates[searchAndCreate.key] = searchAndCreate;
-      } else {
-        const searchOrCreate = {
-          // key: `${resource.key}SearchOrCreate`,
-          key: `${search.key}`, // For now this is a Zapier editor limitation (has to match search)
-          display: {
-            label: `Find or Create ${resource.noun}`,
-            description: _.get(search, ['display', 'description'], ''),
-          },
-          search: search.key,
-          create: create.key,
-        };
-        searchOrCreates[searchOrCreate.key] = searchOrCreate;
-      }
+      const searchCreates = appRaw.searchAndCreates
+        ? appRaw.searchAndCreates
+        : appRaw.searchOrCreates;
+
+      searchCreates[search.key] = {
+        // key: `${resource.key}SearchAndCreate`,
+        key: `${search.key}`, // For now this is a Zapier editor limitation (has to match search)
+        display: {
+          label: appRaw.searchAndCreates
+            ? `Upsert ${resource.noun}`
+            : `Find or Create ${resource.noun}`,
+          description: _.get(search, ['display', 'description'], ''),
+        },
+        search: search.key,
+        create: create.key,
+      };
     }
   });
 
@@ -159,17 +150,15 @@ const compileApp = (appRaw) => {
   // If the searchAndCreates key exists, we use it and avoid adding a searchOrCreates key to the appRaw object.
   // Otherwise, we add a searchOrCreates object to the appRaw object, which defaults to an empty object.
   if (appRaw.searchAndCreates) {
-    appRaw.searchAndCreates = _.extend(
-      {},
-      extras.searchAndCreates,
-      appRaw.searchAndCreates || {}
-    );
+    appRaw.searchAndCreates = {
+      ...extras.searchAndCreates,
+      ...appRaw.searchAndCreates,
+    };
   } else {
-    appRaw.searchOrCreates = _.extend(
-      {},
-      extras.searchOrCreates,
-      appRaw.searchOrCreates || {}
-    );
+    appRaw.searchOrCreates = {
+      ...extras.searchOrCreates,
+      ...appRaw.searchOrCreates,
+    };
   }
 
   _.each(appRaw.triggers, (trigger) => {
