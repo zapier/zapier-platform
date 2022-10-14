@@ -5,7 +5,7 @@ const jsonschema = require('jsonschema');
 
 const getFieldKeys = (definition, path) => {
   const fields = _.get(definition, path, []);
-  return fields.map((field) => field.key);
+  return fields.map((field) => field.key).filter((k) => k);
 };
 
 // This method differs from 'getFieldKeys' since here we obtain the actual object keys with Object.keys()
