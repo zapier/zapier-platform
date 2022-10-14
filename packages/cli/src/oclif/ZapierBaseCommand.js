@@ -27,11 +27,7 @@ class ZapierBaseCommand extends Command {
     this.debug('flags are', this.flags);
     this.debug('------------');
 
-    // only a few commands need the core package to run
-    // so we watch for them here and then check for zapier-platform-core
-    if (this.requiresCore()) {
-      this.throwForInvalidAppInstall();
-    }
+    this.throwForInvalidAppInstall();
 
     // the following comments are pre-merge, might be out of date:
 

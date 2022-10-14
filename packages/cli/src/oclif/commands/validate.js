@@ -8,10 +8,6 @@ const { localAppCommand } = require('../../utils/local');
 const { validateApp } = require('../../utils/api');
 
 class ValidateCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   async perform() {
     this.log('Validating project locally');
 
@@ -112,6 +108,7 @@ class ValidateCommand extends BaseCommand {
   }
 }
 
+ValidateCommand.skipValidInstallCheck = true;
 ValidateCommand.flags = buildFlags({
   commandFlags: {
     'without-style': flags.boolean({

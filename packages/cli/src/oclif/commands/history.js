@@ -4,10 +4,6 @@ const { buildFlags } = require('../buildFlags');
 const { listHistory } = require('../../utils/api');
 
 class HistoryCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   async perform() {
     this.startSpinner('Loading history');
     const { history } = await listHistory();
@@ -26,6 +22,7 @@ class HistoryCommand extends BaseCommand {
   }
 }
 
+HistoryCommand.skipValidInstallCheck = true;
 HistoryCommand.flags = buildFlags({ opts: { format: true } });
 HistoryCommand.description = `Get the history of your integration.
 

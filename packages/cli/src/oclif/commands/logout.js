@@ -6,10 +6,6 @@ const { deleteFile } = require('../../utils/files');
 const { AUTH_LOCATION, AUTH_LOCATION_RAW } = require('../../constants');
 
 class LogoutCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   async perform() {
     let success = true;
     this.startSpinner('Deactivating local deploy key');

@@ -25,10 +25,6 @@ const serializeErrors = (errors) => {
 };
 
 class PromoteCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   async perform() {
     const app = await this.getWritableApp();
 
@@ -145,6 +141,7 @@ PromoteCommand.args = [
   },
 ];
 
+PromoteCommand.skipValidInstallCheck = true;
 PromoteCommand.examples = ['zapier promote 1.0.0'];
 PromoteCommand.description = `Promote a specific version to public access.
 

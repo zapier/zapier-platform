@@ -10,10 +10,6 @@ const {
 const { buildAndOrUpload } = require('../../utils/build');
 
 class BuildCommand extends BaseCommand {
-  requiresCore() {
-    return true;
-  }
-
   async perform() {
     await buildAndOrUpload(
       { build: true },
@@ -60,5 +56,6 @@ This command does the following:
 * Moves the zip to \`${BUILD_PATH}\` and \`${SOURCE_PATH}\` and deletes the temp folder
 
 This command is typically followed by \`zapier upload\`.`;
+BuildCommand.skipValidInstallCheck = true;
 
 module.exports = BuildCommand;

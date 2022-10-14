@@ -41,10 +41,6 @@ const commandFlags = {
 };
 
 class LogsCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   async perform() {
     this.startSpinner('Loading logs');
 
@@ -114,6 +110,7 @@ class LogsCommand extends BaseCommand {
   }
 }
 
+LogsCommand.skipValidInstallCheck = true;
 LogsCommand.flags = buildFlags({
   commandFlags,
   opts: { format: true },

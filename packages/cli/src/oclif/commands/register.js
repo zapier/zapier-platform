@@ -4,10 +4,6 @@ const { buildFlags } = require('../buildFlags');
 const { callAPI, writeLinkedAppConfig } = require('../../utils/api');
 
 class RegisterCommand extends ZapierBaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   async perform() {
     let title = this.args.title;
     if (!title) {
@@ -28,6 +24,7 @@ class RegisterCommand extends ZapierBaseCommand {
   }
 }
 
+RegisterCommand.skipValidInstallCheck = true;
 RegisterCommand.args = [
   {
     name: 'title',

@@ -10,10 +10,6 @@ const { BASE_ENDPOINT } = require('../../constants');
 const { flags } = require('@oclif/command');
 
 class ConvertCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   generateCreateFunc(isVisual, appId, version) {
     return async (tempAppDir) => {
       if (isVisual) {

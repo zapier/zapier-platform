@@ -6,10 +6,6 @@ const { callAPI } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
 
 class MigrateCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   async perform() {
     const percent = this.args.percent;
     if (isNaN(percent) || percent < 1 || percent > 100) {
@@ -132,6 +128,7 @@ MigrateCommand.args = [
   },
 ];
 
+MigrateCommand.skipValidInstallCheck = true;
 MigrateCommand.examples = [
   'zapier migrate 1.0.0 1.0.1',
   'zapier migrate 1.0.1 2.0.0 10',

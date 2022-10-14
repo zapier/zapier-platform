@@ -10,10 +10,6 @@ const { runCommand } = require('../../utils/misc');
 const { getPackageManager } = require('../../utils/package-manager');
 
 class TestCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   async perform() {
     if (!this.flags['skip-validate']) {
       await ValidateCommand.run(['--invokedFromAnotherCommand']);
@@ -90,6 +86,7 @@ TestCommand.flags = buildFlags({
   },
 });
 
+TestCommand.skipValidInstallCheck = true;
 TestCommand.strict = false;
 TestCommand.examples = [
   'zapier test',

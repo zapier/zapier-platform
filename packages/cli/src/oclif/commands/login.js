@@ -41,10 +41,6 @@ const isValidDeployKey = (k) =>
  * Group 1 will definitely have a password. Group 2 might have a password if they created one, but might not. Group 3 definitely will not.
  */
 class LoginCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   promptForDeployKey() {
     this.log(
       `To generate a deploy key, go to ${DEPLOY_KEY_DASH_URL} and create/copy a key, then paste the result below.`

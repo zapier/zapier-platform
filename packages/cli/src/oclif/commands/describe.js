@@ -60,10 +60,6 @@ const typeMap = {
 };
 
 class DescribeCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   logTitle(s) {
     this.log(bold(s) + '\n');
   }
@@ -197,6 +193,7 @@ class DescribeCommand extends BaseCommand {
   }
 }
 
+DescribeCommand.skipValidInstallCheck = true;
 DescribeCommand.flags = buildFlags({ opts: { format: true } });
 DescribeCommand.description = `Describe the current integration.
 

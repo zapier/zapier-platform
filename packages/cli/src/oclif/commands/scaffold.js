@@ -33,10 +33,6 @@ const getFullActionFilePathWithExtension = (directory, actionKey, isTest) =>
   `${getFullActionFilePath(directory, actionKey)}${isTest ? '.test' : ''}.js`;
 
 class ScaffoldCommand extends BaseCommand {
-  requiresCore() {
-    return false;
-  }
-
   async perform() {
     const { actionType, noun } = this.args;
 

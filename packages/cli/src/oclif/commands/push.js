@@ -6,10 +6,6 @@ const BuildCommand = require('./build');
 const { buildAndOrUpload } = require('../../utils/build');
 
 class PushCommand extends ZapierBaseCommand {
-  requiresCore() {
-    return true;
-  }
-
   async perform() {
     await buildAndOrUpload(
       { build: true, upload: true },
@@ -25,6 +21,7 @@ class PushCommand extends ZapierBaseCommand {
   }
 }
 
+PushCommand.skipValidInstallCheck = true;
 PushCommand.flags = BuildCommand.flags;
 PushCommand.description = `Build and upload the current integration.
 
