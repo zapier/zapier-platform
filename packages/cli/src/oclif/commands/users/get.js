@@ -50,5 +50,6 @@ Note that this list of users is NOT a comprehensive list of everyone who is usin
   'zapier user:links'
 )}\` command won't show up here.`;
 UsersListCommand.aliases = ['users:list'];
+UsersListCommand.skipValidInstallCheck = true;
 
 module.exports = UsersListCommand;

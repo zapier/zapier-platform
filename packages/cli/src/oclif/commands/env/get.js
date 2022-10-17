@@ -32,5 +32,6 @@ GetEnvCommand.args = [
 GetEnvCommand.flags = buildFlags({ opts: { format: true } });
 GetEnvCommand.description = `Get environment variables for a version.`;
 GetEnvCommand.examples = [`zapier env:get 1.2.3`];
+GetEnvCommand.skipValidInstallCheck = true;
 
 module.exports = GetEnvCommand;

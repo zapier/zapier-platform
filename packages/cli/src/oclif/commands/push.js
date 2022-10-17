@@ -21,7 +21,7 @@ class PushCommand extends ZapierBaseCommand {
   }
 }
 
-PushCommand.skipValidInstallCheck = true;
+PushCommand.skipValidInstallCheck = false;
 PushCommand.flags = BuildCommand.flags;
 PushCommand.description = `Build and upload the current integration.
 

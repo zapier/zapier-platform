@@ -52,5 +52,6 @@ These users come in three levels:
 Use the \`zapier team:add\` and \`zapier team:remove\` commands to modify your team.
 `;
 TeamListCommand.aliases = ['team:list'];
+TeamListCommand.skipValidInstallCheck = true;
 
 module.exports = TeamListCommand;

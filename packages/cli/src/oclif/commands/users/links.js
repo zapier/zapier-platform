@@ -6,10 +6,8 @@ const { buildFlags } = require('../../buildFlags');
 class UsersLinksCommand extends ZapierBaseCommand {
   async perform() {
     this.startSpinner('Loading links');
-    const {
-      invite_url: inviteUrl,
-      versions_invite_urls: versionInviteUrls,
-    } = await listEndpoint('invitees');
+    const { invite_url: inviteUrl, versions_invite_urls: versionInviteUrls } =
+      await listEndpoint('invitees');
 
     this.stopSpinner();
 
@@ -42,5 +40,6 @@ class UsersLinksCommand extends ZapierBaseCommand {
 
 UsersLinksCommand.flags = buildFlags({ opts: { format: true } });
 UsersLinksCommand.description = `Get a list of links that are used to invite users to your integration.`;
+UsersLinksCommand.skipValidInstallCheck = true;
 
 module.exports = UsersLinksCommand;

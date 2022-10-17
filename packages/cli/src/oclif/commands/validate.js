@@ -108,7 +108,7 @@ class ValidateCommand extends BaseCommand {
   }
 }
 
-ValidateCommand.skipValidInstallCheck = true;
+ValidateCommand.skipValidInstallCheck = false;
 ValidateCommand.flags = buildFlags({
   commandFlags: {
     'without-style': flags.boolean({
