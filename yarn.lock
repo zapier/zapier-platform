@@ -1589,10 +1589,10 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
-"@zapier/secret-scrubber@^1.0.3":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@zapier/secret-scrubber/-/secret-scrubber-1.0.6.tgz#d10fa24c3bea1cbf307997337af4d6bc353230fa"
-  integrity sha512-oaqIMiQ9U0UUd+24UXsx1a+xKmmP5q6SzqwOWpZ51lCS9McvsdEmwCAC6oLf7Q2PApER6At1kbKp1RQ9M5oXTQ==
+"@zapier/secret-scrubber@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@zapier/secret-scrubber/-/secret-scrubber-1.0.7.tgz#afb85623a630b297b92ecc6bdc31714869d5c2e9"
+  integrity sha512-NfqHsMLhjebSsIXOpn6oumkbj0fdViLPNxaQDicj0RTTUEc6LjCzCIj31imI/gVtXcd5oI1fmDJ/M9SQosuH0w==
   dependencies:
     lodash.isplainobject "^4.0.6"
 
