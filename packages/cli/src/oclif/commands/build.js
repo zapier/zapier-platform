@@ -56,6 +56,5 @@ This command does the following:
 * Moves the zip to \`${BUILD_PATH}\` and \`${SOURCE_PATH}\` and deletes the temp folder
 
 This command is typically followed by \`zapier upload\`.`;
-BuildCommand.skipValidInstallCheck = false;
 
 module.exports = BuildCommand;

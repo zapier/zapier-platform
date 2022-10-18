@@ -193,7 +193,6 @@ class DescribeCommand extends BaseCommand {
   }
 }
 
-DescribeCommand.skipValidInstallCheck = false;
 DescribeCommand.flags = buildFlags({ opts: { format: true } });
 DescribeCommand.description = `Describe the current integration.
 

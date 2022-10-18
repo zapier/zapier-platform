@@ -266,7 +266,7 @@ This command also checks the current directory for a linked integration.
 
 A job represents a background process that will be queued up when users execute a "migrate" or "promote" command for the current integration.
 
-Each job will be added to the end of a queue of "promote" and "migration" jobs where the "Job Stage" will then be initialized with "requested". 
+Each job will be added to the end of a queue of "promote" and "migration" jobs where the "Job Stage" will then be initialized with "requested".
 
 Job stages will then move to "estimating", "in_progress" and finally one of four "end" stages: "complete", "aborted", "errored" or "paused".
 
@@ -354,17 +354,17 @@ Since a migration is only for non-breaking changes, users are not emailed about 
 
 We recommend migrating a small subset of users first, via the percent argument, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
-You can migrate a specific user's Zaps by using `--user` (i.e. `zapier migrate 1.0.0 1.0.1 --user=user@example.com`). This will migrate Zaps in any account the user is a member of where the following criteria is met.  
+You can migrate a specific user's Zaps by using `--user` (i.e. `zapier migrate 1.0.0 1.0.1 --user=user@example.com`). This will migrate Zaps in any account the user is a member of where the following criteria is met.
 
-  - The Zap is owned by the user.  
+  - The Zap is owned by the user.
 
-  - The Zap is not shared.  
+  - The Zap is not shared.
 
-  - The integration auth used is not shared.  
+  - The integration auth used is not shared.
 
 Alternatively, you can pass the `--account` flag, (i.e. `zapier migrate 1.0.0 1.0.1 --account=account@example.com`). This will migrate all users' Zaps, Private & Shared, within all accounts for which the specified user is a member.
 
-**The `--account` flag should be used cautiously as it can break shared Zaps for other users in Team or Company accounts.**  
+**The `--account` flag should be used cautiously as it can break shared Zaps for other users in Team or Company accounts.**
 
 You cannot pass both `PERCENT` and `--user` or `--account`.
 
