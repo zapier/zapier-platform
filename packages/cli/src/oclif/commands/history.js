@@ -22,6 +22,7 @@ class HistoryCommand extends BaseCommand {
   }
 }
 
+HistoryCommand.skipValidInstallCheck = true;
 HistoryCommand.flags = buildFlags({ opts: { format: true } });
 HistoryCommand.description = `Get the history of your integration.
 

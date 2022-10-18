@@ -46,5 +46,6 @@ UsersRemoveCommand.description = `Remove a user from all versions of your integr
 
 When this command is run, their Zaps will immediately turn off. They won't be able to use your app again until they're re-invited or it has gone public. In practice, this command isn't run often as it's very disruptive to users.`;
 UsersRemoveCommand.aliases = ['users:delete'];
+UsersRemoveCommand.skipValidInstallCheck = true;
 
 module.exports = UsersRemoveCommand;

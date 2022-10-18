@@ -15,6 +15,7 @@ class UploadCommand extends BaseCommand {
   }
 }
 
+UploadCommand.skipValidInstallCheck = true;
 UploadCommand.flags = buildFlags();
 UploadCommand.description = `Upload the latest build of your integration to Zapier.
 

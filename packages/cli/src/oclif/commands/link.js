@@ -41,6 +41,7 @@ class LinkCommand extends BaseCommand {
   }
 }
 
+LinkCommand.skipValidInstallCheck = true;
 LinkCommand.flags = buildFlags();
 LinkCommand.description = `Link the current directory with an existing integration.
 

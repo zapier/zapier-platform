@@ -70,5 +70,6 @@ Collaborators will immediately lose read access to the integration.
 Subscribers won't receive future email updates.`;
 
 TeamRemoveCommand.aliases = ['team:delete'];
+TeamRemoveCommand.skipValidInstallCheck = true;
 
 module.exports = TeamRemoveCommand;

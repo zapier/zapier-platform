@@ -49,5 +49,6 @@ Zapier will send an email warning users of the deprecation once a date is set, t
 After the deprecation date has passed it will be safe to delete that integration version.
 
 Do not use this if you have non-breaking changes, such as fixing help text.`;
+DeprecateCommand.skipValidInstallCheck = true;
 
 module.exports = DeprecateCommand;

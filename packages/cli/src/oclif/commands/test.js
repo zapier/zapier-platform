@@ -86,6 +86,7 @@ TestCommand.flags = buildFlags({
   },
 });
 
+TestCommand.skipValidInstallCheck = false;
 TestCommand.strict = false;
 TestCommand.examples = [
   'zapier test',

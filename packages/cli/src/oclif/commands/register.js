@@ -24,6 +24,7 @@ class RegisterCommand extends ZapierBaseCommand {
   }
 }
 
+RegisterCommand.skipValidInstallCheck = true;
 RegisterCommand.args = [
   {
     name: 'title',

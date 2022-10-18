@@ -31,6 +31,7 @@ class VersionCommand extends BaseCommand {
   }
 }
 
+VersionCommand.skipValidInstallCheck = true;
 VersionCommand.flags = buildFlags({ opts: { format: true } });
 VersionCommand.description = `List the versions of your integration available for use in the Zapier editor.`;
 

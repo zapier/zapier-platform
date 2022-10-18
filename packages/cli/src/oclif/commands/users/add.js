@@ -60,5 +60,6 @@ When this command is run, we'll send an email to the user inviting them to try y
 
 Invited users will be able to see your integration's name, logo, and description. They'll also be able to create Zaps using any available triggers and actions.`;
 UsersAddCommand.aliases = ['users:invite'];
+UsersAddCommand.skipValidInstallCheck = true;
 
 module.exports = UsersAddCommand;

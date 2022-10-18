@@ -85,7 +85,7 @@ JobsCommand.description = `Lists ongoing migration or promotion jobs for the cur
 
 A job represents a background process that will be queued up when users execute a "migrate" or "promote" command for the current integration.
 
-Each job will be added to the end of a queue of "promote" and "migration" jobs where the "Job Stage" will then be initialized with "requested". 
+Each job will be added to the end of a queue of "promote" and "migration" jobs where the "Job Stage" will then be initialized with "requested".
 
 Job stages will then move to "estimating", "in_progress" and finally one of four "end" stages: "complete", "aborted", "errored" or "paused".
 
@@ -95,4 +95,6 @@ Jobs are returned from oldest to newest.
 `;
 
 JobsCommand.flags = buildFlags({ opts: { format: true } });
+JobsCommand.skipValidInstallCheck = true;
+
 module.exports = JobsCommand;

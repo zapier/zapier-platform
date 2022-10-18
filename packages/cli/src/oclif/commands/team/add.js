@@ -91,5 +91,6 @@ TeamAddCommand.examples = [
   'zapier team:add alfred@wayne.com subscriber "Hey Alfred, check out this app."',
 ];
 TeamAddCommand.aliases = ['team:invite'];
+TeamAddCommand.skipValidInstallCheck = true;
 
 module.exports = TeamAddCommand;

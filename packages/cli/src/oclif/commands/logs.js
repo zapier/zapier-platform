@@ -110,6 +110,7 @@ class LogsCommand extends BaseCommand {
   }
 }
 
+LogsCommand.skipValidInstallCheck = true;
 LogsCommand.flags = buildFlags({
   commandFlags,
   opts: { format: true },

@@ -160,8 +160,7 @@ ScaffoldCommand.args = [
   },
   {
     name: 'noun',
-    help:
-      'What sort of object this action acts on. For example, the name of the new thing to create',
+    help: 'What sort of object this action acts on. For example, the name of the new thing to create',
     required: true,
   },
 ];

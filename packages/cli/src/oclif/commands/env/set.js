@@ -90,5 +90,6 @@ SetEnvCommand.flags = buildFlags();
 SetEnvCommand.description = `Set environment variables for a version.`;
 SetEnvCommand.examples = [`zapier env:set 1.2.3 SECRET=12345 OTHER=4321`];
 SetEnvCommand.strict = false;
+SetEnvCommand.skipValidInstallCheck = true;
 
 module.exports = SetEnvCommand;
