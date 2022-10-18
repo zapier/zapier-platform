@@ -1,6 +1,6 @@
 'use strict';
 
-require('should');
+const should = require('should');
 
 const schema = require('../../src/tools/schema');
 
@@ -78,7 +78,7 @@ describe('schema', () => {
       );
     });
 
-    it('should populate generated searchOrCreate from resource', () => {
+    it('should populate generated searchOrCreates from resource', () => {
       const dummySearch = {
         display: {
           label: 'Find a Foo',
@@ -132,6 +132,69 @@ describe('schema', () => {
         search: 'fooSearch',
         create: 'fooCreate',
       });
+
+      // It's either searchOrCreates or searchAndCreates, not both
+      should.not.exist(compiledApp.searchAndCreates);
+    });
+
+    it('should populate generated searchAndCreates from resource', () => {
+      const dummySearch = {
+        display: {
+          label: 'Find a Foo',
+          description: 'Finds a Foo.',
+        },
+        operation: {
+          perform: () => {
+            return {};
+          },
+        },
+      };
+
+      const dummyCreate = {
+        display: {
+          label: 'Create a Foo',
+          description: 'Creates a Foo.',
+        },
+        operation: {
+          perform: () => {
+            return {};
+          },
+        },
+      };
+
+      const appRaw = {
+        resources: {
+          foo: {
+            key: 'foo',
+            noun: 'Foo',
+            search: dummySearch,
+            create: dummyCreate,
+            outputFields: [
+              { key: 'id', type: 'integer' },
+              { key: 'name', type: 'string' },
+            ],
+            sample: {
+              id: 123,
+              name: 'John Doe',
+            },
+          },
+        },
+        searchAndCreates: {},
+      };
+      const compiledApp = schema.compileApp(appRaw);
+      compiledApp.searchAndCreates.should.have.keys('fooSearch');
+      compiledApp.searchAndCreates.fooSearch.should.eql({
+        key: 'fooSearch',
+        display: {
+          label: 'Find or Create Foo',
+          description: 'Finds a Foo.',
+        },
+        search: 'fooSearch',
+        create: 'fooCreate',
+      });
+
+      // It's either searchOrCreates or searchAndCreates, not both
+      should.not.exist(compiledApp.searchOrCreates);
     });
 
     it('should not make a searchOrCreate if either is hidden', () => {
@@ -279,8 +342,7 @@ describe('schema', () => {
               display: {},
               operation: {
                 performGet: {
-                  url:
-                    'https://local.dev/items-for-search/{{bundle.inputData.id}}',
+                  url: 'https://local.dev/items-for-search/{{bundle.inputData.id}}',
                 },
               },
             },

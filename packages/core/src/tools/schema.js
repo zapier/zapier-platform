@@ -14,8 +14,7 @@ const convertResourceDos = (appRaw) => {
   const triggers = {};
   const searches = {};
   const creates = {};
-  const searchOrCreates = {};
-  const searchAndCreates = {};
+  const searchCreates = {};
 
   _.each(appRaw.resources, (resource) => {
     let search, create, trigger;
@@ -55,17 +54,10 @@ const convertResourceDos = (appRaw) => {
     }
 
     if (search && create && isVisible(search) && isVisible(create)) {
-      // searchAndCreates is an alias for searchOrCreates. Schema validation makes sure only one of them is defined.
-      const searchCreates = appRaw.searchAndCreates
-        ? appRaw.searchAndCreates
-        : appRaw.searchOrCreates;
-
       searchCreates[search.key] = {
         key: `${search.key}`, // For now this is a Zapier editor limitation (has to match search)
         display: {
-          label: appRaw.searchAndCreates
-            ? `Upsert ${resource.noun}`
-            : `Find or Create ${resource.noun}`,
+          label: `Find or Create ${resource.noun}`,
           description: _.get(search, ['display', 'description'], ''),
         },
         search: search.key,
@@ -74,7 +66,16 @@ const convertResourceDos = (appRaw) => {
     }
   });
 
-  return { triggers, searches, creates, searchOrCreates, searchAndCreates };
+  const extras = { triggers, searches, creates };
+
+  // searchAndCreates is an alias for searchOrCreates. Schema validation makes sure only one of them is defined.
+  if (appRaw.searchAndCreates) {
+    extras.searchAndCreates = searchCreates;
+  } else {
+    extras.searchOrCreates = searchCreates;
+  }
+
+  return extras;
 };
 
 /* When a trigger/search/create (action) links to a resource, we walk up to
