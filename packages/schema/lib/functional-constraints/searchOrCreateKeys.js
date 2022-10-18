@@ -160,7 +160,10 @@ const validateSearchOrCreateKeys = (definition) => {
     // Confirm searchOrCreate.updateInputFromSearchOutput contains objects with:
     // keys existing in creates[update].operation.inputFields.key
     // values existing in searches[search].operation.(outputFields.key|sample keys), if they are defined
-    if (searchOrCreateDef.updateInputFromSearchOutput && updateKey) {
+    if (
+      updateKey &&
+      _.isPlainObject(searchOrCreateDef.updateInputFromSearchOutput)
+    ) {
       const updateInputOptionHint = _.isEmpty(updateInputKeys)
         ? '(no "key" found in inputFields)'
         : `(options: ${updateInputKeys})`;
@@ -202,7 +205,10 @@ const validateSearchOrCreateKeys = (definition) => {
     // Confirm searchOrCreate.searchUniqueInputToOutputConstraint contains objects with:
     // keys existing in searches[search].operation.inputFields.key
     // values existing in searches[search].operation.(outputFields.key|sample keys), if they are defined
-    if (searchOrCreateDef.searchUniqueInputToOutputConstraint && updateKey) {
+    if (
+      updateKey &&
+      _.isPlainObject(searchOrCreateDef.searchUniqueInputToOutputConstraint)
+    ) {
       const searchInputOptionHint = _.isEmpty(searchInputKeys)
         ? '(no "key" found in inputFields)'
         : `(options: ${searchInputKeys})`;

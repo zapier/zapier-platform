@@ -1242,4 +1242,68 @@ describe('searchOrCreateKeys', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(0);
   });
+
+  it('should only give type errors if searchOrCreate.updateInputFromSearchOutput and searchOrCreate.searchUniqueInputToOutputConstraint are not objects', () => {
+    const definition = {
+      version: '1.0.0',
+      platformVersion: '1.0.0',
+      creates: {
+        add_product: {
+          key: 'add_product',
+          noun: 'Product',
+          display: {
+            label: 'Create Product',
+            description: 'Creates a new product.',
+          },
+          operation: { perform: '$func$2$f$' },
+        },
+        update_product: {
+          key: 'update_product',
+          noun: 'Product',
+          display: {
+            label: 'Update Product',
+            description: 'Updates an existing product.',
+          },
+          operation: { perform: '$func$2$f$' },
+        },
+      },
+      searches: {
+        find_product: {
+          key: 'find_product',
+          noun: 'Product',
+          display: {
+            label: 'Search Product',
+            description: 'Searches for an existing product.',
+          },
+          operation: { perform: '$func$2$f$' },
+        },
+      },
+      searchOrCreates: {
+        find_product: {
+          key: 'find_product',
+          display: {
+            label: 'Find, Create, or Update Product',
+            description: 'Finds, creates, or updates a product.',
+          },
+          search: 'find_product',
+          create: 'add_product',
+          update: 'update_product',
+          updateInputFromSearchOutput: 'a_string',
+          searchUniqueInputToOutputConstraint: ['title'],
+        },
+      },
+    };
+
+    const results = schema.validateAppDefinition(definition);
+
+    // If updateInputFromSearchOutput or searchUniqueInputToOutputConstraint has
+    // the wrong type, we don't want to validate its content.
+    results.errors.should.have.length(2);
+    results.errors[0].stack.should.eql(
+      'instance.searchOrCreates.find_product.updateInputFromSearchOutput is not of a type(s) object'
+    );
+    results.errors[1].stack.should.eql(
+      'instance.searchOrCreates.find_product.searchUniqueInputToOutputConstraint is not of a type(s) object'
+    );
+  });
 });
