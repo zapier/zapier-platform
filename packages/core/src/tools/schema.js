@@ -14,7 +14,7 @@ const convertResourceDos = (appRaw) => {
   const triggers = {};
   const searches = {};
   const creates = {};
-  const searchOrCreates = {};
+  const searchCreates = {};
 
   _.each(appRaw.resources, (resource) => {
     let search, create, trigger;
@@ -54,8 +54,7 @@ const convertResourceDos = (appRaw) => {
     }
 
     if (search && create && isVisible(search) && isVisible(create)) {
-      const searchOrCreate = {
-        // key: `${resource.key}SearchOrCreate`,
+      searchCreates[search.key] = {
         key: `${search.key}`, // For now this is a Zapier editor limitation (has to match search)
         display: {
           label: `Find or Create ${resource.noun}`,
@@ -64,11 +63,19 @@ const convertResourceDos = (appRaw) => {
         search: search.key,
         create: create.key,
       };
-      searchOrCreates[searchOrCreate.key] = searchOrCreate;
     }
   });
 
-  return { triggers, searches, creates, searchOrCreates };
+  const extras = { triggers, searches, creates };
+
+  // searchAndCreates is an alias for searchOrCreates. Schema validation makes sure only one of them is defined.
+  if (appRaw.searchAndCreates) {
+    extras.searchAndCreates = searchCreates;
+  } else {
+    extras.searchOrCreates = searchCreates;
+  }
+
+  return extras;
 };
 
 /* When a trigger/search/create (action) links to a resource, we walk up to
@@ -106,7 +113,13 @@ const compileApp = (appRaw) => {
   appRaw = schemaTools.findSourceRequireFunctions(appRaw);
   const extras = convertResourceDos(appRaw);
 
-  const actions = ['triggers', 'searches', 'creates', 'searchOrCreates'];
+  const actions = [
+    'triggers',
+    'searches',
+    'creates',
+    'searchOrCreates',
+    'searchAndCreates',
+  ];
   let problemKeys = [];
 
   actions.forEach((a) => {
@@ -132,11 +145,21 @@ const compileApp = (appRaw) => {
   appRaw.triggers = _.extend({}, extras.triggers, appRaw.triggers || {});
   appRaw.searches = _.extend({}, extras.searches, appRaw.searches || {});
   appRaw.creates = _.extend({}, extras.creates, appRaw.creates || {});
-  appRaw.searchOrCreates = _.extend(
-    {},
-    extras.searchOrCreates,
-    appRaw.searchOrCreates || {}
-  );
+
+  // searchAndCreates is an alias for searchOrCreates. Schema validation makes sure only one of them is defined.
+  // If the searchAndCreates key exists, we use it and avoid adding a searchOrCreates key to the appRaw object.
+  // Otherwise, we add a searchOrCreates object to the appRaw object, which defaults to an empty object.
+  if (appRaw.searchAndCreates) {
+    appRaw.searchAndCreates = {
+      ...extras.searchAndCreates,
+      ...appRaw.searchAndCreates,
+    };
+  } else {
+    appRaw.searchOrCreates = {
+      ...extras.searchOrCreates,
+      ...appRaw.searchOrCreates,
+    };
+  }
 
   _.each(appRaw.triggers, (trigger) => {
     appRaw.triggers[trigger.key] = copyPropertiesFromResource(

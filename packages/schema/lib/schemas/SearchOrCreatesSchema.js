@@ -33,6 +33,21 @@ module.exports = makeSchema(
           create: 'createWidget',
         },
       },
+      {
+        searchAndCreateWidgets: {
+          key: 'searchAndCreateWidgets',
+          display: {
+            label: 'Search and Create Widgets',
+            description:
+              'Searches for a widget matching the provided query, creates one if it does not exist or updates existing one if found.',
+            important: true,
+            hidden: false,
+          },
+          search: 'searchWidgets',
+          create: 'createWidget',
+          update: 'updateWidget',
+        },
+      },
     ],
     antiExamples: [
       {
