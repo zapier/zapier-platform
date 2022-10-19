@@ -1940,7 +1940,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>On each trigger, search, or create in the <code>operation</code> directive - you can provide an array of objects as fields under the <code>inputFields</code>. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a &quot;Create Contact&quot; action with fields like &quot;First name&quot;, &quot;Last name&quot;, &quot;Email&quot;, etc. These fields will be able to accept input from previous steps in a Zap, for example:</p><p><img src="https://cdn.zappy.app/52721a3cb202446b7c298e303b710471.gif" alt="gif of setting up an action field in Zap Editor"></p><p>You can find more details about setting action fields from a user perspective in <a href="https://zapier.com/help/creating-zap/#set-up-action-template">our help documentation</a>.</p><p>Those fields have various options you can provide, here is a succinct example:</p>
+      <p>On each trigger, search, or create in the <code>operation</code> directive, you can provide fields as an array of objects under <code>inputFields</code>. Input Fields are what your users see in Zapier when setting up your app&apos;s triggers and actions. For example, you might have a &quot;Create Contact&quot; action with fields like &quot;First name&quot;, &quot;Last name&quot;, &quot;Email&quot;, etc. These fields will be able to accept input from the user, or from previous steps in a Zap. For example:</p><p><img src="https://cdn.zappy.app/52721a3cb202446b7c298e303b710471.gif" alt="gif of setting up an action field in Zap Editor"></p><p>You can find more details about setting action fields from a user perspective in <a href="https://zapier.com/help/creating-zap/">our help documentation</a>.</p><p>Those fields have various options you can provide. Here is a brief example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
@@ -1970,6 +1970,73 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 };
 
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Notably, fields come in several different types, which may look and act differently in the Zap editor. The default field display is a single-line input field.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>String</td>
+<td>Accepts text input.</td>
+</tr>
+<tr>
+<td>Text</td>
+<td>Displays large, <textarea>-style entry box, accepts text input.</textarea></td>
+</tr>
+<tr>
+<td>Code</td>
+<td>Displays large, <textarea>-style box with a fixed-width font, accepts text input.</textarea></td>
+</tr>
+<tr>
+<td>Integer</td>
+<td>Accepts integer number values.</td>
+</tr>
+<tr>
+<td>Number</td>
+<td>Accepts any numeric value, including decimal numbers.</td>
+</tr>
+<tr>
+<td>Boolean</td>
+<td>Displays dropdown menu offering true and false options. Passes along <code>true</code> or <code>false</code>.</td>
+</tr>
+<tr>
+<td>Datetime</td>
+<td>Accepts both <a href="https://help.zapier.com/hc/en-us/articles/8496259603341-Different-field-types-in-Zaps#date-time-fields-0-0">precise and human-readable date-time values</a>. Passes along an ISO-formatted time string.</td>
+</tr>
+<tr>
+<td>File</td>
+<td>Accepts a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a text file will be generated.</td>
+</tr>
+<tr>
+<td>Password</td>
+<td>Displays entered characters as hidden, accepts text input. Does not accept input from previous steps.</td>
+</tr>
+<tr>
+<td>Copy</td>
+<td>Does not allow users enter data. Shows the value of the Markdown-formatted Help Text for the field as a rich text note in the Zap editor. Good for important notices to users.</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
