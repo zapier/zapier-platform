@@ -4,7 +4,7 @@ _release `2022-10-24`_
 
 ### cli
 
-- :nail_care: Now you don't have install zapier-platform-core to run [most of the commands](https://github.com/zapier/zapier-platform/pull/579#pullrequestreview-1145066736) ([#579](https://github.com/zapier/zapier-platform/pull/579))
+- :nail_care: Now you don't have to install zapier-platform-core to run [most of the commands](https://github.com/zapier/zapier-platform/pull/579#pullrequestreview-1145066736) ([#579](https://github.com/zapier/zapier-platform/pull/579))
 
 ### core
 
