@@ -1082,7 +1082,7 @@ const App = {
 
 ```
 
-Notably, fields come in several different types, which may look and act differently in the Zap editor. The default field display is a single-line input field.
+Notably, fields come in different types, which may look and act differently in the Zap editor. The default field display is a single-line input field.
 
 | Type | Behavior |
 |------|----------|
