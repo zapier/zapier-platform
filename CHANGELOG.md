@@ -1,3 +1,21 @@
+## 12.2.0
+
+_release `2022-10-27`_
+
+### cli
+
+- :nail_care: Now you don't have to install zapier-platform-core to run [most of the commands](https://github.com/zapier/zapier-platform/pull/579#pullrequestreview-1145066736) ([#579](https://github.com/zapier/zapier-platform/pull/579))
+
+### core
+
+- :hammer: Dependency updates
+  - Bump secret-scrubber from 1.0.3 to 1.0.7 ([#583](https://github.com/zapier/zapier-platform/pull/583))
+
+### schema
+
+- :test_tube: "Upsert" feature: Now a [search-or-create](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@12.2.0/packages/schema/docs/build/schema.md#searchorcreateschema) can include an `update` action that Zapier should call to update an existing object. **EXPERIMENTAL: This is currently an internal feature and subject to change. Don't use it yet.** ([#584](https://github.com/zapier/zapier-platform/pull/584))
+- :scroll: Clarify how fields accept `file` types ([#582](https://github.com/zapier/zapier-platform/pull/582))
+
 ## 12.1.0
 
 _released `2022-09-29`_
