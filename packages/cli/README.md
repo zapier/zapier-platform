@@ -1086,16 +1086,16 @@ Notably, fields come in different types, which may look and act differently in t
 
 | Type | Behavior |
 |------|----------|
-| String | Accepts text input. |
-| Text | Displays large, <textarea>-style entry box, accepts text input. |
-| Code | Displays large, <textarea>-style box with a fixed-width font, accepts text input. |
-| Integer | Accepts integer number values. |
-| Number | Accepts any numeric value, including decimal numbers. |
-| Boolean | Displays dropdown menu offering true and false options. Passes along `true` or `false`.  |
-| Datetime | Accepts both [precise and human-readable date-time values](https://help.zapier.com/hc/en-us/articles/8496259603341-Different-field-types-in-Zaps#date-time-fields-0-0). Passes along an ISO-formatted time string. |
-| File | Accepts a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a text file will be generated. |
-| Password | Displays entered characters as hidden, accepts text input. Does not accept input from previous steps. |
-| Copy | Does not allow users enter data. Shows the value of the Markdown-formatted Help Text for the field as a rich text note in the Zap editor. Good for important notices to users. |
+| `string` | Accepts text input. |
+| `text` | Displays large, `<textarea>`-style entry box, accepts text input. |
+| `code` | Displays large, `<textarea>`-style box with a fixed-width font, accepts text input. |
+| `integer` | Accepts integer number values. |
+| `number` | Accepts any numeric value, including decimal numbers. |
+| `boolean` | Displays dropdown menu offering true and false options. Passes along `true` or `false`.  |
+| `datetime` | Accepts both [precise and human-readable date-time values](https://help.zapier.com/hc/en-us/articles/8496259603341-Different-field-types-in-Zaps#date-time-fields-0-0). Passes along an ISO-formatted time string. |
+| `file` | Accepts a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a text file will be generated. |
+| `password` | Displays entered characters as hidden, accepts text input. Does not accept input from previous steps. |
+| `copy` | Does not allow users enter data. Shows the value of the Markdown-formatted Help Text for the field as a rich text note in the Zap editor. Good for important notices to users. |
 
 You can find more details on the different field schema options at [our Field Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#fieldschema).
 
