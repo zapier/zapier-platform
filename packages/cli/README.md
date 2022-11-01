@@ -1049,13 +1049,13 @@ In cases where Zapier needs to show an example record to the user, but we are un
 
 ## Input Fields
 
-On each trigger, search, or create in the `operation` directive - you can provide an array of objects as fields under the `inputFields`. Input Fields are what your users would see in the main Zapier user interface. For example, you might have a "Create Contact" action with fields like "First name", "Last name", "Email", etc. These fields will be able to accept input from previous steps in a Zap, for example:
+On each trigger, search, or create in the `operation` directive, you can provide fields as an array of objects under `inputFields`. Input Fields are what your users see in Zapier when setting up your app's triggers and actions. For example, you might have a "Create Contact" action with fields like "First name", "Last name", "Email", etc. These fields will be able to accept input from the user, or from previous steps in a Zap. For example:
 
 ![gif of setting up an action field in Zap Editor](https://cdn.zappy.app/52721a3cb202446b7c298e303b710471.gif)
 
-You can find more details about setting action fields from a user perspective in [our help documentation](https://zapier.com/help/creating-zap/#set-up-action-template).
+You can find more details about setting action fields from a user perspective in [our help documentation](https://zapier.com/help/creating-zap/).
 
-Those fields have various options you can provide, here is a succinct example:
+Those fields have various options you can provide. Here is a brief example:
 
 ```js
 const App = {
@@ -1085,6 +1085,21 @@ const App = {
 };
 
 ```
+
+Notably, fields come in different types, which may look and act differently in the Zap editor. The default field display is a single-line input field.
+
+| Type | Behavior |
+|------|----------|
+| `string` | Accepts text input. |
+| `text` | Displays large, `<textarea>`-style entry box, accepts text input. |
+| `code` | Displays large, `<textarea>`-style box with a fixed-width font, accepts text input. |
+| `integer` | Accepts integer number values. |
+| `number` | Accepts any numeric value, including decimal numbers. |
+| `boolean` | Displays dropdown menu offering true and false options. Passes along `true` or `false`.  |
+| `datetime` | Accepts both [precise and human-readable date-time values](https://help.zapier.com/hc/en-us/articles/8496259603341-Different-field-types-in-Zaps#date-time-fields-0-0). Passes along an ISO-formatted time string. |
+| `file` | Accepts a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a text file will be generated. |
+| `password` | Displays entered characters as hidden, accepts text input. Does not accept input from previous steps. |
+| `copy` | Does not allow users enter data. Shows the value of the Markdown-formatted Help Text for the field as a rich text note in the Zap editor. Good for important notices to users. |
 
 You can find more details on the different field schema options at [our Field Schema](https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#fieldschema).
 
