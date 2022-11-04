@@ -26,6 +26,8 @@ const {
   isSensitiveKey,
 } = require('@zapier/secret-scrubber/lib/convenience');
 
+const { SQSClient, SendMessageCommand } = require('@aws-sdk/client-sqs');
+
 // The payload size per request to stream logs. This should be slighly lower
 // than the limit (16 MB) on the server side.
 const LOG_STREAM_BYTES_LIMIT = 15 * 1024 * 1024;
@@ -352,22 +354,51 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
       // anything else you want to do to finish an invocation
     });
 */
+
+const PRESET_FIELDS = [
+  'log_type',
+  'request_type',
+  'request_url',
+  'request_method',
+  'request_headers',
+  'request_data',
+  'request_duration_ms',
+  'response_headers',
+  'response_status_code',
+  'response_content',
+];
+
 const createLogger = (event, options) => {
-  options = options || {};
-  event = event || {};
+  const sqsClient = new SQSClient({ region: 'us-east-1' });
 
-  options = _.defaults(options, {
-    endpoint: process.env.LOGGING_ENDPOINT || DEFAULT_LOGGING_HTTP_ENDPOINT,
-    apiKey: process.env.LOGGING_API_KEY || DEFAULT_LOGGING_HTTP_API_KEY,
-    token: process.env.LOGGING_TOKEN || event.token,
-  });
+  const logger = async (message, data) => {
+    data = data || {};
+    const params = {
+      // { NAME: { DataType: 'String', StringValue: VALUE } }
+      MessageAttributes: PRESET_FIELDS.reduce((attrs, k) => {
+        const value = data[k];
+        if (value) {
+          attrs[k] = {
+            DataType: 'String',
+            StringValue: data[k],
+          };
+        }
+        return attrs;
+      }, {}),
+      MessageBody: message,
+      QueueUrl: process.env.LOGGING_ENDPOINT,
+    };
 
-  const logStreamFactory = new LogStreamFactory();
-  const logger = sendLog.bind(undefined, logStreamFactory, options, event);
+    console.log(message);
 
-  logger.end = async (timeoutToAbort = DEFAULT_LOGGER_TIMEOUT) => {
-    return logStreamFactory.end(timeoutToAbort);
+    try {
+      const result = await sqsClient.send(new SendMessageCommand(params));
+      console.log('Success. MessageID:', result.MessageId);
+    } catch (err) {
+      console.log('Error', err);
+    }
   };
+
   return logger;
 };
 

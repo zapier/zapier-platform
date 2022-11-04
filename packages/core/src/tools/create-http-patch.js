@@ -41,7 +41,10 @@ const createHttpPatch = (event) => {
         process.env.LOGGING_ENDPOINT || constants.DEFAULT_LOGGING_HTTP_ENDPOINT;
 
       // Ignore logger requests
-      if (requestUrl.indexOf(loggerUrl) !== -1) {
+      if (
+        requestUrl.indexOf(loggerUrl) !== -1 ||
+        requestUrl.includes('us-east-1.amazonaws.com')
+      ) {
         return originalRequest(options, callback);
       }
 

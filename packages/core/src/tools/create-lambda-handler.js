@@ -158,12 +158,10 @@ const createLambdaHandler = (appRawOrPath) => {
 
     let isCallbackCalled = false;
     const callbackOnce = (err, resp) => {
-      logger.end().finally(() => {
-        if (!isCallbackCalled) {
-          isCallbackCalled = true;
-          callback(err, resp);
-        }
-      });
+      if (!isCallbackCalled) {
+        isCallbackCalled = true;
+        callback(err, resp);
+      }
     };
 
     const logErrorAndCallbackOnce = (logMsg, logData, err) => {

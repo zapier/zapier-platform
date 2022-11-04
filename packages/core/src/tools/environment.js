@@ -24,10 +24,10 @@ const cleanEnvironment = () => {
     process.env.AWS_LAMBDA_FUNCTION_VERSION ||
     process.env.AWS_LAMBDA_FUNCTION_NAME
   ) {
-    delete process.env.AWS_ACCESS_KEY_ID;
-    delete process.env.AWS_SECURITY_TOKEN;
-    delete process.env.AWS_SESSION_TOKEN;
-    delete process.env.AWS_SECRET_ACCESS_KEY;
+    // delete process.env.AWS_ACCESS_KEY_ID;
+    // delete process.env.AWS_SECURITY_TOKEN;
+    // delete process.env.AWS_SESSION_TOKEN;
+    // delete process.env.AWS_SECRET_ACCESS_KEY;
   }
 
   // Lambda may reuse container, which leaves leftovers in process.env. Let's clean
