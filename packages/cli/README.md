@@ -838,8 +838,10 @@ const authentication = {
   fields: [
     { key: 'subdomain', type: 'string', required: true, default: 'app' },
     // For OAuth2 we store `access_token` and `refresh_token` automatically
-    // in `bundle.authData` for future use. If you need to save/use something
-    // that the user shouldn't need to type/choose, add a "computed" field, like:
+    // in `bundle.authData` for future use. Note, `client_id` and `client_secret` 
+    // are reserved and cannot be used as keys for input form fields. 
+    // If you need to save/use something that the user shouldn't need to type/choose, 
+    // add a "computed" field, like:
     // {key: 'user_id': type: 'string', required: false, computed: true}
     // And remember to return it in oauth2Config.getAccessToken/refreshAccessToken
   ],
