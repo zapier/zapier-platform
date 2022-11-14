@@ -1600,10 +1600,8 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   <span class="hljs-attr">fields</span>: [
     { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> },
     <span class="hljs-comment">// For OAuth2 we store `access_token` and `refresh_token` automatically</span>
-    <span class="hljs-comment">// in `bundle.authData` for future use. Note, `client_id` and `client_secret` </span>
-    <span class="hljs-comment">// are reserved and cannot be used as keys for input form fields. </span>
-    <span class="hljs-comment">// If you need to save/use something that the user shouldn&apos;t need to type/choose, </span>
-    <span class="hljs-comment">// add a &quot;computed&quot; field, like:</span>
+    <span class="hljs-comment">// in `bundle.authData` for future use. If you need to save/use something</span>
+    <span class="hljs-comment">// that the user shouldn&apos;t need to type/choose, add a &quot;computed&quot; field, like:</span>
     <span class="hljs-comment">// {key: &apos;user_id&apos;: type: &apos;string&apos;, required: false, computed: true}</span>
     <span class="hljs-comment">// And remember to return it in oauth2Config.getAccessToken/refreshAccessToken</span>
   ],
