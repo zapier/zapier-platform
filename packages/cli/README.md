@@ -2464,7 +2464,7 @@ An example can be found in the [Stashing Files](#stashing-files) section.
 
 What makes `z.dehydrateFile` different from `z.dehydrate` has to do with efficiency and when Zapier chooses to hydrate data. Knowing which pointers give us back files helps us delay downloading files until it's absolutely necessary. Not only will it help avoid unnecessary file downloads, it can also prevent errors if the file has a limited availability. (Stashing files, described below, can also help with that situation.)
 
-A good example is when users are creating Zaps in the Zap Editor. If a pointer is made by `z.dehydrate`, the Zap Editor will hydrate the data immediately after pulling in samples. This allows users to map fields from the hydrated data into the subsequent steps of the Zap. If, however, the pointer is made by `z.dehydrateFile`, the Zap Editor will wait to hydrate the file, and will display a placeholder instead. There's nothing in binary file data for users to map in the subsequent steps.
+A good example is when users are creating Zaps in the Zap Editor. If a pointer is made by `z.dehydrate`, the Zap Editor will hydrate the data immediately after pulling in samples. This allows users to map fields from the hydrated data into the subsequent steps of the Zap. If, however, the pointer is made by `z.dehydrateFile`, the Zap Editor will wait to hydrate the file, and will display a placeholder instead. There's nothing inside binary file data for users to map in the subsequent steps.
 
 > `z.dehydrateFile(func, inputData)` was added in v7.3.0. We used to recommend using `z.dehydrate(func, inputData)` for files, but we now recommend changing it to `z.dehydrateFile(func, inputData)` for a better user experience.
 
