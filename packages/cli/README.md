@@ -481,7 +481,7 @@ const App = {
 
 ### Digest
 
-*New in v7.4.0.*
+*Added in v7.4.0.*
 
 The setup and user experience of Digest Auth is identical to Basic Auth. Users provide Zapier their username and password, and Zapier handles all the nonce and quality of protection details automatically.
 
@@ -638,7 +638,7 @@ For Session auth, the function that fetches the additional authentication data n
 
 ### OAuth1
 
-*New in `v7.5.0`.*
+*Added in `v7.5.0`.*
 
 Zapier's OAuth1 implementation matches [Twitter](https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a) and [Trello](https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth) implementations of the 3-legged OAuth flow.
 
@@ -1679,7 +1679,7 @@ We provide several methods off of the `z` object, which is provided as the first
 
 The available errors are:
 
-* `Error` (_new in v9.3.0_) - Stops the current operation, allowing for (auto) replay. Read more on [General Errors](#general-errors)
+* `Error` (_added in v9.3.0_) - Stops the current operation, allowing for (auto) replay. Read more on [General Errors](#general-errors)
 * `HaltedError` - Stops current operation, but will never turn off Zap. Read more on [Halting Execution](#halting-execution)
 * `ExpiredAuthError` - Turns off Zap and emails user to manually reconnect. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
 * `RefreshAuthError` - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on [Stale Authentication Credentials](#stale-authentication-credentials)
@@ -2283,7 +2283,7 @@ Ensure you're handling errors correctly for your platform version. The latest re
 * `agent`: Node.js `http.Agent` instance, allows custom proxy, certificate etc. Default is `null`.
 * `timeout`: request / response timeout in ms. Set to `0` to disable (OS limit still applies), timeout reset on `redirect`. Default is `0` (disabled).
 * `size`: maximum response body size in bytes. Set to `0` to disable. Default is `0` (disabled).
-* `skipThrowForStatus` (_new in v10.0.0_): don't call `response.throwForStatus()` before resolving the request with `response`. See [HTTP Response Object](#http-response-object).
+* `skipThrowForStatus` (_added in v10.0.0_): don't call `response.throwForStatus()` before resolving the request with `response`. See [HTTP Response Object](#http-response-object).
 
 ```js
 const response = await z.request({
@@ -2313,10 +2313,10 @@ The response object returned by `z.request([url], options)` supports the followi
 
 * `status`: The response status code, i.e. `200`, `404`, etc.
 * `content`: The response content as a String. For Buffer, try `options.raw = true`.
-* `data` (_new in v10.0.0_): The response content as an object if the content is JSON or `application/x-www-form-urlencoded` (`undefined` otherwise).
+* `data` (_added in v10.0.0_): The response content as an object if the content is JSON or `application/x-www-form-urlencoded` (`undefined` otherwise).
 * `headers`: Response headers object. The header keys are all lower case.
 * `getHeader(key)`: Retrieve response header, case insensitive: `response.getHeader('My-Header')`
-* `skipThrowForStatus` (_new in v10.0.0_): don't call `throwForStatus()` before resolving the request with this response.
+* `skipThrowForStatus` (_added in v10.0.0_): don't call `throwForStatus()` before resolving the request with this response.
 * `throwForStatus()`: Throws an error if `400 <= statusCode < 600`.
 * `request`: The original request options object (see above).
 
@@ -2456,21 +2456,23 @@ movie.details = {
 
 ### File Dehydration
 
-*New in v7.3.0.*
+*Available in v7.3.0 and above.*
 
-The method `z.dehydrateFile(func, inputData)` allows you to download a file lazily. It takes the identical arguments as `z.dehydrate(func, inputData)` does.
+The method `z.dehydrateFile(func, inputData)` allows you to download a file lazily. It takes the same arguments as `z.dehydrate(func, inputData)` does, but is recommended when the data is a file.
 
 An example can be found in the [Stashing Files](#stashing-files) section.
 
-What makes `z.dehydrateFile` different from `z.dehydrate` has to do with efficiency and when Zapier chooses to hydrate data. Knowing which pointers give us back files helps us delay downloading files until its absolutely necessary. A good example is users creating Zaps in the Zap Editor. If a pointer is made by `z.dehydrate`, the Zap Editor will hydrate the data immediately after pulling in samples. This allows users to map fields from the hydrated data into the subsequent steps of the Zap. If, however, the pointer is made by `z.dehydrateFile`, the Zap Editor will wait to hydrate the file. There's nothing in binary file data for users to map in the subsequent steps.
+What makes `z.dehydrateFile` different from `z.dehydrate` has to do with efficiency and when Zapier chooses to hydrate data. Knowing which pointers give us back files helps us delay downloading files until it's absolutely necessary. Not only will it help avoid unnecessary file downloads, it can also prevent errors if the file has a limited availability. (Stashing files, described below, can also help with that situation.)
 
-> `z.dehydrateFile(func, inputData)` is new in v7.3.0. We used to recommend to use `z.dehydrate(func, inputData)` for files, but it's not the case anymore. Please change it to `z.dehydrateFile(func, inputData)` for a better user experience.
+A good example is when users are creating Zaps in the Zap Editor. If a pointer is made by `z.dehydrate`, the Zap Editor will hydrate the data immediately after pulling in samples. This allows users to map fields from the hydrated data into the subsequent steps of the Zap. If, however, the pointer is made by `z.dehydrateFile`, the Zap Editor will wait to hydrate the file, and will display a placeholder instead. There's nothing in binary file data for users to map in the subsequent steps.
+
+> `z.dehydrateFile(func, inputData)` was added in v7.3.0. We used to recommend using `z.dehydrate(func, inputData)` for files, but we now recommend changing it to `z.dehydrateFile(func, inputData)` for a better user experience.
 
 ## Stashing Files
 
 It can be expensive to download and stream files or they can require complex handshakes to authorize downloads - so we provide a helpful stash routine that will take any `String`, `Buffer` or `Stream` and return a URL file pointer suitable for returning from triggers, searches, creates, etc.
 
-The interface `z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])` takes a single required argument - the extra three arguments will be automatically populated in most cases. For example - a full example is this:
+The interface `z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])` takes a single required argument - the extra three arguments will be automatically populated in most cases. Here's a full example:
 
 ```js
 const content = 'Hello world!';
@@ -2551,11 +2553,15 @@ module.exports = App;
 
 ## Logging
 
-There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the `z.console.log` method ([see below for details](#console-logging)). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use `z.request([url], options)` or shorthand request objects).
+To view the logs for your application, use the `zapier logs` command.
 
-To view the logs for your application, use the `zapier logs` command. There are three types of logs, `http` (logged automatically by Zapier on HTTP requests), `bundle` (logged automatically on every method execution), and `console` (manual logs via `z.console.log()` statements).
+There are three types of logs:
 
-For advanced logging options including only displaying the logs for a certain user or app version, look at the help for the logs command:
+* `http`: logged automatically by Zapier on HTTP requests
+* `bundle`: logged automatically on every method execution
+* `console`: manual logs via `z.console.log()` statements ([see below for details](#console-logging))
+
+For advanced logging options, including only displaying the logs for a certain user or app version, look at the help for the logs command:
 
 ```bash
 zapier help logs
@@ -2569,7 +2575,7 @@ To manually print a log statement in your code, use `z.console.log`:
 z.console.log('Here are the input fields', bundle.inputData);
 ```
 
-The `z.console` object has all the same methods and works just like the Node.js [`Console`](https://nodejs.org/docs/latest-v6.x/api/console.html) class - the only difference is we'll log to our distributed datastore and you can view them via `zapier logs` (more below).
+The `z.console` object has all the same methods and works just like the Node.js [`Console`](https://nodejs.org/docs/latest-v6.x/api/console.html) class - the only difference is we'll log to our distributed datastore and you can view the logs via `zapier logs` (more below).
 
 ### Viewing Console Logs
 
@@ -2589,7 +2595,7 @@ zapier logs --type=bundle
 
 ### HTTP Logging
 
-If you are using the `z.request()` shortcut that we provide - HTTP logging is handled automatically for you. For example:
+If you are using the `z.request()` method that we provide, HTTP logging is handled automatically for you. For example:
 
 ```js
 z.request('https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
@@ -2598,6 +2604,8 @@ z.request('https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
     return res;
   })
 ```
+
+HTTP logging will often work with other methods of making requests as well, but if you're using another method and having trouble seeing logs, try using `z.request()`.
 
 ### Viewing HTTP Logs
 
@@ -2638,7 +2646,7 @@ errors as 200s with a payload that describes the error.
 
 Example: `throw new z.errors.Error('Contact name is too long.', 'InvalidData', 400);`
 
-> `z.errors.Error` is new in v9.3.0. If you're on an older version of `zapier-platform-core`, throw a standard JavaScript `Error` instead, such as `throw new Error('A user-friendly message')`.
+> `z.errors.Error` was added in v9.3.0. If you're on an older version of `zapier-platform-core`, throw a standard JavaScript `Error` instead, such as `throw new Error('A user-friendly message')`.
 
 A couple best practices to keep in mind:
 

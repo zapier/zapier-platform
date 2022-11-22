@@ -1199,7 +1199,7 @@ zapier convert 1234 --version 1.0.1 my-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><em>New in v7.4.0.</em></p><p>The setup and user experience of Digest Auth is identical to Basic Auth. Users provide Zapier their username and password, and Zapier handles all the nonce and quality of protection details automatically.</p><blockquote>
+      <p><em>Added in v7.4.0.</em></p><p>The setup and user experience of Digest Auth is identical to Basic Auth. Users provide Zapier their username and password, and Zapier handles all the nonce and quality of protection details automatically.</p><blockquote>
 <p>To create a new integration with digest authentication, run <code>zapier init [your app name] --template digest-auth</code>. You can also review an example of that code <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/digest-auth">here</a>.</p>
 </blockquote><blockquote>
 <p>Limitation: Currently, MD5-sess and SHA are not implemented. Only the MD5 algorithm is supported. In addition, server nonces are not reused. That means for every <code>z.request</code> call, Zapier will send an additional request beforehand to get the server nonce.</p>
@@ -1394,7 +1394,7 @@ zapier convert 1234 --version 1.0.1 my-app
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><em>New in <code>v7.5.0</code>.</em></p><p>Zapier&apos;s OAuth1 implementation matches <a href="https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a">Twitter</a> and <a href="https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth">Trello</a> implementations of the 3-legged OAuth flow.</p><blockquote>
+      <p><em>Added in <code>v7.5.0</code>.</em></p><p>Zapier&apos;s OAuth1 implementation matches <a href="https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a">Twitter</a> and <a href="https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth">Trello</a> implementations of the 3-legged OAuth flow.</p><blockquote>
 <p>To create a new integration with OAuth1, run <code>zapier init [your app name] --template oauth1-trello</code>. You can also check out <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-trello">oauth1-trello</a>, <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-tumblr">oauth1-tumblr</a>, and <a href="https://github.com/zapier/zapier-platform/tree/master/example-apps/oauth1-twitter">oauth1-twitter</a> for working example apps with OAuth1.</p>
 </blockquote><p>The flow works like this:</p><ol>
 <li>Zapier makes a call to your API requesting a &quot;request token&quot; (also known as &quot;temporary credentials&quot;).</li>
@@ -2840,7 +2840,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p><code>z.errors</code> is a collection error classes that you can throw in your code, like <code>throw new z.errors.HaltedError(&apos;...&apos;)</code>.</p><p>The available errors are:</p><ul>
-<li><code>Error</code> (<em>new in v9.3.0</em>) - Stops the current operation, allowing for (auto) replay. Read more on <a href="#general-errors">General Errors</a></li>
+<li><code>Error</code> (<em>added in v9.3.0</em>) - Stops the current operation, allowing for (auto) replay. Read more on <a href="#general-errors">General Errors</a></li>
 <li><code>HaltedError</code> - Stops current operation, but will never turn off Zap. Read more on <a href="#halting-execution">Halting Execution</a></li>
 <li><code>ExpiredAuthError</code> - Turns off Zap and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
 <li><code>RefreshAuthError</code> - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
@@ -3824,7 +3824,7 @@ zapier env:get 1.0.0
 <li><code>agent</code>: Node.js <code>http.Agent</code> instance, allows custom proxy, certificate etc. Default is <code>null</code>.</li>
 <li><code>timeout</code>: request / response timeout in ms. Set to <code>0</code> to disable (OS limit still applies), timeout reset on <code>redirect</code>. Default is <code>0</code> (disabled).</li>
 <li><code>size</code>: maximum response body size in bytes. Set to <code>0</code> to disable. Default is <code>0</code> (disabled).</li>
-<li><code>skipThrowForStatus</code> (<em>new in v10.0.0</em>): don&apos;t call <code>response.throwForStatus()</code> before resolving the request with <code>response</code>. See <a href="#http-response-object">HTTP Response Object</a>.</li>
+<li><code>skipThrowForStatus</code> (<em>added in v10.0.0</em>): don&apos;t call <code>response.throwForStatus()</code> before resolving the request with <code>response</code>. See <a href="#http-response-object">HTTP Response Object</a>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -3865,10 +3865,10 @@ zapier env:get 1.0.0
       <p>The response object returned by <code>z.request([url], options)</code> supports the following fields and methods:</p><ul>
 <li><code>status</code>: The response status code, i.e. <code>200</code>, <code>404</code>, etc.</li>
 <li><code>content</code>: The response content as a String. For Buffer, try <code>options.raw = true</code>.</li>
-<li><code>data</code> (<em>new in v10.0.0</em>): The response content as an object if the content is JSON or <code>application/x-www-form-urlencoded</code> (<code>undefined</code> otherwise).</li>
+<li><code>data</code> (<em>added in v10.0.0</em>): The response content as an object if the content is JSON or <code>application/x-www-form-urlencoded</code> (<code>undefined</code> otherwise).</li>
 <li><code>headers</code>: Response headers object. The header keys are all lower case.</li>
 <li><code>getHeader(key)</code>: Retrieve response header, case insensitive: <code>response.getHeader(&apos;My-Header&apos;)</code></li>
-<li><code>skipThrowForStatus</code> (<em>new in v10.0.0</em>): don&apos;t call <code>throwForStatus()</code> before resolving the request with this response.</li>
+<li><code>skipThrowForStatus</code> (<em>added in v10.0.0</em>): don&apos;t call <code>throwForStatus()</code> before resolving the request with this response.</li>
 <li><code>throwForStatus()</code>: Throws an error if <code>400 &lt;= statusCode &lt; 600</code>.</li>
 <li><code>request</code>: The original request options object (see above).</li>
 </ul><p>Additionally, if <code>request.raw</code> is <code>true</code>, the raw response has the following properties:</p><ul>
@@ -4051,8 +4051,8 @@ response.throwForStatus();
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><em>New in v7.3.0.</em></p><p>The method <code>z.dehydrateFile(func, inputData)</code> allows you to download a file lazily. It takes the identical arguments as <code>z.dehydrate(func, inputData)</code> does.</p><p>An example can be found in the <a href="#stashing-files">Stashing Files</a> section.</p><p>What makes <code>z.dehydrateFile</code> different from <code>z.dehydrate</code> has to do with efficiency and when Zapier chooses to hydrate data. Knowing which pointers give us back files helps us delay downloading files until its absolutely necessary. A good example is users creating Zaps in the Zap Editor. If a pointer is made by <code>z.dehydrate</code>, the Zap Editor will hydrate the data immediately after pulling in samples. This allows users to map fields from the hydrated data into the subsequent steps of the Zap. If, however, the pointer is made by <code>z.dehydrateFile</code>, the Zap Editor will wait to hydrate the file. There&apos;s nothing in binary file data for users to map in the subsequent steps.</p><blockquote>
-<p><code>z.dehydrateFile(func, inputData)</code> is new in v7.3.0. We used to recommend to use <code>z.dehydrate(func, inputData)</code> for files, but it&apos;s not the case anymore. Please change it to <code>z.dehydrateFile(func, inputData)</code> for a better user experience.</p>
+      <p><em>Available in v7.3.0 and above.</em></p><p>The method <code>z.dehydrateFile(func, inputData)</code> allows you to download a file lazily. It takes the same arguments as <code>z.dehydrate(func, inputData)</code> does, but is recommended when the data is a file.</p><p>An example can be found in the <a href="#stashing-files">Stashing Files</a> section.</p><p>What makes <code>z.dehydrateFile</code> different from <code>z.dehydrate</code> has to do with efficiency and when Zapier chooses to hydrate data. Knowing which pointers give us back files helps us delay downloading files until it&apos;s absolutely necessary. Not only will it help avoid unnecessary file downloads, it can also prevent errors if the file has a limited availability. (Stashing files, described below, can also help with that situation.)</p><p>A good example is when users are creating Zaps in the Zap Editor. If a pointer is made by <code>z.dehydrate</code>, the Zap Editor will hydrate the data immediately after pulling in samples. This allows users to map fields from the hydrated data into the subsequent steps of the Zap. If, however, the pointer is made by <code>z.dehydrateFile</code>, the Zap Editor will wait to hydrate the file, and will display a placeholder instead. There&apos;s nothing in binary file data for users to map in the subsequent steps.</p><blockquote>
+<p><code>z.dehydrateFile(func, inputData)</code> was added in v7.3.0. We used to recommend using <code>z.dehydrate(func, inputData)</code> for files, but we now recommend changing it to <code>z.dehydrateFile(func, inputData)</code> for a better user experience.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -4071,7 +4071,7 @@ response.throwForStatus();
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>It can be expensive to download and stream files or they can require complex handshakes to authorize downloads - so we provide a helpful stash routine that will take any <code>String</code>, <code>Buffer</code> or <code>Stream</code> and return a URL file pointer suitable for returning from triggers, searches, creates, etc.</p><p>The interface <code>z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])</code> takes a single required argument - the extra three arguments will be automatically populated in most cases. For example - a full example is this:</p>
+      <p>It can be expensive to download and stream files or they can require complex handshakes to authorize downloads - so we provide a helpful stash routine that will take any <code>String</code>, <code>Buffer</code> or <code>Stream</code> and return a URL file pointer suitable for returning from triggers, searches, creates, etc.</p><p>The interface <code>z.stashFile(bufferStringStream, [knownLength], [filename], [contentType])</code> takes a single required argument - the extra three arguments will be automatically populated in most cases. Here&apos;s a full example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> content = <span class="hljs-string">&apos;Hello world!&apos;</span>;
@@ -4179,7 +4179,11 @@ z.console.log(url);
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the <code>z.console.log</code> method (<a href="#console-logging">see below for details</a>). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use <code>z.request([url], options)</code> or shorthand request objects).</p><p>To view the logs for your application, use the <code>zapier logs</code> command. There are three types of logs, <code>http</code> (logged automatically by Zapier on HTTP requests), <code>bundle</code> (logged automatically on every method execution), and <code>console</code> (manual logs via <code>z.console.log()</code> statements).</p><p>For advanced logging options including only displaying the logs for a certain user or app version, look at the help for the logs command:</p>
+      <p>To view the logs for your application, use the <code>zapier logs</code> command.</p><p>There are three types of logs:</p><ul>
+<li><code>http</code>: logged automatically by Zapier on HTTP requests</li>
+<li><code>bundle</code>: logged automatically on every method execution</li>
+<li><code>console</code>: manual logs via <code>z.console.log()</code> statements (<a href="#console-logging">see below for details</a>)</li>
+</ul><p>For advanced logging options, including only displaying the logs for a certain user or app version, look at the help for the logs command:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier <span class="hljs-built_in">help</span> logs
@@ -4208,7 +4212,7 @@ z.console.log(url);
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The <code>z.console</code> object has all the same methods and works just like the Node.js <a href="https://nodejs.org/docs/latest-v6.x/api/console.html"><code>Console</code></a> class - the only difference is we&apos;ll log to our distributed datastore and you can view them via <code>zapier logs</code> (more below).</p>
+      <p>The <code>z.console</code> object has all the same methods and works just like the Node.js <a href="https://nodejs.org/docs/latest-v6.x/api/console.html"><code>Console</code></a> class - the only difference is we&apos;ll log to our distributed datastore and you can view the logs via <code>zapier logs</code> (more below).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4264,7 +4268,7 @@ z.console.log(url);
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>If you are using the <code>z.request()</code> shortcut that we provide - HTTP logging is handled automatically for you. For example:</p>
+      <p>If you are using the <code>z.request()</code> method that we provide, HTTP logging is handled automatically for you. For example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js">z.request(<span class="hljs-string">&apos;https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes&apos;</span>)
@@ -4273,6 +4277,15 @@ z.console.log(url);
     <span class="hljs-keyword">return</span> res;
   })
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>HTTP logging will often work with other methods of making requests as well, but if you&apos;re using another method and having trouble seeing logs, try using <code>z.request()</code>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -4348,7 +4361,7 @@ the behavior of Zaps when various kinds of errors occur.</p>
 by throwing <code>z.errors.Error</code> with a user-friendly message and optional error and
 status code. Typically, this will be prettifying 4xx responses or APIs that return
 errors as 200s with a payload that describes the error.</p><p>Example: <code>throw new z.errors.Error(&apos;Contact name is too long.&apos;, &apos;InvalidData&apos;, 400);</code></p><blockquote>
-<p><code>z.errors.Error</code> is new in v9.3.0. If you&apos;re on an older version of <code>zapier-platform-core</code>, throw a standard JavaScript <code>Error</code> instead, such as <code>throw new Error(&apos;A user-friendly message&apos;)</code>.</p>
+<p><code>z.errors.Error</code> was added in v9.3.0. If you&apos;re on an older version of <code>zapier-platform-core</code>, throw a standard JavaScript <code>Error</code> instead, such as <code>throw new Error(&apos;A user-friendly message&apos;)</code>.</p>
 </blockquote><p>A couple best practices to keep in mind:</p><ul>
 <li>Elaborate on terse messages. &quot;not_authenticated&quot; -&gt; &quot;Your API Key is invalid. Please reconnect your account.&quot;</li>
 <li>If the error calls out a specific field, surface that information to the user. &quot;Provided data is invalid&quot; -&gt; &quot;Contact name is invalid&quot;</li>
