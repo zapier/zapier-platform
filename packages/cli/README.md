@@ -2551,11 +2551,15 @@ module.exports = App;
 
 ## Logging
 
-There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the `z.console.log` method ([see below for details](#console-logging)). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use `z.request([url], options)` or shorthand request objects).
+To view the logs for your application, use the `zapier logs` command.
 
-To view the logs for your application, use the `zapier logs` command. There are three types of logs, `http` (logged automatically by Zapier on HTTP requests), `bundle` (logged automatically on every method execution), and `console` (manual logs via `z.console.log()` statements).
+There are three types of logs:
 
-For advanced logging options including only displaying the logs for a certain user or app version, look at the help for the logs command:
+* `http`: logged automatically by Zapier on HTTP requests
+* `bundle`: logged automatically on every method execution
+* `console`: manual logs via `z.console.log()` statements ([see below for details](#console-logging))
+
+For advanced logging options, including only displaying the logs for a certain user or app version, look at the help for the logs command:
 
 ```bash
 zapier help logs
@@ -2569,7 +2573,7 @@ To manually print a log statement in your code, use `z.console.log`:
 z.console.log('Here are the input fields', bundle.inputData);
 ```
 
-The `z.console` object has all the same methods and works just like the Node.js [`Console`](https://nodejs.org/docs/latest-v6.x/api/console.html) class - the only difference is we'll log to our distributed datastore and you can view them via `zapier logs` (more below).
+The `z.console` object has all the same methods and works just like the Node.js [`Console`](https://nodejs.org/docs/latest-v6.x/api/console.html) class - the only difference is we'll log to our distributed datastore and you can view the logs via `zapier logs` (more below).
 
 ### Viewing Console Logs
 
@@ -2589,7 +2593,7 @@ zapier logs --type=bundle
 
 ### HTTP Logging
 
-If you are using the `z.request()` shortcut that we provide - HTTP logging is handled automatically for you. For example:
+If you are using the `z.request()` method that we provide, HTTP logging is handled automatically for you. For example:
 
 ```js
 z.request('https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
@@ -2598,6 +2602,8 @@ z.request('https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
     return res;
   })
 ```
+
+HTTP logging will often work with other methods of making requests as well, but if you're using another method and having trouble seeing logs, try using `z.request()`.
 
 ### Viewing HTTP Logs
 
