@@ -1400,7 +1400,7 @@ See a full example with dehydration/hydration wired in correctly:
 
 To view the logs for your application, use the `zapier logs` command.
 
-There are three types of logs:
+There are three types of logs for a Zapier app:
 
 * `http`: logged automatically by Zapier on HTTP requests
 * `bundle`: logged automatically on every method execution
@@ -1420,7 +1420,7 @@ To manually print a log statement in your code, use `z.console.log`:
 z.console.log('Here are the input fields', bundle.inputData);
 ```
 
-The `z.console` object has all the same methods and works just like the Node.js [`Console`](https://nodejs.org/docs/latest-v6.x/api/console.html) class - the only difference is we'll log to our distributed datastore and you can view the logs via `zapier logs` (more below).
+The `z.console` object has all the same methods and works just like the Node.js [`Console`](https://nodejs.org/docs/latest-v14.x/api/console.html) class - the only difference is we'll log to our distributed datastore and you can view the logs via `zapier logs` (more below).
 
 ### Viewing Console Logs
 
@@ -1459,7 +1459,7 @@ To see the HTTP logs, do:
 ```bash
 zapier logs --type=http
 ```
-To see detailed http logs including headers, request and response bodies, etc, do:
+To see detailed HTTP logs, including data such as headers and request and response bodies, do:
 
 ```bash
 zapier logs --type=http --detailed

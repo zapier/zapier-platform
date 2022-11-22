@@ -4179,7 +4179,7 @@ z.console.log(url);
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To view the logs for your application, use the <code>zapier logs</code> command.</p><p>There are three types of logs:</p><ul>
+      <p>To view the logs for your application, use the <code>zapier logs</code> command.</p><p>There are three types of logs for a Zapier app:</p><ul>
 <li><code>http</code>: logged automatically by Zapier on HTTP requests</li>
 <li><code>bundle</code>: logged automatically on every method execution</li>
 <li><code>console</code>: manual logs via <code>z.console.log()</code> statements (<a href="#console-logging">see below for details</a>)</li>
@@ -4212,7 +4212,7 @@ z.console.log(url);
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The <code>z.console</code> object has all the same methods and works just like the Node.js <a href="https://nodejs.org/docs/latest-v6.x/api/console.html"><code>Console</code></a> class - the only difference is we&apos;ll log to our distributed datastore and you can view the logs via <code>zapier logs</code> (more below).</p>
+      <p>The <code>z.console</code> object has all the same methods and works just like the Node.js <a href="https://nodejs.org/docs/latest-v14.x/api/console.html"><code>Console</code></a> class - the only difference is we&apos;ll log to our distributed datastore and you can view the logs via <code>zapier logs</code> (more below).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4310,7 +4310,7 @@ z.console.log(url);
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To see detailed http logs including headers, request and response bodies, etc, do:</p>
+      <p>To see detailed HTTP logs, including data such as headers and request and response bodies, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http --detailed
