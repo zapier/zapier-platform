@@ -2593,7 +2593,7 @@ zapier logs --type=bundle
 
 ### HTTP Logging
 
-If you are using the `z.request()` method that we provide, HTTP logging is handled automatically for you. For example:
+If you are using [shorthand HTTP requests](#shorthand-http-requests) or the `z.request()` method that we provide, HTTP logging is handled automatically for you. For example:
 
 ```js
 z.request('https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes')
