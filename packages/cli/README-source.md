@@ -1353,7 +1353,7 @@ movie.details = {
 
 ### File Dehydration
 
-*Available in v7.3.0 and above.*
+*Added in v7.3.0.*
 
 The method `z.dehydrateFile(func, inputData)` allows you to download a file lazily. It takes the same arguments as `z.dehydrate(func, inputData)` does, but is recommended when the data is a file.
 
