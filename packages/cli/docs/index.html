@@ -4179,7 +4179,11 @@ z.console.log(url);
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>There are two types of logs for a Zapier app, console logs and HTTP logs. The console logs are created by your app through the use of the <code>z.console.log</code> method (<a href="#console-logging">see below for details</a>). The HTTP logs are created automatically by Zapier whenever your app makes HTTP requests (as long as you use <code>z.request([url], options)</code> or shorthand request objects).</p><p>To view the logs for your application, use the <code>zapier logs</code> command. There are three types of logs, <code>http</code> (logged automatically by Zapier on HTTP requests), <code>bundle</code> (logged automatically on every method execution), and <code>console</code> (manual logs via <code>z.console.log()</code> statements).</p><p>For advanced logging options including only displaying the logs for a certain user or app version, look at the help for the logs command:</p>
+      <p>To view the logs for your application, use the <code>zapier logs</code> command.</p><p>There are three types of logs for a Zapier app:</p><ul>
+<li><code>http</code>: logged automatically by Zapier on HTTP requests</li>
+<li><code>bundle</code>: logged automatically on every method execution</li>
+<li><code>console</code>: manual logs via <code>z.console.log()</code> statements (<a href="#console-logging">see below for details</a>)</li>
+</ul><p>For advanced logging options, including only displaying the logs for a certain user or app version, look at the help for the logs command:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier <span class="hljs-built_in">help</span> logs
@@ -4208,7 +4212,7 @@ z.console.log(url);
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The <code>z.console</code> object has all the same methods and works just like the Node.js <a href="https://nodejs.org/docs/latest-v6.x/api/console.html"><code>Console</code></a> class - the only difference is we&apos;ll log to our distributed datastore and you can view them via <code>zapier logs</code> (more below).</p>
+      <p>The <code>z.console</code> object has all the same methods and works just like the Node.js <a href="https://nodejs.org/docs/latest-v14.x/api/console.html"><code>Console</code></a> class - the only difference is we&apos;ll log to our distributed datastore and you can view the logs via <code>zapier logs</code> (more below).</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4264,7 +4268,7 @@ z.console.log(url);
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>If you are using the <code>z.request()</code> shortcut that we provide - HTTP logging is handled automatically for you. For example:</p>
+      <p>If you are using <a href="#shorthand-http-requests">shorthand HTTP requests</a> or the <code>z.request()</code> method that we provide, HTTP logging is handled automatically for you. For example:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js">z.request(<span class="hljs-string">&apos;https://57b20fb546b57d1100a3c405.mockapi.io/api/recipes&apos;</span>)
@@ -4273,6 +4277,15 @@ z.console.log(url);
     <span class="hljs-keyword">return</span> res;
   })
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>HTTP logging will often work with other methods of making requests as well, but if you&apos;re using another method and having trouble seeing logs, try using <code>z.request()</code>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
@@ -4297,7 +4310,7 @@ z.console.log(url);
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>To see detailed http logs including headers, request and response bodies, etc, do:</p>
+      <p>To see detailed HTTP logs, including data such as headers and request and response bodies, do:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash">zapier logs --<span class="hljs-built_in">type</span>=http --detailed
