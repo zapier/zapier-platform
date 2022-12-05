@@ -35,7 +35,6 @@ This doc describes the latest CLI version (**PACKAGE_VERSION**), as of this writ
 <!-- toc -->
 <!-- tocstop -->
 
-
 ## Getting Started
 
 > If you're new to Zapier Platform CLI, we strongly recommend you to walk through the [Tutorial](https://zapier.com/developer/start) for a more thorough introduction.
