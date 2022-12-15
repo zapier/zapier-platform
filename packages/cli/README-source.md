@@ -340,7 +340,7 @@ The setup and user experience of Digest Auth is identical to Basic Auth. Users p
 
 Custom auth is most commonly used for apps that authenticate with API keys, although it also provides flexibility for any unusual authentication setup. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` (see [Making HTTP Requests](#making-http-requests)) to pass in data returned from the authentication process, most commonly by adding/computing needed headers.
 
-> To create a new integration with custom authentication, run `zapier init [your app name] --custom-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth).
+> To create a new integration with custom authentication, run `zapier init [your app name] --template custom-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/master/example-apps/custom-auth).
 
 ```js
 [insert-file:./snippets/custom-auth.js]
