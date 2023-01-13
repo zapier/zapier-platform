@@ -185,7 +185,6 @@ const validateSearchOrCreateKeys = (definition) => {
           );
         }
 
-        debugger;
         if (
           (hasSearchOutputFields || hasSearchOutputSample) &&
           !allSearchOutputKeys.has(searchOutputField)
