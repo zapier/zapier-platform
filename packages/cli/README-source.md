@@ -1,9 +1,5 @@
 <h1 align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.zappy.app/11069978ee4a9b1eeeeb62b11f541b7c.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://cdn.zappy.app/2602734341239f1b82ef0ff4ca160430.png">
-    <img alt="Zapier Logo" src="https://cdn.zappy.app/2602734341239f1b82ef0ff4ca160430.png" width="300px">
-  </picture>
+  <img alt="Zapier Logo" src="https://cdn.zappy.app/1cd66b15407db2d9a01fbe8d600772fe.svg" width="300px">
   <br>
   Platform CLI
   <br>
