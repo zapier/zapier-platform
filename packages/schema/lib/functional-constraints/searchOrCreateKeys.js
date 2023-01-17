@@ -232,6 +232,7 @@ const validateSearchOrCreateKeys = (definition) => {
 
         if (
           (hasSearchOutputFields || hasSearchOutputSample) &&
+          typeof searchOutputField === 'string' &&
           !allSearchOutputKeys.has(searchOutputField)
         ) {
           errors.push(

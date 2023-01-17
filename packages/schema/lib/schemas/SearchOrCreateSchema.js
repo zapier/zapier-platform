@@ -45,7 +45,7 @@ module.exports = makeSchema(
       searchUniqueInputToOutputConstraint: {
         description:
           "EXPERIMENTAL: A mapping where the key represents an input field for the search action, and the value represents how that field's value will be used to filter down the search output for an exact match.",
-        $ref: FlatObjectSchema.id,
+        type: 'object',
       },
     },
     additionalProperties: false,
