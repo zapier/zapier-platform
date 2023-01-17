@@ -1,3 +1,33 @@
+## 12.2.1
+
+_released `2023-01-18`_
+
+### cli
+
+- :scroll: Improve docs about input field types ([#585](https://github.com/zapier/zapier-platform/pull/585))
+- :scroll: Improve docs about OAuth2 fields ([#589](https://github.com/zapier/zapier-platform/pull/589))
+- :scroll: Update logging info ([#591](https://github.com/zapier/zapier-platform/pull/591))
+- :scroll: Fix `zapier init` command ([#594](https://github.com/zapier/zapier-platform/pull/594))
+- :scroll: Fix typo ([#593](https://github.com/zapier/zapier-platform/pull/593))
+- :scroll: Fix logo ([#604](https://github.com/zapier/zapier-platform/pull/604))
+- :hammer: Dependency updates
+  - Bump typescript from 3.8.3 to 4.9.4 to fix a test ([#599](https://github.com/zapier/zapier-platform/pull/599))
+  - Bump decode-uri-component from 0.2.0 to 0.2.2 ([#596](https://github.com/zapier/zapier-platform/pull/596))
+  - Bump json5 from 1.0.1 to 1.0.2 ([#601](https://github.com/zapier/zapier-platform/pull/601))
+
+### core
+
+- None!
+
+### schema
+
+- :test_tube: Relax schema on `searchUniqueInputToOutput` for upsert to support dynamic fields. **EXPERIMENTAL: Currently an internal feature. Don't use it yet.** ([#602](https://github.com/zapier/zapier-platform/pull/602))
+
+### misc
+
+- :hammer: Dependency updates
+  - Bump qs from 6.5.2 to 6.5.3 ([#598](https://github.com/zapier/zapier-platform/pull/598))
+
 ## 12.2.0
 
 _release `2022-10-27`_
