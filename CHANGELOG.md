@@ -6,6 +6,7 @@ _released `2023-01-18`_
 
 - :scroll: Improve docs about input field types ([#585](https://github.com/zapier/zapier-platform/pull/585))
 - :scroll: Improve docs about OAuth2 fields ([#589](https://github.com/zapier/zapier-platform/pull/589))
+- :scroll: More strongly recommend use of `z.dehydrateFile` for files ([#590](https://github.com/zapier/zapier-platform/pull/590))
 - :scroll: Update logging info ([#591](https://github.com/zapier/zapier-platform/pull/591))
 - :scroll: Fix `zapier init` command ([#594](https://github.com/zapier/zapier-platform/pull/594))
 - :scroll: Fix typo ([#593](https://github.com/zapier/zapier-platform/pull/593))
