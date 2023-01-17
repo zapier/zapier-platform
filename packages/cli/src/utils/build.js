@@ -167,6 +167,7 @@ const forceIncludeDumbPath = (appConfig, filePath) => {
     // include old async deasync versions so this runs seamlessly across node versions
     filePath.endsWith(path.join('bin', 'linux-x64-node-10', 'deasync.node')) ||
     filePath.endsWith(path.join('bin', 'linux-x64-node-12', 'deasync.node')) ||
+    filePath.endsWith(path.join('bin', 'linux-x64-node-14', 'deasync.node')) ||
     filePath.endsWith(
       // Special, for zapier-platform-legacy-scripting-runner
       path.join('bin', `linux-x64-node-${nodeMajorVersion}`, 'deasync.node')
