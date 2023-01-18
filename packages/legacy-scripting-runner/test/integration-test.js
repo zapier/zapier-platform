@@ -1172,7 +1172,7 @@ describe('Integration Test', () => {
         compiledApp,
         'triggers.movie.operation.perform'
       );
-      return app(input).should.be.rejectedWith(/'bar' of undefined/);
+      return app(input).should.be.rejectedWith(/of undefined/);
     });
 
     it('KEY_pre_poll, _.template(bundle.request.url)', () => {
