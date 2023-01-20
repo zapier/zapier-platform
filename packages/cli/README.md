@@ -3103,7 +3103,7 @@ There are a lot of details left out - check out the full example app for a worki
 
 ### Why doesn't Zapier support newer versions of Node.js?
 
-We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node. Sometimes that doesn't include the latest version. Additionally, with over 1,000 apps running on the Zapier platform have to be sure upgrading to the latest Node version will not have a negative impact.
+We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node. Sometimes that doesn't include the latest version. Additionally, with thousands of apps running on the Zapier platform, we have to be sure upgrading to the latest Node version will not have a negative impact.
 
 ### How do I manually set the Node.js version to run my app with?
 
