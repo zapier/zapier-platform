@@ -2134,10 +2134,10 @@ available-typed-arrays@^1.0.2:
   dependencies:
     array-filter "^1.0.0"
 
-aws-sdk@^2.1298.0:
-  version "2.1298.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1298.0.tgz#cc11aaaf18c7b9b6c37bc060e0646d7abdc8f0af"
-  integrity sha512-UMaQe1Rohqguwl4V8e47SHrerboP5QpD7bx6mVZIoV2+AQ5xf8CyXjYXB95u5yvPyjIvpoRxiPKKOtnHL77q4A==
+aws-sdk@^2.1298.0, aws-sdk@^2.1299.0:
+  version "2.1299.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1299.0.tgz#493254104af5b9aaee0d7cd9150611d137e4f205"
+  integrity sha512-xTh6pmCUEJljkFfTM3sE8UozDxal80uX/5WZl8GcjQ+NbrGeQEdvL6wFWBwEEVbhR0VBVuU37cKPuQlfENbRYA==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -3928,10 +3928,10 @@ dot-prop@^6.0.1:
   dependencies:
     is-obj "^2.0.0"
 
-dotenv@9.0.2:
-  version "9.0.2"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-9.0.2.tgz#dacc20160935a37dea6364aa1bef819fb9b6ab05"
-  integrity sha512-I9OvvrHp4pIARv4+x9iuewrWycX6CcZtoAu1XrzPxc5UygMJXJZYmBsynku8IkrJwgypE5DGNjDPmPRhDCptUg==
+dotenv@16.0.3:
+  version "16.0.3"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.0.3.tgz#115aec42bac5053db3c456db30cc243a5a836a07"
+  integrity sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==
 
 duplexer2@^0.1.2, duplexer2@~0.1.0, duplexer2@~0.1.2:
   version "0.1.4"
