@@ -57,14 +57,9 @@ describe('Integration Test', function () {
     return createInput(compiledApp, event, testLogger);
   };
 
-  before(() => {
-    nock.disableNetConnect();
-  });
-
   beforeEach(() => {
-    if (!nock.isActive()) {
-      nock.activate();
-      nock.cleanAll();
+    if (nock.isActive()) {
+      nock.restore();
     }
 
     const httpPatch = createHttpPatch({});
@@ -72,11 +67,6 @@ describe('Integration Test', function () {
     httpPatch(https, testLogger);
 
     logs.length = 0; // clear logs
-  });
-
-  after(() => {
-    nock.cleanAll();
-    nock.enableNetConnect();
   });
 
   describe('session auth', () => {
