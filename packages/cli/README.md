@@ -1,11 +1,7 @@
 <!-- GENERATED! ONLY EDIT `README-source.md` -->
 
 <h1 align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.zappy.app/11069978ee4a9b1eeeeb62b11f541b7c.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://cdn.zappy.app/2602734341239f1b82ef0ff4ca160430.png">
-    <img alt="Zapier Logo" src="https://cdn.zappy.app/2602734341239f1b82ef0ff4ca160430.png" width="300px">
-  </picture>
+  <img alt="Zapier Logo" src="https://cdn.zappy.app/1cd66b15407db2d9a01fbe8d600772fe.svg" width="300px">
   <br>
   Platform CLI
   <br>
@@ -26,11 +22,11 @@ You may find docs duplicate or outdated across the Zapier site. The most up-to-d
 
 Our code is updated frequently. To see a full list of changes, look no further than [the CHANGELOG](https://github.com/zapier/zapier-platform/blob/master/CHANGELOG.md).
 
-This doc describes the latest CLI version (**12.2.0**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+This doc describes the latest CLI version (**12.2.1**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
-- CLI Docs: [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/README.md), [9.6.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.6.0/packages/cli/README.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/README.md)
-- CLI Reference: [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/docs/cli.md), [9.6.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.6.0/packages/cli/docs/cli.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@8.4.2/packages/cli/docs/cli.md)
-- Schema Docs: [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.2.0/packages/schema/docs/build/schema.md), [9.6.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.6.0/packages/schema/docs/build/schema.md), [8.4.2](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@8.4.2/packages/schema/docs/build/schema.md)
+- CLI Docs: [11.3.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@11.3.3/packages/cli/README.md), [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/README.md), [9.7.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.7.3/packages/cli/README.md)
+- CLI Reference: [11.3.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@11.3.3/packages/cli/docs/cli.md), [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/docs/cli.md), [9.7.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.7.3/packages/cli/docs/cli.md)
+- Schema Docs: [11.3.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@11.3.3/packages/schema/docs/build/schema.md), [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.2.0/packages/schema/docs/build/schema.md), [9.7.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.7.3/packages/schema/docs/build/schema.md)
 
 ## Table of Contents
 
@@ -2263,7 +2259,7 @@ This behavior has changed periodically across major versions, which changes how/
 
 ![](https://cdn.zappy.app/e835d9beca1b6489a065d51a381613f3.png)
 
-Ensure you're handling errors correctly for your platform version. The latest released version is **12.2.0**.
+Ensure you're handling errors correctly for your platform version. The latest released version is **12.2.1**.
 
 ### HTTP Request Options
 
@@ -3107,7 +3103,7 @@ There are a lot of details left out - check out the full example app for a worki
 
 ### Why doesn't Zapier support newer versions of Node.js?
 
-We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node. Sometimes that doesn't include the latest version. Additionally, with over 1,000 apps running on the Zapier platform have to be sure upgrading to the latest Node version will not have a negative impact.
+We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node. Sometimes that doesn't include the latest version. Additionally, with thousands of apps running on the Zapier platform, we have to be sure upgrading to the latest Node version will not have a negative impact.
 
 ### How do I manually set the Node.js version to run my app with?
 
@@ -3456,7 +3452,7 @@ Broadly speaking, all releases will continue to work indefinitely. While you nev
 For more info about which Node versions are supported, see [the faq](#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with).
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is **12.2.0**. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is **12.2.1**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 

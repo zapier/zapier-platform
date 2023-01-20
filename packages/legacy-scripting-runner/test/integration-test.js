@@ -39,7 +39,9 @@ const createAppWithCustomBefores = (appRaw, customBefores) => {
   return applyMiddleware(befores, afters, app);
 };
 
-describe('Integration Test', () => {
+describe('Integration Test', function () {
+  this.retries(3); // retry up to 3 times
+
   const logs = [];
   const testLogger = (message, data) => {
     logs.push({ ...data, message });

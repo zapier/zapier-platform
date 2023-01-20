@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-schema",
-  "version": "12.2.0",
+  "version": "12.2.1",
   "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -14,9 +14,9 @@
   ],
   "scripts": {
     "preversion": "git pull && yarn test && yarn build",
-    "test": "mocha -t 10000 --recursive test",
-    "smoke-test": "mocha -t 10000 --recursive smoke-test",
-    "test:debug": "mocha -t 5-10000 --recursive --inspect-brk test",
+    "test": "mocha -t 10s --recursive test --exit",
+    "smoke-test": "mocha -t 10s --recursive smoke-test --exit",
+    "test:debug": "mocha --recursive --inspect-brk test",
     "lint": "eslint lib",
     "lint:fix": "eslint --fix lib",
     "coverage": "istanbul cover _mocha -- --recursive",

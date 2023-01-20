@@ -12,7 +12,7 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "test": "CLIENT_ID=1234 CLIENT_SECRET=asdf AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake mocha --recursive -t 20000",
+    "test": "CLIENT_ID=1234 CLIENT_SECRET=asdf AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake mocha --recursive -t 20s --exit",
     "preversion": "git pull",
     "postversion": "git push && git push --tags",
     "ci-test": "yarn test && ./ci-test.js",

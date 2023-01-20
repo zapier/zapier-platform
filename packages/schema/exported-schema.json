@@ -1,5 +1,5 @@
 {
-  "version": "12.2.0",
+  "version": "12.2.1",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -1334,7 +1334,7 @@
         },
         "searchUniqueInputToOutputConstraint": {
           "description": "EXPERIMENTAL: A mapping where the key represents an input field for the search action, and the value represents how that field's value will be used to filter down the search output for an exact match.",
-          "$ref": "/FlatObjectSchema"
+          "type": "object"
         }
       },
       "additionalProperties": false
