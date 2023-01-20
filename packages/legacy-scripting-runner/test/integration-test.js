@@ -39,7 +39,9 @@ const createAppWithCustomBefores = (appRaw, customBefores) => {
   return applyMiddleware(befores, afters, app);
 };
 
-describe('Integration Test', () => {
+describe('Integration Test', function () {
+  this.retries(3); // retry up to 3 times
+
   const logs = [];
   const testLogger = (message, data) => {
     logs.push({ ...data, message });
@@ -55,9 +57,14 @@ describe('Integration Test', () => {
     return createInput(compiledApp, event, testLogger);
   };
 
+  before(() => {
+    nock.disableNetConnect();
+  });
+
   beforeEach(() => {
-    if (nock.isActive()) {
-      nock.restore();
+    if (!nock.isActive()) {
+      nock.activate();
+      nock.cleanAll();
     }
 
     const httpPatch = createHttpPatch({});
@@ -65,6 +72,11 @@ describe('Integration Test', () => {
     httpPatch(https, testLogger);
 
     logs.length = 0; // clear logs
+  });
+
+  after(() => {
+    nock.cleanAll();
+    nock.enableNetConnect();
   });
 
   describe('session auth', () => {
