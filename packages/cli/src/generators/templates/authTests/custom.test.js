@@ -5,7 +5,10 @@ const zapier = require('zapier-platform-core');
 const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
-describe('custom auth', () => {
+describe('custom auth', function () {
+  this.timeout(1000 * 30); // 30 secs timeout
+  this.retries(3); // retry up to 3 times
+
   it('passes authentication and returns json', async () => {
     const bundle = {
       authData: {

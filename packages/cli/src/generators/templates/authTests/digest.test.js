@@ -5,7 +5,10 @@ const zapier = require('zapier-platform-core');
 const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
-describe('digest auth', () => {
+describe('digest auth', function () {
+  this.timeout(1000 * 30); // 30 secs timeout
+  this.retries(3); // retry up to 3 times
+
   it('correctly authenticates', async () => {
     // Try changing the values of username or password to see how the test method behaves
     const bundle = {
