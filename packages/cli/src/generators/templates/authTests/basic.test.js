@@ -5,10 +5,7 @@ const zapier = require('zapier-platform-core');
 const App = require('../index');
 const appTester = zapier.createAppTester(App);
 
-describe('basic auth', function () {
-  this.timeout(1000 * 30); // 30 secs timeout
-  this.retries(3) // retry up to 3 times
-
+describe('basic auth', () => {
   it('automatically has Authorize Header add', async () => {
     const bundle = {
       authData: {
