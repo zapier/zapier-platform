@@ -11,7 +11,7 @@ const createInput = require('../src/tools/create-input');
 const errors = require('../src/errors');
 const { HTTPBIN_URL } = require('./constants');
 
-describe('request client', () => {
+describe('request client', function () {
   const testLogger = () => Promise.resolve({});
   const input = createInput({}, {}, testLogger);
 
@@ -372,7 +372,10 @@ describe('request client', () => {
     });
   });
 
-  it('should delete GET body by default', async () => {
+  it('should delete GET body by default', async function () {
+    this.timeout(1000 * 30); // 30 secs timeout
+    this.retries(3); // retry up to 3 times
+
     const request = createAppRequestClient(input);
     const response = await request({
       method: 'GET',
@@ -386,7 +389,10 @@ describe('request client', () => {
     should.not.exist(response.data.textBody);
   });
 
-  it('should allow GET with body', async () => {
+  it('should allow GET with body', async function () {
+    this.timeout(1000 * 30); // 30 secs timeout
+    this.retries(3); // retry up to 3 times
+
     const request = createAppRequestClient(input);
     const response = await request({
       method: 'GET',
@@ -401,7 +407,10 @@ describe('request client', () => {
     response.data.textBody.should.eql('{"name":"Darth Vader"}');
   });
 
-  it('allowGetBody should not send empty body', async () => {
+  it('allowGetBody should not send empty body', async function () {
+    this.timeout(1000 * 30); // 30 secs timeout
+    this.retries(3); // retry up to 3 times
+
     const request = createAppRequestClient(input);
     const response = await request({
       method: 'GET',
