@@ -21,10 +21,10 @@ zapier link
 zapier push
 ```
 
-Find out more on the latest docs: https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md.
+Find out more on the latest docs: https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md.
 
 # The "files" Template
 
 This example has a trigger and a create showcasing file handling.
 
-Find out more in the docs: https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#stashing-files.
+Find out more in the docs: https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#stashing-files.

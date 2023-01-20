@@ -21,10 +21,10 @@ zapier link
 zapier push
 ```
 
-Find out more on the latest docs: https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md.
+Find out more on the latest docs: https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md.
 
 # The "Callback" Template
 
 This example has a create showcasing the `performResume` callback function.
 
-Find out more in the docs: https://github.com/zapier/zapier-platform/blob/master/packages/cli#zgeneratecallbackurl.
+Find out more in the docs: https://github.com/zapier/zapier-platform/blob/main/packages/cli#zgeneratecallbackurl.

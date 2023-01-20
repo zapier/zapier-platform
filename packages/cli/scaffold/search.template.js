@@ -12,7 +12,7 @@ const perform = async (z, bundle) => {
 
 module.exports = {
   // see here for a full list of available properties:
-  // https://github.com/zapier/zapier-platform/blob/master/packages/schema/docs/build/schema.md#searchschema
+  // https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#searchschema
   key: '<%= KEY %>',
   noun: '<%= NOUN %>',
 
@@ -45,7 +45,7 @@ module.exports = {
     <%= INCLUDE_INTRO_COMMENTS ? [
       '// If fields are custom to each user (like spreadsheet columns), `outputFields` can create human labels',
       '// For a more complete example of using dynamic fields see',
-      '// https://github.com/zapier/zapier-platform/tree/master/packages/cli#customdynamic-fields',
+      '// https://github.com/zapier/zapier-platform/tree/main/packages/cli#customdynamic-fields',
       '// Alternatively, a static field definition can be provided, to specify labels for the fields'
     ].join('\n    ') : '' %>
     outputFields: [
