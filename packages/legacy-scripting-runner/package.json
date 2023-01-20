@@ -36,7 +36,7 @@
     "xmldom": "0.3.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.868.0",
+    "aws-sdk": "^2.1298.0",
     "nock": "13.3.0",
     "zapier-platform-core": ">=7.6.0"
   }

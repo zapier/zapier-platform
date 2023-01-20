@@ -54,9 +54,9 @@
     "zapier-platform-schema": "12.2.0"
   },
   "devDependencies": {
-    "adm-zip": "0.5.5",
-    "aws-sdk": "^2.905.0",
-    "dicer": "^0.3.0",
+    "adm-zip": "0.5.10",
+    "aws-sdk": "^2.1298.0",
+    "dicer": "^0.3.1",
     "fs-extra": "^10.0.0",
     "mock-fs": "^5.2.0"
   },

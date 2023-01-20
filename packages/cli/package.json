@@ -73,7 +73,7 @@
     "yeoman-generator": "5.2.0"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.26.0",
+    "@oclif/dev-cli": "^1.26.10",
     "decompress": "4.2.1",
     "litdoc": "1.5.6",
     "markdown-toc": "^1",
