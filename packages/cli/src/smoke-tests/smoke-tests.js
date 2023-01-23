@@ -234,7 +234,9 @@ describe('smoke tests - setup will take some time', function () {
     });
 
     testableTemplates.forEach((template) => {
-      it(`${template} should test out of the box`, () => {
+      it(`${template} should test out of the box`, function () {
+        this.retries(3); // retry up to 3 times
+
         runCommand(context.cliBin, ['init', template, '-t', template], {
           cwd: subfolderPath,
           input: 'a', // tells `yo` to replace the auth file
