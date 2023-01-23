@@ -1248,8 +1248,7 @@ zapier convert 1234 --version 1.0.1 my-app
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;custom&apos;</span>,
   <span class="hljs-comment">// &quot;test&quot; could also be a function</span>
   <span class="hljs-attr">test</span>: {
-    <span class="hljs-attr">url</span>:
-      <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>,
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>,
   },
   <span class="hljs-attr">fields</span>: [
     {
@@ -1556,16 +1555,14 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> authentication = {
   <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;oauth2&apos;</span>,
   <span class="hljs-attr">test</span>: {
-    <span class="hljs-attr">url</span>:
-      <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>,
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>,
   },
   <span class="hljs-comment">// you can provide additional fields for inclusion in authData</span>
   <span class="hljs-attr">oauth2Config</span>: {
     <span class="hljs-comment">// &quot;authorizeUrl&quot; could also be a function returning a string url</span>
     <span class="hljs-attr">authorizeUrl</span>: {
       <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;GET&apos;</span>,
-      <span class="hljs-attr">url</span>:
-        <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize&apos;</span>,
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize&apos;</span>,
       <span class="hljs-attr">params</span>: {
         <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
         <span class="hljs-attr">state</span>: <span class="hljs-string">&apos;{{bundle.inputData.state}}&apos;</span>,
@@ -1577,8 +1574,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
     <span class="hljs-comment">// &quot;getAccessToken&quot; could also be a function returning an object</span>
     <span class="hljs-attr">getAccessToken</span>: {
       <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
-      <span class="hljs-attr">url</span>:
-        <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token&apos;</span>,
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token&apos;</span>,
       <span class="hljs-attr">body</span>: {
         <span class="hljs-attr">code</span>: <span class="hljs-string">&apos;{{bundle.inputData.code}}&apos;</span>,
         <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
