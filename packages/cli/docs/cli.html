@@ -379,12 +379,12 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Convert a Legacy Web Builder app or Visual Builder integration to a CLI integration.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier convert INTEGRATIONID PATH</code></p><p>If you&apos;re converting a <strong>Legacy Web Builder</strong> app: the new integration will have a dependency named zapier-platform-legacy-scripting-runner, a shim used to simulate behaviors that are specific to Legacy Web Builder. There could be differences on how the shim simulates and how Legacy Web Builder actually behaves on some edge cases, especially you have custom scripting code.</p><p>If you&apos;re converting a <strong>Visual Builder</strong> app, then it will be identical and ready to push and use immediately!</p><p>If you re-run this command on an existing directory it will leave existing files alone and not clobber them.</p><p>You&apos;ll need to do a <code>zapier push</code> before the new version is visible in the editor, but otherwise you&apos;re good to go.</p><p><strong>Arguments</strong></p><ul>
-<li>(required) <code>integrationId</code> | To get the integration/app ID, go to &quot;<a href="https://zapier.com/app/developer&quot;">https://zapier.com/app/developer&quot;</a>, click on an integration, and copy the number directly after &quot;/app/&quot; in the URL.</li>
+<p>Convert a Visual Builder integration to a CLI integration.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier convert INTEGRATIONID PATH</code></p><p>The resulting CLI integraiton will be identical to its Visual Builder version and ready to push and use immediately!</p><p>If you re-run this command on an existing directory it will leave existing files alone and not clobber them.</p><p>You&apos;ll need to do a <code>zapier push</code> before the new version is visible in the editor, but otherwise you&apos;re good to go.</p><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>integrationId</code> | To get the integration/app ID, go to &quot;<a href="https://developer.zapier.com//app/developer&quot;">https://developer.zapier.com//app/developer&quot;</a>, click on an integration, and copy the number directly after &quot;/app/&quot; in the URL.</li>
 <li>(required) <code>path</code> | Relative to your current path - IE: <code>.</code> for current directory.</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li><code>-v, --version</code> | Convert a specific version. Required when converting a Visual Builder integration.</li>
+<li>(required) <code>-v, --version</code> | Convert a specific version. Required when converting a Visual Builder integration.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul>
     </div>
