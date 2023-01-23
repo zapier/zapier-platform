@@ -18,15 +18,15 @@
     "preversion": "git pull && yarn test",
     "version": "node bin/bump-dependencies.js && yarn && git add package.json yarn.lock",
     "postversion": "git push && git push --tags",
-    "main-tests": "mocha -t 20000 --recursive test",
+    "main-tests": "mocha -t 20s --recursive test --exit",
     "solo-test": "test $(OPT_OUT_PATCH_TEST_ONLY=yes mocha --recursive test -g 'should be able to opt out of patch' -R json | jq '.stats.passes') -eq 1 && echo 'Ran 1 test and it passed!'",
     "test": "yarn main-tests && yarn solo-test",
-    "debug": "mocha -t 10000 --inspect-brk --recursive test",
-    "test:w": "mocha -t 10000 --recursive test --watch",
-    "integration-test": "mocha -t 20000 integration-test",
-    "local-integration-test": "mocha -t 10000 integration-test --local",
-    "lambda-integration-test": "mocha -t 10000 integration-test --lambda",
-    "smoke-test": "mocha -t 120000 smoke-test",
+    "debug": "mocha -t 10s --inspect-brk --recursive test",
+    "test:w": "mocha -t 10s --recursive test --watch",
+    "integration-test": "mocha -t 20s integration-test",
+    "local-integration-test": "mocha -t 10s integration-test --local",
+    "lambda-integration-test": "mocha -t 10s integration-test --lambda",
+    "smoke-test": "mocha -t 2m smoke-test",
     "lint": "eslint src test",
     "lint:fix": "eslint --fix src test",
     "build-integration-test": "bin/build.sh local.bundle.zip",
@@ -35,7 +35,7 @@
     "validate": "yarn test && yarn smoke-test && yarn lint"
   },
   "engines": {
-    "node": ">=12",
+    "node": ">=14",
     "npm": ">=5.6.0"
   },
   "engineStrict": true,
@@ -58,7 +58,7 @@
     "aws-sdk": "^2.905.0",
     "dicer": "^0.3.0",
     "fs-extra": "^10.0.0",
-    "mock-fs": "^4.14.0"
+    "mock-fs": "^5.2.0"
   },
   "optionalDependencies": {
     "@types/node": "^14.14.35"

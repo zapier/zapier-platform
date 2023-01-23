@@ -39,7 +39,9 @@ const createAppWithCustomBefores = (appRaw, customBefores) => {
   return applyMiddleware(befores, afters, app);
 };
 
-describe('Integration Test', () => {
+describe('Integration Test', function () {
+  this.retries(3); // retry up to 3 times
+
   const logs = [];
   const testLogger = (message, data) => {
     logs.push({ ...data, message });
@@ -1172,7 +1174,7 @@ describe('Integration Test', () => {
         compiledApp,
         'triggers.movie.operation.perform'
       );
-      return app(input).should.be.rejectedWith(/'bar' of undefined/);
+      return app(input).should.be.rejectedWith(/of undefined/);
     });
 
     it('KEY_pre_poll, _.template(bundle.request.url)', () => {

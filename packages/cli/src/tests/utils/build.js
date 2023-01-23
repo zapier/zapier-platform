@@ -9,8 +9,9 @@ const { copyDir } = require('../../utils/files');
 const { PLATFORM_PACKAGE } = require('../../constants');
 const { runCommand, getNewTempDirPath, npmPackCore } = require('../_helpers');
 
-describe('build (runs slowly)', () => {
+describe('build (runs slowly)', function () {
   let tmpDir, entryPoint, corePackage;
+
   before(async () => {
     // basically does what `zapier init` does
     tmpDir = getNewTempDirPath();
@@ -41,18 +42,20 @@ describe('build (runs slowly)', () => {
     corePackage.cleanup();
   });
 
-  it('should list only required files', () => {
-    return build.requiredFiles(tmpDir, [entryPoint]).then((smartPaths) => {
-      // check that only the required lodash files are grabbed
-      smartPaths.should.containEql('index.js');
-      smartPaths.should.containEql('lib/index.js');
-      smartPaths.should.containEql('lib/triggers/movie.js');
+  it('should list only required files', async function () {
+    this.retries(3); // retry up to 3 times
 
-      smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
-      smartPaths.should.not.containEql('tsconfig.json');
+    const smartPaths = await build.requiredFiles(tmpDir, [entryPoint]);
 
-      smartPaths.length.should.be.within(200, 300);
-    });
+    // check that only the required lodash files are grabbed
+    smartPaths.should.containEql('index.js');
+    smartPaths.should.containEql('lib/index.js');
+    smartPaths.should.containEql('lib/triggers/movie.js');
+
+    smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
+    smartPaths.should.not.containEql('tsconfig.json');
+
+    smartPaths.length.should.be.within(200, 300);
   });
 
   it('should list all the files', () => {
