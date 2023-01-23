@@ -55,12 +55,12 @@
   },
   "devDependencies": {
     "adm-zip": "0.5.10",
-    "aws-sdk": "^2.1299.0",
+    "aws-sdk": "^2.1300.0",
     "dicer": "^0.3.1",
     "fs-extra": "^10.0.0",
     "mock-fs": "^5.2.0"
   },
   "optionalDependencies": {
-    "@types/node": "^14.14.35"
+    "@types/node": "^18.11.18"
   }
 }
