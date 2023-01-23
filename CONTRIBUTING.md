@@ -112,7 +112,7 @@ project go back to use the packages downloaded from npm.
 **Zapier employees only.** Refer to this [internal doc][releasing] on how to cut a release.
 
 
-[license]: https://github.com/zapier/zapier-platform/blob/master/LICENSE
+[license]: https://github.com/zapier/zapier-platform/blob/main/LICENSE
 [yarn]: https://yarnpkg.com
 [ci]: https://github.com/zapier/zapier-platform/actions/workflows/ci.yaml
 [releasing]: https://coda.io/d/_di0MgBhlCWf/Releasing-a-New-zapier-platform-Version_su5eD

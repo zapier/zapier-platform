@@ -14,7 +14,7 @@ const listRecipes = async (z, bundle) => {
     params: params,
   };
 
-  // z.request() returns an HTTP Response Object https://github.com/zapier/zapier-platform/tree/master/packages/cli#http-response-object
+  // z.request() returns an HTTP Response Object https://github.com/zapier/zapier-platform/tree/main/packages/cli#http-response-object
   const response = await z.request(requestOptions);
 
   return response.data;
@@ -65,7 +65,7 @@ module.exports = {
     //    () => { return []; }
     //   ]
     // For a more complete example of using dynamic fields see
-    // https://github.com/zapier/zapier-platform/tree/master/packages/cli#customdynamic-fields.
+    // https://github.com/zapier/zapier-platform/tree/main/packages/cli#customdynamic-fields.
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
       { key: 'id', label: 'ID' },

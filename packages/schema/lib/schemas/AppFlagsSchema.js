@@ -14,7 +14,7 @@ module.exports = makeSchema({
     },
     skipThrowForStatus: {
       description:
-        'Starting in `core` version `10.0.0`, `response.throwForStatus()` was called by default. We introduced a per-request way to opt-out of this behavior. This flag takes that a step further and controls that behavior integration-wide **for requests made using `z.request()`**. Unless they specify otherwise (per-request, or via middleware), [Shorthand requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#shorthand-http-requests) _always_ call `throwForStatus()`. `z.request()` calls can also ignore this flag if they set `skipThrowForStatus` directly',
+        'Starting in `core` version `10.0.0`, `response.throwForStatus()` was called by default. We introduced a per-request way to opt-out of this behavior. This flag takes that a step further and controls that behavior integration-wide **for requests made using `z.request()`**. Unless they specify otherwise (per-request, or via middleware), [Shorthand requests](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#shorthand-http-requests) _always_ call `throwForStatus()`. `z.request()` calls can also ignore this flag if they set `skipThrowForStatus` directly',
       type: 'boolean',
     },
   },

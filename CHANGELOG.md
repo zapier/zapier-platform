@@ -139,7 +139,7 @@ In the coming months, we'll follow up with a `13.0.0` release that will bump the
 ### core
 
 - :exclamation: calling `response.throwForStatus()` now **always** throws an error if the response status code is `>= 400`. Previously it was a no-op when `response.skipThrowForStatus` was `true`. Now, that flag only controls whether Zapier's built-in middleware calls `throwForStatus()`. This only affects you if you set `skipThrowForStatus` and always call `.throwForStatus()`, expecting it not to error. ([#511](https://github.com/zapier/zapier-platform/pull/511))
-- :exclamation: re-add the built-in auto-refresh middleware for `oauth2` and `session` auths. This runs _before_ your declared `afterResponse`, so you no longer have to account for stale credentials in your middleware (unless you want to). See [the README](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#using-http-middleware) for more info. ([#512](https://github.com/zapier/zapier-platform/pull/512), [#517](https://github.com/zapier/zapier-platform/pull/517))
+- :exclamation: re-add the built-in auto-refresh middleware for `oauth2` and `session` auths. This runs _before_ your declared `afterResponse`, so you no longer have to account for stale credentials in your middleware (unless you want to). See [the README](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#using-http-middleware) for more info. ([#512](https://github.com/zapier/zapier-platform/pull/512), [#517](https://github.com/zapier/zapier-platform/pull/517))
 
 ### schema
 
@@ -501,13 +501,13 @@ Another major release! We have some great improvements in this version but also 
 
 (a) Zapier integrations that depend on the new Core v10 **will run using Node.js 12**. To upgrade, first you need install Node 12 if you haven't. You can install Node 12 using `nvm`. Second, update your `package.json` to depend on `zapier-platform-core@10.0.0`. Third, run `npm install`. Finally, you may want to run unit tests on Node 12 before you push your code to production for further testing.
 
-(b) **`z.request` now always calls `response.throwForStatus`** via a middleware by default. You no longer need to call `response.throwForStatus` after `z.request`, the built-in middleware will do that for you. See [Error Response Handling](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#error-response-handling) for details.
+(b) **`z.request` now always calls `response.throwForStatus`** via a middleware by default. You no longer need to call `response.throwForStatus` after `z.request`, the built-in middleware will do that for you. See [Error Response Handling](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#error-response-handling) for details.
 
 (c) **`response.throwForStatus` now only throws an error if the status code is between 400 and 600 (inclusive)**. Before v10, it threw for status >= 300. So if your code rely on that old behavior, you should change your code to check `response.status` explicitly instead of using `response.throwForStatus`.
 
-(d) **Session and OAuth2 refresh now happens AFTER your `afterResponse`**. Before v10, the refresh happens before your `afterResponse`. This is a breaking change if your `afterResponse` captures 401 response status. See [v10 Breaking Change: Auth Refresh](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#v10-breaking-change-auth-refresh) for details.
+(d) **Session and OAuth2 refresh now happens AFTER your `afterResponse`**. Before v10, the refresh happens before your `afterResponse`. This is a breaking change if your `afterResponse` captures 401 response status. See [v10 Breaking Change: Auth Refresh](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#v10-breaking-change-auth-refresh) for details.
 
-(e) We now **parse JSON and form-encoded response body by default**. So no more `z.JSON.parse(response.content)`! The parsed object is available as `response.data` (`response.json` will be still available for JSON body but less preferable). Before v10, we only parsed JSON for [manual requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#manual-http-requests); parsed JSON and form-encoded body for [shorthand requests](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#shorthand-http-requests). This change could be breaking if you have an `afterResponse` that modifies `response.content`, with the expectation for shorthand requests to pick up on that. In which case, you'll have to replace `response.content = JSON.stringify(parsedOrTransformed)` with `response.data = parsedOrTransformed`.
+(e) We now **parse JSON and form-encoded response body by default**. So no more `z.JSON.parse(response.content)`! The parsed object is available as `response.data` (`response.json` will be still available for JSON body but less preferable). Before v10, we only parsed JSON for [manual requests](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#manual-http-requests); parsed JSON and form-encoded body for [shorthand requests](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#shorthand-http-requests). This change could be breaking if you have an `afterResponse` that modifies `response.content`, with the expectation for shorthand requests to pick up on that. In which case, you'll have to replace `response.content = JSON.stringify(parsedOrTransformed)` with `response.data = parsedOrTransformed`.
 
 (f) We rewrote the CLI `zapier init` command. Now the project templates are more up-to-date, with better coding practices. However, **we've removed the following templates**: `babel`, `create`, `github`, `middleware`, `oauth1-tumblr`, `oauth1-twitter`, `onedrive`, `resource`, `rest-hooks`, `trigger`. For trigger/create/search, use `zapier scaffold` command instead. For `babel`, look at `typescript` template and replace the build step with the similar code from https://babeljs.io/setup#installation. For `oauth1`, we now only keep `oauth1-trello` for simplicity. If you ever need to look at the old templates, they're always available in the [example-apps](https://github.com/zapier/zapier-platform/tree/60eaabd04571df30a3c33e4ab5ec4fe0312ad701/example-apps) directory in the repo.
 
@@ -697,7 +697,7 @@ _released `2021-07-02`_
 
 ### core
 
-- :tada: We have new error classes! Use them to help improve user-facing error messages. Read [Error Handling](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#error-handling) in the docs for more. ([#189](https://github.com/zapier/zapier-platform/pull/189))
+- :tada: We have new error classes! Use them to help improve user-facing error messages. Read [Error Handling](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#error-handling) in the docs for more. ([#189](https://github.com/zapier/zapier-platform/pull/189))
 - :nail_care: Show variable name when curlies have a type error ([#188](https://github.com/zapier/zapier-platform/pull/188))
 
 ### schema
@@ -728,7 +728,7 @@ _released `2021-07-02`_
 
 ### cli
 
-- :tada: CLI now has brand new tab completion! Learn how to activate it in the [doc](https://github.com/zapier/zapier-platform/tree/master/packages/cli#command-line-tab-completion). ([#134](https://github.com/zapier/zapier-platform/pull/134))
+- :tada: CLI now has brand new tab completion! Learn how to activate it in the [doc](https://github.com/zapier/zapier-platform/tree/main/packages/cli#command-line-tab-completion). ([#134](https://github.com/zapier/zapier-platform/pull/134))
 - :nail_care: Make CLI text style more consistent ([#132](https://github.com/zapier/zapier-platform/pull/132))
 - :nail_care: `validate` command now uses a language consistent with the UI ([#132](https://github.com/zapier/zapier-platform/pull/132))
 - :bug: `validate` command no longer requires login ([#119](https://github.com/zapier/zapier-platform/pull/119))
@@ -757,7 +757,7 @@ _released `2021-07-02`_
 This is a big one! There are a few areas with breaking changes. At a high level:
 
 - Zapier integrations that depend on the new Core v9 will run using `Node.js v10`
-- CLI had a lot of refactoring under the hood. A number of commands changed their args and/or name. Check out the [CLI docs](https://github.com/zapier/zapier-platform/blob/master/docs/cli.md) for the full rundown.
+- CLI had a lot of refactoring under the hood. A number of commands changed their args and/or name. Check out the [CLI docs](https://github.com/zapier/zapier-platform/blob/main/docs/cli.md) for the full rundown.
 - All packages drop support for Node 6 (which has been EOL for a while, so hopefully this isn't news)
 
 To successfully migrate to this version, you'll probably need to:
@@ -768,7 +768,7 @@ To successfully migrate to this version, you'll probably need to:
 - Run unit tests on Node 10 if you haven't before
 - Assuming your code works on Node 10, go through the regular push, promote, migrate flow. There aren't any other breaking changes from and end-user perspective.
 
-As always, feel free to [reach out](https://github.com/zapier/zapier-platform/tree/master/packages/cli#get-help) if you've got any questions.
+As always, feel free to [reach out](https://github.com/zapier/zapier-platform/tree/main/packages/cli#get-help) if you've got any questions.
 
 See below for a detailed changelog:
 
@@ -776,12 +776,12 @@ See below for a detailed changelog:
 
 - :exclamation: Remove `--include-js-map` flag from the `build` and `push` commands ([#99](https://github.com/zapier/zapier-platform/pull/99))
 - :exclamation: remove watch command ([#100](https://github.com/zapier/zapier-platform/pull/100))
-- :exclamation: Refactor `env` command. It's now `env:get`, `env:set` and `env:unset` ([docs](https://github.com/zapier/zapier-platform/blob/master/docs/cli.md#envget)) ([#104](https://github.com/zapier/zapier-platform/pull/104))
-- :exclamation: Remove `invite` and `collaborate` commands. This functionality is now under `users` ([docs](https://github.com/zapier/zapier-platform/blob/master/docs/cli.md#usersadd)) and `team` ([docs](https://github.com/zapier/zapier-platform/blob/master/docs/cli.md#teamadd)) commands, respectively ([#106](https://github.com/zapier/zapier-platform/pull/106))
-- :exclamation: Refactor `delete` into `delete:integration` and `delete:version` ([docs](https://github.com/zapier/zapier-platform/blob/master/docs/cli.md#deleteintegration)) ([#109](https://github.com/zapier/zapier-platform/pull/109))
+- :exclamation: Refactor `env` command. It's now `env:get`, `env:set` and `env:unset` ([docs](https://github.com/zapier/zapier-platform/blob/main/docs/cli.md#envget)) ([#104](https://github.com/zapier/zapier-platform/pull/104))
+- :exclamation: Remove `invite` and `collaborate` commands. This functionality is now under `users` ([docs](https://github.com/zapier/zapier-platform/blob/main/docs/cli.md#usersadd)) and `team` ([docs](https://github.com/zapier/zapier-platform/blob/main/docs/cli.md#teamadd)) commands, respectively ([#106](https://github.com/zapier/zapier-platform/pull/106))
+- :exclamation: Refactor `delete` into `delete:integration` and `delete:version` ([docs](https://github.com/zapier/zapier-platform/blob/main/docs/cli.md#deleteintegration)) ([#109](https://github.com/zapier/zapier-platform/pull/109))
 - :exclamation: Refactor `logout` command to only clear the local session, not all of them ([#60](https://github.com/zapier/zapier-platform/pull/60))
 - :exclamation: `scaffold` command errors if a file name already exists ([#88](https://github.com/zapier/zapier-platform/pull/88))
-- :exclamation: `validate` depends on having a valid `deployKey` available (either in the environment or in the auth file, `~/.zapierrc`). This is a regression and will be fixed in a later version. In the meantime, see [Using CI](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md#testing-in-your-ci) for more info.
+- :exclamation: `validate` depends on having a valid `deployKey` available (either in the environment or in the auth file, `~/.zapierrc`). This is a regression and will be fixed in a later version. In the meantime, see [Using CI](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#testing-in-your-ci) for more info.
 - :tada: Add saml support during `login` ([#61](https://github.com/zapier/zapier-platform/pull/61))
 - Refactor the following commands to use the new CLI setup:
   - build
@@ -837,7 +837,7 @@ No more security warnings from `npm audit`!
 
 ### cli
 
-- :tada: Added analytics to the CLI. These are vital for helping us improve our product. Read more about what we collect [here](https://github.com/zapier/zapier-platform/blob/master/packages/cli/README.md).
+- :tada: Added analytics to the CLI. These are vital for helping us improve our product. Read more about what we collect [here](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md).
 
 ### schema
 
