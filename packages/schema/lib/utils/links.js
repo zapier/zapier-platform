@@ -20,8 +20,8 @@ const makeDocLink = (id) =>
   });
 
 module.exports = {
-  filename: filename,
-  anchor: anchor,
-  makeCodeLink: makeCodeLink,
-  makeDocLink: makeDocLink,
+  filename,
+  anchor,
+  makeCodeLink,
+  makeDocLink,
 };

@@ -27,7 +27,7 @@ const App = {
   // don't forget to register hydrators here!
   // it can be imported from any module
   hydrators: {
-    getMovieDetails: getMovieDetails,
+    getMovieDetails,
   },
 
   triggers: {

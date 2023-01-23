@@ -469,7 +469,7 @@ const authentication = {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   // ...
 };
 
@@ -504,7 +504,7 @@ const authentication = {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   // ...
 };
 
@@ -551,7 +551,7 @@ const addApiKeyToHeader = (request, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [addApiKeyToHeader],
   // ...
 };
@@ -623,7 +623,7 @@ const includeSessionKeyHeader = (request, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [includeSessionKeyHeader],
   // ...
 };
@@ -741,7 +741,7 @@ const includeAccessToken = (req, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [includeAccessToken],
   // ...
 };
@@ -850,7 +850,7 @@ const addBearerHeader = (request, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [addBearerHeader],
   // ...
 };
@@ -2402,7 +2402,7 @@ const App = {
   // don't forget to register hydrators here!
   // it can be imported from any module
   hydrators: {
-    getMovieDetails: getMovieDetails,
+    getMovieDetails,
   },
 
   triggers: {
@@ -3310,7 +3310,7 @@ const performWithoutAsync = (z, bundle) => {
       return z.request(
         'https://5ae7ad3547436a00143e104d.mockapi.io/api/recipes',
         {
-          params: { cursor: cursor }, // if cursor is null, it's ignored here
+          params: { cursor }, // if cursor is null, it's ignored here
         }
       );
     })
@@ -3336,7 +3336,7 @@ const performWithAsync = async (z, bundle) => {
     {
       // if cursor is null, it's sent as an empty query
       //   param and should be ignored by the server
-      params: { cursor: cursor },
+      params: { cursor },
     }
   );
 

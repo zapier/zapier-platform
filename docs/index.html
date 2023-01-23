@@ -1176,7 +1176,7 @@ zapier convert 1234 --version 1.0.1 my-app
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  <span class="hljs-attr">authentication</span>: authentication,
+  authentication,
   <span class="hljs-comment">// ...</span>
 };
 
@@ -1220,7 +1220,7 @@ zapier convert 1234 --version 1.0.1 my-app
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  <span class="hljs-attr">authentication</span>: authentication,
+  authentication,
   <span class="hljs-comment">// ...</span>
 };
 
@@ -1278,7 +1278,7 @@ zapier convert 1234 --version 1.0.1 my-app
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  <span class="hljs-attr">authentication</span>: authentication,
+  authentication,
   <span class="hljs-attr">beforeRequest</span>: [addApiKeyToHeader],
   <span class="hljs-comment">// ...</span>
 };
@@ -1361,7 +1361,7 @@ zapier convert 1234 --version 1.0.1 my-app
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  <span class="hljs-attr">authentication</span>: authentication,
+  authentication,
   <span class="hljs-attr">beforeRequest</span>: [includeSessionKeyHeader],
   <span class="hljs-comment">// ...</span>
 };
@@ -1493,7 +1493,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  <span class="hljs-attr">authentication</span>: authentication,
+  authentication,
   <span class="hljs-attr">beforeRequest</span>: [includeAccessToken],
   <span class="hljs-comment">// ...</span>
 };
@@ -1612,7 +1612,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 
 <span class="hljs-keyword">const</span> App = {
   <span class="hljs-comment">// ...</span>
-  <span class="hljs-attr">authentication</span>: authentication,
+  authentication,
   <span class="hljs-attr">beforeRequest</span>: [addBearerHeader],
   <span class="hljs-comment">// ...</span>
 };
@@ -3960,7 +3960,7 @@ response.throwForStatus();
   <span class="hljs-comment">// don&apos;t forget to register hydrators here!</span>
   <span class="hljs-comment">// it can be imported from any module</span>
   <span class="hljs-attr">hydrators</span>: {
-    <span class="hljs-attr">getMovieDetails</span>: getMovieDetails,
+    getMovieDetails,
   },
 
   <span class="hljs-attr">triggers</span>: {
@@ -5311,7 +5311,7 @@ zapier push
       <span class="hljs-keyword">return</span> z.request(
         <span class="hljs-string">&apos;https://5ae7ad3547436a00143e104d.mockapi.io/api/recipes&apos;</span>,
         {
-          <span class="hljs-attr">params</span>: { <span class="hljs-attr">cursor</span>: cursor }, <span class="hljs-comment">// if cursor is null, it&apos;s ignored here</span>
+          <span class="hljs-attr">params</span>: { cursor }, <span class="hljs-comment">// if cursor is null, it&apos;s ignored here</span>
         }
       );
     })
@@ -5337,7 +5337,7 @@ zapier push
     {
       <span class="hljs-comment">// if cursor is null, it&apos;s sent as an empty query</span>
       <span class="hljs-comment">//   param and should be ignored by the server</span>
-      <span class="hljs-attr">params</span>: { <span class="hljs-attr">cursor</span>: cursor },
+      <span class="hljs-attr">params</span>: { cursor },
     }
   );
 

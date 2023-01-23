@@ -15,7 +15,7 @@ const createRpcClient = (event) => {
 
     const id = genId();
     const body = JSON.stringify({
-      id: id,
+      id,
       storeKey: event.storeKey,
       method,
       params,
@@ -24,7 +24,7 @@ const createRpcClient = (event) => {
     const req = {
       method: 'POST',
       url: `${event.rpc_base || FALLBACK_RPC}`,
-      body: body,
+      body,
       headers: {},
     };
 

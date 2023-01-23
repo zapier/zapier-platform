@@ -71,7 +71,7 @@ const includeAccessToken = (req, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [includeAccessToken],
   // ...
 };

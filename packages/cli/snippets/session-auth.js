@@ -56,7 +56,7 @@ const includeSessionKeyHeader = (request, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [includeSessionKeyHeader],
   // ...
 };

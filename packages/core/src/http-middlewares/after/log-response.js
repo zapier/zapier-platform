@@ -49,7 +49,7 @@ const prepareRequestLog = (req, resp) => {
 
   return {
     message: `${data.response_status_code} ${data.request_method} ${data.request_url}`,
-    data: data,
+    data,
   };
 };
 

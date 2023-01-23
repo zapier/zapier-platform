@@ -16,6 +16,6 @@ const authentication = {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   // ...
 };
