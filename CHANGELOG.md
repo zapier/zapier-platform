@@ -1,3 +1,82 @@
+## 13.0.0
+
+_released `2023-01-25`_
+
+Version `13.0.0` is a breaking change release that contains several important upgrades and deprecations. Here is a brief breakdown of the most notable changes (see further below for a more detailed list of changes):
+
+(a) Any integrations that depend on `zapier-platform-core@13.0.0` will now run on Node.js 16.
+
+(b) We are dropping support for Node.js 12, which has been designated end-of-life since early 2022 ([see the Node.js release schedule](https://github.com/nodejs/release#release-schedule)).
+
+(c) As part of internal Zapier changes to the way we process trigger data, **stricter type coercion** for trigger parameters is now enabled by default for integrations running on `zapier-platform-core@13.0.0`. This is a good time to double check if your defined trigger parameter types are coherent with what your app expects at runtime.
+
+(d) Web Builder conversion functionality has been removed. This change is only relevant for [Legacy Web Builder apps](https://platform.zapier.com/legacy/import).
+
+Those are the breaking changes for this major version `13.0.0` release. We are also including some package version bumps, with the changes consisting mostly of dropping older Node versions. As always with any major release, make sure to thoroughly test your integrations after updating!
+
+
+Detailed changelog below (**:exclamation: denotes a breaking change**):
+
+
+### cli
+
+- :exclamation: Remove Web Builder conversion functionality. ([#546](https://github.com/zapier/zapier-platform/pull/546))
+- :exclamation: Make `--version` required on `zapier convert`. ([#546](https://github.com/zapier/zapier-platform/pull/546))
+- :hammer: Improved error handling in the convert command. ([#546](https://github.com/zapier/zapier-platform/pull/546))
+- :scroll: Removed references to converting WB apps in the docs. ([#546](https://github.com/zapier/zapier-platform/pull/546))
+
+### core
+- :exclamation: Apps can now use Node.js v16.x and Node.js v12.x is no longer supported. ([#603](https://github.com/zapier/zapier-platform/pull/603))
+
+- :exclamation: Parameters for triggers now have strict type coercion. This means that if a parameter is defined as an integer and a string representation of an integer is provided, Zapier will now convert the value to an integer before it reaches the developer's code.
+
+### schema
+
+None!
+
+### misc
+
+- :hammer: Dependency updates ([#608](https://github.com/zapier/zapier-platform/pull/608))
+  - Replaced `eslint-plugin-node@11.1.0` with `eslint-plugin-n@15.6.1`
+  - Bump `@oclif/command` from 1.8.0 to 1.8.21
+  - Bump `@oclif/config` from 1.17.0 to 1.18.6
+  - Bump `@oclif/dev-cli` from 13.0.11 to 13.3.0
+  - Bump `@types/node` from 14.14.35 to 18.11.18
+  - Bump `adm-zip` from 0.5.5 to 0.5.10
+  - Bump `archiver` from 5.3.0 to 5.3.1
+  - Bump `aws-sdk` from 2.905.0 to 2.1300.0
+  - Bump `cli-table3` from 0.6.0 to 0.6.3
+  - Bump `content-disposition` from 0.5.3 to 0.5.4
+  - Bump `debug` from 4.3.1 to 4.3.4
+  - Bump `dicer` from 0.3.0 to 0.3.1
+  - Bump `dotenv` from 9.0.2 to 12.0.4
+  - Bump `eslint` from 7.26.0 to 8.32.0
+  - Bump `eslint-config-prettier` from 8.3.0 to 8.6.0
+  - Bump `eslint-config-standard` from 16.0.2 to 17.0.0
+  - Bump `eslint-plugin-import` from 2.22.1 to 2.27.5
+  - Bump `eslint-plugin-mocha` from 8.1.0 to 9.0.0
+  - Bump `eslint-plugin-promise` from 5.1.0 to 6.1.1
+  - Bump `flat` from 5.0.1 to 5.0.2
+  - Bump `gulp-prettier` from 3.0.0 to 4.0.0
+  - Bump `husky` from 6.0.0 to 7.0.4
+  - Bump `inquirer` from 8.0.0 to 8.2.5
+  - Bump `nock` from 13.0.11 to 13.3.0
+  - Bump `prettier` from 2.3.0 to 2.8.3
+  - Bump `semver` from 7.3.5 to 7.3.8
+  - Bump `lint-staged` from 11.0.0 to 11.2.6
+  - Bump `ignore` from 5.1.8 to 5.2.4
+  - Bump `jscodeshift` from 0.12.0 to 0.14.0
+  - Bump `klaw` from 3.0.0 to 4.1.0
+  - Bump `lerna` from 4.0.0 to 6.4.1
+  - Bump `marked` from 4.0.10 to 4.2.12
+  - Bump `marked-terminal` from 4.1.1 to 5.1.1
+  - Bump `mime-types` from 2.1.34 to 2.1.35
+  - Bump `mocha` from 8.4.0 to 10.2.0
+  - Bump `read` from 1.0.7 to 2.0.0
+  - Bump `yeoman-generator` from 5.2.0 to 5.7.0
+
+
+
 ## 12.2.1
 
 _released `2023-01-18`_
