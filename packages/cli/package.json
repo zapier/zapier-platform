@@ -69,7 +69,7 @@
     "through2": "4.0.2",
     "tmp": "0.2.1",
     "update-notifier": "5.1.0",
-    "yeoman-environment": "3.13.0",
+    "yeoman-environment": "3.3.0",
     "yeoman-generator": "5.7.0"
   },
   "devDependencies": {
