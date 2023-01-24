@@ -159,6 +159,10 @@ class ZapierBaseCommand extends Command {
    * @param {object} opts `inquierer.js` opts ([read more](https://github.com/SBoudrias/Inquirer.js/#question))
    */
   async prompt(question, opts = {}) {
+    if (typeof opts.required !== 'undefined' && opts.required) {
+      opts.validate = (input) =>
+        input.trim() === '' ? 'This field is required.' : true;
+    }
     const { ans } = await inquirer.prompt({
       type: 'string',
       ...opts,
