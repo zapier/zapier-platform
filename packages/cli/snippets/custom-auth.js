@@ -2,8 +2,7 @@ const authentication = {
   type: 'custom',
   // "test" could also be a function
   test: {
-    url:
-      'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
+    url: 'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
   },
   fields: [
     {
@@ -32,7 +31,7 @@ const addApiKeyToHeader = (request, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [addApiKeyToHeader],
   // ...
 };

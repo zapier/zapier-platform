@@ -15,7 +15,7 @@ const serializeErrors = (errors) => {
     return opener + errors.map((e) => `* ${e}`).join('\n');
   }
 
-  const issues = flattenCheckResult({ errors: errors });
+  const issues = flattenCheckResult({ errors });
   return (
     opener +
     issues

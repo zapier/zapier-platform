@@ -15,7 +15,7 @@ const performWithoutAsync = (z, bundle) => {
       return z.request(
         'https://5ae7ad3547436a00143e104d.mockapi.io/api/recipes',
         {
-          params: { cursor: cursor }, // if cursor is null, it's ignored here
+          params: { cursor }, // if cursor is null, it's ignored here
         }
       );
     })
@@ -41,7 +41,7 @@ const performWithAsync = async (z, bundle) => {
     {
       // if cursor is null, it's sent as an empty query
       //   param and should be ignored by the server
-      params: { cursor: cursor },
+      params: { cursor },
     }
   );
 

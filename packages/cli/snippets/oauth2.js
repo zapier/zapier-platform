@@ -1,16 +1,14 @@
 const authentication = {
   type: 'oauth2',
   test: {
-    url:
-      'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
+    url: 'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
   },
   // you can provide additional fields for inclusion in authData
   oauth2Config: {
     // "authorizeUrl" could also be a function returning a string url
     authorizeUrl: {
       method: 'GET',
-      url:
-        'https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize',
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize',
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
         state: '{{bundle.inputData.state}}',
@@ -22,8 +20,7 @@ const authentication = {
     // "getAccessToken" could also be a function returning an object
     getAccessToken: {
       method: 'POST',
-      url:
-        'https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token',
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token',
       body: {
         code: '{{bundle.inputData.code}}',
         client_id: '{{process.env.CLIENT_ID}}',
@@ -57,7 +54,7 @@ const addBearerHeader = (request, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [addBearerHeader],
   // ...
 };

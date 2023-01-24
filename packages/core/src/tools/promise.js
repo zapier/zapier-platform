@@ -76,11 +76,11 @@ ZapierPromise.makeContext = function (attachErrorTrace) {
     contextifyOnce(err, attachErrorTrace, frameStack);
   return {
     isContext: true,
-    frameStack: frameStack,
+    frameStack,
     addContext(msg) {
       frameStack.push(msg);
     },
-    attachErrorTraceOnce: attachErrorTraceOnce,
+    attachErrorTraceOnce,
   };
 };
 

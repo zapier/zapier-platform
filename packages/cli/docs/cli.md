@@ -66,7 +66,7 @@ If you re-run this command on an existing directory it will leave existing files
 You'll need to do a `zapier push` before the new version is visible in the editor, but otherwise you're good to go.
 
 **Arguments**
-* (required) `integrationId` | To get the integration/app ID, go to "https://developer.zapier.com//app/developer", click on an integration, and copy the number directly after "/app/" in the URL.
+* (required) `integrationId` | To get the integration/app ID, go to "https://developer.zapier.com", click on an integration, and copy the number directly after "/app/" in the URL.
 * (required) `path` | Relative to your current path - IE: `.` for current directory.
 
 **Flags**

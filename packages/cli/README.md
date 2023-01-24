@@ -469,7 +469,7 @@ const authentication = {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   // ...
 };
 
@@ -504,7 +504,7 @@ const authentication = {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   // ...
 };
 
@@ -521,8 +521,7 @@ const authentication = {
   type: 'custom',
   // "test" could also be a function
   test: {
-    url:
-      'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
+    url: 'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
   },
   fields: [
     {
@@ -551,7 +550,7 @@ const addApiKeyToHeader = (request, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [addApiKeyToHeader],
   // ...
 };
@@ -623,7 +622,7 @@ const includeSessionKeyHeader = (request, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [includeSessionKeyHeader],
   // ...
 };
@@ -741,7 +740,7 @@ const includeAccessToken = (req, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [includeAccessToken],
   // ...
 };
@@ -794,16 +793,14 @@ Your auth definition would look something like this:
 const authentication = {
   type: 'oauth2',
   test: {
-    url:
-      'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
+    url: 'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
   },
   // you can provide additional fields for inclusion in authData
   oauth2Config: {
     // "authorizeUrl" could also be a function returning a string url
     authorizeUrl: {
       method: 'GET',
-      url:
-        'https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize',
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize',
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
         state: '{{bundle.inputData.state}}',
@@ -815,8 +812,7 @@ const authentication = {
     // "getAccessToken" could also be a function returning an object
     getAccessToken: {
       method: 'POST',
-      url:
-        'https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token',
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token',
       body: {
         code: '{{bundle.inputData.code}}',
         client_id: '{{process.env.CLIENT_ID}}',
@@ -850,7 +846,7 @@ const addBearerHeader = (request, z, bundle) => {
 
 const App = {
   // ...
-  authentication: authentication,
+  authentication,
   beforeRequest: [addBearerHeader],
   // ...
 };
@@ -2402,7 +2398,7 @@ const App = {
   // don't forget to register hydrators here!
   // it can be imported from any module
   hydrators: {
-    getMovieDetails: getMovieDetails,
+    getMovieDetails,
   },
 
   triggers: {
@@ -3310,7 +3306,7 @@ const performWithoutAsync = (z, bundle) => {
       return z.request(
         'https://5ae7ad3547436a00143e104d.mockapi.io/api/recipes',
         {
-          params: { cursor: cursor }, // if cursor is null, it's ignored here
+          params: { cursor }, // if cursor is null, it's ignored here
         }
       );
     })
@@ -3336,7 +3332,7 @@ const performWithAsync = async (z, bundle) => {
     {
       // if cursor is null, it's sent as an empty query
       //   param and should be ignored by the server
-      params: { cursor: cursor },
+      params: { cursor },
     }
   );
 
