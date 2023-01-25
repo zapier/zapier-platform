@@ -99,7 +99,8 @@
         "./src/oclif/hooks/deprecated",
         "./src/oclif/hooks/updateNotifier",
         "./src/oclif/hooks/checkValidNodeVersion",
-        "./src/oclif/hooks/renderMarkdownHelp"
+        "./src/oclif/hooks/renderMarkdownHelp",
+        "./src/oclif/hooks/getAppRegistrationFieldChoices"
       ]
     },
     "topics": {
