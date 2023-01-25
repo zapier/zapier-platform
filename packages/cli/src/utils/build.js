@@ -43,6 +43,8 @@ const {
   validateApp,
 } = require('./api');
 
+const checkMissingAppInfo = require('./check-missing-app-info');
+
 const { runCommand, isWindows } = require('./misc');
 
 const debug = require('debug')('zapier:build');
@@ -497,6 +499,7 @@ const buildAndOrUpload = async (
   let app;
   if (upload) {
     app = await getWritableApp();
+    checkMissingAppInfo(app);
   }
 
   if (build) {
