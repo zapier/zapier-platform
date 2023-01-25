@@ -86,7 +86,7 @@ ConvertCommand.flags = buildFlags({
 });
 ConvertCommand.description = `Convert a Visual Builder integration to a CLI integration.
 
-The resulting CLI integraiton will be identical to its Visual Builder version and ready to push and use immediately!
+The resulting CLI integration will be identical to its Visual Builder version and ready to push and use immediately!
 
 If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
