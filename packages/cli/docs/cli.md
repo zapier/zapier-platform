@@ -59,7 +59,7 @@ This command is typically followed by `zapier upload`.
 
 **Usage**: `zapier convert INTEGRATIONID PATH`
 
-The resulting CLI integraiton will be identical to its Visual Builder version and ready to push and use immediately!
+The resulting CLI integration will be identical to its Visual Builder version and ready to push and use immediately!
 
 If you re-run this command on an existing directory it will leave existing files alone and not clobber them.
 
