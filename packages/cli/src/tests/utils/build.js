@@ -45,7 +45,10 @@ describe('build (runs slowly)', function () {
   it('should list only required files', async function () {
     this.retries(3); // retry up to 3 times
 
-    const smartPaths = await build.requiredFiles(tmpDir, [entryPoint]);
+    const smartPaths = await build.requiredFiles({
+      cwd: tmpDir,
+      entryPoints: [entryPoint],
+    });
 
     // check that only the required lodash files are grabbed
     smartPaths.should.containEql('index.js');

@@ -40,7 +40,7 @@ This command does the following:
 
 * Generates and validates app definition.
 
-* Detects dependencies via browserify (optional, on by default)
+* Detects dependencies via `dependency-tree` (optional, on by default)
 
 * Zips up all needed `.js` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your `.zapierapprc`.
 
