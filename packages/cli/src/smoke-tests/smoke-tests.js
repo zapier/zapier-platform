@@ -204,6 +204,34 @@ describe('smoke tests - setup will take some time', function () {
     result.should.be.Array();
   });
 
+  describe('zapier register should validate enum fields that are passed in as flags', function () {
+    it('zapier register should throw error for invalid role', () => {
+      (() => {
+        runCommand(context.cliBin, ['register', '--role', 'invalidRole']);
+      }).should.throw(/invalidRole is not a valid value for role/);
+    });
+
+    it('zapier register should throw error for invalid audience', () => {
+      (() => {
+        runCommand(context.cliBin, [
+          'register',
+          '--audience',
+          'invalidAudience',
+        ]);
+      }).should.throw(/invalidAudience is not a valid value for audience/);
+    });
+
+    it('zapier register should throw error for invalid category', () => {
+      (() => {
+        runCommand(context.cliBin, [
+          'register',
+          '--category',
+          'invalidCategory',
+        ]);
+      }).should.throw(/invalidCategory is not a valid value for category/);
+    });
+  });
+
   describe('zapier init w/ templates (runs very slowly)', () => {
     const testableTemplates = [
       'basic-auth',
