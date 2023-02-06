@@ -16,7 +16,15 @@ module.exports = async function (options) {
   }
 
   const enumFieldChoices = {};
-  const formFields = await callAPI('/apps/fields-choices');
+  let formFields;
+
+  try {
+    formFields = await callAPI('/apps/fields-choices');
+  } catch (e) {
+    this.error(
+      'Unable to connect to Zapier API. Please check your connection and try again.'
+    );
+  }
 
   for (const fieldName of ['intention', 'role', 'app_category']) {
     enumFieldChoices[fieldName] = formFields[fieldName];
