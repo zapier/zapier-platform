@@ -14,7 +14,7 @@ const BasicHookOperationSchema = JSON.parse(
 );
 
 const hookTechnicallyRequired =
-  'Note: this is required for public apps to ensure the best UX for the end-user. For private apps, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.';
+  'Note: this is required for public apps to ensure the best UX for the end-user. For private apps, this is strongly recommended for testing REST Hooks. Otherwise, you can ignore warnings about this property with the `--without-style` flag during `zapier push`.';
 
 BasicHookOperationSchema.id = '/BasicHookOperationSchema';
 
@@ -41,7 +41,7 @@ BasicHookOperationSchema.properties = {
   },
   performList: {
     description:
-      'Can get "live" data on demand instead of waiting for a hook. If you find yourself reaching for this - consider resources and their built-in hook/list methods. ' +
+      'Fetch a list of items on demand during testing instead of waiting for a hook. You can also consider resources and their built-in hook/list methods. ' +
       hookTechnicallyRequired,
     oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
     docAnnotation: {
