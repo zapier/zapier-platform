@@ -1034,7 +1034,7 @@ When a trigger function returns an empty array, the Zap will not trigger. For RE
 
 #### Returning Line Items (Array of Objects)
 
-In some cases, you may want to include multiple items in the data you return for Searches or Creates. To do that, return the set of items as an array of objects under a descriptive key. This may be as part of another object (for example, items in an invoice) or as multiple top-level items.
+In some cases, you may want to include multiple items in the data you return for Searches or Creates. To do that, return the set of items as an array of objects under a descriptive key. This may be as part of another object (like items in an invoice) or as multiple top-level items.
 
 For example, a Create Order action returning an order with multiple items might look like this:
 
