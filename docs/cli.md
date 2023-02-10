@@ -446,8 +446,8 @@ This will change the  `./.zapierapprc` (which identifies this directory as holdi
 
 **Flags**
 * `-D, --desc` | A sentence describing your app in 140 characters or less, e.g. "Trello is a team collaboration tool to organize tasks and keep projects on track."
-* `-u, --url` | The homepage URL of your app. This will also be used as the email domain that would allow team members to join your integration as a Collaborator. Learn more.
-* `-a, --audience` | Are you building a public or private integration? Public integration development receives priority support and launch promotion from the Zapier team.
+* `-u, --url` | The homepage URL of your app, e.g., https://example.com.
+* `-a, --audience` | Are you building a public or private integration?
 * `-r, --role` | What is your relationship with the app you're integrating with Zapier?
 * `-c, --category` | How would you categorize your app? Choose the most appropriate option for your app's core features.
 * `-s, --subscribe` | Get tips and recommendations about this integration along with our monthly newsletter that details the performance of your integration and the latest Zapier news.
