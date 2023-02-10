@@ -154,7 +154,7 @@ RegisterCommand.flags = buildFlags({
     audience: flags.string({
       char: 'a',
       description:
-        'Are you building a public or private integration? Public integration development receives priority support and launch promotion from the Zapier team.',
+        'Are you building a public or private integration?',
     }),
     role: flags.string({
       char: 'r',
