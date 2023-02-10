@@ -149,7 +149,7 @@ RegisterCommand.flags = buildFlags({
     url: flags.string({
       char: 'u',
       description:
-        'The homepage URL of your app. This will also be used as the email domain that would allow team members to join your integration as a Collaborator.',
+        'The homepage URL of your app, e.g., https://example.com.',
     }),
     audience: flags.string({
       char: 'a',
