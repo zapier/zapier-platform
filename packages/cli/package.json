@@ -59,7 +59,6 @@
     "lodash": "4.17.21",
     "marked": "4.2.12",
     "marked-terminal": "5.1.1",
-    "nock": "^13.3.0",
     "node-fetch": "2.6.7",
     "ora": "5.4.0",
     "parse-gitignore": "0.5.1",
@@ -75,10 +74,13 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.10",
+    "@oclif/test": "^1.2.9",
+    "chai": "^4.3.7",
     "decompress": "4.2.1",
     "litdoc": "1.5.6",
     "markdown-toc": "^1",
     "mock-fs": "^5.2.0",
+    "nock": "^13.3.0",
     "stdout-stderr": "0.1.13",
     "yamljs": "0.3.0"
   },
