@@ -1,5 +1,5 @@
 const ZapierBaseCommand = require('../ZapierBaseCommand');
-const { CURRENT_APP_FILE } = require('../../constants');
+const { CURRENT_APP_FILE, MAX_DESCRIPTION_LENGTH } = require('../../constants');
 const { buildFlags } = require('../buildFlags');
 const { callAPI, writeLinkedAppConfig } = require('../../utils/api');
 
@@ -9,9 +9,12 @@ class RegisterCommand extends ZapierBaseCommand {
   async perform() {
     // Flag validation
     this._validateEnumFlags();
-    if ('desc' in this.flags && this.flags.desc.length >= 140) {
+    if (
+      'desc' in this.flags &&
+      this.flags.desc.length >= MAX_DESCRIPTION_LENGTH
+    ) {
       throw new Error(
-        'Please provide a description that is 140 characters or less.'
+        `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`
       );
     }
 
@@ -75,8 +78,8 @@ class RegisterCommand extends ZapierBaseCommand {
     appMeta.description = this.flags.desc?.trim();
     if (!appMeta.description) {
       appMeta.description = await this.prompt(
-        'Please provide a sentence describing your app in 140 characters or less.',
-        { required: true, charLimit: 140 }
+        `Please provide a sentence describing your app in ${MAX_DESCRIPTION_LENGTH} characters or less.`,
+        { required: true, charLimit: MAX_DESCRIPTION_LENGTH }
       );
     }
 
@@ -150,8 +153,7 @@ RegisterCommand.flags = buildFlags({
   commandFlags: {
     desc: flags.string({
       char: 'D',
-      description:
-        'A sentence describing your app in 140 characters or less, e.g. "Trello is a team collaboration tool to organize tasks and keep projects on track."',
+      description: `A sentence describing your app in ${MAX_DESCRIPTION_LENGTH} characters or less, e.g. "Trello is a team collaboration tool to organize tasks and keep projects on track."`,
     }),
     url: flags.string({
       char: 'u',

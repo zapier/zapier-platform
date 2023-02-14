@@ -1,5 +1,5 @@
 const oclif = require('@oclif/test');
-const constants = require('../constants');
+const { BASE_ENDPOINT, MAX_DESCRIPTION_LENGTH } = require('../constants');
 const registerFieldChoices = require('./fixtures/registerFieldChoices');
 
 describe('RegisterCommand', () => {
@@ -14,7 +14,7 @@ describe('RegisterCommand', () => {
         oclif
           .expect(ctx.message)
           .to.contain(
-            'Please provide a description that is 140 characters or less.'
+            `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`
           );
       })
       .it('zapier register should enforce character limit on desc flag');
@@ -22,7 +22,7 @@ describe('RegisterCommand', () => {
 
   describe('zapier register should validate enum fields that are passed in as flags', function () {
     function getTestObj() {
-      return oclif.test.nock(constants.BASE_ENDPOINT, (mockApi) =>
+      return oclif.test.nock(BASE_ENDPOINT, (mockApi) =>
         mockApi
           .get('/api/platform/cli/apps/fields-choices')
           .reply(200, registerFieldChoices)

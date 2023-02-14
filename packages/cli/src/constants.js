@@ -57,6 +57,8 @@ const IS_TESTING =
   argvStr.includes('jest') ||
   (process.env.NODE_ENV || '').toLowerCase().startsWith('test');
 
+const MAX_DESCRIPTION_LENGTH = 140;
+
 module.exports = {
   ANALYTICS_KEY,
   ANALYTICS_MODES,
@@ -76,6 +78,7 @@ module.exports = {
   ISSUES_URL,
   LAMBDA_VERSION,
   LEGACY_RUNNER_PACKAGE,
+  MAX_DESCRIPTION_LENGTH,
   NODE_VERSION,
   NODE_VERSION_CLI_REQUIRES,
   PACKAGE_NAME,
