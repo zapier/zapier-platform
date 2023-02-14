@@ -45,7 +45,7 @@ class RegisterCommand extends ZapierBaseCommand {
 
     for (const flag of Object.keys(this.flags)) {
       // Only validate user input for enum flags (in flagFieldMappings)
-      if (!Object.prototype.hasOwnProperty.call(flagFieldMappings, flag)) {
+      if (!flagFieldMappings[flag]) {
         continue;
       }
 
