@@ -43,7 +43,7 @@ class RegisterCommand extends ZapierBaseCommand {
       category: 'app_category',
     };
 
-    for (const flag of Object.keys(this.flags)) {
+    for (const [flag, flagValue] of Object.entries(this.flags)) {
       // Only validate user input for enum flags (in flagFieldMappings)
       if (!flagFieldMappings[flag]) {
         continue;
@@ -53,13 +53,9 @@ class RegisterCommand extends ZapierBaseCommand {
       const enumFieldChoices = this.config.enumFieldChoices[
         flagFieldMappings[flag]
       ];
-      if (
-        !enumFieldChoices.find((option) => option.value === this.flags[flag])
-      ) {
+      if (!enumFieldChoices.find((option) => option.value === flagValue)) {
         throw new Error(
-          `${
-            this.flags[flag]
-          } is not a valid value for ${flag}. Must be one of the following: ${enumFieldChoices
+          `${flagValue} is not a valid value for ${flag}. Must be one of the following: ${enumFieldChoices
             .map((option) => option.value)
             .join(', ')}`
         );
