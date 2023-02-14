@@ -154,14 +154,52 @@ class ZapierBaseCommand extends Command {
   }
 
   /**
+   *
+   * @param {Object} opts options object (as expected for this.prompt())
+   * @returns {string|boolean} Boolean if validation passes, string w/ error message if it doesn't
+   */
+  _getCustomValidatation(opts) {
+    return (input) => {
+      const validators = {
+        required: (input) =>
+          input.trim() === '' ? 'This field is required.' : true,
+        charLimit: (input, charLimit) =>
+          input.length > charLimit
+            ? `Please provide a value ${charLimit} characters or less.`
+            : true,
+      };
+      let aggregateResult = true;
+
+      for (const key in opts) {
+        if (typeof validators[key] === 'undefined') {
+          continue;
+        }
+
+        let individualResult;
+        if (validators[key].length > 1) {
+          individualResult = validators[key](input, opts[key]);
+        } else {
+          individualResult = validators[key](input);
+        }
+
+        if (individualResult !== true) {
+          aggregateResult = individualResult;
+          break;
+        }
+      }
+
+      return aggregateResult;
+    };
+  }
+
+  /**
    * get user input
    * @param {string} question the question to ask the user
    * @param {object} opts `inquierer.js` opts ([read more](https://github.com/SBoudrias/Inquirer.js/#question))
    */
   async prompt(question, opts = {}) {
-    if (typeof opts.required !== 'undefined' && opts.required) {
-      opts.validate = (input) =>
-        input.trim() === '' ? 'This field is required.' : true;
+    if (Object.keys(opts).length) {
+      opts.validate = this._getCustomValidatation(opts);
     }
     const { ans } = await inquirer.prompt({
       type: 'string',

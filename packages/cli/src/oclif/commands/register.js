@@ -7,7 +7,14 @@ const { flags } = require('@oclif/command');
 
 class RegisterCommand extends ZapierBaseCommand {
   async perform() {
+    // Flag validation
     this._validateEnumFlags();
+    if ('desc' in this.flags && this.flags.desc.length >= 140) {
+      throw new Error(
+        'Please provide a description that is 140 characters or less.'
+      );
+    }
+
     const appMeta = await this._promptForAppMeta();
 
     this.startSpinner(`Registering your new integration "${appMeta.title}"`);
@@ -69,7 +76,7 @@ class RegisterCommand extends ZapierBaseCommand {
     if (!appMeta.description) {
       appMeta.description = await this.prompt(
         'Please provide a sentence describing your app in 140 characters or less.',
-        { required: true }
+        { required: true, charLimit: 140 }
       );
     }
 
@@ -148,13 +155,11 @@ RegisterCommand.flags = buildFlags({
     }),
     url: flags.string({
       char: 'u',
-      description:
-        'The homepage URL of your app, e.g., https://example.com.',
+      description: 'The homepage URL of your app, e.g., https://example.com.',
     }),
     audience: flags.string({
       char: 'a',
-      description:
-        'Are you building a public or private integration?',
+      description: 'Are you building a public or private integration?',
     }),
     role: flags.string({
       char: 'r',
