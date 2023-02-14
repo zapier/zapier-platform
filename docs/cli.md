@@ -456,6 +456,9 @@ This will change the  `./.zapierapprc` (which identifies this directory as holdi
 **Examples**
 * `zapier register`
 * `zapier register "My Cool Integration"`
+* `zapier register "My Cool Integration" --desc "My Cool Integration helps you integrate your apps with the apps that you need." --no-subscribe`
+* `zapier register "My Cool Integration" --url "https://www.zapier.com" --audience private --role employee --category marketing-automation`
+* `zapier register --subscribe`
 
 
 ## scaffold
