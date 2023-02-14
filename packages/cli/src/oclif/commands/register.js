@@ -21,7 +21,10 @@ class RegisterCommand extends ZapierBaseCommand {
     const appMeta = await this._promptForAppMeta();
 
     this.startSpinner(`Registering your new integration "${appMeta.title}"`);
-    const app = await callAPI('/apps', { method: 'POST', body: appMeta });
+    const app = await callAPI('/apps?formId=create', {
+      method: 'POST',
+      body: appMeta,
+    });
     this.stopSpinner();
     this.startSpinner(
       `Linking app to current directory with \`${CURRENT_APP_FILE}\``
