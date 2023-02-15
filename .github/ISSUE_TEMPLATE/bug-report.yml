@@ -1,0 +1,88 @@
+name: Bug Report
+description: You are seeing an error message in your integration code or in the CLI
+title: "[Bug]: "
+labels: ["bug"]
+body:
+- type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to fill out this bug report!
+
+ - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Reproduction Steps
+      description: If the error comes when you run a certain command, please paste all the options you ran it with. If the error comes from a specific trigger/action at runtime, please include as much of the code from that step as you're able to.
+      placeholder: |
+        1.
+        2.
+    validations:
+      required: true
+
+
+- type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to fill out this bug report!
+
+- type: input
+  attributes:
+    label: Zapier Platform version
+    description: Obtained via running `zapier -v`
+    value: zapier version
+  validations:
+    required: true
+
+
+- type: input
+  attributes:
+    label: Node.js version
+    description: Obtained via running `node --version`
+    value: node version
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Your Operating System
+    description: What operating system are you using?
+    placeholder: Example: macOS 13.1
+    value: operating system
+  validations:
+    required: false
+
+
+- type: input
+  attributes:
+    label: npm/yarn version
+    description: Obtained via running `npm --version` or `yarn --version`
+    value: npm version
+  validations:
+    required: false
+
+- type: input
+  attributes:
+    label: App ID
+    description: Your App ID is found in the .zapierapprc file
+    value: app id
+  validations:
+    required: false
+
+
+ - type: textarea
+    id: more-details
+    attributes:
+      label: More Details
+      description: Other links, resources, or anything that will give us more context about the issue that you are encountering.
+    validations:
+      required: false
+
+
