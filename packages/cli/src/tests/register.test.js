@@ -81,13 +81,15 @@ describe('RegisterCommand', () => {
     }
 
     getTestObj()
+      .stdout()
+      .stderr()
       .command([
         'register',
-        '"My Cool Integration"',
+        'My Cool Integration',
         '--desc',
-        '"My Cool Integration helps you integrate your apps with the apps that you need."',
+        'My Cool Integration helps you integrate your apps with the apps that you need.',
         '--url',
-        '"https://www.zapier.com"',
+        'https://www.zapier.com',
         '--audience',
         'private',
         '--role',
