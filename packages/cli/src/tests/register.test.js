@@ -9,7 +9,7 @@ describe('RegisterCommand', () => {
   // Delete generated .zapierapprc file after all tests run
   after(() => {
     const apprcFile = './.zapierapprc';
-    if (fs.statSync(apprcFile, { throwIfNoEntry: false })) {
+    if (fs.existsSync(apprcFile)) {
       fs.unlinkSync(apprcFile);
     }
   });
