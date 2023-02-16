@@ -3,12 +3,12 @@ description: You are seeing an error message in your integration code or in the 
 title: "[Bug]: "
 labels: ["bug"]
 body:
-- type: markdown
+  - type: markdown
     attributes:
       value: |
         Thank you for taking the time to fill out this bug report!
 
- - type: textarea
+  - type: textarea
     id: bug-description
     attributes:
       label: Bug Description
@@ -27,51 +27,48 @@ body:
     validations:
       required: true
 
-- type: input
-  attributes:
-    label: Zapier Platform version
-    description: Obtained via running `zapier -v`
-    value: zapier version
-  validations:
-    required: true
+  - type: input
+    attributes:
+      label: Zapier Platform version
+      description: Obtained via running `zapier -v`
+      value: zapier version
+    validations:
+      required: true
 
+  - type: input
+    attributes:
+      label: Node.js version
+      description: Obtained via running `node --version`
+      value: node version
+    validations:
+      required: true
 
-- type: input
-  attributes:
-    label: Node.js version
-    description: Obtained via running `node --version`
-    value: node version
-  validations:
-    required: true
+  - type: textarea
+    attributes:
+      label: Your Operating System
+      description: What operating system are you using?
+      placeholder: (Example) macOS 13.1
+      value: operating system
+    validations:
+      required: false
 
-- type: textarea
-  attributes:
-    label: Your Operating System
-    description: What operating system are you using?
-    placeholder: Example: macOS 13.1
-    value: operating system
-  validations:
-    required: false
+  - type: input
+    attributes:
+      label: npm/yarn version
+      description: Obtained via running `npm --version` or `yarn --version`
+      value: npm version
+    validations:
+      required: false
 
+  - type: input
+    attributes:
+      label: App ID
+      description: Your App ID is found in the .zapierapprc file
+      value: app id
+    validations:
+      required: false
 
-- type: input
-  attributes:
-    label: npm/yarn version
-    description: Obtained via running `npm --version` or `yarn --version`
-    value: npm version
-  validations:
-    required: false
-
-- type: input
-  attributes:
-    label: App ID
-    description: Your App ID is found in the .zapierapprc file
-    value: app id
-  validations:
-    required: false
-
-
- - type: textarea
+  - type: textarea
     id: more-details
     attributes:
       label: More Details

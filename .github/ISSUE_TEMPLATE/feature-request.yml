@@ -18,7 +18,6 @@ body:
     validations:
       required: false
 
-
   - type: textarea
     id: desired-behavior
     attributes:
