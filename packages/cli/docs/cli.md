@@ -445,11 +445,20 @@ This will change the  `./.zapierapprc` (which identifies this directory as holdi
 * `title` | Your integrations's public title. Asked interactively if not present.
 
 **Flags**
+* `-D, --desc` | A sentence describing your app in 140 characters or less, e.g. "Trello is a team collaboration tool to organize tasks and keep projects on track."
+* `-u, --url` | The homepage URL of your app, e.g., https://example.com.
+* `-a, --audience` | Are you building a public or private integration?
+* `-r, --role` | What is your relationship with the app you're integrating with Zapier?
+* `-c, --category` | How would you categorize your app? Choose the most appropriate option for your app's core features.
+* `-s, --subscribe` | Get tips and recommendations about this integration along with our monthly newsletter that details the performance of your integration and the latest Zapier news.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
 * `zapier register`
 * `zapier register "My Cool Integration"`
+* `zapier register "My Cool Integration" --desc "My Cool Integration helps you integrate your apps with the apps that you need." --no-subscribe`
+* `zapier register "My Cool Integration" --url "https://www.zapier.com" --audience private --role employee --category marketing-automation`
+* `zapier register --subscribe`
 
 
 ## scaffold

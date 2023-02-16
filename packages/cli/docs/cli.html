@@ -893,10 +893,19 @@ a code {
 </blockquote><p><strong>Usage</strong>: <code>zapier register [TITLE]</code></p><p>After running this, you can run <code>zapier push</code> to build and upload your integration for use in the Zapier editor.</p><p>This will change the  <code>./.zapierapprc</code> (which identifies this directory as holding code for a specific integration).</p><p><strong>Arguments</strong></p><ul>
 <li><code>title</code> | Your integrations&apos;s public title. Asked interactively if not present.</li>
 </ul><p><strong>Flags</strong></p><ul>
+<li><code>-D, --desc</code> | A sentence describing your app in 140 characters or less, e.g. &quot;Trello is a team collaboration tool to organize tasks and keep projects on track.&quot;</li>
+<li><code>-u, --url</code> | The homepage URL of your app, e.g., <a href="https://example.com">https://example.com</a>.</li>
+<li><code>-a, --audience</code> | Are you building a public or private integration?</li>
+<li><code>-r, --role</code> | What is your relationship with the app you&apos;re integrating with Zapier?</li>
+<li><code>-c, --category</code> | How would you categorize your app? Choose the most appropriate option for your app&apos;s core features.</li>
+<li><code>-s, --subscribe</code> | Get tips and recommendations about this integration along with our monthly newsletter that details the performance of your integration and the latest Zapier news.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier register</code></li>
 <li><code>zapier register &quot;My Cool Integration&quot;</code></li>
+<li><code>zapier register &quot;My Cool Integration&quot; --desc &quot;My Cool Integration helps you integrate your apps with the apps that you need.&quot; --no-subscribe</code></li>
+<li><code>zapier register &quot;My Cool Integration&quot; --url &quot;https://www.zapier.com&quot; --audience private --role employee --category marketing-automation</code></li>
+<li><code>zapier register --subscribe</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
