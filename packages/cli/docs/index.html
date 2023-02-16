@@ -267,7 +267,10 @@ a code {
 </ul>
 </li>
 <li><a href="#triggerssearchescreates">Triggers/Searches/Creates</a><ul>
-<li><a href="#return-types">Return Types</a></li>
+<li><a href="#return-types">Return Types</a><ul>
+<li><a href="#returning-line-items-array-of-objects">Returning Line Items (Array of Objects)</a></li>
+</ul>
+</li>
 <li><a href="#fallback-sample">Fallback Sample</a></li>
 </ul>
 </li>
@@ -474,7 +477,10 @@ a code {
 </ul>
 </li>
 <li><a href="#triggerssearchescreates">Triggers/Searches/Creates</a><ul>
-<li><a href="#return-types">Return Types</a></li>
+<li><a href="#return-types">Return Types</a><ul>
+<li><a href="#returning-line-items-array-of-objects">Returning Line Items (Array of Objects)</a></li>
+</ul>
+</li>
 <li><a href="#fallback-sample">Fallback Sample</a></li>
 </ul>
 </li>
@@ -1853,7 +1859,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you&apos;re trying to pass the wrong type back. For reference, each expects:</p>
+      <p>Each of the 3 types of function should return a certain data type for use by the platform. As of core v1.0.11, there are automated checks to let you know when you&apos;re trying to pass the wrong type back. For reference, each expects:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -1874,7 +1880,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 <tr>
 <td>Trigger</td>
 <td>Array</td>
-<td>0 or more objects; passed to the <a href="https://zapier.com/developer/documentation/v2/deduplication/">deduper</a> if polling</td>
+<td>0 or more objects; passed to the <a href="https://platform.zapier.com/docs/dedupe/">deduper</a> if polling</td>
 </tr>
 <tr>
 <td>Search</td>
@@ -1882,7 +1888,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 <td>0 or more objects. Only the first object will be returned, so if len &gt; 1, put the best match first</td>
 </tr>
 <tr>
-<td>Action</td>
+<td>Create</td>
 <td>Object</td>
 <td>Return values are evaluated by <a href="https://lodash.com/docs#isPlainObject"><code>isPlainObject</code></a></td>
 </tr>
@@ -1897,6 +1903,60 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>When a trigger function returns an empty array, the Zap will not trigger. For REST Hook triggers, this can be used to filter data if the available subscription options are not specific enough for the Zap&apos;s needs.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h4 id="returning-line-items-array-of-objects">Returning Line Items (Array of Objects)</h4>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>In some cases, you may want to include multiple items in the data you return for Searches or Creates. To do that, return the set of items as an array of objects under a descriptive key. This may be as part of another object (like items in an invoice) or as multiple top-level items.</p><p>For example, a Create Order action returning an order with multiple items might look like this:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code>order = {
+  name: &apos;Zap Zaplar&apos;,
+  total_cost: 25.96,
+  items: [
+    { name: &apos;Zapier T-Shirt&apos;, unit_price: 11.99, quantity: 3, line_amount: 35.97, category: &apos;shirts&apos; },
+    { name: &apos;Orange Widget&apos;, unit_price: 7.99, quantity: 10, line_amount: 79.90, category: &apos;widgets&apos; },
+    { name:&apos;Stuff&apos;, unit_price: 2.99, quantity: 7, line_amount: 20.93, category: &apos;stuff&apos; },
+    { name: &apos;Allbird Shoes&apos;, unit_price: 2.99, quantity: 7, line_amount: 20.93, category: &apos;shoes&apos; },
+  ],
+  zip: 01002
+}
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>While a Find Users search could return multiple items under an object key within an array, like this:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code>result = [{
+  users: [
+      { name: &apos;Zap Zaplar&apos;, age: 12, city: &apos;Columbia&apos;, region: &apos;Missouri&apos; },
+      { name: &apos;Orange Crush&apos;, age: 28, city: &apos;West Ocean City&apos;, region: &apos;Maryland&apos; },
+      { name: &apos;Lego Brick&apos;, age: 91, city: &apos;Billund&apos;, region: &apos;Denmark&apos; },
+    ],
+  }];
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>A standard search would return just the inner array of users, and only the first user would be provided as a final result. Returning line items instead means that the &quot;first result&quot; return is the object containing all the user details within it.</p><p>Using the standard approach is recommended, because not all Zapier integrations support line items directly, so users may need to take additional actions to reformat this data for use in their Zaps. More detail on that at <a href="https://zapier.com/help/create/basics/use-line-items-in-zaps">Use line items in Zaps</a>. However, there are use cases where returning multiple results is helpful enough to outweigh that additional effort.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

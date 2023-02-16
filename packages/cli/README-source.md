@@ -529,15 +529,51 @@ You can find more details on the definition for each by looking at the [Trigger 
 > To add a trigger, search, or create to an existing integration, run `zapier scaffold [trigger|search|create] [noun]` to create the necessary files to your project. For example, `zapier scaffold trigger post` will create a new trigger called "New Post".
 ### Return Types
 
-Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you're trying to pass the wrong type back. For reference, each expects:
+Each of the 3 types of function should return a certain data type for use by the platform. There are automated checks to let you know when you're trying to pass the wrong type back. For reference, each expects:
 
 | Method  | Return Type | Notes                                                                                                                |
 |---------|-------------|----------------------------------------------------------------------------------------------------------------------|
-| Trigger | Array       | 0 or more objects; passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) if polling  |
+| Trigger | Array       | 0 or more objects; passed to the [deduper](https://platform.zapier.com/docs/dedupe/) if polling  |
 | Search  | Array       | 0 or more objects. Only the first object will be returned, so if len > 1, put the best match first                   |
-| Action  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
+| Create  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
 
 When a trigger function returns an empty array, the Zap will not trigger. For REST Hook triggers, this can be used to filter data if the available subscription options are not specific enough for the Zap's needs.
+
+#### Returning Line Items (Array of Objects)
+
+In some cases, you may want to include multiple items in the data you return for Searches or Creates. To do that, return the set of items as an array of objects under a descriptive key. This may be as part of another object (like items in an invoice) or as multiple top-level items.
+
+For example, a Create Order action returning an order with multiple items might look like this:
+
+```
+order = {
+  name: 'Zap Zaplar',
+  total_cost: 25.96,
+  items: [
+    { name: 'Zapier T-Shirt', unit_price: 11.99, quantity: 3, line_amount: 35.97, category: 'shirts' },
+    { name: 'Orange Widget', unit_price: 7.99, quantity: 10, line_amount: 79.90, category: 'widgets' },
+    { name:'Stuff', unit_price: 2.99, quantity: 7, line_amount: 20.93, category: 'stuff' },
+    { name: 'Allbird Shoes', unit_price: 2.99, quantity: 7, line_amount: 20.93, category: 'shoes' },
+  ],
+  zip: 01002
+}
+```
+
+While a Find Users search could return multiple items under an object key within an array, like this:
+
+```
+result = [{
+  users: [
+      { name: 'Zap Zaplar', age: 12, city: 'Columbia', region: 'Missouri' },
+      { name: 'Orange Crush', age: 28, city: 'West Ocean City', region: 'Maryland' },
+      { name: 'Lego Brick', age: 91, city: 'Billund', region: 'Denmark' },
+    ],
+  }];
+```
+
+A standard search would return just the inner array of users, and only the first user would be provided as a final result. Returning line items instead means that the "first result" return is the object containing all the user details within it.
+
+Using the standard approach is recommended, because not all Zapier integrations support line items directly, so users may need to take additional actions to reformat this data for use in their Zaps. More detail on that at [Use line items in Zaps](https://zapier.com/help/create/basics/use-line-items-in-zaps). However, there are use cases where returning multiple results is helpful enough to outweigh that additional effort.
 
 ### Fallback Sample
 In cases where Zapier needs to show an example record to the user, but we are unable to get a live example from the API, Zapier will fallback to this hard-coded sample. This should reflect the data structure of the Trigger's perform method, and have dummy values that we can show to any user.
