@@ -7,6 +7,7 @@ const { buildFlags } = require('../buildFlags');
 const { callAPI } = require('../../utils/api');
 const { flattenCheckResult } = require('../../utils/display');
 const { getVersionChangelog } = require('../../utils/changelog');
+const checkMissingAppInfo = require('../../utils/check-missing-app-info');
 
 const serializeErrors = (errors) => {
   const opener = 'Promotion failed for the following reasons:\n\n';
@@ -27,6 +28,8 @@ const serializeErrors = (errors) => {
 class PromoteCommand extends BaseCommand {
   async perform() {
     const app = await this.getWritableApp();
+
+    checkMissingAppInfo(app);
 
     const version = this.args.version;
     const assumeYes = 'yes' in this.flags;
