@@ -11,7 +11,7 @@ class RegisterCommand extends ZapierBaseCommand {
     this._validateEnumFlags();
     if (
       'desc' in this.flags &&
-      this.flags.desc.length >= MAX_DESCRIPTION_LENGTH
+      this.flags.desc.length > MAX_DESCRIPTION_LENGTH
     ) {
       throw new Error(
         `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`
@@ -50,9 +50,8 @@ class RegisterCommand extends ZapierBaseCommand {
       }
 
       // Check user input against this.config.enumFieldChoices (retrieved in getAppRegistrationFieldChoices hook)
-      const enumFieldChoices = this.config.enumFieldChoices[
-        flagFieldMappings[flag]
-      ];
+      const enumFieldChoices =
+        this.config.enumFieldChoices[flagFieldMappings[flag]];
       if (!enumFieldChoices.find((option) => option.value === flagValue)) {
         throw new Error(
           `${flagValue} is not a valid value for ${flag}. Must be one of the following: ${enumFieldChoices
