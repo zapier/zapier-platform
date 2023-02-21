@@ -1,0 +1,29 @@
+name: Feature Request
+description: You would like to submit a new feature request for the Zapier Platform
+title: "[Feature Request]: "
+labels: ["feature-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We appreciate your feedback and ideas on how to improve the Zapier Platform! Please be sure to include as much details & additional resources if possible.
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Current Behavior
+      description: If relevant, please describe the current behavior you are suggesting improvements for.
+      placeholder: Describe the current behavior
+      value: "Current behavior here"
+    validations:
+      required: false
+
+  - type: textarea
+    id: desired-behavior
+    attributes:
+      label: Desired Behavior / Feature Request
+      description: Describe the feature(s) you would like to see added.
+      placeholder: Let us know your suggestion
+      value: "Your suggestion here"
+    validations:
+      required: true

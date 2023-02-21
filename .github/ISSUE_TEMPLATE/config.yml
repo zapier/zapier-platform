@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Zapier Support
+    url: https://developer.zapier.com/contact
+    about: Please direct any questions not related to feature requests or bug reports to our support team.
+  - name: Zapier Community
+    url: https://community.zapier.com/
+    about: Visit our community page and search for related questions and view open discussions.
+  - name: Zapier Platform Security Policy
+    url: https://github.com/zapier/zapier-platform/blob/main/.github/SECURITY.md
+    about: View our Security Policy for information on how to submit vulnerability reports.
