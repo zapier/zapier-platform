@@ -21,11 +21,7 @@ const getSearchOutputSampleKeys = (definition, searchKey) => {
   return Object.keys(searchOutputSampleFields);
 };
 
-const validateSearchOrCreateKeys = (definition) => {
-  // searchAndCreates is an alias for searchOrCreates. Another functional constraint makes sure only one of them is defined.
-  const searchCreatesKey = definition.searchAndCreates
-    ? 'searchAndCreates'
-    : 'searchOrCreates';
+const validateSearchCreateKeys = (definition, searchCreatesKey) => {
   const searchCreates = definition[searchCreatesKey];
 
   if (!searchCreates) {
@@ -252,6 +248,16 @@ const validateSearchOrCreateKeys = (definition) => {
   });
 
   return errors;
+};
+
+const validateSearchOrCreateKeys = (definition) => {
+  // searchAndCreates is an alias for searchOrCreates. They are the same, but
+  // you can define both searchAndCreates and searchOrCreates to avoid search
+  // key collision.
+  return [
+    ...validateSearchCreateKeys(definition, 'searchOrCreates'),
+    ...validateSearchCreateKeys(definition, 'searchAndCreates'),
+  ];
 };
 
 module.exports = validateSearchOrCreateKeys;

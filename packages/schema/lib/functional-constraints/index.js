@@ -18,7 +18,6 @@ const checks = [
   require('./matchingKeys'),
   require('./labelWhenVisible'),
   require('./uniqueInputFieldKeys'),
-  require('./searchAndCreatesAlias'),
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {
