@@ -44,6 +44,10 @@ module.exports = makeSchema(
           'Should Zapier invoke `refreshAccessToken` when we receive an error for a 401 response?',
         type: 'boolean',
       },
+      enablePkce: {
+        description: 'Should Zapier use PKCE for OAuth2?',
+        type: 'boolean',
+      },
     },
     additionalProperties: false,
     examples: [
@@ -58,6 +62,7 @@ module.exports = makeSchema(
         codeParam: 'unique_code',
         scope: 'read/write',
         autoRefresh: true,
+        enablePkce: true,
       },
     ],
     antiExamples: [

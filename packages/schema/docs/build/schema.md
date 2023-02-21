@@ -257,6 +257,7 @@ Key | Required | Type | Description
 `codeParam` | no | `string` | Define a non-standard code param Zapier should scrape instead.
 `scope` | no | `string` | What scope should Zapier request?
 `autoRefresh` | no | `boolean` | Should Zapier invoke `refreshAccessToken` when we receive an error for a 401 response?
+`enablePkce` | no | `boolean` | Should Zapier use PKCE for OAuth2?
 
 #### Examples
 
@@ -273,7 +274,8 @@ Key | Required | Type | Description
     refreshAccessToken: { require: 'some/path/to/file3.js' },
     codeParam: 'unique_code',
     scope: 'read/write',
-    autoRefresh: true
+    autoRefresh: true,
+    enablePkce: true
   }
   ```
 

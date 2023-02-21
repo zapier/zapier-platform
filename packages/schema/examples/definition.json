@@ -31,7 +31,8 @@
         "method": "POST"
       },
       "scope": "tags,users,contacts",
-      "autoRefresh": false
+      "autoRefresh": false,
+      "enablePkce": false
     },
     "connectionLabel": "{{inputData.email}}"
   },
