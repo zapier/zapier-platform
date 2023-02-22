@@ -1,5 +1,5 @@
 name: Feature Request
-description: You would like to submit a new feature request for the Zapier Platform
+description: You would like to submit a new feature request for the Zapier Platform.
 title: "[Feature Request]: "
 labels: ["feature-request"]
 body:
@@ -14,7 +14,6 @@ body:
       label: Current Behavior
       description: If relevant, please describe the current behavior you are suggesting improvements for.
       placeholder: Describe the current behavior
-      value: "Current behavior here"
     validations:
       required: false
 
@@ -24,6 +23,5 @@ body:
       label: Desired Behavior / Feature Request
       description: Describe the feature(s) you would like to see added.
       placeholder: Let us know your suggestion
-      value: "Your suggestion here"
     validations:
       required: true

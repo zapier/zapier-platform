@@ -1,5 +1,5 @@
 name: Bug Report
-description: You are seeing an error message in your integration code or in the CLI
+description: You are seeing an error message in your integration code or in the CLI.
 title: "[Bug]: "
 labels: ["bug"]
 body:
@@ -30,16 +30,14 @@ body:
   - type: input
     attributes:
       label: Zapier Platform version
-      description: Obtained via running `zapier -v`
-      value: zapier version
+      description: Obtained via running `zapier -v`.
     validations:
       required: true
 
   - type: input
     attributes:
       label: Node.js version
-      description: Obtained via running `node --version`
-      value: node version
+      description: Obtained via running `node --version`.
     validations:
       required: true
 
@@ -48,23 +46,20 @@ body:
       label: Your Operating System
       description: What operating system are you using?
       placeholder: (Example) macOS 13.1
-      value: operating system
     validations:
       required: false
 
   - type: input
     attributes:
       label: npm/yarn version
-      description: Obtained via running `npm --version` or `yarn --version`
-      value: npm version
+      description: Obtained via running `npm --version` or `yarn --version`.
     validations:
       required: false
 
   - type: input
     attributes:
       label: App ID
-      description: Your App ID is found in the .zapierapprc file
-      value: app id
+      description: Your App ID is found in the .zapierapprc file.
     validations:
       required: false
 
