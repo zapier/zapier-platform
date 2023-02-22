@@ -31,7 +31,7 @@ class LinkCommand extends BaseCommand {
         })),
         (app) => app.name.toLowerCase()
       ),
-      15
+      { pageSize: 15 }
     );
 
     this.startSpinner(`Setting up ${CURRENT_APP_FILE}`);
