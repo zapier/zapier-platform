@@ -4,7 +4,7 @@ require('should');
 const schema = require('../../schema');
 
 describe('searchAndCreatesAlias', () => {
-  it('should error if schema contains both searchOrCreates and searchAndCreates keys', () => {
+  it('should not error if schema contains both searchOrCreates and searchAndCreates keys', () => {
     const definition = {
       version: '1.0.0',
       platformVersion: '1.0.0',
@@ -55,7 +55,7 @@ describe('searchAndCreatesAlias', () => {
         },
       },
 
-      // Cannot have both searchOrCreates AND searchAndCreates defined
+      // Can have both searchOrCreates AND searchAndCreates defined
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
@@ -64,20 +64,8 @@ describe('searchAndCreatesAlias', () => {
             description:
               'Tries to fetch a product, creates one if it does not find at least one.',
           },
-
           search: 'find_product',
-
           create: 'add_product',
-
-          update: 'update_product',
-
-          updateInputFromSearchOutput: {
-            product_id: 'id',
-          },
-
-          searchUniqueInputToOutputConstraint: {
-            product_title: 'title',
-          },
         },
       },
       searchAndCreates: {
@@ -88,17 +76,12 @@ describe('searchAndCreatesAlias', () => {
             description:
               'Tries to fetch a product, creates one if it does not find at least one.',
           },
-
           search: 'find_product',
-
           create: 'add_product',
-
           update: 'update_product',
-
           updateInputFromSearchOutput: {
             product_id: 'id',
           },
-
           searchUniqueInputToOutputConstraint: {
             product_title: 'title',
           },
@@ -107,10 +90,7 @@ describe('searchAndCreatesAlias', () => {
     };
 
     const results = schema.validateAppDefinition(definition);
-    results.errors.should.have.length(1);
-    results.errors[0].stack.should.eql(
-      'instance.searchOrCreates should not be used at the same time as its alias, searchAndCreates'
-    );
+    results.errors.should.have.length(0);
   });
 
   it('should not error if schema contains only searchOrCreates key', () => {
