@@ -1,11 +1,20 @@
+const colors = require('colors/safe');
+const fs = require('fs');
+const { flags } = require('@oclif/command');
+
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { CURRENT_APP_FILE, MAX_DESCRIPTION_LENGTH } = require('../../constants');
 const { buildFlags } = require('../buildFlags');
-const { callAPI, writeLinkedAppConfig } = require('../../utils/api');
-
-const { flags } = require('@oclif/command');
+const {
+  callAPI,
+  getWritableApp,
+  writeLinkedAppConfig,
+} = require('../../utils/api');
 
 class RegisterCommand extends ZapierBaseCommand {
+  /**
+   * Entry point function that runs when user runs `zapier register`
+   */
   async perform() {
     // Flag validation
     this._validateEnumFlags();
@@ -20,22 +29,49 @@ class RegisterCommand extends ZapierBaseCommand {
 
     const appMeta = await this._promptForAppMeta();
 
-    this.startSpinner(`Registering your new integration "${appMeta.title}"`);
-    const app = await callAPI('/apps?formId=create', {
-      method: 'POST',
-      body: appMeta,
-    });
-    this.stopSpinner();
-    this.startSpinner(
-      `Linking app to current directory with \`${CURRENT_APP_FILE}\``
-    );
-    await writeLinkedAppConfig(app, process.cwd());
-    this.stopSpinner();
-    this.log(
-      '\nFinished! Now that your integration is registered with Zapier, you can `zapier push`!'
-    );
+    switch (appMeta.action) {
+      case 'update': {
+        this.startSpinner(
+          `Updating your existing integration "${appMeta.title}"`
+        );
+        await callAPI(`/apps/${this.app.id}`, {
+          method: 'PUT',
+          body: {
+            ...this.app,
+            ...appMeta,
+          },
+        });
+        this.stopSpinner();
+        this.log('\nIntegration successfully updated!');
+        break;
+      }
+
+      case 'register': {
+        this.startSpinner(
+          `Registering your new integration "${appMeta.title}"`
+        );
+        const app = await callAPI('/apps?formId=create', {
+          method: 'POST',
+          body: appMeta,
+        });
+        this.stopSpinner();
+        this.startSpinner(
+          `Linking app to current directory with \`${CURRENT_APP_FILE}\``
+        );
+        await writeLinkedAppConfig(app, process.cwd());
+        this.stopSpinner();
+        this.log(
+          '\nFinished! Now that your integration is registered with Zapier, you can `zapier push`!'
+        );
+        break;
+      }
+    }
   }
 
+  /**
+   * Validates values provided for enum flags against options retrieved from the BE
+   * (see getAppRegistrationFieldChoices hook for more details)
+   */
   _validateEnumFlags() {
     const flagFieldMappings = {
       audience: 'intention',
@@ -62,14 +98,48 @@ class RegisterCommand extends ZapierBaseCommand {
     }
   }
 
+  /**
+   * Prompts user for values that have not been provided
+   * Flags can heavily impact the behavior of this function
+   * @returns {object}
+   */
   async _promptForAppMeta() {
     const appMeta = {};
+
+    const actionChoices = [
+      { name: 'Update current integration', value: 'update' },
+      { name: 'Register a new integration', value: 'register' },
+    ];
+    appMeta.action = actionChoices[1].value; // Default action is register
+    if (this._hasAppFile()) {
+      console.info(colors.yellow('.zapierapprc file detected.'));
+      if (this.flags.yes) {
+        console.info(
+          colors.yellow('-y/--yes flag passed, updating current integration.')
+        );
+        appMeta.action = actionChoices[0].value;
+      } else {
+        appMeta.action = await this.promptWithList(
+          'Would you like to update your current integration or register a new one?',
+          actionChoices
+        );
+      }
+    }
+
+    if (appMeta.action === 'update') {
+      this.startSpinner('Retrieving details for your integration');
+      this.app = await getWritableApp();
+      this.stopSpinner();
+    }
 
     appMeta.title = this.args.title?.trim();
     if (!appMeta.title) {
       appMeta.title = await this.prompt(
         'What is the title of your integration?',
-        { required: true }
+        {
+          required: true,
+          default: this.app?.title,
+        }
       );
     }
 
@@ -77,14 +147,19 @@ class RegisterCommand extends ZapierBaseCommand {
     if (!appMeta.description) {
       appMeta.description = await this.prompt(
         `Please provide a sentence describing your app in ${MAX_DESCRIPTION_LENGTH} characters or less.`,
-        { required: true, charLimit: MAX_DESCRIPTION_LENGTH }
+        {
+          required: true,
+          charLimit: MAX_DESCRIPTION_LENGTH,
+          default: this.app,
+        }
       );
     }
 
     appMeta.homepage_url = this.flags.url;
-    if (!appMeta.homepage_url) {
+    if (!appMeta.homepage_url && !this.flags.yes) {
       appMeta.homepage_url = await this.prompt(
-        'What is the homepage URL of your app? (optional)'
+        'What is the homepage URL of your app? (optional)',
+        { default: this.app?.homepage_url }
       );
     }
 
@@ -92,7 +167,8 @@ class RegisterCommand extends ZapierBaseCommand {
     if (!appMeta.intention) {
       appMeta.intention = await this.promptWithList(
         'Are you building a public or private integration?',
-        this.config.enumFieldChoices.intention
+        this.config.enumFieldChoices.intention,
+        { default: this.app?.intention }
       );
     }
 
@@ -103,7 +179,8 @@ class RegisterCommand extends ZapierBaseCommand {
         this._getRoleChoicesWithAppTitle(
           appMeta.title,
           this.config.enumFieldChoices.role
-        )
+        ),
+        { default: this.app?.role }
       );
     }
 
@@ -111,25 +188,42 @@ class RegisterCommand extends ZapierBaseCommand {
     if (!appMeta.app_category) {
       appMeta.app_category = await this.promptWithList(
         'How would you categorize your app?',
-        this.config.enumFieldChoices.app_category
+        this.config.enumFieldChoices.app_category,
+        { default: this.app?.app_category }
       );
     }
 
-    appMeta.subscription = this.flags.subscribe;
-    // boolean field, so using `typeof` === `undefined`
-    if (typeof appMeta.subscription === 'undefined') {
-      appMeta.subscription = await this.promptWithList(
-        'Subscribe to Updates about your Integration',
-        [
-          { name: 'Yes', value: true },
-          { name: 'No', value: false },
-        ]
-      );
+    if (appMeta.action === 'register') {
+      appMeta.subscription = this.flags.subscribe;
+      if (typeof this.flags.yes !== 'undefined') {
+        appMeta.subscription = true;
+      } else if (typeof appMeta.subscription === 'undefined') {
+        // boolean field, so using `typeof` === `undefined`
+        appMeta.subscription = await this.promptWithList(
+          'Subscribe to Updates about your Integration',
+          [
+            { name: 'Yes', value: true },
+            { name: 'No', value: false },
+          ]
+        );
+      }
     }
 
     return appMeta;
   }
 
+  /**
+   * Whether or not the current directory has a .zapierapprc file
+   * @returns {boolean}
+   */
+  _hasAppFile = () => fs.existsSync(CURRENT_APP_FILE);
+
+  /**
+   *
+   * @param {string} title title of integration
+   * @param {array} choices retrieved role choices with `[app_title]` tokens
+   * @returns {array} array of choices with integration titles (instead of `[app_title]` tokens)
+   */
   _getRoleChoicesWithAppTitle(title, choices) {
     return choices.map((choice) => ({
       value: choice.value,
@@ -176,6 +270,11 @@ RegisterCommand.flags = buildFlags({
       description:
         'Get tips and recommendations about this integration along with our monthly newsletter that details the performance of your integration and the latest Zapier news.',
       allowNo: true,
+    }),
+    yes: flags.boolean({
+      char: 'y',
+      description:
+        'Assume yes for all yes/no prompts. This flag will also update an existing integration (as opposed to registering a new one) if a .zapierapprc file is found.',
     }),
   },
 });

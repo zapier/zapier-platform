@@ -451,6 +451,7 @@ This will change the  `./.zapierapprc` (which identifies this directory as holdi
 * `-r, --role` | What is your relationship with the app you're integrating with Zapier?
 * `-c, --category` | How would you categorize your app? Choose the most appropriate option for your app's core features.
 * `-s, --subscribe` | Get tips and recommendations about this integration along with our monthly newsletter that details the performance of your integration and the latest Zapier news.
+* `-y, --yes` | Assume yes for all yes/no prompts. This flag will also update an existing integration (as opposed to registering a new one) if a .zapierapprc file is found.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
