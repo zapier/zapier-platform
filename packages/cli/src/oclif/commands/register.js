@@ -107,8 +107,8 @@ class RegisterCommand extends ZapierBaseCommand {
     const appMeta = {};
 
     const actionChoices = [
-      { name: 'Update current integration', value: 'update' },
-      { name: 'Register a new integration', value: 'register' },
+      { name: 'Yes, update current integration', value: 'update' },
+      { name: 'No, register a new integration', value: 'register' },
     ];
     appMeta.action = actionChoices[1].value; // Default action is register
     if (this._hasAppFile()) {
@@ -120,7 +120,7 @@ class RegisterCommand extends ZapierBaseCommand {
         appMeta.action = actionChoices[0].value;
       } else {
         appMeta.action = await this.promptWithList(
-          'Would you like to update your current integration or register a new one?',
+          'Would you like to update your current integration?',
           actionChoices
         );
       }
