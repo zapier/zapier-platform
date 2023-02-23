@@ -150,7 +150,7 @@ class RegisterCommand extends ZapierBaseCommand {
         {
           required: true,
           charLimit: MAX_DESCRIPTION_LENGTH,
-          default: this.app,
+          default: this.app?.description,
         }
       );
     }
