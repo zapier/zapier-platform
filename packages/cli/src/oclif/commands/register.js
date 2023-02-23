@@ -156,7 +156,7 @@ class RegisterCommand extends ZapierBaseCommand {
     }
 
     appMeta.homepage_url = this.flags.url;
-    if (!appMeta.homepage_url && !this.flags.yes) {
+    if (!appMeta.homepage_url) {
       appMeta.homepage_url = await this.prompt(
         'What is the homepage URL of your app? (optional)',
         { default: this.app?.homepage_url }
