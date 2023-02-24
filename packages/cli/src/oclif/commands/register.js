@@ -283,7 +283,7 @@ RegisterCommand.examples = [
 ];
 RegisterCommand.description = `Register a new integration in your account, or update the existing one if a \`${CURRENT_APP_FILE}\` file is found.
 
-This command creates an new integration and links it in the \`./${CURRENT_APP_FILE}\` file. If \`${CURRENT_APP_FILE}\` already exists, it will ask you if you want to update the currently-linked integration, as opposed to creating a new one.
+This command creates a new integration and links it in the \`./${CURRENT_APP_FILE}\` file. If \`${CURRENT_APP_FILE}\` already exists, it will ask you if you want to update the currently-linked integration, as opposed to creating a new one.
 
 After registering a new integration, you can run \`zapier push\` to build and upload your integration for use in the Zapier editor. This will change \`${CURRENT_APP_FILE}\`, which identifies this directory as holding code for a specific integration.`;
 

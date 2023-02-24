@@ -437,7 +437,7 @@ This command is the same as running `zapier build` and `zapier upload` in sequen
 
 **Usage**: `zapier register [TITLE]`
 
-This command creates an new integration and links it in the `./.zapierapprc` file. If `.zapierapprc` already exists, it will ask you if you want to update the currently-linked integration, as opposed to creating a new one.
+This command creates a new integration and links it in the `./.zapierapprc` file. If `.zapierapprc` already exists, it will ask you if you want to update the currently-linked integration, as opposed to creating a new one.
 
 After registering a new integration, you can run `zapier push` to build and upload your integration for use in the Zapier editor. This will change `.zapierapprc`, which identifies this directory as holding code for a specific integration.
 
