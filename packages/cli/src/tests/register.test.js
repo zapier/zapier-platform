@@ -3,16 +3,19 @@ const oclif = require('@oclif/test');
 const { BASE_ENDPOINT, MAX_DESCRIPTION_LENGTH } = require('../constants');
 const registerFieldChoices = require('./fixtures/registerFieldChoices');
 const createApp = require('./fixtures/createApp');
-const { after } = require('mocha');
 
 describe('RegisterCommand', () => {
-  // Delete generated .zapierapprc file after all tests run
-  after(() => {
-    const apprcFile = './.zapierapprc';
-    if (fs.existsSync(apprcFile)) {
-      fs.unlinkSync(apprcFile);
+  const APP_RC_FILE = './.zapierapprc';
+
+  const deleteRcFile = () => {
+    if (fs.existsSync(APP_RC_FILE)) {
+      fs.unlinkSync(APP_RC_FILE);
     }
-  });
+  };
+
+  // Delete generated .zapierapprc file before and after tests
+  before(deleteRcFile);
+  after(deleteRcFile);
 
   function getTestObj() {
     return oclif.test.nock(BASE_ENDPOINT, (mockApi) =>
@@ -101,5 +104,51 @@ describe('RegisterCommand', () => {
       .it(
         'zapier register should successfully register an app with all data provided'
       );
+  });
+
+  describe('zapier register should update existing app', function () {
+    function getTestObj() {
+      return oclif.test.nock(BASE_ENDPOINT, (mockApi) =>
+        mockApi
+          .get('/api/platform/cli/apps/fields-choices')
+          .reply(200, registerFieldChoices)
+          .get(`/api/platform/cli/apps/${createApp.id}`)
+          .reply(200, createApp)
+          .put(`/api/platform/cli/apps/${createApp.id}`, {
+            title: 'Hello',
+            description: 'Helps you in some way.',
+            homepage_url: 'https://example.com',
+            intention: 'global',
+            role: 'contractor',
+            app_category: 'productivity',
+          })
+          .reply(201, createApp)
+      );
+    }
+
+    fs.writeFileSync(
+      APP_RC_FILE,
+      `{"id":${createApp.id},"key":"App${createApp.id}"}`
+    );
+
+    getTestObj()
+      .stdout()
+      .stderr()
+      .command([
+        'register',
+        'Hello',
+        '-D',
+        'Helps you in some way.',
+        '-u',
+        'https://example.com',
+        '-a',
+        'global',
+        '-r',
+        'contractor',
+        '-c',
+        'productivity',
+        '--yes',
+      ])
+      .it('zapier register --yes should update an app without prompts');
   });
 });

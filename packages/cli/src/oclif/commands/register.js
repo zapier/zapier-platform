@@ -1,5 +1,4 @@
 const colors = require('colors/safe');
-const fs = require('fs');
 const { flags } = require('@oclif/command');
 
 const ZapierBaseCommand = require('../ZapierBaseCommand');
@@ -7,6 +6,7 @@ const { CURRENT_APP_FILE, MAX_DESCRIPTION_LENGTH } = require('../../constants');
 const { buildFlags } = require('../buildFlags');
 const {
   callAPI,
+  getLinkedAppConfig,
   getWritableApp,
   writeLinkedAppConfig,
 } = require('../../utils/api');
@@ -27,19 +27,16 @@ class RegisterCommand extends ZapierBaseCommand {
       );
     }
 
-    const appMeta = await this._promptForAppMeta();
+    const { appMeta, action } = await this._promptForAppMeta();
 
-    switch (appMeta.action) {
+    switch (action) {
       case 'update': {
         this.startSpinner(
           `Updating your existing integration "${appMeta.title}"`
         );
         await callAPI(`/apps/${this.app.id}`, {
           method: 'PUT',
-          body: {
-            ...this.app,
-            ...appMeta,
-          },
+          body: appMeta,
         });
         this.stopSpinner();
         this.log('\nIntegration successfully updated!');
@@ -101,7 +98,7 @@ class RegisterCommand extends ZapierBaseCommand {
   /**
    * Prompts user for values that have not been provided
    * Flags can heavily impact the behavior of this function
-   * @returns {object}
+   * @returns { appMeta: {object}, action: string }
    */
   async _promptForAppMeta() {
     const appMeta = {};
@@ -110,23 +107,28 @@ class RegisterCommand extends ZapierBaseCommand {
       { name: 'Yes, update current integration', value: 'update' },
       { name: 'No, register a new integration', value: 'register' },
     ];
-    appMeta.action = actionChoices[1].value; // Default action is register
-    if (this._hasAppFile()) {
-      console.info(colors.yellow('.zapierapprc file detected.'));
+
+    let action = actionChoices[1].value; // Default action is register
+
+    const linkedAppId = (await getLinkedAppConfig(undefined, false))?.id;
+    if (linkedAppId) {
+      console.info(colors.yellow(`${CURRENT_APP_FILE} file detected.`));
       if (this.flags.yes) {
         console.info(
-          colors.yellow('-y/--yes flag passed, updating current integration.')
+          colors.yellow(
+            `-y/--yes flag passed, updating current integration (ID: ${linkedAppId}).`
+          )
         );
-        appMeta.action = actionChoices[0].value;
+        action = actionChoices[0].value;
       } else {
-        appMeta.action = await this.promptWithList(
-          'Would you like to update your current integration?',
+        action = await this.promptWithList(
+          `Would you like to update your current integration (ID: ${linkedAppId})?`,
           actionChoices
         );
       }
     }
 
-    if (appMeta.action === 'update') {
+    if (action === 'update') {
       this.startSpinner('Retrieving details for your integration');
       this.app = await getWritableApp();
       this.stopSpinner();
@@ -193,7 +195,7 @@ class RegisterCommand extends ZapierBaseCommand {
       );
     }
 
-    if (appMeta.action === 'register') {
+    if (action === 'register') {
       appMeta.subscription = this.flags.subscribe;
       if (typeof this.flags.yes !== 'undefined') {
         appMeta.subscription = true;
@@ -209,14 +211,8 @@ class RegisterCommand extends ZapierBaseCommand {
       }
     }
 
-    return appMeta;
+    return { appMeta, action };
   }
-
-  /**
-   * Whether or not the current directory has a .zapierapprc file
-   * @returns {boolean}
-   */
-  _hasAppFile = () => fs.existsSync(CURRENT_APP_FILE);
 
   /**
    *
