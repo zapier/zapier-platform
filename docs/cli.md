@@ -433,13 +433,13 @@ This command is the same as running `zapier build` and `zapier upload` in sequen
 
 ## register
 
-> Register a new integration in your account.
+> Register a new integration in your account, or update the existing one if a `.zapierapprc` file is found.
 
 **Usage**: `zapier register [TITLE]`
 
-After running this, you can run `zapier push` to build and upload your integration for use in the Zapier editor.
+This command creates a new integration and links it in the `./.zapierapprc` file. If `.zapierapprc` already exists, it will ask you if you want to update the currently-linked integration, as opposed to creating a new one.
 
-This will change the  `./.zapierapprc` (which identifies this directory as holding code for a specific integration).
+After registering a new integration, you can run `zapier push` to build and upload your integration for use in the Zapier editor. This will change `.zapierapprc`, which identifies this directory as holding code for a specific integration.
 
 **Arguments**
 * `title` | Your integrations's public title. Asked interactively if not present.
@@ -451,6 +451,7 @@ This will change the  `./.zapierapprc` (which identifies this directory as holdi
 * `-r, --role` | What is your relationship with the app you're integrating with Zapier?
 * `-c, --category` | How would you categorize your app? Choose the most appropriate option for your app's core features.
 * `-s, --subscribe` | Get tips and recommendations about this integration along with our monthly newsletter that details the performance of your integration and the latest Zapier news.
+* `-y, --yes` | Assume yes for all yes/no prompts. This flag will also update an existing integration (as opposed to registering a new one) if a .zapierapprc file is found.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**

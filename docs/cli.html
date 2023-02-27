@@ -889,8 +889,8 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Register a new integration in your account.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier register [TITLE]</code></p><p>After running this, you can run <code>zapier push</code> to build and upload your integration for use in the Zapier editor.</p><p>This will change the  <code>./.zapierapprc</code> (which identifies this directory as holding code for a specific integration).</p><p><strong>Arguments</strong></p><ul>
+<p>Register a new integration in your account, or update the existing one if a <code>.zapierapprc</code> file is found.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier register [TITLE]</code></p><p>This command creates a new integration and links it in the <code>./.zapierapprc</code> file. If <code>.zapierapprc</code> already exists, it will ask you if you want to update the currently-linked integration, as opposed to creating a new one.</p><p>After registering a new integration, you can run <code>zapier push</code> to build and upload your integration for use in the Zapier editor. This will change <code>.zapierapprc</code>, which identifies this directory as holding code for a specific integration.</p><p><strong>Arguments</strong></p><ul>
 <li><code>title</code> | Your integrations&apos;s public title. Asked interactively if not present.</li>
 </ul><p><strong>Flags</strong></p><ul>
 <li><code>-D, --desc</code> | A sentence describing your app in 140 characters or less, e.g. &quot;Trello is a team collaboration tool to organize tasks and keep projects on track.&quot;</li>
@@ -899,6 +899,7 @@ a code {
 <li><code>-r, --role</code> | What is your relationship with the app you&apos;re integrating with Zapier?</li>
 <li><code>-c, --category</code> | How would you categorize your app? Choose the most appropriate option for your app&apos;s core features.</li>
 <li><code>-s, --subscribe</code> | Get tips and recommendations about this integration along with our monthly newsletter that details the performance of your integration and the latest Zapier news.</li>
+<li><code>-y, --yes</code> | Assume yes for all yes/no prompts. This flag will also update an existing integration (as opposed to registering a new one) if a .zapierapprc file is found.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier register</code></li>
