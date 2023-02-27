@@ -2,7 +2,7 @@ const fs = require('fs');
 const oclif = require('@oclif/test');
 const { BASE_ENDPOINT, MAX_DESCRIPTION_LENGTH } = require('../constants');
 const registerFieldChoices = require('./fixtures/registerFieldChoices');
-const createApp = require('./fixtures/createApp');
+const { privateApp, publicApp } = require('./fixtures/createApp');
 
 describe('RegisterCommand', () => {
   const APP_RC_FILE = './.zapierapprc';
@@ -79,7 +79,7 @@ describe('RegisterCommand', () => {
           .reply(200, registerFieldChoices)
           .post('/api/platform/cli/apps')
           .query({ formId: 'create' })
-          .reply(201, createApp)
+          .reply(201, privateApp)
       );
     }
 
@@ -107,14 +107,15 @@ describe('RegisterCommand', () => {
   });
 
   describe('zapier register should update existing app', function () {
-    function getTestObj() {
+    function getTestObj(isPublic) {
+      const exportedApp = isPublic ? publicApp : privateApp;
       return oclif.test.nock(BASE_ENDPOINT, (mockApi) =>
         mockApi
           .get('/api/platform/cli/apps/fields-choices')
           .reply(200, registerFieldChoices)
-          .get(`/api/platform/cli/apps/${createApp.id}`)
-          .reply(200, createApp)
-          .put(`/api/platform/cli/apps/${createApp.id}`, {
+          .get(`/api/platform/cli/apps/${exportedApp.id}`)
+          .reply(200, exportedApp)
+          .put(`/api/platform/cli/apps/${exportedApp.id}`, {
             title: 'Hello',
             description: 'Helps you in some way.',
             homepage_url: 'https://example.com',
@@ -122,13 +123,13 @@ describe('RegisterCommand', () => {
             role: 'contractor',
             app_category: 'productivity',
           })
-          .reply(201, createApp)
+          .reply(201, exportedApp)
       );
     }
 
     fs.writeFileSync(
       APP_RC_FILE,
-      `{"id":${createApp.id},"key":"App${createApp.id}"}`
+      `{"id":${privateApp.id},"key":"App${privateApp.id}"}`
     );
 
     getTestObj()
@@ -150,5 +151,25 @@ describe('RegisterCommand', () => {
         '--yes',
       ])
       .it('zapier register --yes should update an app without prompts');
+
+    getTestObj(true)
+      .command([
+        'register',
+        'Hello',
+        '-D',
+        'Helps you in some way.',
+        '-u',
+        'https://example.com',
+        '-a',
+        'global',
+        '-r',
+        'contractor',
+        '-c',
+        'productivity',
+        '--yes',
+      ])
+      .it(
+        'zapier register should not allow a user to update a pre-existing public app'
+      );
   });
 });

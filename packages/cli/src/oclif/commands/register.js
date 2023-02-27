@@ -132,6 +132,13 @@ class RegisterCommand extends ZapierBaseCommand {
       this.startSpinner('Retrieving details for your integration');
       this.app = await getWritableApp();
       this.stopSpinner();
+
+      // Block non-private apps from updating settings
+      if (this.app?.intention !== 'private') {
+        throw new Error(
+          "You can't edit settings for this integration. To edit your integration details on Zapier's public app directory, email partners@zapier.com."
+        );
+      }
     }
 
     appMeta.title = this.args.title?.trim();
