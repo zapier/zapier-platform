@@ -12,7 +12,11 @@ describe('check missing required app info', () => {
       key: 'App123',
       app_category: 'crm',
     };
-    should(() => checkMissingAppInfo(app)).throw(new Error(`Your integration is missing required info (intention, role). Please, run "zapier register" to add it.`));
+    should(() => checkMissingAppInfo(app)).throw(
+      new Error(
+        `Your integration is missing required info (intention, role). Please, run "zapier register" to add it.`
+      )
+    );
   });
   it('should return false when all the required app info are set', () => {
     const app = {
@@ -23,6 +27,19 @@ describe('check missing required app info', () => {
       description: 'Sample description',
       key: 'App123',
       intention: 'private',
+      app_category: 'crm',
+      role: 'user',
+    };
+    checkMissingAppInfo(app).should.equal(false);
+  });
+  it('should return false when an app is public (app.intention == `global`)', () => {
+    const app = {
+      id: 123,
+      public: false,
+      pending: false,
+      title: 'Test App',
+      key: 'App123',
+      intention: 'global',
       app_category: 'crm',
       role: 'user',
     };
