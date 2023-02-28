@@ -1,5 +1,7 @@
+const { isPublished } = require('../utils/api');
+
 module.exports = (app) => {
-  if (app.intention && app.intention !== 'private') {
+  if (app.status && isPublished(app.status)) {
     return false;
   }
   const requiredFields = [

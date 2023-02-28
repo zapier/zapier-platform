@@ -27,7 +27,7 @@ const publicApp = {
   public: false,
   pending: false,
   public_ish: false,
-  status: 'global',
+  status: 'public',
   date: '2023-02-14T16:35:44+00:00',
   title: 'My Cool Integration',
   description:

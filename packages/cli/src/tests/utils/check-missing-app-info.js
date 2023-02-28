@@ -5,6 +5,7 @@ describe('check missing required app info', () => {
   it('should raise an error when one or more required app info are missing', () => {
     const app = {
       id: 123,
+      status: 'private',
       public: false,
       pending: false,
       title: 'Test App',
@@ -32,10 +33,25 @@ describe('check missing required app info', () => {
     };
     checkMissingAppInfo(app).should.equal(false);
   });
-  it('should return false when an app is public (app.intention == `global`)', () => {
+  it('should return false when an app is public', () => {
     const app = {
       id: 123,
       public: false,
+      status: 'public',
+      pending: false,
+      title: 'Test App',
+      key: 'App123',
+      intention: 'global',
+      app_category: 'crm',
+      role: 'user',
+    };
+    checkMissingAppInfo(app).should.equal(false);
+  });
+  it('should return false when an app is beta', () => {
+    const app = {
+      id: 123,
+      public: false,
+      status: 'beta',
       pending: false,
       title: 'Test App',
       key: 'App123',

@@ -117,4 +117,18 @@ describe('api', () => {
       nock.restore();
     });
   });
+
+  describe('isPublished', () => {
+    it('should return false for a private app', () => {
+      should(api.isPublished('private')).false();
+    });
+
+    it('should return true for a public app', () => {
+      should(api.isPublished('public')).true();
+    });
+
+    it('should return true for a beta app', () => {
+      should(api.isPublished('beta')).true();
+    });
+  });
 });

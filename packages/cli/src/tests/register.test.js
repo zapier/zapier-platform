@@ -123,6 +123,7 @@ describe('RegisterCommand', () => {
             role: 'contractor',
             app_category: 'productivity',
           })
+          .optionally()
           .reply(201, exportedApp)
       );
     }
@@ -153,6 +154,8 @@ describe('RegisterCommand', () => {
       .it('zapier register --yes should update an app without prompts');
 
     getTestObj(true)
+      .stdout()
+      .stderr()
       .command([
         'register',
         'Hello',
@@ -168,6 +171,13 @@ describe('RegisterCommand', () => {
         'productivity',
         '--yes',
       ])
+      .catch((ctx) => {
+        oclif
+          .expect(ctx.message)
+          .to.contain(
+            "You can't edit settings for this integration. To edit your integration details on Zapier's public app directory, email partners@zapier.com."
+          );
+      })
       .it(
         'zapier register should not allow a user to update a pre-existing public app'
       );

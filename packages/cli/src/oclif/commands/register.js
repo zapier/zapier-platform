@@ -8,6 +8,7 @@ const {
   callAPI,
   getLinkedAppConfig,
   getWritableApp,
+  isPublished,
   writeLinkedAppConfig,
 } = require('../../utils/api');
 
@@ -133,8 +134,8 @@ class RegisterCommand extends ZapierBaseCommand {
       this.app = await getWritableApp();
       this.stopSpinner();
 
-      // Block non-private apps from updating settings
-      if (this.app?.intention !== 'private') {
+      // Block published apps from updating settings
+      if (this.app?.status && isPublished(this.app.status)) {
         throw new Error(
           "You can't edit settings for this integration. To edit your integration details on Zapier's public app directory, email partners@zapier.com."
         );
