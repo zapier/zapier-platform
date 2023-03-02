@@ -259,6 +259,7 @@ a code {
 <li><a href="#session">Session</a></li>
 <li><a href="#oauth1">OAuth1</a></li>
 <li><a href="#oauth2">OAuth2</a></li>
+<li><a href="#oauth2-with-pkce">OAuth2 with PKCE</a></li>
 <li><a href="#connection-label">Connection Label</a></li>
 </ul>
 </li>
@@ -469,6 +470,7 @@ a code {
 <li><a href="#session">Session</a></li>
 <li><a href="#oauth1">OAuth1</a></li>
 <li><a href="#oauth2">OAuth2</a></li>
+<li><a href="#oauth2-with-pkce">OAuth2 with PKCE</a></li>
 <li><a href="#connection-label">Connection Label</a></li>
 </ul>
 </li>
@@ -1628,6 +1630,107 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>For OAuth2, <code>authentication.oauth2Config.authorizeUrl</code>, <code>authentication.oauth2Config.getAccessToken</code>, and <code>authentication.oauth2Config.refreshAccessToken</code> have fields like <code>redirect_uri</code> and <code>state</code> in <code>bundle.inputData</code>. After the code is exchanged for an access token and/or refresh token, those tokens are stored in <code>bundle.authData</code> for the connection.</p><p>Also, <code>authentication.oauth2Config.getAccessToken</code> has access to the additional return values in <code>rawRequest</code> and <code>cleanedRequest</code> should you need to extract other values (for example, from the query string).</p><p>If you define <code>fields</code> to collect additional details from the user, please note that <code>client_id</code> and <code>client_secret</code> are reserved keys and cannot be used as keys for input form fields.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="oauth2-with-pkce">OAuth2 with PKCE</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Zapier&apos;s OAuth2 implementation also supports <a href="https://oauth.net/2/pkce/">PKCE</a>. This implementation is an extension of the OAuth2 <code>authorization_code</code> flow described above. </p><p>To use PKCE in your OAuth2 flow, you&apos;ll need to set the following variables:</p><ol>
+<li><code>enablePkce: true</code></li>
+<li><code>getAccessToken.body</code> to include <code>code_verifier: &quot;{{bundle.inputData.code_verifier}}&quot;</code></li>
+</ol><p>The OAuth2 PKCE flow uses the same flow as OAuth2 but adds a few extra parameters:</p><ol>
+<li>Zapier computes a <code>code_verifier</code> and <code>code_challenge</code> internally and stores the <code>code_verifier</code> in the Zapier bundle.</li>
+<li>Zapier sends the user to the authorization URL defined by your app, passing along the computed <code>code_challenge</code>.</li>
+<li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided.</li>
+<li>Zapier makes a call to your API to exchange the <code>code</code> and the computed <code>code_verifier</code> for an <code>access_token</code>.</li>
+<li>Zapier stores the <code>access_token</code> and uses it to make calls on behalf of the user.</li>
+</ol><p>Your auth definition would look something like this:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> authentication = {
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;oauth2&apos;</span>,
+  <span class="hljs-attr">test</span>: {
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json&apos;</span>,
+  },
+  <span class="hljs-comment">// you can provide additional fields for inclusion in authData</span>
+  <span class="hljs-attr">oauth2Config</span>: {
+    <span class="hljs-comment">// &quot;authorizeUrl&quot; could also be a function returning a string url</span>
+    <span class="hljs-attr">authorizeUrl</span>: {
+      <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;GET&apos;</span>,
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize&apos;</span>,
+      <span class="hljs-attr">params</span>: {
+        <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
+        <span class="hljs-attr">state</span>: <span class="hljs-string">&apos;{{bundle.inputData.state}}&apos;</span>,
+        <span class="hljs-attr">redirect_uri</span>: <span class="hljs-string">&apos;{{bundle.inputData.redirect_uri}}&apos;</span>,
+        <span class="hljs-attr">response_type</span>: <span class="hljs-string">&apos;code&apos;</span>,
+      },
+    },
+    <span class="hljs-comment">// Zapier expects a response providing {access_token: &apos;abcd&apos;}</span>
+    <span class="hljs-comment">// &quot;getAccessToken&quot; could also be a function returning an object</span>
+    <span class="hljs-attr">getAccessToken</span>: {
+      <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
+      <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token&apos;</span>,
+      <span class="hljs-attr">body</span>: {
+        <span class="hljs-attr">code</span>: <span class="hljs-string">&apos;{{bundle.inputData.code}}&apos;</span>,
+        <span class="hljs-attr">client_id</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_ID}}&apos;</span>,
+        <span class="hljs-attr">client_secret</span>: <span class="hljs-string">&apos;{{process.env.CLIENT_SECRET}}&apos;</span>,
+        <span class="hljs-attr">redirect_uri</span>: <span class="hljs-string">&apos;{{bundle.inputData.redirect_uri}}&apos;</span>,
+        <span class="hljs-attr">grant_type</span>: <span class="hljs-string">&apos;authorization_code&apos;</span>,
+        <span class="hljs-attr">code_verifier</span>: <span class="hljs-string">&apos;{{bundle.inputData.code_verifier}}&apos;</span>, <span class="hljs-comment">// Added for PKCE</span>
+      },
+      <span class="hljs-attr">headers</span>: {
+        <span class="hljs-string">&apos;Content-Type&apos;</span>: <span class="hljs-string">&apos;application/x-www-form-urlencoded&apos;</span>,
+      },
+    },
+    <span class="hljs-attr">scope</span>: <span class="hljs-string">&apos;read,write&apos;</span>,
+    <span class="hljs-attr">enablePkce</span>: <span class="hljs-literal">true</span>, <span class="hljs-comment">// Added for PKCE</span>
+  },
+  <span class="hljs-comment">// If you need any fields upfront, put them here</span>
+  <span class="hljs-attr">fields</span>: [
+    { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;subdomain&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">default</span>: <span class="hljs-string">&apos;app&apos;</span> },
+    <span class="hljs-comment">// For OAuth2 we store `access_token` and `refresh_token` automatically</span>
+    <span class="hljs-comment">// in `bundle.authData` for future use. If you need to save/use something</span>
+    <span class="hljs-comment">// that the user shouldn&apos;t need to type/choose, add a &quot;computed&quot; field, like:</span>
+    <span class="hljs-comment">// {key: &apos;user_id&apos;: type: &apos;string&apos;, required: false, computed: true}</span>
+    <span class="hljs-comment">// And remember to return it in oauth2Config.getAccessToken/refreshAccessToken</span>
+  ],
+};
+
+<span class="hljs-keyword">const</span> addBearerHeader = <span class="hljs-function">(<span class="hljs-params">request, z, bundle</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (bundle.authData &amp;&amp; bundle.authData.access_token) {
+    request.headers.Authorization = <span class="hljs-string">`Bearer <span class="hljs-subst">${bundle.authData.access_token}</span>`</span>;
+  }
+  <span class="hljs-keyword">return</span> request;
+};
+
+<span class="hljs-keyword">const</span> App = {
+  <span class="hljs-comment">// ...</span>
+  authentication,
+  <span class="hljs-attr">beforeRequest</span>: [addBearerHeader],
+  <span class="hljs-comment">// ...</span>
+};
+
+<span class="hljs-built_in">module</span>.exports = App;
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>The computed <code>code_verifier</code> uses this standard: <a href="https://www.rfc-editor.org/rfc/rfc7636#section-4.1">RFC 7636 Code Verifier</a></p><p>The computed <code>code_challenge</code> uses this standard: <a href="https://www.rfc-editor.org/rfc/rfc7636#section-4.2">RFC 7636 Code Challenge</a></p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

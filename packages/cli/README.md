@@ -55,6 +55,7 @@ This doc describes the latest CLI version (**13.0.0**), as of this writing. If y
   * [Session](#session)
   * [OAuth1](#oauth1)
   * [OAuth2](#oauth2)
+  * [OAuth2 with PKCE](#oauth2-with-pkce)
   * [Connection Label](#connection-label)
 - [Resources](#resources)
   * [Resource Definition](#resource-definition)
@@ -861,6 +862,97 @@ For OAuth2, `authentication.oauth2Config.authorizeUrl`, `authentication.oauth2Co
 Also, `authentication.oauth2Config.getAccessToken` has access to the additional return values in `rawRequest` and `cleanedRequest` should you need to extract other values (for example, from the query string).
 
 If you define `fields` to collect additional details from the user, please note that `client_id` and `client_secret` are reserved keys and cannot be used as keys for input form fields.
+
+
+### OAuth2 with PKCE
+
+Zapier's OAuth2 implementation also supports [PKCE](https://oauth.net/2/pkce/). This implementation is an extension of the OAuth2 `authorization_code` flow described above. 
+
+To use PKCE in your OAuth2 flow, you'll need to set the following variables:
+  1. `enablePkce: true`
+  2. `getAccessToken.body` to include `code_verifier: "{{bundle.inputData.code_verifier}}"`
+
+The OAuth2 PKCE flow uses the same flow as OAuth2 but adds a few extra parameters:
+
+  1. Zapier computes a `code_verifier` and `code_challenge` internally and stores the `code_verifier` in the Zapier bundle.
+  2. Zapier sends the user to the authorization URL defined by your app, passing along the computed `code_challenge`.
+  3. Once authorized, your website sends the user to the `redirect_uri` Zapier provided.
+  4. Zapier makes a call to your API to exchange the `code` and the computed `code_verifier` for an `access_token`.
+  5. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
+
+Your auth definition would look something like this:
+
+```js
+const authentication = {
+  type: 'oauth2',
+  test: {
+    url: 'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
+  },
+  // you can provide additional fields for inclusion in authData
+  oauth2Config: {
+    // "authorizeUrl" could also be a function returning a string url
+    authorizeUrl: {
+      method: 'GET',
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize',
+      params: {
+        client_id: '{{process.env.CLIENT_ID}}',
+        state: '{{bundle.inputData.state}}',
+        redirect_uri: '{{bundle.inputData.redirect_uri}}',
+        response_type: 'code',
+      },
+    },
+    // Zapier expects a response providing {access_token: 'abcd'}
+    // "getAccessToken" could also be a function returning an object
+    getAccessToken: {
+      method: 'POST',
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token',
+      body: {
+        code: '{{bundle.inputData.code}}',
+        client_id: '{{process.env.CLIENT_ID}}',
+        client_secret: '{{process.env.CLIENT_SECRET}}',
+        redirect_uri: '{{bundle.inputData.redirect_uri}}',
+        grant_type: 'authorization_code',
+        code_verifier: '{{bundle.inputData.code_verifier}}', // Added for PKCE
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    },
+    scope: 'read,write',
+    enablePkce: true, // Added for PKCE
+  },
+  // If you need any fields upfront, put them here
+  fields: [
+    { key: 'subdomain', type: 'string', required: true, default: 'app' },
+    // For OAuth2 we store `access_token` and `refresh_token` automatically
+    // in `bundle.authData` for future use. If you need to save/use something
+    // that the user shouldn't need to type/choose, add a "computed" field, like:
+    // {key: 'user_id': type: 'string', required: false, computed: true}
+    // And remember to return it in oauth2Config.getAccessToken/refreshAccessToken
+  ],
+};
+
+const addBearerHeader = (request, z, bundle) => {
+  if (bundle.authData && bundle.authData.access_token) {
+    request.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+  }
+  return request;
+};
+
+const App = {
+  // ...
+  authentication,
+  beforeRequest: [addBearerHeader],
+  // ...
+};
+
+module.exports = App;
+
+```
+
+The computed `code_verifier` uses this standard: [RFC 7636 Code Verifier](https://www.rfc-editor.org/rfc/rfc7636#section-4.1)
+
+The computed `code_challenge` uses this standard: [RFC 7636 Code Challenge](https://www.rfc-editor.org/rfc/rfc7636#section-4.2)
 
 ### Connection Label
 
