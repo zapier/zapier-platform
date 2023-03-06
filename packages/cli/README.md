@@ -866,6 +866,8 @@ If you define `fields` to collect additional details from the user, please note 
 
 ### OAuth2 with PKCE
 
+*Added in v14.0.0.*
+
 Zapier's OAuth2 implementation also supports [PKCE](https://oauth.net/2/pkce/). This implementation is an extension of the OAuth2 `authorization_code` flow described above. 
 
 To use PKCE in your OAuth2 flow, you'll need to set the following variables:
