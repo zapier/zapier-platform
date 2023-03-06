@@ -443,6 +443,35 @@ Also, `authentication.oauth2Config.getAccessToken` has access to the additional 
 
 If you define `fields` to collect additional details from the user, please note that `client_id` and `client_secret` are reserved keys and cannot be used as keys for input form fields.
 
+
+### OAuth2 with PKCE
+
+*Added in v14.0.0.*
+
+Zapier's OAuth2 implementation also supports [PKCE](https://oauth.net/2/pkce/). This implementation is an extension of the OAuth2 `authorization_code` flow described above. 
+
+To use PKCE in your OAuth2 flow, you'll need to set the following variables:
+  1. `enablePkce: true`
+  2. `getAccessToken.body` to include `code_verifier: "{{bundle.inputData.code_verifier}}"`
+
+The OAuth2 PKCE flow uses the same flow as OAuth2 but adds a few extra parameters:
+
+  1. Zapier computes a `code_verifier` and `code_challenge` internally and stores the `code_verifier` in the Zapier bundle.
+  2. Zapier sends the user to the authorization URL defined by your app, passing along the computed `code_challenge`.
+  3. Once authorized, your website sends the user to the `redirect_uri` Zapier provided.
+  4. Zapier makes a call to your API to exchange the `code` and the computed `code_verifier` for an `access_token`.
+  5. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
+
+Your auth definition would look something like this:
+
+```js
+[insert-file:./snippets/oauth2-pkce.js]
+```
+
+The computed `code_verifier` uses this standard: [RFC 7636 Code Verifier](https://www.rfc-editor.org/rfc/rfc7636#section-4.1)
+
+The computed `code_challenge` uses this standard: [RFC 7636 Code Challenge](https://www.rfc-editor.org/rfc/rfc7636#section-4.2)
+
 ### Connection Label
 
 When a user connects to your app via Zapier and a connection is created to hold the related data in `bundle.authData`, the connection is automatically labeled with the app name. You also have the option of setting a connection label (`connectionLabel`), which can be extremely helpful to identify information like which user is connected or what instance of your app they are connected to. That way, users don't get confused if they have multiple connections to your app.
