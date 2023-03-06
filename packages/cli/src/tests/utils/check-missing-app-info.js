@@ -11,11 +11,10 @@ describe('check missing required app info', () => {
       title: 'Test App',
       description: 'Sample description',
       key: 'App123',
-      app_category: 'crm',
     };
     should(() => checkMissingAppInfo(app)).throw(
       new Error(
-        `Your integration is missing required info (intention, role). Please, run "zapier register" to add it.`
+        `Your integration is missing required info (category, audience, role). Please, run "zapier register" to add it.`
       )
     );
   });
