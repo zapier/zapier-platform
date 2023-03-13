@@ -2823,15 +2823,12 @@ Example: `throw new z.errors.RefreshAuthError();`
 ### Handling Throttled Requests
 
 Since v11.2.0, there are two types of errors that can cause Zapier to throttle an operation and retry at a later time.
-This is useful if the API you're interfacing with is reports it is receiving too many requests, often indicated by
+This is useful if the API you're interfacing with reports it is receiving too many requests, often indicated by
 receiving a response status code of 429.
 
 If a response receives a status code of 429 and is not caught, Zapier will re-attempt the operation after a delay.
-The delay can be customized by the server response containing a
-[Retry-After](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After) header.
-
-Another way to request Zapier retry an operation is to throw a `ThrottledError`, which may also optionally specify a
-delay in seconds:
+The delay can be customized by the server response containing a specific
+[Retry-After](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After) header in your error response or with a specified time delay in seconds using a `ThrottledError`:
 
 ```js
 const yourAfterResponse = (resp) => {
@@ -2841,6 +2838,9 @@ const yourAfterResponse = (resp) => {
   return resp;
 };
 ```
+Instead of a user’s Zap erroring and halting, the request will be repeatedly retried at the specified time.
+
+For throttled requests that occur during processing of a webhook trigger's perform, before results are produced; there is a max retry delay of 300 seconds and a default delay of 60 seconds if none is specified. For webhook processing only, if a request during the retry attempt is also throttled, it will not be re-attempted again. 
 
 ## Testing
 
