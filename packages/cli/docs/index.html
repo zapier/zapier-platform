@@ -4597,11 +4597,10 @@ failed operation. You can also throw this error manually if your server doesn&ap
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p>Since v11.2.0, there are two types of errors that can cause Zapier to throttle an operation and retry at a later time.
-This is useful if the API you&apos;re interfacing with is reports it is receiving too many requests, often indicated by
+This is useful if the API you&apos;re interfacing with reports it is receiving too many requests, often indicated by
 receiving a response status code of 429.</p><p>If a response receives a status code of 429 and is not caught, Zapier will re-attempt the operation after a delay.
-The delay can be customized by the server response containing a
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After">Retry-After</a> header.</p><p>Another way to request Zapier retry an operation is to throw a <code>ThrottledError</code>, which may also optionally specify a
-delay in seconds:</p>
+The delay can be customized by the server response containing a specific
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After">Retry-After</a> header in your error response or with a specified time delay in seconds using a <code>ThrottledError</code>:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> yourAfterResponse = <span class="hljs-function">(<span class="hljs-params">resp</span>) =&gt;</span> {
@@ -4611,6 +4610,15 @@ delay in seconds:</p>
   <span class="hljs-keyword">return</span> resp;
 };
 </code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Instead of a user&#x2019;s Zap erroring and halting, the request will be repeatedly retried at the specified time.</p><p>For throttled requests that occur during processing of a webhook trigger&apos;s perform, before results are produced; there is a max retry delay of 300 seconds and a default delay of 60 seconds if none is specified. For webhook processing only, if a request during the retry attempt is also throttled, it will not be re-attempted again. </p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
     </div>
   </div>
 </div><div class="row">
