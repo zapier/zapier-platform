@@ -1,3 +1,34 @@
+## 14.0.0
+
+_released `2023-03-21`_
+
+Version `14.0.0` is a breaking change release that contains some backwards-incompatible changes that may require you to provide addditional meta information about your app (if that information isn't already provided). If you are missing this information, you will be blocked from making major updates to your application (`zapier promote`, `zapier upload`, `zapier push`).
+
+Read on for a detailed set of release notes, paying special attention to any :exclamation: BREAKING CHANGEs.
+
+### cli
+* :scroll: SUPPORTENG_560_throttling_edits (#631)
+* :nail_care: Use uniform field names in check-missing-app-info util (#630)
+* :scroll: feat(docs) - Add documentation for PKCE OAuth2 (#629)
+* :nail_care: PDE-3822 feat(cli): Only require fields for private integrations via CLI (#628)
+* :nail_care: PDE-3733 feat(cli): Implement --yes flag for register command (#627)
+* :scroll: [SUPPORTENG-394] docs(cli): Add information about how to return line items (#620)
+* :exclamation: PDE-3732 feat(cli): Implement individual field flags for register command (#618)
+* :exclamation: PDE-3678 Block promote, upload, and push for missing required app info (#612)
+* :scroll: docs(cli): Fix 'integraiton' typo in CLI docs (#613)
+
+### core
+* :scroll: [PDE-3809] chore: Small followup improvement on GitHub issue templates (#625)
+* :scroll: [PDE-3809] chore: Replace issue templates with GitHub forms, update CODEOWNERS (#622)
+* :hammer: PDE-2085 chore: bump http-cache-semantics from 4.1.0 to 4.1.1 (#617)
+
+### schema
+* :hammer: PDE-3810 fix(schema): searchAndCreates and searchOrCreates can coexist to avoid search key collision (#624)
+* :nail_care: PDE-3242 - feat(schema) Add enablePkce to OAuth2Config (#623)
+* :scroll: [SUPPORTENG-383] docs(schema): Add clarity on role of performList for testing REST Hooks (#619)
+
+
+
 ## 13.0.0
 
 _released `2023-01-25`_
