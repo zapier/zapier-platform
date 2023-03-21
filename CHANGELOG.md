@@ -2,7 +2,7 @@
 
 _released `2023-03-21`_
 
-Version `14.0.0` is a breaking change release that contains some backwards-incompatible changes that may require you to provide addditional meta information about your app (if that information isn't already provided). If you are missing this information, you will be blocked from making major updates to your application (`zapier promote`, `zapier upload`, `zapier push`).
+Version `14.0.0` is a breaking change release that contains some backwards-incompatible changes that may require you to provide additional meta information about your app (if that information isn't already provided). If you are missing this information, you will be blocked from making major updates to your application (`zapier promote`, `zapier upload`, `zapier push`).
 
 Read on for a detailed set of release notes, paying special attention to any :exclamation: BREAKING CHANGEs.
 
