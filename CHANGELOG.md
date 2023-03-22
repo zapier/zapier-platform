@@ -4,8 +4,8 @@ _released `2023-03-21`_
 
 Version `14.0.0` is a breaking change release that contains several important upgrades and deprecations. Here is a brief breakdown of the most notable changes (see further below for a more detailed list of changes):
 
-1. `alters_custom_fields` is no longer set to `true` all the time. Developers should now set the flag appropriately. This will signal to the editor when needs have to be re-fetched (i.e. user picked another spreadsheet so we need to refresh the dropdowns that act on column/rows).
-1. We will preserve the behavior for Python apps and for devcli apps built on platform version `13.0.0` or lower. Starting on version `14.0.0` CLI integrations will need to define `can_paginate` for every operation that supports pagination.
+1. `alters_custom_fields` is no longer set to `true` all the time. Developers should now set the flag appropriately. This will signal to the editor when dynamic dropdown choices have to be re-fetched (i.e. user picked another spreadsheet so we need to refresh the dropdowns that act on column/rows).
+1. Starting on version `14.0.0` CLI integrations will need to define `can_paginate` for every operation that supports pagination. We will preserve the behavior for apps built on platform version `13.0.0` or lower.
 1. Zapier's OAuth2 implementation now supports PKCE. See [our official documentation](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@14.0.0/packages/cli/README.md#oauth2-with-pkce) for implementation details.
 1. You may need to provide additional meta information about your app (if that information isn't already provided). If you are missing this information, you will be blocked from making major updates to your application (`zapier promote`, `zapier upload`, `zapier push`).
 
