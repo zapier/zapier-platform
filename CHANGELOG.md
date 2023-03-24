@@ -2,39 +2,64 @@
 
 _released `2023-03-21`_
 
-Version `14.0.0` is a breaking change release that contains several important upgrades and deprecations. Here is a brief breakdown of the most notable changes (see further below for a more detailed list of changes):
+Version `14.0.0` is a breaking change release that contains several important upgrades and deprecations. Here is a brief breakdown of the changes (**:exclamation: denotes a breaking change**):
 
-1. `alters_custom_fields` is no longer set to `true` all the time. Developers should now set the flag appropriately. This will signal to the editor when dynamic dropdown choices have to be re-fetched (i.e. user picked another spreadsheet so we need to refresh the dropdowns that act on column/rows).
-1. Starting on version `14.0.0` CLI integrations will need to define `can_paginate` for every operation that supports pagination. We will preserve the behavior for apps built on platform version `13.0.0` or lower.
-1. Zapier's OAuth2 implementation now supports PKCE. See [our official documentation](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@14.0.0/packages/cli/README.md#oauth2-with-pkce) for implementation details.
-1. You may need to provide additional meta information about your app (if that information isn't already provided). If you are missing this information, you will be blocked from making major updates to your application (`zapier promote`, `zapier upload`, `zapier push`).
+1. :exclamation: [`altersDynamicFields`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@14.0.0/packages/schema/docs/build/schema.md#fieldschema) no longer defaults to true when [`dynamic`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@14.0.0/packages/schema/docs/build/schema.md#fieldschema) is set. You should now set the flag appropriately. If a dynamic dropdown (i.e. a field with `dynamic` set) should refresh other input fields, you must set `altersDynamicFields` to true on v14.
 
-Read on for a detailed set of release notes, paying special attention to any :exclamation: BREAKING CHANGEs.
+   ```
+   inputFields: [
+     {
+       key: 'city',
+       dynamic: 'city.id.name',
+       altersDynamicFields: true  // <- set this appropriately on v14
+     }
+   ]
+   ```
+
+2. :exclamation: Before v14, the Zap editor didn't really use [`canPaginate`](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@14.0.0/packages/schema/docs/build/schema.md#basicpollingoperationschema). Instead, it made two requests and compared them to determine if pagination is supported. Starting from v14, `canPaginate` is required for the Zap editor to show the [Load More](https://cdn.zappy.app/2d13ed0a921268482abe8ff7d0cd6e38.png) button for pagination.
+
+   ```
+   triggers: {
+     contact: {
+       operation: {
+         canPaginate: true  // <- set this appropriately on v14
+       }
+     }
+   }
+   ```
+
+3. :exclamation: Now you are required to provide meta information about your app, such as your intended audience and app category (if that information isn't already provided). If you are missing this information, you will be blocked from making updates to your integration (`zapier promote`, `zapier upload`, `zapier push`). Use `zapier register` with `zapier-platform-core@14.0.0` or go to `https://developer.zapier.com/app/{app_id}/version/{version}/settings` to fill it out.
+
+4. On v14, OAuth2 implementation now supports PKCE! See [our documentation](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@14.0.0/packages/cli/README.md#oauth2-with-pkce) for details.
+
+Read on for a detailed set of release notes. Again, :exclamation: are BREAKING CHANGEs.
 
 ### cli
-* :exclamation: Implement individual field flags for register command ([#618](https://github.com/zapier/zapier-platform/pull/618))
-* :exclamation: Block promote, upload, and push for missing required app info ([#612](https://github.com/zapier/zapier-platform/pull/612))
+
+* :exclamation: Implement individual field flags for `register` command ([#618](https://github.com/zapier/zapier-platform/pull/618))
+* :exclamation: Block `promote`, `upload`, and `push` for missing required app info ([#612](https://github.com/zapier/zapier-platform/pull/612))
 * :nail_care: Use uniform field names in check-missing-app-info util ([#630](https://github.com/zapier/zapier-platform/pull/630))
 * :nail_care: Only require fields for private integrations via CLI ([#628](https://github.com/zapier/zapier-platform/pull/628))
-* :nail_care: Implement --yes flag for register command ([#627](https://github.com/zapier/zapier-platform/pull/627))
-* :scroll: Updating throttling text in CLI README to include more detail ([#631](https://github.com/zapier/zapier-platform/pull/631))
+* :nail_care: Implement `--yes` flag for `register` command ([#627](https://github.com/zapier/zapier-platform/pull/627))
+* :scroll: Improve documentation on throttling ([#631](https://github.com/zapier/zapier-platform/pull/631))
 * :scroll: Add documentation for PKCE OAuth2 ([#629](https://github.com/zapier/zapier-platform/pull/629))
 * :scroll: Add information about how to return line items ([#620](https://github.com/zapier/zapier-platform/pull/620))
 * :scroll: Fix 'integraiton' typo in CLI docs ([#613](https://github.com/zapier/zapier-platform/pull/613))
 
 ### core
+
 * :hammer: bump http-cache-semantics from 4.1.0 to 4.1.1 ([#617](https://github.com/zapier/zapier-platform/pull/617))
 
 ### schema
-* :tada: Add enablePkce to OAuth2Config ([#623](https://github.com/zapier/zapier-platform/pull/623))
-* :hammer: searchAndCreates and searchOrCreates can coexist to avoid search key collision ([#624](https://github.com/zapier/zapier-platform/pull/624))
-* :scroll: Add clarity on role of performList for testing REST Hooks ([#619](https://github.com/zapier/zapier-platform/pull/619))
+
+* :tada: Add `enablePkce` to `oauth2Config` ([#623](https://github.com/zapier/zapier-platform/pull/623))
+* :hammer: `searchAndCreates` and `searchOrCreates` can coexist to avoid search key collision ([#624](https://github.com/zapier/zapier-platform/pull/624))
+* :scroll: Add clarity on role of `performList` for testing REST Hooks ([#619](https://github.com/zapier/zapier-platform/pull/619))
 
 ### misc
+
 * :scroll: Small followup improvement on GitHub issue templates ([#625](https://github.com/zapier/zapier-platform/pull/625))
 * :scroll: Replace issue templates with GitHub forms, update CODEOWNERS ([#622](https://github.com/zapier/zapier-platform/pull/622))
-
-
 
 ## 13.0.0
 
