@@ -100,6 +100,23 @@ const visualAppDefinition = {
       params: {},
       method: 'GET',
     },
+    fields: [
+      {
+        key: 'access_token',
+        type: 'string',
+        required: true,
+      },
+      {
+        key: 'refresh_token',
+        type: 'string',
+        required: true,
+      },
+      {
+        key: 'custom_auth_field',
+        type: 'string',
+        required: false,
+      },
+    ],
     oauth2Config: {
       authorizeUrl: {
         url: 'https://app.wistia.com/oauth/authorize?client_id=03e84930b97011c7bd674f6d02c04ec9c1a430325a73a0501eb443ef07b6b99c&redirect_uri=https%3A%2F%2Fzapier.com%2Fdashboard%2Fauth%2Foauth%2Freturn%2FApp17741CLIAPI%2F&response_type=code',
@@ -298,9 +315,16 @@ describe('convert', () => {
       should(rcFile.id).eql(visualApp.id);
       should(rcFile.includeInBuild).be.undefined();
 
+      const countOccurrences = (str, search) => {
+        const regex = new RegExp(search, 'g');
+        return (str.match(regex) || []).length;
+      };
+
       const envFile = readTempFile('.env');
-      should(envFile.includes('ACCESS_TOKEN')).be.true();
-      should(envFile.includes('REFRESH_TOKEN')).be.true();
+      // prevent regression of duplicates when authentication.fields contains default fields
+      should(countOccurrences(envFile, 'ACCESS_TOKEN=')).be.equals(1);
+      should(countOccurrences(envFile, 'REFRESH_TOKEN=')).be.equals(1);
+      should(envFile.includes('CUSTOM_AUTH_FIELD')).be.true();
 
       const idxFile = readTempFile('index.js');
 

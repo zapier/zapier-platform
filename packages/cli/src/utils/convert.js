@@ -72,30 +72,30 @@ const renderTemplate = async (
 
 const getAuthFieldKeys = (appDefinition) => {
   const authFields = _.get(appDefinition, 'authentication.fields') || [];
-  const fieldKeys = authFields.map((f) => f.key);
+  const fieldKeys = new Set(authFields.map((f) => f.key));
 
   const authType = _.get(appDefinition, 'authentication.type');
   switch (authType) {
     case 'basic': {
-      fieldKeys.push('username', 'password');
+      fieldKeys.add('username');
+      fieldKeys.add('password');
       break;
     }
     case 'oauth1':
-      fieldKeys.push('oauth_access_token');
+      fieldKeys.add('oauth_access_token');
       break;
     case 'oauth2':
-      fieldKeys.push('access_token', 'refresh_token');
+      fieldKeys.add('access_token');
+      fieldKeys.add('refresh_token');
       break;
     default:
-      fieldKeys.push(
-        'oauth_consumer_key',
-        'oauth_consumer_secret',
-        'oauth_token',
-        'oauth_token_secret'
-      );
+      fieldKeys.add('oauth_consumer_key');
+      fieldKeys.add('oauth_consumer_secret');
+      fieldKeys.add('oauth_token');
+      fieldKeys.add('oauth_token_secret');
       break;
   }
-  return fieldKeys;
+  return Array.from(fieldKeys);
 };
 
 const renderPackageJson = async (appInfo, appDefinition) => {
