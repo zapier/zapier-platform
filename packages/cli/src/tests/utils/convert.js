@@ -313,6 +313,7 @@ describe('convert', () => {
 
       const rcFile = JSON.parse(readTempFile('.zapierapprc'));
       should(rcFile.id).eql(visualApp.id);
+      should(rcFile.key).eql(visualApp.key);
       should(rcFile.includeInBuild).be.undefined();
 
       const countOccurrences = (str, search) => {
