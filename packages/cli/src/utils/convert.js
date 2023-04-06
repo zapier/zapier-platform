@@ -468,6 +468,9 @@ const writeZapierAppRc = async (appInfo, appDefinition, newAppDir) => {
   if (appInfo.id) {
     json.id = appInfo.id;
   }
+  if (appInfo.key) {
+    json.key = appInfo.key;
+  }
   if (appDefinition.legacy) {
     json.includeInBuild = ['scripting.js'];
   }
