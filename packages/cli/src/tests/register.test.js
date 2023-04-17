@@ -30,7 +30,7 @@ describe('RegisterCommand', () => {
       .command([
         'register',
         '--desc',
-        'Cupidatat non elit non enim enim cupidatat ea in consequat exercitation do nisi occaecat amet id deserunt nostrud quis aliqua id fugiat sit elit.',
+        'Cupidatat non elit non enim enim cupidatat ea in consequat exercitation do nisi occaecat amet id deserunt nostrud quis aliqua id fugiat sit elita.',
       ])
       .catch((ctx) => {
         oclif
