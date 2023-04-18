@@ -76,6 +76,8 @@ jobs:
           cache: yarn
       - name: Install dependencies
         run: yarn --frozen-lockfile
+      - name: Debug
+        run: echo 'hello' | sha256sum
       - name: Test - cli
         run: yarn test
         working-directory: packages/cli
