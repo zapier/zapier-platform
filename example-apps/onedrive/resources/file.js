@@ -43,17 +43,17 @@ module.exports = {
   get: {
     display: {
       label: 'Get File',
-      description: 'Gets a file.'
+      description: 'Gets a file.',
     },
     operation: {
       inputFields: [
         {
           key: 'id',
-          required: true
-        }
+          required: true,
+        },
       ],
-      perform: getFile
-    }
+      perform: getFile,
+    },
   },
 
   // Will become a trigger on the app. Key will be `fileList`
@@ -61,7 +61,6 @@ module.exports = {
     display: {
       label: 'New File',
       description: 'Triggers when a new file is added in a folder.',
-      important: true
     },
     operation: {
       inputFields: [
@@ -72,11 +71,11 @@ module.exports = {
           required: false,
           dynamic: 'folderList._path.name',
           helpText:
-            'Folder where to look for the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.'
-        }
+            'Folder where to look for the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.',
+        },
       ],
-      perform: listFiles
-    }
+      perform: listFiles,
+    },
   },
 
   // Will become a create on the app. Key will be `fileCreate`
@@ -84,7 +83,6 @@ module.exports = {
     display: {
       label: 'Upload File',
       description: 'Upload an existing file or attachment.',
-      important: true
     },
     operation: {
       inputFields: [
@@ -95,7 +93,7 @@ module.exports = {
           required: false,
           dynamic: 'folderList._path.name',
           helpText:
-            'Folder where to place the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.'
+            'Folder where to place the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.',
         },
         {
           key: 'file',
@@ -103,7 +101,7 @@ module.exports = {
           label: 'File',
           required: true,
           helpText:
-            'Must be a file object from another service (or some text or URL).'
+            'Must be a file object from another service (or some text or URL).',
         },
         {
           key: 'name',
@@ -111,11 +109,11 @@ module.exports = {
           label: 'File Name',
           required: false,
           helpText:
-            'By default, we use the same name and extension as the original file.'
-        }
+            'By default, we use the same name and extension as the original file.',
+        },
       ],
-      perform: createFile
-    }
+      perform: createFile,
+    },
   },
 
   // Will become a search on the app. Key will be `fileSearch`
@@ -123,7 +121,6 @@ module.exports = {
     display: {
       label: 'Find File',
       description: 'Finds a file by name.',
-      important: true
     },
     operation: {
       inputFields: [
@@ -134,16 +131,16 @@ module.exports = {
           required: false,
           dynamic: 'folderList._path.name',
           helpText:
-            'Folder where to look for the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.'
+            'Folder where to look for the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.',
         },
         {
           key: 'name',
           required: true,
-          type: 'string'
-        }
+          type: 'string',
+        },
       ],
-      perform: searchFile
-    }
+      perform: searchFile,
+    },
   },
 
   sample: {
@@ -154,7 +151,7 @@ module.exports = {
     webUrl: 'https://example.com',
     '@microsoft.graph.downloadUrl': 'https://example.com',
     createdDateTime: '2016-09-16T03:37:04.72Z',
-    lastModifiedDateTime: '2016-09-16T03:37:04.72Z'
+    lastModifiedDateTime: '2016-09-16T03:37:04.72Z',
   },
 
   outputFields: [
@@ -163,6 +160,6 @@ module.exports = {
     { key: '_path', label: 'File Path' },
     { key: '_parent', label: 'Folder' },
     { key: 'webUrl', label: 'URL' },
-    { key: '@microsoft.graph.downloadUrl', label: 'Download URL' }
-  ]
+    { key: '@microsoft.graph.downloadUrl', label: 'Download URL' },
+  ],
 }

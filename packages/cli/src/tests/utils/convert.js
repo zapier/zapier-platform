@@ -82,7 +82,6 @@ const visualAppDefinition = {
       noun: 'Project',
       display: {
         hidden: false,
-        important: true,
         description: 'asdfasda asdf asd fasd f',
         label: 'Create a New Project',
       },
@@ -180,7 +179,6 @@ const visualAppDefinition = {
       display: {
         directions: 'this is help text, where does it go?',
         hidden: false,
-        important: true,
         description: 'Triggers on a new project created',
         label: 'New Project',
       },
@@ -196,7 +194,6 @@ const visualAppDefinition = {
       noun: 'Code',
       display: {
         hidden: false,
-        important: true,
         description: "just runs some code, let's go",
         label: 'New Code Trigger',
       },
