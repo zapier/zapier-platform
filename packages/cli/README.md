@@ -22,7 +22,7 @@ You may find docs duplicate or outdated across the Zapier site. The most up-to-d
 
 Our code is updated frequently. To see a full list of changes, look no further than [the CHANGELOG](https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md).
 
-This doc describes the latest CLI version (**13.0.0**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+This doc describes the latest CLI version (**14.0.0**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
 - CLI Docs: [11.3.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@11.3.3/packages/cli/README.md), [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/README.md), [9.7.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.7.3/packages/cli/README.md)
 - CLI Reference: [11.3.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@11.3.3/packages/cli/docs/cli.md), [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/docs/cli.md), [9.7.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.7.3/packages/cli/docs/cli.md)
@@ -55,11 +55,13 @@ This doc describes the latest CLI version (**13.0.0**), as of this writing. If y
   * [Session](#session)
   * [OAuth1](#oauth1)
   * [OAuth2](#oauth2)
+  * [OAuth2 with PKCE](#oauth2-with-pkce)
   * [Connection Label](#connection-label)
 - [Resources](#resources)
   * [Resource Definition](#resource-definition)
 - [Triggers/Searches/Creates](#triggerssearchescreates)
   * [Return Types](#return-types)
+    + [Returning Line Items (Array of Objects)](#returning-line-items-array-of-objects)
   * [Fallback Sample](#fallback-sample)
 - [Input Fields](#input-fields)
   * [Custom/Dynamic Fields](#customdynamic-fields)
@@ -861,6 +863,99 @@ Also, `authentication.oauth2Config.getAccessToken` has access to the additional 
 
 If you define `fields` to collect additional details from the user, please note that `client_id` and `client_secret` are reserved keys and cannot be used as keys for input form fields.
 
+
+### OAuth2 with PKCE
+
+*Added in v14.0.0.*
+
+Zapier's OAuth2 implementation also supports [PKCE](https://oauth.net/2/pkce/). This implementation is an extension of the OAuth2 `authorization_code` flow described above. 
+
+To use PKCE in your OAuth2 flow, you'll need to set the following variables:
+  1. `enablePkce: true`
+  2. `getAccessToken.body` to include `code_verifier: "{{bundle.inputData.code_verifier}}"`
+
+The OAuth2 PKCE flow uses the same flow as OAuth2 but adds a few extra parameters:
+
+  1. Zapier computes a `code_verifier` and `code_challenge` internally and stores the `code_verifier` in the Zapier bundle.
+  2. Zapier sends the user to the authorization URL defined by your app, passing along the computed `code_challenge`.
+  3. Once authorized, your website sends the user to the `redirect_uri` Zapier provided.
+  4. Zapier makes a call to your API to exchange the `code` and the computed `code_verifier` for an `access_token`.
+  5. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
+
+Your auth definition would look something like this:
+
+```js
+const authentication = {
+  type: 'oauth2',
+  test: {
+    url: 'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
+  },
+  // you can provide additional fields for inclusion in authData
+  oauth2Config: {
+    // "authorizeUrl" could also be a function returning a string url
+    authorizeUrl: {
+      method: 'GET',
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/oauth2/authorize',
+      params: {
+        client_id: '{{process.env.CLIENT_ID}}',
+        state: '{{bundle.inputData.state}}',
+        redirect_uri: '{{bundle.inputData.redirect_uri}}',
+        response_type: 'code',
+      },
+    },
+    // Zapier expects a response providing {access_token: 'abcd'}
+    // "getAccessToken" could also be a function returning an object
+    getAccessToken: {
+      method: 'POST',
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/v2/oauth2/token',
+      body: {
+        code: '{{bundle.inputData.code}}',
+        client_id: '{{process.env.CLIENT_ID}}',
+        client_secret: '{{process.env.CLIENT_SECRET}}',
+        redirect_uri: '{{bundle.inputData.redirect_uri}}',
+        grant_type: 'authorization_code',
+        code_verifier: '{{bundle.inputData.code_verifier}}', // Added for PKCE
+      },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    },
+    scope: 'read,write',
+    enablePkce: true, // Added for PKCE
+  },
+  // If you need any fields upfront, put them here
+  fields: [
+    { key: 'subdomain', type: 'string', required: true, default: 'app' },
+    // For OAuth2 we store `access_token` and `refresh_token` automatically
+    // in `bundle.authData` for future use. If you need to save/use something
+    // that the user shouldn't need to type/choose, add a "computed" field, like:
+    // {key: 'user_id': type: 'string', required: false, computed: true}
+    // And remember to return it in oauth2Config.getAccessToken/refreshAccessToken
+  ],
+};
+
+const addBearerHeader = (request, z, bundle) => {
+  if (bundle.authData && bundle.authData.access_token) {
+    request.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+  }
+  return request;
+};
+
+const App = {
+  // ...
+  authentication,
+  beforeRequest: [addBearerHeader],
+  // ...
+};
+
+module.exports = App;
+
+```
+
+The computed `code_verifier` uses this standard: [RFC 7636 Code Verifier](https://www.rfc-editor.org/rfc/rfc7636#section-4.1)
+
+The computed `code_challenge` uses this standard: [RFC 7636 Code Challenge](https://www.rfc-editor.org/rfc/rfc7636#section-4.2)
+
 ### Connection Label
 
 When a user connects to your app via Zapier and a connection is created to hold the related data in `bundle.authData`, the connection is automatically labeled with the app name. You also have the option of setting a connection label (`connectionLabel`), which can be extremely helpful to identify information like which user is connected or what instance of your app they are connected to. That way, users don't get confused if they have multiple connections to your app.
@@ -1021,15 +1116,51 @@ You can find more details on the definition for each by looking at the [Trigger 
 > To add a trigger, search, or create to an existing integration, run `zapier scaffold [trigger|search|create] [noun]` to create the necessary files to your project. For example, `zapier scaffold trigger post` will create a new trigger called "New Post".
 ### Return Types
 
-Each of the 3 types of function expects a certain type of object. As of core v1.0.11, there are automated checks to let you know when you're trying to pass the wrong type back. For reference, each expects:
+Each of the 3 types of function should return a certain data type for use by the platform. There are automated checks to let you know when you're trying to pass the wrong type back. For reference, each expects:
 
 | Method  | Return Type | Notes                                                                                                                |
 |---------|-------------|----------------------------------------------------------------------------------------------------------------------|
-| Trigger | Array       | 0 or more objects; passed to the [deduper](https://zapier.com/developer/documentation/v2/deduplication/) if polling  |
+| Trigger | Array       | 0 or more objects; passed to the [deduper](https://platform.zapier.com/docs/dedupe/) if polling  |
 | Search  | Array       | 0 or more objects. Only the first object will be returned, so if len > 1, put the best match first                   |
-| Action  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
+| Create  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
 
 When a trigger function returns an empty array, the Zap will not trigger. For REST Hook triggers, this can be used to filter data if the available subscription options are not specific enough for the Zap's needs.
+
+#### Returning Line Items (Array of Objects)
+
+In some cases, you may want to include multiple items in the data you return for Searches or Creates. To do that, return the set of items as an array of objects under a descriptive key. This may be as part of another object (like items in an invoice) or as multiple top-level items.
+
+For example, a Create Order action returning an order with multiple items might look like this:
+
+```
+order = {
+  name: 'Zap Zaplar',
+  total_cost: 25.96,
+  items: [
+    { name: 'Zapier T-Shirt', unit_price: 11.99, quantity: 3, line_amount: 35.97, category: 'shirts' },
+    { name: 'Orange Widget', unit_price: 7.99, quantity: 10, line_amount: 79.90, category: 'widgets' },
+    { name:'Stuff', unit_price: 2.99, quantity: 7, line_amount: 20.93, category: 'stuff' },
+    { name: 'Allbird Shoes', unit_price: 2.99, quantity: 7, line_amount: 20.93, category: 'shoes' },
+  ],
+  zip: 01002
+}
+```
+
+While a Find Users search could return multiple items under an object key within an array, like this:
+
+```
+result = [{
+  users: [
+      { name: 'Zap Zaplar', age: 12, city: 'Columbia', region: 'Missouri' },
+      { name: 'Orange Crush', age: 28, city: 'West Ocean City', region: 'Maryland' },
+      { name: 'Lego Brick', age: 91, city: 'Billund', region: 'Denmark' },
+    ],
+  }];
+```
+
+A standard search would return just the inner array of users, and only the first user would be provided as a final result. Returning line items instead means that the "first result" return is the object containing all the user details within it.
+
+Using the standard approach is recommended, because not all Zapier integrations support line items directly, so users may need to take additional actions to reformat this data for use in their Zaps. More detail on that at [Use line items in Zaps](https://zapier.com/help/create/basics/use-line-items-in-zaps). However, there are use cases where returning multiple results is helpful enough to outweigh that additional effort.
 
 ### Fallback Sample
 In cases where Zapier needs to show an example record to the user, but we are unable to get a live example from the API, Zapier will fallback to this hard-coded sample. This should reflect the data structure of the Trigger's perform method, and have dummy values that we can show to any user.
@@ -2255,7 +2386,7 @@ This behavior has changed periodically across major versions, which changes how/
 
 ![](https://cdn.zappy.app/e835d9beca1b6489a065d51a381613f3.png)
 
-Ensure you're handling errors correctly for your platform version. The latest released version is **13.0.0**.
+Ensure you're handling errors correctly for your platform version. The latest released version is **14.0.0**.
 
 ### HTTP Request Options
 
@@ -2692,15 +2823,12 @@ Example: `throw new z.errors.RefreshAuthError();`
 ### Handling Throttled Requests
 
 Since v11.2.0, there are two types of errors that can cause Zapier to throttle an operation and retry at a later time.
-This is useful if the API you're interfacing with is reports it is receiving too many requests, often indicated by
+This is useful if the API you're interfacing with reports it is receiving too many requests, often indicated by
 receiving a response status code of 429.
 
 If a response receives a status code of 429 and is not caught, Zapier will re-attempt the operation after a delay.
-The delay can be customized by the server response containing a
-[Retry-After](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After) header.
-
-Another way to request Zapier retry an operation is to throw a `ThrottledError`, which may also optionally specify a
-delay in seconds:
+The delay can be customized by the server response containing a specific
+[Retry-After](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Retry-After) header in your error response or with a specified time delay in seconds using a `ThrottledError`:
 
 ```js
 const yourAfterResponse = (resp) => {
@@ -2710,6 +2838,9 @@ const yourAfterResponse = (resp) => {
   return resp;
 };
 ```
+Instead of a user’s Zap erroring and halting, the request will be repeatedly retried at the specified time.
+
+For throttled requests that occur during processing of a webhook trigger's perform, before results are produced; there is a max retry delay of 300 seconds and a default delay of 60 seconds if none is specified. For webhook processing only, if a request during the retry attempt is also throttled, it will not be re-attempted again. 
 
 ## Testing
 
@@ -3448,7 +3579,7 @@ Broadly speaking, all releases will continue to work indefinitely. While you nev
 For more info about which Node versions are supported, see [the faq](#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with).
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is **13.0.0**. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is **14.0.0**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 

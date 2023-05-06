@@ -265,6 +265,12 @@ const getVersionInfo = () => {
   });
 };
 
+// Intended to match logic of https://gitlab.com/zapier/team-developer-platform/dev-platform/-/blob/9fa28d8bacd04ebdad5937bd039c71aede4ede47/web/frontend/assets/app/entities/CliApp/CliApp.ts#L96
+const isPublished = (appStatus) => {
+  const publishedStatuses = ['public', 'beta'];
+  return publishedStatuses.indexOf(appStatus) > -1;
+};
+
 const listApps = async () => {
   let linkedApp;
   try {
@@ -405,6 +411,7 @@ module.exports = {
   getLinkedAppConfig,
   getWritableApp,
   getVersionInfo,
+  isPublished,
   listApps,
   listEndpoint,
   listEndpointMulti,

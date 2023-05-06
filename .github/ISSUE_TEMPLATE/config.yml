@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Zapier Support
+    url: https://developer.zapier.com/contact
+    about: Please direct any questions not related to feature requests or bug reports to our support team.
+  - name: Zapier Community
+    url: https://community.zapier.com/
+    about: Visit our community page and search for related questions or view open discussions.
