@@ -77,7 +77,6 @@ module.exports = {
     display: {
       label: 'New Folder',
       description: 'Triggers when a new folder is added.',
-      important: true,
     },
     operation: {
       inputFields: [
@@ -102,7 +101,6 @@ module.exports = {
     display: {
       label: 'Create Folder',
       description: 'Creates a new folder.',
-      important: true,
     },
     operation: {
       inputFields: [
@@ -130,7 +128,6 @@ module.exports = {
     display: {
       label: 'Find Folder',
       description: 'Finds a folder by name.',
-      important: true,
     },
     operation: {
       inputFields: [
