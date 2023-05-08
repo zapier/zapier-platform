@@ -430,8 +430,8 @@ Key | Required | Type | Description
 `label` | **yes** (with exceptions, see description) | `string` | A short label like "New Record" or "Create Record in Project". Optional if `hidden` is true.
 `description` | **yes** (with exceptions, see description) | `string` | A description of what this trigger, search, or create does. Optional if `hidden` is true.
 `directions` | no | `string` | A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application. Only evaluated for static webhooks.
-`important` | no | `boolean` | Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.
 `hidden` | no | `boolean` | Should this operation be unselectable by users?
+`important` | no | `boolean` | **DEPRECATED** Formerly affected how prominently this operation is displayed in the UI.
 
 #### Examples
 
@@ -442,8 +442,7 @@ Key | Required | Type | Description
     label: 'New Thing',
     description: 'Gets a new thing for you.',
     directions: 'This is how you use the thing.',
-    hidden: false,
-    important: true
+    hidden: false
   }
   ```
 
@@ -451,7 +450,6 @@ Key | Required | Type | Description
 
 * `{ label: 'New Thing', hidden: false }` - _Missing required key: description_
 * `{ description: 'Gets a new thing for you.', hidden: false }` - _Missing required key: label_
-* `{ label: 'New Thing', description: 'Gets a new thing for you.', important: 1 }` - _Invalid value for key: important_
 
 -----
 

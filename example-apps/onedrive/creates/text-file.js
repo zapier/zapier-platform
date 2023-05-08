@@ -36,7 +36,6 @@ module.exports = {
     label: 'Create New Text File',
     description:
       'Creates a brand new text file from plain text content you specify.',
-    important: true
   },
 
   operation: {
@@ -48,14 +47,14 @@ module.exports = {
         required: false,
         dynamic: 'folderList._path.name',
         helpText:
-          'Folder where to place the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.'
+          'Folder where to place the file. Keep clicking the dropdown to go inside folders. Defaults to the top-level folder if left blank.',
       },
       {
         key: 'file',
         type: 'text',
         label: 'File',
         required: true,
-        helpText: 'Plain text content to put inside the new text file.'
+        helpText: 'Plain text content to put inside the new text file.',
       },
       {
         key: 'name',
@@ -63,8 +62,8 @@ module.exports = {
         label: 'Name of New File',
         required: true,
         helpText:
-          'Specify the name of this file. ".txt" will always be appended.'
-      }
+          'Specify the name of this file. ".txt" will always be appended.',
+      },
     ],
 
     perform: createTextFile,
@@ -76,6 +75,6 @@ module.exports = {
     // so the sample and output are the same for each.
     sample: fileResource.sample,
 
-    outputFields: fileResource.outputFields
-  }
+    outputFields: fileResource.outputFields,
+  },
 }

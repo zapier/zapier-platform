@@ -41,13 +41,13 @@ module.exports = makeSchema({
       minLength: 12,
       maxLength: 1000,
     },
-    important: {
-      description:
-        'Affects how prominently this operation is displayed in the UI. Only mark a few of the most popular operations important.',
-      type: 'boolean',
-    },
     hidden: {
       description: 'Should this operation be unselectable by users?',
+      type: 'boolean',
+    },
+    important: {
+      description:
+        '**DEPRECATED** Formerly affected how prominently this operation is displayed in the UI.',
       type: 'boolean',
     },
   },
@@ -60,7 +60,6 @@ module.exports = makeSchema({
       description: 'Gets a new thing for you.',
       directions: 'This is how you use the thing.',
       hidden: false,
-      important: true,
     },
   ],
   antiExamples: [
@@ -79,14 +78,6 @@ module.exports = makeSchema({
         hidden: false,
       },
       reason: 'Missing required key: label',
-    },
-    {
-      example: {
-        label: 'New Thing',
-        description: 'Gets a new thing for you.',
-        important: 1,
-      },
-      reason: 'Invalid value for key: important',
     },
   ],
 });

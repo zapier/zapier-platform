@@ -85,7 +85,6 @@ const ExtraTrigger = {
     // no effect on behavior
     label: 'New Lead in Project',
     description: 'Triggers when a lead is added to a project.',
-    important: false,
     hidden: false,
     order: 3,
   },
