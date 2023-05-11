@@ -25,6 +25,16 @@ const serializeErrors = (errors) => {
   );
 };
 
+const hasAppChangeType = (metadata, changeType) => {
+  return Boolean(
+    metadata?.some(
+      // Existing property name
+      // eslint-disable-next-line camelcase
+      ({ app_change_type }) => app_change_type === changeType
+    )
+  );
+};
+
 class PromoteCommand extends BaseCommand {
   async perform() {
     const app = await this.getWritableApp();
@@ -35,8 +45,24 @@ class PromoteCommand extends BaseCommand {
     const assumeYes = 'yes' in this.flags;
 
     let shouldContinue;
-    const changelog = await getVersionChangelog(version);
-    if (changelog) {
+    const { changelog, appMetadata, issueMetadata } = await getVersionChangelog(
+      version
+    );
+    if (!changelog) {
+      let error = `${colors.yellow(
+        'Warning!'
+      )} Changelog not found. Please create a CHANGELOG.md file in a format similar to ${colors.cyan(
+        'https://gist.github.com/xavdid/b9ede3565f1188ce339292acc29612b2'
+      )} with user-facing descriptions.`;
+      if (!appMetadata && !issueMetadata) {
+        error += `\nChangelog did not contain any release metadata. Please make sure issue or app data is present in the changelog in the form ${colors.cyan(
+          'APP: <BUGFIX | FEATURE_UPDATE>-<action key>:<action type>'
+        )} (e.x. 'APP: BUGFIX-doStuff:read') or ${colors.cyan(
+          'ISSUE: <BUGFIX | FEATURE_UPDATE>-<issue id>'
+        )} (e.x. 'ISSUE-1234').`;
+      }
+      this.error(error);
+    } else {
       this.log(colors.green(`Changelog found for ${version}`));
       this.log(`\n---\n${changelog}\n---\n`);
 
@@ -44,20 +70,6 @@ class PromoteCommand extends BaseCommand {
         assumeYes ||
         (await this.confirm(
           'Would you like to continue promoting with this changelog?'
-        ));
-    } else {
-      this.log(
-        `${colors.yellow(
-          'Warning!'
-        )} Changelog not found. Please create a CHANGELOG.md file in a format similar to ${colors.cyan(
-          'https://gist.github.com/xavdid/b9ede3565f1188ce339292acc29612b2'
-        )} with user-facing descriptions.`
-      );
-
-      shouldContinue =
-        assumeYes ||
-        (await this.confirm(
-          'Would you like to continue promoting without a changelog?'
         ));
     }
 
@@ -74,6 +86,14 @@ class PromoteCommand extends BaseCommand {
         name: 'promote',
         to_version: version,
         changelog,
+        app_metadata: appMetadata,
+        loki_metadata: issueMetadata,
+        is_feature_update:
+          hasAppChangeType(appMetadata, 'FEATURE-UPDATE') ||
+          hasAppChangeType(issueMetadata, 'FEATURE-UPDATE'),
+        is_bugfix:
+          hasAppChangeType(appMetadata, 'BUGFIX') ||
+          hasAppChangeType(issueMetadata, 'FEATURE-UPDATE'),
       },
     };
 

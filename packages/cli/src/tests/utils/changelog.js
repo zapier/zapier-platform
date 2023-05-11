@@ -1,7 +1,7 @@
-require('should');
+const should = require('should');
 const path = require('path');
 const fs = require('fs-extra');
-const changelog = require('../../utils/changelog');
+const changelogUtil = require('../../utils/changelog');
 const { makeTempDir } = require('../../utils/files');
 
 describe('changelog utils', () => {
@@ -13,7 +13,12 @@ describe('changelog utils', () => {
       appDir = makeTempDir();
       fs.writeFileSync(
         path.join(appDir, 'CHANGELOG.md'),
-        '## new and improved version! (v2.0.0)\n\n' +
+        '## 3.0.0\n\n' +
+          'Made some changes that affect app actions\n' +
+          'APP: BUGFIX-send_message:write, FEATURE_UPDATE-pr_review:read\n' +
+          'However, we also addressed some open issues!\n' +
+          'ISSUES: BUGFIX-123 FEATURE_UPDATE-456\n\n' +
+          '## new and improved version! (v2.0.0)\n\n' +
           '* Fix some bugs.\n' +
           '* Major docs fixes.\n\n' +
           '## 1.0.0\n\n' +
@@ -27,25 +32,64 @@ describe('changelog utils', () => {
     });
 
     it('should find changelog for 1.0.0', () =>
-      changelog.getVersionChangelog('1.0.0', appDir).then((log) => {
-        log.should.eql('* Removing beta "label".\n* Minor docs fixes.');
+      changelogUtil.getVersionChangelog('1.0.0', appDir).then((log) => {
+        log.changelog.should.eql(
+          '* Removing beta "label".\n* Minor docs fixes.'
+        );
       }));
 
     it('should not find changelog for 2.3.0', () =>
-      changelog.getVersionChangelog('2.3.0', appDir).then((log) => {
-        log.should.eql('');
+      changelogUtil.getVersionChangelog('2.3.0', appDir).then((log) => {
+        log.changelog.should.eql('');
       }));
 
     it('should not fail when there is no changelog file', () =>
-      changelog
+      changelogUtil
         .getVersionChangelog('1.0.0', './unexistent-directory')
         .then((log) => {
-          log.should.eql('');
+          log.changelog.should.eql('');
         }));
 
     it('should not fail when versions follow "different" formatting', () =>
-      changelog.getVersionChangelog('2.0.0', appDir).then((log) => {
-        log.should.eql('* Fix some bugs.\n* Major docs fixes.');
+      changelogUtil.getVersionChangelog('2.0.0', appDir).then((log) => {
+        log.changelog.should.eql('* Fix some bugs.\n* Major docs fixes.');
       }));
+
+    it('should not return metadata if it is not found', async () => {
+      const { appMetadata, issueMetadata, changelog } =
+        await changelogUtil.getVersionChangelog('1.0.0', appDir);
+      should(appMetadata).equal(undefined);
+      should(issueMetadata).equal(undefined);
+      changelog.should.equal('* Removing beta "label".\n* Minor docs fixes.');
+    });
+
+    it('should return metadata if it is found', async () => {
+      const { appMetadata, issueMetadata, changelog } =
+        await changelogUtil.getVersionChangelog('3.0.0', appDir);
+
+      changelog.should.equal(
+        'Made some changes that affect app actions\nHowever, we also addressed some open issues!'
+      );
+      JSON.stringify(appMetadata).should.equal(
+        JSON.stringify([
+          {
+            app_change_type: 'BUGFIX',
+            action_key: 'send_message',
+            action_type: 'write',
+          },
+          {
+            app_change_type: 'FEATURE_UPDATE',
+            action_key: 'pr_review',
+            action_type: 'read',
+          },
+        ])
+      );
+      JSON.stringify(issueMetadata).should.equal(
+        JSON.stringify([
+          { app_change_type: 'BUGFIX', issue_id: 123 },
+          { app_change_type: 'FEATURE_UPDATE', issue_id: 456 },
+        ])
+      );
+    });
   });
 });
