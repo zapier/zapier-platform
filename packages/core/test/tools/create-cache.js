@@ -47,14 +47,16 @@ describe('zcache: get, set, delete', () => {
   });
 
   it('zcache_set: should throw error for values that are not JSON-encodable', async () => {
-    const key = 'random-key'
-    const value = () => { 'this is a function' };
+    const key = 'random-key';
+    const values = [console, () => { 'this is a function' }];
 
-    await cache.set(key, value).should.be.rejectedWith('value must be JSON-encodable');
+    for (const index in values) {
+        await cache.set(key, values[index]).should.be.rejectedWith('value must be JSON-encodable');
+    }
   });
 
   it('zcache_set: should throw error for a non-integer ttl', async () => {
-    await cache.set('random-key', 'random-value', 'twenty').should.be.rejectedWith('ttl must be a number');
+    await cache.set('random-key', 'random-value', 'twenty').should.be.rejectedWith('ttl must be an integer');
   });
 
   it('zcache_delete: should delete the cache entry of an existing key', async () => {

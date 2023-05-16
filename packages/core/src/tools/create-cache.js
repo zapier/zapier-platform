@@ -3,8 +3,9 @@
 const _ = require('lodash');
 
 const JSON = require('./create-json-tool')();
+const isJSONEncodable = require('./ensure-json');
 
-const createCacheObj = (input) => {
+const createCache = (input) => {
   const rpc = _.get(input, '_zapier.rpc');
   const runValidationChecks = (rpc, key, value = null, ttl = null) => {
     if (!rpc) {
@@ -12,15 +13,15 @@ const createCacheObj = (input) => {
     }
 
     if (!_.isString(key)) {
-      throw new Error('key must be a string');
+      throw new TypeError('key must be a string');
     }
 
-    if (!JSON.stringify(value)) {
+    if (!isJSONEncodable(value)) {
       throw new Error('value must be JSON-encodable');
     }
 
     if (ttl != null && !_.isInteger(ttl)) {
-      throw new Error('ttl must be a number');
+      throw new TypeError('ttl must be an integer');
     }
   };
 
@@ -46,4 +47,4 @@ const createCacheObj = (input) => {
   };
 };
 
-module.exports = createCacheObj;
+module.exports = createCache;
