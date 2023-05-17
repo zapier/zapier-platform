@@ -2997,7 +2997,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <p><code>z.errors</code> is a collection error classes that you can throw in your code, like <code>throw new z.errors.HaltedError(&apos;...&apos;)</code>.</p><p>The available errors are:</p><ul>
 <li><code>Error</code> (<em>added in v9.3.0</em>) - Stops the current operation, allowing for (auto) replay. Read more on <a href="#general-errors">General Errors</a></li>
 <li><code>HaltedError</code> - Stops current operation, but will never turn off Zap. Read more on <a href="#halting-execution">Halting Execution</a></li>
-<li><code>ExpiredAuthError</code> - Turns off Zap and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
+<li><code>ExpiredAuthError</code> - Stops the current operation and emails user to manually reconnect. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
 <li><code>RefreshAuthError</code> - (OAuth2 or Session Auth) Tells Zapier to refresh credentials and retry operation. Read more on <a href="#stale-authentication-credentials">Stale Authentication Credentials</a></li>
 <li><code>ThrottledError</code> (<em>new in v11.2.0</em>) - Tells Zapier to retry the current operation after a delay specified in seconds. Read more on <a href="#handling-throttled-requests">Handling Throttled Requests</a></li>
 </ul><p>For more details on error handling in general, see <a href="#error-handling">here</a>.</p>
@@ -4574,7 +4574,7 @@ provides a mechanism to notify users of expired credentials. With the
 is sent out asking the user to refresh the credentials. While the auth is
 disconnected, Zap runs will not be executed, to prevent more calls with expired
 credentials. (The runs will be
-<a href="https://zapier.com/help/manage/history/view-and-manage-your-zap-history#holding">Held</a>,
+<a href="https://help.zapier.com/hc/en-us/articles/8496291148685-View-and-manage-your-Zap-history#held-0-3">Held</a>,
 and the user will be able to replay them after reconnecting.)</p><p>Example: <code>throw new z.errors.ExpiredAuthError(&apos;You must manually reconnect this auth.&apos;);</code></p><p>For apps that use OAuth2 with <code>autoRefresh: true</code> or Session Auth, <code>core</code> injects
 a built-in <code>afterResponse</code> middleware that throws an error when the response status
 is 401. The error will signal Zapier to refresh the credentials and then retry the
