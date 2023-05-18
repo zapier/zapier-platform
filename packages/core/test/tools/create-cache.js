@@ -48,11 +48,11 @@ describe('zcache: get, set, delete', () => {
 
   it('zcache_set: should throw error for values that are not JSON-encodable', async () => {
     const key = 'random-key';
-    const values = [console, () => { 'this is a function' }];
+    let value = console;
+    await cache.set(key, value).should.be.rejectedWith("Type 'object' is not JSON-encodable (path: '')");
 
-    for (const index in values) {
-        await cache.set(key, values[index]).should.be.rejectedWith('value must be JSON-encodable');
-    }
+    value = () => { 'this is a function' };
+    await cache.set(key, value).should.be.rejectedWith("Type 'function' is not JSON-encodable (path: '')");
   });
 
   it('zcache_set: should throw error for a non-integer ttl', async () => {

@@ -1,8 +1,10 @@
+const assert = require('assert');
 const should = require('should');
 
 const cleaner = require('../src/tools/cleaner');
 const hashing = require('../src/tools/hashing');
 const ensureArray = require('../src/tools/ensure-array');
+const ensureJSONEncodable = require('../src/tools/ensure-json-encodable');
 const requestSugar = require('../src/tools/request-sugar');
 const dataTools = require('../src/tools/data');
 
@@ -368,6 +370,92 @@ describe('Tools', () => {
         url: 'https://foo.com',
         headers: { a: 'b' },
       });
+    });
+  });
+
+  describe('ensureJsonEncodable', () => {
+    it('should return successfully without error for JSON-encodable data', () => {
+      ensureJSONEncodable(null);
+      ensureJSONEncodable(1.23456);
+      ensureJSONEncodable('hello');
+      ensureJSONEncodable({ foo: 'bar' });
+      ensureJSONEncodable({ foo: { bar: 'baz' } });
+      ensureJSONEncodable({ foo: { bar: 'baz', items: [null, 1234, {}] } });
+
+      // These object keys are stringified by JSON.stringify(), e.g., 12.34 ->
+      // '12.34', so I guess we can consider them JSON-encodable.
+      ensureJSONEncodable({ 12.34: 56.78 });
+      ensureJSONEncodable({ [null]: true });
+      ensureJSONEncodable({ [undefined]: true });
+    });
+
+    it('should throw error for data that are not JSON-encodable', () => {
+      assert.throws(
+        () => {
+          ensureJSONEncodable(undefined);
+        },
+        {
+          name: 'TypeError',
+          message: "Type 'undefined' is not JSON-encodable (path: '')",
+        }
+      );
+      assert.throws(
+        () => {
+          ensureJSONEncodable(/hello/);
+        },
+        {
+          name: 'TypeError',
+          message: "Type 'object' is not JSON-encodable (path: '')",
+        }
+      );
+      assert.throws(
+        () => {
+          ensureJSONEncodable(console);
+        },
+        {
+          name: 'TypeError',
+          message: "Type 'object' is not JSON-encodable (path: '')",
+        }
+      );
+      assert.throws(
+        () => {
+          ensureJSONEncodable({ foo: [null, { xyz: undefined }] });
+        },
+        {
+          name: 'TypeError',
+          message: "Type 'undefined' is not JSON-encodable (path: 'foo.1.xyz')",
+        }
+      );
+      assert.throws(
+        () => {
+          ensureJSONEncodable(function () {});
+        },
+        {
+          name: 'TypeError',
+          message: "Type 'function' is not JSON-encodable (path: '')",
+        }
+      );
+      assert.throws(
+        () => {
+          ensureJSONEncodable({ foo: [null, { hello: function () {} }] });
+        },
+        {
+          name: 'TypeError',
+          message: "Type 'function' is not JSON-encodable (path: 'foo.1.hello')",
+        }
+      );
+      assert.throws(
+        () => {
+          const obj = { num: 1 };
+          obj.items = [{ self: obj }];
+          ensureJSONEncodable(obj);
+        },
+        {
+          name: 'TypeError',
+          message:
+            "Circular structure is not JSON-encodable (path: 'items.0.self')",
+        }
+      );
     });
   });
 });
