@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const should = require('should');
 
 const createAppTester = require('../src/tools/create-app-tester');
@@ -51,5 +52,29 @@ describe('test-tools', () => {
   it('should delete the temporary handler after use', async () => {
     await appTester(() => [1, 2, 3]);
     should(appDefinition._testRequest).eql(undefined);
+  });
+
+  it('should use the local cache and not RPC cache during test', async () => {
+    const customInputFields = [
+      { key: 'custom-field-1' },
+      { key: 'custom-field-2' },
+    ];
+
+    // retrieves custom fields from API
+    appTester.zcacheTestObj.should.eql({});
+    const freshResults = await appTester(
+      appDefinition.resources.cachedcustominputfields.list.operation.inputFields,
+      {},
+      true,
+    );
+    freshResults.should.eql(customInputFields);
+
+    // retrieves custom fields from cache
+    _.values(appTester.zcacheTestObj).should.containDeep([JSON.stringify(customInputFields)]);
+    const cachedResults = await appTester(
+      appDefinition.resources.cachedcustominputfields.list.operation.inputFields,
+      {},
+    );
+    cachedResults.should.eql(customInputFields);
   });
 });
