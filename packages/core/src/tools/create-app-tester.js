@@ -29,7 +29,7 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
 
   const randomSeed = genId();
 
-  const appTester = (methodOrFunc, bundle, clearZcacheBeforeUse = null) => {
+  const appTester = (methodOrFunc, bundle, clearZcacheBeforeUse = false) => {
     bundle = bundle || {};
 
     let method = resolveMethodPath(appRaw, methodOrFunc, false);

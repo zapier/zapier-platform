@@ -27,6 +27,8 @@ const rpcCacheMock = (zcacheTestObj, method, key, value = null, ttl = null) => {
 
     return JSON.stringify(false);
   }
+
+  throw new Error(`Unexpected method '${method}'`);
 };
 
 const createRpcClient = (event) => {

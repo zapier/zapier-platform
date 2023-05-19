@@ -28,22 +28,26 @@ describe('zcache: get, set, delete', () => {
     await cache.get(12345).should.be.rejectedWith('key must be a string');
   });
 
-  it('zcache_set: should set a cache entry when current throughput is within app\'s rate-limit', async () => {
-    const key = 'random-key'
+  it('zcache_set: should set a cache entry based on the app\'s rate-limit', async () => {
+    const key1 = 'random-key1'
+    const key2 = 'random-key2'
     const value = {entity:'Zapier', colors: ['Orange', 'black']};
+    const valueLength = JSON.stringify(value).length;
+
+    // in bytes/minute
+    const rateLimit = valueLength + 3;
+
+    // still within the rate-limit
+    should(valueLength).be.belowOrEqual(rateLimit);
     mockRpcCall(JSON.stringify(true));
+    const result1 = await cache.set(key1, value);
+    should(result1).eql(true);
 
-    const result = await cache.set(key, value);
-    should(result).eql(true);
-  });
-
-  it('zcache_set: should not set a cache entry when current throughput is outside app\'s rate-limit', async () => {
-    const key = 'random-key'
-    const value = {entity:'Zapier', colors: ['Orange', 'black']};
+    // outside the rate-limit in addition to the first request both within the same 1-minute time window
+    should(valueLength * 2).be.above(rateLimit);
     mockRpcCall(JSON.stringify(false));
-
-    const result = await cache.set(key, value);
-    should(result).eql(false);
+    const result2 = await cache.set(key2, value);
+    should(result2).eql(false);
   });
 
   it('zcache_set: should throw error for values that are not JSON-encodable', async () => {
