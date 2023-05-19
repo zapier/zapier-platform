@@ -16,7 +16,8 @@ export const createAppTester: (
   options?: { customStoreKey?: string }
 ) => <T, B extends Bundle>(
   func: (z: ZObject, bundle: B) => T | Promise<T>,
-  bundle?: Partial<B> // partial so we don't have to make a full bundle in tests
+  bundle?: Partial<B>, // partial so we don't have to make a full bundle in tests
+  clearZcacheBeforeUse?: boolean
 ) => Promise<T>; // appTester always returns a promise
 
 // internal only
@@ -192,5 +193,11 @@ export interface ZObject {
     ExpiredAuthError: typeof ExpiredAuthError;
     RefreshAuthError: typeof RefreshAuthError;
     ThrottledError: typeof ThrottledError;
+  };
+
+  cache: {
+    get: (key: string) => Promise<any>;
+    set: (key: string, value: any, ttl?: integer) => Promise<boolean>;
+    delete: (key: string) => Promise<boolean>;
   };
 }
