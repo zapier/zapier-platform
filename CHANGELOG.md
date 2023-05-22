@@ -15,7 +15,7 @@ _released `2023-05-22`_
 
 ### schema
 
-- :exclamation: Deprecate the `important` key of the `BasicDisplaySchema`. This property will be removed in the next major version release. ([#644](https://github.com/zapier/zapier-platform/pull/644))
+- :scroll: Deprecate the `important` key of the `BasicDisplaySchema`. This property will be removed and hence a breaking change ❗ in the next major version release. ([#644](https://github.com/zapier/zapier-platform/pull/644))
 
 
 ### misc
