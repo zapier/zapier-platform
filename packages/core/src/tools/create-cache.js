@@ -33,14 +33,12 @@ const createCache = (input) => {
     set: async (key, value, ttl = null) => {
       runValidationChecks(rpc, key, value, ttl);
 
-      const result = await rpc('zcache_set', key, JSON.stringify(value), ttl);
-      return JSON.parse(result);
+      return await rpc('zcache_set', key, JSON.stringify(value), ttl);
     },
     delete: async (key) => {
       runValidationChecks(rpc, key);
 
-      const result = await rpc('zcache_delete', key);
-      return JSON.parse(result);
+      return await rpc('zcache_delete', key);
     },
   };
 };

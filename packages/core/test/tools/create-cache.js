@@ -39,13 +39,13 @@ describe('zcache: get, set, delete', () => {
 
     // still within the rate-limit
     should(valueLength).be.belowOrEqual(rateLimit);
-    mockRpcCall(JSON.stringify(true));
+    mockRpcCall(true);
     const result1 = await cache.set(key1, value);
     should(result1).eql(true);
 
     // outside the rate-limit in addition to the first request both within the same 1-minute time window
     should(valueLength * 2).be.above(rateLimit);
-    mockRpcCall(JSON.stringify(false));
+    mockRpcCall(false);
     const result2 = await cache.set(key2, value);
     should(result2).eql(false);
   });
@@ -64,14 +64,14 @@ describe('zcache: get, set, delete', () => {
   });
 
   it('zcache_delete: should delete the cache entry of an existing key', async () => {
-    mockRpcCall(JSON.stringify(true));
+    mockRpcCall(true);
 
     const result = await cache.delete('existing-key');
     should(result).eql(true);
   });
 
   it('zcache_delete: should return false for a non-existing key', async () => {
-    mockRpcCall(JSON.stringify(false));
+    mockRpcCall(false);
 
     const result = await cache.delete('non-existing-key');
     should(result).eql(false);
