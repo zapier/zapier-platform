@@ -33,7 +33,7 @@ describe('build (runs slowly)', function () {
     runCommand('npm', ['i'], { cwd: tmpDir });
     // TODO: This test depends on how "typescript" example is set up, which
     // isn't good. Should refactor not to rely on that.
-    runCommand('npm', ['run', 'build'], { cwd: tmpDir });
+    runCommand('npm', ['run', 'build', '--scripts-prepend-node-path'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
