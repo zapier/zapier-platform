@@ -19,7 +19,7 @@ module.exports = {
 
     const response = await expensiveCustomFieldsRequestMock();
     const data = response.data;
-    z.cache.set('custom-fields', data);
+    await z.cache.set('custom-fields', data);
 
     return data;
   },

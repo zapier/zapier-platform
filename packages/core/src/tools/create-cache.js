@@ -28,7 +28,7 @@ const createCache = (input) => {
       runValidationChecks(rpc, key);
 
       const result = await rpc('zcache_get', key);
-      return JSON.parse(result);
+      return result ? JSON.parse(result) : null;
     },
     set: async (key, value, ttl = null) => {
       runValidationChecks(rpc, key, value, ttl);

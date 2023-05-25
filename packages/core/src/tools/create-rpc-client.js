@@ -10,22 +10,22 @@ const FALLBACK_RPC = process.env.ZAPIER_BASE_ENDPOINT + '/platform/rpc/cli';
 
 const rpcCacheMock = (zcacheTestObj, method, key, value = null, ttl = null) => {
   if (method === 'zcache_get') {
-    const result = key in zcacheTestObj ? zcacheTestObj[key] : 'null';
+    const result = key in zcacheTestObj ? zcacheTestObj[key] : null;
     return result;
   }
 
   if (method === 'zcache_set') {
     zcacheTestObj[key] = value;
-    return JSON.stringify(true);
+    return true;
   }
 
   if (method === 'zcache_delete') {
     if (key in zcacheTestObj) {
       delete zcacheTestObj[key];
-      return JSON.stringify(true);
+      return true;
     }
 
-    return JSON.stringify(false);
+    return false;
   }
 
   throw new Error(`Unexpected method '${method}'`);
