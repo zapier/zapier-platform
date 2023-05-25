@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run build && jest --testTimeout 10000 --rootDir ./lib/test",
-    "build": "which node && npm run clean && tsc",
+    "build": "npm run clean && tsc",
     "clean": "rimraf ./lib ./build",
     "watch": "npm run clean && tsc --watch",
     "_zapier-build": "npm run build"

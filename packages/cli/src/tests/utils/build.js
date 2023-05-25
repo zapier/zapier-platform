@@ -30,9 +30,6 @@ describe('build (runs slowly)', function () {
     appPackageJson.dependencies[PLATFORM_PACKAGE] = corePackage.path;
     fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
 
-    console.log('which node:');
-    console.log(runCommand('which', ['node'], { cwd: tmpDir }));
-
     runCommand('npm', ['i'], { cwd: tmpDir });
     // TODO: This test depends on how "typescript" example is set up, which
     // isn't good. Should refactor not to rely on that.
