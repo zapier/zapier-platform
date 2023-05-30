@@ -29,7 +29,7 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
 
   const randomSeed = genId();
 
-  return (methodOrFunc, bundle) => {
+  const appTester = (methodOrFunc, bundle, clearZcacheBeforeUse = false) => {
     bundle = bundle || {};
 
     let method = resolveMethodPath(appRaw, methodOrFunc, false);
@@ -53,12 +53,17 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
         : `testKey-${method}-${randomSeed}`
       : null;
 
+    if (clearZcacheBeforeUse) {
+      appTester.zcacheTestObj = {};
+    }
+
     const event = {
       command: 'execute',
       method,
       bundle,
       storeKey,
       callback_url: 'https://auth-json-server.zapier-staging.com/echo',
+      zcacheTestObj: appTester.zcacheTestObj,
     };
 
     if (process.env.LOG_TO_STDOUT) {
@@ -73,6 +78,10 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       return resp.results;
     });
   };
+
+  appTester.zcacheTestObj = {};
+
+  return appTester;
 };
 
 module.exports = createAppTester;

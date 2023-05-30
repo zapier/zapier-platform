@@ -377,6 +377,23 @@ const MixedInputFields = {
   },
 };
 
+const CachedCustomInputFields = {
+  key: 'cachedcustominputfields',
+  noun: 'cachedcustominputfields',
+  list: {
+    display: {
+      label: 'Cached Custom Input Fields',
+      description: 'Get/Set custom input fields in zcache',
+    },
+    operation: {
+      inputFields: [
+        helpers.getCustomFields,
+      ],
+      perform: () => {},
+    },
+  },
+};
+
 const HonkerDonker = {
   key: 'honkerdonker',
   noun: 'honkerdonker',
@@ -582,6 +599,7 @@ const App = {
     [DynamicSyncInputFields.key]: DynamicSyncInputFields,
     [DynamicAsyncInputFields.key]: DynamicAsyncInputFields,
     [MixedInputFields.key]: MixedInputFields,
+    [CachedCustomInputFields.key]: CachedCustomInputFields,
     [HonkerDonker.key]: HonkerDonker,
     [ExecuteRequestAsFunc.key]: ExecuteRequestAsFunc,
     [ExecuteRequestAsShorthand.key]: ExecuteRequestAsShorthand,
