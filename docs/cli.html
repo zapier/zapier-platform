@@ -234,6 +234,7 @@ a code {
 <li><a href="#commands">Commands</a><ul>
 <li><a href="#analytics">analytics</a></li>
 <li><a href="#build">build</a></li>
+<li><a href="#cacheclear">cache:clear</a></li>
 <li><a href="#convert">convert</a></li>
 <li><a href="#deleteintegration">delete:integration</a></li>
 <li><a href="#deleteversion">delete:version</a></li>
@@ -360,6 +361,33 @@ a code {
 </ul><p>This command is typically followed by <code>zapier upload</code>.</p><p><strong>Flags</strong></p><ul>
 <li><code>--disable-dependency-detection</code> | Disable &quot;smart&quot; file inclusion. By default, Zapier only includes files that are required by <code>index.js</code>. If you (or your dependencies) require files dynamically (such as with <code>require(someVar)</code>), then you may see &quot;Cannot find module&quot; errors. Disabling this may make your <code>build.zip</code> too large. If that&apos;s the case, try using the <code>includeInBuild</code> option in your <code>.zapierapprc</code>. See the docs about <code>includeInBuild</code> for more info.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="cacheclear">cache:clear</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Clears the app cache for a major version. </p>
+</blockquote><p><strong>Usage</strong>: <code>zapier cache:clear [MAJORVERSION]</code></p><p>The cache will be cleared for all app versions under the given major version.</p><p>This command will add a job to the worker queue so it may take some time to complete.</p><p>You can check <code>zapier history</code> to see the high level status of the job.</p><p><strong>Arguments</strong></p><ul>
+<li><code>majorVersion</code> | (Optional) The app cache will be deleted for this major version. If not provided, you must pick from a list of major versions for this app.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier cache clear</code></li>
+<li><code>zapier cache clear 2</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

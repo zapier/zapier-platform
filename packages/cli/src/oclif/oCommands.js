@@ -4,6 +4,8 @@ module.exports = {
   analytics: require('./commands/analytics'),
   apps: true,
   build: require('./commands/build'),
+  cache: true,
+  'cache:clear': require('./commands/cache/clear'),
   convert: require('./commands/convert'),
   deprecate: require('./commands/deprecate'),
   delete: true,
