@@ -81,6 +81,12 @@ class PromoteCommand extends BaseCommand {
       `Preparing to promote version ${version} of your integration "${app.title}".`
     );
 
+    const isFeatureUpdate =
+      hasAppChangeType(appMetadata, 'FEATURE-UPDATE') ||
+      hasAppChangeType(issueMetadata, 'FEATURE-UPDATE');
+    const isBugfix =
+      hasAppChangeType(appMetadata, 'BUGFIX') ||
+      hasAppChangeType(issueMetadata, 'BUGFIX');
     const body = {
       job: {
         name: 'promote',
@@ -88,12 +94,9 @@ class PromoteCommand extends BaseCommand {
         changelog,
         app_metadata: appMetadata,
         loki_metadata: issueMetadata,
-        is_feature_update:
-          hasAppChangeType(appMetadata, 'FEATURE-UPDATE') ||
-          hasAppChangeType(issueMetadata, 'FEATURE-UPDATE'),
-        is_bugfix:
-          hasAppChangeType(appMetadata, 'BUGFIX') ||
-          hasAppChangeType(issueMetadata, 'FEATURE-UPDATE'),
+        is_feature_update: isFeatureUpdate,
+        is_bugfix: isBugfix,
+        is_other: !isFeatureUpdate && !isBugfix,
       },
     };
 
