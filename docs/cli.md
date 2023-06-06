@@ -53,29 +53,6 @@ This command is typically followed by `zapier upload`.
 * `-d, --debug` | Show extra debugging output.
 
 
-## cache:clear
-
-> Clear the cache data for a major version. 
-
-**Usage**: `zapier cache:clear [MAJORVERSION]`
-
-This command clears the cache data for a major version of your integration.
-
-The job will be run in the background and may take some time to complete.
-
-You can check `zapier history` to see the job status.
-
-**Arguments**
-* `majorVersion` | (Optional) The cache data will be deleted for this major version. If not provided, you must pick from a list of major versions for this integration.
-
-**Flags**
-* `-d, --debug` | Show extra debugging output.
-
-**Examples**
-* `zapier cache:clear`
-* `zapier cache:clear 2`
-
-
 ## convert
 
 > Convert a Visual Builder integration to a CLI integration.
