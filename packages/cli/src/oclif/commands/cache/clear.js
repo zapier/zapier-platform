@@ -108,5 +108,6 @@ You can check \`zapier history\` to see the job status.
 `;
 ClearCacheCommand.examples = [`zapier cache:clear`, `zapier cache:clear 2`];
 ClearCacheCommand.skipValidInstallCheck = true;
+ClearCacheCommand.hide = true;
 
 module.exports = ClearCacheCommand;
