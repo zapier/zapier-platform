@@ -11,8 +11,12 @@ class ClearCacheCommand extends BaseCommand {
 
     const { majorVersion } = this.args;
 
-    let selectedMajorVersion =
-      majorVersion === '' ? null : Number(majorVersion);
+    let selectedMajorVersion = majorVersion ? Number(majorVersion) : null;
+    if (Number.isNaN(selectedMajorVersion)) {
+      throw new Error(
+        `Invalid major version '${majorVersion}'. Must be a number.`
+      );
+    }
 
     const majorVersions = [
       ...new Set(
@@ -31,7 +35,7 @@ class ClearCacheCommand extends BaseCommand {
     } else {
       if (!majorVersions.includes(selectedMajorVersion)) {
         throw new Error(
-          `This app does not have any versions on major version '${selectedMajorVersion}'. Valid versions are: ${majorVersions.join(
+          `This integration does not have any versions on major version '${selectedMajorVersion}'. Valid versions are: ${majorVersions.join(
             ', '
           )}`
         );
@@ -40,7 +44,7 @@ class ClearCacheCommand extends BaseCommand {
 
     if (
       !(await this.confirm(
-        `Are you sure you want to clear the app cache for major version '${cyan(
+        `Are you sure you want to clear all cache data for major version '${cyan(
           selectedMajorVersion
         )}'?`,
         true
@@ -54,10 +58,7 @@ class ClearCacheCommand extends BaseCommand {
     const { id: appId } = await getWritableApp();
     const url = `/apps/${appId}/major-versions/${selectedMajorVersion}/cache`;
 
-    await callAPI(url, {
-      url: url.startsWith('http') ? url : undefined,
-      method: 'DELETE',
-    });
+    await callAPI(url, { method: 'DELETE' });
 
     this.stopSpinner();
 
@@ -83,7 +84,7 @@ class ClearCacheCommand extends BaseCommand {
     });
 
     return await this.promptWithList(
-      'Which major version app cache would you like to delete?',
+      "Which major version's cache data would you like to delete?",
       majorVersionChoices,
       { default: currentMajorVersion }
     );
@@ -94,18 +95,18 @@ ClearCacheCommand.args = [
   {
     name: 'majorVersion',
     description:
-      '(Optional) The app cache will be deleted for this major version. If not provided, you must pick from a list of major versions for this app.',
+      '(Optional) The cache data will be deleted for this major version. If not provided, you must pick from a list of major versions for this integration.',
     required: false,
   },
 ];
 ClearCacheCommand.flags = buildFlags();
-ClearCacheCommand.description = `Clears the app cache for a major version. 
+ClearCacheCommand.description = `Clear the cache data for a major version. 
 
-The cache will be cleared for all app versions under the given major version.
-This command will add a job to the worker queue so it may take some time to complete.
-You can check \`zapier history\` to see the high level status of the job.
+This command clears the cache data for a major version of your integration.
+The job will be run in the background and may take some time to complete.
+You can check \`zapier history\` to see the job status.
 `;
-ClearCacheCommand.examples = [`zapier cache clear`, `zapier cache clear 2`];
+ClearCacheCommand.examples = [`zapier cache:clear`, `zapier cache:clear 2`];
 ClearCacheCommand.skipValidInstallCheck = true;
 
 module.exports = ClearCacheCommand;

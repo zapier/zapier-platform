@@ -380,14 +380,14 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Clears the app cache for a major version. </p>
-</blockquote><p><strong>Usage</strong>: <code>zapier cache:clear [MAJORVERSION]</code></p><p>The cache will be cleared for all app versions under the given major version.</p><p>This command will add a job to the worker queue so it may take some time to complete.</p><p>You can check <code>zapier history</code> to see the high level status of the job.</p><p><strong>Arguments</strong></p><ul>
-<li><code>majorVersion</code> | (Optional) The app cache will be deleted for this major version. If not provided, you must pick from a list of major versions for this app.</li>
+<p>Clear the cache data for a major version. </p>
+</blockquote><p><strong>Usage</strong>: <code>zapier cache:clear [MAJORVERSION]</code></p><p>This command clears the cache data for a major version of your integration.</p><p>The job will be run in the background and may take some time to complete.</p><p>You can check <code>zapier history</code> to see the job status.</p><p><strong>Arguments</strong></p><ul>
+<li><code>majorVersion</code> | (Optional) The cache data will be deleted for this major version. If not provided, you must pick from a list of major versions for this integration.</li>
 </ul><p><strong>Flags</strong></p><ul>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
-<li><code>zapier cache clear</code></li>
-<li><code>zapier cache clear 2</code></li>
+<li><code>zapier cache:clear</code></li>
+<li><code>zapier cache:clear 2</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

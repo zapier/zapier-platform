@@ -55,25 +55,25 @@ This command is typically followed by `zapier upload`.
 
 ## cache:clear
 
-> Clears the app cache for a major version. 
+> Clear the cache data for a major version. 
 
 **Usage**: `zapier cache:clear [MAJORVERSION]`
 
-The cache will be cleared for all app versions under the given major version.
+This command clears the cache data for a major version of your integration.
 
-This command will add a job to the worker queue so it may take some time to complete.
+The job will be run in the background and may take some time to complete.
 
-You can check `zapier history` to see the high level status of the job.
+You can check `zapier history` to see the job status.
 
 **Arguments**
-* `majorVersion` | (Optional) The app cache will be deleted for this major version. If not provided, you must pick from a list of major versions for this app.
+* `majorVersion` | (Optional) The cache data will be deleted for this major version. If not provided, you must pick from a list of major versions for this integration.
 
 **Flags**
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
-* `zapier cache clear`
-* `zapier cache clear 2`
+* `zapier cache:clear`
+* `zapier cache:clear 2`
 
 
 ## convert
