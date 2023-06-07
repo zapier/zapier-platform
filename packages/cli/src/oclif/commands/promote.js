@@ -49,19 +49,16 @@ class PromoteCommand extends BaseCommand {
       version
     );
     if (!changelog) {
-      let error = `${colors.yellow(
+      this.error(`${colors.yellow(
         'Warning!'
       )} Changelog not found. Please create a CHANGELOG.md file in a format similar to ${colors.cyan(
         'https://gist.github.com/xavdid/b9ede3565f1188ce339292acc29612b2'
-      )} with user-facing descriptions.`;
-      if (!appMetadata && !issueMetadata) {
-        error += `\nChangelog did not contain any release metadata. Please make sure issue or app data is present in the changelog in the form ${colors.cyan(
-          'APP: <BUGFIX | FEATURE_UPDATE>-<action key>:<action type>'
-        )} (e.x. 'APP: BUGFIX-doStuff:read') or ${colors.cyan(
-          'ISSUE: <BUGFIX | FEATURE_UPDATE>-<issue id>'
-        )} (e.x. 'ISSUE-1234').`;
-      }
-      this.error(error);
+      )} with user-facing descriptions.
+      Metadata should be present in the changelog in the form ${colors.cyan(
+        'APP: <BUGFIX | FEATURE_UPDATE>-<action key>:<action type>'
+      )} (e.x. 'APP: BUGFIX-doStuff:read') or ${colors.cyan(
+        'ISSUE: <BUGFIX | FEATURE_UPDATE>-<issue id>'
+      )} (e.x. 'ISSUE-1234').`);
     } else {
       this.log(colors.green(`Changelog found for ${version}`));
       this.log(`\n---\n${changelog}\n---\n`);
