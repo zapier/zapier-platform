@@ -15,9 +15,9 @@ describe('changelog utils', () => {
         path.join(appDir, 'CHANGELOG.md'),
         '## 3.0.0\n\n' +
           'Made some changes that affect app actions\n' +
-          'APP: BUGFIX-send_message:write, FEATURE_UPDATE-pr_review:read\n' +
-          'However, we also addressed some open issues!\n' +
-          'ISSUES: BUGFIX-123 FEATURE_UPDATE-456\n\n' +
+          '- Update the trigger/pr_review action, as well as changes for #456\n' +
+          'However, we also addressed fixed open issues!\n' +
+          '- Fix #123 and an issue with create/send_message\n\n' +
           '## new and improved version! (v2.0.0)\n\n' +
           '* Fix some bugs.\n' +
           '* Major docs fixes.\n\n' +
@@ -68,26 +68,26 @@ describe('changelog utils', () => {
         await changelogUtil.getVersionChangelog('3.0.0', appDir);
 
       changelog.should.equal(
-        'Made some changes that affect app actions\nHowever, we also addressed some open issues!'
+        'Made some changes that affect app actions\n- Update the trigger/pr_review action, as well as changes for #456\nHowever, we also addressed fixed open issues!\n- Fix #123 and an issue with create/send_message'
       );
       JSON.stringify(appMetadata).should.equal(
         JSON.stringify([
-          {
-            app_change_type: 'BUGFIX',
-            action_key: 'send_message',
-            action_type: 'write',
-          },
           {
             app_change_type: 'FEATURE_UPDATE',
             action_key: 'pr_review',
             action_type: 'read',
           },
+          {
+            app_change_type: 'BUGFIX',
+            action_key: 'send_message',
+            action_type: 'write',
+          },
         ])
       );
       JSON.stringify(issueMetadata).should.equal(
         JSON.stringify([
-          { app_change_type: 'BUGFIX', issue_id: 123 },
           { app_change_type: 'FEATURE_UPDATE', issue_id: 456 },
+          { app_change_type: 'BUGFIX', issue_id: 123 },
         ])
       );
     });

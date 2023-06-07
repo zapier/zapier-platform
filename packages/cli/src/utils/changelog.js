@@ -6,34 +6,43 @@ const { readFile } = require('./files');
 // Turns an empty array into undefined so it will not be present in the body when sent
 const absentIfEmpty = (arr) => (arr.length === 0 ? undefined : arr);
 
-const getAppMetadata = (line) => {
-  // App metadata must be in the form of <change type>-<action key>:<action type>
+const IntegrationBuilderMapping = {
+  trigger: 'read',
+  create: 'write',
+  search: 'search',
+};
+
+const startsWithIgnoringSymbols = (source, target) => {
+  return RegExp(`^\\W*(${target.toLowerCase()})`).test(source.toLowerCase());
+};
+
+const getAppMetadata = (line, changeType) => {
+  // App metadata must be in the form of <key>/<trigger | create | search>
   return Array.from(
-    line.matchAll(/(?<changeType>\w+)-(?<actionKey>\w+):(?<actionType>\w+)/gm)
+    line.matchAll(/(?<actionType>(trigger|create|search))\/(?<actionKey>\w+)/gm)
   )
     .flatMap((match) => match.groups)
     .map(
       (group) =>
-        group?.changeType &&
         group?.actionKey &&
-        group?.actionType && {
-          app_change_type: group.changeType,
+        group?.actionType &&
+        IntegrationBuilderMapping[group.actionType.toLowerCase()] && {
+          app_change_type: changeType,
           action_key: group.actionKey,
-          action_type: group.actionType,
+          action_type: IntegrationBuilderMapping[group.actionType],
         }
     )
     .filter(Boolean);
 };
 
-const getIssueMetadata = (line) => {
-  // Issue metadata must be in the form <change type>-<issue id>
-  return Array.from(line.matchAll(/(?<changeType>\w+)-(?<issueId>\d+)/gm))
+const getIssueMetadata = (line, changeType) => {
+  // Issue metadata must be in the form #<id>
+  return Array.from(line.matchAll(/#(?<issueId>\d+)/gm))
     .flatMap((match) => match.groups)
     .map(
       (group) =>
-        group?.changeType &&
         !isNaN(group?.issueId) && {
-          app_change_type: group.changeType,
+          app_change_type: changeType,
           issue_id: Number(group.issueId), // must be a number due to \d+ match
         }
     )
@@ -76,14 +85,17 @@ const getChangelogFromMarkdown = (version, markdown) => {
   const issueMetadata = [];
 
   for (const line of changelogLines) {
-    if (line.startsWith('APP')) {
-      appMetadata.push(...getAppMetadata(line));
-    } else if (line.startsWith('ISSUES')) {
-      issueMetadata.push(...getIssueMetadata(line));
-    } else {
-      // We skip lines that contain metadata as they will be submitted separately
-      changelog.push(line);
+    let changeType = null;
+    if (startsWithIgnoringSymbols(line, 'update')) {
+      changeType = 'FEATURE_UPDATE';
+    } else if (startsWithIgnoringSymbols(line, 'fix')) {
+      changeType = 'BUGFIX';
     }
+    if (changeType) {
+      appMetadata.push(...getAppMetadata(line, changeType));
+      issueMetadata.push(...getIssueMetadata(line, changeType));
+    }
+    changelog.push(line);
   }
 
   return {
