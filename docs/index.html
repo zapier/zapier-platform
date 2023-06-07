@@ -1652,9 +1652,9 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 <li><code>getAccessToken.body</code> to include <code>code_verifier: &quot;{{bundle.inputData.code_verifier}}&quot;</code></li>
 </ol><p>The OAuth2 PKCE flow uses the same flow as OAuth2 but adds a few extra parameters:</p><ol>
 <li>Zapier computes a <code>code_verifier</code> and <code>code_challenge</code> internally and stores the <code>code_verifier</code> in the Zapier bundle.</li>
-<li>Zapier sends the user to the authorization URL defined by your app, passing along the computed <code>code_challenge</code>.</li>
+<li>Zapier sends the user to the authorization URL defined by your app. We automatically include the computed <code>code_challenge</code> and <code>code_challenge_method</code> in the authorization request.</li>
 <li>Once authorized, your website sends the user to the <code>redirect_uri</code> Zapier provided.</li>
-<li>Zapier makes a call to your API to exchange the <code>code</code> and the computed <code>code_verifier</code> for an <code>access_token</code>.</li>
+<li>Zapier makes a call to your API to exchange the code but you must include the computed <code>code_verifier</code> in the request for an <code>access_token</code>.</li>
 <li>Zapier stores the <code>access_token</code> and uses it to make calls on behalf of the user.</li>
 </ol><p>Your auth definition would look something like this:</p>
     </div>
