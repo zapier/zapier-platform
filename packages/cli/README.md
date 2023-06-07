@@ -22,7 +22,7 @@ You may find docs duplicate or outdated across the Zapier site. The most up-to-d
 
 Our code is updated frequently. To see a full list of changes, look no further than [the CHANGELOG](https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md).
 
-This doc describes the latest CLI version (**14.0.1**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+This doc describes the latest CLI version (**14.1.1**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
 - CLI Docs: [11.3.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@11.3.3/packages/cli/README.md), [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/README.md), [9.7.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.7.3/packages/cli/README.md)
 - CLI Reference: [11.3.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@11.3.3/packages/cli/docs/cli.md), [10.2.0](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/docs/cli.md), [9.7.3](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.7.3/packages/cli/docs/cli.md)
@@ -2386,7 +2386,7 @@ This behavior has changed periodically across major versions, which changes how/
 
 ![](https://cdn.zappy.app/e835d9beca1b6489a065d51a381613f3.png)
 
-Ensure you're handling errors correctly for your platform version. The latest released version is **14.0.1**.
+Ensure you're handling errors correctly for your platform version. The latest released version is **14.1.1**.
 
 ### HTTP Request Options
 
@@ -3579,7 +3579,7 @@ Broadly speaking, all releases will continue to work indefinitely. While you nev
 For more info about which Node versions are supported, see [the faq](#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with).
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is **14.0.1**. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is **14.1.1**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 

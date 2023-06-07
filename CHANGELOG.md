@@ -1,3 +1,26 @@
+## 14.1.1
+
+_released `2023-06-07`_
+
+### cli
+
+- :scroll: Improve docs related to expected behaviors for configuring OAuth2 with PKCE ([#655](https://github.com/zapier/zapier-platform/pull/655))
+- :scroll: Improve docs related to hydration payload limit([#656](https://github.com/zapier/zapier-platform/pull/656))
+- :hammer: Dependency updates
+  - Bump `typescript` in template generator from 4.2.4 to 4.9.4 ([#657](https://github.com/zapier/zapier-platform/pull/657))
+
+### core
+
+- None!
+
+### schema
+
+- None!
+
+### misc
+
+- None!
+
 ## 14.0.1
 
 _released `2023-05-22`_
@@ -8,7 +31,6 @@ _released `2023-05-22`_
 - :bug: Fix missing `key` property in the `.zapierapprc` file after running the `zapier convert` command ([#640](https://github.com/zapier/zapier-platform/pull/640))
 - :scroll: Improve docs related to expected behaviors for stale authentication ([#647](https://github.com/zapier/zapier-platform/pull/647))
 
-
 ### core
 
 - None!
@@ -17,13 +39,11 @@ _released `2023-05-22`_
 
 - :scroll: Deprecate the `important` key of the `BasicDisplaySchema`. This property will be removed and hence a breaking change ❗ in the next major version release. ([#644](https://github.com/zapier/zapier-platform/pull/644))
 
-
 ### misc
 
 - :hammer: Dependency updates
   - Bump `moment` from 2.24.0 to 2.29.4 ([#635](https://github.com/zapier/zapier-platform/pull/635))
   - Bump `minimatch` from 3.0.4 to 3.0.5 ([#634](https://github.com/zapier/zapier-platform/pull/634))
-
 
 ## 14.0.0
 
@@ -63,30 +83,30 @@ Read on for a detailed set of release notes. Again, :exclamation: are BREAKING C
 
 ### cli
 
-* :exclamation: Implement individual field flags for `register` command ([#618](https://github.com/zapier/zapier-platform/pull/618))
-* :exclamation: Block `promote`, `upload`, and `push` for missing required app info ([#612](https://github.com/zapier/zapier-platform/pull/612))
-* :nail_care: Use uniform field names in check-missing-app-info util ([#630](https://github.com/zapier/zapier-platform/pull/630))
-* :nail_care: Only require fields for private integrations via CLI ([#628](https://github.com/zapier/zapier-platform/pull/628))
-* :nail_care: Implement `--yes` flag for `register` command ([#627](https://github.com/zapier/zapier-platform/pull/627))
-* :scroll: Improve documentation on throttling ([#631](https://github.com/zapier/zapier-platform/pull/631))
-* :scroll: Add documentation for PKCE OAuth2 ([#629](https://github.com/zapier/zapier-platform/pull/629))
-* :scroll: Add information about how to return line items ([#620](https://github.com/zapier/zapier-platform/pull/620))
-* :scroll: Fix 'integraiton' typo in CLI docs ([#613](https://github.com/zapier/zapier-platform/pull/613))
+- :exclamation: Implement individual field flags for `register` command ([#618](https://github.com/zapier/zapier-platform/pull/618))
+- :exclamation: Block `promote`, `upload`, and `push` for missing required app info ([#612](https://github.com/zapier/zapier-platform/pull/612))
+- :nail_care: Use uniform field names in check-missing-app-info util ([#630](https://github.com/zapier/zapier-platform/pull/630))
+- :nail_care: Only require fields for private integrations via CLI ([#628](https://github.com/zapier/zapier-platform/pull/628))
+- :nail_care: Implement `--yes` flag for `register` command ([#627](https://github.com/zapier/zapier-platform/pull/627))
+- :scroll: Improve documentation on throttling ([#631](https://github.com/zapier/zapier-platform/pull/631))
+- :scroll: Add documentation for PKCE OAuth2 ([#629](https://github.com/zapier/zapier-platform/pull/629))
+- :scroll: Add information about how to return line items ([#620](https://github.com/zapier/zapier-platform/pull/620))
+- :scroll: Fix 'integraiton' typo in CLI docs ([#613](https://github.com/zapier/zapier-platform/pull/613))
 
 ### core
 
-* :hammer: bump http-cache-semantics from 4.1.0 to 4.1.1 ([#617](https://github.com/zapier/zapier-platform/pull/617))
+- :hammer: bump http-cache-semantics from 4.1.0 to 4.1.1 ([#617](https://github.com/zapier/zapier-platform/pull/617))
 
 ### schema
 
-* :tada: Add `enablePkce` to `oauth2Config` ([#623](https://github.com/zapier/zapier-platform/pull/623))
-* :hammer: `searchAndCreates` and `searchOrCreates` can coexist to avoid search key collision ([#624](https://github.com/zapier/zapier-platform/pull/624))
-* :scroll: Add clarity on role of `performList` for testing REST Hooks ([#619](https://github.com/zapier/zapier-platform/pull/619))
+- :tada: Add `enablePkce` to `oauth2Config` ([#623](https://github.com/zapier/zapier-platform/pull/623))
+- :hammer: `searchAndCreates` and `searchOrCreates` can coexist to avoid search key collision ([#624](https://github.com/zapier/zapier-platform/pull/624))
+- :scroll: Add clarity on role of `performList` for testing REST Hooks ([#619](https://github.com/zapier/zapier-platform/pull/619))
 
 ### misc
 
-* :scroll: Small followup improvement on GitHub issue templates ([#625](https://github.com/zapier/zapier-platform/pull/625))
-* :scroll: Replace issue templates with GitHub forms, update CODEOWNERS ([#622](https://github.com/zapier/zapier-platform/pull/622))
+- :scroll: Small followup improvement on GitHub issue templates ([#625](https://github.com/zapier/zapier-platform/pull/625))
+- :scroll: Replace issue templates with GitHub forms, update CODEOWNERS ([#622](https://github.com/zapier/zapier-platform/pull/622))
 
 ## 13.0.0
 
@@ -104,9 +124,7 @@ Version `13.0.0` is a breaking change release that contains several important up
 
 Those are the breaking changes for this major version `13.0.0` release. We are also including some package version bumps, with the changes consisting mostly of dropping older Node versions. As always with any major release, make sure to thoroughly test your integrations after updating!
 
-
 Detailed changelog below (**:exclamation: denotes a breaking change**):
-
 
 ### cli
 
@@ -116,6 +134,7 @@ Detailed changelog below (**:exclamation: denotes a breaking change**):
 - :scroll: Removed references to converting WB apps in the docs. ([#546](https://github.com/zapier/zapier-platform/pull/546))
 
 ### core
+
 - :exclamation: Apps can now use Node.js v16.x and Node.js v12.x is no longer supported. ([#603](https://github.com/zapier/zapier-platform/pull/603))
 
 - :exclamation: Parameters for triggers now have strict type coercion. This means that if a parameter is defined as an integer and a string representation of an integer is provided, Zapier will now convert the value to an integer before it reaches the developer's code.
@@ -164,8 +183,6 @@ None!
   - Bump `mocha` from 8.4.0 to 10.2.0
   - Bump `read` from 1.0.7 to 2.0.0
   - Bump `yeoman-generator` from 5.2.0 to 5.7.0
-
-
 
 ## 12.2.1
 
