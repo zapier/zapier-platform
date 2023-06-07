@@ -7,18 +7,21 @@ const packageManagers = [
     forceFlag: undefined,
     executable: 'npm',
     useDoubleHyphenBeforeArgs: true,
+    extraRunArgs: ['--scripts-prepend-node-path'],
   },
   {
     lockFile: 'yarn.lock',
     forceFlag: 'yarn',
     executable: 'yarn',
     useDoubleHyphenBeforeArgs: false, // yarn gives a warning if we include `--`
+    extraRunArgs: ['--scripts-prepend-node-path'],
   },
   {
     lockFile: 'pnpm-lock.yaml',
     forceFlag: 'pnpm',
     executable: 'pnpm',
     useDoubleHyphenBeforeArgs: true,
+    extraRunArgs: [],
   },
 ];
 

@@ -43,6 +43,7 @@ class TestCommand extends BaseCommand {
     const argv = [
       'run',
       '--silent',
+      ...packageManager.extraRunArgs,
       'test',
       packageManager.useDoubleHyphenBeforeArgs ? '--' : '',
       ...passthroughArgs,
