@@ -14,7 +14,7 @@ const packageManagers = [
     forceFlag: 'yarn',
     executable: 'yarn',
     useDoubleHyphenBeforeArgs: false, // yarn gives a warning if we include `--`
-    extraRunArgs: ['--scripts-prepend-node-path'],
+    extraRunArgs: [],
   },
   {
     lockFile: 'pnpm-lock.yaml',
