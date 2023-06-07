@@ -2492,7 +2492,7 @@ Dehydration, and its counterpart Hydration, is a tool that can lazily load data 
 
 The method `z.dehydrate(func, inputData)` has two required arguments:
 
-* `func` - the function to call to fetch the extra data. Can be any raw `function`, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app's `hydrators` property
+* `func` - the function to call to fetch the extra data. Can be any raw `function`, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app's `hydrators` property. Note that since v10.1.0, the maximum payload size to pass to `z.dehydrate` / `z.dehydrateFile` is 6KB. 
 * `inputData` - this is an object that contains things like a `path` or `id` - whatever you need to load data on the other side
 
 > **Why do I need to register my functions?** Because of how JavaScript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to "automagically" (and sometimes incorrectly) infer code locations.

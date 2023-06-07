@@ -4083,7 +4083,7 @@ response.throwForStatus();
 </ul><blockquote>
 <p>This is very common when <a href="#stashing-files">Stashing Files</a> - but that isn&apos;t their only use!</p>
 </blockquote><p>The method <code>z.dehydrate(func, inputData)</code> has two required arguments:</p><ul>
-<li><code>func</code> - the function to call to fetch the extra data. Can be any raw <code>function</code>, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app&apos;s <code>hydrators</code> property</li>
+<li><code>func</code> - the function to call to fetch the extra data. Can be any raw <code>function</code>, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app&apos;s <code>hydrators</code> property. Note that since v10.1.0, the maximum payload size to pass to <code>z.dehydrate</code> / <code>z.dehydrateFile</code> is 6KB. </li>
 <li><code>inputData</code> - this is an object that contains things like a <code>path</code> or <code>id</code> - whatever you need to load data on the other side</li>
 </ul><blockquote>
 <p><strong>Why do I need to register my functions?</strong> Because of how JavaScript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to &quot;automagically&quot; (and sometimes incorrectly) infer code locations.</p>
