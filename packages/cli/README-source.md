@@ -457,9 +457,9 @@ To use PKCE in your OAuth2 flow, you'll need to set the following variables:
 The OAuth2 PKCE flow uses the same flow as OAuth2 but adds a few extra parameters:
 
   1. Zapier computes a `code_verifier` and `code_challenge` internally and stores the `code_verifier` in the Zapier bundle.
-  2. Zapier sends the user to the authorization URL defined by your app, passing along the computed `code_challenge`.
+  2. Zapier sends the user to the authorization URL defined by your app. We automatically include the computed `code_challenge` and `code_challenge_method` in the authorization request.
   3. Once authorized, your website sends the user to the `redirect_uri` Zapier provided.
-  4. Zapier makes a call to your API to exchange the `code` and the computed `code_verifier` for an `access_token`.
+  4. Zapier makes a call to your API to exchange the code but you must include the computed `code_verifier` in the request for an `access_token`.
   5. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
 
 Your auth definition would look something like this:
