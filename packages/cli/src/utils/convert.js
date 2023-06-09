@@ -3,6 +3,7 @@ const path = require('path');
 const _ = require('lodash');
 const prettier = require('prettier');
 const semver = require('semver');
+const traverse = require('traverse');
 
 const {
   PACKAGE_VERSION,
@@ -157,55 +158,41 @@ const renderPackageJson = async (appInfo, appDefinition) => {
   return prettifyJSON(pkg);
 };
 
-const renderStep = (type, definition) => {
-  let exportBlock = _.cloneDeep(definition);
-  let functionBlock = [];
-
-  ['perform', 'performList', 'performSubscribe', 'performUnsubscribe'].forEach(
-    (funcName) => {
-      const func = definition.operation[funcName];
-      if (func && func.source) {
-        const args = func.args || ['z', 'bundle'];
-        functionBlock.push(
-          `const ${funcName} = async (${args.join(', ')}) => {\n${
-            func.source
-          }\n};`
-        );
-
-        exportBlock.operation[funcName] = makePlaceholder(funcName);
-      }
-    }
-  );
-
-  ['inputFields', 'outputFields'].forEach((key) => {
-    const fields = definition.operation[key];
-    if (Array.isArray(fields) && fields.length > 0) {
-      // Godzilla currently doesn't allow mutliple dynamic fields (see PDE-948) but when it does, this will account for it
+const renderSource = (definition, functions = {}) => {
+  traverse(definition).forEach(function (source) {
+    if (this.key === 'source') {
+      const args = this.parent.node.args || ['z', 'bundle'];
+      // Find first parent that is not an array (applies to inputFields)
+      const funcNameBase = this.path
+        .slice(0, -1)
+        .reverse()
+        .find((key) => !/^\d+$/.test(key));
+      let funcName = funcNameBase;
       let funcNum = 0;
-      fields.forEach((maybeFunc, index) => {
-        if (maybeFunc.source) {
-          const args = maybeFunc.args || ['z', 'bundle'];
-          // always increment the number, but only return a value if it's > 0
-          const funcName = `get${_.upperFirst(key)}${
-            funcNum ? funcNum++ : ++funcNum && ''
-          }`;
-          functionBlock.push(
-            `const ${funcName} = async (${args.join(', ')}) => {\n${
-              maybeFunc.source
-            }\n};`
-          );
+      while (functions[funcName]) {
+        funcNum++;
+        funcName = `${funcNameBase}${funcNum}`;
+      }
+      functions[funcName] = `const ${funcName} = async (${args.join(
+        ', '
+      )}) => {\n${source}\n};`;
 
-          exportBlock.operation[key][index] = makePlaceholder(funcName);
-        }
-      });
+      this.parent.update(makePlaceholder(funcName));
     }
   });
+};
+
+const renderDefinitionSlice = (definitionSlice) => {
+  let exportBlock = _.cloneDeep(definitionSlice);
+  let functionBlock = {};
+
+  renderSource(exportBlock, functionBlock);
 
   exportBlock = `module.exports = ${replacePlaceholders(
     JSON.stringify(exportBlock)
   )};\n`;
 
-  functionBlock = functionBlock.join('\n\n');
+  functionBlock = Object.values(functionBlock).join('\n\n');
 
   return prettifyJs(functionBlock + '\n\n' + exportBlock);
 };
@@ -265,63 +252,15 @@ const renderStepTest = async (stepType, definition, appDefinition) => {
   return renderTemplate(templateFile, templateContext);
 };
 
-const renderAuth = async (appDefinition) => {
-  let exportBlock = _.cloneDeep(appDefinition.authentication);
-  let functionBlock = [];
+const renderAuth = async (appDefinition) =>
+  renderDefinitionSlice(appDefinition.authentication);
 
-  _.each(
-    {
-      connectionLabel: 'getConnectionLabel',
-      test: 'testAuth',
-    },
-    (funcName, key) => {
-      const func = appDefinition.authentication[key];
-      if (func && func.source) {
-        const args = func.args || ['z', 'bundle'];
-        functionBlock.push(
-          `const ${funcName} = async (${args.join(', ')}) => {${func.source}};`
-        );
-
-        exportBlock[key] = makePlaceholder(funcName);
-      }
-    }
-  );
-
-  exportBlock = `module.exports = ${replacePlaceholders(
-    JSON.stringify(exportBlock)
-  )};\n`;
-
-  functionBlock = functionBlock.join('\n\n');
-
-  return prettifyJs(functionBlock + '\n\n' + exportBlock);
-};
-
-const renderHydrators = async (appDefinition) => {
-  let exportBlock = _.cloneDeep(appDefinition.hydrators);
-  let functionBlock = [];
-
-  _.each(appDefinition.hydrators, (func, funcName) => {
-    if (func && func.source) {
-      const args = func.args || ['z', 'bundle'];
-      functionBlock.push(
-        `const ${funcName} = async (${args.join(', ')}) => {${func.source}};`
-      );
-      exportBlock[funcName] = makePlaceholder(funcName);
-    }
-  });
-
-  exportBlock = `module.exports = ${replacePlaceholders(
-    JSON.stringify(exportBlock)
-  )};\n`;
-
-  functionBlock = functionBlock.join('\n\n');
-
-  return prettifyJs(functionBlock + '\n\n' + exportBlock);
-};
+const renderHydrators = async (appDefinition) =>
+  renderDefinitionSlice(appDefinition.hydrators);
 
 const renderIndex = async (appDefinition) => {
   let exportBlock = _.cloneDeep(appDefinition);
-  let functionBlock = [];
+  let functionBlock = {};
   let importBlock = [];
 
   // replace version and platformVersion with dynamic reference
@@ -349,8 +288,9 @@ const renderIndex = async (appDefinition) => {
         importBlock.push(`const ${importName} = require('${filepath}');`);
 
         delete exportBlock[stepType][key];
-        exportBlock[stepType][makePlaceholder(`[${importName}.key]`)] =
-          makePlaceholder(importName);
+        exportBlock[stepType][
+          makePlaceholder(`[${importName}.key]`)
+        ] = makePlaceholder(importName);
       });
     }
   );
@@ -360,22 +300,7 @@ const renderIndex = async (appDefinition) => {
     exportBlock.hydrators = makePlaceholder('hydrators');
   }
 
-  ['beforeRequest', 'afterResponse'].forEach((middlewareType) => {
-    const middlewares = appDefinition[middlewareType];
-    if (middlewares && middlewares.length > 0) {
-      // Backend converter always generates only one middleware
-      const func = middlewares[0];
-      if (func.source) {
-        const args = func.args || ['z', 'bundle'];
-        const funcName = middlewareType;
-        functionBlock.push(
-          `const ${funcName} = async (${args.join(', ')}) => {${func.source}};`
-        );
-
-        exportBlock[middlewareType][0] = makePlaceholder(funcName);
-      }
-    }
-  });
+  renderSource(exportBlock, functionBlock);
 
   if (appDefinition.legacy && appDefinition.legacy.scriptingSource) {
     importBlock.push("\nconst fs = require('fs');");
@@ -390,7 +315,7 @@ const renderIndex = async (appDefinition) => {
   )};`;
 
   importBlock = importBlock.join('\n');
-  functionBlock = functionBlock.join('\n\n');
+  functionBlock = Object.values(functionBlock).join('\n\n');
 
   return prettifyJs(
     importBlock + '\n\n' + functionBlock + '\n\n' + exportBlock
@@ -408,7 +333,7 @@ const renderEnvironment = (appDefinition) => {
 
 const writeStep = async (stepType, definition, key, newAppDir) => {
   const filename = `${stepType}/${snakeCase(key)}.js`;
-  const content = await renderStep(stepType, definition);
+  const content = await renderDefinitionSlice(definition);
   await createFile(content, filename, newAppDir);
 };
 

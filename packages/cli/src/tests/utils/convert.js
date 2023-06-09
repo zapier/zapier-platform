@@ -89,20 +89,22 @@ const visualAppDefinition = {
       key: 'create_project',
     },
   },
+  beforeRequest: [
+    {
+      source:
+        // eslint-disable-next-line no-template-curly-in-string
+        'const addApiKeyToHeader = (request, z, bundle) => {\n  request.headers["X-Subdomain"] = bundle.authData.subdomain;\n  const basicHash = Buffer.from(`${bundle.authData.api_key}:x`).toString(\n    "base64"\n  );\n  request.headers.Authorization = `Basic ${basicHash}`;\n  return request;\n};\n',
+    },
+  ],
   authentication: {
     test: {
-      body: {},
-      url: 'https://api.wistia.com/v1/account.json',
-      removeMissingValuesFrom: {},
-      headers: {
-        Authorization: 'Bearer {{bundle.authData.access_token}}',
-      },
-      params: {},
-      method: 'GET',
+      source:
+        "const options = {\n  url: 'https://api.wistia.com/v1/account.json',\n  method: 'GET',\n  headers: {\n    Authorization: 'Bearer {{bundle.authData.access_token}}',\n  },\n  body: {}\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.data;\n\n    // You can do any parsing you need for results here before returning them\n\n    return results;\n  });",
     },
     oauth2Config: {
       authorizeUrl: {
-        url: 'https://app.wistia.com/oauth/authorize?client_id=03e84930b97011c7bd674f6d02c04ec9c1a430325a73a0501eb443ef07b6b99c&redirect_uri=https%3A%2F%2Fzapier.com%2Fdashboard%2Fauth%2Foauth%2Freturn%2FApp17741CLIAPI%2F&response_type=code',
+        url:
+          'https://app.wistia.com/oauth/authorize?client_id=03e84930b97011c7bd674f6d02c04ec9c1a430325a73a0501eb443ef07b6b99c&redirect_uri=https%3A%2F%2Fzapier.com%2Fdashboard%2Fauth%2Foauth%2Freturn%2FApp17741CLIAPI%2F&response_type=code',
         params: {
           state: '{{bundle.inputData.state}}',
           redirect_uri: '{{bundle.inputData.redirect_uri}}',
@@ -112,15 +114,8 @@ const visualAppDefinition = {
         method: 'GET',
       },
       refreshAccessToken: {
-        body: {
-          grant_type: 'refresh_token',
-          refresh_token: '{{bundle.authData.refresh_token}}',
-        },
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded',
-          accept: 'application/json',
-        },
-        method: 'POST',
+        source:
+          "const options = {\n  url: 'https://api.wistia.com/oauth/token',\n  method: 'POST',\n  headers: {\n    'content-type': 'application/x-www-form-urlencoded',\n    accept: 'application/json',\n  },\n  body: {\n    grant_type: 'refresh_token',\n    refresh_token: '{{bundle.authData.refresh_token}}',\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.data;\n\n    // You can do any parsing you need for results here before returning them\n\n    return results;\n  });",
       },
       getAccessToken: {
         body: {
@@ -172,6 +167,7 @@ const visualAppDefinition = {
     codemode: {
       operation: {
         perform: {
+          args: ['z'],
           source:
             "const options = {\n  url: 'https://jsonplaceholder.typicode.com/posts',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n    '_limit': '3'\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.data;\n\n    // You can do any parsing you need for results here before returning them\n\n    return results;\n  });",
         },
@@ -184,6 +180,12 @@ const visualAppDefinition = {
         label: 'New Code Trigger',
       },
       key: 'codemode',
+    },
+  },
+  hydrators: {
+    getMovieDetails: {
+      source:
+        "const response = await z.request('https://example.com/movies.json');\n\nreturn response.data.map((movie) => {\n  // so maybe /movies.json is thin content but /movies/:id.json has more\n  // details we want...\n  movie.details = z.dehydrate(getMovieDetails, { id: movie.id });\n  return movie;\n});\n",
     },
   },
 };
@@ -271,6 +273,7 @@ describe('convert', () => {
         'test/triggers/project.js',
         'test/creates/create_project.js',
         'authentication.js',
+        'hydrators.js',
       ].forEach((filename) => {
         const filepath = path.join(tempAppDir, filename);
         fs.existsSync(filepath).should.be.true(`failed to create ${filename}`);
@@ -308,18 +311,51 @@ describe('convert', () => {
       should(
         idxFile.includes("require('zapier-platform-core').version")
       ).be.true();
+      should(idxFile.includes('source:')).be.false();
+      should(
+        idxFile.includes('const beforeRequest = async(z, bundle)')
+      ).be.false();
 
       // requiring the file ensures the js is syntactically valid
       const idx = require(path.join(tempAppDir, 'index.js'));
       should(idx.version).eql('1.0.2'); // bumped from 1.0.1
       should(idx.platformVersion).eql(visualAppDefinition.platformVersion);
 
-      // dynamic fields
+      // renderStep -> inputFields
       const createFile = readTempFile('creates/create_project.js');
       should(createFile.includes('source:')).be.false();
-      should(createFile.includes('getInputFields = ')).be.true();
-      should(createFile.includes('getInputFields0')).be.false();
-      should(createFile.includes('getInputFields1 = ')).be.true();
+      should(
+        createFile.includes('const inputFields = async (z, bundle)')
+      ).be.true();
+      should(createFile.includes('inputFields0')).be.false();
+      should(
+        createFile.includes('const inputFields1 = async (z, bundle)')
+      ).be.true();
+
+      // renderStep -> perform etc
+      const triggerFile = readTempFile('triggers/codemode.js');
+      should(triggerFile.includes('source:')).be.false();
+      should(triggerFile.includes('args:')).be.false();
+      should(triggerFile.includes('const perform = async (z)')).be.true();
+
+      // renderAuth -> test, refreshAccessToken etc
+      const authenticationFile = readTempFile('authentication.js');
+      should(authenticationFile.includes('source:')).be.false();
+      should(
+        authenticationFile.includes('const test = async (z, bundle)')
+      ).be.true();
+      should(
+        authenticationFile.includes(
+          'const refreshAccessToken = async (z, bundle)'
+        )
+      ).be.true();
+
+      // renderHydrators
+      const hydratorsFile = readTempFile('hydrators.js');
+      should(hydratorsFile.includes('source:')).be.false();
+      should(
+        hydratorsFile.includes('getMovieDetails = async (z, bundle)')
+      ).be.true();
     });
 
     it('should not break over a comment', async () => {
