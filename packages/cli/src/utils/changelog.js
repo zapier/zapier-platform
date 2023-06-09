@@ -1,52 +1,23 @@
 const path = require('path');
 
 const { readFile } = require('./files');
+const { getMetadata } = require('./metadata');
+
+const isObject = (obj) => !!obj && typeof obj === 'object';
+
+const isAppMetadata = (obj) =>
+  isObject(obj) &&
+  Object.hasOwn(obj, 'app_change_type') &&
+  Object.hasOwn(obj, 'action_key') &&
+  Object.hasOwn(obj, 'action_type');
+
+const isIssueMetadata = (obj) =>
+  isObject(obj) &&
+  Object.hasOwn(obj, 'app_change_type') &&
+  Object.hasOwn(obj, 'issue_id');
 
 // Turns an empty array into undefined so it will not be present in the body when sent
 const absentIfEmpty = (arr) => (arr.length === 0 ? undefined : arr);
-
-const IntegrationBuilderMapping = {
-  trigger: 'read',
-  create: 'write',
-  search: 'search',
-};
-
-const startsWithIgnoringSymbols = (source, target) => {
-  return RegExp(`^\\W*(${target.toLowerCase()})`).test(source.toLowerCase());
-};
-
-const getAppMetadata = (line, changeType) => {
-  // App metadata must be in the form of <key>/<trigger | create | search>
-  return Array.from(
-    line.matchAll(/(?<actionType>(trigger|create|search))\/(?<actionKey>\w+)/gm)
-  )
-    .flatMap((match) => match.groups)
-    .map(
-      (group) =>
-        group?.actionKey &&
-        group?.actionType &&
-        IntegrationBuilderMapping[group.actionType.toLowerCase()] && {
-          app_change_type: changeType,
-          action_key: group.actionKey,
-          action_type: IntegrationBuilderMapping[group.actionType],
-        }
-    )
-    .filter(Boolean);
-};
-
-const getIssueMetadata = (line, changeType) => {
-  // Issue metadata must be in the form #<id>
-  return Array.from(line.matchAll(/#(?<issueId>\d+)/gm))
-    .flatMap((match) => match.groups)
-    .map(
-      (group) =>
-        !isNaN(group?.issueId) && {
-          app_change_type: changeType,
-          issue_id: Number(group.issueId), // must be a number due to \d+ match
-        }
-    )
-    .filter(Boolean);
-};
 
 const getChangelogFromMarkdown = (version, markdown) => {
   const lines = markdown
@@ -80,16 +51,14 @@ const getChangelogFromMarkdown = (version, markdown) => {
   const issueMetadata = [];
 
   for (const line of changelogLines) {
-    let changeType = null;
-    if (startsWithIgnoringSymbols(line, 'update')) {
-      changeType = 'FEATURE_UPDATE';
-    } else if (startsWithIgnoringSymbols(line, 'fix')) {
-      changeType = 'BUGFIX';
+    for (const metadata of getMetadata(line)) {
+      if (isAppMetadata(metadata)) {
+        appMetadata.push(metadata);
+      } else if (isIssueMetadata(metadata)) {
+        issueMetadata.push(metadata);
+      }
     }
-    if (changeType) {
-      appMetadata.push(...getAppMetadata(line, changeType));
-      issueMetadata.push(...getIssueMetadata(line, changeType));
-    }
+
     changelog.push(line);
   }
 
