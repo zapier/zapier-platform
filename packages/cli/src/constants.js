@@ -59,6 +59,22 @@ const IS_TESTING =
 
 const MAX_DESCRIPTION_LENGTH = 140;
 
+const EXAMPLE_CHANGELOG = `
+## 1.1.0
+
+* (Fix) [Permission denied with \`index.js\`.](https://github.com/zapier/zapier-platform-cli/pull/224)
+* (Fix) [\`zapier convert\` didn't escape line breaks in app description.](https://github.com/zapier/zapier-platform-cli/pull/226)
+* (Doc) [Add FAQs section.](https://github.com/zapier/zapier-platform-cli/pull/225)
+* [Ensure users are authenticated before building or pushing.](https://github.com/zapier/zapier-platform-cli/pull/227)
+
+## 1.0.0
+
+* (Fix) [Broken patching on http.request.](https://github.com/zapier/zapier-platform-core/pull/61)
+
+## 0.9.9
+
+Initial release to public. Read docs here https://github.com/zapier/zapier-platform-cli.`;
+
 module.exports = {
   ANALYTICS_KEY,
   ANALYTICS_MODES,
@@ -87,4 +103,5 @@ module.exports = {
   SOURCE_PATH,
   STARTER_REPO,
   UPDATE_NOTIFICATION_INTERVAL,
+  EXAMPLE_CHANGELOG,
 };

@@ -8,6 +8,7 @@ const { callAPI } = require('../../utils/api');
 const { flattenCheckResult } = require('../../utils/display');
 const { getVersionChangelog } = require('../../utils/changelog');
 const checkMissingAppInfo = require('../../utils/check-missing-app-info');
+const { EXAMPLE_CHANGELOG } = require('../../constants');
 
 const serializeErrors = (errors) => {
   const opener = 'Promotion failed for the following reasons:\n\n';
@@ -52,13 +53,10 @@ class PromoteCommand extends BaseCommand {
       this.error(`${colors.yellow(
         'Warning!'
       )} Changelog not found. Please create a CHANGELOG.md file in a format similar to ${colors.cyan(
-        'https://gist.github.com/xavdid/b9ede3565f1188ce339292acc29612b2'
+        EXAMPLE_CHANGELOG
       )} with user-facing descriptions.
-      Metadata should be present in the changelog in the form ${colors.cyan(
-        'APP: <BUGFIX | FEATURE_UPDATE>-<action key>:<action type>'
-      )} (e.x. 'APP: BUGFIX-doStuff:read') or ${colors.cyan(
-        'ISSUE: <BUGFIX | FEATURE_UPDATE>-<issue id>'
-      )} (e.x. 'ISSUE-1234').`);
+      If bugfixes or updates to actions are present, then should be marked on a line that begins with "Update" or "Fix" (case insensitive) and information that contains the identifier.
+      Issues are indicated by #<id>, and actions by <key>/<trigger | create | search>. Note issue IDs must be numeric and action identifiers are case sensitive.`);
     } else {
       this.log(colors.green(`Changelog found for ${version}`));
       this.log(`\n---\n${changelog}\n---\n`);
