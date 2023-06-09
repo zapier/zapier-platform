@@ -70,26 +70,22 @@ describe('changelog utils', () => {
       changelog.should.equal(
         'Made some changes that affect app actions\n- Update the trigger/pr_review action, as well as changes for #456\nHowever, we also addressed fixed open issues!\n- Fix #123 and an issue with create/send_message'
       );
-      JSON.stringify(appMetadata).should.equal(
-        JSON.stringify([
-          {
-            app_change_type: 'FEATURE_UPDATE',
-            action_key: 'pr_review',
-            action_type: 'read',
-          },
-          {
-            app_change_type: 'BUGFIX',
-            action_key: 'send_message',
-            action_type: 'write',
-          },
-        ])
-      );
-      JSON.stringify(issueMetadata).should.equal(
-        JSON.stringify([
-          { app_change_type: 'FEATURE_UPDATE', issue_id: 456 },
-          { app_change_type: 'BUGFIX', issue_id: 123 },
-        ])
-      );
+      appMetadata.should.deepEqual([
+        {
+          app_change_type: 'FEATURE_UPDATE',
+          action_key: 'pr_review',
+          action_type: 'read',
+        },
+        {
+          app_change_type: 'BUGFIX',
+          action_key: 'send_message',
+          action_type: 'write',
+        },
+      ]);
+      issueMetadata.should.deepEqual([
+        { app_change_type: 'FEATURE_UPDATE', issue_id: 456 },
+        { app_change_type: 'BUGFIX', issue_id: 123 },
+      ]);
     });
   });
 });
