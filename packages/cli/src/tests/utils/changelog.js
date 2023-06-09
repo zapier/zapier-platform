@@ -23,12 +23,23 @@ describe('changelog utils', () => {
           '* Major docs fixes.\n\n' +
           '## 1.0.0\n\n' +
           '* Removing beta "label".\n' +
-          '* Minor docs fixes.\n'
+          '* Minor docs fixes.\n' +
+          '#### 0.0.1\n' +
+          'initial release\n\n' +
+          'just for internal testing\n\n'
       );
     });
 
     after(() => {
       fs.removeSync(appDir);
+    });
+
+    it('should be forgiving on the markdown format', async () => {
+      const { appMetadata, issueMetadata, changelog } =
+        await changelogUtil.getVersionChangelog('0.0.1', appDir);
+      should(appMetadata).equal(undefined);
+      should(issueMetadata).equal(undefined);
+      changelog.should.equal('initial release\n\njust for internal testing');
     });
 
     it('should find changelog for 1.0.0', () =>

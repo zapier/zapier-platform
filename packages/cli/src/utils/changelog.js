@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const path = require('path');
 
 const { readFile } = require('./files');
@@ -55,29 +54,25 @@ const getChangelogFromMarkdown = (version, markdown) => {
     .replace(/\r/g, '\n')
     .split('\n');
 
-  let startingLine = _.findIndex(lines, (line) =>
-    RegExp(`## .*${version}`).test(line)
+  let startingLine = lines.findIndex((line) =>
+    RegExp(`^#{1,4} .*${version.replaceAll('.', '\\.')}`).test(line)
   );
 
   if (startingLine === -1) {
-    throw Error('Invalid start position');
+    throw new Error(`Version '${version}' not found in changelog`);
   }
 
-  // Skip the line with the version, and the next line (expected blank)
-  startingLine += 2;
+  startingLine++;
 
-  let endingLine = _.findIndex(
-    lines,
-    (line) => line.indexOf('## ') === 0,
-    startingLine
-  );
+  // Find the next line that starts with one or more '#' chars
+  let endingLine = lines
+    .slice(startingLine)
+    .findIndex((line) => /^#{1,4} /.test(line));
 
   if (endingLine === -1) {
     endingLine = lines.length;
   }
-
-  // Skip the line before the next version (expected blank)
-  endingLine -= 1;
+  endingLine += startingLine;
 
   const changelogLines = lines.slice(startingLine, endingLine);
   const changelog = [];
@@ -99,7 +94,7 @@ const getChangelogFromMarkdown = (version, markdown) => {
   }
 
   return {
-    changelog: changelog.join('\n'),
+    changelog: changelog.join('\n').trim(),
     appMetadata: absentIfEmpty(appMetadata),
     issueMetadata: absentIfEmpty(issueMetadata),
   };
