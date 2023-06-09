@@ -1,59 +1,5 @@
 'use strict';
 
-const getAccessToken = async (z, bundle) => {
-  const response = await z.request({
-    url: 'https://auth-json-server.zapier-staging.com/oauth/access-token',
-    method: 'POST',
-    body: {
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
-      grant_type: 'authorization_code',
-      code: bundle.inputData.code,
-
-      // Extra data can be pulled from the querystring. For instance:
-      // 'accountDomain': bundle.cleanedRequest.querystring.accountDomain
-    },
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-  });
-
-  // If you're using core v9.x or older, you should call response.throwForStatus()
-  // or verify response.status === 200 before you continue.
-
-  // This function should return `access_token`.
-  // If your app does an app refresh, then `refresh_token` should be returned here
-  // as well
-  return {
-    access_token: response.data.access_token,
-    refresh_token: response.data.refresh_token,
-  };
-};
-
-const refreshAccessToken = async (z, bundle) => {
-  const response = await z.request({
-    url: 'https://auth-json-server.zapier-staging.com/oauth/refresh-token',
-    method: 'POST',
-    body: {
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
-      grant_type: 'refresh_token',
-      refresh_token: bundle.authData.refresh_token,
-    },
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-  });
-
-  // If you're using core v9.x or older, you should call response.throwForStatus()
-  // or verify response.status === 200 before you continue.
-
-  // This function should return `access_token`.
-  // If the refresh token stays constant, no need to return it.
-  // If the refresh token does change, return it here to update the stored value in
-  // Zapier
-  return {
-    access_token: response.data.access_token,
-    refresh_token: response.data.refresh_token,
-  };
-};
-
 // This function runs before every outbound request. You can have as many as you
 // need. They'll need to each be registered in your index.js file.
 const includeBearerToken = (request, z, bundle) => {
@@ -63,14 +9,6 @@ const includeBearerToken = (request, z, bundle) => {
 
   return request;
 };
-
-// You want to make a request to an endpoint that is either specifically designed
-// to test auth, or one that every user will have access to. eg: `/me`.
-// By returning the entire request object, you have access to the request and
-// response data for testing purposes. Your connection label can access any data
-// from the returned response using the `json.` prefix. eg: `{{json.username}}`.
-const test = (z, bundle) =>
-  z.request({ url: 'https://auth-json-server.zapier-staging.com/me' });
 
 module.exports = {
   config: {
@@ -87,8 +25,38 @@ module.exports = {
           response_type: 'code',
         },
       },
-      getAccessToken,
-      refreshAccessToken,
+      getAccessToken: {
+        // This endpoint should return `access_token`.
+        // If your app does an app refresh, then `refresh_token` should be returned here
+        // as well
+        url: 'https://auth-json-server.zapier-staging.com/oauth/access-token',
+        method: 'POST',
+        body: {
+          client_id: '{{process.env.CLIENT_ID}}',
+          client_secret: '{{process.env.CLIENT_SECRET}}',
+          grant_type: 'authorization_code',
+          code: '{{bundle.inputData.code}}',
+
+          // Extra data can be pulled from the querystring. For instance:
+          // accountDomain: "{{bundle.cleanedRequest.querystring.accountDomain}}",
+        },
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      },
+      refreshAccessToken: {
+        // This endpoint should return `access_token`.
+        // If the refresh token stays constant, no need to return it.
+        // If the refresh token does change, return it here to update the stored value in
+        // Zapier
+        url: 'https://auth-json-server.zapier-staging.com/oauth/refresh-token',
+        method: 'POST',
+        body: {
+          client_id: '{{process.env.CLIENT_ID}}',
+          client_secret: '{{process.env.CLIENT_SECRET}}',
+          grant_type: 'refresh_token',
+          refresh_token: '{{bundle.authData.refresh_token}}',
+        },
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      },
       autoRefresh: true,
     },
 
@@ -99,7 +67,14 @@ module.exports = {
     // The test method allows Zapier to verify that the credentials a user provides
     // are valid. We'll execute this method whenever a user connects their account for
     // the first time.
-    test,
+    test: {
+      // You want to make a request to an endpoint that is either specifically designed
+      // to test auth, or one that every user will have access to. eg: `/me`.
+      // By returning the entire request object, you have access to the request and
+      // response data for testing purposes. Your connection label can access any data
+      // from the returned response using the `json.` prefix. eg: `{{json.username}}`.
+      url: 'https://auth-json-server.zapier-staging.com/me',
+    },
 
     // This template string can access all the data returned from the auth test. If
     // you return the test object, you'll access the returned data with a label like
