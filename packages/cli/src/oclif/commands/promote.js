@@ -10,6 +10,12 @@ const { getVersionChangelog } = require('../../utils/changelog');
 const checkMissingAppInfo = require('../../utils/check-missing-app-info');
 const { EXAMPLE_CHANGELOG } = require('../../constants');
 
+const ACTION_TYPE_MAPPING = {
+  read: 'trigger',
+  write: 'create',
+  search: 'search',
+};
+
 const serializeErrors = (errors) => {
   const opener = 'Promotion failed for the following reasons:\n\n';
   if (typeof errors[0] === 'string') {
@@ -56,10 +62,53 @@ class PromoteCommand extends BaseCommand {
 ${colors.cyan(EXAMPLE_CHANGELOG)}
 If bugfixes or updates to actions are present, then should be marked on a line that begins with "Update" or "Fix" (case insensitive) and information that contains the identifier.
 
-Issues are indicated by ${colors.bold.underline('#<issueId>')}, and actions by ${colors.bold.underline('<trigger|create|search>/<key>')}. Note issue IDs must be numeric and action identifiers are case sensitive.`);
+Issues are indicated by ${colors.bold.underline(
+        '#<issueId>'
+      )}, and actions by ${colors.bold.underline(
+        '<trigger|create|search>/<key>'
+      )}. Note issue IDs must be numeric and action identifiers are case sensitive.`);
     } else {
       this.log(colors.green(`Changelog found for ${version}`));
       this.log(`\n---\n${changelog}\n---\n`);
+      if (appMetadata || issueMetadata) {
+        /* eslint-disable camelcase */
+        this.log(`---\n\nParsed metadata:\n`);
+        if (appMetadata) {
+          this.log(
+            `Feature updates: ${[
+              ...appMetadata
+                .filter(
+                  ({ app_change_type }) => app_change_type === 'FEATURE_UPDATE'
+                )
+                .map(
+                  ({ action_type, action_key }) =>
+                    `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`
+                ),
+              ...issueMetadata
+                .filter(
+                  ({ app_change_type }) => app_change_type === 'FEATURE_UPDATE'
+                )
+                .map(({ issue_id }) => `#${issue_id}`),
+            ].join(', ')}`
+          );
+        }
+        if (issueMetadata) {
+          this.log(
+            `Bug fixes: ${[
+              ...appMetadata
+                .filter(({ app_change_type }) => app_change_type === 'BUGFIX')
+                .map(
+                  ({ action_type, action_key }) =>
+                    `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`
+                ),
+              ...issueMetadata
+                .filter(({ app_change_type }) => app_change_type === 'BUGFIX')
+                .map(({ issue_id }) => `#${issue_id}`),
+            ].join(', ')}`
+          );
+        }
+        /* eslint-enable camelcase */
+      }
 
       shouldContinue =
         assumeYes ||

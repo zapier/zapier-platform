@@ -3,8 +3,6 @@ const path = require('path');
 const { readFile } = require('./files');
 const { getMetadata } = require('./metadata');
 
-const isObject = (obj) => !!obj && typeof obj === 'object';
-
 const isAppMetadata = (obj) =>
   obj?.app_change_type && obj?.action_key && obj?.action_type;
 
