@@ -52,11 +52,11 @@ class PromoteCommand extends BaseCommand {
     if (!changelog) {
       this.error(`${colors.yellow(
         'Warning!'
-      )} Changelog not found. Please create a CHANGELOG.md file in a format similar to ${colors.cyan(
-        EXAMPLE_CHANGELOG
-      )} with user-facing descriptions.
-      If bugfixes or updates to actions are present, then should be marked on a line that begins with "Update" or "Fix" (case insensitive) and information that contains the identifier.
-      Issues are indicated by #<id>, and actions by <key>/<trigger | create | search>. Note issue IDs must be numeric and action identifiers are case sensitive.`);
+      )} Changelog not found. Please create a CHANGELOG.md file with user-facing descriptions. Example:
+${colors.cyan(EXAMPLE_CHANGELOG)}
+If bugfixes or updates to actions are present, then should be marked on a line that begins with "Update" or "Fix" (case insensitive) and information that contains the identifier.
+
+Issues are indicated by ${colors.bold.underline('#<issueId>')}, and actions by ${colors.bold.underline('<trigger|create|search>/<key>')}. Note issue IDs must be numeric and action identifiers are case sensitive.`);
     } else {
       this.log(colors.green(`Changelog found for ${version}`));
       this.log(`\n---\n${changelog}\n---\n`);

@@ -6,15 +6,9 @@ const { getMetadata } = require('./metadata');
 const isObject = (obj) => !!obj && typeof obj === 'object';
 
 const isAppMetadata = (obj) =>
-  isObject(obj) &&
-  Object.hasOwn(obj, 'app_change_type') &&
-  Object.hasOwn(obj, 'action_key') &&
-  Object.hasOwn(obj, 'action_type');
+  obj?.app_change_type && obj?.action_key && obj?.action_type;
 
-const isIssueMetadata = (obj) =>
-  isObject(obj) &&
-  Object.hasOwn(obj, 'app_change_type') &&
-  Object.hasOwn(obj, 'issue_id');
+const isIssueMetadata = (obj) => obj?.app_change_type && obj?.issue_id;
 
 // Turns an empty array into undefined so it will not be present in the body when sent
 const absentIfEmpty = (arr) => (arr.length === 0 ? undefined : arr);

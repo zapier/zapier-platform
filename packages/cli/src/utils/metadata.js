@@ -1,9 +1,9 @@
-const IntegrationBuilderMapping = {
+const ACTION_TYPE_MAPPING = {
   trigger: 'read',
   create: 'write',
   search: 'search',
 };
-const isValidAppType = (type) => type in IntegrationBuilderMapping;
+const isValidActionType = (type) => type in ACTION_TYPE_MAPPING;
 
 const bugfixMatches = new Set(['fix', 'fixed', 'fixes']);
 const featureUpdateMatches = new Set([
@@ -13,6 +13,7 @@ const featureUpdateMatches = new Set([
   'improve',
   'improves',
   'improved',
+  'improvement',
   'improvements',
   'update',
   'updates',
@@ -36,12 +37,12 @@ const extractMetadata = (token, context) => {
   );
   if (
     appMetadata?.groups?.actionKey &&
-    isValidAppType(appMetadata.groups.actionType)
+    isValidActionType(appMetadata.groups.actionType)
   ) {
     return {
       app_change_type: context,
       action_key: appMetadata.groups.actionKey,
-      action_type: IntegrationBuilderMapping[appMetadata.groups.actionType],
+      action_type: ACTION_TYPE_MAPPING[appMetadata.groups.actionType],
     };
   }
 };

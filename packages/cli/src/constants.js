@@ -60,20 +60,27 @@ const IS_TESTING =
 const MAX_DESCRIPTION_LENGTH = 140;
 
 const EXAMPLE_CHANGELOG = `
-## 1.1.0
+## 3.0.0
 
-* (Fix) [Permission denied with \`index.js\`.](https://github.com/zapier/zapier-platform-cli/pull/224)
-* (Fix) [\`zapier convert\` didn't escape line breaks in app description.](https://github.com/zapier/zapier-platform-cli/pull/226)
-* (Doc) [Add FAQs section.](https://github.com/zapier/zapier-platform-cli/pull/225)
-* [Ensure users are authenticated before building or pushing.](https://github.com/zapier/zapier-platform-cli/pull/227)
+Made some changes that affect app actions
+
+1. Update the trigger/pr_review action, as well as changes for #456
+2. Fix trigger/new_card #208
+3. New action! create/add_contact
+
+However, we also addressed fixed open issues!
+
+- Fix #123 and an issue with create/send_message
+
+## 2.0.0
+
+* Fix some bugs.
+* Major docs fixes.
 
 ## 1.0.0
 
-* (Fix) [Broken patching on http.request.](https://github.com/zapier/zapier-platform-core/pull/61)
-
-## 0.9.9
-
-Initial release to public. Read docs here https://github.com/zapier/zapier-platform-cli.`;
+Initial release to public.
+`;
 
 module.exports = {
   ANALYTICS_KEY,
