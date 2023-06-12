@@ -56,7 +56,6 @@ module.exports = makeSchema(
           label: 'Search or Create Widgets',
           description:
             'Searches for a widget matching the provided query, or creates one if it does not exist.',
-          important: true,
           hidden: false,
         },
         search: 'searchWidgets',
@@ -68,7 +67,6 @@ module.exports = makeSchema(
           label: 'Upsert Widgets',
           description:
             'Searches for a widget matching the provided query and updates it if found, or creates one if it does not exist.',
-          important: true,
           hidden: false,
         },
         search: 'searchWidgets',
@@ -90,7 +88,6 @@ module.exports = makeSchema(
             label: 'Search or Create Widgets',
             description:
               'Searches for a widget matching the provided query, or creates one if it does not exist.',
-            important: true,
             hidden: false,
           },
           search: 'searchWidgets',
@@ -105,7 +102,6 @@ module.exports = makeSchema(
             label: 'Search or Create Widgets',
             description:
               'Searches for a widget matching the provided query, or creates one if it does not exist.',
-            important: true,
             hidden: false,
           },
           search: { require: 'path/to/some/file.js' },
@@ -122,7 +118,6 @@ module.exports = makeSchema(
             label: 'Upsert Widgets',
             description:
               'Searches for a widget matching the provided query and updates it if found, or creates one if it does not exist.',
-            important: true,
             hidden: false,
           },
           search: 'searchWidgets',

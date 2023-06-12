@@ -431,7 +431,6 @@ Key | Required | Type | Description
 `description` | **yes** (with exceptions, see description) | `string` | A description of what this trigger, search, or create does. Optional if `hidden` is true.
 `directions` | no | `string` | A short blurb that can explain how to get this working. EG: how and where to copy-paste a static hook URL into your application. Only evaluated for static webhooks.
 `hidden` | no | `boolean` | Should this operation be unselectable by users?
-`important` | no | `boolean` | **DEPRECATED** Formerly affected how prominently this operation is displayed in the UI.
 
 #### Examples
 
@@ -1692,7 +1691,6 @@ Key | Required | Type | Description
       display: {
         label: 'Search or Create Widgets',
         description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-        important: true,
         hidden: false
       },
       search: 'searchWidgets',
@@ -1707,7 +1705,6 @@ Key | Required | Type | Description
       display: {
         label: 'Search and Create Widgets',
         description: 'Searches for a widget matching the provided query, creates one if it does not exist or updates existing one if found.',
-        important: true,
         hidden: false
       },
       search: 'searchWidgets',
@@ -1726,7 +1723,6 @@ Key | Required | Type | Description
       display: {
         label: 'Search or Create Widgets',
         description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-        important: true,
         hidden: false
       },
       search: 'searchWidgets',
@@ -1767,7 +1763,6 @@ Key | Required | Type | Description
     display: {
       label: 'Search or Create Widgets',
       description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-      important: true,
       hidden: false
     },
     search: 'searchWidgets',
@@ -1780,7 +1775,6 @@ Key | Required | Type | Description
     display: {
       label: 'Upsert Widgets',
       description: 'Searches for a widget matching the provided query and updates it if found, or creates one if it does not exist.',
-      important: true,
       hidden: false
     },
     search: 'searchWidgets',
@@ -1799,7 +1793,6 @@ Key | Required | Type | Description
     display: {
       label: 'Search or Create Widgets',
       description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-      important: true,
       hidden: false
     },
     search: 'searchWidgets',
@@ -1813,7 +1806,6 @@ Key | Required | Type | Description
     display: {
       label: 'Search or Create Widgets',
       description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-      important: true,
       hidden: false
     },
     search: { require: 'path/to/some/file.js' },
@@ -1827,7 +1819,6 @@ Key | Required | Type | Description
     display: {
       label: 'Upsert Widgets',
       description: 'Searches for a widget matching the provided query and updates it if found, or creates one if it does not exist.',
-      important: true,
       hidden: false
     },
     search: 'searchWidgets',
@@ -1864,7 +1855,6 @@ Key | Required | Type | Description
       display: {
         label: 'Search or Create Widgets',
         description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-        important: true,
         hidden: false
       },
       search: 'searchWidgets',
@@ -1879,7 +1869,6 @@ Key | Required | Type | Description
       display: {
         label: 'Search and Create Widgets',
         description: 'Searches for a widget matching the provided query, creates one if it does not exist or updates existing one if found.',
-        important: true,
         hidden: false
       },
       search: 'searchWidgets',
@@ -1898,7 +1887,6 @@ Key | Required | Type | Description
       display: {
         label: 'Search or Create Widgets',
         description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-        important: true,
         hidden: false
       },
       search: 'searchWidgets',
