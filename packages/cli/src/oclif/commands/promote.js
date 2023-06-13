@@ -55,60 +55,80 @@ class PromoteCommand extends BaseCommand {
     const { changelog, appMetadata, issueMetadata } = await getVersionChangelog(
       version
     );
+
+    const metadataPromptHelper = `Issues are indicated by ${colors.bold.underline(
+      '#<issueId>'
+    )}, and actions by ${colors.bold.underline(
+      '<trigger|create|search>/<key>'
+    )}. Note issue IDs must be numeric and action identifiers are case sensitive.`;
+
     if (!changelog) {
       this.error(`${colors.yellow(
         'Warning!'
       )} Changelog not found. Please create a CHANGELOG.md file with user-facing descriptions. Example:
 ${colors.cyan(EXAMPLE_CHANGELOG)}
 If bugfixes or updates to actions are present, then should be marked on a line that begins with "Update" or "Fix" (case insensitive) and information that contains the identifier.
-
-Issues are indicated by ${colors.bold.underline(
-        '#<issueId>'
-      )}, and actions by ${colors.bold.underline(
-        '<trigger|create|search>/<key>'
-      )}. Note issue IDs must be numeric and action identifiers are case sensitive.`);
+${metadataPromptHelper}`);
     } else {
       this.log(colors.green(`Changelog found for ${version}`));
-      this.log(`\n---\n${changelog}\n---\n`);
-      if (appMetadata || issueMetadata) {
-        /* eslint-disable camelcase */
-        this.log(`---\n\nParsed metadata:\n`);
-        if (appMetadata) {
-          this.log(
-            `Feature updates: ${[
-              ...appMetadata
-                .filter(
-                  ({ app_change_type }) => app_change_type === 'FEATURE_UPDATE'
-                )
-                .map(
-                  ({ action_type, action_key }) =>
-                    `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`
-                ),
-              ...issueMetadata
-                .filter(
-                  ({ app_change_type }) => app_change_type === 'FEATURE_UPDATE'
-                )
-                .map(({ issue_id }) => `#${issue_id}`),
-            ].join(', ')}`
+      this.log(`\n---\n${changelog}\n---`);
+      /* eslint-disable camelcase */
+      this.log(`\nParsed metadata:\n`);
+
+      const appFeatureUpdates =
+        appMetadata &&
+        appMetadata
+          .filter(({ app_change_type }) => app_change_type === 'FEATURE_UPDATE')
+          .map(
+            ({ action_type, action_key }) =>
+              `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`
           );
-        }
-        if (issueMetadata) {
-          this.log(
-            `Bug fixes: ${[
-              ...appMetadata
-                .filter(({ app_change_type }) => app_change_type === 'BUGFIX')
-                .map(
-                  ({ action_type, action_key }) =>
-                    `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`
-                ),
-              ...issueMetadata
-                .filter(({ app_change_type }) => app_change_type === 'BUGFIX')
-                .map(({ issue_id }) => `#${issue_id}`),
-            ].join(', ')}`
-          );
-        }
-        /* eslint-enable camelcase */
+
+      const issueFeatureUpdates =
+        issueMetadata &&
+        issueMetadata
+          .filter(({ app_change_type }) => app_change_type === 'FEATURE_UPDATE')
+          .map(({ issue_id }) => `#${issue_id}`);
+
+      if (appFeatureUpdates || issueFeatureUpdates) {
+        this.log(
+          `Feature updates: ${[
+            ...appFeatureUpdates,
+            ...issueFeatureUpdates,
+          ].join(', ')}`
+        );
       }
+
+      const appBugfixes =
+        appMetadata &&
+        appMetadata
+          .filter(({ app_change_type }) => app_change_type === 'BUGFIX')
+          .map(
+            ({ action_type, action_key }) =>
+              `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`
+          );
+      const issueBugfixes =
+        issueMetadata &&
+        issueMetadata
+          .filter(({ app_change_type }) => app_change_type === 'BUGFIX')
+          .map(({ issue_id }) => `#${issue_id}`);
+
+      if (appBugfixes || issueBugfixes) {
+        this.log(`Bug fixes: ${[...appBugfixes, issueBugfixes].join(', ')}`);
+      }
+
+      if (
+        !appFeatureUpdates &&
+        !issueFeatureUpdates &&
+        !appBugfixes &&
+        !issueBugfixes
+      ) {
+        this.log(
+          `No metadata was found in the changelog. Remember, you can associate the changelog with issues or triggers/actions.\n\n${metadataPromptHelper}`
+        );
+      }
+      this.log();
+      /* eslint-enable camelcase */
 
       shouldContinue =
         assumeYes ||
@@ -126,8 +146,8 @@ Issues are indicated by ${colors.bold.underline(
     );
 
     const isFeatureUpdate =
-      hasAppChangeType(appMetadata, 'FEATURE-UPDATE') ||
-      hasAppChangeType(issueMetadata, 'FEATURE-UPDATE');
+      hasAppChangeType(appMetadata, 'FEATURE_UPDATE') ||
+      hasAppChangeType(issueMetadata, 'FEATURE_UPDATE');
     const isBugfix =
       hasAppChangeType(appMetadata, 'BUGFIX') ||
       hasAppChangeType(issueMetadata, 'BUGFIX');
