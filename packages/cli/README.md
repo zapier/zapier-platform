@@ -188,15 +188,15 @@ Zapier Platform CLI is designed to be used by development teams who collaborate 
 
 ### Requirements
 
-All Zapier CLI apps are run using Node.js `v16`.
+All Zapier CLI apps are run using Node.js `v18`.
 
-You can develop using any version of Node you'd like, but your eventual code must be compatible with `v16`. If you're using features not yet available in `v16`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
+You can develop using any version of Node you'd like, but your eventual code must be compatible with `v18`. If you're using features not yet available in `v18`, you can transpile your code to a compatible format with [Babel](https://babeljs.io/) (or similar).
 
-To ensure stability for our users, we strongly encourage you run tests on `v16` sometime before your code reaches users. This can be done multiple ways.
+To ensure stability for our users, we strongly encourage you run tests on `v18` sometime before your code reaches users. This can be done multiple ways.
 
 Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform/blob/main/example-apps/trigger/.travis.yml) file in our template apps to get you started.
 
-Alternatively, you can change your local node version with tools such as [nvm](https://github.com/nvm-sh/nvm#installation-and-update). Then you can either swap to that version with `nvm use v16`, or do `nvm exec v16 zapier test` so you can run tests without having to switch versions while developing.
+Alternatively, you can change your local node version with tools such as [nvm](https://github.com/nvm-sh/nvm#installation-and-update). Then you can either swap to that version with `nvm use v18`, or do `nvm exec v18 zapier test` so you can run tests without having to switch versions while developing.
 
 
 ### Quick Setup Guide
@@ -770,6 +770,8 @@ The OAuth2 flow looks like this:
   3. Zapier makes a backend call to your API to exchange the `code` for an `access_token`.
   4. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
   5. (Optionally) Zapier can refresh the token if it expires.
+
+> Note: When [building a public integration](https://platform.zapier.com/private_integrations/private-vs-public-integrations),  the `redirect_uri` will change once the app is approved for publishing, to be more consistent with your app’s branding. Depending on your API, you may need to add this new `redirect_uri` to an allow list in order for users to continue connecting to your app on Zapier. To access the new `redirect_uri`, run `zapier describe` again once the app is published.
 
 You are required to define:
 
@@ -3047,7 +3049,7 @@ This makes it straightforward to integrate into your testing interface. For exam
 ```yaml
 language: node_js
 node_js:
-  - "v16"
+  - "v18"
 before_script: npm install -g zapier-platform-cli
 script: CLIENT_ID=1234 CLIENT_SECRET=abcd zapier test
 ```
@@ -3519,7 +3521,7 @@ InvalidParameterValueException An error occurred (InvalidParameterValueException
 
 1. Edit `package.json` to depend on a later major version of `zapier-platform-core`. There's a list of all breaking changes (marked with a :exclamation:) in the [changelog](https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md).
 2. Increment the `version` property in `package.json`
-3. Ensure you're using version `v16` (or greater) of node locally (`node -v`). Use [nvm](https://github.com/nvm-sh/nvm) to use a different one if need be.
+3. Ensure you're using version `v18` (or greater) of node locally (`node -v`). Use [nvm](https://github.com/nvm-sh/nvm) to use a different one if need be.
 4. Run `rm -rf node_modules && npm i` to get a fresh copy of everything
 5. Run `zapier test` to ensure your tests still pass
 6. Run `zapier push`
