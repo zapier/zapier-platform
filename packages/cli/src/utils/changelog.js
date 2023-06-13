@@ -18,7 +18,7 @@ const getChangelogFromMarkdown = (version, markdown) => {
     .split('\n');
 
   let startingLine = lines.findIndex((line) =>
-    RegExp(`^#{1,4} .*${version.replaceAll('.', '\\.')}`).test(line)
+    RegExp(`^#{1,4} .*${version.split('.').join('\\.')}`).test(line)
   );
 
   if (startingLine === -1) {
