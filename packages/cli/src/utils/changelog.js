@@ -1,7 +1,15 @@
-const _ = require('lodash');
 const path = require('path');
 
 const { readFile } = require('./files');
+const { getMetadata } = require('./metadata');
+
+const isAppMetadata = (obj) =>
+  obj?.app_change_type && obj?.action_key && obj?.action_type;
+
+const isIssueMetadata = (obj) => obj?.app_change_type && obj?.issue_id;
+
+// Turns an empty array into undefined so it will not be present in the body when sent
+const absentIfEmpty = (arr) => (arr.length === 0 ? undefined : arr);
 
 const getChangelogFromMarkdown = (version, markdown) => {
   const lines = markdown
@@ -9,41 +17,56 @@ const getChangelogFromMarkdown = (version, markdown) => {
     .replace(/\r/g, '\n')
     .split('\n');
 
-  let startingLine = _.findIndex(lines, (line) =>
-    RegExp(`## .*${version}`).test(line)
+  let startingLine = lines.findIndex((line) =>
+    RegExp(`^#{1,4} .*${version.split('.').join('\\.')}`).test(line)
   );
 
   if (startingLine === -1) {
-    return '';
+    throw new Error(`Version '${version}' not found in changelog`);
   }
 
-  // Skip the line with the version, and the next line (expected blank)
-  startingLine += 2;
+  startingLine++;
 
-  let endingLine = _.findIndex(
-    lines,
-    (line) => line.indexOf('## ') === 0,
-    startingLine
-  );
+  // Find the next line that starts with one or more '#' chars
+  let endingLine = lines
+    .slice(startingLine)
+    .findIndex((line) => /^#{1,4} /.test(line));
 
   if (endingLine === -1) {
     endingLine = lines.length;
   }
-
-  // Skip the line before the next version (expected blank)
-  endingLine -= 1;
+  endingLine += startingLine;
 
   const changelogLines = lines.slice(startingLine, endingLine);
+  const changelog = [];
+  const appMetadata = [];
+  const issueMetadata = [];
 
-  return changelogLines.join('\n');
+  for (const line of changelogLines) {
+    for (const metadata of getMetadata(line)) {
+      if (isAppMetadata(metadata)) {
+        appMetadata.push(metadata);
+      } else if (isIssueMetadata(metadata)) {
+        issueMetadata.push(metadata);
+      }
+    }
+
+    changelog.push(line);
+  }
+
+  return {
+    changelog: changelog.join('\n').trim(),
+    appMetadata: absentIfEmpty(appMetadata),
+    issueMetadata: absentIfEmpty(issueMetadata),
+  };
 };
 
-const getVersionChangelog = (version, appDir = '.') => {
+const getVersionChangelog = async (version, appDir = '.') => {
   const file = path.resolve(appDir, 'CHANGELOG.md');
 
   return readFile(file)
     .then((buffer) => getChangelogFromMarkdown(version, buffer.toString()))
-    .catch(() => ''); // We're ignoring files that don't exist or that aren't readable
+    .catch(() => ({ changelog: '' })); // We're ignoring files that don't exist or that aren't readable
 };
 
 module.exports = {

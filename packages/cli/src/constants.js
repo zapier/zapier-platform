@@ -59,6 +59,29 @@ const IS_TESTING =
 
 const MAX_DESCRIPTION_LENGTH = 140;
 
+const EXAMPLE_CHANGELOG = `
+## 3.0.0
+
+Made some changes that affect app actions
+
+1. Update the trigger/pr_review action, as well as changes for #456
+2. Fix trigger/new_card #208
+3. New action! create/add_contact
+
+However, we also addressed fixed open issues!
+
+- Fix #123 and an issue with create/send_message
+
+## 2.0.0
+
+* Fix some bugs.
+* Major docs fixes.
+
+## 1.0.0
+
+Initial release to public.
+`;
+
 module.exports = {
   ANALYTICS_KEY,
   ANALYTICS_MODES,
@@ -87,4 +110,5 @@ module.exports = {
   SOURCE_PATH,
   STARTER_REPO,
   UPDATE_NOTIFICATION_INTERVAL,
+  EXAMPLE_CHANGELOG,
 };
