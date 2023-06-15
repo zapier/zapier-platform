@@ -19,7 +19,13 @@ const { writeFile } = require('../../utils/files');
 const { prettyJSONstringify } = require('../../utils/display');
 const { isSamlEmail } = require('../../utils/credentials');
 
-const DEPLOY_KEY_DASH_URL = `${BASE_ENDPOINT}/developer/partner-settings/deploy-keys/`;
+const getDeployKeyUrl = () => {
+  const url = new URL(BASE_ENDPOINT);
+  url.hostname = `developer.${url.hostname}`;
+  url.pathname = 'partner-settings/deploy-keys/';
+  return url.href;
+};
+const DEPLOY_KEY_DASH_URL = getDeployKeyUrl();
 
 const isValidTotpCode = (i) => {
   const num = parseInt(i, 10);
