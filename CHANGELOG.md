@@ -1,3 +1,71 @@
+## 15.0.0
+
+_released `2023-06-30`_
+
+Version `15.0.0` is a breaking change release that contains several important upgrades and deprecations. Here is a brief breakdown of the changes (**:exclamation: denotes a breaking change**):
+
+- **:exclamation: Changelog is required for promotions.**
+  Prior to v15.0.0, providing a changelog was optional for promoting an app; this is now required.
+
+- **:exclamation: Remove `important` field from the schema.**
+  The `important` field was deprecated in `v14.0.1` ([#644](https://github.com/zapier/zapier-platform/pull/644)) and now we are removing it in this release.
+
+- **:exclamation: Apps can now use Node.js v18.x and Node.js v14.x is no longer supported.**
+  (a) Any integrations that depend on `zapier-platform-core@15.0.0` will now run on Node.js 18.
+  (b) We are dropping support for Node.js 14, which has been designated end-of-life since 2023-04-30 ([see the Node.js release schedule](https://github.com/nodejs/release#release-schedule)).
+
+### cli
+
+- :exclamation: Changelog is required for promotions ([#653](https://github.com/zapier/zapier-platform/pull/653))
+- :bug: `zapier login --sso` points to the correct link for fetching Deploy Keys ([#666](https://github.com/zapier/zapier-platform/pull/666))
+
+### core
+
+- :exclamation: Apps can now use Node.js v18.x and Node.js v14.x is no longer supported ([#665](https://github.com/zapier/zapier-platform/pull/665))
+
+### schema
+
+- :exclamation: Remove `important` field from the schema ([#662](https://github.com/zapier/zapier-platform/pull/662))
+
+### misc
+
+- :scroll: Documentation update related to redirect caveat in public apps ([#661](https://github.com/zapier/zapier-platform/pull/661))
+- :scroll: Documentation update related to supplement the "Output Fields" section ([#654](https://github.com/zapier/zapier-platform/pull/654))
+
+- :hammer: Dependency updates ([#665](https://github.com/zapier/zapier-platform/pull/665))
+
+  CLI
+
+  - Bump `@oclif/command@1.8.21` to `@oclif/command@1.8.27`
+  - Bump `@oclif/config@1.18.6` to `@oclif/command@1.18.10`
+  - Bump `fs-extra@10.0.0` to `@oclif/command@11.1.1`
+  - Bump `jscodeshift@0.14.0` to `jscodeshift@0.15.0`
+  - Bump `marked-terminal@5.1.1` to `marked-terminal@5.2.0`
+  - Bump `prettier@2.8.3` to `prettier@2.8.8`
+  - Bump `read@2.0.0` to `read@2.1.0`
+  - Bump `semver@7.3.8` to `semvar@7.5.1`
+  - Bump `yeoman-generator@5.7.0` to `yeoman-generator@5.9.0`
+  - Bump `nock@13.3.0` to `nock@13.3.1`
+
+  Core
+
+  - Bump `node-abort-controller@3.0.1` to `node-abort-controller@3.1.1`
+  - Bump `semver@7.3.5` to `semvar@7.5.1`
+  - Bump `aws-sdk@2.1300.0` to `aws-sdk@2.1397.0`
+  - Bump `fs-extra@10.0.0` to `fs-extra@11.1.1`
+  - Bump `@types/node@18.11.18` to `@types/node@20.3.1`
+
+  Legacy
+
+  - Bump `moment-timezone@0.5.35` to `moment-timezone@0.5.43`
+  - Bump `aws-sdk@2.1300.0` to `aws-sdk@2.1397.0`
+  - Bump `nock@13.3.0` to `nock@13.3.1`
+
+  Schema
+
+  - Bump `jsonschema@1.2.2` to `jsonschema@1.4.1`
+  - Bump `fs-extra@10.0.0` to `fs-extra@11.1.1`
+
 ## 14.1.1
 
 _released `2023-06-07`_
