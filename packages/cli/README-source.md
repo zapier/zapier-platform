@@ -92,7 +92,7 @@ npm install -g zapier-platform-cli
 # setup auth to Zapier's platform with a deploy key
 zapier login
 ```
-> Note: If you log into Zapier via the single sign-on (Google, Facebook, or Microsoft), you may not have a Zapier password. If that's the case, you'll need to generate a deploy key, go to [your Zapier developer account here](https://zapier.com/developer/partner-settings/deploy-keys/) and create/copy a key, then run ```zapier login``` command with the --sso flag.
+> Note: If you log into Zapier via the single sign-on (Google, Facebook, or Microsoft), you may not have a Zapier password. If that's the case, you'll need to generate a deploy key, go to [your Zapier developer account here](https://developer.zapier.com/partner-settings/deploy-keys/) and create/copy a key, then run ```zapier login``` command with the --sso flag.
 
 Your Zapier CLI should be installed and ready to go at this point. Next up, we'll create our first app!
 
@@ -129,7 +129,7 @@ zapier push
 
 ### Tutorial
 
-For a full tutorial, head over to our [Tutorial](https://zapier.com/developer/start) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
+For a full tutorial, head over to our [Tutorial](https://platform.zapier.com/cli_tutorials/getting-started) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
 
 ## Creating a Local App
 
