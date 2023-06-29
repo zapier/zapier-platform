@@ -13,4 +13,4 @@ zapier test
 
 `zapier build` works as a non-watch command that calls the `npm run _zapier-build` hook, and `zapier push` will make a fresh build using that hook as well.
 
-> We recommend using the zapier-platform-cli and `zapier init . --template=babel` to create an app.
+> We recommend using the zapier-platform-cli and `zapier init .`  to create an app - you’ll be presented with a list of currently available templates to start with.
