@@ -210,7 +210,7 @@ npm install -g zapier-platform-cli
 # setup auth to Zapier's platform with a deploy key
 zapier login
 ```
-> Note: If you log into Zapier via the single sign-on (Google, Facebook, or Microsoft), you may not have a Zapier password. If that's the case, you'll need to generate a deploy key, go to [your Zapier developer account here](https://zapier.com/developer/partner-settings/deploy-keys/) and create/copy a key, then run ```zapier login``` command with the --sso flag.
+> Note: If you log into Zapier via the single sign-on (Google, Facebook, or Microsoft), you may not have a Zapier password. If that's the case, you'll need to generate a deploy key, go to [your Zapier developer account here](https://developer.zapier.com/partner-settings/deploy-keys/) and create/copy a key, then run ```zapier login``` command with the --sso flag.
 
 Your Zapier CLI should be installed and ready to go at this point. Next up, we'll create our first app!
 
@@ -247,7 +247,7 @@ zapier push
 
 ### Tutorial
 
-For a full tutorial, head over to our [Tutorial](https://zapier.com/developer/start) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
+For a full tutorial, head over to our [Tutorial](https://platform.zapier.com/cli_tutorials/getting-started) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
 
 ## Creating a Local App
 
@@ -770,6 +770,8 @@ The OAuth2 flow looks like this:
   3. Zapier makes a backend call to your API to exchange the `code` for an `access_token`.
   4. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
   5. (Optionally) Zapier can refresh the token if it expires.
+
+> Note: When [building a public integration](https://platform.zapier.com/private_integrations/private-vs-public-integrations),  the `redirect_uri` will change once the app is approved for publishing, to be more consistent with your app’s branding. Depending on your API, you may need to add this new `redirect_uri` to an allow list in order for users to continue connecting to your app on Zapier. To access the new `redirect_uri`, run `zapier describe` again once the app is published.
 
 You are required to define:
 
