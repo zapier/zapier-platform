@@ -50,7 +50,7 @@
     "node-abort-controller": "3.0.1",
     "node-fetch": "2.6.7",
     "oauth-sign": "0.9.0",
-    "semver": "7.3.5",
+    "semver": "7.5.2",
     "zapier-platform-schema": "14.1.1"
   },
   "devDependencies": {
