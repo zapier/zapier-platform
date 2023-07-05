@@ -31,6 +31,7 @@ To pull down the code and install the needed dependencies, run:
 zapier init --template=onedrive ./
 npm install
 ```
+> We recommend using the zapier-platform-cli and `zapier init .`  to create an app - you’ll be presented with a list of currently available templates to start with.
 
 ### 2. Seeing Your App on zapier.com
 
