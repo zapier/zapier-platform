@@ -16,8 +16,9 @@ Version `15.0.0` is a breaking change release that contains several important up
 
 ### cli
 
-- :exclamation: Changelog is required for promotions ([#653](https://github.com/zapier/zapier-platform/pull/653))
 - :bug: `zapier login --sso` points to the correct link for fetching Deploy Keys ([#666](https://github.com/zapier/zapier-platform/pull/666))
+- :bug: `zapier convert` should convert `source` fields ([#660](https://github.com/zapier/zapier-platform/pull/660))
+- :exclamation: Changelog is required for promotions ([#653](https://github.com/zapier/zapier-platform/pull/653))
 
 ### core
 
@@ -29,6 +30,9 @@ Version `15.0.0` is a breaking change release that contains several important up
 
 ### misc
 
+- :scroll: Documentation update related to example apps ([#675](https://github.com/zapier/zapier-platform/pull/675), [#672](https://github.com/zapier/zapier-platform/pull/672), [#671](https://github.com/zapier/zapier-platform/pull/671))
+- :scroll: Documentation update related to outdated hyperlinks ([#673](https://github.com/zapier/zapier-platform/pull/673))
+- :scroll: Documentation update to match public platform docs ([#670](https://github.com/zapier/zapier-platform/pull/670))
 - :scroll: Documentation update related to redirect caveat in public apps ([#661](https://github.com/zapier/zapier-platform/pull/661))
 - :scroll: Documentation update related to supplement the "Output Fields" section ([#654](https://github.com/zapier/zapier-platform/pull/654))
 
