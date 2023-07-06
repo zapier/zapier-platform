@@ -34,7 +34,7 @@ This doc describes the latest CLI version (**PACKAGE_VERSION**), as of this writ
 
 ## Getting Started
 
-> If you're new to Zapier Platform CLI, we strongly recommend you to walk through the [Tutorial](https://zapier.com/developer/start) for a more thorough introduction.
+> If you're new to Zapier Platform CLI, we strongly recommend you to walk through the [Tutorial](https://platform.zapier.com/cli_tutorials/getting-started) for a more thorough introduction.
 
 ### What is an App?
 
@@ -64,7 +64,7 @@ The Zapier Platform includes two ways to build integrations: a CLI (to build int
 
 Zapier Platform CLI is designed to be used by development teams who collaborate with version control and CI, and can be used to build more advanced integrations with custom coding for every part of your API calls and response parsing.
 
-[Zapier Platform UI](https://zapier.com/app/developer/) is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It's the quickest way to start using the Zapier platform—and you can manage your CLI apps' core details from its online UI as well. You can also [export](https://platform.zapier.com/docs/export) Zapier Platform UI integrations to CLI to start development in your browser, then finish out the core features in your local development environment.
+[Zapier Platform UI](https://developer.zapier.com/) is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It's the quickest way to start using the Zapier platform—and you can manage your CLI apps' core details from its online UI as well. You can also [export](https://platform.zapier.com/docs/export) Zapier Platform UI integrations to CLI to start development in your browser, then finish out the core features in your local development environment.
 
 > Learn more in our [Zapier Platform UI vs CLI](https://platform.zapier.com/docs/vs) post.
 
@@ -92,7 +92,7 @@ npm install -g zapier-platform-cli
 # setup auth to Zapier's platform with a deploy key
 zapier login
 ```
-> Note: If you log into Zapier via the single sign-on (Google, Facebook, or Microsoft), you may not have a Zapier password. If that's the case, you'll need to generate a deploy key, go to [your Zapier developer account here](https://zapier.com/developer/partner-settings/deploy-keys/) and create/copy a key, then run ```zapier login``` command with the --sso flag.
+> Note: If you log into Zapier via the single sign-on (Google, Facebook, or Microsoft), you may not have a Zapier password. If that's the case, you'll need to generate a deploy key, go to [your Zapier developer account here](https://developer.zapier.com/partner-settings/deploy-keys/) and create/copy a key, then run ```zapier login``` command with the --sso flag.
 
 Your Zapier CLI should be installed and ready to go at this point. Next up, we'll create our first app!
 
@@ -106,7 +106,13 @@ cd example-app
 # install all the libraries needed for your app
 npm install
 ```
+Depending on the authentication method for your app, you'll also likely need to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables. These are the consumer key and secret in OAuth1 terminology.
 
+```bash
+# setting the environment variables on Zapier.com
+$ zapier env:set 1.0.0 CLIENT_ID=1234
+$ zapier env:set 1.0.0 CLIENT_SECRET=abcd
+```
 > Note: When you run `zapier init`, you'll be presented with a list of templates to start with. Pick the one that matches a feature you'll need (such as "dynamic-dropdown" for an integration with [dynamic dropdown fields](#dynamic-dropdowns)), or select "minimal" for an integration with only the essentials. [View more example apps here](https://github.com/zapier/zapier-platform/tree/main/example-apps).
 
 You should now have a working local app. You can run several local commands to try it out.
@@ -124,16 +130,16 @@ Next, you'll probably want to upload app to Zapier itself so you can start testi
 zapier push
 ```
 
-> Go check out our [full CLI reference documentation](https://zapier.github.io/zapier-platform/cli) to see all the other commands!
+> Go check out our [full CLI reference documentation](https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md#zapier-cli-reference) to see all the other commands!
 
 
 ### Tutorial
 
-For a full tutorial, head over to our [Tutorial](https://zapier.com/developer/start) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
+For a full tutorial, head over to our [Tutorial](https://platform.zapier.com/cli_tutorials/getting-started) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
 
 ## Creating a Local App
 
-> Tip: Check the [Quick Setup](#quick-setup-guide) if this is your first time using the platform!
+> Tip: Check the [Quick Setup](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#quick-setup-guide) if this is your first time using the platform!
 
 Creating an App can be done entirely locally and they are fairly simple Node.js apps using the standard Node environment and should be completely testable. However, a local app stays local until you `zapier register`.
 
@@ -280,7 +286,7 @@ zapier deprecate 1.0.0 2020-06-01
 
 ## Converting an Existing App
 
-If you have an existing Zapier [legacy Web Builder app](https://zapier.com/developer/builder/), you can use it as a template to kickstart your local application.
+If you have an existing Zapier [legacy Web Builder app](https://platform.zapier.com/conversion/maintaining), you can use it as a template to kickstart your local application.
 
 ```bash
 # Convert an existing Web Builder app to a CLI app in the my-app directory
@@ -1899,9 +1905,9 @@ zapier test
 zapier push
 ```
 
-There are a lot of details left out - check out the full example app for a working setup.
+There are a lot of details left out - check out the full example app [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/babel).
 
-> To create a new integration with Babel, run `zapier init [your app name] --template babel`. You can also check out our working example app [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/babel).
+> We recommend using `zapier init .`  to create an app - you’ll be presented with a list of currently available example templates to start with.
 
 ## FAQs
 

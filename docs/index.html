@@ -617,7 +617,7 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>If you&apos;re new to Zapier Platform CLI, we strongly recommend you to walk through the <a href="https://zapier.com/developer/start">Tutorial</a> for a more thorough introduction.</p>
+<p>If you&apos;re new to Zapier Platform CLI, we strongly recommend you to walk through the <a href="https://platform.zapier.com/cli_tutorials/getting-started">Tutorial</a> for a more thorough introduction.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -684,7 +684,7 @@ for. This is used during the &quot;Connect Accounts&quot; section of the Zap Edi
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The Zapier Platform includes two ways to build integrations: a CLI (to build integrations in your local development environment and deploy them from the command line), and a Visual Builder (to create integrations with a visual builder from your browser). Both use the same underlying platform, so pick the one that fits your team&apos;s needs best. The main difference is how you make changes to your code.</p><p>Zapier Platform CLI is designed to be used by development teams who collaborate with version control and CI, and can be used to build more advanced integrations with custom coding for every part of your API calls and response parsing.</p><p><a href="https://zapier.com/app/developer/">Zapier Platform UI</a> is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It&apos;s the quickest way to start using the Zapier platform&#x2014;and you can manage your CLI apps&apos; core details from its online UI as well. You can also <a href="https://platform.zapier.com/docs/export">export</a> Zapier Platform UI integrations to CLI to start development in your browser, then finish out the core features in your local development environment.</p><blockquote>
+      <p>The Zapier Platform includes two ways to build integrations: a CLI (to build integrations in your local development environment and deploy them from the command line), and a Visual Builder (to create integrations with a visual builder from your browser). Both use the same underlying platform, so pick the one that fits your team&apos;s needs best. The main difference is how you make changes to your code.</p><p>Zapier Platform CLI is designed to be used by development teams who collaborate with version control and CI, and can be used to build more advanced integrations with custom coding for every part of your API calls and response parsing.</p><p><a href="https://developer.zapier.com/">Zapier Platform UI</a> is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It&apos;s the quickest way to start using the Zapier platform&#x2014;and you can manage your CLI apps&apos; core details from its online UI as well. You can also <a href="https://platform.zapier.com/docs/export">export</a> Zapier Platform UI integrations to CLI to start development in your browser, then finish out the core features in your local development environment.</p><blockquote>
 <p>Learn more in our <a href="https://platform.zapier.com/docs/vs">Zapier Platform UI vs CLI</a> post.</p>
 </blockquote>
     </div>
@@ -737,7 +737,7 @@ zapier login
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Note: If you log into Zapier via the single sign-on (Google, Facebook, or Microsoft), you may not have a Zapier password. If that&apos;s the case, you&apos;ll need to generate a deploy key, go to <a href="https://zapier.com/developer/partner-settings/deploy-keys/">your Zapier developer account here</a> and create/copy a key, then run <code>zapier login</code> command with the --sso flag.</p>
+<p>Note: If you log into Zapier via the single sign-on (Google, Facebook, or Microsoft), you may not have a Zapier password. If that&apos;s the case, you&apos;ll need to generate a deploy key, go to <a href="https://developer.zapier.com/partner-settings/deploy-keys/">your Zapier developer account here</a> and create/copy a key, then run <code>zapier login</code> command with the --sso flag.</p>
 </blockquote><p>Your Zapier CLI should be installed and ready to go at this point. Next up, we&apos;ll create our first app!</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -749,6 +749,18 @@ zapier init example-app
 
 <span class="hljs-comment"># install all the libraries needed for your app</span>
 npm install
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Depending on the authentication method for your app, you&apos;ll also likely need to set your <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> as environment variables. These are the consumer key and secret in OAuth1 terminology.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-bash"><span class="hljs-comment"># setting the environment variables on Zapier.com</span>
+$ zapier env:<span class="hljs-built_in">set</span> 1.0.0 CLIENT_ID=1234
+$ zapier env:<span class="hljs-built_in">set</span> 1.0.0 CLIENT_SECRET=abcd
 </code></pre>
     </div>
   </div>
@@ -781,7 +793,7 @@ zapier push
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Go check out our <a href="https://zapier.github.io/zapier-platform/cli">full CLI reference documentation</a> to see all the other commands!</p>
+<p>Go check out our <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md#zapier-cli-reference">full CLI reference documentation</a> to see all the other commands!</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -800,7 +812,7 @@ zapier push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For a full tutorial, head over to our <a href="https://zapier.com/developer/start">Tutorial</a> for a comprehensive walkthrough for creating your first app. If this isn&apos;t your first rodeo, read on!</p>
+      <p>For a full tutorial, head over to our <a href="https://platform.zapier.com/cli_tutorials/getting-started">Tutorial</a> for a comprehensive walkthrough for creating your first app. If this isn&apos;t your first rodeo, read on!</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -819,7 +831,7 @@ zapier push
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Tip: Check the <a href="#quick-setup-guide">Quick Setup</a> if this is your first time using the platform!</p>
+<p>Tip: Check the <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#quick-setup-guide">Quick Setup</a> if this is your first time using the platform!</p>
 </blockquote><p>Creating an App can be done entirely locally and they are fairly simple Node.js apps using the standard Node environment and should be completely testable. However, a local app stays local until you <code>zapier register</code>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
@@ -1114,7 +1126,7 @@ zapier deprecate 1.0.0 2020-06-01
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>If you have an existing Zapier <a href="https://zapier.com/developer/builder/">legacy Web Builder app</a>, you can use it as a template to kickstart your local application.</p>
+      <p>If you have an existing Zapier <a href="https://platform.zapier.com/conversion/maintaining">legacy Web Builder app</a>, you can use it as a template to kickstart your local application.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># Convert an existing Web Builder app to a CLI app in the my-app directory</span>
