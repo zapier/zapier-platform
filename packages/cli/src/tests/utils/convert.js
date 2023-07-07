@@ -119,8 +119,7 @@ const visualAppDefinition = {
     ],
     oauth2Config: {
       authorizeUrl: {
-        url:
-          'https://app.wistia.com/oauth/authorize?client_id=03e84930b97011c7bd674f6d02c04ec9c1a430325a73a0501eb443ef07b6b99c&redirect_uri=https%3A%2F%2Fzapier.com%2Fdashboard%2Fauth%2Foauth%2Freturn%2FApp17741CLIAPI%2F&response_type=code',
+        url: 'https://app.wistia.com/oauth/authorize?client_id=03e84930b97011c7bd674f6d02c04ec9c1a430325a73a0501eb443ef07b6b99c&redirect_uri=https%3A%2F%2Fzapier.com%2Fdashboard%2Fauth%2Foauth%2Freturn%2FApp17741CLIAPI%2F&response_type=code',
         params: {
           state: '{{bundle.inputData.state}}',
           redirect_uri: '{{bundle.inputData.redirect_uri}}',
@@ -283,9 +282,9 @@ describe('convert', () => {
         'triggers/codemode.js',
         'triggers/project.js',
         'creates/create_project.js',
-        'test/triggers/codemode.js',
-        'test/triggers/project.js',
-        'test/creates/create_project.js',
+        'test/triggers/codemode.test.js',
+        'test/triggers/project.test.js',
+        'test/creates/create_project.test.js',
         'authentication.js',
         'hydrators.js',
       ].forEach((filename) => {
