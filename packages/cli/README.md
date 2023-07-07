@@ -3236,9 +3236,9 @@ zapier test
 zapier push
 ```
 
-There are a lot of details left out - check out the full example app for a working setup.
+There are a lot of details left out - check out the full example app [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/babel).
 
-> To create a new integration with Babel, run `zapier init [your app name] --template babel`. You can also check out our working example app [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/babel).
+> We recommend using `zapier init .`  to create an app - you’ll be presented with a list of currently available example templates to start with.
 
 ## FAQs
 
