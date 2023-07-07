@@ -5,7 +5,7 @@ _released `2023-06-30`_
 Version `15.0.0` is a breaking change release that contains several important upgrades and deprecations. Here is a brief breakdown of the changes (**:exclamation: denotes a breaking change**):
 
 - **:exclamation: Changelog is required for promotions.**
-  Prior to v15.0.0, providing a changelog was optional for promoting an app; this is now required.
+  Prior to v15.0.0, providing a changelog was optional for promoting an app; this is now required. You can also append changelog metadata to help categorize whether the changes are related to bug fixes or a new feature.
 
 - **:exclamation: Remove `important` field from the schema.**
   The `important` field was deprecated in `v14.0.1` ([#644](https://github.com/zapier/zapier-platform/pull/644)) and now we are removing it in this release.
@@ -16,6 +16,7 @@ Version `15.0.0` is a breaking change release that contains several important up
 
 ### cli
 
+- :bug: `zapier convert` now uses jest test template scaffold instead of mocha ([#674](https://github.com/zapier/zapier-platform/pull/674))
 - :bug: `zapier login --sso` points to the correct link for fetching Deploy Keys ([#666](https://github.com/zapier/zapier-platform/pull/666))
 - :bug: `zapier convert` should convert `source` fields ([#660](https://github.com/zapier/zapier-platform/pull/660))
 - :exclamation: Changelog is required for promotions ([#653](https://github.com/zapier/zapier-platform/pull/653))
@@ -36,7 +37,7 @@ Version `15.0.0` is a breaking change release that contains several important up
 - :scroll: Documentation update related to redirect caveat in public apps ([#661](https://github.com/zapier/zapier-platform/pull/661))
 - :scroll: Documentation update related to supplement the "Output Fields" section ([#654](https://github.com/zapier/zapier-platform/pull/654))
 
-- :hammer: Dependency updates ([#665](https://github.com/zapier/zapier-platform/pull/665))
+- :hammer: Dependency updates ([#668](https://github.com/zapier/zapier-platform/pull/668), [#665](https://github.com/zapier/zapier-platform/pull/665))
 
   CLI
 
@@ -47,14 +48,14 @@ Version `15.0.0` is a breaking change release that contains several important up
   - Bump `marked-terminal@5.1.1` to `marked-terminal@5.2.0`
   - Bump `prettier@2.8.3` to `prettier@2.8.8`
   - Bump `read@2.0.0` to `read@2.1.0`
-  - Bump `semver@7.3.8` to `semvar@7.5.1`
+  - Bump `semver@7.3.8` to `semvar@7.5.2`
   - Bump `yeoman-generator@5.7.0` to `yeoman-generator@5.9.0`
   - Bump `nock@13.3.0` to `nock@13.3.1`
 
   Core
 
   - Bump `node-abort-controller@3.0.1` to `node-abort-controller@3.1.1`
-  - Bump `semver@7.3.5` to `semvar@7.5.1`
+  - Bump `semver@7.3.5` to `semvar@7.5.2`
   - Bump `aws-sdk@2.1300.0` to `aws-sdk@2.1397.0`
   - Bump `fs-extra@10.0.0` to `fs-extra@11.1.1`
   - Bump `@types/node@18.11.18` to `@types/node@20.3.1`
