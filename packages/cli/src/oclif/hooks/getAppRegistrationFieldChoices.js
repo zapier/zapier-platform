@@ -12,6 +12,7 @@ module.exports = async function (options) {
   try {
     formFields = await callAPI('/apps/fields-choices');
   } catch (e) {
+    console.error(e);
     this.error(
       `Unable to connect to Zapier API. Please check your connection and try again. ${e}`
     );

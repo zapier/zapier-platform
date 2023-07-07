@@ -4,7 +4,7 @@ const { BASE_ENDPOINT, MAX_DESCRIPTION_LENGTH } = require('../constants');
 const registerFieldChoices = require('./fixtures/registerFieldChoices');
 const { privateApp, publicApp } = require('./fixtures/createApp');
 
-describe('RegisterCommand', () => {
+describe.only('RegisterCommand', () => {
   const APP_RC_FILE = './.zapierapprc';
 
   const deleteRcFile = () => {
