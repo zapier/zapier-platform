@@ -1,5 +1,3 @@
-/* globals describe, expect, test, it */
-
 const zapier = require('zapier-platform-core');
 
 // Use this to make test calls into your app:
