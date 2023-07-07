@@ -64,7 +64,7 @@
     "parse-gitignore": "0.5.1",
     "prettier": "2.8.3",
     "read": "2.0.0",
-    "semver": "7.3.8",
+    "semver": "7.5.2",
     "string-length": "4.0.2",
     "through2": "4.0.2",
     "tmp": "0.2.1",
