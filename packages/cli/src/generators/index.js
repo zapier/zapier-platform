@@ -46,7 +46,7 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
           [PLATFORM_PACKAGE]: PACKAGE_VERSION,
         },
         devDependencies: {
-          jest: '^26.6.3',
+          jest: '^29.6.0',
         },
         private: true,
       },

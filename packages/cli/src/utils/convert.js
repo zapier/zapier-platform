@@ -17,7 +17,8 @@ const { snakeCase } = require('./misc');
 const { getPackageLatestVersion } = require('./npm');
 let { startSpinner, endSpinner } = require('./display');
 
-const TEMPLATE_DIR = path.join(__dirname, '../../scaffold/convert');
+const SCAFFOLD_TEMPLATE_DIR = path.join(__dirname, '../../scaffold');
+const GENERATORS_TEMPLATE_DIR = path.join(__dirname, '../generators/templates');
 
 // A placeholder that can be used to identify this is something we need to replace
 // before generating the final code. See replacePlaceholders function. Make it really
@@ -29,10 +30,6 @@ const makePlaceholder = (replacement) => `${REPLACE_DIRECTIVE}${replacement}`;
 
 const replacePlaceholders = (str) =>
   str.replace(new RegExp(`"${REPLACE_DIRECTIVE}([^"]+)"`, 'g'), '$1');
-
-const quote = (s) => `'${s}'`;
-
-const escapeSpecialChars = (s) => s.replace(/\n/g, '\\n').replace(/'/g, "\\'");
 
 const createFile = async (content, filename, dir) => {
   const destFile = path.join(dir, filename);
@@ -140,7 +137,7 @@ const renderPackageJson = async (appInfo, appDefinition) => {
     description,
     main: 'index.js',
     scripts: {
-      test: 'mocha --recursive -t 10000',
+      test: 'jest --testTimeout 10000',
     },
     engines: {
       node: `>=${LAMBDA_VERSION}`,
@@ -148,8 +145,7 @@ const renderPackageJson = async (appInfo, appDefinition) => {
     },
     dependencies,
     devDependencies: {
-      mocha: '^5.2.0',
-      should: '^13.2.0',
+      jest: '^29.6.0',
     },
     private: true,
     zapier: zapierMeta,
@@ -197,58 +193,14 @@ const renderDefinitionSlice = (definitionSlice) => {
   return prettifyJs(functionBlock + '\n\n' + exportBlock);
 };
 
-// Render authData for test code
-const renderAuthData = (appDefinition) => {
-  const fieldKeys = getAuthFieldKeys(appDefinition);
-  const lines = _.map(fieldKeys, (key) => {
-    const upperKey = _.snakeCase(key).toUpperCase();
-    return `"${key}": process.env.${upperKey}`;
-  });
-  if (_.isEmpty(lines)) {
-    return `{
-      // TODO: Put your custom auth data here
-    }`;
-  }
-  return '{' + lines.join(',\n') + '}';
-};
-
-const renderDefaultInputData = (definition) => {
-  const lines = [];
-
-  if (definition.inputFields) {
-    definition.inputFields.forEach((field) => {
-      if (field.default || field.required) {
-        const defaultValue = field.default
-          ? quote(escapeSpecialChars(field.default))
-          : null;
-        lines.push(`'${field.key}': ${defaultValue}`);
-      }
-    });
-  }
-
-  if (lines.length === 0) {
-    return '{}';
-  }
-  return `{
-    // TODO: Pulled from input fields' default values. Edit if necessary.
-    ${lines.join(',\n')}
-  }`;
-};
-
-const renderStepTest = async (stepType, definition, appDefinition) => {
-  const templateName = {
-    triggers: 'trigger-test.template.js',
-    creates: 'create-test.template.js',
-    searches: 'search-test.template.js',
-  }[stepType];
-
+const renderStepTest = async (stepType, definition) => {
   const templateContext = {
-    key: definition.key,
-    authData: renderAuthData(appDefinition),
-    inputData: renderDefaultInputData(definition),
+    ACTION_PLURAL: stepType,
+    KEY: definition.key,
+    MAYBE_RESOURCE: '',
   };
 
-  const templateFile = path.join(TEMPLATE_DIR, templateName);
+  const templateFile = path.join(SCAFFOLD_TEMPLATE_DIR, 'test.template.js');
   return renderTemplate(templateFile, templateContext);
 };
 
@@ -288,9 +240,8 @@ const renderIndex = async (appDefinition) => {
         importBlock.push(`const ${importName} = require('${filepath}');`);
 
         delete exportBlock[stepType][key];
-        exportBlock[stepType][
-          makePlaceholder(`[${importName}.key]`)
-        ] = makePlaceholder(importName);
+        exportBlock[stepType][makePlaceholder(`[${importName}.key]`)] =
+          makePlaceholder(importName);
       });
     }
   );
@@ -337,15 +288,9 @@ const writeStep = async (stepType, definition, key, newAppDir) => {
   await createFile(content, filename, newAppDir);
 };
 
-const writeStepTest = async (
-  stepType,
-  definition,
-  key,
-  appDefinition,
-  newAppDir
-) => {
-  const filename = `test/${stepType}/${snakeCase(key)}.js`;
-  const content = await renderStepTest(stepType, definition, appDefinition);
+const writeStepTest = async (stepType, definition, key, newAppDir) => {
+  const filename = `test/${stepType}/${snakeCase(key)}.test.js`;
+  const content = await renderStepTest(stepType, definition);
   await createFile(content, filename, newAppDir);
 };
 
@@ -383,7 +328,7 @@ const writeEnvironment = async (appDefinition, newAppDir) => {
 };
 
 const writeGitIgnore = async (newAppDir) => {
-  const srcPath = path.join(TEMPLATE_DIR, '/gitignore');
+  const srcPath = path.join(GENERATORS_TEMPLATE_DIR, '/gitignore');
   const destPath = path.join(newAppDir, '/.gitignore');
   await copyFile(srcPath, destPath);
 };
@@ -414,7 +359,7 @@ const convertApp = async (appInfo, appDefinition, newAppDir) => {
     _.each(appDefinition[stepType], (definition, key) => {
       promises.push(
         writeStep(stepType, definition, key, newAppDir),
-        writeStepTest(stepType, definition, key, appDefinition, newAppDir)
+        writeStepTest(stepType, definition, key, newAppDir)
       );
     });
   });
