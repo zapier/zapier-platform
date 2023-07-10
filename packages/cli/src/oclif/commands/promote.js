@@ -8,6 +8,13 @@ const { callAPI } = require('../../utils/api');
 const { flattenCheckResult } = require('../../utils/display');
 const { getVersionChangelog } = require('../../utils/changelog');
 const checkMissingAppInfo = require('../../utils/check-missing-app-info');
+const { EXAMPLE_CHANGELOG } = require('../../constants');
+
+const ACTION_TYPE_MAPPING = {
+  read: 'trigger',
+  write: 'create',
+  search: 'search',
+};
 
 const serializeErrors = (errors) => {
   const opener = 'Promotion failed for the following reasons:\n\n';
@@ -25,6 +32,16 @@ const serializeErrors = (errors) => {
   );
 };
 
+const hasAppChangeType = (metadata, changeType) => {
+  return Boolean(
+    metadata?.some(
+      // Existing property name
+      // eslint-disable-next-line camelcase
+      ({ app_change_type }) => app_change_type === changeType
+    )
+  );
+};
+
 class PromoteCommand extends BaseCommand {
   async perform() {
     const app = await this.getWritableApp();
@@ -35,29 +52,88 @@ class PromoteCommand extends BaseCommand {
     const assumeYes = 'yes' in this.flags;
 
     let shouldContinue;
-    const changelog = await getVersionChangelog(version);
-    if (changelog) {
+    const { changelog, appMetadata, issueMetadata } = await getVersionChangelog(
+      version
+    );
+
+    const metadataPromptHelper = `Issues are indicated by ${colors.bold.underline(
+      '#<issueId>'
+    )}, and actions by ${colors.bold.underline(
+      '<trigger|create|search>/<key>'
+    )}. Note issue IDs must be numeric and action identifiers are case sensitive.`;
+
+    if (!changelog) {
+      this.error(`${colors.yellow(
+        'Warning!'
+      )} Changelog not found. Please create a CHANGELOG.md file with user-facing descriptions. Example:
+${colors.cyan(EXAMPLE_CHANGELOG)}
+If bugfixes or updates to actions are present, then should be marked on a line that begins with "Update" or "Fix" (case insensitive) and information that contains the identifier.
+${metadataPromptHelper}`);
+    } else {
       this.log(colors.green(`Changelog found for ${version}`));
-      this.log(`\n---\n${changelog}\n---\n`);
+      this.log(`\n---\n${changelog}\n---`);
+      /* eslint-disable camelcase */
+      this.log(`\nParsed metadata:\n`);
+
+      const appFeatureUpdates =
+        appMetadata &&
+        appMetadata
+          .filter(({ app_change_type }) => app_change_type === 'FEATURE_UPDATE')
+          .map(
+            ({ action_type, action_key }) =>
+              `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`
+          );
+
+      const issueFeatureUpdates =
+        issueMetadata &&
+        issueMetadata
+          .filter(({ app_change_type }) => app_change_type === 'FEATURE_UPDATE')
+          .map(({ issue_id }) => `#${issue_id}`);
+
+      if (appFeatureUpdates || issueFeatureUpdates) {
+        this.log(
+          `Feature updates: ${[
+            ...appFeatureUpdates,
+            ...issueFeatureUpdates,
+          ].join(', ')}`
+        );
+      }
+
+      const appBugfixes =
+        appMetadata &&
+        appMetadata
+          .filter(({ app_change_type }) => app_change_type === 'BUGFIX')
+          .map(
+            ({ action_type, action_key }) =>
+              `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`
+          );
+      const issueBugfixes =
+        issueMetadata &&
+        issueMetadata
+          .filter(({ app_change_type }) => app_change_type === 'BUGFIX')
+          .map(({ issue_id }) => `#${issue_id}`);
+
+      if (appBugfixes || issueBugfixes) {
+        this.log(`Bug fixes: ${[...appBugfixes, issueBugfixes].join(', ')}`);
+      }
+
+      if (
+        !appFeatureUpdates &&
+        !issueFeatureUpdates &&
+        !appBugfixes &&
+        !issueBugfixes
+      ) {
+        this.log(
+          `No metadata was found in the changelog. Remember, you can associate the changelog with issues or triggers/actions.\n\n${metadataPromptHelper}`
+        );
+      }
+      this.log();
+      /* eslint-enable camelcase */
 
       shouldContinue =
         assumeYes ||
         (await this.confirm(
           'Would you like to continue promoting with this changelog?'
-        ));
-    } else {
-      this.log(
-        `${colors.yellow(
-          'Warning!'
-        )} Changelog not found. Please create a CHANGELOG.md file in a format similar to ${colors.cyan(
-          'https://gist.github.com/xavdid/b9ede3565f1188ce339292acc29612b2'
-        )} with user-facing descriptions.`
-      );
-
-      shouldContinue =
-        assumeYes ||
-        (await this.confirm(
-          'Would you like to continue promoting without a changelog?'
         ));
     }
 
@@ -69,11 +145,22 @@ class PromoteCommand extends BaseCommand {
       `Preparing to promote version ${version} of your integration "${app.title}".`
     );
 
+    const isFeatureUpdate =
+      hasAppChangeType(appMetadata, 'FEATURE_UPDATE') ||
+      hasAppChangeType(issueMetadata, 'FEATURE_UPDATE');
+    const isBugfix =
+      hasAppChangeType(appMetadata, 'BUGFIX') ||
+      hasAppChangeType(issueMetadata, 'BUGFIX');
     const body = {
       job: {
         name: 'promote',
         to_version: version,
         changelog,
+        app_metadata: appMetadata,
+        loki_metadata: issueMetadata,
+        is_feature_update: isFeatureUpdate,
+        is_bugfix: isBugfix,
+        is_other: !isFeatureUpdate && !isBugfix,
       },
     };
 

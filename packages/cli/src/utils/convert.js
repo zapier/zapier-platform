@@ -240,9 +240,8 @@ const renderIndex = async (appDefinition) => {
         importBlock.push(`const ${importName} = require('${filepath}');`);
 
         delete exportBlock[stepType][key];
-        exportBlock[stepType][
-          makePlaceholder(`[${importName}.key]`)
-        ] = makePlaceholder(importName);
+        exportBlock[stepType][makePlaceholder(`[${importName}.key]`)] =
+          makePlaceholder(importName);
       });
     }
   );

@@ -1,5 +1,5 @@
 {
-  "version": "14.1.1",
+  "version": "15.0.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -651,10 +651,6 @@
         },
         "hidden": {
           "description": "Should this operation be unselectable by users?",
-          "type": "boolean"
-        },
-        "important": {
-          "description": "**DEPRECATED** Formerly affected how prominently this operation is displayed in the UI.",
           "type": "boolean"
         }
       },

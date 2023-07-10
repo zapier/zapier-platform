@@ -45,11 +45,6 @@ module.exports = makeSchema({
       description: 'Should this operation be unselectable by users?',
       type: 'boolean',
     },
-    important: {
-      description:
-        '**DEPRECATED** Formerly affected how prominently this operation is displayed in the UI.',
-      type: 'boolean',
-    },
   },
   additionalProperties: false,
   examples: [

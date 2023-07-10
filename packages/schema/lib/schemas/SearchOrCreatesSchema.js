@@ -26,7 +26,6 @@ module.exports = makeSchema(
             label: 'Search or Create Widgets',
             description:
               'Searches for a widget matching the provided query, or creates one if it does not exist.',
-            important: true,
             hidden: false,
           },
           search: 'searchWidgets',
@@ -40,7 +39,6 @@ module.exports = makeSchema(
             label: 'Search and Create Widgets',
             description:
               'Searches for a widget matching the provided query, creates one if it does not exist or updates existing one if found.',
-            important: true,
             hidden: false,
           },
           search: 'searchWidgets',
@@ -59,7 +57,6 @@ module.exports = makeSchema(
               label: 'Search or Create Widgets',
               description:
                 'Searches for a widget matching the provided query, or creates one if it does not exist.',
-              important: true,
               hidden: false,
             },
             search: 'searchWidgets',
