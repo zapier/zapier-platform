@@ -1,3 +1,25 @@
+## 15.0.1
+
+_released `2023-07-10`_
+
+### cli
+
+- :bug: `zapier convert` now uses jest test template scaffold instead of mocha ([#674](https://github.com/zapier/zapier-platform/pull/674))
+
+### core
+
+None!
+
+### schema
+
+None!
+
+### misc
+
+- :scroll: Documentation update related to example apps ([#675](https://github.com/zapier/zapier-platform/pull/675), [#672](https://github.com/zapier/zapier-platform/pull/672), [#671](https://github.com/zapier/zapier-platform/pull/671))
+- :scroll: Documentation update related to outdated hyperlinks ([#673](https://github.com/zapier/zapier-platform/pull/673))
+- :scroll: Documentation update to match public platform docs ([#670](https://github.com/zapier/zapier-platform/pull/670))
+
 ## 15.0.0
 
 _released `2023-06-30`_
@@ -31,9 +53,6 @@ Version `15.0.0` is a breaking change release that contains several important up
 
 ### misc
 
-- :scroll: Documentation update related to example apps ([#675](https://github.com/zapier/zapier-platform/pull/675), [#672](https://github.com/zapier/zapier-platform/pull/672), [#671](https://github.com/zapier/zapier-platform/pull/671))
-- :scroll: Documentation update related to outdated hyperlinks ([#673](https://github.com/zapier/zapier-platform/pull/673))
-- :scroll: Documentation update to match public platform docs ([#670](https://github.com/zapier/zapier-platform/pull/670))
 - :scroll: Documentation update related to redirect caveat in public apps ([#661](https://github.com/zapier/zapier-platform/pull/661))
 - :scroll: Documentation update related to supplement the "Output Fields" section ([#654](https://github.com/zapier/zapier-platform/pull/654))
 
