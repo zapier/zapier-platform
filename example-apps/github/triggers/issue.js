@@ -19,7 +19,7 @@ module.exports = {
   noun: 'Issue',
 
   display: {
-    label: 'Get Issue',
+    label: 'New Issue',
     description: 'Triggers on a new issue.',
   },
 

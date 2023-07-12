@@ -8,18 +8,16 @@
   "license": "BSD-3-Clause",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --recursive"
+    "test": "jest --testTimeout 10000"
   },
   "engines": {
-    "node": ">=8.10.0",
+    "node": "8.10.0",
     "npm": ">=5.6.0"
   },
   "dependencies": {
     "zapier-platform-core": "15.0.1"
   },
   "devDependencies": {
-    "mocha": "^5.2.0",
-    "should": "^13.2.0"
-  },
-  "private": true
+    "jest": "^26.6.3"
+  }
 }

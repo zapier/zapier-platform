@@ -1,19 +1,23 @@
 const repoTrigger = require('./triggers/repo');
 const issueCreate = require('./creates/issue');
 const issueTrigger = require('./triggers/issue');
-const authentication = require('./authentication');
+const {
+  config: authentication,
+  befores = [],
+  afters = [],
+} = require('./authentication');
 
 const App = {
   // This is just shorthand to reference the installed dependencies you have. Zapier will
   // need to know these before we can upload
   version: require('./package.json').version,
   platformVersion: require('zapier-platform-core').version,
-  authentication: authentication,
+  authentication,
 
   // beforeRequest & afterResponse are optional hooks into the provided HTTP client
-  beforeRequest: [],
+  beforeRequest: [...befores],
 
-  afterResponse: [],
+  afterResponse: [...afters],
 
   // If you want to define optional resources to simplify creation of triggers, searches, creates - do that here!
   resources: {},
