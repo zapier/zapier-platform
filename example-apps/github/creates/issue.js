@@ -18,7 +18,7 @@ module.exports = {
 
   display: {
     label: 'Create Issue',
-    description: 'Creates a issue.',
+    description: 'Creates an issue.',
   },
 
   operation: {
