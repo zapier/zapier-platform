@@ -125,6 +125,14 @@ type DehydrateFunc = <T>(
   inputData: T
 ) => string;
 
+type LockFunc = <T>(
+  key: [string],
+  value: string,
+  maxLockSec: number,
+  callbackFn: () => Promise<T>,
+  scope: string
+) => Promise<T>;
+
 export interface ZObject {
   request: {
     // most specific overloads go first
@@ -200,4 +208,5 @@ export interface ZObject {
     set: (key: string, value: any, ttl?: number) => Promise<boolean>;
     delete: (key: string) => Promise<boolean>;
   };
+  lock: LockFunc;
 }
