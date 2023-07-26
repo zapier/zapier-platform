@@ -24,21 +24,39 @@ const createCache = (input) => {
   };
 
   return {
-    get: async (key) => {
+    get: async (key, namespaceMode = null, namespaceScope = null) => {
       runValidationChecks(rpc, key);
 
-      const result = await rpc('zcache_get', key);
+      const result = await rpc(
+        'zcache_get',
+        key,
+        namespaceMode,
+        namespaceScope
+      );
       return result ? JSON.parse(result) : null;
     },
-    set: async (key, value, ttl = null) => {
+    set: async (
+      key,
+      value,
+      ttl = null,
+      namespaceMode = null,
+      namespaceScope = null
+    ) => {
       runValidationChecks(rpc, key, value, ttl);
 
-      return await rpc('zcache_set', key, JSON.stringify(value), ttl);
+      return await rpc(
+        'zcache_set',
+        key,
+        JSON.stringify(value),
+        ttl,
+        namespaceMode,
+        namespaceScope
+      );
     },
-    delete: async (key) => {
+    delete: async (key, namespaceMode = null, namespaceScope = null) => {
       runValidationChecks(rpc, key);
 
-      return await rpc('zcache_delete', key);
+      return await rpc('zcache_delete', key, namespaceMode, namespaceScope);
     },
   };
 };
