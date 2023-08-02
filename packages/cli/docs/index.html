@@ -3114,6 +3114,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>The app will have a maximum of 30 days to <code>POST</code> to the callback URL. If a user deletes or modifies the Zap or Task in the meantime, we will not resume the task.</p>
+</blockquote><blockquote>
+<p><code>performResume</code> will only run when the Zap runs live, and cannot be tested in the Zap Editor when configuring the Zap. It is possible to use <code>bundle.meta.isLoadingSample</code> to load a fixed sample to allow users to test a step that includes <code>performResume</code>. </p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
