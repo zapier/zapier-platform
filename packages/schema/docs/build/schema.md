@@ -933,7 +933,7 @@ Key | Required | Type | Description
 `list` | no | `boolean` | Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?
 `children` | no | `array`[[/FieldSchema](#fieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?
-`computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)?
+`computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.
 `altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?
 `inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
 
