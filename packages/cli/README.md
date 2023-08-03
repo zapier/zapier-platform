@@ -1881,6 +1881,8 @@ const performResume = async (z, bundle) => {
 
 > The app will have a maximum of 30 days to `POST` to the callback URL. If a user deletes or modifies the Zap or Task in the meantime, we will not resume the task.
 
+> `performResume` will only run when the Zap runs live, and cannot be tested in the Zap Editor when configuring the Zap. It is possible to use `bundle.meta.isLoadingSample` to load a fixed sample to allow users to test a step that includes `performResume`. 
+
 
 ## Bundle Object
 
