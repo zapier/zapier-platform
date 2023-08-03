@@ -405,7 +405,7 @@ Also, `authentication.oauth1Config.getAccessToken` has access to the additional 
 
 ### OAuth2
 
-Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](https://developer.github.com/v3/oauth/) and [Facebook](https://developers.facebook.com/docs/authentication/server-side/).
+Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps) and [Facebook](https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow).
 
 > To create a new integration with OAuth2, run `zapier init [your app name] --template oauth2`. You can also check out [our working example app](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth2).
 
