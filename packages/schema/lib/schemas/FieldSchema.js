@@ -112,7 +112,7 @@ module.exports = makeSchema(
       },
       computed: {
         description:
-          'Is this field automatically populated (and hidden from the user)?',
+          'Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.',
         type: 'boolean',
       },
       altersDynamicFields: {
