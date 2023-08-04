@@ -414,14 +414,14 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <p align="center">
   <a href="https://www.npmjs.com/package/zapier-platform-cli"><img src="https://img.shields.io/npm/v/zapier-platform-cli.svg" alt="npm version"></a>
-</p><p>Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.</p><p>You may find docs duplicate or outdated across the Zapier site. The most up-to-date contents are always available on GitHub:</p><ul>
+</p><p>Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.</p><p>You may find some documents on the Zapier site to be duplicates or outdated. The most up-to-date contents are always available on GitHub:</p><ul>
 <li><a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md">Latest CLI Docs</a></li>
 <li><a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md">Latest CLI Reference</a></li>
 <li><a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md">Latest Schema Docs</a></li>
 </ul><p>Our code is updated frequently. To see a full list of changes, look no further than <a href="https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md">the CHANGELOG</a>.</p><p>This doc describes the latest CLI version (<strong>15.0.1</strong>), as of this writing. If you&apos;re using an older version of the CLI, you may want to check out these historical releases:</p><ul>
-<li>CLI Docs: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@11.3.3/packages/cli/README.md">11.3.3</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/README.md">10.2.0</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.7.3/packages/cli/README.md">9.7.3</a></li>
-<li>CLI Reference: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@11.3.3/packages/cli/docs/cli.md">11.3.3</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@10.2.0/packages/cli/docs/cli.md">10.2.0</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@9.7.3/packages/cli/docs/cli.md">9.7.3</a></li>
-<li>Schema Docs: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@11.3.3/packages/schema/docs/build/schema.md">11.3.3</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@10.2.0/packages/schema/docs/build/schema.md">10.2.0</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@9.7.3/packages/schema/docs/build/schema.md">9.7.3</a></li>
+<li>CLI Docs: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@14.1.2/packages/cli/README.md">14.x</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@13.0.0/packages/cli/README.md">13.x</a></li>
+<li>CLI Reference: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@14.1.2/packages/cli/docs/cli.md">14.x</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@13.0.0/packages/cli/docs/cli.md">13.x</a></li>
+<li>Schema Docs: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@14.1.2/packages/schema/docs/build/schema.md">14.x</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@13.0.0/packages/schema/docs/build/schema.md">13.x</a></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -744,6 +744,8 @@ zapier login
       <pre><code class="lang-bash"><span class="hljs-comment"># create a directory with the minimum required files</span>
 zapier init example-app
 
+&gt; Note: When you run `zapier init`, you<span class="hljs-string">&apos;ll be presented with a list of templates to start with. Pick the one that matches a feature you&apos;</span>ll need (such as <span class="hljs-string">&quot;dynamic-dropdown&quot;</span> <span class="hljs-keyword">for</span> an integration with [dynamic dropdown fields](<span class="hljs-comment">#dynamic-dropdowns)), or select &quot;minimal&quot; for an integration with only the essentials. [View more example apps here](https://github.com/zapier/zapier-platform/tree/main/example-apps).</span>
+
 <span class="hljs-comment"># move into the new directory</span>
 <span class="hljs-built_in">cd</span> example-app
 
@@ -767,9 +769,7 @@ $ zapier env:<span class="hljs-built_in">set</span> 1.0.0 CLIENT_SECRET=abcd
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <blockquote>
-<p>Note: When you run <code>zapier init</code>, you&apos;ll be presented with a list of templates to start with. Pick the one that matches a feature you&apos;ll need (such as &quot;dynamic-dropdown&quot; for an integration with <a href="#dynamic-dropdowns">dynamic dropdown fields</a>), or select &quot;minimal&quot; for an integration with only the essentials. <a href="https://github.com/zapier/zapier-platform/tree/main/example-apps">View more example apps here</a>.</p>
-</blockquote><p>You should now have a working local app. You can run several local commands to try it out.</p>
+      <p>You should now have a working local app. You can run several local commands to try it out.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-bash"><span class="hljs-comment"># run the local tests</span>
@@ -1661,7 +1661,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><em>Added in v14.0.0.</em></p><p>Zapier&apos;s OAuth2 implementation also supports <a href="https://oauth.net/2/pkce/">PKCE</a>. This implementation is an extension of the OAuth2 <code>authorization_code</code> flow described above. </p><p>To use PKCE in your OAuth2 flow, you&apos;ll need to set the following variables:</p><ol>
+      <p><em>Added in v14.0.0.</em></p><p>Zapier&apos;s OAuth2 implementation also supports <a href="https://oauth.net/2/pkce/">PKCE</a>. This implementation is an extension of the OAuth2 <code>authorization_code</code> flow described above.</p><p>To use PKCE in your OAuth2 flow, you&apos;ll need to set the following variables:</p><ol>
 <li><code>enablePkce: true</code></li>
 <li><code>getAccessToken.body</code> to include <code>code_verifier: &quot;{{bundle.inputData.code_verifier}}&quot;</code></li>
 </ol><p>The OAuth2 PKCE flow uses the same flow as OAuth2 but adds a few extra parameters:</p><ol>
@@ -3115,7 +3115,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <blockquote>
 <p>The app will have a maximum of 30 days to <code>POST</code> to the callback URL. If a user deletes or modifies the Zap or Task in the meantime, we will not resume the task.</p>
 </blockquote><blockquote>
-<p><code>performResume</code> will only run when the Zap runs live, and cannot be tested in the Zap Editor when configuring the Zap. It is possible to use <code>bundle.meta.isLoadingSample</code> to load a fixed sample to allow users to test a step that includes <code>performResume</code>. </p>
+<p><code>performResume</code> will only run when the Zap runs live, and cannot be tested in the Zap Editor when configuring the Zap. It is possible to use <code>bundle.meta.isLoadingSample</code> to load a fixed sample to allow users to test a step that includes <code>performResume</code>.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -4104,7 +4104,7 @@ response.throwForStatus();
 </ul><blockquote>
 <p>This is very common when <a href="#stashing-files">Stashing Files</a> - but that isn&apos;t their only use!</p>
 </blockquote><p>The method <code>z.dehydrate(func, inputData)</code> has two required arguments:</p><ul>
-<li><code>func</code> - the function to call to fetch the extra data. Can be any raw <code>function</code>, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app&apos;s <code>hydrators</code> property. Note that since v10.1.0, the maximum payload size to pass to <code>z.dehydrate</code> / <code>z.dehydrateFile</code> is 6KB. </li>
+<li><code>func</code> - the function to call to fetch the extra data. Can be any raw <code>function</code>, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app&apos;s <code>hydrators</code> property. Note that since v10.1.0, the maximum payload size to pass to <code>z.dehydrate</code> / <code>z.dehydrateFile</code> is 6KB.</li>
 <li><code>inputData</code> - this is an object that contains things like a <code>path</code> or <code>id</code> - whatever you need to load data on the other side</li>
 </ul><blockquote>
 <p><strong>Why do I need to register my functions?</strong> Because of how JavaScript works with its module system, we need an explicit handle on the function that can be accessed from the App definition without trying to &quot;automagically&quot; (and sometimes incorrectly) infer code locations.</p>
@@ -4636,7 +4636,7 @@ The delay can be customized by the server response containing a specific
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>Instead of a user&#x2019;s Zap erroring and halting, the request will be repeatedly retried at the specified time.</p><p>For throttled requests that occur during processing of a webhook trigger&apos;s perform, before results are produced; there is a max retry delay of 300 seconds and a default delay of 60 seconds if none is specified. For webhook processing only, if a request during the retry attempt is also throttled, it will not be re-attempted again. </p>
+      <p>Instead of a user&#x2019;s Zap erroring and halting, the request will be repeatedly retried at the specified time.</p><p>For throttled requests that occur during processing of a webhook trigger&apos;s perform, before results are produced; there is a max retry delay of 300 seconds and a default delay of 60 seconds if none is specified. For webhook processing only, if a request during the retry attempt is also throttled, it will not be re-attempted again.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
