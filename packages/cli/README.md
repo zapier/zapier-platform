@@ -1788,7 +1788,8 @@ We provide several methods off of the `z` object, which is provided as the first
 
 ### `z.request([url], options)`
 
-`z.request([url], options)` is a promise based HTTP client with some Zapier-specific goodies. See [Making HTTP Requests](#making-http-requests).
+`z.request([url], options)` is a promise based HTTP client with some Zapier-specific goodies. See [Making HTTP Requests](#making-http-requests). `z.request()` will percent-encode non-ascii characters and these reserved characters: :$/?#[]@$&+,;=^@`\. 
+Use [`skipEncodingChars`](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#requestschema) to modify this behaviour. 
 
 ### `z.console`
 
@@ -1847,6 +1848,7 @@ For example, in your `perform` you might do:
 const perform = async (z, bundle) => {
   // something like this url:
   // https://zapier.com/hooks/callback/123/abcdef01-2345-6789-abcd-ef0123456789/abcdef0123456789abcdef0123456789abcdef01/
+  // consider checking bundle.meta.isLoadingSample to determine if this is a test run or real run!
   const callbackUrl = z.generateCallbackUrl();
   await z.request({
     url: 'https://example.com/api/slow-job',
@@ -1869,6 +1871,7 @@ Content-Type: application/json
 
 {"foo":"bar"}
 ```
+> We recommend using `bundle.meta.isLoadingSample` to determine if the execution is happening in the foreground (IE: during Zap setup) as using `z.generateCallbackUrl()` can be inappropriate given the disconnect. Instead, wait for the long running request without generating a callback, or if you must, return stubbed data.
 
 And finally, in a `performResume` to handle the final step which will receive three bundle properties:
 
