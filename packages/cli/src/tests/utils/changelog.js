@@ -23,6 +23,9 @@ describe('changelog utils', () => {
           '5. New action! create/add_contact\n' +
           'However, we also addressed fixed open issues!\n' +
           '- Fix #123 and an issue with create/send_message\n\n' +
+          '## 2.0.1\n\n' +
+          '1. Action fix only\n' +
+          '2. Another action fix\n\n' +
           '## new and improved version! (v2.0.0)\n\n' +
           '* Fix some bugs.\n' +
           '* Major docs fixes.\n\n' +
@@ -42,8 +45,8 @@ describe('changelog utils', () => {
     it('should be forgiving on the markdown format', async () => {
       const { appMetadata, issueMetadata, changelog } =
         await changelogUtil.getVersionChangelog('0.0.1', appDir);
-      should(appMetadata).equal(undefined);
-      should(issueMetadata).equal(undefined);
+      should(appMetadata.length).equal(0);
+      should(issueMetadata.length).equal(0);
       changelog.should.equal('initial release\n\njust for internal testing');
     });
 
@@ -74,8 +77,8 @@ describe('changelog utils', () => {
     it('should not return metadata if it is not found', async () => {
       const { appMetadata, issueMetadata, changelog } =
         await changelogUtil.getVersionChangelog('1.0.0', appDir);
-      should(appMetadata).equal(undefined);
-      should(issueMetadata).equal(undefined);
+      should(appMetadata.length).equal(0);
+      should(issueMetadata.length).equal(0);
       changelog.should.equal('* Removing beta "label".\n* Minor docs fixes.');
     });
 
