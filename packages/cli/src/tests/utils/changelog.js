@@ -23,9 +23,6 @@ describe('changelog utils', () => {
           '5. New action! create/add_contact\n' +
           'However, we also addressed fixed open issues!\n' +
           '- Fix #123 and an issue with create/send_message\n\n' +
-          '## 2.0.1\n\n' +
-          '1. Action fix only\n' +
-          '2. Another action fix\n\n' +
           '## new and improved version! (v2.0.0)\n\n' +
           '* Fix some bugs.\n' +
           '* Major docs fixes.\n\n' +
