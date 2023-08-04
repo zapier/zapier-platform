@@ -815,7 +815,7 @@ We provide several methods off of the `z` object, which is provided as the first
 
 ### `z.request([url], options)`
 
-`z.request([url], options)` is a promise based HTTP client with some Zapier-specific goodies. See [Making HTTP Requests](#making-http-requests). `z.request()` will percent-encode non-ascii characters and these reserved characters: :$/?#[]@$&+,;=^@`` ` ``\. 
+`z.request([url], options)` is a promise based HTTP client with some Zapier-specific goodies. See [Making HTTP Requests](#making-http-requests). `z.request()` will percent-encode non-ascii characters and these reserved characters: ``:$/?#[]@$&+,;=^@`\``. 
 Use [`skipEncodingChars`](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#requestschema) to modify this behaviour. 
 
 ### `z.console`
