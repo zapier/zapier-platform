@@ -3068,6 +3068,7 @@ Use [</code>skipEncodingChars`](<a href="https://github.com/zapier/zapier-platfo
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> perform = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-comment">// something like this url:</span>
   <span class="hljs-comment">// https://zapier.com/hooks/callback/123/abcdef01-2345-6789-abcd-ef0123456789/abcdef0123456789abcdef0123456789abcdef01/</span>
+  <span class="hljs-comment">// consider checking bundle.meta.isLoadingSample to determine if this is a test run or real run!</span>
   <span class="hljs-keyword">const</span> callbackUrl = z.generateCallbackUrl();
   <span class="hljs-keyword">await</span> z.request({
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://example.com/api/slow-job&apos;</span>,
@@ -3099,7 +3100,9 @@ Use [</code>skipEncodingChars`](<a href="https://github.com/zapier/zapier-platfo
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>And finally, in a <code>performResume</code> to handle the final step which will receive three bundle properties:</p><ul>
+      <blockquote>
+<p>We recommend using <code>bundle.meta.isLoadingSample</code> to determine if the execution is happening in the foreground (IE: during Zap setup) as using <code>z.generateCallbackUrl()</code> can be inappropriate given the disconnect. Instead, wait for the long running request without generating a callback, or if you must, return stubbed data.</p>
+</blockquote><p>And finally, in a <code>performResume</code> to handle the final step which will receive three bundle properties:</p><ul>
 <li><code>bundle.outputData</code> is <code>{&quot;hello&quot;: &quot;world&quot;}</code>, the data returned from the initial <code>perform</code></li>
 <li><code>bundle.cleanedRequest</code> is <code>{&quot;foo&quot;: &quot;bar&quot;}</code>, the payload from the callback URL</li>
 <li><code>bundle.rawRequest</code> is the full request object corresponding to <code>bundle.cleanedRequest</code></li>
