@@ -12,7 +12,7 @@
 
 Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.
 
-You may find some documents on the Zapier site duplicates or outdated. The most up-to-date contents are always available on GitHub:
+You may find some documents on the Zapier site duplicate or outdated. The most up-to-date contents are always available on GitHub:
 
 - [Latest CLI Docs](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md)
 - [Latest CLI Reference](https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md)
