@@ -2890,8 +2890,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><code>z.request([url], options)</code> is a promise based HTTP client with some Zapier-specific goodies. See <a href="#making-http-requests">Making HTTP Requests</a>. <code>z.request()</code> will percent-encode non-ascii characters and these reserved characters: :$/?#[]@$&amp;+,;=^@<code>\. 
-Use [</code>skipEncodingChars`](<a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#requestschema">https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#requestschema</a>) to modify this behaviour. </p>
+      <p><code>z.request([url], options)</code> is a promise based HTTP client with some Zapier-specific goodies. See <a href="#making-http-requests">Making HTTP Requests</a>. <code>z.request()</code> will percent-encode non-ascii characters and these reserved characters: <code>:$/?#[]@$&amp;+,;=^@`\</code>. Use <a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#requestschema"><code>skipEncodingChars</code></a> to modify this behaviour. </p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
