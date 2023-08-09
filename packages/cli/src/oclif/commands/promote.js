@@ -90,7 +90,7 @@ ${metadataPromptHelper}`);
           .filter(({ app_change_type }) => app_change_type === 'FEATURE_UPDATE')
           .map(({ issue_id }) => `#${issue_id}`);
 
-      if (appFeatureUpdates || issueFeatureUpdates) {
+      if (!_.isEmpty(appFeatureUpdates) || !_.isEmpty(issueFeatureUpdates)) {
         this.log(
           `Feature updates: ${[
             ...appFeatureUpdates,
@@ -113,15 +113,15 @@ ${metadataPromptHelper}`);
           .filter(({ app_change_type }) => app_change_type === 'BUGFIX')
           .map(({ issue_id }) => `#${issue_id}`);
 
-      if (appBugfixes || issueBugfixes) {
+      if (!_.isEmpty(appBugfixes) || !_.isEmpty(issueBugfixes)) {
         this.log(`Bug fixes: ${[...appBugfixes, issueBugfixes].join(', ')}`);
       }
 
       if (
-        !appFeatureUpdates &&
-        !issueFeatureUpdates &&
-        !appBugfixes &&
-        !issueBugfixes
+        _.isEmpty(appFeatureUpdates) &&
+        _.isEmpty(issueFeatureUpdates) &&
+        _.isEmpty(appBugfixes) &&
+        _.isEmpty(issueBugfixes)
       ) {
         this.log(
           `No metadata was found in the changelog. Remember, you can associate the changelog with issues or triggers/actions.\n\n${metadataPromptHelper}`
