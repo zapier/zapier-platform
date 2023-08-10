@@ -8,6 +8,9 @@ const isAppMetadata = (obj) =>
 
 const isIssueMetadata = (obj) => obj?.app_change_type && obj?.issue_id;
 
+// Turns an empty array into undefined so it will not be present in the body when sent
+const absentIfEmpty = (arr) => (arr.length === 0 ? undefined : arr);
+
 const getChangelogFromMarkdown = (version, markdown) => {
   const lines = markdown
     .replace(/\r\n/g, '\n')
@@ -53,8 +56,8 @@ const getChangelogFromMarkdown = (version, markdown) => {
 
   return {
     changelog: changelog.join('\n').trim(),
-    appMetadata,
-    issueMetadata,
+    appMetadata: absentIfEmpty(appMetadata),
+    issueMetadata: absentIfEmpty(issueMetadata),
   };
 };
 

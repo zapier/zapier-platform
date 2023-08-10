@@ -42,8 +42,8 @@ describe('changelog utils', () => {
     it('should be forgiving on the markdown format', async () => {
       const { appMetadata, issueMetadata, changelog } =
         await changelogUtil.getVersionChangelog('0.0.1', appDir);
-      should(appMetadata.length).equal(0);
-      should(issueMetadata.length).equal(0);
+      should(appMetadata).equal(undefined);
+      should(issueMetadata).equal(undefined);
       changelog.should.equal('initial release\n\njust for internal testing');
     });
 
@@ -74,8 +74,8 @@ describe('changelog utils', () => {
     it('should not return metadata if it is not found', async () => {
       const { appMetadata, issueMetadata, changelog } =
         await changelogUtil.getVersionChangelog('1.0.0', appDir);
-      should(appMetadata.length).equal(0);
-      should(issueMetadata.length).equal(0);
+      should(appMetadata).equal(undefined);
+      should(issueMetadata).equal(undefined);
       changelog.should.equal('* Removing beta "label".\n* Minor docs fixes.');
     });
 
