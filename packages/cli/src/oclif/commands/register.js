@@ -33,7 +33,10 @@ class RegisterCommand extends ZapierBaseCommand {
       );
     }
 
-    if ('title' in this.args && this.args.title.length < MIN_TITLE_LENGTH) {
+    if (
+      this.args.title !== undefined &&
+      this.args.title.length < MIN_TITLE_LENGTH
+    ) {
       throw new Error(
         `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`
       );
