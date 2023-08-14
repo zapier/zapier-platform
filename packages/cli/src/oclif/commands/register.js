@@ -22,19 +22,20 @@ class RegisterCommand extends ZapierBaseCommand {
    */
   async perform() {
     // Flag validation
-    if ('title' in this.args && this.args.title.length < MIN_TITLE_LENGTH) {
-      throw new Error(
-        `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`
-      );
-    }
-
     this._validateEnumFlags();
+
     if (
       'desc' in this.flags &&
       this.flags.desc.length > MAX_DESCRIPTION_LENGTH
     ) {
       throw new Error(
         `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`
+      );
+    }
+
+    if ('title' in this.args && this.args.title.length < MIN_TITLE_LENGTH) {
+      throw new Error(
+        `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`
       );
     }
 
