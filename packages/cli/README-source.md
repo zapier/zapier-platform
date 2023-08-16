@@ -100,7 +100,7 @@ Your Zapier CLI should be installed and ready to go at this point. Next up, we'l
 # create a directory with the minimum required files
 zapier init example-app
 
-> Note: When you run `zapier init`, you'll be presented with a list of templates to start with. Pick the one that matches a feature you'll need (such as "dynamic-dropdown" for an integration with [dynamic dropdown fields](#dynamic-dropdowns)), or select "minimal" for an integration with only the essentials. [View more example apps here](https://github.com/zapier/zapier-platform/tree/main/example-apps).
+> Note: When you run `zapier init`, you'll be presented with a list of templates to start with. Pick the one that matches a feature you'll need (such as "dynamic-dropdown" for an integration with [dynamic dropdown fields](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#dynamic-dropdowns)), or select "minimal" for an integration with only the essentials. [View more example apps here](https://github.com/zapier/zapier-platform/tree/main/example-apps).
 
 # move into the new directory
 cd example-app
@@ -815,7 +815,7 @@ We provide several methods off of the `z` object, which is provided as the first
 
 ### `z.request([url], options)`
 
-`z.request([url], options)` is a promise based HTTP client with some Zapier-specific goodies. See [Making HTTP Requests](#making-http-requests). `z.request()` will percent-encode non-ascii characters and these reserved characters: ``:$/?#[]@$&+,;=^@`\``. Use [`skipEncodingChars`](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#requestschema) to modify this behaviour. 
+`z.request([url], options)` is a promise based HTTP client with some Zapier-specific goodies. See [Making HTTP Requests](#making-http-requests). `z.request()` will [percent-encode](https://developer.mozilla.org/en-US/docs/Glossary/Percent-encoding) non-ascii characters and these reserved characters: ``:$/?#[]@$&+,;=^@`\``. Use [`skipEncodingChars`](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#requestschema) to modify this behaviour. 
 
 ### `z.console`
 
