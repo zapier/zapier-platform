@@ -51,7 +51,8 @@ module.exports = makeSchema(
         },
       },
       lock: {
-        description: 'Config for operation locking.',
+        description:
+          '**INTERNAL USE ONLY**. Zapier uses this config for internal operation locking.',
         type: 'object',
         required: ['key'],
         properties: {

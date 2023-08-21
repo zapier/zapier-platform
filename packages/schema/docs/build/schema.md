@@ -371,7 +371,7 @@ Key | Required | Type | Description
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-`lock` | no | `object` | Config for operation locking.
+`lock` | no | `object` | **INTERNAL USE ONLY**. Zapier uses this config for internal operation locking.
 
 #### Examples
 
@@ -403,7 +403,7 @@ Key | Required | Type | Description
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-`lock` | no | `object` | Config for operation locking.
+`lock` | no | `object` | **INTERNAL USE ONLY**. Zapier uses this config for internal operation locking.
 `shouldLock` | no | `boolean` | Should this action be performed one at a time (avoid concurrency)?
 
 #### Examples
@@ -524,7 +524,7 @@ Key | Required | Type | Description
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-`lock` | no | `object` | Config for operation locking.
+`lock` | no | `object` | **INTERNAL USE ONLY**. Zapier uses this config for internal operation locking.
 
 #### Examples
 
