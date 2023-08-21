@@ -2,7 +2,11 @@ const colors = require('colors/safe');
 const { flags } = require('@oclif/command');
 
 const ZapierBaseCommand = require('../ZapierBaseCommand');
-const { CURRENT_APP_FILE, MAX_DESCRIPTION_LENGTH } = require('../../constants');
+const {
+  CURRENT_APP_FILE,
+  MAX_DESCRIPTION_LENGTH,
+  MIN_TITLE_LENGTH,
+} = require('../../constants');
 const { buildFlags } = require('../buildFlags');
 const {
   callAPI,
@@ -19,12 +23,22 @@ class RegisterCommand extends ZapierBaseCommand {
   async perform() {
     // Flag validation
     this._validateEnumFlags();
+
     if (
       'desc' in this.flags &&
       this.flags.desc.length > MAX_DESCRIPTION_LENGTH
     ) {
       throw new Error(
         `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`
+      );
+    }
+
+    if (
+      this.args.title !== undefined &&
+      this.args.title.length < MIN_TITLE_LENGTH
+    ) {
+      throw new Error(
+        `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`
       );
     }
 
@@ -145,9 +159,10 @@ class RegisterCommand extends ZapierBaseCommand {
     appMeta.title = this.args.title?.trim();
     if (!appMeta.title) {
       appMeta.title = await this.prompt(
-        'What is the title of your integration?',
+        `What is the title of your integration? It must be ${MIN_TITLE_LENGTH} characters at minimum.`,
         {
           required: true,
+          charMinimum: MIN_TITLE_LENGTH,
           default: this.app?.title,
         }
       );
@@ -241,7 +256,7 @@ RegisterCommand.args = [
   {
     name: 'title',
     description:
-      "Your integrations's public title. Asked interactively if not present.",
+      "Your integration's public title. Asked interactively if not present.",
   },
 ];
 

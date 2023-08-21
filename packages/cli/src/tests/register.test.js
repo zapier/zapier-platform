@@ -1,6 +1,10 @@
 const fs = require('fs');
 const oclif = require('@oclif/test');
-const { BASE_ENDPOINT, MAX_DESCRIPTION_LENGTH } = require('../constants');
+const {
+  BASE_ENDPOINT,
+  MIN_TITLE_LENGTH,
+  MAX_DESCRIPTION_LENGTH,
+} = require('../constants');
 const registerFieldChoices = require('./fixtures/registerFieldChoices');
 const { privateApp, publicApp } = require('./fixtures/createApp');
 
@@ -24,6 +28,19 @@ describe('RegisterCommand', () => {
         .reply(200, registerFieldChoices)
     );
   }
+
+  describe('zapier register should enforce character minimum on title', function () {
+    getTestObj()
+      .command(['register', 't'])
+      .catch((ctx) => {
+        oclif
+          .expect(ctx.message)
+          .to.contain(
+            `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`
+          );
+      })
+      .it('zapier register should enforce character minimum on title flag');
+  });
 
   describe('zapier register should enforce character limits on flags', function () {
     getTestObj()

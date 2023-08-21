@@ -57,6 +57,7 @@ const IS_TESTING =
   argvStr.includes('jest') ||
   (process.env.NODE_ENV || '').toLowerCase().startsWith('test');
 
+const MIN_TITLE_LENGTH = 2;
 const MAX_DESCRIPTION_LENGTH = 140;
 
 const EXAMPLE_CHANGELOG = `
@@ -101,6 +102,7 @@ module.exports = {
   ISSUES_URL,
   LAMBDA_VERSION,
   LEGACY_RUNNER_PACKAGE,
+  MIN_TITLE_LENGTH,
   MAX_DESCRIPTION_LENGTH,
   NODE_VERSION,
   NODE_VERSION_CLI_REQUIRES,

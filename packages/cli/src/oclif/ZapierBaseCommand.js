@@ -167,6 +167,10 @@ class ZapierBaseCommand extends Command {
           input.length > charLimit
             ? `Please provide a value ${charLimit} characters or less.`
             : true,
+        charMinimum: (input, charMinimum) =>
+          input.length < charMinimum
+            ? `Please provide a value ${charMinimum} characters or more.`
+            : true,
       };
       let aggregateResult = true;
 
