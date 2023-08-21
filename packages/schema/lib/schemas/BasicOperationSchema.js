@@ -62,8 +62,11 @@ module.exports = makeSchema(
             $ref: KeySchema.id,
           },
           scope: {
-            description:
-              'The scope can be configured to lock on a per-user basis. If one is not provided, then the default scope "app" is used which means only the "key" is used. "user" scope ensures all requests for the same user is made one at a time. "auth" scope ensures all requests for the same authenticated user is made one at a time. "account" scope ensures all accounts across Zapier can make requests one at a time. You may also combine scopes.',
+            description: `The level at which an app's access is restricted to. 
+              'user' - Locks based on user ids. 
+              'auth' - Locks based on unique auth ids
+              'account' - Locks for all users under a single account. 
+              You may also combine scopes.`,
             type: 'array',
             items: {
               enum: ['user', 'auth', 'account'],
