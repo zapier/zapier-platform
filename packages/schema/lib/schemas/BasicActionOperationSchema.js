@@ -33,6 +33,7 @@ BasicActionOperationSchema.properties = {
   inputFields: BasicActionOperationSchema.properties.inputFields,
   outputFields: BasicActionOperationSchema.properties.outputFields,
   sample: BasicActionOperationSchema.properties.sample,
+  lock: BasicActionOperationSchema.properties.lock,
 };
 
 BasicActionOperationSchema.examples = [
