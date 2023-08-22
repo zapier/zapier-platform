@@ -703,7 +703,8 @@
           "properties": {
             "key": {
               "description": "The key to use for locking. This should be unique to the operation.",
-              "$ref": "/KeySchema"
+              "type": "string",
+              "minLength": 1
             },
             "scope": {
               "description": "The level at which an app's access is restricted to. \n              'user' - Locks based on user ids. \n              'auth' - Locks based on unique auth ids\n              'account' - Locks for all users under a single account. \n              You may also combine scopes.",
@@ -939,7 +940,8 @@
           "properties": {
             "key": {
               "description": "The key to use for locking. This should be unique to the operation.",
-              "$ref": "/KeySchema"
+              "type": "string",
+              "minLength": 1
             },
             "scope": {
               "description": "The level at which an app's access is restricted to. \n              'user' - Locks based on user ids. \n              'auth' - Locks based on unique auth ids\n              'account' - Locks for all users under a single account. \n              You may also combine scopes.",
@@ -1321,7 +1323,8 @@
           "properties": {
             "key": {
               "description": "The key to use for locking. This should be unique to the operation.",
-              "$ref": "/KeySchema"
+              "type": "string",
+              "minLength": 1
             },
             "scope": {
               "description": "The level at which an app's access is restricted to. \n              'user' - Locks based on user ids. \n              'auth' - Locks based on unique auth ids\n              'account' - Locks for all users under a single account. \n              You may also combine scopes.",

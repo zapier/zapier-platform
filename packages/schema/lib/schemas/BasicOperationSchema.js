@@ -59,7 +59,8 @@ module.exports = makeSchema(
           key: {
             description:
               'The key to use for locking. This should be unique to the operation.',
-            $ref: KeySchema.id,
+            type: 'string',
+            minLength: 1,
           },
           scope: {
             description: `The level at which an app's access is restricted to. 
