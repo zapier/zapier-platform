@@ -93,8 +93,8 @@ ${metadataPromptHelper}`);
       if (appFeatureUpdates || issueFeatureUpdates) {
         this.log(
           `Feature updates: ${[
-            ...appFeatureUpdates,
-            ...issueFeatureUpdates,
+            ...(appFeatureUpdates ?? []),
+            ...(issueFeatureUpdates ?? []),
           ].join(', ')}`
         );
       }
@@ -114,7 +114,11 @@ ${metadataPromptHelper}`);
           .map(({ issue_id }) => `#${issue_id}`);
 
       if (appBugfixes || issueBugfixes) {
-        this.log(`Bug fixes: ${[...appBugfixes, issueBugfixes].join(', ')}`);
+        this.log(
+          `Bug fixes: ${[...(appBugfixes ?? []), ...(issueBugfixes ?? [])].join(
+            ', '
+          )}`
+        );
       }
 
       if (
