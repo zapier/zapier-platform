@@ -8,6 +8,7 @@ const FunctionSchema = require('./FunctionSchema');
 const RequestSchema = require('./RequestSchema');
 const ResultsSchema = require('./ResultsSchema');
 const KeySchema = require('./KeySchema');
+const LockObjectSchema = require('./LockObjectSchema');
 
 module.exports = makeSchema(
   {
@@ -53,29 +54,7 @@ module.exports = makeSchema(
       lock: {
         description:
           '**INTERNAL USE ONLY**. Zapier uses this config for internal operation locking.',
-        type: 'object',
-        required: ['key'],
-        properties: {
-          key: {
-            description:
-              'The key to use for locking. This should be unique to the operation.',
-            type: 'string',
-            minLength: 1,
-          },
-          scope: {
-            description: `The level at which an app's access is restricted to. By default, locks are scoped to the app. That is, all users of the app will share the same locks. If you want to restrict serial access to a specific user, auth, or account, you can set the scope to one or more of the following: 'user' - Locks based on user ids.  'auth' - Locks based on unique auth ids. 'account' - Locks for all users under a single account. You may also combine scopes.`,
-            type: 'array',
-            items: {
-              enum: ['user', 'auth', 'account'],
-              type: 'string',
-            },
-          },
-          timeout: {
-            description:
-              'The number of seconds to hold the lock before timing out. If not provided, will use the default set by the app.',
-            type: 'integer',
-          },
-        },
+        $ref: LockObjectSchema.id,
       },
     },
     examples: [
@@ -96,5 +75,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [DynamicFieldsSchema, FunctionSchema, KeySchema, RequestSchema, ResultsSchema]
+  [DynamicFieldsSchema, FunctionSchema, KeySchema, LockObjectSchema, RequestSchema, ResultsSchema]
 );
