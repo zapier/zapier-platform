@@ -5,7 +5,7 @@ const makeSchema = require('../utils/makeSchema');
 module.exports = makeSchema({
   id: '/LockObjectSchema',
   description:
-    '**INTERNAL USE ONLY**. Zapier uses this config for internal operation locking.',
+    '**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.',
   type: 'object',
   required: ['key'],
   properties: {
