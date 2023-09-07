@@ -8,6 +8,7 @@ const FunctionSchema = require('./FunctionSchema');
 const RequestSchema = require('./RequestSchema');
 const ResultsSchema = require('./ResultsSchema');
 const KeySchema = require('./KeySchema');
+const LockObjectSchema = require('./LockObjectSchema');
 
 module.exports = makeSchema(
   {
@@ -50,6 +51,11 @@ module.exports = makeSchema(
           },
         },
       },
+      lock: {
+        description:
+          '**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.',
+        $ref: LockObjectSchema.id,
+      },
     },
     examples: [
       {
@@ -69,5 +75,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [DynamicFieldsSchema, FunctionSchema, KeySchema, RequestSchema, ResultsSchema]
+  [DynamicFieldsSchema, FunctionSchema, KeySchema, LockObjectSchema, RequestSchema, ResultsSchema]
 );
