@@ -25,7 +25,7 @@
   "dependencies": {
     "async": "2.6.4",
     "flat": "5.0.2",
-    "jquery": "2.1.4",
+    "jquery": "3.5.0",
     "jsdom": "7.0.0",
     "lodash": "4.17.21",
     "moment-timezone": "0.5.43",
