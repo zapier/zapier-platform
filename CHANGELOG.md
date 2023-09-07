@@ -3,12 +3,14 @@
 _release `2023-09-07`_
 
 ### cli
+
 - :bug: Removed the logic converting an empty array to undefined in changelog metadata ([#690](https://github.com/zapier/zapier-platform/pull/690))
 - :nail_care: Integration title length must be at least 2 characters ([#693](https://github.com/zapier/zapier-platform/pull/693))
 
 ### core
 
 None!
+
 ### schema 
 
 None!
