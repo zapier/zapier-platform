@@ -377,7 +377,7 @@ const legacyScriptingSource = `
       },
 
       movie_poll_z_request_uri: function(bundle) {
-        var response = z.request({ uri: '${HTTPBIN_URL}/get', method: 'get' });
+        var response = z.request({ uri: '${HTTPBIN_URL}/get', method: 'GET' });
         return [z.JSON.parse(response.content)];
       },
 
