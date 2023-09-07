@@ -1,6 +1,6 @@
 ## 15.1.0
 
-_release `2023-09-07`_
+_released `2023-09-07`_
 
 ### cli
 
@@ -15,6 +15,10 @@ None!
 
 None!
 
+### legacy-scripting-runner
+
+- :bug: Fixed a flaky test for legacy scripting runner ([#697](https://github.com/zapier/zapier-platform/pull/697))
+
 ### misc
 
 - :scroll: Added links to relevant support documentation ([#692](https://github.com/zapier/zapier-platform/pull/692))
@@ -26,11 +30,8 @@ None!
 - :scroll: Added detail on the 'computed' flag in the API documentation ([#686](https://github.com/zapier/zapier-platform/pull/686))
 - :scroll: Added detail on callback URL parameter in the API documentation ([#687](https://github.com/zapier/zapier-platform/pull/687))
 - :scroll: Updated GitHub CLI tutorial app documentation ([#679](https://github.com/zapier/zapier-platform/pull/679))
-
-
 - :hammer: Bumped word-wrap version from 1.2.3 to 1.2.4 ([#680](https://github.com/zapier/zapier-platform/pull/680))
 - :hammer: Bumped cli, core, schema from 15.0.0 to 15.0.1 ([#678](https://github.com/zapier/zapier-platform/pull/678))
-
 
 ## 15.0.1
 
