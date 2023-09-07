@@ -442,7 +442,7 @@ This command creates a new integration and links it in the `./.zapierapprc` file
 After registering a new integration, you can run `zapier push` to build and upload your integration for use in the Zapier editor. This will change `.zapierapprc`, which identifies this directory as holding code for a specific integration.
 
 **Arguments**
-* `title` | Your integrations's public title. Asked interactively if not present.
+* `title` | Your integration's public title. Asked interactively if not present.
 
 **Flags**
 * `-D, --desc` | A sentence describing your app in 140 characters or less, e.g. "Trello is a team collaboration tool to organize tasks and keep projects on track."
