@@ -44,7 +44,10 @@ const includeBearerToken = (request, z, bundle) => {
 // By returning the entire request object, you have access to the request and
 // response data for testing purposes. Your connection label can access any data
 // from the returned response using the `json.` prefix. eg: `{{json.username}}`.
-const test = (z, bundle) => z.request({ url: 'https://api.github.com/user' });
+const test = async (z, bundle) => {
+  const response = await z.request({ url: 'https://api.github.com/user' });
+  return response;
+};
 
 module.exports = {
   config: {
