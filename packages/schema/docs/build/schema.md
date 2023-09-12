@@ -1152,7 +1152,7 @@ A unique identifier for this item.
 #### Details
 
 * **Type** - `object`
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.0.1/packages/schema/lib/schemas/LockObjectSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.1.0/packages/schema/lib/schemas/LockObjectSchema.js)
 
 #### Properties
 
