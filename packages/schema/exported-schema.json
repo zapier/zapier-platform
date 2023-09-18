@@ -449,16 +449,29 @@
       "description": "Config for custom authentication (like API keys). No extra properties are required to setup this auth type, so you can leave this empty if your app uses a custom auth method.",
       "type": "object",
       "properties": {
-        "sendCode": {
-          "description": "Define the call Zapier should make to send the OTP code.",
-          "oneOf": [
-            {
-              "$ref": "/RedirectRequestSchema"
+        "/OTPSchema": {
+          "dependencies": [],
+          "id": "/OTPSchema",
+          "schema": {
+            "id": "/OTPSchema",
+            "description": "Config for sending an OTP code.",
+            "type": "object",
+            "properties": {
+              "sendCode": {
+                "description": "Define the call Zapier should make to send the OTP code.",
+                "oneOf": [
+                  {
+                    "$ref": "/RedirectRequestSchema"
+                  },
+                  {
+                    "$ref": "/FunctionSchema"
+                  }
+                ]
+              }
             },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+            "examples": [],
+            "antiExamples": []
+          }
         }
       },
       "additionalProperties": false
