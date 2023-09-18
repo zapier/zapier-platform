@@ -173,7 +173,7 @@ Config for custom authentication (like API keys). No extra properties are requir
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`/OTPSchema` | no | _n/a_ | _No description given._
+`sendCode` | no | oneOf([/RedirectRequestSchema](#redirectrequestschema), [/FunctionSchema](#functionschema)) | Define the call Zapier should make to send the OTP code.
 
 #### Examples
 

@@ -1,7 +1,8 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
-const OTPSchema = require('./OTPSchema');
+const FunctionSchema = require('./FunctionSchema');
+const RedirectRequestSchema = require('./RedirectRequestSchema');
 
 module.exports = makeSchema({
   id: '/AuthenticationCustomConfigSchema',
@@ -9,7 +10,10 @@ module.exports = makeSchema({
     'Config for custom authentication (like API keys). No extra properties are required to setup this auth type, so you can leave this empty if your app uses a custom auth method.',
   type: 'object',
   properties: {
-    [OTPSchema.id]: OTPSchema,
+    sendCode: {
+      description: 'Define the call Zapier should make to send the OTP code.',
+      oneOf: [{ $ref: RedirectRequestSchema.id }, { $ref: FunctionSchema.id }],
+    },
   },
   additionalProperties: false,
   examples: [{}],
