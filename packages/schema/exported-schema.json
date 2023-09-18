@@ -590,19 +590,6 @@
       },
       "additionalProperties": false
     },
-    "AuthenticationOTPConfigSchema": {
-      "id": "/AuthenticationOTPConfigSchema",
-      "description": "Config for OTP Authentication. The user will be prompted to enter a code sent to their phone or email.",
-      "type": "object",
-      "required": ["sendCode"],
-      "properties": {
-        "sendCode": {
-          "description": "Define the call Zapier should make to send the OTP code.",
-          "$ref": "/RedirectRequestSchema"
-        }
-      },
-      "additionalProperties": false
-    },
     "FieldOrFunctionSchema": {
       "id": "/FieldOrFunctionSchema",
       "description": "Represents an array of fields or functions.",
@@ -1422,15 +1409,7 @@
         "type": {
           "description": "Choose which scheme you want to use.",
           "type": "string",
-          "enum": [
-            "basic",
-            "custom",
-            "digest",
-            "oauth1",
-            "oauth2",
-            "session",
-            "otp"
-          ]
+          "enum": ["basic", "custom", "digest", "oauth1", "oauth2", "session"]
         },
         "test": {
           "description": "A function or request that confirms the authentication is working.",
@@ -1478,9 +1457,6 @@
         },
         "sessionConfig": {
           "$ref": "/AuthenticationSessionConfigSchema"
-        },
-        "otpConfig": {
-          "$ref": "/AuthenticationOTPConfigSchema"
         }
       },
       "additionalProperties": false

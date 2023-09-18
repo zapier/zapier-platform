@@ -7,7 +7,6 @@ const AuthenticationCustomConfigSchema = require('./AuthenticationCustomConfigSc
 const AuthenticationDigestConfigSchema = require('./AuthenticationDigestConfigSchema.js');
 const AuthenticationOAuth1ConfigSchema = require('./AuthenticationOAuth1ConfigSchema.js');
 const AuthenticationOAuth2ConfigSchema = require('./AuthenticationOAuth2ConfigSchema.js');
-const AuthenticationOTPConfigSchema = require('./AuthenticationOTPConfigSchema');
 const AuthenticationSessionConfigSchema = require('./AuthenticationSessionConfigSchema.js');
 const FieldsSchema = require('./FieldsSchema');
 const FunctionSchema = require('./FunctionSchema');
@@ -23,15 +22,7 @@ module.exports = makeSchema(
       type: {
         description: 'Choose which scheme you want to use.',
         type: 'string',
-        enum: [
-          'basic',
-          'custom',
-          'digest',
-          'oauth1',
-          'oauth2',
-          'session',
-          'otp',
-        ],
+        enum: ['basic', 'custom', 'digest', 'oauth1', 'oauth2', 'session'],
       },
       test: {
         description:
@@ -59,7 +50,6 @@ module.exports = makeSchema(
       oauth1Config: { $ref: AuthenticationOAuth1ConfigSchema.id },
       oauth2Config: { $ref: AuthenticationOAuth2ConfigSchema.id },
       sessionConfig: { $ref: AuthenticationSessionConfigSchema.id },
-      otpConfig: { $ref: AuthenticationOTPConfigSchema.id },
     },
     additionalProperties: false,
     examples: [
@@ -124,6 +114,5 @@ module.exports = makeSchema(
     AuthenticationOAuth1ConfigSchema,
     AuthenticationOAuth2ConfigSchema,
     AuthenticationSessionConfigSchema,
-    AuthenticationOTPConfigSchema,
   ]
 );
