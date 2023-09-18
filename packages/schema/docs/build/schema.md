@@ -170,6 +170,11 @@ Config for custom authentication (like API keys). No extra properties are requir
 * **Type** - `object`
 * [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.1.0/packages/schema/lib/schemas/AuthenticationCustomConfigSchema.js)
 
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`sendCode` | no | oneOf([/RedirectRequestSchema](#redirectrequestschema), [/FunctionSchema](#functionschema)) | Define the call Zapier should make to send the OTP code.
 
 #### Examples
 
