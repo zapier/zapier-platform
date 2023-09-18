@@ -453,7 +453,7 @@
           "description": "Define the call Zapier should make to send the OTP code.",
           "oneOf": [
             {
-              "$ref": "/RedirectRequestSchema"
+              "$ref": "/RequestSchema"
             },
             {
               "$ref": "/FunctionSchema"

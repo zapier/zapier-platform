@@ -2,7 +2,7 @@
 
 const makeSchema = require('../utils/makeSchema');
 const FunctionSchema = require('./FunctionSchema');
-const RedirectRequestSchema = require('./RedirectRequestSchema');
+const RequestSchema = require('./RequestSchema');
 
 module.exports = makeSchema({
   id: '/AuthenticationCustomConfigSchema',
@@ -12,7 +12,7 @@ module.exports = makeSchema({
   properties: {
     sendCode: {
       description: 'Define the call Zapier should make to send the OTP code.',
-      oneOf: [{ $ref: RedirectRequestSchema.id }, { $ref: FunctionSchema.id }],
+      oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
     },
   },
   additionalProperties: false,
