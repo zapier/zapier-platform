@@ -178,6 +178,20 @@ Key | Required | Type | Description
 #### Examples
 
 * `{}`
+* ```
+  {
+    sendCode: {
+      url: 'https://example.com/api/otp/send',
+      headers: {
+        Authorization: 'Bearer {{process.env.API_KEY}}',
+        body: {
+          to_phone_number: '{{bundle.inputData.phone_number}}',
+          code: '{{bundle.inputData.code}}'
+        }
+      }
+    }
+  }
+  ```
 
 #### Anti-Examples
 
