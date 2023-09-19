@@ -12,7 +12,8 @@ module.exports = makeSchema(
     type: 'object',
     properties: {
       sendCode: {
-        description: 'Define the call Zapier should make to send the OTP code.',
+        description:
+          'EXPERIMENTAL: Define the call Zapier should make to send the OTP code.',
         oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
       },
     },
