@@ -7,12 +7,19 @@ const authentication = {
   customConfig: {
     sendCode: {
       method: 'POST',
-      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/otp/verify',
+      url: 'https://{{bundle.inputData.subdomain}}.example.com/api/otp/send',
+      headers: {
+        Authorization: `Bearer {{process.env.API_KEY}}`,
+      },
+      body: {
+        to_phone_number: '{{bundle.inputData.phone_number}}',
+        code: '{{bundle.inputData.code}}',
+      },
     },
     // If you need any fields upfront, put them here
     fields: [
       {
-        key: 'phone_number',
+        key: 'to_phone_number',
         type: 'string',
         required: true,
         label: 'Phone Number',
