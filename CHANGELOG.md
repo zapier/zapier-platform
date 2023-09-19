@@ -12,7 +12,7 @@ None!
 
 ### schema
 
-- :nail_care: Extend Custom Auth to support OTP ([#702](https://github.com/zapier/zapier-platform/pull/702)) 
+- :nail_care: (Experimental) Extend Custom Auth to support OTP ([#702](https://github.com/zapier/zapier-platform/pull/702)) 
 
 ### misc
 
