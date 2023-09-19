@@ -169,10 +169,27 @@ Config for custom authentication (like API keys). No extra properties are requir
 * **Type** - `object`
 * [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.1.0/packages/schema/lib/schemas/AuthenticationCustomConfigSchema.js)
 
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`sendCode` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | EXPERIMENTAL: Define the call Zapier should make to send the OTP code.
 
 #### Examples
 
 * `{}`
+* ```
+  {
+    sendCode: {
+      url: 'https://example.com/api/send',
+      headers: { Authorization: 'Bearer {{process.env.API_KEY}}' },
+      body: {
+        to_phone_number: '{{bundle.inputData.phone_number}}',
+        code: '{{bundle.inputData.code}}'
+      }
+    }
+  }
+  ```
 
 #### Anti-Examples
 

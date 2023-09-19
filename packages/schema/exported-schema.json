@@ -318,28 +318,6 @@
         }
       ]
     },
-    "RedirectRequestSchema": {
-      "id": "/RedirectRequestSchema",
-      "description": "A representation of a HTTP redirect - you can use the `{{syntax}}` to inject authentication, field or global variables.",
-      "type": "object",
-      "properties": {
-        "method": {
-          "description": "The HTTP method for the request.",
-          "type": "string",
-          "default": "GET",
-          "enum": ["GET"]
-        },
-        "url": {
-          "description": "A URL for the request (we will parse the querystring and merge with params). Keys and values will not be re-encoded.",
-          "type": "string"
-        },
-        "params": {
-          "description": "A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.",
-          "$ref": "/FlatObjectSchema"
-        }
-      },
-      "additionalProperties": false
-    },
     "RequestSchema": {
       "id": "/RequestSchema",
       "description": "A representation of a HTTP request - you can use the `{{syntax}}` to inject authentication, field or global variables.",
@@ -429,6 +407,28 @@
       },
       "additionalProperties": false
     },
+    "RedirectRequestSchema": {
+      "id": "/RedirectRequestSchema",
+      "description": "A representation of a HTTP redirect - you can use the `{{syntax}}` to inject authentication, field or global variables.",
+      "type": "object",
+      "properties": {
+        "method": {
+          "description": "The HTTP method for the request.",
+          "type": "string",
+          "default": "GET",
+          "enum": ["GET"]
+        },
+        "url": {
+          "description": "A URL for the request (we will parse the querystring and merge with params). Keys and values will not be re-encoded.",
+          "type": "string"
+        },
+        "params": {
+          "description": "A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.",
+          "$ref": "/FlatObjectSchema"
+        }
+      },
+      "additionalProperties": false
+    },
     "FieldsSchema": {
       "id": "/FieldsSchema",
       "description": "An array or collection of fields.",
@@ -448,7 +448,19 @@
       "id": "/AuthenticationCustomConfigSchema",
       "description": "Config for custom authentication (like API keys). No extra properties are required to setup this auth type, so you can leave this empty if your app uses a custom auth method.",
       "type": "object",
-      "properties": {},
+      "properties": {
+        "sendCode": {
+          "description": "EXPERIMENTAL: Define the call Zapier should make to send the OTP code.",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        }
+      },
       "additionalProperties": false
     },
     "AuthenticationDigestConfigSchema": {
