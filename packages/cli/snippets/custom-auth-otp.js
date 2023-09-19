@@ -19,6 +19,13 @@ const authentication = {
     // If you need any fields upfront, put them here
     fields: [
       {
+        key: 'subdomain',
+        type: 'string',
+        required: true,
+        label: 'Subdomain',
+        helpText: 'The subdomain for your account.',
+      },
+      {
         key: 'to_phone_number',
         type: 'string',
         required: true,
