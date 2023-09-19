@@ -181,7 +181,7 @@ Key | Required | Type | Description
 * ```
   {
     sendCode: {
-      url: 'https://example.com/api/otp/send',
+      url: 'https://example.com/api/send',
       headers: { Authorization: 'Bearer {{process.env.API_KEY}}' },
       body: {
         to_phone_number: '{{bundle.inputData.phone_number}}',

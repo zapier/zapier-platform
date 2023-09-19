@@ -318,28 +318,6 @@
         }
       ]
     },
-    "RedirectRequestSchema": {
-      "id": "/RedirectRequestSchema",
-      "description": "A representation of a HTTP redirect - you can use the `{{syntax}}` to inject authentication, field or global variables.",
-      "type": "object",
-      "properties": {
-        "method": {
-          "description": "The HTTP method for the request.",
-          "type": "string",
-          "default": "GET",
-          "enum": ["GET"]
-        },
-        "url": {
-          "description": "A URL for the request (we will parse the querystring and merge with params). Keys and values will not be re-encoded.",
-          "type": "string"
-        },
-        "params": {
-          "description": "A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.",
-          "$ref": "/FlatObjectSchema"
-        }
-      },
-      "additionalProperties": false
-    },
     "RequestSchema": {
       "id": "/RequestSchema",
       "description": "A representation of a HTTP request - you can use the `{{syntax}}` to inject authentication, field or global variables.",
@@ -425,6 +403,28 @@
         "skipEncodingChars": {
           "description": "Contains the characters that you want left unencoded in the query params (`req.params`). If unspecified, `z.request()` will percent-encode non-ascii characters and these reserved characters: ``:$/?#[]@$&+,;=^@`\\``.",
           "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "RedirectRequestSchema": {
+      "id": "/RedirectRequestSchema",
+      "description": "A representation of a HTTP redirect - you can use the `{{syntax}}` to inject authentication, field or global variables.",
+      "type": "object",
+      "properties": {
+        "method": {
+          "description": "The HTTP method for the request.",
+          "type": "string",
+          "default": "GET",
+          "enum": ["GET"]
+        },
+        "url": {
+          "description": "A URL for the request (we will parse the querystring and merge with params). Keys and values will not be re-encoded.",
+          "type": "string"
+        },
+        "params": {
+          "description": "A mapping of the querystring - will get merged with any query params in the URL. Keys and values will be encoded.",
+          "$ref": "/FlatObjectSchema"
         }
       },
       "additionalProperties": false

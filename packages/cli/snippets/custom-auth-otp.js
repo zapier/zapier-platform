@@ -3,7 +3,6 @@ const authentication = {
   test: {
     url: 'https://{{bundle.authData.subdomain}}.example.com/api/accounts/me.json',
   },
-  // The function to call out to verify the OTP code.
   customConfig: {
     sendCode: {
       method: 'POST',
