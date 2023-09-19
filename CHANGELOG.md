@@ -1,3 +1,26 @@
+## 15.3.0
+
+_released `2023-09-19`_
+
+### cli 
+
+None!
+
+### core
+
+None!
+
+### schema
+
+- :nail_care: (Experimental) Extend Custom Auth to support OTP ([#702](https://github.com/zapier/zapier-platform/pull/702)) 
+
+### misc
+
+- :scroll: Bring over paging cursor doc changes added in visual-builder repo ([#701](https://github.com/zapier/zapier-platform/pull/701)) 
+- :bug: Updating example Github app unit tests ([#700](https://github.com/zapier/zapier-platform/pull/700)) 
+- :scroll: Update version mismatch ([#699](https://github.com/zapier/zapier-platform/pull/699)) 
+- :bug: Fix legacy scripting runner test ([#697](https://github.com/zapier/zapier-platform/pull/697))  
+
 ## 15.1.0
 
 _released `2023-09-07`_
