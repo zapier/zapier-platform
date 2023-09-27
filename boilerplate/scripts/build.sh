@@ -67,7 +67,11 @@ BOILERPLATE_DIR="$REPO_DIR/boilerplate"
 
 BUILD_DIR="$BOILERPLATE_DIR/build"
 
-mkdir -p $BUILD_DIR
+# Prevent leftover old builds from being included
+if [ -d $BUILD_DIR ]; then
+    --rm --rf $BUILD_DIR
+
+mkdir $BUILD_DIR
 
 # Copy files
 cp "$CORE_DIR/include/zapierwrapper.js" "$BOILERPLATE_DIR/"
