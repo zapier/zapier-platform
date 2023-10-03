@@ -9,6 +9,7 @@ const RequestSchema = require('./RequestSchema');
 const ResultsSchema = require('./ResultsSchema');
 const KeySchema = require('./KeySchema');
 const LockObjectSchema = require('./LockObjectSchema');
+const ThrottleObjectSchema = require('./ThrottleObjectSchema');
 
 module.exports = makeSchema(
   {
@@ -56,6 +57,11 @@ module.exports = makeSchema(
           '**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.',
         $ref: LockObjectSchema.id,
       },
+      throttle: {
+        description:
+          'Zapier uses this configuration to apply throttling when the limit for the window is exceeded.',
+        $ref: ThrottleObjectSchema.id,
+      },
     },
     examples: [
       {
@@ -75,5 +81,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [DynamicFieldsSchema, FunctionSchema, KeySchema, LockObjectSchema, RequestSchema, ResultsSchema]
+  [DynamicFieldsSchema, FunctionSchema, KeySchema, LockObjectSchema, RequestSchema, ResultsSchema, ThrottleObjectSchema]
 );

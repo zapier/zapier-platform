@@ -75,6 +75,10 @@
           "description": "Top-level app options",
           "$ref": "/AppFlagsSchema"
         },
+        "throttle": {
+          "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded. When set here, it is the default throttle configuration used on each action of the integration. And when set in an action's operation object, it gets overwritten for that action only.",
+          "$ref": "/ThrottleObjectSchema"
+        },
         "legacy": {
           "description": "**INTERNAL USE ONLY**. Zapier uses this to hold properties from a legacy Web Builder app.",
           "type": "object",
@@ -652,6 +656,31 @@
         "minProperties": 1
       }
     },
+    "ThrottleObjectSchema": {
+      "id": "/ThrottleObjectSchema",
+      "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
+      "type": "object",
+      "required": ["window", "limit"],
+      "properties": {
+        "window": {
+          "description": "The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.",
+          "type": "integer"
+        },
+        "limit": {
+          "description": "The maximum number of invocations for an action, allowed within the timeframe window.",
+          "type": "integer"
+        },
+        "scope": {
+          "description": "The granularity to throttle by. You can set the scope to one or more of the following: 'user' - Throttles based on user ids.  'auth' - Throttles based on auth ids. 'account' - Throttles based on account ids for all users under a single account. By default, throttling is scoped to the account.",
+          "type": "array",
+          "items": {
+            "enum": ["user", "auth", "account"],
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "BasicDisplaySchema": {
       "id": "/BasicDisplaySchema",
       "description": "Represents user information for a trigger, search, or create.",
@@ -737,6 +766,10 @@
         "lock": {
           "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
           "$ref": "/LockObjectSchema"
+        },
+        "throttle": {
+          "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
+          "$ref": "/ThrottleObjectSchema"
         }
       },
       "additionalProperties": false
@@ -954,6 +987,10 @@
         "lock": {
           "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
           "$ref": "/LockObjectSchema"
+        },
+        "throttle": {
+          "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
+          "$ref": "/ThrottleObjectSchema"
         }
       },
       "additionalProperties": false
@@ -1317,6 +1354,10 @@
         "lock": {
           "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
           "$ref": "/LockObjectSchema"
+        },
+        "throttle": {
+          "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
+          "$ref": "/ThrottleObjectSchema"
         },
         "shouldLock": {
           "description": "Should this action be performed one at a time (avoid concurrency)?",
