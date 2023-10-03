@@ -67,6 +67,12 @@ BOILERPLATE_DIR="$REPO_DIR/boilerplate"
 
 BUILD_DIR="$BOILERPLATE_DIR/build"
 
+# Prevent leftover old builds from being included in new build
+if [ -d $BUILD_DIR ]; then
+    echo "Removing existing boilerplate/build directory..."
+    rm -r "$BUILD_DIR"
+fi
+
 mkdir -p $BUILD_DIR
 
 # Copy files
