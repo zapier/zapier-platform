@@ -9,7 +9,7 @@ const appDefinition = require('../examples/definition.json');
 
 const copy = (o) => JSON.parse(JSON.stringify(o));
 
-const NUM_SCHEMAS = 53; // changes regularly as we expand
+const NUM_SCHEMAS = 54; // changes regularly as we expand
 
 describe('app', () => {
   describe('validation', () => {

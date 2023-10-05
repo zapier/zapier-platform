@@ -34,6 +34,7 @@ BasicActionOperationSchema.properties = {
   outputFields: BasicActionOperationSchema.properties.outputFields,
   sample: BasicActionOperationSchema.properties.sample,
   lock: BasicActionOperationSchema.properties.lock,
+  throttle: BasicActionOperationSchema.properties.throttle,
 };
 
 BasicActionOperationSchema.examples = [

@@ -317,6 +317,7 @@ a code {
 <li><a href="#accessing-environment-variables">Accessing Environment Variables</a></li>
 </ul>
 </li>
+<li><a href="#adding-throttle-configuration">Adding Throttle Configuration</a></li>
 <li><a href="#making-http-requests">Making HTTP Requests</a><ul>
 <li><a href="#shorthand-http-requests">Shorthand HTTP Requests</a></li>
 <li><a href="#manual-http-requests">Manual HTTP Requests</a><ul>
@@ -528,6 +529,7 @@ a code {
 <li><a href="#accessing-environment-variables">Accessing Environment Variables</a></li>
 </ul>
 </li>
+<li><a href="#adding-throttle-configuration">Adding Throttle Configuration</a></li>
 <li><a href="#making-http-requests">Making HTTP Requests</a><ul>
 <li><a href="#shorthand-http-requests">Shorthand HTTP Requests</a></li>
 <li><a href="#manual-http-requests">Manual HTTP Requests</a><ul>
@@ -3637,6 +3639,67 @@ zapier env:get 1.0.0
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="adding-throttle-configuration">Adding Throttle Configuration</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p><em>Added in v15.4.0.</em></p><p>When a throttle configuration is set for an action, Zapier uses it to apply throttling when the limit for the timeframe window is exceeded. It can be set at the root level and/or on an action. When set at the root level, it is the default throttle configuration used on each action of the integration. And when set in an action&apos;s operation object, the root-level default is overwritten for that action only.</p><p>To throttle an action, you need to set a <code>throttle</code> object with the following variables:</p><ol>
+<li><code>window [integer]</code>: The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.</li>
+<li><code>limit [integer]</code>: The maximum number of invocations for an action, allowed within the timeframe window.</li>
+<li><code>scope [array]</code>: The granularity to throttle by. You can set the scope to one or more of the following options;<ul>
+<li>&apos;user&apos; - Throttles based on user ids.</li>
+<li>&apos;auth&apos; - Throttles based on auth ids.</li>
+<li>&apos;account&apos; - Throttles based on account ids for all users under a single account.</li>
+</ul>
+</li>
+</ol><p>Except for the scope, all throttle variables are required. By default, throttling is scoped to the account.</p><p>Here is a typical usage of the throttle configuration:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> App = {
+  <span class="hljs-attr">version</span>: <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;./package.json&apos;</span>).version,
+  <span class="hljs-attr">platformVersion</span>: <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;zapier-platform-core&apos;</span>).version,
+
+  <span class="hljs-comment">// default throttle used for each action</span>
+  <span class="hljs-attr">throttle</span>: {
+    <span class="hljs-attr">window</span>: <span class="hljs-number">600</span>,
+    <span class="hljs-attr">limit</span>: <span class="hljs-number">50</span>,
+    <span class="hljs-attr">scope</span>: [<span class="hljs-string">&apos;account&apos;</span>],
+  },
+
+  <span class="hljs-attr">creates</span>: {
+    <span class="hljs-attr">upload_video</span>: {
+      <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Video&apos;</span>,
+      <span class="hljs-attr">display</span>: {
+        <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Upload Video&apos;</span>,
+        <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Upload a video.&apos;</span>,
+      },
+      <span class="hljs-attr">operation</span>: {
+        <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {},
+        <span class="hljs-attr">inputFields</span>: [],
+        <span class="hljs-comment">// overwrites the default, for this action</span>
+        <span class="hljs-attr">throttle</span>: {
+          <span class="hljs-attr">window</span>: <span class="hljs-number">600</span>,
+          <span class="hljs-attr">limit</span>: <span class="hljs-number">5</span>,
+          <span class="hljs-attr">scope</span>: [<span class="hljs-string">&apos;account&apos;</span>],
+        },
+      },
+    },
+  },
+};
+
+<span class="hljs-built_in">module</span>.exports = App;
+
+</code></pre>
     </div>
   </div>
 </div><div class="row">

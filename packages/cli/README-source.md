@@ -1153,6 +1153,29 @@ For example, you can access the `process.env` in your perform functions and in t
 > Note! Be sure to lazily access your environment variables - see [When to use placeholders or curlies?](#when-to-use-placeholders-or-curlies).
 
 
+## Adding Throttle Configuration
+
+*Added in v15.4.0.*
+
+When a throttle configuration is set for an action, Zapier uses it to apply throttling when the limit for the timeframe window is exceeded. It can be set at the root level and/or on an action. When set at the root level, it is the default throttle configuration used on each action of the integration. And when set in an action's operation object, the root-level default is overwritten for that action only.
+
+To throttle an action, you need to set a `throttle` object with the following variables:
+  1. `window [integer]`: The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.
+  2. `limit [integer]`: The maximum number of invocations for an action, allowed within the timeframe window.
+  3. `scope [array]`: The granularity to throttle by. You can set the scope to one or more of the following options;
+        - 'user' - Throttles based on user ids.
+        - 'auth' - Throttles based on auth ids.
+        - 'account' - Throttles based on account ids for all users under a single account.
+
+Except for the scope, all throttle variables are required. By default, throttling is scoped to the account.
+
+Here is a typical usage of the throttle configuration:
+
+```js
+[insert-file:./snippets/throttle-configuration.js]
+```
+
+
 ## Making HTTP Requests
 
 There are two ways to make HTTP requests:
