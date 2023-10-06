@@ -1,3 +1,24 @@
+## 15.4.0
+
+_released `2023-10-06`_
+
+### cli
+
+None!
+
+### core
+
+- :bug: Added handling the use of non-string cursors in `z.cursor.set()` ([#705](https://github.com/zapier/zapier-platform/pull/705))
+
+### schema
+
+- :tada: Added support for throttle configuration ([#709](https://github.com/zapier/zapier-platform/pull/709))
+
+### misc
+
+- :bug: Fixed building of boilerplate having lingering old files from previous builds ([#708](https://github.com/zapier/zapier-platform/pull/708))
+- :hammer: Bumped get-func-name version from 2.0.0 to 2.0.2 ([#707](https://github.com/zapier/zapier-platform/pull/707))
+
 ## 15.3.0
 
 _released `2023-09-19`_
