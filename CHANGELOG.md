@@ -1,3 +1,23 @@
+## 15.4.1
+
+_released `2023-10-06`_
+
+### cli
+
+None!
+
+### core
+
+None!
+
+### schema
+
+- :bug: Fixed throttle configuration not being allowed on triggers ([#709](https://github.com/zapier/zapier-platform/pull/711))
+
+### misc
+
+None!
+
 ## 15.4.0
 
 _released `2023-10-06`_
