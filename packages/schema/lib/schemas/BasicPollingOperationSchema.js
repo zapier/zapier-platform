@@ -33,6 +33,7 @@ BasicPollingOperationSchema.properties = {
   inputFields: BasicPollingOperationSchema.properties.inputFields,
   outputFields: BasicPollingOperationSchema.properties.outputFields,
   sample: BasicPollingOperationSchema.properties.sample,
+  throttle: BasicPollingOperationSchema.properties.throttle,
 };
 
 module.exports = makeSchema(
