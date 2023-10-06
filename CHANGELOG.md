@@ -12,7 +12,7 @@ None!
 
 ### schema
 
-- :bug: Fixed throttle configuration not being allowed on triggers ([#709](https://github.com/zapier/zapier-platform/pull/711))
+- :bug: Fixed throttle configuration not being allowed on triggers ([#711](https://github.com/zapier/zapier-platform/pull/711))
 
 ### misc
 
