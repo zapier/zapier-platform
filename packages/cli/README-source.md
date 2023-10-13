@@ -34,7 +34,7 @@ This doc describes the latest CLI version (**PACKAGE_VERSION**), as of this writ
 
 ## Getting Started
 
-> If you're new to Zapier Platform CLI, we strongly recommend you to walk through the [Tutorial](https://platform.zapier.com/cli_tutorials/getting-started) for a more thorough introduction.
+> If you're new to Zapier Platform CLI, we strongly recommend you to walk through the [Tutorial](https://platform.zapier.com/quickstart/cli-tutorial) for a more thorough introduction.
 
 ### What is an App?
 
