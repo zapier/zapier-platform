@@ -3524,8 +3524,8 @@ const perform = async (z, bundle) => {
   );
 
   // after fetching a page, set the returned cursor for the next page,
-  // or empty/null if this was the last one.
-  await z.cursor.set(response.nextPage);
+  // or an empty string if the cursor is null
+  await z.cursor.set(response.nextPage ?? '');
 
   return response.items;
 };

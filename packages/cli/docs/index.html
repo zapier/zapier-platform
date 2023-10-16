@@ -5576,8 +5576,8 @@ zapier push
   );
 
   <span class="hljs-comment">// after fetching a page, set the returned cursor for the next page,</span>
-  <span class="hljs-comment">// or empty/null if this was the last one.</span>
-  <span class="hljs-keyword">await</span> z.cursor.set(response.nextPage);
+  <span class="hljs-comment">// or an empty string if the cursor is null</span>
+  <span class="hljs-keyword">await</span> z.cursor.set(response.nextPage ?? <span class="hljs-string">&apos;&apos;</span>);
 
   <span class="hljs-keyword">return</span> response.items;
 };
