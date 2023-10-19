@@ -11,13 +11,13 @@ module.exports = makeSchema({
   properties: {
     value: {
       description:
-        'The actual value that is sent into the Zap. Should match sample exactly.',
+        'The actual value that is sent into the Zap. This is displayed as light grey text in the editor. Should match sample exactly.',
       type: 'string',
       minLength: 1,
     },
     sample: {
       description:
-        "Displayed as light grey text in the editor. It's important that the value match the sample. Otherwise, the actual value won't match what the user picked, which is confusing.",
+        "It's important that the value match the sample. Otherwise, the actual value won't match what the user picked, which is confusing.",
       type: 'string',
       minLength: 1,
     },
