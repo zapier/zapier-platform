@@ -859,7 +859,7 @@ An object describing a labeled choice in a static dropdown. Useful if the value 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `value` | **yes** | `string` | The actual value that is sent into the Zap. This is displayed as light grey text in the editor. Should match sample exactly.
-`sample` | **yes** | `string` | It's important that the value match the sample. Otherwise, the actual value won't match what the user picked, which is confusing.
+`sample` | **yes** | `string` | A legacy field that is no longer used by the editor, but it is still required for now and should match the value.
 `label` | **yes** | `string` | A human readable label for this value.
 
 #### Examples
