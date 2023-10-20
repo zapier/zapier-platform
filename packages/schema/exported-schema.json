@@ -108,7 +108,7 @@
           "minLength": 1
         },
         "sample": {
-          "description": "It's important that the value match the sample. Otherwise, the actual value won't match what the user picked, which is confusing.",
+          "description": "A legacy field that is no longer used by the editor, but it is still required for now and should match the value.",
           "type": "string",
           "minLength": 1
         },
