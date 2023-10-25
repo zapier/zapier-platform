@@ -2291,10 +2291,10 @@
     js-yaml "^3.10.0"
     tslib "^2.4.0"
 
-"@zapier/secret-scrubber@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@zapier/secret-scrubber/-/secret-scrubber-1.0.7.tgz#afb85623a630b297b92ecc6bdc31714869d5c2e9"
-  integrity sha512-NfqHsMLhjebSsIXOpn6oumkbj0fdViLPNxaQDicj0RTTUEc6LjCzCIj31imI/gVtXcd5oI1fmDJ/M9SQosuH0w==
+"@zapier/secret-scrubber@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@zapier/secret-scrubber/-/secret-scrubber-1.0.8.tgz#f757ea475243c408789803b99f6c5fc0a5465187"
+  integrity sha512-6vVhOwlwfbETEhLCS+eY/OzXLANzf71O1XnfPpKAx29JMxZV4S1Sefp9F5jBQGTmL0BVYu34rNS7Uej1x/rcsQ==
   dependencies:
     lodash.isplainobject "^4.0.6"
 
