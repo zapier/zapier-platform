@@ -139,7 +139,7 @@ describe('logger', () => {
         message: '123 from google.com',
         data: {
           log_type: 'console',
-          request_headers: 'authorization: basic :censored:10:cf265ec679:',
+          request_headers: 'authorization: :censored:22:4b0b50fb9c:',
           response_headers: 'Authorization: :censored:30:2a1f21f809:',
         },
       },
@@ -175,7 +175,7 @@ describe('logger', () => {
         message: '123 from url google.com',
         data: {
           log_type: 'console',
-          request_headers: 'authorization: basic :censored:10:cf265ec679:',
+          request_headers: 'authorization: :censored:22:4b0b50fb9c:',
           response_headers: 'authorization: :censored:30:2a1f21f809:',
         },
       },
