@@ -1,3 +1,29 @@
+
+## 15.4.2
+
+_released `2023-11-01`_
+
+### cli
+
+- :scroll: Update `z.cursor` documentation for handling end of the result set ([#703](https://github.com/zapier/zapier-platform/pull/703))
+
+
+### core
+- :hammer: Bump secret-scrubber-js to v1.0.8 ([#717](https://github.com/zapier/zapier-platform/pull/717))
+
+### schema
+
+- :scroll: Correct the 'value' and 'sample' description in the 'FieldChoicesWithLabel' schema ([#716](https://github.com/zapier/zapier-platform/pull/716))
+
+### misc
+
+- :hammer: Bump @babel/traverse from 7.14.0 to 7.23.2 ([#715](https://github.com/zapier/zapier-platform/pull/715))
+
+- :scroll: Fix broken link in README-source.md ([#714](https://github.com/zapier/zapier-platform/pull/714))
+
+- :scroll: Fix broken link in readme.md ([#713](https://github.com/zapier/zapier-platform/pull/713))
+
+
 ## 15.4.1
 
 _released `2023-10-06`_
@@ -43,7 +69,7 @@ None!
 
 _released `2023-09-19`_
 
-### cli 
+### cli
 
 None!
 
@@ -53,14 +79,14 @@ None!
 
 ### schema
 
-- :nail_care: (Experimental) Extend Custom Auth to support OTP ([#702](https://github.com/zapier/zapier-platform/pull/702)) 
+- :nail_care: (Experimental) Extend Custom Auth to support OTP ([#702](https://github.com/zapier/zapier-platform/pull/702))
 
 ### misc
 
-- :scroll: Bring over paging cursor doc changes added in visual-builder repo ([#701](https://github.com/zapier/zapier-platform/pull/701)) 
-- :bug: Updating example Github app unit tests ([#700](https://github.com/zapier/zapier-platform/pull/700)) 
-- :scroll: Update version mismatch ([#699](https://github.com/zapier/zapier-platform/pull/699)) 
-- :bug: Fix legacy scripting runner test ([#697](https://github.com/zapier/zapier-platform/pull/697))  
+- :scroll: Bring over paging cursor doc changes added in visual-builder repo ([#701](https://github.com/zapier/zapier-platform/pull/701))
+- :bug: Updating example Github app unit tests ([#700](https://github.com/zapier/zapier-platform/pull/700))
+- :scroll: Update version mismatch ([#699](https://github.com/zapier/zapier-platform/pull/699))
+- :bug: Fix legacy scripting runner test ([#697](https://github.com/zapier/zapier-platform/pull/697))
 
 ## 15.1.0
 
@@ -75,7 +101,7 @@ _released `2023-09-07`_
 
 None!
 
-### schema 
+### schema
 
 None!
 
