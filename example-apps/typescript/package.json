@@ -11,7 +11,7 @@
     "_zapier-build": "npm run build"
   },
   "dependencies": {
-    "zapier-platform-core": "15.5.0"
+    "zapier-platform-core": "15.5.1"
   },
   "devDependencies": {
     "jest": "^25.5.3",
