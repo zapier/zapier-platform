@@ -1514,7 +1514,9 @@ There are three types of logs for a Zapier app:
 * `bundle`: logged automatically on every method execution
 * `console`: manual logs via `z.console.log()` statements ([see below for details](#console-logging))
 
-For advanced logging options, including only displaying the logs for a certain user or app version, look at the help for the logs command:
+Note that by default, this command with fetch logs associated to your user.
+
+For advanced logging options, including the option to fetch logs for other users or specific app versions, look at the help for the logs command:
 
 ```bash
 zapier help logs
