@@ -1,4 +1,24 @@
 
+## 15.5.0
+
+_released `2023-11-08`_
+
+### cli
+
+None!
+
+### core
+
+None!
+
+### schema
+
+- :nail_care: Add `steadyState` property on the FieldSchema for steady state deduplication on trigger polls ([#721](https://github.com/zapier/zapier-platform/pull/721))
+
+### misc
+
+- :hammer: Bump browserify-sign from 4.0.4 to 4.2.2 ([#719](https://github.com/zapier/zapier-platform/pull/719))
+
 ## 15.4.2
 
 _released `2023-11-01`_
