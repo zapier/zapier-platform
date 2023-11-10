@@ -505,6 +505,37 @@ describe('logger', () => {
     ]);
   });
 
+  it('should honor logFieldMaxLength from server', async () => {
+    const bundle = {
+      authData: {
+        password: 'secret',
+        key: '123456789',
+      },
+    };
+    const logger = createlogger({ bundle, logFieldMaxLength: 40 }, options);
+
+    const data = {
+      log_type: 'http',
+      response_content: '9876543210-98765443210-9876543210-9876543210',
+      request_data: '0123456789-0123456789-0123456789-0123456789',
+    };
+
+    logger('200 GET https://example.com/test', data);
+    const response = await logger.end(1000);
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 GET https://example.com/test',
+        data: {
+          log_type: 'http',
+          response_content: '9876543210-98765443210-9876543210- [...]',
+          request_data: '0:censored:9:f0d5b7b789:-0:censore [...]',
+        },
+      },
+    ]);
+  });
+
   it('should send multiple logs in a request', async () => {
     const logger = createlogger({}, options);
 
