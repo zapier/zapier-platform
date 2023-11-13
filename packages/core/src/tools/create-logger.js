@@ -284,27 +284,38 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
     data.input = truncateData(data.input, MAX_LENGTH);
     data.output = truncateData(data.output, MAX_LENGTH);
   }
+
   // scrub throws an error if there are no secrets
-  const safeMessage = truncateString(
-    sensitiveValues.length ? scrub(message, sensitiveValues) : message
-  );
-  const safeData = recurseReplace(
-    sensitiveValues.length ? scrub(data, sensitiveValues) : data,
-    truncateString
-  );
-  const unsafeData = recurseReplace(data, truncateString);
+  let safeMessage, safeData;
+  if (sensitiveValues.length) {
+    safeMessage = scrub(message, sensitiveValues);
+    safeData = scrub(data, sensitiveValues);
+  } else {
+    safeMessage = message;
+    safeData = data;
+  }
+
+  let safeKeyData = _.pick(data, SAFE_LOG_KEYS);
+
+  if (event.logFieldMaxLength != null && event.logFieldMaxLength >= 0) {
+    const truncate = (s) =>
+      simpleTruncate(s, event.logFieldMaxLength, ' [...]');
+
+    safeMessage = truncate(safeMessage);
+    safeData = recurseReplace(safeData, truncate);
+    safeKeyData = recurseReplace(safeKeyData, truncate);
+  }
+
   // Keep safe log keys uncensored
-  Object.keys(safeData).forEach((key) => {
-    if (SAFE_LOG_KEYS.includes(key)) {
-      safeData[key] = unsafeData[key];
-    }
+  Object.entries(safeKeyData).forEach(([key, value]) => {
+    safeData[key] = value;
   });
 
   safeData.request_headers = formatHeaders(safeData.request_headers);
   safeData.response_headers = formatHeaders(safeData.response_headers);
 
   if (event.logToStdout) {
-    toStdout(event, message, unsafeData);
+    toStdout(event, message, safeData);
   }
 
   if (options.logBuffer && data.log_type === 'console') {
