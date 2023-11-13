@@ -41,4 +41,3 @@
 
 - Most files in `core/src` have a matching file in `core/test`
 - there are test apps in `core/test/*app` directories
--
