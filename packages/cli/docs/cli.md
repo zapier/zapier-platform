@@ -368,6 +368,10 @@ You cannot pass both `PERCENT` and `--user` or `--account`.
 
 You cannot pass both `--user` and `--account`.
 
+When you , you can also pass the `--include-all-compatible-versions` flag to migrate all older compatible versions of the integration. For example, if you have versions 1.0.0, 1.1.0 and 1.2.0 which you would like to migrate to version 2.0.0, you can run the migrate command with `fromVersion` set to 1.2.0 and use the `--include-all-compatible-versions` flag.
+
+**The `--include-all-compatible-versions` flag should be used cautiously as it is a bulk operation that will possibly affect more than just one version. It also only supports forward migrations; rolling back to a previous version would require individual migrations.**
+
 **Arguments**
 * (required) `fromVersion` | The version FROM which to migrate users.
 * (required) `toVersion` | The version TO which to migrate users.
@@ -376,6 +380,7 @@ You cannot pass both `--user` and `--account`.
 **Flags**
 * `--user` | Migrates all of a users' Private Zaps within all accounts for which the specified user is a member
 * `--account` | Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member
+* `--includeAllCompatibleVersions` | Schedules the migration of other compatible versions besides the 'fromVersion', if any are available. Compatible versions are those that are older than the 'fromVersion' but still share the same major version number as the 'fromVersion'.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
@@ -383,6 +388,7 @@ You cannot pass both `--user` and `--account`.
 * `zapier migrate 1.0.1 2.0.0 10`
 * `zapier migrate 2.0.0 2.0.1 --user=user@example.com`
 * `zapier migrate 2.0.0 2.0.1 --account=account@example.com`
+* `zapier migrate 2.4.0 2.5.0 --include-all-compatible-versions`
 
 
 ## promote
