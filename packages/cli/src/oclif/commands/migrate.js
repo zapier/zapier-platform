@@ -43,13 +43,14 @@ class MigrateCommand extends BaseCommand {
     // `versionsToMigrate` should at least include the user-specified `fromVersion`
     const versionsToMigrate = [fromVersion];
 
-    // If the `--include-all-compatible-versions` flag is active,we fetch all available
-    // versions, filter for which are compatible and then add them to `versionsToMigrate`
+    // If the `--include-all-compatible-versions` flag is active, we fetch all
+    // available app versions, filter for which are compatible with `fromVersion`
+    // and include these in the migration by adding them to `versionsToMigrate`
     if (includeAllCompatibleVersions) {
       const { versions } = await listVersions();
       const versionStrings = versions.map((v) => v.version);
       const compatibleVersions = versionStrings.filter((v) =>
-        isVersionCompatible({ versionCurrent: v, versionGoal: toVersion })
+        isVersionCompatible({ versionCurrent: v, versionGoal: fromVersion })
       );
 
       if (compatibleVersions.length > 0) {
