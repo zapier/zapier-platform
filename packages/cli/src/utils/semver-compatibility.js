@@ -6,8 +6,8 @@ function isVersionCompatible({ versionCurrent, versionGoal }) {
     return false;
   }
 
-  // Create a range that represents all versions less than or equal to 'versionGoal'
-  const versionRange = `<=${versionGoal}`;
+  // Create a range that represents all versions less the 'versionGoal'
+  const versionRange = `<${versionGoal}`;
 
   // Check if 'versionCurrent' falls within this range
   return semver.satisfies(versionCurrent, versionRange);
