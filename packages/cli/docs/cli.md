@@ -380,7 +380,7 @@ If you want to migrate more than one version to another specific version, instea
 **Flags**
 * `--user` | Migrates all of a users' Private Zaps within all accounts for which the specified user is a member
 * `--account` | Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member
-* `--includeAllCompatibleVersions` | Schedules the migration of other compatible versions besides the 'fromVersion', if any are available. Compatible versions are those that are older than the 'fromVersion' but still share the same major version number as the 'fromVersion'.
+* `--include-all-compatible-versions` | Schedules the migration of other compatible versions besides the 'fromVersion', if any are available. Compatible versions are those that are older than the 'fromVersion' but still share the same major version number as the 'fromVersion'.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**

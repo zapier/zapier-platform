@@ -15,10 +15,11 @@ class MigrateCommand extends BaseCommand {
 
     const account = this.flags.account;
     const user = this.flags.user;
+    const includeAllCompatibleVersions =
+      this.flags['include-all-compatible-versions'];
+
     const fromVersion = this.args.fromVersion;
     const toVersion = this.args.toVersion;
-    const includeAllCompatibleVersions =
-      this.flags.includeAllCompatibleVersions;
 
     let flagType;
 
@@ -100,27 +101,25 @@ class MigrateCommand extends BaseCommand {
 
       if (user || account) {
         this.startSpinner(
-          `Starting migration from ${fromVersion} to ${toVersion} for ${
+          `Starting migration from ${version} to ${toVersion} for ${
             user || account
           }`
         );
       } else {
         this.startSpinner(
-          `Starting migration from ${fromVersion} to ${toVersion} for ${percent}%`
+          `Starting migration from ${version} to ${toVersion} for ${percent}%`
         );
       }
 
       try {
         await callAPI(url, { method: 'POST', body });
-      } catch (err) {
-        this.error(err);
       } finally {
         this.stopSpinner();
       }
     }
 
     this.log(
-      '\nMigration(s) successfully queued, please check `zapier jobs` to track their status. Migrations usually take between 5-10 minutes.'
+      '\nMigration(s) successfully queued, please check `zapier jobs` to track their status. Each migration usually takes between 5-10 minutes.'
     );
   }
 }
@@ -135,7 +134,7 @@ MigrateCommand.flags = buildFlags({
       description:
         "Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member",
     }),
-    includeAllCompatibleVersions: flags.string({
+    'include-all-compatible-versions': flags.boolean({
       description:
         "Schedules the migration of other compatible versions besides the 'fromVersion', if any are available. Compatible versions are those that are older than the 'fromVersion' but still share the same major version number as the 'fromVersion'.",
     }),
