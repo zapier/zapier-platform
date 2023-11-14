@@ -168,9 +168,9 @@ MigrateCommand.examples = [
   'zapier migrate 2.0.0 2.0.1 --account=account@example.com',
   'zapier migrate 2.4.0 2.5.0 --include-all-compatible-versions',
 ];
-MigrateCommand.description = `Migrate a percentage of users or a single user from one version of your integration to another.
+MigrateCommand.description = `Migrate a percentage of users or a single user from a version of your integration to another.
 
-Start a migration to move users between different versions of your integration. You may also "revert" by simply swapping the from/to verion strings in the command line arguments (i.e. \`zapier migrate 1.0.1 1.0.0\`).
+Start a migration to move users between different versions of your integration. You may also "revert" by simply swapping the from/to version strings in the command line arguments (i.e. \`zapier migrate 1.0.1 1.0.0\`).
 
 **Only use this command to migrate users between non-breaking versions, use \`zapier deprecate\` if you have breaking changes!**
 
@@ -194,7 +194,7 @@ You cannot pass both \`PERCENT\` and \`--user\` or \`--account\`.
 
 You cannot pass both \`--user\` and \`--account\`.
 
-When you , you can also pass the \`--include-all-compatible-versions\` flag to migrate all older compatible versions of the integration. For example, if you have versions 1.0.0, 1.1.0 and 1.2.0 which you would like to migrate to version 2.0.0, you can run the migrate command with \`fromVersion\` set to 1.2.0 and use the \`--include-all-compatible-versions\` flag.
+If you want to migrate more than one version to another specific version, instead of running many individual commands, you can evaluate using the \`--include-all-compatible-versions\` flag. This would migrate all compatible versions of the integration besides the specified "from" version. For example, if you have versions 1.0.0, 1.0.5 and 1.1.0 which you would like to migrate to version 1.2.0, you can run the migrate command with "from" version set to 1.1.0 and use the \`--include-all-compatible-versions\` flag (i.e. \`zapier migrate 1.1.0 1.2.0 --include-all-compatible-versions\`). This would migrate versions 1.0.0, 1.0.5 and 1.1.0 to version 1.2.0.
 
 **The \`--include-all-compatible-versions\` flag should be used cautiously as it is a bulk operation that will possibly affect more than just one version. It also only supports forward migrations; rolling back to a previous version would require individual migrations.**
 `;
