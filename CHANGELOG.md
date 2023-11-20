@@ -1,3 +1,22 @@
+## 15.5.1
+
+_released `2023-11-21`_
+
+### cli
+
+- :scroll: Update `zapier logs` documentation to mention default user target ([#721](https://github.com/zapier/zapier-platform/pull/721))
+
+### core
+
+- :nail_care: Allow server to decide when to truncate log fields ([#725](https://github.com/zapier/zapier-platform/pull/725))
+
+### schema
+
+None!
+
+### misc
+
+- :hammer: Bump axios from 1.2.3 to 1.6.1 ([#726](https://github.com/zapier/zapier-platform/pull/726))
 
 ## 15.5.0
 
