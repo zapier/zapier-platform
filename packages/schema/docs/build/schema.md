@@ -391,7 +391,7 @@ Key | Required | Type | Description
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-`lock` | no | [/LockObjectSchema](#lockobjectschema) | **INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
+`lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
 
 #### Examples
@@ -424,7 +424,7 @@ Key | Required | Type | Description
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-`lock` | no | [/LockObjectSchema](#lockobjectschema) | **INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
+`lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
 
 #### Examples
@@ -546,7 +546,7 @@ Key | Required | Type | Description
 `inputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicFieldsSchema](#dynamicfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-`lock` | no | [/LockObjectSchema](#lockobjectschema) | **INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
+`lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
 
 #### Examples
@@ -1154,7 +1154,7 @@ A unique identifier for this item.
 
 ## /LockObjectSchema
 
-**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
+Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 
 #### Details
 
