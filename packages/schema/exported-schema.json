@@ -1370,10 +1370,6 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
-        },
-        "shouldLock": {
-          "description": "Should this action be performed one at a time (avoid concurrency)?",
-          "type": "boolean"
         }
       },
       "additionalProperties": false

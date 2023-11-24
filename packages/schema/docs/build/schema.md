@@ -426,7 +426,6 @@ Key | Required | Type | Description
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | **INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
-`shouldLock` | no | `boolean` | Should this action be performed one at a time (avoid concurrency)?
 
 #### Examples
 
@@ -718,14 +717,6 @@ Key | Required | Type | Description
   {
     key: 'recipe',
     noun: 'Recipe',
-    display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 }, shouldLock: true }
-  }
-  ```
-* ```
-  {
-    key: 'recipe',
-    noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.', hidden: true },
     operation: { perform: '$func$2$f$' }
   }
@@ -734,15 +725,6 @@ Key | Required | Type | Description
 #### Anti-Examples
 
 * `'abc'` - _Must be an object_
-* ```
-  {
-    key: 'recipe',
-    noun: 'Recipe',
-    display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$', shouldLock: 'yes' }
-  }
-  ```
-  _Invalid value for key on operation: shouldLock_
 * ```
   {
     key: 'recipe',
