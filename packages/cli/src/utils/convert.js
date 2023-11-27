@@ -1,6 +1,7 @@
 const path = require('path');
 
 const _ = require('lodash');
+const chalk = require('chalk');
 const prettier = require('prettier');
 const semver = require('semver');
 const traverse = require('traverse');
@@ -157,6 +158,15 @@ const renderPackageJson = async (appInfo, appDefinition) => {
 const renderSource = (definition, functions = {}) => {
   traverse(definition).forEach(function (source) {
     if (this.key === 'source') {
+      if (
+        this.path.length >= 2 &&
+        this.path[0] === 'operation' &&
+        this.path[1] === 'sample'
+      ) {
+        // Don't replace 'source' if it's in sample
+        return;
+      }
+
       const args = this.parent.node.args || ['z', 'bundle'];
       // Find first parent that is not an array (applies to inputFields)
       const funcNameBase = this.path
@@ -178,7 +188,7 @@ const renderSource = (definition, functions = {}) => {
   });
 };
 
-const renderDefinitionSlice = (definitionSlice) => {
+const renderDefinitionSlice = (definitionSlice, filename) => {
   let exportBlock = _.cloneDeep(definitionSlice);
   let functionBlock = {};
 
@@ -190,7 +200,17 @@ const renderDefinitionSlice = (definitionSlice) => {
 
   functionBlock = Object.values(functionBlock).join('\n\n');
 
-  return prettifyJs(functionBlock + '\n\n' + exportBlock);
+  const uglyCode = functionBlock + '\n\n' + exportBlock;
+  try {
+    return prettifyJs(uglyCode);
+  } catch (err) {
+    console.warn(
+      `Warning: Your code has syntax error in ${chalk.underline.bold(
+        filename
+      )}. ` + `It will be left as is and won't be prettified.\n\n${err.message}`
+    );
+    return uglyCode;
+  }
 };
 
 const renderStepTest = async (stepType, definition) => {
@@ -205,10 +225,10 @@ const renderStepTest = async (stepType, definition) => {
 };
 
 const renderAuth = async (appDefinition) =>
-  renderDefinitionSlice(appDefinition.authentication);
+  renderDefinitionSlice(appDefinition.authentication, 'authentication.js');
 
 const renderHydrators = async (appDefinition) =>
-  renderDefinitionSlice(appDefinition.hydrators);
+  renderDefinitionSlice(appDefinition.hydrators, 'hydrators.js');
 
 const renderIndex = async (appDefinition) => {
   let exportBlock = _.cloneDeep(appDefinition);
@@ -284,7 +304,7 @@ const renderEnvironment = (appDefinition) => {
 
 const writeStep = async (stepType, definition, key, newAppDir) => {
   const filename = `${stepType}/${snakeCase(key)}.js`;
-  const content = await renderDefinitionSlice(definition);
+  const content = await renderDefinitionSlice(definition, filename);
   await createFile(content, filename, newAppDir);
 };
 
