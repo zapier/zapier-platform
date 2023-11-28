@@ -258,16 +258,25 @@ const setupTempWorkingDir = () => {
 };
 
 describe('convert', () => {
-  let tempAppDir, readTempFile;
+  let tempAppDir, readTempFile, origConsoleWarn;
+  const warnings = [];
 
   beforeEach(() => {
     tempAppDir = setupTempWorkingDir();
     readTempFile = (fpath) =>
       fs.readFileSync(path.join(tempAppDir, fpath), 'utf-8');
+
+    origConsoleWarn = console.warn;
+    warnings.length = 0;
+    console.warn = (msg) => {
+      warnings.push(msg);
+    };
   });
 
   afterEach(() => {
     fs.removeSync(tempAppDir);
+
+    console.warn = origConsoleWarn;
   });
 
   describe('visual builder apps', () => {
@@ -385,6 +394,74 @@ describe('convert', () => {
       appDefinition.triggers.codemode.operation.perform.source +=
         '\n// a comment';
       await convertApp(visualApp, appDefinition, tempAppDir);
+    });
+
+    it('should not break over syntax error in authentication', async () => {
+      // PDE-4495
+      const appDefinition = cloneDeep(visualAppDefinition);
+      appDefinition.authentication.test.source += '{ bad code }';
+      await convertApp(visualApp, appDefinition, tempAppDir);
+
+      warnings.should.have.length(1);
+      warnings[0].should.containEql('Your code has syntax error');
+      warnings[0].should.containEql('authentication.js');
+
+      const authenticationFile = readTempFile('authentication.js');
+      should(
+        authenticationFile.includes('const test = async (z, bundle)')
+      ).be.true();
+      should(authenticationFile.includes('{ bad code }')).be.true();
+    });
+
+    it('should not break over syntax error in step', async () => {
+      // PDE-4495
+      const appDefinition = cloneDeep(visualAppDefinition);
+      appDefinition.triggers.codemode.operation.perform.source +=
+        '{ bad code }';
+      await convertApp(visualApp, appDefinition, tempAppDir);
+
+      warnings.should.have.length(1);
+      warnings[0].should.containEql('Your code has syntax error');
+      warnings[0].should.containEql('triggers/codemode.js');
+
+      const triggerFile = readTempFile('triggers/codemode.js');
+      should(triggerFile.includes('const perform = async (z)')).be.true();
+      should(triggerFile.includes('{ bad code }')).be.true();
+    });
+
+    it('should not break over syntax error in hydrator', async () => {
+      // PDE-4495
+      const appDefinition = cloneDeep(visualAppDefinition);
+      appDefinition.hydrators.getMovieDetails.source += '{ bad code }';
+      await convertApp(visualApp, appDefinition, tempAppDir);
+
+      warnings.should.have.length(1);
+      warnings[0].should.containEql('Your code has syntax error');
+      warnings[0].should.containEql('hydrators.js');
+
+      const hydratorsFile = readTempFile('hydrators.js');
+      should(
+        hydratorsFile.includes('getMovieDetails = async (z, bundle)')
+      ).be.true();
+      should(hydratorsFile.includes('{ bad code }')).be.true();
+    });
+
+    it("should not replace 'source' in sample", async () => {
+      // PDE-4495
+      const appDefinition = cloneDeep(visualAppDefinition);
+      appDefinition.creates.create_project.operation.sample = {
+        id: 1234,
+        data: {
+          objects: [{ source: 'not a function' }],
+        },
+      };
+      await convertApp(visualApp, appDefinition, tempAppDir);
+
+      const createFile = readTempFile('creates/create_project.js');
+      should(
+        createFile.includes('const inputFields = async (z, bundle)')
+      ).be.true();
+      should(createFile.includes("[{ source: 'not a function' }]")).be.true();
     });
   });
 });
