@@ -54,7 +54,7 @@ module.exports = makeSchema(
       },
       lock: {
         description:
-          '**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.',
+          'Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).',
         $ref: LockObjectSchema.id,
       },
       throttle: {

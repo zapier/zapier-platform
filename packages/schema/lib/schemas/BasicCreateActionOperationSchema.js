@@ -14,12 +14,6 @@ BasicCreateActionOperationSchema.id = '/BasicCreateActionOperationSchema';
 BasicCreateActionOperationSchema.description =
   'Represents the fundamental mechanics of a create.';
 
-BasicCreateActionOperationSchema.properties.shouldLock = {
-  description:
-    'Should this action be performed one at a time (avoid concurrency)?',
-  type: 'boolean',
-};
-
 module.exports = makeSchema(
   BasicCreateActionOperationSchema,
   BasicActionOperationSchema.dependencies
