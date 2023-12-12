@@ -3,7 +3,7 @@ const subscribeHook = (z, bundle) => {
   z.console.log('console says hello world!');
 
   // bundle.targetUrl has the Hook URL this app should call when a recipe is created.
-  // https://platform.zapier.com/docs/advanced#targeturl
+  // https://platform.zapier.com/build/bundle#targeturl
   const data = {
     url: bundle.targetUrl,
     style: bundle.inputData.style,
@@ -18,6 +18,10 @@ const subscribeHook = (z, bundle) => {
   };
 
   // You may return a promise or a normal data structure from any perform method.
+
+  // If your webhook subscriptions expire, make sure the subscribe endpoint returns an `expiration_date` property containing an ISO8601 date.
+  // The platform will automatically attempt to resubscribe after the expiration date. More details here: https://platform.zapier.com/build/cli-hook-trigger#prerequisites
+
   return z.request(options).then((response) => response.data);
 };
 
@@ -69,7 +73,7 @@ module.exports = {
   key: 'recipe',
 
   // You'll want to provide some helpful display labels and descriptions
-  // for users. Zapier will put them into the UX.
+  // for users. Zapier will put them into the UI.
   noun: 'Recipe',
   display: {
     label: 'New Recipe',
@@ -102,7 +106,7 @@ module.exports = {
     sample: {
       id: 1,
       createdAt: 1472069465,
-      name: 'Best Spagetti Ever',
+      name: 'Best Spaghetti Ever',
       authorId: 1,
       directions: '1. Boil Noodles\n2.Serve with sauce',
       style: 'italian',
