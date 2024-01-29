@@ -51,7 +51,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
   rawRequest?: Partial<{
     method: HttpMethod;
     querystring: string;
-    headers: { [x: string]: string };
+    headers: { [name: string]: string };
     content: string;
   }>;
   cleanedRequest?:
