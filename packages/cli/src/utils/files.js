@@ -84,7 +84,7 @@ const copyFile = (src, dest, mode) => {
 };
 
 // Returns a promise that copies a directory.
-const copyDir = (src, dst, options) => {
+const copyDir = async (src, dst, options) => {
   const defaultFilter = (dir) => {
     const isntPackage = dir.indexOf('node_modules') === -1;
     const isntBuild = dir.indexOf('.zip') === -1;
@@ -98,41 +98,41 @@ const copyDir = (src, dst, options) => {
     onSkip: () => {},
   });
 
-  return ensureDir(dst)
-    .then(() => fse.readdir(src))
-    .then((files) => {
-      const promises = files.map((file) => {
-        const srcItem = path.resolve(src, file);
-        const dstItem = path.resolve(dst, file);
-        const stat = fse.statSync(srcItem);
-        const dstExists = fileExistsSync(dstItem);
+  await ensureDir(dst);
+  const files = await fse.readdir(src);
 
-        if (!options.filter(srcItem)) {
-          return Promise.resolve();
-        }
+  const promises = files.map(async (file) => {
+    const srcItem = path.resolve(src, file);
 
-        if (dstExists && options.clobber) {
-          fse.removeSync(dstItem);
-        } else if (dstExists) {
-          if (!stat.isDirectory()) {
-            options.onSkip(dstItem);
-            return Promise.resolve();
-          }
-        }
+    // skip srcItem if filter returns false
+    if (!options.filter(srcItem)) {
+      return Promise.resolve();
+    }
 
-        if (stat.isDirectory()) {
-          return ensureDir(dstItem).then(() =>
-            copyDir(srcItem, dstItem, options)
-          );
-        } else {
-          return copyFile(srcItem, dstItem, stat.mode).then(() => {
-            options.onCopy(dstItem);
-          });
-        }
+    const dstItem = path.resolve(dst, file);
+    const stat = fse.statSync(srcItem);
+    const dstExists = fileExistsSync(dstItem);
+
+    if (dstExists && options.clobber) {
+      fse.removeSync(dstItem);
+    } else if (dstExists) {
+      if (!stat.isDirectory()) {
+        options.onSkip(dstItem);
+        return Promise.resolve();
+      }
+    }
+
+    if (stat.isDirectory()) {
+      await ensureDir(dstItem);
+      return copyDir(srcItem, dstItem, options);
+    } else {
+      return copyFile(srcItem, dstItem, stat.mode).then(() => {
+        options.onCopy(dstItem);
       });
+    }
+  });
 
-      return Promise.all(promises);
-    });
+  return Promise.all(promises);
 };
 
 // Delete a directory.

@@ -48,7 +48,7 @@ BuildCommand.description = `Build a pushable zip from the current directory.
 This command does the following:
 
 * Creates a temporary folder
-* Copies all code into the temporary folder
+* Copies all code (excluding files in .gitignore) into the temporary folder
 * Adds an entry point: \`zapierwrapper.js\`
 * Generates and validates app definition.
 * Detects dependencies via browserify (optional, on by default)

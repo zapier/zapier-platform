@@ -318,6 +318,29 @@ const maybeRunBuildScript = async (options = {}) => {
   }
 };
 
+const buildCopyDirFilter = ({ wdir, skipNpmInstall = false }) => {
+  // read and parse .gitignore
+  const gitIgnorePath = path.join(wdir, '.gitignore');
+  const gitIgnoreFilter = ignore();
+
+  // create an ignore filter from .gitignore, if it exists
+  if (fs.existsSync(gitIgnorePath)) {
+    const gitIgnoredPaths = gitIgnore(gitIgnorePath);
+    const validGitIgnorePaths = gitIgnoredPaths.filter(ignore.isPathValid);
+    gitIgnoreFilter.add(validGitIgnorePaths);
+  }
+
+  return (file) => {
+    // exclude any files defined in .gitignore
+    if (gitIgnoreFilter.ignores(path.relative(wdir, file))) {
+      return false;
+    }
+
+    // exclude '.zip' files only if skipNpmInstall is true
+    return !(skipNpmInstall && file.includes('.zip'));
+  };
+};
+
 const _buildFunc = async ({
   skipNpmInstall = false,
   disableDependencyDetection = false,
@@ -342,8 +365,9 @@ const _buildFunc = async ({
   await ensureDir(constants.BUILD_DIR);
 
   startSpinner('Copying project to temp directory');
+
   await copyDir(wdir, tmpDir, {
-    filter: skipNpmInstall ? (dir) => !dir.includes('.zip') : undefined,
+    filter: buildCopyDirFilter({ wdir, skipNpmInstall }),
   });
 
   let output = {};
@@ -518,4 +542,5 @@ module.exports = {
   listFiles,
   requiredFiles,
   maybeRunBuildScript,
+  buildCopyDirFilter,
 };
