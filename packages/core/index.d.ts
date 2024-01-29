@@ -3,6 +3,7 @@
 // Definitions by: David Brownman <https://davidbrownman.com>
 
 /// <reference types="node" />
+/// <reference types="node-fetch" />
 
 import { Agent } from 'http';
 import { Headers } from 'node-fetch';

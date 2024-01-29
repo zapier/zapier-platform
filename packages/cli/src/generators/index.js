@@ -137,6 +137,7 @@ const writeForStandaloneTemplate = (gen) => {
       devDependencies: {
         '@types/jest': '^26.0.23',
         '@types/node': '^14',
+        '@types/node-fetch': '^2.6.11',
         rimraf: '^3.0.2',
         typescript: '^4.9.4',
       },
