@@ -34,7 +34,7 @@ This command does the following:
 
 * Creates a temporary folder
 
-* Copies all code into the temporary folder
+* Copies all code (excluding files in .gitignore) into the temporary folder
 
 * Adds an entry point: `zapierwrapper.js`
 

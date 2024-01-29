@@ -87,7 +87,7 @@ const copyFile = (src, dest, mode) => {
   Returns a promise that copies a directory recursively.
 
 	Options:
-		
+
 	- clobber: Overwrite existing files? Default is false.
 	- filter:
 			A function that returns true if the file should be copied. By default, it
