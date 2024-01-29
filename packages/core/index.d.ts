@@ -51,7 +51,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
   rawRequest?: Partial<{
     method: HttpMethod;
     querystring: string;
-    headers: { [name: string]: string };
+    headers: { [x: string]: string };
     content: string;
   }>;
   cleanedRequest?:
@@ -84,7 +84,7 @@ export interface HttpRequestOptions {
   compress?: boolean;
   follow?: number;
   form?: object;
-  headers?: { [x: string]: string };
+  headers?: { [name: string]: string };
   json?: object | any[];
   method?: HttpMethod;
   params?: object;
