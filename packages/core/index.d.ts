@@ -84,7 +84,7 @@ export interface HttpRequestOptions {
   compress?: boolean;
   follow?: number;
   form?: object;
-  headers?: Headers;
+  headers?: { [x: string]: string };
   json?: object | any[];
   method?: HttpMethod;
   params?: object;
