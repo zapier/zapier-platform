@@ -5,6 +5,7 @@
 /// <reference types="node" />
 
 import { Agent } from 'http';
+import { Headers } from 'node-fetch';
 
 // The EXPORTED OBJECT
 export const version: string;
@@ -83,7 +84,7 @@ export interface HttpRequestOptions {
   compress?: boolean;
   follow?: number;
   form?: object;
-  headers?: { [name: string]: string };
+  headers?: Headers;
   json?: object | any[];
   method?: HttpMethod;
   params?: object;
@@ -101,7 +102,7 @@ export interface HttpRequestOptions {
 
 interface BaseHttpResponse {
   status: number;
-  headers: { [key: string]: string };
+  headers: Headers;
   getHeader(key: string): string | undefined;
   throwForStatus(): void;
   skipThrowForStatus: boolean;
