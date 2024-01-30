@@ -40,8 +40,9 @@
   "dependencies": {
     "@oclif/command": "1.8.27",
     "@oclif/config": "1.18.10",
+    "@oclif/core": "1.26.0",
     "@oclif/plugin-autocomplete": "0.3.0",
-    "@oclif/plugin-help": "3.2.2",
+    "@oclif/plugin-help": "3.2.20",
     "@oclif/plugin-not-found": "1.2.4",
     "adm-zip": "0.5.10",
     "archiver": "5.3.1",
