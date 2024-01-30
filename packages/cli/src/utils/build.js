@@ -45,7 +45,7 @@ const {
 
 const checkMissingAppInfo = require('./check-missing-app-info');
 
-const { runCommand, isWindows } = require('./misc');
+const { runCommand, isWindows, findCorePackageDir } = require('./misc');
 
 const debug = require('debug')('zapier:build');
 
@@ -332,6 +332,7 @@ const _buildFunc = async ({
     osTmpDir,
     'zapier-' + crypto.randomBytes(4).toString('hex')
   );
+  debug('Using temp directory: ', tmpDir);
 
   maybeNotifyAboutOutdated();
 
@@ -342,9 +343,28 @@ const _buildFunc = async ({
   await ensureDir(constants.BUILD_DIR);
 
   startSpinner('Copying project to temp directory');
-  await copyDir(wdir, tmpDir, {
-    filter: skipNpmInstall ? (dir) => !dir.includes('.zip') : undefined,
-  });
+
+  const copyFilter = skipNpmInstall
+    ? (src) => !src.includes('.zip')
+    : undefined;
+
+  await copyDir(wdir, tmpDir, { filter: copyFilter });
+
+  if (skipNpmInstall) {
+    const corePackageDir = findCorePackageDir();
+    const nodeModulesDir = path.dirname(corePackageDir);
+    const workspaceDir = path.dirname(nodeModulesDir);
+    if (wdir !== workspaceDir) {
+      // If we're in here, it means the user is using npm/yarn workspaces
+      await copyDir(nodeModulesDir, path.join(tmpDir, 'node_modules'), {
+        filter: copyFilter,
+        onDirExists: (dir) => {
+          // Don't overwrite existing sub-directories in node_modules
+          return false;
+        },
+      });
+    }
+  }
 
   let output = {};
   if (!skipNpmInstall) {
@@ -412,7 +432,7 @@ const _buildFunc = async ({
      * (Remote - `validateApp`) Both the Schema, AppVersion, and Auths are validated
      */
 
-    startSpinner('Validating project schema');
+    startSpinner('Validating project schema and style');
     const validateResponse = await _appCommandZapierWrapper(tmpDir, {
       command: 'validate',
     });
@@ -424,8 +444,6 @@ const _buildFunc = async ({
         'We hit some validation errors, try running `zapier validate` to see them!'
       );
     }
-
-    startSpinner('Validating project style');
 
     // No need to mention specifically we're validating style checks as that's
     //   implied from `zapier validate`, though it happens as a separate process
