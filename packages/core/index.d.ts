@@ -3,8 +3,10 @@
 // Definitions by: David Brownman <https://davidbrownman.com>
 
 /// <reference types="node" />
+/// <reference types="node-fetch" />
 
 import { Agent } from 'http';
+import { Headers } from 'node-fetch';
 
 // The EXPORTED OBJECT
 export const version: string;
@@ -101,7 +103,7 @@ export interface HttpRequestOptions {
 
 interface BaseHttpResponse {
   status: number;
-  headers: { [key: string]: string };
+  headers: Headers;
   getHeader(key: string): string | undefined;
   throwForStatus(): void;
   skipThrowForStatus: boolean;

@@ -54,6 +54,7 @@
     "zapier-platform-schema": "15.5.1"
   },
   "devDependencies": {
+    "@types/node-fetch": "^2.6.11",
     "adm-zip": "0.5.10",
     "aws-sdk": "^2.1397.0",
     "dicer": "^0.3.1",
