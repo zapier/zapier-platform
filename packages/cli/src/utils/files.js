@@ -128,9 +128,26 @@ const copyDir = async (src, dst, options) => {
 
   const promises = files.map(async (file) => {
     const srcItem = path.resolve(src, file);
-    const srcStat = fse.lstatSync(srcItem);
+
+    let srcStat;
+    try {
+      srcStat = fse.statSync(srcItem);
+    } catch (err) {
+      // If the file is a symlink and the target doesn't exist, skip it.
+      if (fse.lstatSync(srcItem).isSymbolicLink()) {
+        console.warn(
+          colors.yellow(
+            `\n! Warning: symlink "${srcItem}" points to a non-existent file. Skipping!\n`
+          )
+        );
+        return null;
+      }
+
+      // otherwise, rethrow the error
+      throw err;
+    }
+
     const srcIsFile = srcStat.isFile();
-    const srcIsSymbolicLink = srcStat.isSymbolicLink();
 
     const dstItem = path.resolve(dst, file);
     const dstExists = fileExistsSync(dstItem);
@@ -138,17 +155,7 @@ const copyDir = async (src, dst, options) => {
       return null;
     }
 
-    if (srcIsFile || srcIsSymbolicLink) {
-      if (srcIsSymbolicLink && !fileExistsSync(srcItem)) {
-        console.warn(
-          colors.yellow(
-            `\n! Warning: symlink "${srcItem}" points to a non-existent file. Skipping!\n`
-          )
-        );
-        options.onSkip(dstItem);
-        return null;
-      }
-
+    if (srcIsFile) {
       if (dstExists) {
         if (!options.clobber) {
           options.onSkip(dstItem);
