@@ -33,7 +33,9 @@ describe('build (runs slowly)', function () {
     runCommand('npm', ['i'], { cwd: tmpDir });
     // TODO: This test depends on how "typescript" example is set up, which
     // isn't good. Should refactor not to rely on that.
-    runCommand('npm', ['run', 'build', '--scripts-prepend-node-path'], { cwd: tmpDir });
+    runCommand('npm', ['run', 'build', '--scripts-prepend-node-path'], {
+      cwd: tmpDir,
+    });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
@@ -307,5 +309,190 @@ describe('build (runs slowly)', function () {
 
     const buildExists = await fs.pathExists(path.join(tmpDir, 'lib'));
     should.equal(buildExists, true);
+  });
+});
+
+describe('build in workspaces', function () {
+  let tmpDir, origCwd;
+
+  before(async () => {
+    tmpDir = getNewTempDirPath();
+
+    // Set up a monorepo project structure with two integrations as npm
+    // workspaces:
+    //
+    // packages/
+    // ├─ package.json
+    // ├─ app-1/
+    // │  ├─ index.js
+    // │  └─ package.json
+    // └─ app-2/
+    // 	  ├─ index.js
+    // 	  └─ package.json
+
+    // Create root package.json
+    fs.outputFileSync(
+      path.join(tmpDir, 'package.json'),
+      JSON.stringify({
+        name: 'my-monorepo',
+        workspaces: ['packages/*'],
+        private: true,
+      })
+    );
+
+    const defaultIndexJs = `module.exports = {
+	version: require('./package.json').version,
+	platformVersion: require('zapier-platform-core').version,
+};`;
+
+    // First integration: app-1
+    fs.outputFileSync(
+      path.join(tmpDir, 'packages', 'app-1', 'index.js'),
+      defaultIndexJs
+    );
+    fs.outputFileSync(
+      path.join(tmpDir, 'packages', 'app-1', 'package.json'),
+      JSON.stringify({
+        name: 'app-1',
+        version: '1.0.0',
+        main: 'index.js',
+        dependencies: {
+          uuid: '8.3.2',
+          'zapier-platform-core': '15.5.1',
+        },
+        private: true,
+      })
+    );
+
+    // Second integration: app-2
+    fs.outputFileSync(
+      path.join(tmpDir, 'packages', 'app-2', 'index.js'),
+      defaultIndexJs
+    );
+    fs.outputFileSync(
+      path.join(tmpDir, 'packages', 'app-2', 'package.json'),
+      JSON.stringify({
+        name: 'app-2',
+        version: '1.0.0',
+        main: 'index.js',
+        dependencies: {
+          uuid: '9.0.1',
+          'zapier-platform-core': '15.5.1',
+        },
+        private: true,
+      })
+    );
+
+    runCommand('yarn', ['install'], { cwd: tmpDir });
+  });
+
+  after(() => {
+    fs.removeSync(tmpDir);
+  });
+
+  beforeEach(() => {
+    origCwd = process.cwd();
+  });
+
+  afterEach(() => {
+    process.chdir(origCwd);
+  });
+
+  it('should build in app-1', async () => {
+    const workspaceDir = path.join(tmpDir, 'packages', 'app-1');
+    const zipPath = path.join(workspaceDir, 'build', 'build.zip');
+    const unzipPath = path.join(tmpDir, 'build', 'build');
+
+    // Make sure the zapier-platform-core dependency is installed in the root
+    // project directory
+    fs.existsSync(
+      path.join(tmpDir, 'node_modules', 'zapier-platform-core')
+    ).should.be.true();
+    fs.existsSync(
+      path.join(workspaceDir, 'node_modules', 'zapier-platform-core')
+    ).should.be.false();
+
+    fs.ensureDirSync(path.dirname(zipPath));
+
+    process.chdir(workspaceDir);
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        skipNpmInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      }
+    );
+    await decompress(zipPath, unzipPath);
+
+    const corePackageJson = JSON.parse(
+      fs.readFileSync(
+        path.join(
+          unzipPath,
+          'node_modules',
+          'zapier-platform-core',
+          'package.json'
+        )
+      )
+    );
+    corePackageJson.version.should.equal('15.5.1');
+
+    const uuidPackageJson = JSON.parse(
+      fs.readFileSync(
+        path.join(unzipPath, 'node_modules', 'uuid', 'package.json')
+      )
+    );
+    uuidPackageJson.version.should.equal('8.3.2');
+  });
+
+  it('should build in app-2', async () => {
+    const workspaceDir = path.join(tmpDir, 'packages', 'app-2');
+    const zipPath = path.join(workspaceDir, 'build', 'build.zip');
+    const unzipPath = path.join(tmpDir, 'build', 'build');
+
+    // Make sure the zapier-platform-core dependency is installed in the root
+    // project directory
+    fs.existsSync(
+      path.join(tmpDir, 'node_modules', 'zapier-platform-core')
+    ).should.be.true();
+    fs.existsSync(
+      path.join(workspaceDir, 'node_modules', 'zapier-platform-core')
+    ).should.be.false();
+
+    fs.ensureDirSync(path.dirname(zipPath));
+
+    process.chdir(workspaceDir);
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        skipNpmInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      }
+    );
+    await decompress(zipPath, unzipPath);
+
+    const corePackageJson = JSON.parse(
+      fs.readFileSync(
+        path.join(
+          unzipPath,
+          'node_modules',
+          'zapier-platform-core',
+          'package.json'
+        )
+      )
+    );
+    corePackageJson.version.should.equal('15.5.1');
+
+    const uuidPackageJson = JSON.parse(
+      fs.readFileSync(
+        path.join(unzipPath, 'node_modules', 'uuid', 'package.json')
+      )
+    );
+    uuidPackageJson.version.should.equal('9.0.1');
   });
 });

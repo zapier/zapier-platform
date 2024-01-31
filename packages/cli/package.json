@@ -32,6 +32,7 @@
     "lint": "eslint src snippets",
     "lint:fix": "eslint --fix src snippets",
     "test": "cross-env NODE_ENV=test mocha -t 50s --recursive src/tests --exit",
+    "test-debug": "cross-env NODE_ENV=test node inspect ../../node_modules/.bin/mocha -t 50s --recursive src/tests --exit",
     "smoke-test": "cross-env NODE_ENV=test mocha -t 2m --recursive src/smoke-tests --exit",
     "validate-templates": "./scripts/validate-app-templates.js",
     "set-template-versions": "./scripts/set-app-template-versions.js",

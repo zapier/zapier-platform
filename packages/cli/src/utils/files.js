@@ -83,7 +83,25 @@ const copyFile = (src, dest, mode) => {
   });
 };
 
-// Returns a promise that copies a directory.
+/*
+  Returns a promise that copies a directory recursively.
+
+	Options:
+		
+	- clobber: Overwrite existing files? Default is false.
+	- filter:
+			A function that returns true if the file should be copied. By default, it
+			ignores node_modules and .zip files.
+	- onCopy:
+			A function called when a file is copied. Takes the destination path as an
+			argument.
+	- onSkip:
+			A function called when a file is skipped. Takes the destination path as an
+			argument.
+	- onDirExists:
+			A function called when a directory exists. Takes the destination path as
+			an argument. Returns true to carry on copying. Returns false to skip.
+*/
 const copyDir = async (src, dst, options) => {
   const defaultFilter = (srcPath) => {
     const isntPackage = !srcPath.includes('node_modules');
@@ -91,13 +109,18 @@ const copyDir = async (src, dst, options) => {
     return isntPackage && isntBuild;
   };
 
-  options = _.defaults(options || {}, {
+  options = {
     clobber: false,
     filter: defaultFilter,
     onCopy: () => {},
     onSkip: () => {},
     onDirExists: () => true,
-  });
+    ...options,
+  };
+
+  if (!options.filter) {
+    options.filter = defaultFilter;
+  }
 
   await ensureDir(dst);
   const files = await fse.readdirSync(src);
@@ -140,6 +163,7 @@ const copyDir = async (src, dst, options) => {
 
 // Delete a directory.
 const removeDir = (dir) => fse.remove(dir);
+const removeDirSync = (dir) => fse.removeSync(dir);
 
 // Returns true if directory is empty, else false.
 // Rejects if directory does not exist.
@@ -167,6 +191,7 @@ module.exports = {
   readFile,
   readFileStr,
   removeDir,
+  removeDirSync,
   validateFileExists,
   writeFile,
   copyFile,
