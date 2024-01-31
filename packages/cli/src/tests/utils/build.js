@@ -321,14 +321,15 @@ describe('build in workspaces', function () {
     // Set up a monorepo project structure with two integrations as npm
     // workspaces:
     //
-    // packages/
+    // (project root)
     // ├─ package.json
-    // ├─ app-1/
-    // │  ├─ index.js
-    // │  └─ package.json
-    // └─ app-2/
-    // 	  ├─ index.js
-    // 	  └─ package.json
+    // └── packages/
+    //    ├─ app-1/
+    //    │  ├─ index.js
+    //    │  └─ package.json
+    //    └─ app-2/
+    // 	     ├─ index.js
+    // 	     └─ package.json
 
     // Create root package.json
     fs.outputFileSync(
