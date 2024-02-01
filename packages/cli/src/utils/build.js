@@ -415,6 +415,11 @@ const _buildFunc = async ({
     zapierWrapperBuf.toString()
   );
 
+  if (printProgress) {
+    endSpinner();
+    startSpinner('Building app definition.json');
+  }
+
   const rawDefinition = (
     await _appCommandZapierWrapper(tmpDir, {
       command: 'definition',
