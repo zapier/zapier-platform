@@ -86,21 +86,21 @@ const copyFile = (src, dest, mode) => {
 /*
   Returns a promise that copies a directory recursively.
 
-	Options:
-		
-	- clobber: Overwrite existing files? Default is false.
-	- filter:
-			A function that returns true if the file should be copied. By default, it
-			ignores node_modules and .zip files.
-	- onCopy:
-			A function called when a file is copied. Takes the destination path as an
-			argument.
-	- onSkip:
-			A function called when a file is skipped. Takes the destination path as an
-			argument.
-	- onDirExists:
-			A function called when a directory exists. Takes the destination path as
-			an argument. Returns true to carry on copying. Returns false to skip.
+  Options:
+
+  - clobber: Overwrite existing files? Default is false.
+  - filter:
+      A function that returns true if the file should be copied. By default, it
+      ignores node_modules and .zip files.
+  - onCopy:
+      A function called when a file is copied. Takes the destination path as an
+      argument.
+  - onSkip:
+      A function called when a file is skipped. Takes the destination path as an
+      argument.
+  - onDirExists:
+      A function called when a directory exists. Takes the destination path as
+      an argument. Returns true to carry on copying. Returns false to skip.
 */
 const copyDir = async (src, dst, options) => {
   const defaultFilter = (srcPath) => {
