@@ -446,6 +446,15 @@ describe('build in workspaces', function () {
       )
     );
     uuidPackageJson.version.should.equal('8.3.2');
+
+    // Make sure node_modules/app-1 and node_modules/app-2 are not included
+    // in the build
+    fs.existsSync(
+      path.join(unzipPath, 'node_modules', 'app-1')
+    ).should.be.false();
+    fs.existsSync(
+      path.join(unzipPath, 'node_modules', 'app-2')
+    ).should.be.false();
   });
 
   it('should build in app-2', async () => {
@@ -495,5 +504,14 @@ describe('build in workspaces', function () {
       )
     );
     uuidPackageJson.version.should.equal('9.0.1');
+
+    // Make sure node_modules/app-1 and node_modules/app-2 are not included
+    // in the build
+    fs.existsSync(
+      path.join(unzipPath, 'node_modules', 'app-1')
+    ).should.be.false();
+    fs.existsSync(
+      path.join(unzipPath, 'node_modules', 'app-2')
+    ).should.be.false();
   });
 });
