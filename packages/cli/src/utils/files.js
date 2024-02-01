@@ -4,6 +4,7 @@ const os = require('os');
 const path = require('path');
 
 const fse = require('fs-extra');
+const colors = require('colors/safe');
 
 const fixHome = (dir) => {
   const home = process.env.HOME || process.env.USERPROFILE;
@@ -127,16 +128,34 @@ const copyDir = async (src, dst, options) => {
 
   const promises = files.map(async (file) => {
     const srcItem = path.resolve(src, file);
-    const dstItem = path.resolve(dst, file);
-    const stat = fse.statSync(srcItem);
-    const isFile = stat.isFile();
-    const dstExists = fileExistsSync(dstItem);
 
+    let srcStat;
+    try {
+      srcStat = fse.statSync(srcItem);
+    } catch (err) {
+      // If the file is a symlink and the target doesn't exist, skip it.
+      if (fse.lstatSync(srcItem).isSymbolicLink()) {
+        console.warn(
+          colors.yellow(
+            `\n! Warning: symlink "${srcItem}" points to a non-existent file. Skipping!\n`
+          )
+        );
+        return null;
+      }
+
+      // otherwise, rethrow the error
+      throw err;
+    }
+
+    const srcIsFile = srcStat.isFile();
+
+    const dstItem = path.resolve(dst, file);
+    const dstExists = fileExistsSync(dstItem);
     if (!options.filter(srcItem)) {
       return null;
     }
 
-    if (isFile) {
+    if (srcIsFile) {
       if (dstExists) {
         if (!options.clobber) {
           options.onSkip(dstItem);
@@ -145,7 +164,7 @@ const copyDir = async (src, dst, options) => {
         fse.removeSync(dstItem);
       }
 
-      await copyFile(srcItem, dstItem, stat.mode);
+      await copyFile(srcItem, dstItem, srcStat.mode);
       options.onCopy(dstItem);
     } else {
       let shouldCopyRecursively = true;
