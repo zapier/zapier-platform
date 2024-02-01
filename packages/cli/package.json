@@ -60,6 +60,7 @@
     "lodash": "4.17.21",
     "marked": "4.2.12",
     "marked-terminal": "5.2.0",
+    "minimatch": "9.0.3",
     "node-fetch": "2.6.7",
     "ora": "5.4.0",
     "parse-gitignore": "0.5.1",

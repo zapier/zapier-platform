@@ -14,6 +14,7 @@ const colors = require('colors/safe');
 const ignore = require('ignore');
 const gitIgnore = require('parse-gitignore');
 const semver = require('semver');
+const { minimatch } = require('minimatch');
 
 const {
   constants: { Z_BEST_COMPRESSION },
@@ -318,6 +319,24 @@ const maybeRunBuildScript = async (options = {}) => {
   }
 };
 
+const listWorkspaces = (workspaceRoot) => {
+  const packageJsonPath = path.join(workspaceRoot, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return [];
+  }
+
+  let packageJson;
+  try {
+    packageJson = require(packageJsonPath);
+  } catch (err) {
+    return [];
+  }
+
+  return (packageJson.workspaces || []).map((relpath) =>
+    path.join(workspaceRoot, relpath)
+  );
+};
+
 const _buildFunc = async ({
   skipNpmInstall = false,
   disableDependencyDetection = false,
@@ -351,7 +370,7 @@ const _buildFunc = async ({
   }
 
   const copyFilter = skipNpmInstall
-    ? (src) => !src.includes('.zip')
+    ? (src) => !src.endsWith('.zip')
     : undefined;
 
   await copyDir(wdir, tmpDir, { filter: copyFilter });
@@ -359,11 +378,30 @@ const _buildFunc = async ({
   if (skipNpmInstall) {
     const corePackageDir = findCorePackageDir();
     const nodeModulesDir = path.dirname(corePackageDir);
-    const workspaceDir = path.dirname(nodeModulesDir);
-    if (wdir !== workspaceDir) {
+    const workspaceRoot = path.dirname(nodeModulesDir);
+    if (wdir !== workspaceRoot) {
       // If we're in here, it means the user is using npm/yarn workspaces
+      const workspaces = listWorkspaces(workspaceRoot);
+
       await copyDir(nodeModulesDir, path.join(tmpDir, 'node_modules'), {
-        filter: copyFilter,
+        filter: (src) => {
+          if (src.endsWith('.zip')) {
+            return false;
+          }
+          const stat = fse.lstatSync(src);
+          if (stat.isSymbolicLink()) {
+            const realPath = path.resolve(
+              path.dirname(src),
+              fse.readlinkSync(src)
+            );
+            for (const workspace of workspaces) {
+              if (minimatch(realPath, workspace)) {
+                return false;
+              }
+            }
+          }
+          return true;
+        },
         onDirExists: (dir) => {
           // Don't overwrite existing sub-directories in node_modules
           return false;
