@@ -1,3 +1,33 @@
+## 15.5.2
+
+_released `2024-02-05`_
+
+### cli
+
+- :wrench: Updated the "custom-auth" sample to avoid a warning when running zapier validate ([#724](https://github.com/zapier/zapier-platform/pull/724))
+
+- :bug: Fixed bug in `zapier convert` that crashes due to syntax error in user's code and should not replace `source` in sample ([#730](https://github.com/zapier/zapier-platform/pull/730))
+
+- :scroll: Updated rest hook tutorial to include content for expiring webhooks ([#731](https://github.com/zapier/zapier-platform/pull/731))
+
+- :bug: Updated method types in RawHttpResponse ([#735](https://github.com/zapier/zapier-platform/pull/735))
+
+- :bug: Use node-fetch types in BaseHttpResponse ([#736](https://github.com/zapier/zapier-platform/pull/736))
+
+- :wrench: Improved handling of broken symlinks while copying files to temp directory during the build process ([#737](https://github.com/zapier/zapier-platform/pull/737))
+
+- :bug: `zapier build` fails with npm workspaces ([#738](https://github.com/zapier/zapier-platform/pull/738))
+
+- :wrench: Added @clif/core dependency, upgraded @oclif/plugin-help ([#739](https://github.com/zapier/zapier-platform/pull/739))
+
+- :scroll: Documenting 5 min cache behavior of hydration and how to workaround ([#740](https://github.com/zapier/zapier-platform/pull/740))
+
+- :bug: Fixed converting triggers breaking when trigger key starts with a number ([#741](https://github.com/zapier/zapier-platform/pull/741))
+
+- :bug: Added comments and fixed a path issue in utils/build.js ([#742](https://github.com/zapier/zapier-platform/pull/742))
+
+- :wrench: Fixed text alignment in `zapier validate` ([#743](https://github.com/zapier/zapier-platform/pull/743))
+
 ## 15.5.1
 
 _released `2023-11-21`_
@@ -46,8 +76,8 @@ _released `2023-11-01`_
 
 - :scroll: Update `z.cursor` documentation for handling end of the result set ([#703](https://github.com/zapier/zapier-platform/pull/703))
 
-
 ### core
+
 - :hammer: Bump secret-scrubber-js to v1.0.8 ([#717](https://github.com/zapier/zapier-platform/pull/717))
 
 ### schema
@@ -61,7 +91,6 @@ _released `2023-11-01`_
 - :scroll: Fix broken link in README-source.md ([#714](https://github.com/zapier/zapier-platform/pull/714))
 
 - :scroll: Fix broken link in readme.md ([#713](https://github.com/zapier/zapier-platform/pull/713))
-
 
 ## 15.4.1
 
