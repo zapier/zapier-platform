@@ -319,6 +319,8 @@ const maybeRunBuildScript = async (options = {}) => {
   }
 };
 
+// Get `workspaces` from root package.json and convert them to absolute paths.
+// Returns an empty array if package.json can't be found.
 const listWorkspaces = (workspaceRoot) => {
   const packageJsonPath = path.join(workspaceRoot, 'package.json');
   if (!fs.existsSync(packageJsonPath)) {
@@ -333,7 +335,7 @@ const listWorkspaces = (workspaceRoot) => {
   }
 
   return (packageJson.workspaces || []).map((relpath) =>
-    path.join(workspaceRoot, relpath)
+    path.resolve(workspaceRoot, relpath)
   );
 };
 
@@ -395,6 +397,8 @@ const _buildFunc = async ({
               fse.readlinkSync(src)
             );
             for (const workspace of workspaces) {
+              // Use minimatch to do glob pattern match. If match, it means the
+              // symlink points to a workspace package, so we don't copy it.
               if (minimatch(realPath, workspace)) {
                 return false;
               }
