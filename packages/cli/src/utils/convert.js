@@ -254,7 +254,12 @@ const renderIndex = async (appDefinition) => {
     },
     (importNameSuffix, stepType) => {
       _.each(appDefinition[stepType], (definition, key) => {
-        const importName = _.camelCase(key) + importNameSuffix;
+        let importName = _.camelCase(key) + importNameSuffix;
+
+        if (importName[0].match(/[0-9]/)) {
+          importName = `cannotStartWithNumber${importName}`;
+        }
+
         const filepath = `./${stepType}/${_.snakeCase(key)}.js`;
 
         importBlock.push(`const ${importName} = require('${filepath}');`);
