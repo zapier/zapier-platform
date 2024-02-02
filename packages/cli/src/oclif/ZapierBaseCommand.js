@@ -1,6 +1,5 @@
 const { Command } = require('@oclif/command');
-const { stdtermwidth } = require('@oclif/plugin-help/lib/screen');
-const { renderList } = require('@oclif/plugin-help/lib/list');
+const { renderList } = require('@oclif/core/lib/cli-ux/list');
 const colors = require('colors/safe');
 
 const { startSpinner, endSpinner, formatStyles } = require('../utils/display');
@@ -150,7 +149,7 @@ class ZapierBaseCommand extends Command {
    * @param {string[][]} items
    */
   logList(items) {
-    this.log(renderList(items, { spacer: '\n', maxWidth: stdtermwidth }));
+    this.log(renderList(items));
   }
 
   /**
