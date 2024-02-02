@@ -14,6 +14,7 @@ const colors = require('colors/safe');
 const ignore = require('ignore');
 const gitIgnore = require('parse-gitignore');
 const semver = require('semver');
+const { minimatch } = require('minimatch');
 
 const {
   constants: { Z_BEST_COMPRESSION },
@@ -45,7 +46,7 @@ const {
 
 const checkMissingAppInfo = require('./check-missing-app-info');
 
-const { runCommand, isWindows } = require('./misc');
+const { runCommand, isWindows, findCorePackageDir } = require('./misc');
 
 const debug = require('debug')('zapier:build');
 
@@ -318,10 +319,30 @@ const maybeRunBuildScript = async (options = {}) => {
   }
 };
 
+const listWorkspaces = (workspaceRoot) => {
+  const packageJsonPath = path.join(workspaceRoot, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return [];
+  }
+
+  let packageJson;
+  try {
+    packageJson = require(packageJsonPath);
+  } catch (err) {
+    return [];
+  }
+
+  return (packageJson.workspaces || []).map((relpath) =>
+    path.join(workspaceRoot, relpath)
+  );
+};
+
 const _buildFunc = async ({
   skipNpmInstall = false,
   disableDependencyDetection = false,
   skipValidation = false,
+  printProgress = true,
+  checkOutdated = true,
 } = {}) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
@@ -332,8 +353,11 @@ const _buildFunc = async ({
     osTmpDir,
     'zapier-' + crypto.randomBytes(4).toString('hex')
   );
+  debug('Using temp directory: ', tmpDir);
 
-  maybeNotifyAboutOutdated();
+  if (checkOutdated) {
+    maybeNotifyAboutOutdated();
+  }
 
   await maybeRunBuildScript();
 
@@ -341,15 +365,57 @@ const _buildFunc = async ({
   await ensureDir(tmpDir);
   await ensureDir(constants.BUILD_DIR);
 
-  startSpinner('Copying project to temp directory');
-  await copyDir(wdir, tmpDir, {
-    filter: skipNpmInstall ? (dir) => !dir.includes('.zip') : undefined,
-  });
+  if (printProgress) {
+    startSpinner('Copying project to temp directory');
+  }
+
+  const copyFilter = skipNpmInstall
+    ? (src) => !src.endsWith('.zip')
+    : undefined;
+
+  await copyDir(wdir, tmpDir, { filter: copyFilter });
+
+  if (skipNpmInstall) {
+    const corePackageDir = findCorePackageDir();
+    const nodeModulesDir = path.dirname(corePackageDir);
+    const workspaceRoot = path.dirname(nodeModulesDir);
+    if (wdir !== workspaceRoot) {
+      // If we're in here, it means the user is using npm/yarn workspaces
+      const workspaces = listWorkspaces(workspaceRoot);
+
+      await copyDir(nodeModulesDir, path.join(tmpDir, 'node_modules'), {
+        filter: (src) => {
+          if (src.endsWith('.zip')) {
+            return false;
+          }
+          const stat = fse.lstatSync(src);
+          if (stat.isSymbolicLink()) {
+            const realPath = path.resolve(
+              path.dirname(src),
+              fse.readlinkSync(src)
+            );
+            for (const workspace of workspaces) {
+              if (minimatch(realPath, workspace)) {
+                return false;
+              }
+            }
+          }
+          return true;
+        },
+        onDirExists: (dir) => {
+          // Don't overwrite existing sub-directories in node_modules
+          return false;
+        },
+      });
+    }
+  }
 
   let output = {};
   if (!skipNpmInstall) {
-    endSpinner();
-    startSpinner('Installing project dependencies');
+    if (printProgress) {
+      endSpinner();
+      startSpinner('Installing project dependencies');
+    }
     output = await runCommand('npm', ['install', '--production'], {
       cwd: tmpDir,
     });
@@ -366,9 +432,12 @@ const _buildFunc = async ({
       'Could not install dependencies properly. Error log:\n' + output.stderr
     );
   }
-  endSpinner();
 
-  startSpinner('Applying entry point file');
+  if (printProgress) {
+    endSpinner();
+    startSpinner('Applying entry point file');
+  }
+
   // TODO: should this routine for include exist elsewhere?
   const zapierWrapperBuf = await readFile(
     path.join(
@@ -383,9 +452,12 @@ const _buildFunc = async ({
     path.join(tmpDir, 'zapierwrapper.js'),
     zapierWrapperBuf.toString()
   );
-  endSpinner();
 
-  startSpinner('Building app definition.json');
+  if (printProgress) {
+    endSpinner();
+    startSpinner('Building app definition.json');
+  }
+
   const rawDefinition = (
     await _appCommandZapierWrapper(tmpDir, {
       command: 'definition',
@@ -403,7 +475,10 @@ const _buildFunc = async ({
       `Unable to write ${tmpDir}/definition.json, please check file permissions!`
     );
   }
-  endSpinner();
+
+  if (printProgress) {
+    endSpinner();
+  }
 
   if (!skipValidation) {
     /**
@@ -412,7 +487,9 @@ const _buildFunc = async ({
      * (Remote - `validateApp`) Both the Schema, AppVersion, and Auths are validated
      */
 
-    startSpinner('Validating project schema');
+    if (printProgress) {
+      startSpinner('Validating project schema and style');
+    }
     const validateResponse = await _appCommandZapierWrapper(tmpDir, {
       command: 'validate',
     });
@@ -424,8 +501,6 @@ const _buildFunc = async ({
         'We hit some validation errors, try running `zapier validate` to see them!'
       );
     }
-
-    startSpinner('Validating project style');
 
     // No need to mention specifically we're validating style checks as that's
     //   implied from `zapier validate`, though it happens as a separate process
@@ -441,7 +516,9 @@ const _buildFunc = async ({
         'We hit some style validation errors, try running `zapier validate` to see them!'
       );
     }
-    endSpinner();
+    if (printProgress) {
+      endSpinner();
+    }
 
     if (_.get(styleChecksResponse, ['warnings', 'total_failures'])) {
       console.log(colors.yellow('WARNINGS:'));
@@ -457,16 +534,21 @@ const _buildFunc = async ({
     debug('\nWarning: Skipping Validation');
   }
 
-  startSpinner('Zipping project and dependencies');
+  if (printProgress) {
+    startSpinner('Zipping project and dependencies');
+  }
   await makeZip(tmpDir, path.join(wdir, zipPath), disableDependencyDetection);
   await makeSourceZip(
     tmpDir,
     path.join(wdir, sourceZipPath),
     disableDependencyDetection
   );
-  endSpinner();
 
-  startSpinner('Testing build');
+  if (printProgress) {
+    endSpinner();
+    startSpinner('Testing build');
+  }
+
   if (!isWindows()) {
     // TODO err, what should we do on windows?
 
@@ -479,11 +561,17 @@ const _buildFunc = async ({
       { cwd: tmpDir }
     );
   }
-  endSpinner();
 
-  startSpinner('Cleaning up temp directory');
+  if (printProgress) {
+    endSpinner();
+    startSpinner('Cleaning up temp directory');
+  }
+
   await removeDir(tmpDir);
-  endSpinner();
+
+  if (printProgress) {
+    endSpinner();
+  }
 
   return zipPath;
 };

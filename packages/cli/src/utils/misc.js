@@ -77,6 +77,22 @@ const runCommand = (command, args, options) => {
 const isValidNodeVersion = (version = process.version) =>
   semver.satisfies(version, NODE_VERSION_CLI_REQUIRES);
 
+const findCorePackageDir = () => {
+  let baseDir = process.cwd();
+  // 500 is just an arbitrary number to prevent infinite loops
+  for (let i = 0; i < 500; i++) {
+    const dir = path.join(baseDir, 'node_modules', PLATFORM_PACKAGE);
+    if (fse.existsSync(dir)) {
+      return dir;
+    }
+    if (baseDir === '/' || baseDir.match(/^[a-z]:\\$/i)) {
+      break;
+    }
+    baseDir = path.dirname(baseDir);
+  }
+  throw new Error(`Could not find ${PLATFORM_PACKAGE}.`);
+};
+
 const isValidAppInstall = () => {
   let packageJson, dependedCoreVersion;
   try {
@@ -91,7 +107,7 @@ const isValidAppInstall = () => {
         valid: false,
         reason: `Your app doesn't depend on ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
           `npm install -E ${PLATFORM_PACKAGE}`
-        )}\` to resolve`,
+        )}\` to resolve.`,
       };
     } else if (!semver.valid(dependedCoreVersion)) {
       // semver.valid only matches exact versions
@@ -104,28 +120,28 @@ const isValidAppInstall = () => {
     return { valid: false, reason: String(err) };
   }
 
+  let corePackageDir;
   try {
-    const installedPackageJson = require(path.join(
-      process.cwd(),
-      'node_modules',
-      PLATFORM_PACKAGE,
-      'package.json'
-    ));
-
-    const installedCoreVersion = installedPackageJson.version;
-    // not an error for now, but something to mention to them
-    if (dependedCoreVersion !== installedCoreVersion) {
-      console.warn(
-        `\nYour code depends on v${dependedCoreVersion} of ${PLATFORM_PACKAGE}, but your local copy is v${installedCoreVersion}. You should probably reinstall your dependencies.\n`
-      );
-    }
+    corePackageDir = findCorePackageDir();
   } catch (err) {
     return {
       valid: false,
       reason: `Looks like you're missing a local installation of ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
         'npm install'
-      )}\` to resolve`,
+      )}\` to resolve.`,
     };
+  }
+
+  const installedPackageJson = require(path.join(
+    corePackageDir,
+    'package.json'
+  ));
+  const installedCoreVersion = installedPackageJson.version;
+
+  if (installedCoreVersion !== dependedCoreVersion) {
+    console.warn(
+      `\nYour code depends on v${dependedCoreVersion} of ${PLATFORM_PACKAGE}, but your local copy is v${installedCoreVersion}. You should probably reinstall your dependencies.\n`
+    );
   }
 
   return { valid: true };
@@ -214,6 +230,7 @@ const printVersionInfo = (context) => {
 module.exports = {
   camelCase,
   entryPoint,
+  findCorePackageDir,
   isValidAppInstall,
   isValidNodeVersion,
   isWindows,
