@@ -8,7 +8,7 @@ _released `2024-02-05`_
 
 - :bug: Fixed bug in `zapier convert` that crashes due to syntax error in user's code and should not replace `source` in sample ([#730](https://github.com/zapier/zapier-platform/pull/730))
 
-- :wrench: Improved handling of broken symlinks while copying files to temp directory during the build process ([#737](https://github.com/zapier/zapier-platform/pull/737))
+- :bug: Improved handling of broken symlinks while copying files to temp directory during the build process ([#737](https://github.com/zapier/zapier-platform/pull/737))
 
 - :bug: `zapier build` fails with npm workspaces ([#738](https://github.com/zapier/zapier-platform/pull/738))
 
