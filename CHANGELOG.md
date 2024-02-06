@@ -1,6 +1,6 @@
 ## 15.5.2
 
-_released `2024-02-05`_
+_released `2024-02-06`_
 
 ### cli
 
@@ -10,16 +10,10 @@ _released `2024-02-05`_
 
 - :bug: Improved handling of broken symlinks while copying files to temp directory during the build process ([#737](https://github.com/zapier/zapier-platform/pull/737))
 
-- :bug: `zapier build` fails with npm workspaces ([#738](https://github.com/zapier/zapier-platform/pull/738))
-
+- :bug: `zapier build` fails with npm workspaces ([#738](https://github.com/zapier/zapier-platform/pull/738), [#742](https://github.com/zapier/zapier-platform/pull/742))
 - :wrench: Added @clif/core dependency, upgraded @oclif/plugin-help ([#739](https://github.com/zapier/zapier-platform/pull/739))
 
 - :bug: Fixed converting triggers breaking when trigger key starts with a number ([#741](https://github.com/zapier/zapier-platform/pull/741))
-
-- :bug: Added comments and fixed a path issue in utils/build.js ([#742](https://github.com/zapier/zapier-platform/pull/742))
-
-- :wrench: Fixed text alignment in `zapier validate` ([#743](https://github.com/zapier/zapier-platform/pull/743))
-
 
 ### core
 - :bug: Updated method types in RawHttpResponse ([#735](https://github.com/zapier/zapier-platform/pull/735))
