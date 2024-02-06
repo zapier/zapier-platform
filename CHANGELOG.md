@@ -11,23 +11,22 @@ _released `2024-02-06`_
 - :bug: Improved handling of broken symlinks while copying files to temp directory during the build process ([#737](https://github.com/zapier/zapier-platform/pull/737))
 
 - :bug: `zapier build` fails with npm workspaces ([#738](https://github.com/zapier/zapier-platform/pull/738), [#742](https://github.com/zapier/zapier-platform/pull/742))
-- :wrench: Added @clif/core dependency, upgraded @oclif/plugin-help ([#739](https://github.com/zapier/zapier-platform/pull/739))
+
+- :wrench: Upgraded @oclif/plugin-help dependency ([#739](https://github.com/zapier/zapier-platform/pull/739))
 
 - :bug: Fixed converting triggers breaking when trigger key starts with a number ([#741](https://github.com/zapier/zapier-platform/pull/741))
 
 ### core
+
 - :bug: Updated method types in RawHttpResponse ([#735](https://github.com/zapier/zapier-platform/pull/735))
 
 - :bug: Use node-fetch types in BaseHttpResponse ([#736](https://github.com/zapier/zapier-platform/pull/736))
-
 
 ### misc
 
 - :scroll: Updated rest hook tutorial to include content for expiring webhooks ([#731](https://github.com/zapier/zapier-platform/pull/731))
 
 - :scroll: Documenting 5 min cache behavior of hydration and how to workaround ([#740](https://github.com/zapier/zapier-platform/pull/740))
-
-
 
 ## 15.5.1
 
