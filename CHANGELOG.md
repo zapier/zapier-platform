@@ -1,3 +1,12 @@
+## 15.5.3
+
+_released `2024-02-08`_
+
+### cli
+
+- :bug: Fixed bug in `zapier validate` where `zapier-platform-core` was failing to import on version `15.5.2` ([#746](https://github.com/zapier/zapier-platform/pull/746))
+
+
 ## 15.5.2
 
 _released `2024-02-06`_
