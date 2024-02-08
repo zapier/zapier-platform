@@ -1,11 +1,13 @@
 const _ = require('lodash');
 const path = require('path');
 
-const { PLATFORM_PACKAGE } = require('../constants');
+const { findCorePackageDir } = require('./misc');
 
 const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
   const entryPath = `${process.cwd()}/index`;
   const rootPath = path.dirname(require.resolve(entryPath));
+  const corePackageDir = findCorePackageDir();
+
   if (reload) {
     Object.keys(require.cache).forEach((cachePath) => {
       if (cachePath.startsWith(rootPath)) {
@@ -16,7 +18,7 @@ const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
   let appRaw, zapier;
   try {
     appRaw = require(entryPath);
-    zapier = require(PLATFORM_PACKAGE);
+    zapier = require(corePackageDir);
   } catch (err) {
     // this err.stack doesn't give a nice traceback at all :-(
     // maybe we could do require('syntax-error') in the future
