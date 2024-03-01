@@ -1324,6 +1324,7 @@ Ensure you're handling errors correctly for your platform version. The latest re
 * `headers`: request headers object, format `{'header-key': 'header-value'}`.
 * `params`: URL query params object, format `{'query-key': 'query-value'}`.
 * `body`: request body, can be a string, buffer, readable stream or plain object. When it is an object/array and the `Content-Type` header is `application/x-www-form-urlencoded` the body will be transformed to query string parameters, otherwise we'll set the header to `application/json; charset=utf-8` and JSON encode the body. Default is `null`.
+* `allowGetBody`: include `body` in `GET` requests. Set to `true` to enable. Default is `false`. Set only if required by the receiving API. See [section 4.3.1 in RFC 7231](https://www.rfc-editor.org/rfc/rfc7231#section-4.3.1).
 * `json`: shortcut object/array/etc. you want to JSON encode into body. Default is `null`.
 * `form`: shortcut object. you want to form encode into body. Default is `null`.
 * `raw`: set this to stream the response instead of consuming it immediately. Default is `false`.
