@@ -42,25 +42,26 @@ const isPrimitive = (v) => {
 // Gets array v where v[i] === result[primaryKeys[i]] and stringifies v into a string.
 // Throws TypeError if any of the values are not primitive.
 const stringifyValuesFromPrimaryKeys = (result, primaryKeys) => {
-  const values = primaryKeys.map((key) => result[key]);
-  return values
-    .map((v, i) => {
-      const fieldKey = primaryKeys[i];
+  const values = primaryKeys
+    .map((k, i) => {
+      const v = result[k];
       if (!isPrimitive(v)) {
         throw new TypeError(
-          `As a primary key, field "${fieldKey}" must be a primitive (non-object like number or string)`
+          `As part of primary key, field "${k}" must be a primitive (non-object like number or string)`
         );
       }
-      if (v == null) {
-        return '';
-      }
-      return `${fieldKey}=${v.toString()}`;
+      return [k, v];
     })
-    .join('&');
+    .filter((v) => v !== undefined)
+    .reduce((acc, [k, v]) => {
+      acc[k] = v;
+      return acc;
+    }, {});
+  return JSON.stringify(values);
 };
 
 /*
-  Makes sure the results all have a unique primary key in them.
+  Makes sure the primary keys are unique among the results
 */
 const triggerHasUniquePrimary = {
   name: 'triggerHasUniquePrimary',
@@ -71,8 +72,13 @@ const triggerHasUniquePrimary = {
 
     const idCount = {};
 
+    if (!Array.isArray(results)) {
+      // One item can't have duplicates
+      return [];
+    }
+
     for (const result of results) {
-      if (result == null) {
+      if (!result) {
         // this'll get caught elsewhere, but we don't want to blow up this check
         continue;
       }
@@ -87,7 +93,7 @@ const triggerHasUniquePrimary = {
       const count = (idCount[id] = (idCount[id] || 0) + 1);
       if (count > 1) {
         return [
-          `Got a two or more results with primary key of "${id}", primary key is supposed to be unique`,
+          `Got two or more results with primary key of \`${id}\`, primary key should be unique`,
         ];
       }
     }

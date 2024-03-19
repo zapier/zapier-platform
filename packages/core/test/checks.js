@@ -42,18 +42,124 @@ describe('checks', () => {
     checks.triggerHasId.run(testMethod, [{}]).length.should.eql(1);
   });
 
-  it('should check for unique ids via triggerHasUniqueIds', () => {
-    checks.triggerHasUniqueIds
+  it('should run triggerHasId when there are no primary fields', () => {
+    const app = {
+      triggers: {
+        task: {
+          operation: {
+            outputFields: [{ key: 'project_id' }, { key: 'slug' }],
+          },
+        },
+      },
+    };
+    const method = 'triggers.task.operation.perform';
+    const bundle = {};
+    checks.triggerHasId.shouldRun(method, bundle, app).should.be.true();
+    checks.triggerHasId
+      .run(method, [{ id: 1 }, { name: 'foo' }, { name: 'bar' }])
+      .length.should.eql(1);
+  });
+
+  it('should not run triggerHasId when there are non-id primary fields', () => {
+    const app = {
+      triggers: {
+        task: {
+          operation: {
+            outputFields: [
+              { key: 'project_id', primary: true },
+              { key: 'slug', primary: true },
+            ],
+          },
+        },
+      },
+    };
+    const method = 'triggers.task.operation.perform';
+    const bundle = {};
+    checks.triggerHasId.shouldRun(method, bundle, app).should.be.false();
+  });
+
+  it('should check for unique ids via triggerHasUniquePrimary', () => {
+    checks.triggerHasUniquePrimary
       .run(testMethod, [{ id: 1 }, { id: 2 }])
       .length.should.eql(0);
-    checks.triggerHasUniqueIds
+    checks.triggerHasUniquePrimary
       .run(testMethod, [{ id: 1 }, { id: 1 }])
       .length.should.eql(1);
 
-    checks.triggerHasUniqueIds.run(testMethod, []).length.should.eql(0);
-    checks.triggerHasUniqueIds
+    checks.triggerHasUniquePrimary.run(testMethod, []).length.should.eql(0);
+    checks.triggerHasUniquePrimary
       .run(testMethod, { throwsIfNull: null })
       .length.should.eql(0);
+  });
+
+  it('should check for unique primary keys via triggerHasUniquePrimary', () => {
+    const app = {
+      triggers: {
+        task: {
+          operation: {
+            outputFields: [
+              { key: 'id' },
+              { key: 'project_id', primary: true },
+              { key: 'slug', primary: true },
+            ],
+          },
+        },
+      },
+    };
+    const method = 'triggers.task.operation.perform';
+
+    const errors = checks.triggerHasUniquePrimary.run(
+      method,
+      [
+        // Some bad data to make sure the check doesn't break
+        null,
+        undefined,
+        0,
+        Infinity,
+        NaN,
+        { id: 1, project_id: 1, slug: 'foo' },
+        { id: 2, project_id: 2, slug: 'foo' },
+        { id: 3, project_id: 1, slug: 'foo' }, // duplicate!
+      ],
+      app
+    );
+    errors.length.should.eql(1);
+
+    const error = errors[0];
+    error.should.containEql(
+      'Got two or more results with primary key of `{"project_id":1,"slug":"foo"}`'
+    );
+  });
+
+  it('should check type error via triggerHasUniquePrimary', () => {
+    const app = {
+      triggers: {
+        task: {
+          operation: {
+            outputFields: [
+              { key: 'id' },
+              { key: 'project_id', primary: true },
+              { key: 'slug', primary: true },
+            ],
+          },
+        },
+      },
+    };
+    const method = 'triggers.task.operation.perform';
+
+    const errors = checks.triggerHasUniquePrimary.run(
+      method,
+      [
+        { id: 1, project_id: 1, slug: 'foo' },
+        // non-primitive can't be used as a primary key
+        { id: 2, project_id: 2, slug: { foo: 'bar' } },
+      ],
+      app
+    );
+    errors.length.should.eql(1);
+
+    const error = errors[0];
+    error.should.containEql('field "slug" must be a primitive');
   });
 
   it('should error for objects via triggerIsArray', () => {
