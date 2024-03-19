@@ -2080,12 +2080,21 @@ Key | Required | Type | Description
 `window` | **yes** | `integer` | The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.
 `limit` | **yes** | `integer` | The maximum number of invocations for an action, allowed within the timeframe window.
 `scope` | no | `array`[`string` in (`'user'`, `'auth'`, `'account'`)] | The granularity to throttle by. You can set the scope to one or more of the following: 'user' - Throttles based on user ids.  'auth' - Throttles based on auth ids. 'account' - Throttles based on account ids for all users under a single account. By default, throttling is scoped to the account.
+`overrides` | no | `array`[`object`] | Overrides the original throttle configuration based on a Zapier account attribute.
 
 #### Examples
 
 * `{ window: 60, limit: 100 }`
 * `{ window: 600, limit: 100, scope: [ 'account', 'user' ] }`
 * `{ window: 3600, limit: 10, scope: [ 'auth' ] }`
+* ```
+  {
+    window: 3600,
+    limit: 10,
+    scope: [ 'auth' ],
+    overrides: [ { window: 3600, limit: 2, filter: 'free' } ]
+  }
+  ```
 
 #### Anti-Examples
 
