@@ -44,7 +44,13 @@ const isPrimitive = (v) => {
 const stringifyValuesFromPrimaryKeys = (result, primaryKeys) => {
   const values = primaryKeys
     .map((k, i) => {
-      const v = result[k];
+      let v = result[k];
+      if (v === undefined) {
+        // undefined is not a valid JSON value. Here we convert it to string so we will
+        // have `{"id":"undefined"}` in the error message rather than `{}`,
+        // which is confusing.
+        v = 'undefined';
+      }
       if (!isPrimitive(v)) {
         throw new TypeError(
           `As part of primary key, field "${k}" must be a primitive (non-object like number or string)`
@@ -52,7 +58,6 @@ const stringifyValuesFromPrimaryKeys = (result, primaryKeys) => {
       }
       return [k, v];
     })
-    .filter((v) => v !== undefined)
     .reduce((acc, [k, v]) => {
       acc[k] = v;
       return acc;
@@ -70,6 +75,9 @@ const triggerHasUniquePrimary = {
     const triggerKey = method.split('.', 2)[1];
     const primaryKeys = getPreferredPrimaryKeys(compiledApp, triggerKey);
 
+    const usingDefaultPrimary =
+      primaryKeys.length === 1 && primaryKeys[0] === 'id';
+
     const idCount = {};
 
     if (!Array.isArray(results)) {
@@ -83,17 +91,23 @@ const triggerHasUniquePrimary = {
         continue;
       }
 
-      let id;
+      let uniqueKey;
       try {
-        id = stringifyValuesFromPrimaryKeys(result, primaryKeys);
+        uniqueKey = stringifyValuesFromPrimaryKeys(result, primaryKeys);
       } catch (e) {
         return [e.message];
       }
 
-      const count = (idCount[id] = (idCount[id] || 0) + 1);
+      const count = (idCount[uniqueKey] = (idCount[uniqueKey] || 0) + 1);
       if (count > 1) {
+        if (usingDefaultPrimary && uniqueKey === '{"id":"undefined"}') {
+          // This is for backward compatibility. By default, `id` is used as
+          // primary key. But if `results` have no `id` field, let it pass here
+          // and the other check trigger-has-id will catch it.
+          continue;
+        }
         return [
-          `Got two or more results with primary key of \`${id}\`, primary key should be unique`,
+          `Got two or more results with primary key of \`${uniqueKey}\`, primary key should be unique`,
         ];
       }
     }
