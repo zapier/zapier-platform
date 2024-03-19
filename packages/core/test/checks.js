@@ -251,6 +251,44 @@ describe('checkOutput', () => {
     }).should.throw(/missing the "id"/);
   });
 
+  it('should ensure trigger has unique primary key', () => {
+    const output = {
+      input: {
+        _zapier: {
+          event: {
+            method: 'triggers.message.operation.perform',
+            command: 'execute',
+            bundle: {},
+          },
+          app: {
+            triggers: {
+              message: {
+                operation: {
+                  outputFields: [
+                    { key: 'timestamp', primary: true },
+                    { key: 'email', primary: true },
+                    { key: 'subject' },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+      results: [
+        { timestamp: 1710836598, email: 'joe@example.com', subject: 'hi' },
+        { timestamp: 1710836622, email: 'amy@example.com', subject: 'hi' },
+        { timestamp: 1710836622, email: 'amy@example.com', subject: 'hey' },
+      ],
+    };
+
+    (() => {
+      checkOutput(output);
+    }).should.throw(
+      /primary key of `{"timestamp":1710836622,"email":"amy@example.com"}`/
+    );
+  });
+
   it('should be ok if there is a null', () => {
     const output = {
       input: {

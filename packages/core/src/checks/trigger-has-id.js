@@ -15,7 +15,6 @@ const triggerHasId = {
     if (!isTrigger(method) || bundle.cleanedRequest) {
       return false;
     }
-
     const triggerKey = method.split('.', 2)[1];
     if (!triggerKey) {
       // Unreachable, but just in case
@@ -30,8 +29,7 @@ const triggerHasId = {
     ]);
 
     if (!outputFields || !Array.isArray(outputFields)) {
-      // Unreachable, but just in case
-      return false;
+      return true;
     }
 
     // This check is only necessary if either:
