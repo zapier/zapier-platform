@@ -27,6 +27,29 @@ module.exports = makeSchema({
         type: 'string',
       },
     },
+    overrides: {
+      description: 'EXPERIMENTAL: Overrides the original throttle configuration based on a Zapier account attribute.',
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          window: {
+            description:
+              'The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.',
+            type: 'integer',
+          },
+          limit: {
+            description:
+              'The maximum number of invocations for an action, allowed within the timeframe window.',
+            type: 'integer',
+          },
+          filter: {
+            description: `Account-based attribute to override the throttle by. You can set to one of the following: "free", "trial", "paid". Therefore, the throttle scope would be automatically set to "account" and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.`,
+            type: 'string',
+          },
+        }
+      },
+    },
   },
   examples: [
     {
@@ -42,6 +65,16 @@ module.exports = makeSchema({
       window: 3600,
       limit: 10,
       scope: ['auth'],
+    },
+    {
+      window: 3600,
+      limit: 10,
+      scope: ['auth'],
+      overrides: [{
+        window: 3600,
+        limit: 2,
+        filter: 'free',
+      }],
     },
   ],
   antiExamples: [
