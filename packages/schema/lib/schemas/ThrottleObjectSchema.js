@@ -28,7 +28,7 @@ module.exports = makeSchema({
       },
     },
     overrides: {
-      description: `Overrides the original throttle configuration based on a Zapier account attribute.`,
+      description: 'EXPERIMENTAL: Overrides the original throttle configuration based on a Zapier account attribute.',
       type: 'array',
       items: {
         type: 'object',
