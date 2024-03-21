@@ -786,9 +786,9 @@ On each trigger, search, or create in the operation directive - you can provide 
 
 Output Fields are optional, but can be used to:
 
-
 - Define friendly labels for the returned fields. By default, we will *humanize* for example `my_key` as *My Key*.
 - Make sure that custom fields that may not be found in every live sample and - since they're custom to the connected account - cannot be defined in the static sample, can still be mapped.
+- (Added in v15.6.0) Define what field(s) can be used to uniquely identify and [deduplicate](#dedupe) items returned by a polling trigger call.
 
 The [schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#fieldschema) for `outputFields` is shared with `inputFields` but only the `key`, `label`, `type`, and `required` properties are relevant:
 
@@ -796,6 +796,7 @@ The [schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema
 - `label` - defines the field name displayed to users.
 - `type` - defines the type for static sample data. A [validation warning](https://platform.zapier.com/docs/integration-checks-reference#d024---static-sample-respects-output-field-definition) will be displayed if the static sample does not match the specified type.
 - `required` - defines whether the field is required in static sample data. A [validation warning](https://platform.zapier.com/docs/integration-checks-reference#d024---static-sample-respects-output-field-definition) will be displayed if the value is true and the static sample does not contain the field.
+- `primary` - defines whether the field is part of the primary key for polling trigger [deduplication](#dedupe).
 
 Custom/Dynamic Output Fields are defined in the same way as [Custom/Dynamic Input Fields](#customdynamic-fields).
 
@@ -2052,11 +2053,13 @@ Lastly, you need to set `canPaginate` to `true` in your polling definition (per 
 <a id="dedup"></a>
 ### How does deduplication work?
 
-Each time a polling Zap runs, Zapier needs to decide which of the items in the response should trigger the zap. To do this, we compare the `id`s to all those we've seen before, trigger on new objects, and update the list of seen `id`s. When a Zap is turned on, we initialize the list of seen `id`s with a single poll. When it's turned off, we clear that list. For this reason, it's important that calls to a polling endpoint always return the newest items.
+Each time a polling Zap runs, Zapier extracts a unique "primary key" for each item in the response. Zapier needs to decide which of the items should trigger the Zap. To do this, we compare the primary keys to all those we've seen before, trigger on new objects, and update the list of seen primary keys. When a Zap is turned on, we initialize the list of seen primary keys with a single poll. When it's turned off, we clear that list. For this reason, it's important that calls to a polling endpoint always return the newest items.
 
-For example, the initial poll returns objects 4, 5, and 6 (where a higher `id` is newer). If a later poll increases the limit and returns objects 1-6, then 1, 2, and 3 will be (incorrectly) treated like new objects.
+For example, the initial poll returns objects 4, 5, and 6 (where a higher primary key is newer). If a later poll increases the limit and returns objects 1-6, then 1, 2, and 3 will be (incorrectly) treated like new objects.
 
-There's a more in-depth explanation [here](https://platform.zapier.com/legacy/dedupe).
+By default, the primary key is the item's `id` field. Since v15.6.0, you can customize the primary by setting any `outputFields` to true.
+
+There's a more in-depth explanation [here](https://platform.zapier.com/build/deduplication).
 
 ### Why are my triggers complaining if I don't provide an explicit `id` field?
 
@@ -2070,6 +2073,25 @@ return items.map((item) => {
   return item;
 });
 ```
+
+Since v15.6.0, instead of using the default `id` field, you can also define one or more `outputFields` as `primary`. For example:
+
+```js
+{
+  triggers: {
+    recipe: {
+      operation: {
+        outputField: [
+          { key: 'userId', primary: true },
+          { key: 'slug', primary: true },
+        ]
+      }
+    }
+  }
+}
+```
+
+will tell Zapier to use `(userId, slug)` as the unique primary key to deduplicate items when running a polling trigger.
 
 ### Node X No Longer Supported
 
