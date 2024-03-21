@@ -10,9 +10,45 @@ const isTrigger = require('./is-trigger');
 */
 const triggerHasId = {
   name: 'triggerHasId',
-  shouldRun: (method, bundle) => {
+  shouldRun: (method, bundle, compiledApp) => {
     // Hooks will have a bundle.cleanedRequest and we don't need to check they've got an id
-    return isTrigger(method) && !bundle.cleanedRequest;
+    if (!isTrigger(method) || bundle.cleanedRequest) {
+      return false;
+    }
+    const triggerKey = method.split('.', 2)[1];
+    if (!triggerKey) {
+      // Unreachable, but just in case
+      return false;
+    }
+
+    const outputFields = _.get(compiledApp, [
+      'triggers',
+      triggerKey,
+      'operation',
+      'outputFields',
+    ]);
+
+    if (!outputFields || !Array.isArray(outputFields)) {
+      return true;
+    }
+
+    // This check is only necessary if either:
+    // - field.primary not set for all fields
+    // - field.primary is set for `id` field
+    let hasPrimary = false;
+    for (const field of outputFields) {
+      if (!field) {
+        continue; // just in case
+      }
+      if (field.primary) {
+        if (field.key === 'id') {
+          return true;
+        } else {
+          hasPrimary = true;
+        }
+      }
+    }
+    return !hasPrimary;
   },
   run: (method, results) => {
     const missingIdResult = _.find(results, (result) => {

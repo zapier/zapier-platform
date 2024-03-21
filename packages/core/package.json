@@ -21,6 +21,7 @@
     "main-tests": "mocha -t 20s --recursive test --exit",
     "solo-test": "test $(OPT_OUT_PATCH_TEST_ONLY=yes mocha --recursive test -g 'should be able to opt out of patch' -R json | jq '.stats.passes') -eq 1 && echo 'Ran 1 test and it passed!'",
     "test": "yarn main-tests && yarn solo-test",
+    "test:debug": "mocha inspect -t 10s --recursive test",
     "debug": "mocha -t 10s --inspect-brk --recursive test",
     "test:w": "mocha -t 10s --recursive test --watch",
     "integration-test": "mocha -t 20s integration-test",

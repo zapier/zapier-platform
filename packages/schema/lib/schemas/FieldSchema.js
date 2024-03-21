@@ -79,6 +79,11 @@ module.exports = makeSchema(
         type: 'string',
         minLength: 1,
       },
+      primary: {
+        description:
+          'Use this field as part of the primary key for deduplication. You can set multiple fields as "primary", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`; it will be ignored if set in `inputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).',
+        type: 'boolean',
+      },
       dynamic: {
         description:
           'A reference to a trigger that will power a dynamic dropdown.',
@@ -121,7 +126,8 @@ module.exports = makeSchema(
         type: 'boolean',
       },
       steadyState: {
-        description: 'Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.',
+        description:
+          'Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.',
         type: 'boolean',
       },
       inputFormat: {
