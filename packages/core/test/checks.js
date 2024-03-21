@@ -78,6 +78,24 @@ describe('checks', () => {
     checks.triggerHasId.shouldRun(method, bundle, app).should.be.false();
   });
 
+  it('should run triggerHasId if id follows another primary field', () => {
+    const app = {
+      triggers: {
+        task: {
+          operation: {
+            outputFields: [
+              { key: 'slug', primary: true },
+              { key: 'id', primary: true },
+            ],
+          },
+        },
+      },
+    };
+    const method = 'triggers.task.operation.perform';
+    const bundle = {};
+    checks.triggerHasId.shouldRun(method, bundle, app).should.be.true();
+  });
+
   it('should check for unique ids via triggerHasUniquePrimary', () => {
     checks.triggerHasUniquePrimary
       .run(testMethod, [{ id: 1 }, { id: 2 }])

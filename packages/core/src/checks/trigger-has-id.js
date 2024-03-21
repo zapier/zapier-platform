@@ -45,7 +45,6 @@ const triggerHasId = {
           return true;
         } else {
           hasPrimary = true;
-          break;
         }
       }
     }
