@@ -1,3 +1,20 @@
+## 15.6.0
+
+_To be released_
+
+### cli
+
+- :scroll: Document `allowGetBody` option in `z.request()` ([#752](https://github.com/zapier/zapier-platform/pull/752))
+
+### core
+
+- :wrench: Change trigger output check logic for the newly-added `primary` property in `outputFields` ([#754](https://github.com/zapier/zapier-platform/pull/754))
+
+### schema
+
+- :tada: Allow to set `primary` in `outputFields` to define the unique key for [deduplication](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#how-does-deduplication-work) ([#754](https://github.com/zapier/zapier-platform/pull/754))
+- :test_tube: Add support for throttle configuration override ([#755](https://github.com/zapier/zapier-platform/pull/754))
+
 ## 15.5.3
 
 _released `2024-02-08`_
@@ -6,7 +23,6 @@ _released `2024-02-08`_
 
 - :bug: Fixed bug in `zapier validate` where `zapier-platform-core` was failing to import on version `15.5.2` ([#746](https://github.com/zapier/zapier-platform/pull/746))
 
-
 ## 15.5.2
 
 _released `2024-02-06`_
@@ -14,27 +30,20 @@ _released `2024-02-06`_
 ### cli
 
 - :bug: Fixed bug in `zapier convert` that crashes due to syntax error in user's code and should not replace `source` in sample ([#730](https://github.com/zapier/zapier-platform/pull/730))
-
 - :bug: Improved handling of broken symlinks while copying files to temp directory during the build process ([#737](https://github.com/zapier/zapier-platform/pull/737))
-
 - :bug: Fixed bug in `zapier build` where it failed to run in npm workspaces ([#738](https://github.com/zapier/zapier-platform/pull/738), [#742](https://github.com/zapier/zapier-platform/pull/742))
-
 - :bug: Fixed converting triggers breaking when trigger key starts with a number ([#741](https://github.com/zapier/zapier-platform/pull/741))
-
 - :wrench: Upgraded @oclif/plugin-help dependency, addressing security issue with sub-dependency ([#739](https://github.com/zapier/zapier-platform/pull/739))
-
 - :wrench: Updated the "custom-auth" sample to avoid a warning when running zapier validate ([#724](https://github.com/zapier/zapier-platform/pull/724))
 
 ### core
 
 - :bug: Updated TypeScript method types in RawHttpResponse ([#735](https://github.com/zapier/zapier-platform/pull/735))
-
 - :bug: Use node-fetch TypeScript types in BaseHttpResponse ([#736](https://github.com/zapier/zapier-platform/pull/736))
 
 ### misc
 
 - :scroll: Updated rest hook tutorial to include content for expiring webhooks ([#731](https://github.com/zapier/zapier-platform/pull/731))
-
 - :scroll: Documenting 5 min cache behavior of hydration and how to workaround ([#740](https://github.com/zapier/zapier-platform/pull/740))
 
 ## 15.5.1
