@@ -2067,7 +2067,7 @@ Key | Required | Type | Description
 
 ## /ThrottleObjectSchema
 
-Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
+Zapier uses this configuration to apply throttling when the limit for the window is exceeded. **NOTE:** the final key used for the throttling is formed as a combination of the key, window, and scope. While actions of different integrations with the same key, window, and scope will never share the same limit, actions of the same integration with the same key, window, and scope will do when "action" is not in the scope.
 
 #### Details
 
@@ -2080,7 +2080,7 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `window` | **yes** | `integer` | The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.
 `limit` | **yes** | `integer` | The maximum number of invocations for an action, allowed within the timeframe window.
-`key` | no | `string` | The key to throttle with in combination with the scope. This should be unique to the operation. While actions of different integrations with the same key and scope will never share the same limit, actions of the same integration with the same key and scope will do when "action" is not in the scope. User data provided for the input fields can be used in the key with the use of the curly braces referencing. For example, to access the user data provided for the input field "test_field", use `{{bundle.inputData.test_field}}`. Note that a required input field should be referenced to get user data always.
+`key` | no | `string` | The key to throttle with in combination with the scope. User data provided for the input fields can be used in the key with the use of the curly braces referencing. For example, to access the user data provided for the input field "test_field", use `{{bundle.inputData.test_field}}`. Note that a required input field should be referenced to get user data always.
 `scope` | no | `array`[`string` in (`'user'`, `'auth'`, `'account'`, `'action'`)] | The granularity to throttle by. You can set the scope to one or more of the following: 'user' - Throttles based on user ids.  'auth' - Throttles based on auth ids. 'account' - Throttles based on account ids for all users under a single account. 'action' - Throttles the action it is set on separately from other actions. By default, throttling is scoped to the action and account.
 `overrides` | no | `array`[`object`] | EXPERIMENTAL: Overrides the original throttle configuration based on a Zapier account attribute.
 

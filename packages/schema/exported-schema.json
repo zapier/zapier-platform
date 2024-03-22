@@ -666,7 +666,7 @@
     },
     "ThrottleObjectSchema": {
       "id": "/ThrottleObjectSchema",
-      "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
+      "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded. **NOTE:** the final key used for the throttling is formed as a combination of the key, window, and scope. While actions of different integrations with the same key, window, and scope will never share the same limit, actions of the same integration with the same key, window, and scope will do when \"action\" is not in the scope.",
       "type": "object",
       "required": ["window", "limit"],
       "properties": {
@@ -679,7 +679,7 @@
           "type": "integer"
         },
         "key": {
-          "description": "The key to throttle with in combination with the scope. This should be unique to the operation. While actions of different integrations with the same key and scope will never share the same limit, actions of the same integration with the same key and scope will do when \"action\" is not in the scope. User data provided for the input fields can be used in the key with the use of the curly braces referencing. For example, to access the user data provided for the input field \"test_field\", use `{{bundle.inputData.test_field}}`. Note that a required input field should be referenced to get user data always.",
+          "description": "The key to throttle with in combination with the scope. User data provided for the input fields can be used in the key with the use of the curly braces referencing. For example, to access the user data provided for the input field \"test_field\", use `{{bundle.inputData.test_field}}`. Note that a required input field should be referenced to get user data always.",
           "type": "string",
           "minLength": 1
         },
