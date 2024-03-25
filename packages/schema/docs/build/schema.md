@@ -2067,7 +2067,7 @@ Key | Required | Type | Description
 
 ## /ThrottleObjectSchema
 
-Zapier uses this configuration to apply throttling when the limit for the window is exceeded. **NOTE:** the final key used for the throttling is formed as a combination of the key, window, and scope. While actions of different integrations with the same key, window, and scope will never share the same limit, actions of the same integration with the same key, window, and scope will do when "action" is not in the scope.
+Zapier uses this configuration to apply throttling when the limit for the window is exceeded. **NOTE:** The final key used for the throttling is formed as a combination of all the configurations; key, window, limit, and scope. To share a limit across multiple actions in an integration, each should have the same configuration set without "action" in the scope.
 
 #### Details
 
