@@ -666,7 +666,7 @@
     },
     "ThrottleObjectSchema": {
       "id": "/ThrottleObjectSchema",
-      "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
+      "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded. **NOTE:** The final key used for the throttling is formed as a combination of all the configurations; key, window, limit, and scope. To share a limit across multiple actions in an integration, each should have the same configuration set without \"action\" in the scope.",
       "type": "object",
       "required": ["window", "limit"],
       "properties": {
@@ -678,11 +678,16 @@
           "description": "The maximum number of invocations for an action, allowed within the timeframe window.",
           "type": "integer"
         },
+        "key": {
+          "description": "The key to throttle with in combination with the scope. User data provided for the input fields can be used in the key with the use of the curly braces referencing. For example, to access the user data provided for the input field \"test_field\", use `{{bundle.inputData.test_field}}`. Note that a required input field should be referenced to get user data always.",
+          "type": "string",
+          "minLength": 1
+        },
         "scope": {
-          "description": "The granularity to throttle by. You can set the scope to one or more of the following: 'user' - Throttles based on user ids.  'auth' - Throttles based on auth ids. 'account' - Throttles based on account ids for all users under a single account. By default, throttling is scoped to the account.",
+          "description": "The granularity to throttle by. You can set the scope to one or more of the following: 'user' - Throttles based on user ids.  'auth' - Throttles based on auth ids. 'account' - Throttles based on account ids for all users under a single account. 'action' - Throttles the action it is set on separately from other actions. By default, throttling is scoped to the action and account.",
           "type": "array",
           "items": {
-            "enum": ["user", "auth", "account"],
+            "enum": ["user", "auth", "account", "action"],
             "type": "string"
           }
         },
