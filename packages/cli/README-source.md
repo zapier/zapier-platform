@@ -1158,17 +1158,25 @@ For example, you can access the `process.env` in your perform functions and in t
 
 *Added in v15.4.0.*
 
-When a throttle configuration is set for an action, Zapier uses it to apply throttling when the limit for the timeframe window is exceeded. It can be set at the root level and/or on an action. When set at the root level, it is the default throttle configuration used on each action of the integration. And when set in an action's operation object, the root-level default is overwritten for that action only.
+*Updated in v15.6.0*
+
+When a throttle configuration is set for an action, Zapier uses it to apply throttling when the limit for the timeframe window is exceeded. It can be set at the root level and/or on an action. When set at the root level, it is the default throttle configuration used on each action of the integration. And when set in an action's operation object, the root-level default is overwritten for that action only. Note that the throttle limit is not shared across actions unless for those with the same key, window, limit, and scope when "action" is not in the scope.
 
 To throttle an action, you need to set a `throttle` object with the following variables:
   1. `window [integer]`: The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.
   2. `limit [integer]`: The maximum number of invocations for an action, allowed within the timeframe window.
-  3. `scope [array]`: The granularity to throttle by. You can set the scope to one or more of the following options;
+  3. `key [string]`: The key to throttle with in combination with the scope. User data provided for the input fields can be used in the key with the use of the curly braces referencing. For example, to access the user data provided for the input field "test_field", use `{{bundle.inputData.test_field}}`. Note that a required input field should be referenced to get user data always.
+  4. `scope [array]`: The granularity to throttle by. You can set the scope to one or more of the following options;
         - 'user' - Throttles based on user ids.
         - 'auth' - Throttles based on auth ids.
         - 'account' - Throttles based on account ids for all users under a single account.
+        - 'action' - Throttles the action it is set on separately from other actions.
+  5. `overrides [array[object]]`: 'EXPERIMENTAL: Overrides the original throttle configuration based on a Zapier account attribute.';
+        - `window [integer]`: Same description as above.
+        - `limit [integer]`: Same description as above.
+        - `filter [string]`: Account-based attribute to override the throttle by. You can set to one of the following: "free", "trial", "paid". Therefore, the throttle scope would be automatically set to "account" and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.
 
-Except for the scope, all throttle variables are required. By default, throttling is scoped to the account.
+Both `window` and `limit` are required and others are optional. By default, throttling is scoped to the action and account.
 
 Here is a typical usage of the throttle configuration:
 
