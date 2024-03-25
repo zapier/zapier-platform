@@ -18,12 +18,30 @@ const App = {
       },
       operation: {
         perform: () => {},
-        inputFields: [],
+        inputFields: [{key: 'name', required: true, type: 'string'}],
         // overwrites the default, for this action
         throttle: {
           window: 600,
           limit: 5,
+          key: 'test-key-{{bundle.inputData.name}}',
           scope: ['account'],
+          overrides: [
+            {
+              window: 600,
+              limit: 10,
+              filter: 'free',
+            },
+            {
+              window: 600,
+              limit: 100,
+              filter: 'trial',
+            },
+            {
+              window: 0,
+              limit: 0,
+              filter: 'paid',
+            },
+          ],
         },
       },
     },
