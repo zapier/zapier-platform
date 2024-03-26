@@ -1,10 +1,11 @@
 ## 15.6.0
 
-_To be released_
+_released `2024-03-26`_
 
 ### cli
 
 - :scroll: Document `allowGetBody` option in `z.request()` ([#752](https://github.com/zapier/zapier-platform/pull/752))
+- :scroll: Update document on the throttle configuration to include `key` and `overrides` attributes, and `action` scope ([#760](https://github.com/zapier/zapier-platform/pull/760))
 
 ### core
 
@@ -13,7 +14,8 @@ _To be released_
 ### schema
 
 - :tada: Allow to set `primary` in `outputFields` to define the unique key for [deduplication](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#how-does-deduplication-work) ([#754](https://github.com/zapier/zapier-platform/pull/754))
-- :test_tube: Add support for throttle configuration override ([#755](https://github.com/zapier/zapier-platform/pull/755))
+- :test_tube: Add support for `overrides` in the throttle configuration ([#755](https://github.com/zapier/zapier-platform/pull/755))
+- :test_tube: Add support for `key` in the throttle configuration and `action` scope ([#757](https://github.com/zapier/zapier-platform/pull/757))
 
 ## 15.5.3
 
