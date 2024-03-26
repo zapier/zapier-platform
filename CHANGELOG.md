@@ -13,7 +13,7 @@ _To be released_
 ### schema
 
 - :tada: Allow to set `primary` in `outputFields` to define the unique key for [deduplication](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#how-does-deduplication-work) ([#754](https://github.com/zapier/zapier-platform/pull/754))
-- :test_tube: Add support for throttle configuration override ([#755](https://github.com/zapier/zapier-platform/pull/754))
+- :test_tube: Add support for throttle configuration override ([#755](https://github.com/zapier/zapier-platform/pull/755))
 
 ## 15.5.3
 
