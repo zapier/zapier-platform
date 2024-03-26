@@ -2175,6 +2175,7 @@ To throttle an action, you need to set a `throttle` object with the following va
         - `window [integer]`: Same description as above.
         - `limit [integer]`: Same description as above.
         - `filter [string]`: Account-based attribute to override the throttle by. You can set to one of the following: "free", "trial", "paid". Therefore, the throttle scope would be automatically set to "account" and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.
+        - `retry [boolean]` (_added in v15.6.1_): The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`.
 
 Both `window` and `limit` are required and others are optional. By default, throttling is scoped to the action and account.
 
@@ -2213,16 +2214,19 @@ const App = {
               window: 600,
               limit: 10,
               filter: 'free',
+              retry: false,
             },
             {
               window: 600,
               limit: 100,
               filter: 'trial',
+              retry: false,
             },
             {
               window: 0,
               limit: 0,
               filter: 'paid',
+              retry: true,
             },
           ],
         },
