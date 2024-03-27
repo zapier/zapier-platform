@@ -10,7 +10,7 @@ module.exports = async function (options) {
   let formFields;
 
   try {
-    formFields = await callAPI('/apps/fields-choices');
+    formFields = await callAPI('/apps/fields-choices', { skipDeployKey: true });
   } catch (e) {
     this.error(
       `Unable to connect to Zapier API. Please check your connection and try again. ${e}`
