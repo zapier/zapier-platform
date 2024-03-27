@@ -1679,7 +1679,7 @@ Output Fields are optional, but can be used to:
 
 - Define friendly labels for the returned fields. By default, we will *humanize* for example `my_key` as *My Key*.
 - Make sure that custom fields that may not be found in every live sample and - since they're custom to the connected account - cannot be defined in the static sample, can still be mapped.
-- (Added in v15.6.0) Define what field(s) can be used to uniquely identify and [deduplicate](#dedupe) items returned by a polling trigger call.
+- (Added in v15.6.0) Define what field(s) can be used to uniquely identify and [deduplicate](#how-does-deduplication-work) items returned by a polling trigger call.
 
 The [schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#fieldschema) for `outputFields` is shared with `inputFields` but only these properties are relevant:
 
@@ -1687,7 +1687,7 @@ The [schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema
 - `label` - defines the field name displayed to users.
 - `type` - defines the type for static sample data. A [validation warning](https://platform.zapier.com/docs/integration-checks-reference#d024---static-sample-respects-output-field-definition) will be displayed if the static sample does not match the specified type.
 - `required` - defines whether the field is required in static sample data. A [validation warning](https://platform.zapier.com/docs/integration-checks-reference#d024---static-sample-respects-output-field-definition) will be displayed if the value is true and the static sample does not contain the field.
-- `primary` - defines whether the field is part of the primary key for polling trigger [deduplication](#dedupe).
+- `primary` - defines whether the field is part of the primary key for polling trigger [deduplication](#how-does-deduplication-work).
 
 Custom/Dynamic Output Fields are defined in the same way as [Custom/Dynamic Input Fields](#customdynamic-fields).
 

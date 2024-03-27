@@ -2747,13 +2747,13 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <p>On each trigger, search, or create in the operation directive - you can provide an array of objects as fields under the <code>outputFields</code>. Output Fields are what users see when they select a field provided by your trigger, search or create to map it to another.</p><p>Output Fields are optional, but can be used to:</p><ul>
 <li>Define friendly labels for the returned fields. By default, we will <em>humanize</em> for example <code>my_key</code> as <em>My Key</em>.</li>
 <li>Make sure that custom fields that may not be found in every live sample and - since they&apos;re custom to the connected account - cannot be defined in the static sample, can still be mapped.</li>
-<li>(Added in v15.6.0) Define what field(s) can be used to uniquely identify and <a href="#dedupe">deduplicate</a> items returned by a polling trigger call.</li>
+<li>(Added in v15.6.0) Define what field(s) can be used to uniquely identify and <a href="#how-does-deduplication-work">deduplicate</a> items returned by a polling trigger call.</li>
 </ul><p>The <a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#fieldschema">schema</a> for <code>outputFields</code> is shared with <code>inputFields</code> but only these properties are relevant:</p><ul>
 <li><code>key</code> - includes the field when not present in the live sample. When no <code>label</code> property is provided, <code>key</code> will be <em>humanized</em> and displayed as the field name.</li>
 <li><code>label</code> - defines the field name displayed to users.</li>
 <li><code>type</code> - defines the type for static sample data. A <a href="https://platform.zapier.com/docs/integration-checks-reference#d024---static-sample-respects-output-field-definition">validation warning</a> will be displayed if the static sample does not match the specified type.</li>
 <li><code>required</code> - defines whether the field is required in static sample data. A <a href="https://platform.zapier.com/docs/integration-checks-reference#d024---static-sample-respects-output-field-definition">validation warning</a> will be displayed if the value is true and the static sample does not contain the field.</li>
-<li><code>primary</code> - defines whether the field is part of the primary key for polling trigger <a href="#dedupe">deduplication</a>.</li>
+<li><code>primary</code> - defines whether the field is part of the primary key for polling trigger <a href="#how-does-deduplication-work">deduplication</a>.</li>
 </ul><p>Custom/Dynamic Output Fields are defined in the same way as <a href="#customdynamic-fields">Custom/Dynamic Input Fields</a>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
