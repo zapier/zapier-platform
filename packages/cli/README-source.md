@@ -790,7 +790,7 @@ Output Fields are optional, but can be used to:
 - Make sure that custom fields that may not be found in every live sample and - since they're custom to the connected account - cannot be defined in the static sample, can still be mapped.
 - (Added in v15.6.0) Define what field(s) can be used to uniquely identify and [deduplicate](#dedupe) items returned by a polling trigger call.
 
-The [schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#fieldschema) for `outputFields` is shared with `inputFields` but only the `key`, `label`, `type`, and `required` properties are relevant:
+The [schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#fieldschema) for `outputFields` is shared with `inputFields` but only these properties are relevant:
 
 - `key` - includes the field when not present in the live sample. When no `label` property is provided, `key` will be *humanized* and displayed as the field name.
 - `label` - defines the field name displayed to users.
@@ -2090,6 +2090,7 @@ Since v15.6.0, instead of using the default `id` field, you can also define one 
         outputField: [
           { key: 'userId', primary: true },
           { key: 'slug', primary: true },
+          { key: 'name' }
         ]
       }
     }

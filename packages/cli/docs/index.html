@@ -2748,7 +2748,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 <li>Define friendly labels for the returned fields. By default, we will <em>humanize</em> for example <code>my_key</code> as <em>My Key</em>.</li>
 <li>Make sure that custom fields that may not be found in every live sample and - since they&apos;re custom to the connected account - cannot be defined in the static sample, can still be mapped.</li>
 <li>(Added in v15.6.0) Define what field(s) can be used to uniquely identify and <a href="#dedupe">deduplicate</a> items returned by a polling trigger call.</li>
-</ul><p>The <a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#fieldschema">schema</a> for <code>outputFields</code> is shared with <code>inputFields</code> but only the <code>key</code>, <code>label</code>, <code>type</code>, and <code>required</code> properties are relevant:</p><ul>
+</ul><p>The <a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#fieldschema">schema</a> for <code>outputFields</code> is shared with <code>inputFields</code> but only these properties are relevant:</p><ul>
 <li><code>key</code> - includes the field when not present in the live sample. When no <code>label</code> property is provided, <code>key</code> will be <em>humanized</em> and displayed as the field name.</li>
 <li><code>label</code> - defines the field name displayed to users.</li>
 <li><code>type</code> - defines the type for static sample data. A <a href="https://platform.zapier.com/docs/integration-checks-reference#d024---static-sample-respects-output-field-definition">validation warning</a> will be displayed if the static sample does not match the specified type.</li>
@@ -5679,6 +5679,7 @@ zapier push
         <span class="hljs-attr">outputField</span>: [
           { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;userId&apos;</span>, <span class="hljs-attr">primary</span>: <span class="hljs-literal">true</span> },
           { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;slug&apos;</span>, <span class="hljs-attr">primary</span>: <span class="hljs-literal">true</span> },
+          { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;name&apos;</span> }
         ]
       }
     }
