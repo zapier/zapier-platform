@@ -3572,7 +3572,7 @@ Each time a polling Zap runs, Zapier extracts a unique "primary key" for each it
 
 For example, the initial poll returns objects 4, 5, and 6 (where a higher primary key is newer). If a later poll increases the limit and returns objects 1-6, then 1, 2, and 3 will be (incorrectly) treated like new objects.
 
-By default, the primary key is the item's `id` field. Since v15.6.0, you can customize the primary by setting any `outputFields` to true.
+By default, the primary key is the item's `id` field. Since v15.6.0, you can customize the primary key by setting `primary` to true in `outputFields`.
 
 There's a more in-depth explanation [here](https://platform.zapier.com/build/deduplication).
 
