@@ -17,7 +17,7 @@ None!
 
 ### misc
 
-- :scroll: Fix failing tests in dependabot's PRs ([#762](https://github.com/zapier/zapier-platform/pull/762))
+- :wrench: Fix failing tests in dependabot's PRs ([#762](https://github.com/zapier/zapier-platform/pull/762))
 
 ## 15.6.0
 
