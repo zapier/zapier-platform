@@ -1,3 +1,24 @@
+## 15.6.1
+
+_released `2024-03-28`_
+
+### cli
+
+- :scroll: Update document on the `primary` property in `outputFields` ([#763](https://github.com/zapier/zapier-platform/pull/763))
+- :scroll: Update document on the throttle configuration to include `retry` in the `overrides` attributes ([#761](https://github.com/zapier/zapier-platform/pull/761))
+
+### core
+
+None!
+
+### schema
+
+- :test_tube: Add support for `retry` in the `overrides` object of the throttle configuration ([#761](https://github.com/zapier/zapier-platform/pull/761))
+
+### misc
+
+- :scroll: Fix failing tests in dependabot's PRs ([#762](https://github.com/zapier/zapier-platform/pull/762))
+
 ## 15.6.0
 
 _released `2024-03-26`_
