@@ -19,10 +19,10 @@ const setupZapierRC = () => {
   const rcPath = path.join(os.homedir(), '.zapierrc');
   if (fs.existsSync(rcPath)) {
     hasRC = true;
-  } else if (process.env.DEPLOY_KEY) {
+  } else if (process.env.ZAPIER_DEPLOY_KEY) {
     fs.writeFileSync(
       rcPath,
-      JSON.stringify({ deployKey: process.env.DEPLOY_KEY })
+      JSON.stringify({ deployKey: process.env.ZAPIER_DEPLOY_KEY })
     );
     hasRC = true;
   }
@@ -195,6 +195,7 @@ describe('smoke tests - setup will take some time', function () {
   it('zapier integrations', function () {
     if (!context.hasRC) {
       this.skip();
+      return;
     }
     const stdout = runCommand(context.cliBin, [
       'integrations',

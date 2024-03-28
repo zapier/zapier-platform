@@ -10,6 +10,7 @@ const { privateApp, publicApp } = require('./fixtures/createApp');
 
 describe('RegisterCommand', () => {
   const APP_RC_FILE = './.zapierapprc';
+  const ORIG_DEPLOY_KEY = process.env.ZAPIER_DEPLOY_KEY;
 
   const deleteRcFile = () => {
     if (fs.existsSync(APP_RC_FILE)) {
@@ -17,9 +18,23 @@ describe('RegisterCommand', () => {
     }
   };
 
+  const mockDeployKey = () => {
+    process.env.ZAPIER_DEPLOY_KEY = 'fake';
+  };
+
+  const restoreDeployKey = () => {
+    process.env.ZAPIER_DEPLOY_KEY = ORIG_DEPLOY_KEY;
+  };
+
   // Delete generated .zapierapprc file before and after tests
-  before(deleteRcFile);
-  after(deleteRcFile);
+  before(() => {
+    deleteRcFile();
+    mockDeployKey();
+  });
+  after(() => {
+    deleteRcFile();
+    restoreDeployKey();
+  });
 
   function getTestObj() {
     return oclif.test.nock(BASE_ENDPOINT, (mockApi) =>
