@@ -297,6 +297,44 @@ describe('logger', () => {
     ]);
   });
 
+  it('should replace secret in response content as a JSON string', async () => {
+    const event = {
+      method: 'authentication.sessionConfig.perform',
+    };
+    const logger = createlogger(event, options);
+
+    const { message, data } = prepareTestRequest({
+      reqBody: {
+        username: 'user1234',
+        password: 'password1234',
+      },
+      resBody: '"new_access_token_is_secret"',
+    });
+
+    logger(message, data);
+    const response = await logger.end(1000);
+    response.status.should.eql(200);
+
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 POST http://example.com',
+        data: {
+          log_type: 'http',
+          request_type: 'devplatform-outbound',
+          request_url: 'http://example.com',
+          request_method: 'POST',
+          request_headers: 'accept: application/json',
+          request_data:
+            '{"username":"user1234","password":":censored:12:60562c5b6c:"}',
+          request_via_client: true,
+          response_status_code: 200,
+          response_headers: 'content-type: application/json',
+          response_content: '":censored:26:fea118210f:"',
+        },
+      },
+    ]);
+  });
+
   it('should handle missing bits of the request/response', async () => {
     // this test should, as closely as possible, match what we actually log after an http request from z.request
     const bundle = {

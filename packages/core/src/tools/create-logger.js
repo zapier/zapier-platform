@@ -120,13 +120,19 @@ const toStdout = (event, msg, data) => {
 };
 
 // try to parse json; if successful, find secrets in it
-const attemptFindSecretsInStr = (s) => {
+const attemptFindSecretsInStr = (s, isGettingNewSecret) => {
   let parsedRespContent;
   try {
     parsedRespContent = JSON.parse(s);
   } catch {
     return [];
   }
+
+  if (isGettingNewSecret && typeof parsedRespContent === 'string') {
+    // Likely the response content itself is a secret
+    return [parsedRespContent];
+  }
+
   return findSensitiveValues(parsedRespContent);
 };
 
@@ -157,9 +163,14 @@ const buildSensitiveValues = (event, data) => {
   // for our http logs (genrated by prepareRequestLog), make sure that we try to parse the content to find any new strings
   // (such as what comes back in the response during an auth refresh)
 
+  const isGettingNewSecret =
+    event.method &&
+    (event.method.endsWith('refreshAccessToken') ||
+      event.method.endsWith('sessionConfig.perform'));
+
   for (const prop of ['response_content', 'request_data']) {
     if (data[prop]) {
-      result.push(...attemptFindSecretsInStr(data[prop]));
+      result.push(...attemptFindSecretsInStr(data[prop], isGettingNewSecret));
     }
   }
   if (data.request_params) {
