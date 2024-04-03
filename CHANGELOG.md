@@ -1,3 +1,19 @@
+## 15.6.2
+
+_released `2024-04-03`_
+
+### cli
+
+None!
+
+### core
+
+- :bug: Censor entire response content when refreshing or getting new auth token ([#765](https://github.com/zapier/zapier-platform/pull/765))
+
+### schema
+
+None!
+
 ## 15.6.1
 
 _released `2024-03-28`_
