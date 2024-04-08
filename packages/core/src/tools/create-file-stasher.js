@@ -13,9 +13,7 @@ const FormData = require('form-data');
 const mime = require('mime-types');
 
 const request = require('./request-client-internal');
-
-const UPLOAD_MAX_SIZE = 1000 * 1000 * 1000 * 1; // 1GB, in zapier backend too
-const NON_STREAM_UPLOAD_MAX_SIZE = 1000 * 1000 * 150;
+const { UPLOAD_MAX_SIZE, NON_STREAM_UPLOAD_MAX_SIZE } = require('../constants');
 
 const LENGTH_ERR_MESSAGE =
   'We could not calculate the length of your file - please ' +
@@ -235,7 +233,7 @@ const uploader = async (
   throw new Error(`Got ${response.status} - ${response.content}`);
 };
 
-const isUploadMaxSizeExceeded = (streamOrData, length) => {
+const ensureUploadMaxSizeNotExceeded = (streamOrData, length) => {
   let uploadMaxSize = NON_STREAM_UPLOAD_MAX_SIZE;
   let uploadMethod = 'non-streaming';
   if (streamOrData instanceof Readable) {
@@ -244,7 +242,7 @@ const isUploadMaxSizeExceeded = (streamOrData, length) => {
   }
 
   if (length && length > uploadMaxSize) {
-    throw new Error(`${length} is too big, ${uploadMaxSize} is the max for ${uploadMethod} of data.`);
+    throw new Error(`${length} bytes is too big, ${uploadMaxSize} is the max for ${uploadMethod} data.`);
   }
 };
 
@@ -306,12 +304,13 @@ const createFileStasher = (input) => {
       filename: _filename,
     } = await resolveToBufferStringStream(responseOrData);
 
-    isUploadMaxSizeExceeded(streamOrData, knownLength || length);
+    const finalLength = knownLength || length;
+    ensureUploadMaxSizeNotExceeded(streamOrData, finalLength);
 
     return uploader(
       signedPostData,
       streamOrData,
-      knownLength || length,
+      finalLength,
       filename || _filename,
       contentType || _contentType
     );
