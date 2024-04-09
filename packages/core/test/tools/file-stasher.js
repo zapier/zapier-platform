@@ -20,6 +20,7 @@ const {
 const createFileStasher = require('../../src/tools/create-file-stasher');
 const createAppRequestClient = require('../../src/tools/create-app-request-client');
 const createInput = require('../../src/tools/create-input');
+const { UPLOAD_MAX_SIZE, NON_STREAM_UPLOAD_MAX_SIZE } = require('../../src/constants');
 
 const sha1 = (stream) =>
   new Promise((resolve, reject) => {
@@ -137,6 +138,43 @@ describe('file upload', () => {
 
     await stashFile(file, knownLength - 1).should.be.rejectedWith(
       /MalformedPOSTRequest/
+    );
+  });
+
+  it('should fail a stream of text file with length exceeding the upload maximum size', async () => {
+    mockRpcGetPresignedPostCall('8888/new.txt');
+    mockUpload();
+
+    const filePath = path.join(__dirname, 'test.txt');
+    const file = fs.createReadStream(filePath);
+    const knownLength = UPLOAD_MAX_SIZE + 1;
+
+    await stashFile(file, knownLength).should.be.rejectedWith(
+      `${knownLength} bytes is too big, ${UPLOAD_MAX_SIZE} is the max for streaming data.`
+    );
+  });
+
+  it('should fail a blob of text file with length exceeding the non-stream upload maximum size', async () => {
+    mockRpcGetPresignedPostCall('8888/new.txt');
+    mockUpload();
+
+    const file = 'hello world this is a plain blob of text';
+    const knownLength = NON_STREAM_UPLOAD_MAX_SIZE + 1;
+
+    await stashFile(file, knownLength).should.be.rejectedWith(
+      `${knownLength} bytes is too big, ${NON_STREAM_UPLOAD_MAX_SIZE} is the max for non-streaming data.`
+    );
+  });
+
+  it('should fail a buffer of text file with length exceeding the non-stream upload maximum size', async () => {
+    mockRpcGetPresignedPostCall('8888/new.txt');
+    mockUpload();
+
+    const file = Buffer.from('hello world this is a buffer of text');
+    const knownLength = NON_STREAM_UPLOAD_MAX_SIZE + 1;
+
+    await stashFile(file, knownLength).should.be.rejectedWith(
+      `${knownLength} bytes is too big, ${NON_STREAM_UPLOAD_MAX_SIZE} is the max for non-streaming data.`
     );
   });
 
