@@ -1,3 +1,19 @@
+## 15.7.0
+
+_released `2024-04-09`_
+
+### cli
+
+- :scroll: Added missing 'to' in CLI docs ([#767](https://github.com/zapier/zapier-platform/pull/767))
+
+### core
+
+- :nail_care: Raised max file size for upload streaming to 1GB ([#768](https://github.com/zapier/zapier-platform/pull/768))
+
+### schema
+
+None!
+
 ## 15.6.2
 
 _released `2024-04-03`_
