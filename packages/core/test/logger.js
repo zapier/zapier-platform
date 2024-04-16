@@ -335,6 +335,39 @@ describe('logger', () => {
     ]);
   });
 
+  it('should leave response content of null uncensored', async () => {
+    const event = {
+      method: 'authentication.sessionConfig.perform',
+    };
+    const logger = createlogger(event, options);
+
+    const { message, data } = prepareTestRequest({
+      resBody: JSON.stringify(null),
+    });
+
+    await logger(message, data);
+    const response = await logger.end(1000);
+    response.status.should.eql(200);
+
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 POST http://example.com',
+        data: {
+          log_type: 'http',
+          request_type: 'devplatform-outbound',
+          request_url: 'http://example.com',
+          request_method: 'POST',
+          request_headers: 'accept: application/json',
+          request_data: '{}',
+          request_via_client: true,
+          response_status_code: 200,
+          response_headers: 'content-type: application/json',
+          response_content: 'null',
+        },
+      },
+    ]);
+  });
+
   it('should handle missing bits of the request/response', async () => {
     // this test should, as closely as possible, match what we actually log after an http request from z.request
     const bundle = {
