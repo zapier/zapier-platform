@@ -123,7 +123,7 @@ const toStdout = (event, msg, data) => {
 const attemptFindSecretsInStr = (s, isGettingNewSecret) => {
   let parsedRespContent;
   try {
-    parsedRespContent = JSON.parse(s);
+    parsedRespContent = JSON.parse(s) || {};
   } catch {
     return [];
   }
