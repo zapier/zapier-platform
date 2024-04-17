@@ -13,7 +13,7 @@ class AppError extends Error {
       })
     );
     this.name = 'AppError';
-    this.contextify = false;
+    this.doNotContextify = true;
   }
 }
 
