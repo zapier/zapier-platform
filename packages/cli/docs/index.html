@@ -1553,9 +1553,7 @@ $ CLIENT_ID=1234 CLIENT_SECRET=abcd zapier <span class="hljs-built_in">test</spa
 <li>Zapier makes a backend call to your API to exchange the <code>code</code> for an <code>access_token</code>.</li>
 <li>Zapier stores the <code>access_token</code> and uses it to make calls on behalf of the user.</li>
 <li>(Optionally) Zapier can refresh the token if it expires.</li>
-</ol><blockquote>
-<p>Note: When <a href="https://platform.zapier.com/private_integrations/private-vs-public-integrations">building a public integration</a>,  the <code>redirect_uri</code> will change once the app is approved for publishing, to be more consistent with your app&#x2019;s branding. Depending on your API, you may need to add this new <code>redirect_uri</code> to an allow list in order for users to continue connecting to your app on Zapier. To access the new <code>redirect_uri</code>, run <code>zapier describe</code> again once the app is published.</p>
-</blockquote><p>You are required to define:</p><ul>
+</ol><p>You are required to define:</p><ul>
 <li><code>authorizeUrl</code>: The authorization URL</li>
 <li><code>getAccessToken</code>: The API call to fetch the access token</li>
 </ul><p>If the access token has a limited life and you want to refresh the token when it expires, you&apos;ll also need to define the API call to perform that refresh (<code>refreshAccessToken</code>). You can choose to set <code>autoRefresh: true</code>, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See <a href="#stale-authentication-credentials">Stale Authentication Credentials</a> for more details on handling auth refresh.</p><p>You&apos;ll also likely want to set your <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> as environment variables:</p>
