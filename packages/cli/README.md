@@ -779,8 +779,6 @@ The OAuth2 flow looks like this:
   4. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
   5. (Optionally) Zapier can refresh the token if it expires.
 
-> Note: When [building a public integration](https://platform.zapier.com/private_integrations/private-vs-public-integrations),  the `redirect_uri` will change once the app is approved for publishing, to be more consistent with your app’s branding. Depending on your API, you may need to add this new `redirect_uri` to an allow list in order for users to continue connecting to your app on Zapier. To access the new `redirect_uri`, run `zapier describe` again once the app is published.
-
 You are required to define:
 
   * `authorizeUrl`: The authorization URL
