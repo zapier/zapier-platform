@@ -1,3 +1,25 @@
+## 15.7.1
+
+_released `2024-05-01`_
+
+### cli
+
+- :scroll: Add instruction to close resolved issues after promotion in the docs ([#770](https://github.com/zapier/zapier-platform/pull/770))
+- :scroll: Remove the note on `redirect_uri` change after publish in the docs ([#774](https://github.com/zapier/zapier-platform/pull/774))
+
+### core
+
+- :bug: Fix `null` response content breaking the search for sensitive values ([#772](https://github.com/zapier/zapier-platform/pull/772))
+
+### schema
+
+None!
+
+### misc
+
+- :bug: Fix the legacy-scripting-runner's ErrorException invalid JSON data ([#773](https://github.com/zapier/zapier-platform/pull/773))
+- :hammer: Bump tar from 6.1.0 to 6.2.1 ([#771](https://github.com/zapier/zapier-platform/pull/771))
+
 ## 15.7.0
 
 _released `2024-04-09`_
