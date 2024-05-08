@@ -1,3 +1,22 @@
+## 15.7.2
+
+_released `2024-05-08`_
+
+### cli
+
+- :scroll: Correct docs about `zapier migrate --user` ([#779](https://github.com/zapier/zapier-platform/pull/779))
+
+### core
+
+- :bug: Censor set-cookie response header in logs ([#780](https://github.com/zapier/zapier-platform/pull/780))
+
+### misc
+
+- :wrench: Dependency updates
+  - Bump semver from 5.7.1 to 7.5.2 ([#776](https://github.com/zapier/zapier-platform/pull/776))
+  - Bump ejs from 3.1.7 to 3.1.10 ([#777](https://github.com/zapier/zapier-platform/pull/777))
+  - Bump debug from 4.1.1 to 4.3.4 ([#778](https://github.com/zapier/zapier-platform/pull/778))
+
 ## 15.7.1
 
 _released `2024-05-01`_
