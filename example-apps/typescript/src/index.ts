@@ -1,6 +1,7 @@
 import { Bundle, HttpRequestOptions, ZObject } from 'zapier-platform-core';
 
 import MovieCreate from './creates/movie';
+import MoviesCreate from './creates/movies';
 import MovieTrigger from './triggers/movie';
 import { version as platformVersion } from 'zapier-platform-core';
 
@@ -29,5 +30,6 @@ export default {
 
   creates: {
     [MovieCreate.key]: MovieCreate,
+    [MoviesCreate.key]: MoviesCreate,
   },
 };
