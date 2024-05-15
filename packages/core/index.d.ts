@@ -205,17 +205,24 @@ export interface ZObject {
   };
 }
 
+interface PerformBulkSuccessItem {
+  outputData: { [x: string]: any };
+  error?: string;
+}
+
+interface PreformBulkErrorItem {
+  outputData?: { [x: string]: any };
+  error: string;
+}
+
+export type PerformBulkItem = PerformBulkSuccessItem | PerformBulkErrorItem;
+
 export interface BufferedBundle<InputData = { [x: string]: any }> {
   inputData: InputData;
   meta: {
     id: string;
     [x: string]: any;
   };
-}
-
-export interface PerformBulkItem {
-  outputData: { [x: string]: any };
-  error?: string;
 }
 
 export interface BulkBundle<InputData = { [x: string]: any }> {
