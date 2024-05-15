@@ -210,7 +210,7 @@ interface PerformBulkSuccessItem {
   error?: string;
 }
 
-interface PreformBulkErrorItem {
+interface PerformBulkErrorItem {
   outputData?: { [x: string]: any };
   error: string;
 }
