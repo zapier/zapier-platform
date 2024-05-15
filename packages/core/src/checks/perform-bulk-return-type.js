@@ -31,19 +31,24 @@ const performBulkEchoesIds = {
       let missingIdsStr = missingIds.slice(0, LIMIT).join(', ');
       const remainingCount = missingIds.length - LIMIT;
       if (remainingCount > 0) {
-        // No want to flood the user with too many IDs
+        // Don't want to flood the user with too many IDs
         missingIdsStr += `, and ${remainingCount} more`;
       }
       return [`Result object is missing these IDs as keys: ${missingIdsStr}`];
     }
 
     const errors = [];
-    for (const [id, item] of Object.entries(results)) {
+    for (const id of inputIds) {
+      const item = results[id];
+
       if (!_.isPlainObject(item)) {
         errors.push(`Result object member with ID '${id}' must be an object`);
-      } else if (!_.isPlainObject(item.outputData)) {
+      } else if (
+        !_.isPlainObject(item.outputData) &&
+        typeof item.error !== 'string'
+      ) {
         errors.push(
-          `Result object member with ID '${id}' must have 'outputData' object`
+          `Result object member with ID '${id}' must have 'outputData' object or 'error' string`
         );
       }
 

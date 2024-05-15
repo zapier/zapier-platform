@@ -276,9 +276,22 @@ describe('checks', () => {
   });
 
   it('should check performBulk object shape', () => {
-    const results = { one: {}, two: {} };
+    const results = {
+      one: 'not an object',
+      two: { error: 123 },
+      three: { outputData: {} },
+      four: { error: 'test' },
+      five: {
+        outputData: 'this one should pass because it is not in the input',
+      },
+    };
     const bundle = {
-      bulk: [{ meta: { id: 'one' } }, { meta: { id: 'two' } }],
+      bulk: [
+        { meta: { id: 'one' } },
+        { meta: { id: 'two' } },
+        { meta: { id: 'three' } },
+        { meta: { id: 'four' } },
+      ],
     };
     const errors = checks.performBulkReturnType.run(
       'creates.blah.operation.performBulk',
@@ -287,11 +300,9 @@ describe('checks', () => {
       bundle
     );
     errors.length.should.eql(2);
-    errors[0].should.match(
-      /member with ID 'one' must have 'outputData' object/
-    );
+    errors[0].should.match(/member with ID 'one' must be an object/);
     errors[1].should.match(
-      /member with ID 'two' must have 'outputData' object/
+      /member with ID 'two' must have 'outputData' object or 'error' string/
     );
   });
 
