@@ -287,6 +287,7 @@ a code {
 <li><a href="#nested--children-line-item-fields-1">Nested &amp; Children (Line Item) Fields</a></li>
 </ul>
 </li>
+<li><a href="#bulk-create-actions">Bulk Create Actions</a></li>
 <li><a href="#z-object">Z Object</a><ul>
 <li><a href="#zrequesturl-options"><code>z.request([url], options)</code></a></li>
 <li><a href="#zconsole"><code>z.console</code></a></li>
@@ -310,6 +311,16 @@ a code {
 <li><a href="#bundleoutputdata"><code>bundle.outputData</code></a></li>
 <li><a href="#bundletargeturl"><code>bundle.targetUrl</code></a></li>
 <li><a href="#bundlesubscribedata"><code>bundle.subscribeData</code></a></li>
+</ul>
+</li>
+<li><a href="#bulkbundle-object">BulkBundle Object</a><ul>
+<li><a href="#bulkbundleauthdata"><code>bulkbundle.authData</code></a></li>
+<li><a href="#bulkbundlegroupedby"><code>bulkbundle.groupedBy</code></a></li>
+<li><a href="#bulkbundlebulk"><code>bulkbundle.bulk</code></a><ul>
+<li><a href="#bulkbundlebulkinputdata"><code>bulkbundle.bulk[].inputData</code></a></li>
+<li><a href="#bulkbundlebulkmeta"><code>bulkbundle.bulk[].meta</code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#environment">Environment</a><ul>
@@ -499,6 +510,7 @@ a code {
 <li><a href="#nested--children-line-item-fields-1">Nested &amp; Children (Line Item) Fields</a></li>
 </ul>
 </li>
+<li><a href="#bulk-create-actions">Bulk Create Actions</a></li>
 <li><a href="#z-object">Z Object</a><ul>
 <li><a href="#zrequesturl-options"><code>z.request([url], options)</code></a></li>
 <li><a href="#zconsole"><code>z.console</code></a></li>
@@ -522,6 +534,16 @@ a code {
 <li><a href="#bundleoutputdata"><code>bundle.outputData</code></a></li>
 <li><a href="#bundletargeturl"><code>bundle.targetUrl</code></a></li>
 <li><a href="#bundlesubscribedata"><code>bundle.subscribeData</code></a></li>
+</ul>
+</li>
+<li><a href="#bulkbundle-object">BulkBundle Object</a><ul>
+<li><a href="#bulkbundleauthdata"><code>bulkbundle.authData</code></a></li>
+<li><a href="#bulkbundlegroupedby"><code>bulkbundle.groupedBy</code></a></li>
+<li><a href="#bulkbundlebulk"><code>bulkbundle.bulk</code></a><ul>
+<li><a href="#bulkbundlebulkinputdata"><code>bulkbundle.bulk[].inputData</code></a></li>
+<li><a href="#bulkbundlebulkmeta"><code>bulkbundle.bulk[].meta</code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#environment">Environment</a><ul>
@@ -2863,6 +2885,128 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="bulk-create-actions">Bulk Create Actions</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p><em>Added in v15.8.0.</em></p><p>Bulk Create allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server. When enabled, Zapier holds the data until the buffer reaches a size limit or a certain time has passed, then sends the buffered data using the <code>performBulk</code> function you define.</p><p>To implement a Bulk Create, you define a <a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#bulkobjectschema"><code>bulk</code></a> configuration object and a <code>performBulk</code> function in the <code>operation</code> object. In the <code>bulk</code> config object, you specify how you want to group the buffered data using the <code>groupedBy</code> setting and the maximum number of items to buffer using the <code>limit</code> setting.</p><p>The <code>performBulk</code> function should replace the <code>perform</code> function. Note that <code>perform</code> cannot be defined along with <code>performBulk</code>. Check out the <a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#basiccreateactionoperationschema"><code>create</code> action operation schema</a> for details.</p><p>Similar to the general <code>perform</code> function accepting two arguments, <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object"><code>z</code></a> and <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bundle-object"><code>bundle</code></a> objects, the <code>performBulk</code> function accepts <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object"><code>z</code></a> and <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bulkbundle-object"><code>bulkBundle</code></a> objects. They share the same <code>z</code> object, but the <code>bulkBundle</code> object is different from the <code>bundle</code> object. The <code>bulkBundle</code> object has an idempotency ID set at <code>bulkBundle.bulk[].meta.id</code> for each object in the bulk. <code>performBulk</code> would have to return the idempotency IDs to tell Zapier which objects were successfully written. Find the details about the <code>bulkBundle</code> object <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bulkbundle-object">here</a>.</p><p>Here is an example of a Bulk Create action:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> performBulk = <span class="hljs-keyword">async</span> (z, bulkBundle) =&gt; {
+  <span class="hljs-comment">// Grab the line items, preserving the order</span>
+  <span class="hljs-keyword">const</span> rows = bulkBundle.bulk.map(<span class="hljs-function">(<span class="hljs-params">{inputData}</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> {<span class="hljs-attr">title</span>: inputData.title, <span class="hljs-attr">year</span>: inputData.year};
+  });
+
+  <span class="hljs-comment">// Make the bulk-write API request</span>
+  <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
+    <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
+    <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://api.example.com/add_rows&apos;</span>,
+    <span class="hljs-attr">body</span>: {
+      <span class="hljs-attr">spreadsheet</span>: bulkBundle.groupedBy.spreadsheet,
+      <span class="hljs-attr">worksheet</span>: bulkBundle.groupedBy.worksheet,
+      rows,
+    },
+  });
+
+  <span class="hljs-comment">// Create a matching result using the idempotency ID for each buffered invovation run.</span>
+  <span class="hljs-comment">// The returned IDs will tell Zapier backend which items were successfully written.</span>
+  <span class="hljs-keyword">const</span> result = {};
+  bulkBundle.bulk.forEach(<span class="hljs-function">(<span class="hljs-params">{inputData, meta}, index</span>) =&gt;</span> {
+    <span class="hljs-keyword">let</span> error = <span class="hljs-string">&apos;&apos;</span>;
+    <span class="hljs-keyword">let</span> outputData = {};
+
+    <span class="hljs-comment">// assuming request order matches response and</span>
+    <span class="hljs-comment">// response.data = {</span>
+    <span class="hljs-comment">//   &quot;rows&quot;: [</span>
+    <span class="hljs-comment">//     {&quot;id&quot;: &quot;12910&quot;},</span>
+    <span class="hljs-comment">//     {&quot;id&quot;: &quot;92830&quot;},</span>
+    <span class="hljs-comment">//     {&quot;error&quot;: &quot;Not Created&quot;},</span>
+    <span class="hljs-comment">//     ...</span>
+    <span class="hljs-comment">//   ]</span>
+    <span class="hljs-comment">// }</span>
+    <span class="hljs-keyword">if</span> (response.data.rows.length &gt; index) {
+      <span class="hljs-comment">// assuming an error is returned with an &quot;error&quot; key in the response data</span>
+      <span class="hljs-keyword">if</span> (response.data.rows[index].error) {
+        error = response.data.rows[index].error;
+      } <span class="hljs-keyword">else</span> {
+        outputData = response.data.rows[index];
+      }
+    }
+
+    <span class="hljs-comment">// the performBulk method must return a data just like this</span>
+    <span class="hljs-comment">// {</span>
+    <span class="hljs-comment">//   &quot;idempotency ID 1&quot;: {</span>
+    <span class="hljs-comment">//     &quot;outputData&quot;: {&quot;id&quot;: &quot;12910&quot;},</span>
+    <span class="hljs-comment">//     &quot;error&quot;: &quot;&quot;</span>
+    <span class="hljs-comment">//   },</span>
+    <span class="hljs-comment">//   &quot;idempotency ID 2&quot;: {</span>
+    <span class="hljs-comment">//     &quot;outputData&quot;: {&quot;id&quot;: &quot;92830&quot;},</span>
+    <span class="hljs-comment">//     &quot;error&quot;: &quot;&quot;</span>
+    <span class="hljs-comment">//   },</span>
+    <span class="hljs-comment">// &quot;idempotency ID 3&quot;: {</span>
+    <span class="hljs-comment">//     &quot;outputData&quot;: {},</span>
+    <span class="hljs-comment">//     &quot;error&quot;: &quot;Not Created&quot;</span>
+    <span class="hljs-comment">//   },</span>
+    <span class="hljs-comment">//   ...</span>
+    <span class="hljs-comment">// }</span>
+    result[meta.id] = { outputData, error };
+  });
+
+  <span class="hljs-keyword">return</span> result;
+};
+
+<span class="hljs-built_in">module</span>.exports = {
+  <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;add_rows&apos;</span>,
+  <span class="hljs-attr">noun</span>: <span class="hljs-string">&apos;Rows&apos;</span>,
+  <span class="hljs-attr">display</span>: {
+    <span class="hljs-attr">label</span>: <span class="hljs-string">&apos;Add Rows&apos;</span>,
+    <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Add rows to a worksheet.&apos;</span>,
+  },
+  <span class="hljs-attr">operation</span>: {
+    <span class="hljs-attr">bulk</span>: {
+      <span class="hljs-attr">groupedBy</span>: [<span class="hljs-string">&apos;spreadsheet&apos;</span>, <span class="hljs-string">&apos;worksheet&apos;</span>],
+      <span class="hljs-attr">limit</span>: <span class="hljs-number">3</span>,
+    },
+    performBulk,
+    <span class="hljs-attr">inputFields</span>: [
+      {
+        <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;spreadsheet&apos;</span>,
+        <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
+        <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+      },
+      {
+        <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;worksheet&apos;</span>,
+        <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
+        <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>,
+      },
+      {
+        <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;title&apos;</span>,
+        <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
+      },
+      {
+        <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;year&apos;</span>,
+        <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
+      },
+    ],
+    <span class="hljs-attr">outputFields</span>: [
+      { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;id&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span> },
+    ],
+    <span class="hljs-attr">sample</span>: { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;12345&apos;</span> },
+  },
+};
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h2 id="z-object">Z Object</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -3473,6 +3617,116 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       <blockquote>
 <p><code>bundle.subscribeData</code> is available in the <code>perform</code> and <code>performUnsubscribe</code> method for webhooks.</p>
 </blockquote><p>This is an object that contains the data you returned from the <code>performSubscribe</code> function. It should contain whatever information you need send a <code>DELETE</code> request to your server to stop sending webhooks to Zapier.</p><p>Read more in the <a href="https://github.com/zapier/zapier-platform/blob/main/example-apps/rest-hooks/triggers/recipe.js">REST hook example</a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="bulkbundle-object">BulkBundle Object</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p><em>Added in v15.8.0.</em></p><p>This object holds a user&apos;s auth details and the bulked data for the API requests. It is used only with a <code>create</code> action&apos;s <code>performBulk</code> function.</p><blockquote>
+<p>The <code>bulkbundle</code> object is passed into the <code>performBulk</code> function as the second argument - IE: <code>performBulk: (z, bulkbundle) =&gt; {}</code>.</p>
+</blockquote>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="bulkbundleauthdata"><code>bulkbundle.authData</code></h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>It is a user-provided authentication data, like <code>api_key</code> or <code>access_token</code>. <a href="#authentication">Read more on authentication.</a></p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="bulkbundlegroupedby"><code>bulkbundle.groupedBy</code></h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>It is a user-provided data for a set of selected <a href="#input-fields"><code>inputFields</code></a> to group the multiple runs of a <code>create</code> action by.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="bulkbundlebulk"><code>bulkbundle.bulk</code></h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>It is a list of objects of user-provided data and some meta data to allow multiple runs of a <code>create</code> action be processed in a single API request.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h4 id="bulkbundlebulkinputdata"><code>bulkbundle.bulk[].inputData</code></h4>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>It is a user-provided data for a particular run of a <code>create</code> action in the bulk, as defined by the <a href="#input-fields"><code>inputFields</code></a>.</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h4 id="bulkbundlebulkmeta"><code>bulkbundle.bulk[].meta</code></h4>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>It contains an idempotency <code>id</code> provided to the <code>create</code> action to identify each run&apos;s data in the bulk data.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

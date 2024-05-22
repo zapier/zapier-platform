@@ -806,6 +806,24 @@ To define an Output Field for a nested field use `{{parent}}__{{key}}`. For chil
 [insert-file:./snippets/output-fields.js]
 ```
 
+## Bulk Create Actions
+
+*Added in v15.8.0.*
+
+Bulk Create allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server. When enabled, Zapier holds the data until the buffer reaches a size limit or a certain time has passed, then sends the buffered data using the `performBulk` function you define.
+
+To implement a Bulk Create, you define a [`bulk`](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#bulkobjectschema) configuration object and a `performBulk` function in the `operation` object. In the `bulk` config object, you specify how you want to group the buffered data using the `groupedBy` setting and the maximum number of items to buffer using the `limit` setting.
+
+The `performBulk` function should replace the `perform` function. Note that `perform` cannot be defined along with `performBulk`. Check out the [`create` action operation schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#basiccreateactionoperationschema) for details.
+
+Similar to the general `perform` function accepting two arguments, [`z`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object) and [`bundle`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bundle-object) objects, the `performBulk` function accepts [`z`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object) and [`bulkBundle`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bulkbundle-object) objects. They share the same `z` object, but the `bulkBundle` object is different from the `bundle` object. The `bulkBundle` object has an idempotency ID set at `bulkBundle.bulk[].meta.id` for each object in the bulk. `performBulk` would have to return the idempotency IDs to tell Zapier which objects were successfully written. Find the details about the `bulkBundle` object [here](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bulkbundle-object).
+
+Here is an example of a Bulk Create action:
+
+```js
+[insert-file:./snippets/bulk-create.js]
+```
+
 ## Z Object
 
 We provide several methods off of the `z` object, which is provided as the first argument to all function calls in your app.
@@ -1080,6 +1098,34 @@ Read more in the [REST hook example](https://github.com/zapier/zapier-platform/b
 This is an object that contains the data you returned from the `performSubscribe` function. It should contain whatever information you need send a `DELETE` request to your server to stop sending webhooks to Zapier.
 
 Read more in the [REST hook example](https://github.com/zapier/zapier-platform/blob/main/example-apps/rest-hooks/triggers/recipe.js).
+
+## BulkBundle Object
+
+*Added in v15.8.0.*
+
+This object holds a user's auth details and the bulked data for the API requests. It is used only with a `create` action's `performBulk` function.
+
+> The `bulkbundle` object is passed into the `performBulk` function as the second argument - IE: `performBulk: (z, bulkbundle) => {}`.
+
+### `bulkbundle.authData`
+
+It is a user-provided authentication data, like `api_key` or `access_token`. [Read more on authentication.](#authentication)
+
+### `bulkbundle.groupedBy`
+
+It is a user-provided data for a set of selected [`inputFields`](#input-fields) to group the multiple runs of a `create` action by.
+
+### `bulkbundle.bulk`
+
+It is a list of objects of user-provided data and some meta data to allow multiple runs of a `create` action be processed in a single API request.
+
+#### `bulkbundle.bulk[].inputData`
+
+It is a user-provided data for a particular run of a `create` action in the bulk, as defined by the [`inputFields`](#input-fields).
+
+#### `bulkbundle.bulk[].meta`
+
+It contains an idempotency `id` provided to the `create` action to identify each run's data in the bulk data.
 
 ## Environment
 
