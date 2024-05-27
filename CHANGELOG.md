@@ -1,3 +1,11 @@
+## 15.7.3
+
+_released `2024-05-27`_
+
+### cli
+
+- :bug: Address `CVE-2024-27980` changes in Node.js by always passing `shell: true` as an option for `spawn()` in Windows OS environments (thanks to @jaydamani for the report!) ([#788](https://github.com/zapier/zapier-platform/pull/788)).
+
 ## 15.7.2
 
 _released `2024-05-08`_
