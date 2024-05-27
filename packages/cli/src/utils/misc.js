@@ -25,7 +25,9 @@ const isWindows = () => {
 
 // Run a bash command with a promise.
 const runCommand = (command, args, options) => {
-  if (isWindows()) {
+  const isRunningUnderWindows = isWindows();
+
+  if (isRunningUnderWindows) {
     command += '.cmd';
   }
 
@@ -34,6 +36,11 @@ const runCommand = (command, args, options) => {
   }
 
   options = options || {};
+
+  if (isRunningUnderWindows) {
+    // See CVE-2024-27980
+    options.shell = true;
+  }
 
   debug('\n');
   debug(
