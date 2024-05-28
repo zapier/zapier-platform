@@ -18,7 +18,7 @@
     "npm": ">=3.0.0"
   },
   "dependencies": {
-    "async": "2.4.1",
+    "async": "2.6.4",
     "content-disposition": "0.5.2",
     "lodash": "4.17.11",
     "node-fetch": "1.7.1",
