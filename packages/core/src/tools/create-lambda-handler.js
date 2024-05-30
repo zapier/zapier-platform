@@ -190,6 +190,7 @@ const createLambdaHandler = (appRawOrPath) => {
     });
 
     handlerDomain.run(() => {
+      event.rpc_base = 'https://zapier.com//platform/rpc/cli';
       const rpc = createRpcClient(event);
 
       return loadApp(event, rpc, appRawOrPath)
