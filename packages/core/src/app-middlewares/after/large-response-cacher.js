@@ -17,10 +17,11 @@ const largeResponseCachePointer = async (output) => {
       `Oh no! Payload is ${size}, which is larger than ${constants.RESPONSE_SIZE_LIMIT}.`
     );
 
-    const stasher = createResponseStasher(output.input);
+    const stasher = createResponseStasher(output.results);
     const url = await stasher(JSON.stringify(response));
 
-    output.results = { ...output.results, results: [], resultsUrl: url };
+    output.resultsUrl = url;
+    output.results = [];
   }
   return output;
 };
