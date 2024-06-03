@@ -18,7 +18,7 @@ const largeResponseCachePointer = async (output) => {
     );
 
     const stasher = createResponseStasher(output.input);
-    const url = await stasher(JSON.stringify(output));
+    const url = await stasher(JSON.stringify(output.results));
 
     output.resultsUrl = url;
     output.results = [];
