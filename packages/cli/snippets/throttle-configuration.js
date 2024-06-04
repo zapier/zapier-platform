@@ -24,6 +24,7 @@ const App = {
           window: 600,
           limit: 5,
           key: 'test-key-{{bundle.inputData.name}}',
+          retry: false,
           scope: ['account'],
           overrides: [
             {
