@@ -1613,7 +1613,8 @@
           "description": "Any unique key can be used and its values will be validated against the CreateSchema.",
           "$ref": "/CreateSchema"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "SearchAndCreatesSchema": {
       "id": "/SearchAndCreatesSchema",

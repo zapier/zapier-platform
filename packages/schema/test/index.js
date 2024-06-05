@@ -28,12 +28,36 @@ describe('app', () => {
       results.errors.length.should.eql(4);
     });
 
-    it('should invalidate a bad named trigger', () => {
+    it('should invalidate a badly named trigger', () => {
       const appCopy = copy(appDefinition);
       appCopy.triggers['3contact_by_tag'] = appCopy.triggers.contact_by_tag;
       delete appCopy.triggers.contact_by_tag;
       const results = schema.validateAppDefinition(appCopy);
-      results.errors.length.should.eql(2); // invalid name and top-level key doesn't match trigger key
+      results.errors[0].stack.should.eql(
+        'instance.triggers additionalProperty "3contact_by_tag" exists in instance when not allowed'
+      );
+      results.errors.length.should.eql(2); // additional property error + top-level key doesn't match trigger key
+    });
+
+    it('should invalidate a badly named create', () => {
+      const appCopy = copy(appDefinition);
+      appCopy.creates['3contact_by_tag'] = appCopy.creates.tag_create;
+      delete appCopy.creates.tag_create;
+      const results = schema.validateAppDefinition(appCopy);
+      results.errors[0].stack.should.eql(
+        'instance.creates additionalProperty "3contact_by_tag" exists in instance when not allowed'
+      );
+      results.errors.length.should.eql(2); // additional property error + top-level key doesn't match create key
+    });
+
+    it('should invalidate a create with a bad key', () => {
+      const appCopy = copy(appDefinition);
+      appCopy.creates.tag_create.key = '3tag_create';
+      const results = schema.validateAppDefinition(appCopy);
+      results.errors[0].stack.should.eql(
+        'instance.creates.tag_create.key does not match pattern "^[a-zA-Z]+[a-zA-Z0-9_]*$"'
+      );
+      results.errors.length.should.eql(2); // invalid name and top-level key doesn't match create key
     });
 
     it('should run and pass functional constraints', function () {

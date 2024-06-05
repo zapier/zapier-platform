@@ -17,6 +17,7 @@ module.exports = makeSchema(
         $ref: CreateSchema.id,
       },
     },
+    additionalProperties: false,
     examples: [
       {
         createRecipe: {
