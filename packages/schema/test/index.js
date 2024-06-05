@@ -52,7 +52,7 @@ describe('app', () => {
 
     it('should invalidate a create with a bad key', () => {
       const appCopy = copy(appDefinition);
-      appCopy.creates.tag_create.key = '3tag_create';
+      appCopy.creates.tag_create.key = 'tag:create';
       const results = schema.validateAppDefinition(appCopy);
       results.errors[0].stack.should.eql(
         'instance.creates.tag_create.key does not match pattern "^[a-zA-Z]+[a-zA-Z0-9_]*$"'
