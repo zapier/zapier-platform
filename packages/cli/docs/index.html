@@ -261,6 +261,7 @@ a code {
 <li><a href="#oauth2">OAuth2</a></li>
 <li><a href="#oauth2-with-pkce">OAuth2 with PKCE</a></li>
 <li><a href="#connection-label">Connection Label</a></li>
+<li><a href="#domain-and-subdomain-validation">Domain and subdomain validation</a></li>
 </ul>
 </li>
 <li><a href="#resources">Resources</a><ul>
@@ -473,6 +474,7 @@ a code {
 <li><a href="#oauth2">OAuth2</a></li>
 <li><a href="#oauth2-with-pkce">OAuth2 with PKCE</a></li>
 <li><a href="#connection-label">Connection Label</a></li>
+<li><a href="#domain-and-subdomain-validation">Domain and subdomain validation</a></li>
 </ul>
 </li>
 <li><a href="#resources">Resources</a><ul>
@@ -1769,6 +1771,64 @@ Since Zapier uses the <code>state</code> to verify that GET requests to your red
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="domain-and-subdomain-validation">Domain and subdomain validation</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>When adding a subdomain input field, commonly used in OAuth implementations, additional validation is strongly recommended to prevent a potential security vulnerability. If not taken into account, an attacker could utilize a maliciously constructed subdomain field (like <code>attacker-domain.com/</code>) in order to redirect OAuth connection requests to that attacker-controlled domain (because <code>attacker-domain.com/.your-domain.com</code> resolves to the attacker&#x2019;s domain instead of the expected one). </p><p>This vulnerability presents itself when:</p><ul>
+<li>The authentication method uses pre-configured tokens or secret values (for example, OAuth v2)</li>
+<li>User is able to input a domain or subdomain when authenticating within Zapier</li>
+<li>Integration stores sensitive authentication details (in environment variables, for example) which are used as part of the authentication process</li>
+</ul><p>Taking the following steps prevents the potential for an attacker to access your integration&#x2019;s sensitive authentication information, such as the OAuth client ID or secret.</p><ol>
+<li><p>If your integration allows for the user to provide a domain, validate the input against an allow-list of trusted domains.</p>
+</li>
+<li><p>If your integration allows for the user to provide a subdomain, add conditional validation for the subdomain string whenever you include the value in your OAuth HTTP requests. This change will prevent potential exploitation of the subdomain vulnerability.</p>
+<ul>
+<li>If you&#x2019;re using OAuth-based authentications, update the <code>getAccessToken</code> and optional <code>refreshAccessToken</code> configuration methods. If the integration uses <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#shorthand-http-requests">shorthand HTTP requests</a>, switching to <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#manual-http-requests">manual HTTP requests</a> will allow you to perform this manual subdomain validation.</li>
+</ul>
+<p>Example code for handling subdomain validation:</p>
+</li>
+</ol>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js">  <span class="hljs-keyword">const</span> refreshAccessToken = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+ <span class="hljs-comment">// --- UPDATE: add your validation for the subdomain field before using it ---</span>
+ <span class="hljs-keyword">if</span> (!<span class="hljs-regexp">/^[a-z0-9-]+$/</span>.test(bundle.authData.yourSubdomainField)) {
+   <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(
+     <span class="hljs-string">&quot;Subdomain can only contain letters, numbers and dashes (-).&quot;</span>
+   );
+ }
+
+
+ <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
+   <span class="hljs-attr">url</span>: <span class="hljs-string">`https://<span class="hljs-subst">${bundle.authData.yourSubdomainField}</span>.mydomain.com/oauth/token`</span>,
+   <span class="hljs-attr">method</span>: <span class="hljs-string">&quot;POST&quot;</span>,
+   <span class="hljs-attr">body</span>: {
+     <span class="hljs-attr">client_id</span>: process.env.CLIENT_ID,
+     <span class="hljs-attr">client_secret</span>: process.env.CLIENT_SECRET,
+     <span class="hljs-attr">grant_type</span>: <span class="hljs-string">&quot;refresh_token&quot;</span>,
+     <span class="hljs-attr">refresh_token</span>: bundle.authData.refresh_token,
+     <span class="hljs-attr">redirect_uri</span>: bundle.inputData.redirect_uri,
+   },
+ });
+
+
+ <span class="hljs-keyword">return</span> {
+   <span class="hljs-attr">access_token</span>: response.data.access_token,
+   <span class="hljs-attr">refresh_token</span>: response.data.refresh_token,
+ };
+ };
+</code></pre>
     </div>
   </div>
 </div><div class="row">
