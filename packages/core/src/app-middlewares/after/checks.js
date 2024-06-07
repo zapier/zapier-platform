@@ -32,7 +32,7 @@ const checkOutput = (output) => {
       })
       .map((check) => {
         return check
-          .run(event.method, output.results, compiledApp)
+          .run(event.method, output.results, compiledApp, event.bundle)
           .map((err) => ({ name: check.name, error: err }));
       });
     const checkResults = _.flatten(rawResults);

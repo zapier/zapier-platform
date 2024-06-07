@@ -204,3 +204,38 @@ export interface ZObject {
     delete: (key: string) => Promise<boolean>;
   };
 }
+
+interface PerformBulkSuccessItem {
+  outputData: { [x: string]: any };
+  error?: string;
+}
+
+interface PerformBulkErrorItem {
+  outputData?: { [x: string]: any };
+  error: string;
+}
+
+export type PerformBulkItem = PerformBulkSuccessItem | PerformBulkErrorItem;
+
+export interface BufferedBundle<InputData = { [x: string]: any }> {
+  inputData: InputData;
+  meta: {
+    id: string;
+    [x: string]: any;
+  };
+}
+
+export interface BulkBundle<InputData = { [x: string]: any }> {
+  authData: { [x: string]: string };
+  bulk: BufferedBundle<InputData>[];
+  groupedBy: { [x: string]: string };
+}
+
+export interface PerformBulkResult {
+  [id: string]: PerformBulkItem;
+}
+
+export const performBulk: (
+  z: ZObject,
+  bundle: BulkBundle
+) => Promise<PerformBulkResult>;

@@ -1351,18 +1351,35 @@
       },
       "additionalProperties": false
     },
+    "BulkObjectSchema": {
+      "id": "/BulkObjectSchema",
+      "description": "Zapier uses this configuration for writing in bulk.",
+      "type": "object",
+      "required": ["groupedBy", "limit"],
+      "properties": {
+        "groupedBy": {
+          "description": "The list of keys of input fields to group bulk-write with. The actual user data provided for the fields will be used during execution. Note that a required input field should be referenced to get user data always.",
+          "type": "array",
+          "minItems": 1
+        },
+        "limit": {
+          "description": "The maximum number of items to call performBulk with. **Note** that it is capped by the platform to prevent exceeding the [AWS Lambda's request/response payload size quota of 6 MB](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#function-configuration-deployment-and-execution). Also, the execution is time-bound; we recommend reducing it upon consistent timeout.",
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
     "BasicCreateActionOperationSchema": {
       "id": "/BasicCreateActionOperationSchema",
       "description": "Represents the fundamental mechanics of a create.",
       "type": "object",
-      "required": ["perform"],
       "properties": {
         "resource": {
           "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/KeySchema"
         },
         "perform": {
-          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`. Exactly one of `perform` or `performBulk` must be defined. If you choose to define `bulk` and `performBulk`, you must omit `perform`.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -1370,7 +1387,13 @@
             {
               "$ref": "/FunctionSchema"
             }
-          ]
+          ],
+          "docAnnotation": {
+            "required": {
+              "type": "replace",
+              "value": "no (with exceptions, see description)"
+            }
+          }
         },
         "performResume": {
           "description": "A function that parses data from a perform (which uses z.generateCallbackUrl()) and callback request to resume this action.",
@@ -1417,6 +1440,26 @@
         "shouldLock": {
           "description": "Should this action be performed one at a time (avoid concurrency)?",
           "type": "boolean"
+        },
+        "bulk": {
+          "description": "Zapier uses this configuration for writing in bulk with `performBulk`.",
+          "$ref": "/BulkObjectSchema",
+          "docAnnotation": {
+            "required": {
+              "type": "replace",
+              "value": "no (with exceptions, see description)"
+            }
+          }
+        },
+        "performBulk": {
+          "description": "A function to write in bulk with. `bulk` and `performBulk` must either both be defined or neither. Additionally, only one of `perform` or `performBulk` can be defined. If you choose to define `perform`, you must omit `bulk` and `performBulk`.",
+          "$ref": "/FunctionSchema",
+          "docAnnotation": {
+            "required": {
+              "type": "replace",
+              "value": "no (with exceptions, see description)"
+            }
+          }
         }
       },
       "additionalProperties": false
