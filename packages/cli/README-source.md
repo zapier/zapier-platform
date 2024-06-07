@@ -947,9 +947,7 @@ Content-Type: application/json
 ```
 > We recommend using `bundle.meta.isLoadingSample` to determine if the execution is happening in the foreground (IE: during Zap setup) as using `z.generateCallbackUrl()` can be inappropriate given the disconnect. Instead, wait for the long running request without generating a callback, or if you must, return stubbed data.
 
-By default the payload `POST`ed to the callback URL will augment the data returned from the initial `perform` to compose the final value.
-
-If you need to customize what the final value should be you can define a `performResume` method that receives three bundle properties:
+And finally, in a `performResume` to handle the final step which will receive three bundle properties:
 
 * `bundle.outputData` is `{"hello": "world"}`, the data returned from the initial `perform`
 * `bundle.cleanedRequest` is `{"foo": "bar"}`, the payload from the callback URL
@@ -958,8 +956,6 @@ If you need to customize what the final value should be you can define a `perfor
 ```js
 const performResume = async (z, bundle) => {
   // this will give a final value of: {"hello": "world", "foo": "bar"}
-  // which is the default behavior when a custom `performResume` is not
-  // defined.
   return  { ...bundle.outputData, ...bundle.cleanedRequest };
 };
 ```
