@@ -2083,7 +2083,7 @@ Key | Required | Type | Description
 `limit` | **yes** | `integer` | The maximum number of invocations for an action, allowed within the timeframe window.
 `key` | no | `string` | The key to throttle with in combination with the scope. User data provided for the input fields can be used in the key with the use of the curly braces referencing. For example, to access the user data provided for the input field "test_field", use `{{bundle.inputData.test_field}}`. Note that a required input field should be referenced to get user data always.
 `scope` | no | `array`[`string` in (`'user'`, `'auth'`, `'account'`, `'action'`)] | The granularity to throttle by. You can set the scope to one or more of the following: 'user' - Throttles based on user ids.  'auth' - Throttles based on auth ids. 'account' - Throttles based on account ids for all users under a single account. 'action' - Throttles the action it is set on separately from other actions. By default, throttling is scoped to the action and account.
-`retry` | no | `boolean` | The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`.
+`retry` | no | `boolean` | The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`. NOTE that it has no effect on polling triggers and should not be set.
 `filter` | no | `string` in (`'free'`, `'trial'`, `'paid'`) | EXPERIMENTAL: Account-based attribute to override the throttle by. You can set to one of the following: "free", "trial", "paid". Therefore, the throttle scope would be automatically set to "account" and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.
 `overrides` | no | `array`[[/ThrottleOverrideObjectSchema](#throttleoverrideobjectschema)] | EXPERIMENTAL: Overrides the original throttle configuration based on a Zapier account attribute.
 
@@ -2138,7 +2138,7 @@ Key | Required | Type | Description
 `window` | **yes** | `integer` | The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.
 `limit` | **yes** | `integer` | The maximum number of invocations for an action, allowed within the timeframe window.
 `filter` | **yes** | `string` in (`'free'`, `'trial'`, `'paid'`) | Account-based attribute to override the throttle by. You can set to one of the following: "free", "trial", "paid". Therefore, the throttle scope would be automatically set to "account" and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.
-`retry` | no | `boolean` | The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`.
+`retry` | no | `boolean` | The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`. NOTE that it has no effect on polling triggers and should not be set.
 
 #### Examples
 

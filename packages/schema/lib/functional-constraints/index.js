@@ -18,6 +18,7 @@ const checks = [
   require('./matchingKeys'),
   require('./labelWhenVisible'),
   require('./uniqueInputFieldKeys'),
+  require('./pollingThrottle'),
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {

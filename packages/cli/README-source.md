@@ -1162,7 +1162,7 @@ To throttle an action, you need to set a `throttle` object with the following va
   1. `window [integer]`: The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.
   2. `limit [integer]`: The maximum number of invocations for an action, allowed within the timeframe window.
   3. `key [string]` (_added in v15.6.0_): The key to throttle with in combination with the scope. User data provided for the input fields can be used in the key with the use of the curly braces referencing. For example, to access the user data provided for the input field "test_field", use `{{bundle.inputData.test_field}}`. Note that a required input field should be referenced to get user data always.
-  4. `retry [boolean]` (_added in v15.8.0_): The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`.
+  4. `retry [boolean]` (_added in v15.8.0_): The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`. NOTE that it has no effect on polling triggers and should not be set.
   5. `filter [string]` (_added in v15.8.0_): EXPERIMENTAL: Account-based attribute to override the throttle by. You can set to one of the following: "free", "trial", "paid". Therefore, the throttle scope would be automatically set to "account" and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.
   6. `scope [array]`: The granularity to throttle by. You can set the scope to one or more of the following options;
         - 'user' - Throttles based on user ids.
@@ -1173,7 +1173,7 @@ To throttle an action, you need to set a `throttle` object with the following va
         - `window [integer]`: Same description as above.
         - `limit [integer]`: Same description as above.
         - `filter [string]`: Account-based attribute to override the throttle by. You can set to one of the following: "free", "trial", "paid". Therefore, the throttle scope would be automatically set to "account" and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.
-        - `retry [boolean]` (_added in v15.6.1_): The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`.
+        - `retry [boolean]` (_added in v15.6.1_): The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`. NOTE that it has no effect on polling triggers and should not be set.
 
 Both `window` and `limit` are required and others are optional. By default, throttling is scoped to the action and account.
 

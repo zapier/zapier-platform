@@ -38,7 +38,7 @@ module.exports = makeSchema(
       },
       retry: {
         description:
-          'The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`.',
+          'The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`. NOTE that it has no effect on polling triggers and should not be set.',
         type: 'boolean',
       },
       filter: {
