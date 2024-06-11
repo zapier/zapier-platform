@@ -928,10 +928,6 @@
               "value": "**yes** (with exceptions, see description)"
             }
           }
-        },
-        "throttle": {
-          "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
-          "$ref": "/ThrottleObjectSchema"
         }
       },
       "additionalProperties": false

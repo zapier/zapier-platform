@@ -36,8 +36,18 @@ const definition = {
 describe('pollingThrottle', () => {
   it('should error on a polling trigger with the "retry" field set in its throttle configuration', () => {
     operation.throttle.retry = false;
+    let results;
 
-    const results = schema.validateAppDefinition(definition);
+    // for polling trigger with operation.type set
+    results = schema.validateAppDefinition(definition);
+    results.errors.should.have.length(1);
+    results.errors[0].stack.should.eql(
+      'instance.triggers.foo.operation.throttle must not use the "retry" field for a polling trigger.'
+    );
+
+    // for polling trigger with operation.type unset
+    delete operation.type
+    results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
       'instance.triggers.foo.operation.throttle must not use the "retry" field for a polling trigger.'
