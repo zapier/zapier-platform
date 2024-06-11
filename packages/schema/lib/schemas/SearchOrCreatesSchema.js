@@ -18,6 +18,7 @@ module.exports = makeSchema(
         $ref: SearchOrCreateSchema.id,
       },
     },
+    additionalProperties: false,
     examples: [
       {
         searchOrCreateWidgets: {

@@ -1494,7 +1494,8 @@
           "description": "Any unique key can be used and its values will be validated against the SearchOrCreateSchema.",
           "$ref": "/SearchOrCreateSchema"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "AuthenticationSchema": {
       "id": "/AuthenticationSchema",
@@ -1602,7 +1603,8 @@
           "description": "Any unique key can be used and its values will be validated against the SearchSchema.",
           "$ref": "/SearchSchema"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "CreatesSchema": {
       "id": "/CreatesSchema",
@@ -1613,7 +1615,8 @@
           "description": "Any unique key can be used and its values will be validated against the CreateSchema.",
           "$ref": "/CreateSchema"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "SearchAndCreatesSchema": {
       "id": "/SearchAndCreatesSchema",
@@ -1624,7 +1627,8 @@
           "description": "Any unique key can be used and its values will be validated against the SearchOrCreateSchema.",
           "$ref": "/SearchOrCreateSchema"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "VersionSchema": {
       "id": "/VersionSchema",
