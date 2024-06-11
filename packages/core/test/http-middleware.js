@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const nock = require('nock');
 const FormData = require('form-data');
 const should = require('should');
 
@@ -625,6 +626,78 @@ describe('http logResponse after middleware', () => {
       url,
       form: { filename: ['sample.txt'] },
     });
+  });
+});
+
+describe('http throwForDisallowedHostnameAfterRedirect after middleware', () => {
+  it('does not throw for allowed hostnames', async () => {
+    const testLogger = () => Promise.resolve({});
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    const localUrl = 'https://zapier.com';
+    const localScope = nock(localUrl).get('/test').reply(200, 'redirected!!');
+
+    // It would be strange that a developer would redirect to a different domain
+    // using a subdomain like this, but as long as it isn't
+    const externalScope = nock('https://my-redirect-domain.com')
+      .get('/')
+      .reply(301, '', { Location: `${localUrl}/test` });
+
+    const response = await request({
+      url: 'https://my-redirect-domain.com',
+    });
+
+    response.status.should.equal(200);
+
+    externalScope.isDone().should.be.true();
+    localScope.isDone().should.be.true();
+  });
+
+  it('does not throw for disallowed hostname if no redirect has happened', async () => {
+    const testLogger = () => Promise.resolve({});
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    const localUrl = 'http://127.0.0.1:9000';
+    const localScope = nock(localUrl)
+      .get('/test')
+      .reply(200, 'not a redirect!!');
+
+    const response = await request({
+      url: `${localUrl}/test`,
+    });
+
+    response.status.should.equal(200);
+
+    localScope.isDone().should.be.true();
+  });
+
+  it('throws for disallowed hostname after redirect', async () => {
+    const testLogger = () => Promise.resolve({});
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    const localUrl = 'http://127.0.0.1:9000';
+    const localScope = nock(localUrl).get('/test').reply(200, 'redirected!!');
+
+    const externalScope = nock('http://bad-subdomain.com')
+      .get('/.good-domain.com')
+      .reply(301, '', { Location: `${localUrl}/test` });
+
+    await request({
+      url: `http://bad-subdomain.com/.good-domain.com`,
+    }).should.be.rejectedWith(errors.Error, {
+      name: 'AppError',
+      doNotContextify: true,
+      message: `{"message":"Redirecting to disallowed hostname"}`,
+    });
+
+    externalScope.isDone().should.be.true();
+
+    // Ideally this would be false but without manual control of the redirect,
+    // we can't prevent the request from being made...
+    localScope.isDone().should.be.true();
   });
 });
 

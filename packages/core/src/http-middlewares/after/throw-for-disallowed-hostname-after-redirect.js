@@ -1,6 +1,6 @@
 'use strict';
 
-const { DisallowedRedirectError } = require('../../errors');
+const { Error } = require('../../errors');
 
 const disallowedRedirectHosts = [
   // Loopback addresses (IPv4)
@@ -24,8 +24,10 @@ function isDisallowedAfterRedirect(url) {
 }
 
 const throwForDisallowedHostnameAfterRedirect = (resp) => {
-  if (resp.redirected && isDisallowedAfterRedirect(resp.request.url)) {
-    throw new DisallowedRedirectError();
+  // Looking at the response URL instead of the request URL
+  // because the response URL can change after a redirect
+  if (resp.redirected && isDisallowedAfterRedirect(resp.url)) {
+    throw new Error('Redirecting to disallowed hostname');
   }
 
   return resp;
