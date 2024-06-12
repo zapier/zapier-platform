@@ -45,7 +45,9 @@ const prepareContentResponse = async (resp, request) => {
 
   // trim down the response signature a ton for simplicity
   const preppedResp = {
+    url: resp.url,
     status: resp.status,
+    redirected: resp.redirected,
     json: undefined,
     data: undefined,
     content,

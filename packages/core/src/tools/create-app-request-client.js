@@ -20,6 +20,7 @@ const { logResponse } = require('../http-middlewares/after/log-response');
 const prepareResponse = require('../http-middlewares/after/prepare-response');
 const throwForStaleAuth = require('../http-middlewares/after/throw-for-stale-auth');
 const throwForStatusMiddleware = require('../http-middlewares/after/throw-for-status');
+const throwForDisallowedHostnameAfterRedirect = require('../http-middlewares/after/throw-for-disallowed-hostname-after-redirect');
 
 const createAppRequestClient = (input, options) => {
   input = ensurePath(input, '_zapier.app');
@@ -64,6 +65,7 @@ const createAppRequestClient = (input, options) => {
 
   const httpAfters = [
     prepareResponse,
+    throwForDisallowedHostnameAfterRedirect,
     logResponse,
     ...(includeAutoRefresh ? [throwForStaleAuth] : []),
     ...ensureArray(app.afterResponse),
