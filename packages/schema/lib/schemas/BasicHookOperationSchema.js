@@ -83,7 +83,6 @@ BasicHookOperationSchema.properties = {
   inputFields: BasicHookOperationSchema.properties.inputFields,
   outputFields: BasicHookOperationSchema.properties.outputFields,
   sample: BasicHookOperationSchema.properties.sample,
-  throttle: BasicHookOperationSchema.properties.throttle,
 };
 
 BasicHookOperationSchema.examples = [
