@@ -638,8 +638,6 @@ describe('http throwForDisallowedHostnameAfterRedirect after middleware', () => 
     const localUrl = 'https://zapier.com';
     const localScope = nock(localUrl).get('/test').reply(200, 'redirected!!');
 
-    // It would be strange that a developer would redirect to a different domain
-    // using a subdomain like this, but as long as it isn't
     const externalScope = nock('https://my-redirect-domain.com')
       .get('/')
       .reply(301, '', { Location: `${localUrl}/test` });

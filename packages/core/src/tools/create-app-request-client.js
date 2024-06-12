@@ -65,8 +65,8 @@ const createAppRequestClient = (input, options) => {
 
   const httpAfters = [
     prepareResponse,
-    logResponse,
     throwForDisallowedHostnameAfterRedirect,
+    logResponse,
     ...(includeAutoRefresh ? [throwForStaleAuth] : []),
     ...ensureArray(app.afterResponse),
     throwForStatusMiddleware,
