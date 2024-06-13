@@ -1,3 +1,27 @@
+## 15.8.0
+
+_released `2024-06-13`_
+
+### cli
+
+- :scroll: Add docs for domain and subdomain validation as Authentication subheading ([#797](https://github.com/zapier/zapier-platform/pull/797))
+- :scroll: Document performResume default implementation ([#806](https://github.com/zapier/zapier-platform/pull/806))
+
+### core
+
+- :nail_care: Throw error for HTTP redirect made to disallowed domains ([#803](https://github.com/zapier/zapier-platform/pull/803))
+
+### schema
+
+- :test_tube: Add support for `retry` and `filter` at the root-level of the throttle configuration ([#796](https://github.com/zapier/zapier-platform/pull/796))
+- :bug: Update createsSchema to disallow additional properties ([#798](https://github.com/zapier/zapier-platform/pull/798))
+
+### misc
+
+- :hammer: Bump jquery from 2.1.4 to 3.5.0 in the legacy-scripting-runner ([#790](https://github.com/zapier/zapier-platform/pull/790))
+- :hammer: Bump marked from 0.3.19 to 4.2.12 ([#793](https://github.com/zapier/zapier-platform/pull/793))
+- :hammer: Bump braces from 3.0.2 to 3.0.3 ([#805](https://github.com/zapier/zapier-platform/pull/805))
+
 ## 15.7.3
 
 _released `2024-05-27`_
