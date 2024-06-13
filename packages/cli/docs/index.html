@@ -3163,7 +3163,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>We recommend using <code>bundle.meta.isLoadingSample</code> to determine if the execution is happening in the foreground (IE: during Zap setup) as using <code>z.generateCallbackUrl()</code> can be inappropriate given the disconnect. Instead, wait for the long running request without generating a callback, or if you must, return stubbed data.</p>
-</blockquote><p>And finally, in a <code>performResume</code> to handle the final step which will receive three bundle properties:</p><ul>
+</blockquote><p>By default the payload <code>POST</code>ed to the callback URL will augment the data returned from the initial <code>perform</code> to compose the final value.</p><p>If you need to customize what the final value should be you can define a <code>performResume</code> method that receives three bundle properties:</p><ul>
 <li><code>bundle.outputData</code> is <code>{&quot;hello&quot;: &quot;world&quot;}</code>, the data returned from the initial <code>perform</code></li>
 <li><code>bundle.cleanedRequest</code> is <code>{&quot;foo&quot;: &quot;bar&quot;}</code>, the payload from the callback URL</li>
 <li><code>bundle.rawRequest</code> is the full request object corresponding to <code>bundle.cleanedRequest</code></li>
@@ -3172,6 +3172,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> performResume = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-comment">// this will give a final value of: {&quot;hello&quot;: &quot;world&quot;, &quot;foo&quot;: &quot;bar&quot;}</span>
+  <span class="hljs-comment">// which is the default behavior when a custom `performResume` is not</span>
+  <span class="hljs-comment">// defined.</span>
   <span class="hljs-keyword">return</span>  { ...bundle.outputData, ...bundle.cleanedRequest };
 };
 </code></pre>
