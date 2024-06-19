@@ -130,7 +130,8 @@ const createBundleBank = (appRaw, event = {}, serializeFunc = (x) => x) => {
   }, {});
 };
 
-const maskOutput = (output) => _.pick(output, 'results', 'status');
+const maskOutput = (output) =>
+  _.pick(output, 'results', 'status', 'resultsUrl');
 
 // These normalize functions are called after the initial before middleware that
 // cleans the request. The reason is that we need to know why a value is empty
