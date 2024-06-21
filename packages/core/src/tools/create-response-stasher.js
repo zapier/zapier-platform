@@ -1,7 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
-const request = require('./request-client-internal');
+const uploader = require('./uploader');
+const { v4: uuidv4 } = require('uuid');
 
 const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
   try {
@@ -16,38 +17,24 @@ const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
   }
 };
 
-// Function to handle uploading JSON payload
-const uploader = async (signedPostData, jsonData) => {
-  const response = await request({
-    url: signedPostData.url,
-    method: 'POST',
-    body: jsonData,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+// responseStasher uploads the data and returns the URL that points to that data.
+const stashResponse = async (input, response, size) => {
+  const rpc = _.get(input, '_zapier.rpc');
 
-  if (response.status === 204) {
-    return new URL(signedPostData.fields.key, signedPostData.url).href;
+  if (!rpc) {
+    throw new Error('rpc is not available');
   }
-
-  throw new Error(
-    `Response stasher failed with status ${response.status} - ${response.content}`
+  const signedPostData = await rpc('get_presigned_upload_post_data');
+  return withRetry(
+    _.partial(
+      uploader,
+      signedPostData,
+      response.toString(), // accept JSON string to send to uploader.
+      size,
+      uuidv4() + '.json',
+      'application/json'
+    )
   );
 };
 
-// Main function to process the request or data for uploading
-const createResponseStasher = (input) => {
-  const rpc = _.get(input, '_zapier.rpc');
-
-  return async (jsonData) => {
-    if (!rpc) {
-      throw new Error('RPC is not available');
-    }
-
-    const signedPostData = await rpc('get_presigned_upload_post_data');
-    return withRetry(uploader(signedPostData, jsonData));
-  };
-};
-
-module.exports = createResponseStasher;
+module.exports = stashResponse;
