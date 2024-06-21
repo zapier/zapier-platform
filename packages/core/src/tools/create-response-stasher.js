@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 const uploader = require('./uploader');
-const { v4: uuidv4 } = require('uuid');
+const crypto = require('crypto');
 
 const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
   try {
@@ -31,7 +31,7 @@ const stashResponse = async (input, response, size) => {
       signedPostData,
       response.toString(), // accept JSON string to send to uploader.
       size,
-      uuidv4() + '.json',
+      crypto.randomUUID() + '.json',
       'application/json'
     )
   );
