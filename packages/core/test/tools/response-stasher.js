@@ -23,6 +23,10 @@ describe('stash response', () => {
 
   const request = createAppRequestClient(input);
 
+  beforeEach(() => {
+    nock.cleanAll();
+  });
+
   it('should upload json response', async () => {
     mockRpcGetPresignedPostCall('1234/foo.json');
     mockUpload();
@@ -60,7 +64,6 @@ describe('stash response', () => {
 
     // Mock fail the first upload, then succeed
     nock(FAKE_S3_URL)
-      .persist()
       .post('/')
       .reply(500, 'uh oh')
       .post('/')

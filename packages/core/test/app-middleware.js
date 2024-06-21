@@ -100,7 +100,7 @@ describe('app middleware', () => {
         })
         .catch(done);
     });
-    it('after middleware should respect payload output size', (done) => {
+    it('should stash big payloads', (done) => {
       const rpc = makeRpc();
       mockRpcGetPresignedPostCall('1234/foo.json');
       mockUpload();
@@ -121,6 +121,100 @@ describe('app middleware', () => {
       input._zapier.event.autostashPayloadOutputLimit = 8 * 1024 * 1024;
 
       app(input)
+        .then((output) => {
+          output.should.not.have.property('resultsUrl');
+          done();
+        })
+        .catch(done);
+    });
+    it('should not stash if payload is bigger than autostash limit', (done) => {
+      const rpc = makeRpc();
+      mockRpcGetPresignedPostCall('1234/foo.json');
+      mockUpload();
+
+      const appDefinition = dataTools.deepCopy(exampleAppDefinition);
+
+      const app = createApp(appDefinition);
+
+      // returns 10mb of response
+      const input = createTestInput(
+        'resources.really_big_response.list.operation.perform',
+        appDefinition
+      );
+      input._zapier.rpc = rpc;
+
+      // set the payload autostash limit
+      // this limit is lower than res, so do not stash, let it fail
+      input._zapier.event.autostashPayloadOutputLimit = 8 * 1024 * 1024;
+
+      app(input)
+        .then((output) => {
+          output.should.not.have.property('resultsUrl');
+          done();
+        })
+        .catch(done);
+    });
+    it('should always stash if autostash limit is -1', (done) => {
+      const rpc = makeRpc();
+      mockRpcGetPresignedPostCall('1234/foo.json');
+      mockUpload();
+
+      const appDefinition = dataTools.deepCopy(exampleAppDefinition);
+
+      const app = createApp(appDefinition);
+
+      // returns regular response
+      const input = createTestInput(
+        'resources.list.list.operation.perform',
+        appDefinition
+      );
+      input._zapier.rpc = rpc;
+
+      // set the payload autostash limit
+      // this limit is lower than res, so do not stash, let it fail
+      input._zapier.event.autostashPayloadOutputLimit = -1;
+
+      app(input)
+        .then((output) => {
+          output.resultsUrl.should.eql(
+            'https://s3-fake.zapier.com/1234/foo.json'
+          );
+          done();
+        })
+        .catch(done);
+    });
+    it('should not stash if limit is not defined', (done) => {
+      const rpc = makeRpc();
+      mockRpcGetPresignedPostCall('1234/foo.json');
+      mockUpload();
+
+      const appDefinition = dataTools.deepCopy(exampleAppDefinition);
+
+      const app = createApp(appDefinition);
+
+      // returns regular response
+      const input = createTestInput(
+        'resources.list.list.operation.perform',
+        appDefinition
+      );
+      input._zapier.rpc = rpc;
+
+      // omit setting the payload autostash limit
+
+      app(input).then((output) => {
+        output.should.not.have.property('resultsUrl');
+      });
+
+      // returns 10mb regular response
+      const bigInputCall = createTestInput(
+        'resources.really_big_response.list.operation.perform',
+        appDefinition
+      );
+      input._zapier.rpc = rpc;
+
+      // omit setting the payload autostash limit
+
+      app(bigInputCall)
         .then((output) => {
           output.should.not.have.property('resultsUrl');
           done();

@@ -7,23 +7,23 @@ const responseStasher = require('../../tools/create-response-stasher');
 const largeResponseCachePointer = async (output) => {
   const response = cleaner.maskOutput(output);
 
-  const autostashOutputLimit =
-    output.input._zapier.event.autostashPayloadOutputLimit;
+  const autostashLimit = output.input._zapier.event.autostashPayloadOutputLimit;
 
   const payload = JSON.stringify(response.results);
   const size = payload.length;
-  if (size > constants.RESPONSE_SIZE_LIMIT) {
-    console.log(
-      `Oh no! Payload is ${size}, which is larger than ${constants.RESPONSE_SIZE_LIMIT}.`
-    );
 
-    // Stash if response is larger than lambda limit, but smaller than autostash limit
-    // otherwise, let lambda deal with it
-    if (autostashOutputLimit && size <= autostashOutputLimit) {
-      const url = await responseStasher(output.input, payload, size);
-      output.resultsUrl = url;
-      output.results = Array.isArray(output.results) ? [] : {};
-    }
+  // If autostash limit is defined, and is within the range, stash the response
+  // If it is -1, stash the response regardless of size
+  // If the limit is defined and is out of range, let lambda deal with it
+  if (
+    (autostashLimit &&
+      size >= constants.RESPONSE_SIZE_LIMIT &&
+      size <= autostashLimit) ||
+    autostashLimit === -1
+  ) {
+    const url = await responseStasher(output.input, payload, size);
+    output.resultsUrl = url;
+    output.results = Array.isArray(output.results) ? [] : {};
   }
   return output;
 };
