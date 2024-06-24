@@ -31,8 +31,8 @@ const stashResponse = async (input, response, size) => {
       signedPostData,
       response.toString(), // accept JSON string to send to uploader.
       size,
-      crypto.randomUUID() + '.json',
-      'application/json'
+      crypto.randomUUID() + '.txt',
+      'text/plain'
     )
   );
 };

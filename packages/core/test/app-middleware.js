@@ -70,8 +70,8 @@ describe('app middleware', () => {
       .catch(done);
   });
 
-  describe('large-response-cacher', (done) => {
-    it('after middleware should stash large payloads', (done) => {
+  describe('large-response-cacher', async () => {
+    it('after middleware should stash large payloads', async () => {
       const rpc = makeRpc();
       mockRpcGetPresignedPostCall('1234/foo.json');
       mockUpload();
@@ -91,16 +91,10 @@ describe('app middleware', () => {
       // set the payload autostash limit
       input._zapier.event.autostashPayloadOutputLimit = 11 * 1024 * 1024;
 
-      app(input)
-        .then((output) => {
-          output.resultsUrl.should.eql(
-            'https://s3-fake.zapier.com/1234/foo.json'
-          );
-          done();
-        })
-        .catch(done);
+      const output = await app(input);
+      output.resultsUrl.should.eql('https://s3-fake.zapier.com/1234/foo.json');
     });
-    it('should stash big payloads', (done) => {
+    it('should stash big payloads', async () => {
       const rpc = makeRpc();
       mockRpcGetPresignedPostCall('1234/foo.json');
       mockUpload();
@@ -120,14 +114,10 @@ describe('app middleware', () => {
       // this limit is lower than res, so do not stash, let it fail
       input._zapier.event.autostashPayloadOutputLimit = 8 * 1024 * 1024;
 
-      app(input)
-        .then((output) => {
-          output.should.not.have.property('resultsUrl');
-          done();
-        })
-        .catch(done);
+      const output = await app(input);
+      output.should.not.have.property('resultsUrl');
     });
-    it('should not stash if payload is bigger than autostash limit', (done) => {
+    it('should not stash if payload is bigger than autostash limit', async () => {
       const rpc = makeRpc();
       mockRpcGetPresignedPostCall('1234/foo.json');
       mockUpload();
@@ -147,14 +137,10 @@ describe('app middleware', () => {
       // this limit is lower than res, so do not stash, let it fail
       input._zapier.event.autostashPayloadOutputLimit = 8 * 1024 * 1024;
 
-      app(input)
-        .then((output) => {
-          output.should.not.have.property('resultsUrl');
-          done();
-        })
-        .catch(done);
+      const output = app(input);
+      output.should.not.have.property('resultsUrl');
     });
-    it('should always stash if autostash limit is -1', (done) => {
+    it('should always stash if autostash limit is -1', async () => {
       const rpc = makeRpc();
       mockRpcGetPresignedPostCall('1234/foo.json');
       mockUpload();
@@ -174,16 +160,10 @@ describe('app middleware', () => {
       // this limit is lower than res, so do not stash, let it fail
       input._zapier.event.autostashPayloadOutputLimit = -1;
 
-      app(input)
-        .then((output) => {
-          output.resultsUrl.should.eql(
-            'https://s3-fake.zapier.com/1234/foo.json'
-          );
-          done();
-        })
-        .catch(done);
+      const output = await app(input);
+      output.resultsUrl.should.eql('https://s3-fake.zapier.com/1234/foo.json');
     });
-    it('should not stash if limit is not defined', (done) => {
+    it('should not stash if limit is not defined', async () => {
       const rpc = makeRpc();
       mockRpcGetPresignedPostCall('1234/foo.json');
       mockUpload();
@@ -201,9 +181,8 @@ describe('app middleware', () => {
 
       // omit setting the payload autostash limit
 
-      app(input).then((output) => {
-        output.should.not.have.property('resultsUrl');
-      });
+      const output = app(input);
+      output.should.not.have.property('resultsUrl');
 
       // returns 10mb regular response
       const bigInputCall = createTestInput(
@@ -214,12 +193,8 @@ describe('app middleware', () => {
 
       // omit setting the payload autostash limit
 
-      app(bigInputCall)
-        .then((output) => {
-          output.should.not.have.property('resultsUrl');
-          done();
-        })
-        .catch(done);
+      const bigOutput = app(bigInputCall);
+      bigOutput.should.not.have.property('resultsUrl');
     });
   });
 });
