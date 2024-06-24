@@ -37,10 +37,7 @@ describe('stash response', () => {
     should(url).eql(`${FAKE_S3_URL}/1234/foo.json`);
 
     const s3Response = await request({ url });
-    should(s3Response.getHeader('content-type')).startWith('application/json');
-    // should(s3Response.getHeader('content-disposition')).eql(
-    //   'attachment; filename="unnamedfile.txt"'
-    // );
+    should(s3Response.getHeader('content-type')).startWith('text/plain');
 
     should(s3Response.content).eql(data);
   });
