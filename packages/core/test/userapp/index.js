@@ -26,6 +26,26 @@ const List = {
   },
 };
 
+const ListRequire = {
+  key: 'listrequire',
+  noun: 'List',
+  list: {
+    display: {
+      description: 'Trigger on new thing in list.',
+      label: 'List',
+    },
+    operation: {
+      perform: (z, bundle) => {
+        // need to specify the full /test/userapp path because
+        // it's not possible to mock process.cwd for require.resolve
+        // but in prod, that will return the app root directory
+        const { BASE_URL } = z.require('./test/userapp/constants.js');
+        return BASE_URL;
+      },
+    },
+  },
+};
+
 const Contact = {
   key: 'contact',
   noun: 'Contact',
@@ -386,9 +406,7 @@ const CachedCustomInputFields = {
       description: 'Get/Set custom input fields in zcache',
     },
     operation: {
-      inputFields: [
-        helpers.getCustomFields,
-      ],
+      inputFields: [helpers.getCustomFields],
       perform: () => {},
     },
   },
@@ -582,6 +600,7 @@ const App = {
   afterResponse: [],
   resources: {
     [List.key]: List,
+    [ListRequire.key]: ListRequire,
     [Contact.key]: Contact,
     [ContactError.key]: ContactError,
     [ContactSource.key]: ContactSource,
