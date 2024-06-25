@@ -4,6 +4,11 @@ const fetch = require('node-fetch');
 const FORM_TYPE = 'application/x-www-form-urlencoded';
 const JSON_TYPE = 'application/json';
 const JSON_TYPE_UTF8 = 'application/json; charset=utf-8';
+const HTML_TYPE = 'text/html';
+const TEXT_TYPE = 'text/plain';
+const YAML_TYPE = 'application/yaml';
+const XML_TYPE = 'application/xml';
+const JSONAPI_TYPE = 'application/vnd.api+json';
 
 const getContentType = (headers) => {
   const headerKeys = Object.keys(headers);
@@ -101,6 +106,11 @@ module.exports = {
   FORM_TYPE,
   JSON_TYPE,
   JSON_TYPE_UTF8,
+  HTML_TYPE,
+  TEXT_TYPE,
+  YAML_TYPE,
+  XML_TYPE,
+  JSONAPI_TYPE,
   getContentType,
   parseDictHeader,
   unheader,

@@ -1,6 +1,27 @@
-const zlib = require('zlib');
 const _ = require('lodash');
 const constants = require('../constants');
+
+const {
+  FORM_TYPE,
+  JSON_TYPE,
+  JSON_TYPE_UTF8,
+  HTML_TYPE,
+  TEXT_TYPE,
+  YAML_TYPE,
+  XML_TYPE,
+  JSONAPI_TYPE,
+} = require('./http');
+
+const ALLOWED_HTTP_DATA_CONTENT_TYPES = new Set([
+  FORM_TYPE,
+  JSON_TYPE,
+  JSON_TYPE_UTF8,
+  HTML_TYPE,
+  TEXT_TYPE,
+  YAML_TYPE,
+  XML_TYPE,
+  JSONAPI_TYPE,
+]);
 
 const createHttpPatch = (event) => {
   const httpPatch = (object, logger) => {
@@ -54,6 +75,17 @@ const createHttpPatch = (event) => {
       const newCallback = function (response) {
         const chunks = [];
 
+        // Only include request or response data for specific content types
+        // which we are able to read in logs and which are not typically too large
+        const requestContentType = _.get(options.headers['content-type'], '');
+        const responseContentType = _.get(response.headers['content-type'], '');
+
+        const shouldIncludeRequestData =
+          ALLOWED_HTTP_DATA_CONTENT_TYPES.has(requestContentType);
+
+        const shouldIncludeResponseData =
+          ALLOWED_HTTP_DATA_CONTENT_TYPES.has(responseContentType);
+
         const sendToLogger = (responseBody) => {
           // Prepare data for GL
           const logData = {
@@ -62,11 +94,15 @@ const createHttpPatch = (event) => {
             request_url: requestUrl,
             request_method: options.method || 'GET',
             request_headers: options.headers,
-            request_data: options.body || '',
+            request_data: shouldIncludeRequestData
+              ? options.body || ''
+              : '[unsupported]',
             request_via_client: false,
             response_status_code: response.statusCode,
             response_headers: response.headers,
-            response_content: responseBody,
+            response_content: shouldIncludeResponseData
+              ? responseBody
+              : '[unsupported]',
           };
 
           object.zapierLogger(
@@ -76,22 +112,11 @@ const createHttpPatch = (event) => {
         };
 
         const logResponse = () => {
-          // Decode gzip if needed
-          if (response.headers['content-encoding'] === 'gzip') {
-            const buffer = Buffer.concat(chunks);
-            zlib.gunzip(buffer, (err, decoded) => {
-              const responseBody = err
-                ? 'Could not decode response body.'
-                : decoded.toString();
+          const responseBody = _.map(chunks, (chunk) => chunk.toString()).join(
+            '\n'
+          );
 
-              sendToLogger(responseBody);
-            });
-          } else {
-            const responseBody = _.map(chunks, (chunk) =>
-              chunk.toString()
-            ).join('\n');
-            sendToLogger(responseBody);
-          }
+          sendToLogger(responseBody);
         };
 
         response.on('data', (chunk) => chunks.push(chunk));
