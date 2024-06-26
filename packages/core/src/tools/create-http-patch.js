@@ -1,27 +1,9 @@
+const zlib = require('zlib');
 const _ = require('lodash');
+
+const { ALLOWED_HTTP_DATA_CONTENT_TYPES, getContentType } = require('./http');
+
 const constants = require('../constants');
-
-const {
-  FORM_TYPE,
-  JSON_TYPE,
-  JSON_TYPE_UTF8,
-  HTML_TYPE,
-  TEXT_TYPE,
-  YAML_TYPE,
-  XML_TYPE,
-  JSONAPI_TYPE,
-} = require('./http');
-
-const ALLOWED_HTTP_DATA_CONTENT_TYPES = new Set([
-  FORM_TYPE,
-  JSON_TYPE,
-  JSON_TYPE_UTF8,
-  HTML_TYPE,
-  TEXT_TYPE,
-  YAML_TYPE,
-  XML_TYPE,
-  JSONAPI_TYPE,
-]);
 
 const createHttpPatch = (event) => {
   const httpPatch = (object, logger) => {
@@ -77,12 +59,11 @@ const createHttpPatch = (event) => {
 
         // Only include request or response data for specific content types
         // which we are able to read in logs and which are not typically too large
-        const requestContentType = _.get(options.headers['content-type'], '');
-        const responseContentType = _.get(response.headers['content-type'], '');
+        const requestContentType = getContentType(options.headers || {});
+        const responseContentType = getContentType(response.headers || {});
 
         const shouldIncludeRequestData =
           ALLOWED_HTTP_DATA_CONTENT_TYPES.has(requestContentType);
-
         const shouldIncludeResponseData =
           ALLOWED_HTTP_DATA_CONTENT_TYPES.has(responseContentType);
 
@@ -90,19 +71,19 @@ const createHttpPatch = (event) => {
           // Prepare data for GL
           const logData = {
             log_type: 'http',
-            request_type: 'devplatform-outbound',
+            request_type: 'patched-devplatform-outbound', // using a custom request type to differentiate from client requests
             request_url: requestUrl,
             request_method: options.method || 'GET',
             request_headers: options.headers,
             request_data: shouldIncludeRequestData
               ? options.body || ''
-              : '[unsupported]',
+              : '<unsupported format>',
             request_via_client: false,
             response_status_code: response.statusCode,
             response_headers: response.headers,
             response_content: shouldIncludeResponseData
               ? responseBody
-              : '[unsupported]',
+              : '<unsupported format>',
           };
 
           object.zapierLogger(
@@ -112,11 +93,22 @@ const createHttpPatch = (event) => {
         };
 
         const logResponse = () => {
-          const responseBody = _.map(chunks, (chunk) => chunk.toString()).join(
-            '\n'
-          );
+          // Decode gzip if needed
+          if (response.headers['content-encoding'] === 'gzip') {
+            const buffer = Buffer.concat(chunks);
+            zlib.gunzip(buffer, (err, decoded) => {
+              const responseBody = err
+                ? 'Could not decode response body.'
+                : decoded.toString();
 
-          sendToLogger(responseBody);
+              sendToLogger(responseBody);
+            });
+          } else {
+            const responseBody = _.map(chunks, (chunk) =>
+              chunk.toString()
+            ).join('\n');
+            sendToLogger(responseBody);
+          }
         };
 
         response.on('data', (chunk) => chunks.push(chunk));
