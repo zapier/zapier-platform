@@ -602,6 +602,16 @@ describe('create-app', () => {
         /Cannot find module 'non-existing-package'/
       );
     });
+
+    it('should be able to import from other paths using zRequire', async () => {
+      const input = createTestInput(
+        'resources.listrequire.list.operation.perform'
+      );
+      const appPass = createApp(appDefinition);
+
+      const { results } = await appPass(input);
+      results.should.eql('www.base-url.com');
+    });
   });
 
   describe('response.content parsing', () => {
