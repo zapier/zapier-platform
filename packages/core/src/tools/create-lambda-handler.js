@@ -31,12 +31,14 @@ const isRequestOrFunction = (obj) => {
 const extendAppRaw = (base, extension) => {
   const keysToOverride = [
     'inputFields',
+    'outputFields',
     'perform',
     'performList',
     'performSubscribe',
     'performUnsubscribe',
     'sample',
     'test',
+    'throttle',
   ];
   const concatArrayAndOverrideKeys = (objValue, srcValue, key) => {
     if (
