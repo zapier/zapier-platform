@@ -582,6 +582,32 @@ const BadCallback = {
   },
 };
 
+const createLargeResponse = (targetSizeInMB) => {
+  const targetSize = targetSizeInMB * 1024 * 1024; // Convert MB to bytes
+  const sampleData = {
+    id: 1,
+    data: 'a'.repeat(targetSize),
+  };
+  return sampleData;
+};
+
+// 10mb of data
+const ReallyBigResponse = {
+  key: 'really_big_response',
+  noun: 'Really Big Response',
+  list: {
+    display: {
+      label: 'Really Big Response',
+      description: 'This is a really big response.',
+    },
+    operation: {
+      perform: (z, bundle) => {
+        return createLargeResponse(10);
+      },
+    },
+  },
+};
+
 // custom HTTP middlewares /////
 
 /*
@@ -623,6 +649,7 @@ const App = {
     [ExecuteCallbackRequest.key]: ExecuteCallbackRequest,
     [EnvironmentVariable.key]: EnvironmentVariable,
     [BadCallback.key]: BadCallback,
+    [ReallyBigResponse.key]: ReallyBigResponse,
   },
   hydrators: {
     getBigStuff: () => {},
