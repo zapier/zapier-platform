@@ -36,9 +36,7 @@ const ListRequire = {
     },
     operation: {
       perform: (z, bundle) => {
-        // need to specify the full /test/userapp path because
-        // it's not possible to mock process.cwd for require.resolve
-        // but in prod, that will return the app root directory
+        // in prod, process.cwd will return the app root directory
         const { BASE_URL } = z.require('./test/userapp/constants.js');
         return BASE_URL;
       },
