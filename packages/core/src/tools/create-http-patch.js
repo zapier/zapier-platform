@@ -71,7 +71,8 @@ const createHttpPatch = (event) => {
           // Prepare data for GL
           const logData = {
             log_type: 'http',
-            request_type: 'patched-devplatform-outbound', // using a custom request type to differentiate from client requests
+            // Using a custom request_type to differentiate from z.request() since `request_via_client` is not logged in GL
+            request_type: 'patched-devplatform-outbound',
             request_url: requestUrl,
             request_method: options.method || 'GET',
             request_headers: options.headers,
