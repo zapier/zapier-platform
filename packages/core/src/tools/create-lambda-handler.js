@@ -30,17 +30,15 @@ const isRequestOrFunction = (obj) => {
 
 const extendAppRaw = (base, extension) => {
   const keysToOverride = [
-    'test',
+    'inputFields',
     'perform',
     'performList',
     'performSubscribe',
     'performUnsubscribe',
+    'sample',
+    'test',
   ];
   const concatArrayAndOverrideKeys = (objValue, srcValue, key) => {
-    if (Array.isArray(objValue) && Array.isArray(srcValue)) {
-      return objValue.concat(srcValue);
-    }
-
     if (
       // Do full replacement when it comes to keysToOverride
       keysToOverride.indexOf(key) !== -1 &&
