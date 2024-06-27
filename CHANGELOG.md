@@ -1,3 +1,20 @@
+## 15.9.0
+
+_released `2024-06-26`_
+
+### cli
+
+None!
+
+### core
+
+- :nail_care: Allow relative paths via z.require() ([#809](https://github.com/zapier/zapier-platform/pull/809))
+- :nail_care: Handle large response payloads ([#808](https://github.com/zapier/zapier-platform/pull/808))
+
+### schema
+
+None!
+
 ## 15.8.0
 
 _released `2024-06-13`_
