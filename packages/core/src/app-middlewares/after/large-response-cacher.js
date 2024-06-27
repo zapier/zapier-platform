@@ -6,6 +6,9 @@ const responseStasher = require('../../tools/create-response-stasher');
 
 const largeResponseCachePointer = async (output) => {
   const response = cleaner.maskOutput(output);
+  if (!response.results) {
+    return output;
+  }
 
   const autostashLimit = output.input._zapier.event.autostashPayloadOutputLimit;
 
