@@ -1,4 +1,6 @@
 'use strict';
+const should = require('should');
+
 const createApp = require('../src/create-app');
 const createInput = require('../src/tools/create-input');
 const dataTools = require('../src/tools/data');
@@ -71,6 +73,26 @@ describe('app middleware', () => {
   });
 
   describe('large-response-cacher', async () => {
+    it('should skip if results is undefined', async () => {
+      const rpc = makeRpc();
+      mockRpcGetPresignedPostCall('1234/foo.json');
+      mockUpload();
+
+      const appDefinition = dataTools.deepCopy(exampleAppDefinition);
+
+      const app = createApp(appDefinition);
+
+      // returns nothing
+      const input = createTestInput(
+        'resources.contact.create.operation.perform',
+        appDefinition
+      );
+      input._zapier.rpc = rpc;
+
+      const output = await app(input);
+      output.should.have.property('results');
+      should(output.results).be.undefined();
+    });
     it('after middleware should stash large payloads', async () => {
       const rpc = makeRpc();
       mockRpcGetPresignedPostCall('1234/foo.json');
