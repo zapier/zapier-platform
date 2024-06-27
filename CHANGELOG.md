@@ -1,3 +1,19 @@
+## 15.9.1
+
+_released `20254-06-27`_
+
+### cli
+
+None!
+
+### core
+
+- :bug: Fix afterApp large response cacher bug ([#814](https://github.com/zapier/zapier-platform/pull/814))
+
+### schema
+
+None!
+
 ## 15.9.0
 
 _released `2024-06-26`_
