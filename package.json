@@ -32,7 +32,8 @@
     "lint-examples": "eslint examples",
     "validate": "lerna run validate",
     "bump": "./scripts/bump.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "generate-schema-dts": "yarn workspace zapier-platform-core generate-schema-dts"
   },
   "husky": {
     "hooks": {

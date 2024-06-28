@@ -33,7 +33,8 @@
     "build-integration-test": "bin/build.sh local.bundle.zip",
     "upload-integration-test": "bin/upload-lambda.js local.bundle.zip",
     "deploy-integration-test": "yarn build-integration-test && yarn upload-integration-test",
-    "validate": "yarn test && yarn smoke-test && yarn lint"
+    "validate": "yarn test && yarn smoke-test && yarn lint",
+    "generate-schema-dts": "zapier-schema-to-ts"
   },
   "engines": {
     "node": ">=16",
