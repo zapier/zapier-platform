@@ -116,17 +116,25 @@ const getAppRawOverride = (rpc, appRawOverride) => {
 // so allow for that, and an event.appRawOverride for "buildless" apps.
 const loadApp = (event, rpc, appRawOrPath) => {
   return new ZapierPromise((resolve, reject) => {
+    const appRaw = _.isString(appRawOrPath)
+      ? require(appRawOrPath)
+      : appRawOrPath;
+
     if (event && event.appRawOverride) {
+      if (
+        Array.isArray(event.appRawOverride) &&
+        event.appRawOverride.length > 1 &&
+        !event.appRawOverride[0]
+      ) {
+        event.appRawOverride[0] = appRaw;
+      }
+
       return getAppRawOverride(rpc, event.appRawOverride)
         .then((appRawOverride) => resolve(appRawOverride))
         .catch((err) => reject(err));
     }
 
-    if (_.isString(appRawOrPath)) {
-      return resolve(require(appRawOrPath));
-    }
-
-    return resolve(appRawOrPath);
+    return resolve(appRaw);
   });
 };
 

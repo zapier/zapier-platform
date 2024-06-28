@@ -488,6 +488,40 @@ const doTest = (runner) => {
       });
     });
 
+    it('should handle array of non-existent appRawOverride (CLI app) with an appRawExtension, and add new trigger', () => {
+      let definition; // CLI apps have no definition override
+
+      const definitionExtension = {
+        triggers: {
+          perform: {
+            key: 'perform',
+            noun: 'Foo',
+            operation: {
+              perform: { source: 'return [{id: 12345}]' },
+            },
+          },
+        },
+      };
+
+      const event = {
+        command: 'execute',
+        method: 'triggers.perform.operation.perform',
+        appRawOverride: [definition, definitionExtension],
+        rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
+        token: 'fake',
+      };
+
+      return runner(event).then((response) => {
+        response.results.should.eql([
+          {
+            id: 12345,
+          },
+        ]);
+        // CLI code should be merged in with extension
+        event.appRawOverride[0].should.not.eql(undefined);
+      });
+    });
+
     it('should handle function source in beforeRequest', async () => {
       const definition = {
         beforeRequest: [
