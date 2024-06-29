@@ -21,11 +21,16 @@ const ZapierPromise = require('./promise');
 
 const RequestSchema = require('zapier-platform-schema/lib/schemas/RequestSchema');
 const FunctionSchema = require('zapier-platform-schema/lib/schemas/FunctionSchema');
+const OperationSchema = require('zapier-platform-schema/lib/schemas/BasicOperationSchema');
 
 const isRequestOrFunction = (obj) => {
   return (
     RequestSchema.validate(obj).valid || FunctionSchema.validate(obj).valid
   );
+};
+
+const isValidOperation = (obj) => {
+  return OperationSchema.validate(obj).valid;
 };
 
 const extendAppRaw = (base, extension) => {
@@ -40,6 +45,7 @@ const extendAppRaw = (base, extension) => {
     'test',
     'throttle',
   ];
+  const parentKeysToOverride = ['operation'];
   const concatArrayAndOverrideKeys = (objValue, srcValue, key) => {
     if (
       // Do full replacement when it comes to keysToOverride
@@ -50,6 +56,26 @@ const extendAppRaw = (base, extension) => {
       isRequestOrFunction(objValue)
     ) {
       return srcValue;
+    } else if (
+      objValue !== undefined &&
+      parentKeysToOverride.indexOf(key) !== -1 &&
+      isValidOperation(objValue) &&
+      // TODO question: do we care if the srcValue is a valid operation? can an external action be partial?
+      isValidOperation(srcValue)
+    ) {
+      const cloneObj = { ...objValue };
+      for (const srcKey of Object.keys(srcValue)) {
+        if (
+          Object.keys(objValue).indexOf(srcKey) !== -1 &&
+          keysToOverride.indexOf(srcKey) !== -1
+        ) {
+          cloneObj[srcKey] = srcValue[srcKey];
+        } else if (Object.keys(objValue).indexOf(srcKey) === -1) {
+          // if it's not in objValue, add it
+          cloneObj[srcKey] = srcValue[srcKey];
+        }
+      }
+      return cloneObj;
     }
 
     return undefined;
