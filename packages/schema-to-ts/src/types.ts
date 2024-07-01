@@ -1,4 +1,4 @@
-import type { AST } from "json-schema-to-typescript/dist/src/types/AST.js";
+import type { AST } from 'json-schema-to-typescript/dist/src/types/AST.js';
 
 export type RawSchemaLookup = Record<string, any>;
 

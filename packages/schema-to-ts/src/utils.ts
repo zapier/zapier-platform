@@ -1,11 +1,11 @@
-import { pino } from "pino";
+import { pino } from 'pino';
 
-const logLevel = process.env.LOG_LEVEL?.toLowerCase() ?? "info";
+const logLevel = process.env.LOG_LEVEL?.toLowerCase() ?? 'info';
 
 export const logger = pino({
   level: logLevel,
   transport: {
-    target: "pino-pretty",
+    target: 'pino-pretty',
   },
 });
 
@@ -14,4 +14,4 @@ export const logger = pino({
  * numbers and the "Schema" suffix.
  */
 export const prettyName = (name: string) =>
-  name.replace(/\d+$/, "").replace(/Schema$/, "");
+  name.replace(/\d+$/, '').replace(/Schema$/, '');

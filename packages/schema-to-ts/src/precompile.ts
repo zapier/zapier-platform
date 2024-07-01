@@ -1,17 +1,17 @@
-import { type ResolverOptions } from "@bcherny/json-schema-ref-parser";
-import { DEFAULT_OPTIONS, type Options } from "json-schema-to-typescript";
-import { AST } from "json-schema-to-typescript/dist/src/types/AST.js";
-import { dereference } from "json-schema-to-typescript/dist/src/resolver.js";
-import { link } from "json-schema-to-typescript/dist/src/linker.js";
-import { normalize } from "json-schema-to-typescript/dist/src/normalizer.js";
-import { parse } from "json-schema-to-typescript/dist/src/parser.js";
-import { optimize } from "json-schema-to-typescript/dist/src/optimizer.js";
-import deepmerge from "deepmerge";
+import { type ResolverOptions } from '@bcherny/json-schema-ref-parser';
+import { DEFAULT_OPTIONS, type Options } from 'json-schema-to-typescript';
+import { AST } from 'json-schema-to-typescript/dist/src/types/AST.js';
+import { dereference } from 'json-schema-to-typescript/dist/src/resolver.js';
+import { link } from 'json-schema-to-typescript/dist/src/linker.js';
+import { normalize } from 'json-schema-to-typescript/dist/src/normalizer.js';
+import { parse } from 'json-schema-to-typescript/dist/src/parser.js';
+import { optimize } from 'json-schema-to-typescript/dist/src/optimizer.js';
+import deepmerge from 'deepmerge';
 
-import ZPS from "zapier-platform-schema";
+import ZPS from 'zapier-platform-schema';
 
-import { logger, prettyName } from "./utils.js";
-import type { NamedAst, NodeMap, RawSchemaLookup } from "./types.js";
+import { logger, prettyName } from './utils.js';
+import type { NamedAst, NodeMap, RawSchemaLookup } from './types.js';
 
 /**
  * Produce a "Resolver" that can adapt the normal JsonSchema references
@@ -22,13 +22,13 @@ const getResolver = (schemas: RawSchemaLookup): Partial<ResolverOptions> => ({
   canRead: true,
   order: 1,
   read: ({ url }) => {
-    const key = url.replace("/", "");
+    const key = url.replace('/', '');
 
     const result = schemas[key];
     if (!result) {
-      console.warn("Could not resolve schema with key %s", key);
+      console.warn('Could not resolve schema with key %s', key);
     } else {
-      logger.trace("Resolved schema with key %s", key);
+      logger.trace('Resolved schema with key %s', key);
     }
     return result;
   },
@@ -42,7 +42,7 @@ const getResolver = (schemas: RawSchemaLookup): Partial<ResolverOptions> => ({
  */
 const compileToAST = async (
   schemas: RawSchemaLookup,
-  appKey = "AppSchema",
+  appKey = 'AppSchema',
 ): Promise<AST> => {
   const rootSchema = schemas[appKey];
   if (!rootSchema) {
@@ -80,33 +80,33 @@ const updateTypeMapRecursive = (
 
     if (types.has(name)) {
       // We've seen this type before, no need to re-register or traverse it.
-      logger.trace("Skipping registering %s %s", node.type, name);
+      logger.trace('Skipping registering %s %s', node.type, name);
       return;
     } else {
-      logger.debug("Registering %s %s", node.type, name);
+      logger.debug('Registering %s %s', node.type, name);
       types.set(name, node);
     }
   } else {
-    logger.trace("Traversing unnamed %s node", node.type);
+    logger.trace('Traversing unnamed %s node', node.type);
   }
 
   // Traverse Composite node types' children, exploring the tree more
   // deeply.
   switch (node.type) {
-    case "INTERFACE":
+    case 'INTERFACE':
       node.params.forEach((param) => {
         updateTypeMapRecursive(param.ast, schemas, types);
       });
       break;
-    case "UNION":
+    case 'UNION':
       node.params.forEach((param) => {
         updateTypeMapRecursive(param, schemas, types);
       });
       break;
-    case "ARRAY":
+    case 'ARRAY':
       updateTypeMapRecursive(node.params, schemas, types);
       break;
-    case "TUPLE":
+    case 'TUPLE':
       node.params.forEach((param) => {
         updateTypeMapRecursive(param, schemas, types);
       });
@@ -114,15 +114,15 @@ const updateTypeMapRecursive = (
         updateTypeMapRecursive(node.spreadParam, schemas, types);
       }
       break;
-    case "BOOLEAN":
-    case "LITERAL":
-    case "NUMBER":
-    case "NULL":
-    case "STRING":
-      logger.debug("Ignoring Primitive Type %s", node.type);
+    case 'BOOLEAN':
+    case 'LITERAL':
+    case 'NUMBER':
+    case 'NULL':
+    case 'STRING':
+      logger.debug('Ignoring Primitive Type %s', node.type);
       break;
     default:
-      logger.debug("Attempted to traverse %s Node", node.type, {
+      logger.debug('Attempted to traverse %s Node', node.type, {
         unhandledNode: node,
       });
     // throw new Error(`Unhandled node type ${node.type}`);
@@ -140,14 +140,14 @@ export const compileNodesFromSchemas = async (
   const nodeMap = new Map();
 
   for (const key of Object.keys(schemas)) {
-    logger.debug("Pre-compiling %s to Node", key);
+    logger.debug('Pre-compiling %s to Node', key);
     const ast = await compileToAST(schemas, key);
     if (isNamedNode(ast)) {
       const name = prettyName(key);
-      logger.trace("Registering %s %s", ast.type, name);
+      logger.trace('Registering %s %s', ast.type, name);
       nodeMap.set(name, ast);
     } else {
-      logger.warn("Schema %s did not compile to a named node!?", key);
+      logger.warn('Schema %s did not compile to a named node!?', key);
     }
   }
 
