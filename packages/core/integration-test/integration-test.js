@@ -215,6 +215,7 @@ const doTest = (runner) => {
       const definitionExtension = {
         creates: {
           foo: {
+            key: 'foo',
             noun: 'Foo',
             operation: {
               perform: { source: 'return [{id: 12345}]' },
@@ -290,7 +291,7 @@ const doTest = (runner) => {
       });
     });
 
-    it('should handle array of [appRawOverrideHash, appRawExtension] and overrides with an operation trigger key', () => {
+    it('should handle array of [appRawOverrideHash, appRawExtension] and overrides with an operation create key', () => {
       const definition = {
         creates: {
           operation: {
