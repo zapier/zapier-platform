@@ -4,9 +4,11 @@ const crypto = require('crypto');
 
 const { DehydrateError } = require('../errors');
 
-// Max URL length for Node is 8KB (https://stackoverflow.com/a/56954244/)
-// 8 * 1024 * (3 / 4) = 6144 max, minus some room for additional overhead
-const MAX_PAYLOAD_SIZE = 6000;
+// https://nodejs.org/docs/latest-v16.x/api/http.html#httpmaxheadersize
+// Base64 encoding adds approx 4/3 to the original size
+// To account for encoding, we use the inverse to calc the max original size (3/4)
+// 16kb limit * 1024 * (3 / 4) = 12.228 kb max, minus some room for additional overhead
+const MAX_PAYLOAD_SIZE = 12000;
 
 const wrapHydrate = (payload) => {
   payload = JSON.stringify(payload);
