@@ -1,3 +1,21 @@
+## 15.10.0
+
+_released `2024-07-02`_
+
+### cli
+
+None!
+
+### core
+
+- :nail_care: Update extendAppRaw to override arrays as well as objects ([#813](https://github.com/zapier/zapier-platform/pull/813))
+- :nail_care: Increase hydration payload limit ([#816](https://github.com/zapier/zapier-platform/pull/816))
+- :nail_care: Add allowlist for specific content types to log HTTP response/response for in patched HTTP client ([#810](https://github.com/zapier/zapier-platform/pull/810))
+
+### schema
+
+None!
+
 ## 15.9.1
 
 _released `2024-06-27`_
