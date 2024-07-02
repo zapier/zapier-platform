@@ -7,12 +7,12 @@
   "author": "Zapier Engineering <contact@zapier.com>",
   "license": "SEE LICENSE IN LICENSE",
   "main": "index.js",
-  "typings": "index.d.ts",
+  "types": "types/index.d.ts",
   "files": [
     "/include/",
-    "/index.d.ts",
     "/index.js",
-    "/src/"
+    "/src/",
+    "/types/"
   ],
   "scripts": {
     "preversion": "git pull && yarn test",

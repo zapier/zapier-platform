@@ -11,8 +11,10 @@
     "clean": "rm -rf dist",
     "prebuild": "yarn clean",
     "build": "tsc",
-    "generate-types": "node ./dist/cli.js --schema-json ../schema/exported-schema.json",
-    "generate-types:build": "yarn build && yarn generate-types"
+    "generate-types": "node ./dist/cli.js --schema-json ../schema/exported-schema.json --output ../core/types/zapier.generated.d.ts",
+    "generate-types:build": "yarn build && yarn generate-types",
+    "git-add": "git add ../core/types/zapier.generated.d.ts",
+    "precommit": "yarn build && yarn generate-types && yarn git-add"
   },
   "dependencies": {
     "commander": "^12.1.0",

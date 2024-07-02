@@ -118,9 +118,9 @@ export interface HttpResponse extends BaseHttpResponse {
 
 export interface RawHttpResponse extends BaseHttpResponse {
   body: NodeJS.ReadableStream;
-	buffer(): Promise<Buffer>;
-	json(): Promise<object>;
-	text(): Promise<string>;
+  buffer(): Promise<Buffer>;
+  json(): Promise<object>;
+  text(): Promise<string>;
 }
 
 type DehydrateFunc = <T>(
