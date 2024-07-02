@@ -8,8 +8,6 @@ import { parse } from 'json-schema-to-typescript/dist/src/parser.js';
 import { optimize } from 'json-schema-to-typescript/dist/src/optimizer.js';
 import deepmerge from 'deepmerge';
 
-import ZPS from 'zapier-platform-schema';
-
 import { logger, prettyName } from './utils.js';
 import type { NamedAst, NodeMap, RawSchemaLookup } from './types.js';
 
@@ -152,14 +150,4 @@ export const compileNodesFromSchemas = async (
   }
 
   return nodeMap;
-};
-
-/**
- * Get the collection of schema objects from the zapier-platform-schema
- * library. This is a fallback in case the exported schema file is not
- * directly provided.
- */
-export const getZpsRawSchemas = async (): Promise<RawSchemaLookup> => {
-  const { schemas } = ZPS.exportSchema();
-  return schemas;
 };

@@ -2,20 +2,19 @@
   "name": "zapier-schema-to-ts",
   "version": "0.1.0",
   "description": "Converts zapier-platform-schema JsonSchema definitions to TypeScript types",
-  "main": "dist/cli.js",
+  "author": "Thomas Cranny <thomas.cranny@zapier.com>",
   "license": "SEE LICENSE IN LICENSE",
+  "main": "dist/cli.js",
+  "type": "module",
   "scripts": {
     "test": "vitest",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
     "build": "tsc",
-    "generate": "node ./dist/cli.js"
+    "generate-platform-types": "node ./dist/cli.js --schema-json ../schema/exported-schema.json",
+    "generate-platform-types:build": "yarn build && yarn generate-platform-types"
+    ,"foo": "yarn schema-to-ts"
   },
-  "bin": {
-    "zapier-schema-to-ts": "./dist/cli.js"
-  },
-  "author": "Thomas Cranny <thomas.cranny@zapier.com>",
-  "type": "module",
   "dependencies": {
     "commander": "^12.1.0",
     "deepmerge": "^4.3.1",
@@ -24,9 +23,7 @@
     "pino": "^9.1.0",
     "pino-pretty": "^11.0.0",
     "prettier": "^3.2.5",
-    "word-wrap": "^1.2.5",
-    "zapier-platform-core": "^15.8.0",
-    "zapier-platform-schema": "^15.8.0"
+    "word-wrap": "^1.2.5"
   },
   "devDependencies": {
     "typescript": "^5.5.2",
