@@ -29,16 +29,16 @@ program
   )
   .option(
     '-o, --output [file]',
-    'The file to write the generated TypeScript to.',
+    'The file to write the generated TypeScript to. Typically intended to be put in ../core/types as a generated module.',
     '../core/types/zapier.generated.d.ts',
   )
   .option(
     '--skip-patch-functions',
-    'If to skip augmenting the `Function` type with an actual function signature, because raw JSON schema cannot provide the code-level function details. If true, output is much closer to a raw 1-1 interface for each schema.',
+    'If to skip augmenting the `Function` type with an actual function signature, because raw JSON schema cannot provide the code-level function details. If true, outputs are close 1-1 interfaces for each schema.',
     false,
   )
   .option(
-    '--platform-core-custom-import [path]',
+    '--platform-core-custom-import <path>',
     'What import to use for import `ZObject` and `Bundle` from. Defaults to its sibling custom types module in platform-core, but can be overridden to `zapier-platform-core` for example.',
     './zapier.custom',
   );
