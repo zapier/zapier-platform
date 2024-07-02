@@ -5,7 +5,8 @@ const crypto = require('crypto');
 const { DehydrateError } = require('../errors');
 
 // https://nodejs.org/docs/latest-v16.x/api/http.html#httpmaxheadersize
-// base64 encoding is approx 4/3, so our limit should be:
+// Base64 encoding adds approx 4/3 to the original size
+// To account for encoding, we use the inverse to calc the max original size (3/4)
 // 16kb limit * 1024 * (3 / 4) = 12.228 kb max, minus some room for additional overhead
 const MAX_PAYLOAD_SIZE = 12000;
 
