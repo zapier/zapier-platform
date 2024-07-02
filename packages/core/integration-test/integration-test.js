@@ -190,7 +190,7 @@ const doTest = (runner) => {
       });
     });
 
-    it('should handle array of [appRawOverrideHash, appRawExtension]', () => {
+    it('should handle array of [appRawOverrideHash, appRawExtension] and override inputFields', () => {
       const definition = {
         creates: {
           foo: {
@@ -198,7 +198,13 @@ const doTest = (runner) => {
             noun: 'Foo',
             operation: {
               perform: { source: 'return [{id: 12345}]' },
-              inputFields: [{ key: 'name', type: 'string' }],
+              inputFields: [
+                { key: 'name', type: 'string' },
+                { key: 'testing', type: 'string' },
+              ],
+              sample: {
+                id: 123,
+              },
             },
           },
         },
@@ -209,11 +215,13 @@ const doTest = (runner) => {
       const definitionExtension = {
         creates: {
           foo: {
-            noun: 'Foobar',
+            key: 'foo',
+            noun: 'Foo',
             operation: {
+              perform: { source: 'return [{id: 12345}]' },
               inputFields: [{ key: 'message', type: 'string' }],
               sample: {
-                id: 678,
+                name: 'sample',
               },
             },
           },
@@ -234,10 +242,105 @@ const doTest = (runner) => {
       };
 
       return runner(event).then((response) => {
-        response.results.should.eql([
-          { key: 'name', type: 'string' },
-          { key: 'message', type: 'string' },
-        ]);
+        response.results.should.eql([{ key: 'message', type: 'string' }]);
+      });
+    });
+
+    it('should handle array of [appRawOverrideHash, appRawExtension] and override specific inputField', () => {
+      const definition = {
+        creates: {
+          foo: {
+            key: 'foo',
+            noun: 'Foo',
+            operation: {
+              perform: { source: 'return [{id: 12345}]' },
+              inputFields: [{ key: 'message', type: 'integer' }],
+            },
+          },
+        },
+      };
+
+      mocky.mockRpcCall(definition);
+
+      const definitionExtension = {
+        creates: {
+          foo: {
+            noun: 'Foobar',
+            operation: {
+              inputFields: [{ key: 'message', type: 'string' }],
+            },
+          },
+        },
+      };
+
+      const definitionHash = crypto
+        .createHash('md5')
+        .update(JSON.stringify(definition))
+        .digest('hex');
+
+      const event = {
+        command: 'execute',
+        method: 'creates.foo.operation.inputFields',
+        appRawOverride: [definitionHash, definitionExtension],
+        rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
+        token: 'fake',
+      };
+
+      return runner(event).then((response) => {
+        response.results.should.eql([{ key: 'message', type: 'string' }]);
+      });
+    });
+
+    it('should handle array of [appRawOverrideHash, appRawExtension] and overrides with an operation create key', () => {
+      const definition = {
+        creates: {
+          operation: {
+            key: 'operation',
+            operation: {
+              perform: { source: 'return [{id: 12345}]' },
+              inputFields: [
+                { key: 'name', type: 'string' },
+                { key: 'testing', type: 'string' },
+              ],
+              sample: {
+                id: 123,
+              },
+            },
+          },
+        },
+      };
+
+      mocky.mockRpcCall(definition);
+
+      const definitionExtension = {
+        creates: {
+          operation: {
+            operation: {
+              perform: { source: 'return [{id: 123}]' },
+              inputFields: [{ key: 'message', type: 'string' }],
+              sample: {
+                name: 'sample',
+              },
+            },
+          },
+        },
+      };
+
+      const definitionHash = crypto
+        .createHash('md5')
+        .update(JSON.stringify(definition))
+        .digest('hex');
+
+      const event = {
+        command: 'execute',
+        method: 'creates.operation.operation.inputFields',
+        appRawOverride: [definitionHash, definitionExtension],
+        rpc_base: 'https://mock.zapier.com/platform/rpc/cli',
+        token: 'fake',
+      };
+
+      return runner(event).then((response) => {
+        response.results.should.eql([{ key: 'message', type: 'string' }]);
       });
     });
 

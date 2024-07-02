@@ -19,42 +19,43 @@ const environmentTools = require('./environment');
 const schemaTools = require('./schema');
 const ZapierPromise = require('./promise');
 
-const RequestSchema = require('zapier-platform-schema/lib/schemas/RequestSchema');
-const FunctionSchema = require('zapier-platform-schema/lib/schemas/FunctionSchema');
-
-const isRequestOrFunction = (obj) => {
+const isDefinedPrimitive = (value) => {
   return (
-    RequestSchema.validate(obj).valid || FunctionSchema.validate(obj).valid
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
   );
 };
 
-const extendAppRaw = (base, extension) => {
-  const keysToOverride = [
-    'test',
-    'perform',
-    'performList',
-    'performSubscribe',
-    'performUnsubscribe',
-  ];
-  const concatArrayAndOverrideKeys = (objValue, srcValue, key) => {
-    if (Array.isArray(objValue) && Array.isArray(srcValue)) {
-      return objValue.concat(srcValue);
-    }
+const shouldFullyReplace = (path) => {
+  // covers inputFields, outputFields, sample, throttle, etc
+  const isOperation = path[path.length - 2] === 'operation';
+  return isOperation;
+};
 
-    if (
-      // Do full replacement when it comes to keysToOverride
-      keysToOverride.indexOf(key) !== -1 &&
-      _.isPlainObject(srcValue) &&
-      _.isPlainObject(objValue) &&
-      isRequestOrFunction(srcValue) &&
-      isRequestOrFunction(objValue)
-    ) {
-      return srcValue;
+const extendAppRaw = (base, extension, path) => {
+  if (extension === undefined) {
+    return base;
+  } else if (isDefinedPrimitive(extension)) {
+    return extension;
+  } else if (Array.isArray(extension)) {
+    return [...extension];
+  } else if (_.isPlainObject(extension)) {
+    path = path || [];
+    if (shouldFullyReplace(path)) {
+      return extension;
+    } else {
+      const baseObject = _.isPlainObject(base) ? base : {};
+      const result = { ...baseObject };
+      for (const [key, value] of Object.entries(extension)) {
+        const newPath = [...path, key];
+        result[key] = extendAppRaw(baseObject[key], value, newPath);
+      }
+      return result;
     }
-
-    return undefined;
-  };
-  return _.mergeWith(base, extension, concatArrayAndOverrideKeys);
+  }
+  throw new TypeError('Unexpected type');
 };
 
 const getAppRawOverride = (rpc, appRawOverride) => {
