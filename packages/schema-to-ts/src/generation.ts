@@ -70,9 +70,9 @@ const genType = (typeNode: AST): string => {
         const snippet = typeNode.params.replace('insert-snippet|||', '');
         return snippet;
       }
-      logger.warn(`Unsupported CUSTOM_TYPE Node: ${typeNode.params}`);
+      logger.error(`Unsupported CUSTOM_TYPE Node: ${typeNode.params}`);
     default:
-      logger.warn(`Unsupported anonymous type: ${typeNode.type}`);
+      logger.error(`Unsupported anonymous type: ${typeNode.type}`);
   }
 
   return 'undefined /* TODO: Implement me! */\n';
@@ -124,27 +124,36 @@ const genCustomTypeSnippet = (node: NamedAst<TCustomType>): string => {
  */
 const genNamedNode = (node: NamedAst): string => {
   const name = prettyName(node.standaloneName);
+  logger.debug(
+    { type: node.type, standaloneName: node.standaloneName },
+    'Generating code for %s',
+    name,
+  );
+  logger.trace({ node }, 'Raw node details for %s', name);
   switch (node.type) {
     case 'INTERFACE':
-      logger.debug(`Generating interface: ${name} (${node.type})`);
       return genNamedInterface(node);
     case 'STRING':
-      logger.debug(`Generating string: ${name} (${node.type})`);
       return genNamedString(node);
     case 'UNION':
-      logger.debug(`Generating union: ${name} (${node.type})`);
       return genNamedUnion(node);
     case 'ARRAY':
-      logger.debug(`Generating array: ${name} (${node.type})`);
       return genNamedArray(node);
     case 'CUSTOM_TYPE':
       if (node.params.startsWith('insert-snippet|||')) {
-        logger.debug(`Generating custom type: ${name} (${node.type})`);
         return genCustomTypeSnippet(node);
       }
-      logger.warn(`Unsupported named node (custom): ${name} (${node.type})`);
+      logger.warn(
+        { type: node.type, standaloneName: node.standaloneName },
+        'Unsupported named node (custom): %s',
+        name,
+      );
     default:
-      logger.warn(`Unsupported named node: ${name} (${node.type})`);
+      logger.fatal(
+        { type: node.type, standaloneName: node.standaloneName },
+        'Unsupported named node: %s. Cannot convert to TypeScript code.',
+        name,
+      );
   }
   throw new Error(`Cannot generate code for node: ${name} (${node.type})`);
 };

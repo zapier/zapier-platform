@@ -1,97 +1,118 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
-import { writeFileSync, existsSync, readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { cwd } from 'process';
+import { CliOptions, CompilerOptions, ZapierSchemaDocument } from './types.js';
+import { Command, Option } from 'commander';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import { applyAllTransformations } from './transformers.js';
+import { compileNodesFromSchemas } from './precompile.js';
 import { format } from './formatter.js';
 import { generateTypeScript } from './generation.js';
-import { compileNodesFromSchemas } from './precompile.js';
 import { logger } from './utils.js';
-
-import packageJson from '../package.json' with { type: 'json' };
-import { RawSchemaLookup } from './types.js';
-
-const DEFAULT_SCHEMA_JSON_PATH = `${cwd()}/node_modules/zapier-platform-schema/exported-schema.json`;
-const DEFAULT_OUTPUT_TS_PATH = `${cwd()}/zapier.generated.d.ts`;
 
 const program = new Command();
 
 program
-  .name(packageJson.name)
-  .version(packageJson.version)
-  .description(packageJson.description);
-
-program.option(
-  '-s, --schema-json [file]',
-  'The `exported-schema.json` file from zapier-platform-schema to compile from. If not provided, defaults to searching in $CWD/node_modules/zapier-platform-schema/',
-);
-program.option(
-  '-l, --log-level <level>',
-  'The log level to use, one of "error", "warning", "info", "debug", "trace".',
-  'info',
-);
-program.option(
-  '-o, --output [file]',
-  'The file to write the generated TypeScript to. If not provided, defaults to stdout.',
-);
+  .name(process.env.npm_package_name!)
+  .version(process.env.npm_package_version!)
+  .description(process.env.npm_package_description!)
+  .addOption(
+    new Option('-l, --log-level <level>')
+      .choices(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
+      .env('LOG_LEVEL')
+      .default('info'),
+  )
+  .option(
+    '-s, --schema-json [file]',
+    'The `exported-schema.json` file from zapier-platform-schema to compile from. Typically the latest built output from zapier-platform-schema.',
+    '../schema/exported-schema.json',
+  )
+  .option(
+    '-o, --output [file]',
+    'The file to write the generated TypeScript to.',
+    '../core/types/zapier.generated.d.ts',
+  )
+  .option(
+    '--skip-patch-functions',
+    'If to skip augmenting the `Function` type with an actual function signature, because raw JSON schema cannot provide the code-level function details. If true, output is much closer to a raw 1-1 interface for each schema.',
+    false,
+  )
+  .option(
+    '--platform-core-custom-import [path]',
+    'What import to use for import `ZObject` and `Bundle` from. Defaults to its sibling custom types module in platform-core, but can be overridden to `zapier-platform-core` for example.',
+    './zapier.custom',
+  );
 
 const main = async () => {
   program.parse();
-  const options = program.opts();
-
+  const options = program.opts<CliOptions>();
   if (options.logLevel) {
     logger.level = options.logLevel;
   }
+  logger.debug({ options }, 'Parsed CLI options');
 
-  // Load the schema JSON file.
-  let schemaJsonPath = options.schemaJson;
-  if (!schemaJsonPath) {
-    schemaJsonPath = DEFAULT_SCHEMA_JSON_PATH;
-    logger.warn(
-      {
-        DEFAULT_SCHEMA_JSON_PATH,
-      },
-      `No --schema-json file provided, attempting to use zapier-platform-schema from node_modules`,
-    );
-  }
-  if (!existsSync(schemaJsonPath)) {
+  // Load the schema JSON file. The `zapier-platform-schema` package
+  // has an `exported-schema.json` file of all the schemas we want to
+  // compile.
+  const schemaJson = options.schemaJson!;
+  if (!existsSync(schemaJson)) {
     logger.fatal(
-      { schemaJsonPath },
+      { schemaJsonPath: schemaJson },
       'Schema-json file does not exist, aborting',
     );
     process.exit(1);
   } else {
     logger.info(
-      { schemaJsonPath },
+      { schemaJsonPath: schemaJson },
       'Successfully found schema-json file to compile.',
     );
   }
-  const rawSchemas = getRawSchemasFromJson(schemaJsonPath);
+  const { version, schemas } = loadExportedSchemas(schemaJson);
   logger.info(
-    'Loaded %d raw JsonSchemas to compile',
-    Object.keys(rawSchemas).length,
+    {
+      schemaJson,
+      version,
+      numRawSchemas: Object.keys(schemas).length,
+    },
+    'Loaded %d raw JsonSchemas from zapier-platform-schemas v%s to compile',
+    Object.keys(schemas).length,
+    version,
   );
+
+  const compilerOptions: CompilerOptions = {
+    ...options,
+    compilerVersion: process.env.npm_package_version!,
+    platformVersion: version,
+  };
+  logger.debug({ compilerOptions }, 'Finalised compiler options');
 
   // Compile the schemas into a collection of AST nodes to work with.
+  // There is one node for each schema at this stage, and they are in a
+  // format that we still want to improve, as the
+  // json-schema-to-typescript library does most of the work but has
+  // some undesirable results.
   logger.debug('Generating pre-compiled node map');
-  const nodeMap = await compileNodesFromSchemas(rawSchemas);
+  const nodeMap = await compileNodesFromSchemas(schemas);
   logger.info({ nodes: nodeMap.size }, 'Generated pre-compiled node map');
 
+  // "Transform" the compiled schemas from a raw AST format into more
+  // usable nodes. This is where we cleanup comments, add links to the
+  // public docs, and add references to the pre-existing
+  // zapier-platform-core types.
   logger.debug('Applying transformations to node map');
-  const improvedNodeMap = applyAllTransformations(nodeMap);
+  const improvedNodeMap = applyAllTransformations(nodeMap, compilerOptions);
   logger.info(
     { nodes: improvedNodeMap.size },
-    'Applied transformations to node map',
+    'Applied all transformations to node map',
   );
 
+  // Convert the nodes into a string containing real TypeScript code.
   logger.debug('Generating TypeScript from transformed node map');
   const rawTypeScript = generateTypeScript(improvedNodeMap);
   logger.info({ bytes: rawTypeScript.length }, 'Generated raw TypeScript');
 
+  // Format the TypeScript with Prettier before writing it to a file.
+  // Necessary because the code-generation step is rather messy.
   logger.debug('Formatting generated TypeScript with Prettier');
   const typescript = await format(rawTypeScript);
   logger.info(
@@ -99,24 +120,14 @@ const main = async () => {
     'Formatted generated TypeScript with Prettier',
   );
 
-  let output = options.output;
-  if (!output) {
-    output = `${cwd()}/zapier.generated.d.ts`;
-    logger.warn(
-      { DEFAULT_OUTPUT_TS_PATH },
-      'No output file provided, writing to default location',
-    );
-  }
-
-  writeFileSync(output, typescript);
-  logger.info({ output }, 'Wrote generated TypeScript to file');
+  // Write it to a real file. Defaults to the current working directory.
+  writeFileSync(options.output!, typescript);
+  logger.info({ output: options.output }, 'Wrote generated TypeScript to file');
 
   logger.info('Done!');
 };
 
-const getRawSchemasFromJson = (schemaJsonPath: string): RawSchemaLookup => {
-  const data = JSON.parse(readFileSync(schemaJsonPath, 'utf-8'));
-  return data.schemas;
-};
+const loadExportedSchemas = (schemaJsonPath: string): ZapierSchemaDocument =>
+  JSON.parse(readFileSync(schemaJsonPath, 'utf-8'));
 
 main();

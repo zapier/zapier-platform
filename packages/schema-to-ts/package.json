@@ -9,11 +9,10 @@
   "scripts": {
     "test": "vitest",
     "clean": "rm -rf dist",
-    "prebuild": "npm run clean",
+    "prebuild": "yarn clean",
     "build": "tsc",
-    "generate-platform-types": "node ./dist/cli.js --schema-json ../schema/exported-schema.json",
-    "generate-platform-types:build": "yarn build && yarn generate-platform-types"
-    ,"foo": "yarn schema-to-ts"
+    "generate-types": "node ./dist/cli.js --schema-json ../schema/exported-schema.json",
+    "generate-types:build": "yarn build && yarn generate-types"
   },
   "dependencies": {
     "commander": "^12.1.0",
