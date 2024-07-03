@@ -4,8 +4,8 @@
  * files, and/or the schema-to-ts tool and run its CLI to regenerate
  * these typings.
  *
- * zapier-platform-schema version: 15.9.1
- * schema-to-ts compiler version: 0.1.0
+ * zapier-platform-schema version: 15.10.0
+ *  schema-to-ts compiler version: 0.1.0
  */
 
 import type { Bundle, ZObject } from "./zapier.custom";
