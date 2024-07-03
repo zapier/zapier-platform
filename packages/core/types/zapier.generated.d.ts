@@ -8,7 +8,7 @@
  *  schema-to-ts compiler version: 0.1.0
  */
 
-import type { Bundle, ZObject } from "./zapier.custom";
+import type { Bundle, ZObject } from './zapier.custom';
 
 /**
  * Represents a full app.
@@ -222,16 +222,16 @@ export interface Field {
    * Otherwise, a .txt file will be generated.
    */
   type?:
-    | "string"
-    | "text"
-    | "integer"
-    | "number"
-    | "boolean"
-    | "datetime"
-    | "file"
-    | "password"
-    | "copy"
-    | "code";
+    | 'string'
+    | 'text'
+    | 'integer'
+    | 'number'
+    | 'boolean'
+    | 'datetime'
+    | 'file'
+    | 'password'
+    | 'copy'
+    | 'code';
 
   /** If this value is required or not. */
   required?: boolean;
@@ -395,7 +395,7 @@ export type Function =
  */
 export interface Request {
   /** The HTTP method for the request. */
-  method?: "GET" | "PUT" | "POST" | "PATCH" | "DELETE" | "HEAD";
+  method?: 'GET' | 'PUT' | 'POST' | 'PATCH' | 'DELETE' | 'HEAD';
 
   /**
    * A URL for the request (we will parse the querystring and merge
@@ -472,7 +472,7 @@ export interface Request {
  */
 export interface RedirectRequest {
   /** The HTTP method for the request. */
-  method?: "GET";
+  method?: 'GET';
 
   /**
    * A URL for the request (we will parse the querystring and merge
@@ -634,7 +634,7 @@ export interface ThrottleOverrideObject {
    * requests throttled based on the throttle overrides while the rest
    * are throttled based on the original configuration.
    */
-  filter: "free" | "trial" | "paid";
+  filter: 'free' | 'trial' | 'paid';
 
   /**
    * The effect of throttling on the tasks of the action. `true` means
@@ -694,7 +694,7 @@ export interface LockObject {
    *
    * @minItems 0
    */
-  scope?: ("user" | "auth" | "account")[];
+  scope?: ('user' | 'auth' | 'account')[];
 
   /**
    * The number of seconds to hold the lock before releasing it to
@@ -756,7 +756,7 @@ export interface ThrottleObject {
    *
    * @minItems 0
    */
-  scope?: ("user" | "auth" | "account" | "action")[];
+  scope?: ('user' | 'auth' | 'account' | 'action')[];
 
   /**
    * The effect of throttling on the tasks of the action. `true` means
@@ -776,7 +776,7 @@ export interface ThrottleObject {
    * overrides while the rest are throttled based on the original
    * configuration.
    */
-  filter?: "free" | "trial" | "paid";
+  filter?: 'free' | 'trial' | 'paid';
 
   /**
    * EXPERIMENTAL: Overrides the original throttle configuration based
@@ -885,7 +885,7 @@ export interface BasicHookOperation {
    * Must be explicitly set to `"hook"` unless this hook is defined as
    * part of a resource, in which case it's optional.
    */
-  type?: "hook";
+  type?: 'hook';
 
   /**
    * Optionally reference and extends a resource. Allows Zapier to
@@ -973,7 +973,7 @@ export interface BasicPollingOperation {
    * Clarify how this operation works (polling == pull or hook ==
    * push).
    */
-  type?: "polling";
+  type?: 'polling';
 
   /**
    * Optionally reference and extends a resource. Allows Zapier to
@@ -1254,7 +1254,7 @@ export interface BulkRead {
  */
 export interface BasicHookToPollOperation {
   /** Must be explicitly set to `"hook_to_poll"`. */
-  type?: "hook_to_poll";
+  type?: 'hook_to_poll';
 
   /**
    * Similar a polling trigger, but checks for new data when a webhook
@@ -1513,7 +1513,7 @@ export interface SearchOrCreates {
  */
 export interface Authentication {
   /** Choose which scheme you want to use. */
-  type: "basic" | "custom" | "digest" | "oauth1" | "oauth2" | "session";
+  type: 'basic' | 'custom' | 'digest' | 'oauth1' | 'oauth2' | 'session';
 
   /**
    * A function or request that confirms the authentication is

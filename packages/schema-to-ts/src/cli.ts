@@ -109,14 +109,14 @@ const main = async () => {
   // Convert the nodes into a string containing real TypeScript code.
   logger.debug('Generating TypeScript from transformed node map');
   const rawTypeScript = generateTypeScript(improvedNodeMap);
-  logger.info({ bytes: rawTypeScript.length }, 'Generated raw TypeScript');
+  logger.info({ length: rawTypeScript.length }, 'Generated raw TypeScript');
 
   // Format the TypeScript with Prettier before writing it to a file.
   // Necessary because the code-generation step is rather messy.
   logger.debug('Formatting generated TypeScript with Prettier');
   const typescript = await format(rawTypeScript);
   logger.info(
-    { bytes: typescript.length },
+    { length: typescript.length },
     'Formatted generated TypeScript with Prettier',
   );
 
