@@ -55,7 +55,7 @@ export interface CliOptions {
 }
 
 export interface CompilerOptions extends CliOptions {
-  /** The version of _this_ compiler */
+  /** The version of this schema-to-ts compiler */
   compilerVersion: string;
 
   /** The zapier-platform version of schemas that are being compiled. */

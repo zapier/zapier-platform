@@ -1,5 +1,8 @@
 import { type ResolverOptions } from '@bcherny/json-schema-ref-parser';
-import { DEFAULT_OPTIONS, type Options } from 'json-schema-to-typescript';
+import {
+  DEFAULT_OPTIONS,
+  type Options as JsttOptions,
+} from 'json-schema-to-typescript';
 import { AST } from 'json-schema-to-typescript/dist/src/types/AST.js';
 import { dereference } from 'json-schema-to-typescript/dist/src/resolver.js';
 import { link } from 'json-schema-to-typescript/dist/src/linker.js';
@@ -12,19 +15,63 @@ import { logger, prettyName } from './utils.js';
 import type { NamedAst, NodeMap, RawSchemaLookup } from './types.js';
 
 /**
+ * Produce a map of each named Zapier Schema to a corresponding
+ * semi-compiled AST node. These can then be used to inform the full
+ * TypeScript declaration file generation.
+ *
+ * @remarks
+ * This produces a compiled node for each schema directly, as opposed to
+ * the json-schema-to-typescript library's default behaviour of
+ * producing a single TypeScript file given a single root-level schema
+ * following references. This is done because we want to produce some
+ * finer-grained control over the output, as the library otherwise
+ * produces some undesirable comments and references between types.
+ *
+ * This close but undesirable format has cropped up more than once  from
+ * a Zapien from many years ago.
+ *
+ * @see https://github.com/zapier/zapier-platform/issues/8
+ * @see https://github.com/bcherny/json-schema-to-typescript/issues/334
+ */
+export const compileNodesFromSchemas = async (
+  schemas: RawSchemaLookup,
+): Promise<NodeMap> => {
+  const nodeMap = new Map();
+
+  for (const rawSchemaName of Object.keys(schemas)) {
+    logger.debug({ rawSchemaName }, 'Pre-compiling %s to Node', rawSchemaName);
+    logger.trace(
+      { schema: schemas[rawSchemaName] },
+      'Raw schema details for %s',
+      rawSchemaName,
+    );
+    const node = await compileToAST(schemas, rawSchemaName);
+    if (isNamedNode(node)) {
+      const name = prettyName(rawSchemaName);
+      logger.trace('Registering %s %s', node.type, name);
+      nodeMap.set(name, node);
+    } else {
+      logger.warn('Schema %s did not compile to a named node!?', rawSchemaName);
+    }
+  }
+
+  return nodeMap;
+};
+
+/**
  * Produce a "Resolver" that can adapt the normal JsonSchema references
  * in a document to be able to retrieve other schemas out of the big
  * flat object of schemas produced by zapier-platform-schema.
  */
 const getResolver = (schemas: RawSchemaLookup): Partial<ResolverOptions> => ({
   canRead: true,
-  order: 1,
+  order: 1, // Run before the default resolver.
   read: ({ url }) => {
     const key = url.replace('/', '');
 
     const result = schemas[key];
     if (!result) {
-      console.warn('Could not resolve schema with key %s', key);
+      logger.error('Could not resolve schema with key %s', key);
     } else {
       logger.trace('Resolved schema with key %s', key);
     }
@@ -37,6 +84,10 @@ const getResolver = (schemas: RawSchemaLookup): Partial<ResolverOptions> => ({
  * library. We don't want it's default rendered TypeScript output
  * though, so we stop at the abstract syntax tree (AST) level so we can
  * manipulate it further.
+ *
+ * This implementation is lifted straight from the
+ * json-schema-to-typescript library's `compile()` function, stopping
+ * just before the code-generation stage.
  */
 const compileToAST = async (
   schemas: RawSchemaLookup,
@@ -46,7 +97,7 @@ const compileToAST = async (
   if (!rootSchema) {
     throw new Error(`App Root Schema Undefined. Check ${appKey} is in schema`);
   }
-  const _options: Options = deepmerge(DEFAULT_OPTIONS, {
+  const _options: JsttOptions = deepmerge(DEFAULT_OPTIONS, {
     $refOptions: {
       resolve: { customResolver: getResolver(schemas) },
     },
@@ -66,88 +117,4 @@ const compileToAST = async (
 
 const isNamedNode = (node: AST): node is NamedAst => {
   return node.standaloneName !== undefined;
-};
-
-const updateTypeMapRecursive = (
-  node: AST,
-  schemas: RawSchemaLookup,
-  types: NodeMap,
-) => {
-  if (isNamedNode(node)) {
-    const name = prettyName(node.standaloneName);
-
-    if (types.has(name)) {
-      // We've seen this type before, no need to re-register or traverse it.
-      logger.trace('Skipping registering %s %s', node.type, name);
-      return;
-    } else {
-      logger.debug('Registering %s %s', node.type, name);
-      types.set(name, node);
-    }
-  } else {
-    logger.trace('Traversing unnamed %s node', node.type);
-  }
-
-  // Traverse Composite node types' children, exploring the tree more
-  // deeply.
-  switch (node.type) {
-    case 'INTERFACE':
-      node.params.forEach((param) => {
-        updateTypeMapRecursive(param.ast, schemas, types);
-      });
-      break;
-    case 'UNION':
-      node.params.forEach((param) => {
-        updateTypeMapRecursive(param, schemas, types);
-      });
-      break;
-    case 'ARRAY':
-      updateTypeMapRecursive(node.params, schemas, types);
-      break;
-    case 'TUPLE':
-      node.params.forEach((param) => {
-        updateTypeMapRecursive(param, schemas, types);
-      });
-      if (node.spreadParam) {
-        updateTypeMapRecursive(node.spreadParam, schemas, types);
-      }
-      break;
-    case 'BOOLEAN':
-    case 'LITERAL':
-    case 'NUMBER':
-    case 'NULL':
-    case 'STRING':
-      logger.debug('Ignoring Primitive Type %s', node.type);
-      break;
-    default:
-      logger.debug('Attempted to traverse %s Node', node.type, {
-        unhandledNode: node,
-      });
-    // throw new Error(`Unhandled node type ${node.type}`);
-  }
-};
-
-/**
- * Produce a map of each named Zapier Schema to a corresponding
- * semi-compiled AST node. These can then be used to inform the full
- * TypeScript declaration file generation.
- */
-export const compileNodesFromSchemas = async (
-  schemas: RawSchemaLookup,
-): Promise<NodeMap> => {
-  const nodeMap = new Map();
-
-  for (const key of Object.keys(schemas)) {
-    logger.debug('Pre-compiling %s to Node', key);
-    const ast = await compileToAST(schemas, key);
-    if (isNamedNode(ast)) {
-      const name = prettyName(key);
-      logger.trace('Registering %s %s', ast.type, name);
-      nodeMap.set(name, ast);
-    } else {
-      logger.warn('Schema %s did not compile to a named node!?', key);
-    }
-  }
-
-  return nodeMap;
 };

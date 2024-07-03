@@ -6,6 +6,12 @@ import type { Tokens } from 'marked';
 const SINGLE_LINE_CONTENT_WIDTH = 60;
 const MULTILINE_DEFAULT_CONTENT_WIDTH = 65;
 
+/**
+ * Zapier-platform-schemas is thoroughly documented with Markdown
+ * content. This function converts this content into TS/JS block
+ * comments (i.e. /** style), preserving even tables and bulleted lists,
+ * but adding sensible line wrapping for readability.
+ */
 export const commentToTsDocString = (comment: string): string => {
   const stripped = comment?.trim();
   if (!stripped) return '';
@@ -19,6 +25,7 @@ export const commentToTsDocString = (comment: string): string => {
   return `/**\n${docsLines}\n */\n`;
 };
 
+// Exported only for testing purposes.
 export const reflowLines = (
   tokens: TokensList,
   { width = MULTILINE_DEFAULT_CONTENT_WIDTH } = {},

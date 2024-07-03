@@ -120,7 +120,8 @@ const main = async () => {
     'Formatted generated TypeScript with Prettier',
   );
 
-  // Write it to a real file. Defaults to the current working directory.
+  // Write it to a real file. Defaults to writing it straight to the
+  // ../core/types/ directory as `zapier.generated.d.ts`.
   writeFileSync(options.output!, typescript);
   logger.info({ output: options.output }, 'Wrote generated TypeScript to file');
 

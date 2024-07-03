@@ -11,8 +11,6 @@ const DEFAULT_OPTIONS: PrettierOptions = {
   proseWrap: 'always',
 };
 
-/**
- * Format a Typescript module with Prettier.
- */
+/** Format a Typescript module with Prettier. */
 export const format = async (ts: string): Promise<string> =>
   prettify(ts, { parser: 'typescript', ...DEFAULT_OPTIONS });
