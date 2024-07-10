@@ -48,9 +48,8 @@ mapTransformers.set(
   'patch-function-types',
   (nodeMap, options: CompilerOptions) => {
     /**
-     * Injects a reference to the PerformFunction type into the
-     * FunctionSchema, because in JSON Schema the type is a union of just
-     * strings and serialised function payloads.
+     * Replaces the types of FunctionSchema, with a reference to the
+     * imported PerformFunction name instead of the.
      */
     const injectFunctionReference = makeMapTransformer((node) => {
       // Search for the "FunctionSchema" JsonSchema, and patch in a
@@ -66,7 +65,7 @@ mapTransformers.set(
           // TODO: Perhaps don't bother with the extra source string
           // formats, and use the `PerformFunction` type directly
           // throughout the interfaces.
-          params: [performFuncReference, ...node.params],
+          params: [performFuncReference],
         };
       }
       // Leave every other node unchanged.
