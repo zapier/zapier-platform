@@ -1,4 +1,4 @@
-import { type ResolverOptions } from '@bcherny/json-schema-ref-parser';
+import { type ResolverOptions } from '@apidevtools/json-schema-ref-parser';
 import {
   DEFAULT_OPTIONS,
   type Options as JsttOptions,
