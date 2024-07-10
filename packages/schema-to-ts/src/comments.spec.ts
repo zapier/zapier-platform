@@ -32,7 +32,9 @@ describe('reflowing rules', () => {
     expect(actual).toEqual(expected);
   });
 
-  // These two are now just markdown to markdown tests, as we
+  // These are now just markdown to markdown; so should remain
+  // unchanged from the schema. Originally used {@link}, but markdown
+  // was nicer.
   it('should convert solitary links to TSDoc', () => {
     const input = '[A link](http://some.domain.com)';
     const expected = [`[A link](http://some.domain.com)`];

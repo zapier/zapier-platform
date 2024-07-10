@@ -6,9 +6,9 @@ import type {
   TInterfaceParam,
   TUnion,
 } from 'json-schema-to-typescript/dist/src/types/AST.js';
+import type { NamedAst, NodeMap } from './types.js';
 import { logger, prettyName } from './utils.js';
 
-import { NamedAst } from './types.js';
 import { commentToTsDocString } from './comments.js';
 
 /**
@@ -17,7 +17,7 @@ import { commentToTsDocString } from './comments.js';
  * 1-1 interface for each schema, but with some extra pieces that the
  * transformation step may add like headers and function types.
  */
-export const generateTypeScript = (typesMap: Map<string, NamedAst>): string => {
+export const generateTypeScript = (typesMap: NodeMap): string => {
   const nodes = Array.from(typesMap.values());
   return nodes.map(genNamedNode).join('\n\n');
 };

@@ -27,7 +27,7 @@ import type { NamedAst, NodeMap, RawSchemaLookup } from './types.js';
  * finer-grained control over the output, as the library otherwise
  * produces some undesirable comments and references between types.
  *
- * This close but undesirable format has cropped up more than once  from
+ * This close but undesirable format has cropped up more than once from
  * a Zapien from many years ago.
  *
  * @see https://github.com/zapier/zapier-platform/issues/8

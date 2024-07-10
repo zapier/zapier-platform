@@ -1,14 +1,11 @@
 #!/usr/bin/env node
 
-import { CliOptions, CompilerOptions, ZapierSchemaDocument } from './types.js';
+import type { CliOptions, CompilerOptions } from './types.js';
 import { Command, Option } from 'commander';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { compile, loadExportedSchemas } from './main.js';
 
-import { applyAllTransformations } from './transformers.js';
-import { compileNodesFromSchemas } from './precompile.js';
-import { format } from './formatter.js';
-import { generateTypeScript } from './generation.js';
 import { logger } from './utils.js';
+import { writeFileSync } from 'fs';
 
 const program = new Command();
 
@@ -54,30 +51,7 @@ const main = async () => {
   // Load the schema JSON file. The `zapier-platform-schema` package
   // has an `exported-schema.json` file of all the schemas we want to
   // compile.
-  const schemaJson = options.schemaJson!;
-  if (!existsSync(schemaJson)) {
-    logger.fatal(
-      { schemaJsonPath: schemaJson },
-      'Schema-json file does not exist, aborting',
-    );
-    process.exit(1);
-  } else {
-    logger.info(
-      { schemaJsonPath: schemaJson },
-      'Successfully found schema-json file to compile.',
-    );
-  }
-  const { version, schemas } = loadExportedSchemas(schemaJson);
-  logger.info(
-    {
-      schemaJson,
-      version,
-      numRawSchemas: Object.keys(schemas).length,
-    },
-    'Loaded %d raw JsonSchemas from zapier-platform-schemas v%s to compile',
-    Object.keys(schemas).length,
-    version,
-  );
+  const { version, schemas } = loadExportedSchemas(options.schemaJson!);
 
   const compilerOptions: CompilerOptions = {
     ...options,
@@ -86,39 +60,8 @@ const main = async () => {
   };
   logger.debug({ compilerOptions }, 'Finalised compiler options');
 
-  // Compile the schemas into a collection of AST nodes to work with.
-  // There is one node for each schema at this stage, and they are in a
-  // format that we still want to improve, as the
-  // json-schema-to-typescript library does most of the work but has
-  // some undesirable results.
-  logger.debug('Generating pre-compiled node map');
-  const nodeMap = await compileNodesFromSchemas(schemas);
-  logger.info({ nodes: nodeMap.size }, 'Generated pre-compiled node map');
-
-  // "Transform" the compiled schemas from a raw AST format into more
-  // usable nodes. This is where we cleanup comments, add links to the
-  // public docs, and add references to the pre-existing
-  // zapier-platform-core types.
-  logger.debug('Applying transformations to node map');
-  const improvedNodeMap = applyAllTransformations(nodeMap, compilerOptions);
-  logger.info(
-    { nodes: improvedNodeMap.size },
-    'Applied all transformations to node map',
-  );
-
-  // Convert the nodes into a string containing real TypeScript code.
-  logger.debug('Generating TypeScript from transformed node map');
-  const rawTypeScript = generateTypeScript(improvedNodeMap);
-  logger.info({ length: rawTypeScript.length }, 'Generated raw TypeScript');
-
-  // Format the TypeScript with Prettier before writing it to a file.
-  // Necessary because the code-generation step is rather messy.
-  logger.debug('Formatting generated TypeScript with Prettier');
-  const typescript = await format(rawTypeScript);
-  logger.info(
-    { length: typescript.length },
-    'Formatted generated TypeScript with Prettier',
-  );
+  // Actually compile the schemas into TypeScript!
+  const typescript = await compile(schemas, compilerOptions);
 
   // Write it to a real file. Defaults to writing it straight to the
   // ../core/types/ directory as `zapier.generated.d.ts`.
@@ -128,7 +71,4 @@ const main = async () => {
   logger.info('Done!');
 };
 
-const loadExportedSchemas = (schemaJsonPath: string): ZapierSchemaDocument =>
-  JSON.parse(readFileSync(schemaJsonPath, 'utf-8'));
-
-main();
+await main();
