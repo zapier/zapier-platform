@@ -76,25 +76,13 @@ mapTransformers.set(
     // Add the `ZObject` and `Bundle` imports to the top of the file.
     const withFuncAndImport = insertAtFront(
       withFunctionReference,
-      'import ZPC object',
+      'import PerformFunction from ZPC',
       snippetNode({
-        content: `import type { Bundle, ZObject } from "${options.platformCoreCustomImport}";`,
-        name: 'ZPC import',
+        content: `import type { PerformFunction } from "${options.platformCoreCustomImport}";`,
+        name: 'PerformFunction import',
       }),
     );
 
-    // Add a type definition for the `PerformFunction`, which is an
-    // async function that takes a `ZObject` and a `Bundle` from the
-    // custom zapier-platform-core types. Added to the bottom.
-    withFuncAndImport.set(
-      'PerformFunction',
-      snippetNode({
-        content: `export type PerformFunction<BI=Record<string, any>, R=any> = (z: ZObject, bundle: Bundle<BI>) => Promise<R>;`,
-        name: 'PerformFunction',
-        comment:
-          'A function that performs the action.\n\n@template BI The shape of data in the `bundle.inputData` object.\n@template R The return type of the function.',
-      }),
-    );
     return withFuncAndImport;
   },
 );

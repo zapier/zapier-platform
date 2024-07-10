@@ -8,7 +8,7 @@
  *  schema-to-ts compiler version: 0.1.0
  */
 
-import type { Bundle, ZObject } from './zapier.custom';
+import type { PerformFunction } from './zapier.custom';
 
 /**
  * Represents a full app.
@@ -1729,14 +1729,3 @@ export interface AppFlags {
    */
   skipThrowForStatus?: boolean;
 }
-
-/**
- * A function that performs the action.
- *
- * @template BI The shape of data in the `bundle.inputData` object.
- * @template R The return type of the function.
- */
-export type PerformFunction<BI = Record<string, any>, R = any> = (
-  z: ZObject,
-  bundle: Bundle<BI>,
-) => Promise<R>;
