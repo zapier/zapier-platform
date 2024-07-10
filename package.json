@@ -32,11 +32,12 @@
     "lint-examples": "eslint examples",
     "validate": "lerna run validate",
     "bump": "./scripts/bump.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "generate-types": "cd schema-to-ts && yarn generate-types:build"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lerna run --stream precommit && lint-staged"
+      "pre-commit": "lerna run --stream precommit && yarn generate-types && lint-staged"
     }
   },
   "lint-staged": {
