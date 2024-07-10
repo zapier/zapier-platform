@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Converts zapier-platform-schema JsonSchema definitions to TypeScript types",
   "author": "Thomas Cranny <thomas.cranny@zapier.com>",
-  "license": "SEE LICENSE IN LICENSE",
+  "private": true,
   "main": "dist/cli.js",
   "type": "module",
   "scripts": {
