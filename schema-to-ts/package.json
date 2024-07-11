@@ -7,7 +7,7 @@
   "main": "dist/cli.js",
   "type": "module",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest --run",
     "clean": "rm -rf dist",
     "prebuild": "yarn clean",
     "build": "tsc",

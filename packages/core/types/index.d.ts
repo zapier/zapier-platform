@@ -1,2 +1,2 @@
 export type * from './zapier.generated';
-export type * from './zapier.custom';
+export * from './zapier.custom';
