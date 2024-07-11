@@ -30,7 +30,7 @@ program
     '../core/types/zapier.generated.d.ts',
   )
   .option(
-    '--skip-patch-functions',
+    '--skip-patch-perform-function',
     'If to skip augmenting the `Function` type with an actual function signature, because raw JSON schema cannot provide the code-level function details. If true, outputs are close 1-1 interfaces for each schema.',
     false,
   )

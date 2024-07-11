@@ -211,3 +211,15 @@ export type PerformFunction<BI = Record<string, any>, R = any> = (
   z: ZObject,
   bundle: Bundle<BI>
 ) => Promise<R>;
+
+export type BeforeRequestMiddleware = (
+  request: HttpRequestOptions,
+  z?: ZObject,
+  bundle?: Bundle
+) => HttpRequestOptions;
+
+export type AfterResponseMiddleware = (
+  response: HttpResponse,
+  z: ZObject,
+  bundle?: Bundle
+) => HttpResponse;

@@ -8,7 +8,11 @@
  *  schema-to-ts compiler version: 0.1.0
  */
 
-import type { PerformFunction } from './zapier.custom';
+import type {
+  AfterResponseMiddleware,
+  BeforeRequestMiddleware,
+  PerformFunction,
+} from './zapier.custom';
 
 /**
  * Represents a full app.
@@ -47,13 +51,13 @@ export interface App {
    * Before an HTTP request is sent via our `z.request()` client, you
    * can modify it.
    */
-  beforeRequest?: Middlewares;
+  beforeRequest?: BeforeRequestMiddleware | BeforeRequestMiddleware[];
 
   /**
    * After an HTTP response is recieved via our `z.request()` client,
    * you can modify it.
    */
-  afterResponse?: Middlewares;
+  afterResponse?: AfterResponseMiddleware | AfterResponseMiddleware[];
 
   /**
    * An optional bank of named functions that you can use in

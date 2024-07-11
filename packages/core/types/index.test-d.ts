@@ -1,4 +1,10 @@
-import type { Bundle, PerformFunction, ZObject } from './zapier.custom';
+import type {
+  AfterResponseMiddleware,
+  BeforeRequestMiddleware,
+  Bundle,
+  PerformFunction,
+  ZObject,
+} from './zapier.custom';
 import type {
   App,
   Authentication,
@@ -110,11 +116,31 @@ const search: Search = {
 };
 expectType<Search>(search);
 
+const addBearerHeader: BeforeRequestMiddleware = (request, z, bundle) => {
+  if (bundle?.authData?.access_token && !request.headers!.Authorization) {
+    request.headers!.Authorization = `Bearer ${bundle.authData.access_token}`;
+  }
+  return request;
+};
+expectType<BeforeRequestMiddleware>(addBearerHeader);
+
+const checkPermissionsError: AfterResponseMiddleware = (response, z) => {
+  if (response.status === 403) {
+    throw new z.errors.Error(
+      response.json?.['o:errorDetails']?.[0].detail,
+      response.status.toString()
+    );
+  }
+  return response;
+};
+expectType<AfterResponseMiddleware>(checkPermissionsError);
+
 const app: App = {
   platformVersion: '0.0.1',
   version: '0.0.1',
 
-  beforeApp: [],
+  beforeRequest: [addBearerHeader],
+  afterResponse: [checkPermissionsError],
 
   creates: { [create.key]: create },
   triggers: {

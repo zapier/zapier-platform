@@ -1,3 +1,8 @@
+import {
+  TArray,
+  TInterface,
+  TUnion,
+} from 'json-schema-to-typescript/dist/src/types/AST.js';
 import { CompilerOptions, NamedAst, NodeMap } from './types.js';
 import { insertAtFront, logger } from './utils.js';
 
@@ -28,6 +33,10 @@ const makeMapTransformer =
       ]),
     );
 
+/**
+ * The global, ordered collection of transformers that are registered to
+ * transform the schema nodes before they are converted into TypeScript.
+ */
 const mapTransformers: Map<string, MapTransformer> = new Map();
 
 mapTransformers.set(
@@ -36,6 +45,11 @@ mapTransformers.set(
     const comment = node.comment ?? '';
     // TODO: This will occasionally produce a dead link for the schemas
     // that are hidden from the public docs.
+
+    // TODO: This links to the raw schemas, which are fine but very raw.
+    // We could also investigate linking to relevant sections of the
+    // main platform docs, but that would require human discretion to
+    // get right.
     const url = `https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#${node.standaloneName}`;
     return {
       ...node,
@@ -45,49 +59,155 @@ mapTransformers.set(
 );
 
 mapTransformers.set(
-  'patch-function-types',
-  (nodeMap, options: CompilerOptions) => {
-    /**
-     * Replaces the types of FunctionSchema, with a reference to the
-     * imported PerformFunction name instead of the.
-     */
-    const injectFunctionReference = makeMapTransformer((node) => {
-      // Search for the "FunctionSchema" JsonSchema, and patch in a
-      // references to the (also injected) `PerformFunction` type.
-      if (node.standaloneName === 'FunctionSchema' && node.type === 'UNION') {
-        const performFuncReference: NamedAst = {
-          standaloneName: 'PerformFunction',
-          type: 'CUSTOM_TYPE',
-          params: `func-ref:perform`,
-        };
-        return {
-          ...node,
-          // Include a reference to the PerformFunction type for the
-          // "FunctionSchema" union. This is done because JSON Schema
-          // doesn't have a way to represent functions, but this is the
-          // most common use-case for downstream code before zapier push
-          // is run.
-          params: [performFuncReference, ...node.params],
-        };
+  'patch-before-request-middleware-type',
+  makeMapTransformer((node) => {
+    if (node.standaloneName !== 'AppSchema' || node.type !== 'INTERFACE') {
+      return node; // Leave every other node unchanged.
+    }
+
+    logger.debug('App Interface node found, will patch `beforeRequest`');
+
+    const toReplace = node.params.find((n) => n.keyName === 'beforeRequest');
+    if (!toReplace) {
+      logger.warn("beforeRequest not found in App node params, won't patch");
+    }
+
+    const newParams = node.params.map((param) => {
+      if (param.keyName !== 'beforeRequest') {
+        return param; // Leave every other param unchanged.
       }
-      // Leave every other node unchanged.
-      return node;
+
+      logger.debug(
+        'Patching beforeRequest param to `BeforeRequestMiddleware | BeforeRequestMiddleware[]`',
+      );
+      return {
+        ...param,
+        isPatternProperty: false,
+        keyName: 'beforeRequest',
+        isRequired: false,
+        isUnreachableDefinition: false,
+        ast: {
+          // OMIT the standaloneName, as this will shortcut to just
+          // a reference to the named `Middlewares` type.
+          comment: param.ast.comment,
+          keyName: param.ast.keyName,
+          deprecated: param.ast.deprecated,
+          type: 'UNION',
+          params: [
+            namedReferenceNode('BeforeRequestMiddleware'),
+            {
+              type: 'ARRAY',
+              params: namedReferenceNode('BeforeRequestMiddleware'),
+            } satisfies TArray,
+          ],
+        } as TUnion,
+      };
     });
-    const withFunctionReference = injectFunctionReference(nodeMap, options);
-
-    // Add the `PerformFunction` import to the top of the file.
-    const withFuncAndImport = insertAtFront(
-      withFunctionReference,
-      'import PerformFunction from ZPC',
-      snippetNode({
-        content: `import type { PerformFunction } from "${options.platformCoreCustomImport}";`,
-        name: 'PerformFunction import',
-      }),
-    );
-
-    return withFuncAndImport;
-  },
+    return {
+      ...node,
+      params: newParams,
+    } satisfies TInterface;
+  }),
 );
+
+mapTransformers.set(
+  'patch-after-response-middleware-type',
+  makeMapTransformer((node) => {
+    if (node.standaloneName !== 'AppSchema' || node.type !== 'INTERFACE') {
+      return node; // Leave every other node unchanged.
+    }
+
+    logger.debug('App Interface node found, will patch `afterResponse`');
+
+    const toReplace = node.params.find((n) => n.keyName === 'afterResponse');
+    if (!toReplace) {
+      logger.warn("afterResponse not found in App node params, won't patch");
+    }
+
+    const newParams = node.params.map((param) => {
+      if (param.keyName !== 'afterResponse') {
+        return param; // Leave every other param unchanged.
+      }
+
+      logger.debug(
+        'Patching afterResponse param to `AfterResponseMiddleware | AfterResponseMiddleware[]`',
+      );
+      return {
+        ...param,
+        isPatternProperty: false,
+        keyName: 'afterResponse',
+        isRequired: false,
+        isUnreachableDefinition: false,
+        ast: {
+          // OMIT the standaloneName, as this will shortcut to just
+          // a reference to the named `Middlewares` type.
+          comment: param.ast.comment,
+          keyName: param.ast.keyName,
+          deprecated: param.ast.deprecated,
+          type: 'UNION',
+          params: [
+            namedReferenceNode('AfterResponseMiddleware'),
+            {
+              type: 'ARRAY',
+              params: namedReferenceNode('AfterResponseMiddleware'),
+            } satisfies TArray,
+          ],
+        } as TUnion,
+      };
+    });
+    return {
+      ...node,
+      params: newParams,
+    } satisfies TInterface;
+  }),
+);
+
+mapTransformers.set(
+  'patch-perform-function-types',
+  makeMapTransformer((node) => {
+    // Search for the "FunctionSchema" JsonSchema, and patch in a
+    // reference to the (also injected) `PerformFunction` type.
+    if (node.standaloneName === 'FunctionSchema' && node.type === 'UNION') {
+      const performFuncReference: NamedAst = {
+        standaloneName: 'PerformFunction',
+        type: 'CUSTOM_TYPE',
+        params: `func-ref:perform`,
+      };
+      return {
+        ...node,
+        // Include a reference to the PerformFunction type for the
+        // "FunctionSchema" union. This is done because JSON Schema
+        // doesn't have a way to represent functions, but this is the
+        // most common use-case for downstream code before zapier push
+        // is run.
+        params: [performFuncReference, ...node.params],
+      };
+    }
+    // Leave every other node unchanged.
+    return node;
+  }),
+);
+
+const CUSTOM_IMPORT_MEMBERS = [
+  'AfterResponseMiddleware',
+  'BeforeRequestMiddleware',
+  'PerformFunction',
+];
+
+mapTransformers.set('add-custom-imports', (nodeMap, options) => {
+  const customImportNode = snippetNode({
+    content: `import type {${CUSTOM_IMPORT_MEMBERS.join(', ')}} from "${options.platformCoreCustomImport}";`,
+    name: 'Custom Type Imports',
+  });
+  logger.debug(
+    {
+      CUSTOM_IMPORT_MEMBERS,
+      platformCoreCustomImport: options.platformCoreCustomImport,
+    },
+    'Injecting custom imports snippet as first node in the file.',
+  );
+  return insertAtFront(nodeMap, '_custom_imports', customImportNode);
+});
 
 mapTransformers.set('inject-preamble', (nodeMap, options) => {
   const header = `/**
@@ -109,12 +229,12 @@ export const applyAllTransformations = (
   nodeMap: NodeMap,
   options: CompilerOptions,
 ): NodeMap => {
-  if (options.skipPatchFunctions) {
+  if (options.skipPatchPerformFunction) {
     logger.warn(
-      { skipPatchFunctions: options.skipPatchFunctions },
+      { skipPatchPerformFunction: options.skipPatchPerformFunction },
       'Skipping patch-functions transformer because of --skip-patch-functions ',
     );
-    mapTransformers.delete('patch-function-types');
+    mapTransformers.delete('patch-perform-function-types');
   }
 
   logger.info(
@@ -133,6 +253,16 @@ export const applyAllTransformations = (
     nodeMap,
   );
 };
+
+/**
+ * Make a node that will just insert a reference to another named type
+ * when the TypeScript is generated.
+ */
+const namedReferenceNode = (standaloneName: string): NamedAst => ({
+  type: 'CUSTOM_TYPE',
+  standaloneName,
+  params: `ref:${standaloneName}`,
+});
 
 /**
  * Make a node with a CUSTOM_TYPE and a special param prefix that the

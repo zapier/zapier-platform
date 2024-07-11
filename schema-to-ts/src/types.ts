@@ -42,7 +42,7 @@ export interface CliOptions {
    *
    * @default false
    */
-  skipPatchFunctions?: boolean;
+  skipPatchPerformFunction?: boolean;
 
   /**
    * What import to use for import `ZObject` and `Bundle` from. Defaults
