@@ -381,7 +381,11 @@ export interface FlatObject {
  *
  * [Docs: FunctionSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FunctionSchema)
  */
-export type Function = PerformFunction;
+export type Function =
+  | PerformFunction
+  | string
+  | FunctionRequire
+  | FunctionSource;
 
 /**
  * A representation of a HTTP request - you can use the `{{syntax}}`

@@ -62,10 +62,12 @@ mapTransformers.set(
         };
         return {
           ...node,
-          // This removes the underlying string function formats from
-          // the union, and replaces them with a reference to the
-          // PerformFunction defined in the custom types import.
-          params: [performFuncReference],
+          // Include a reference to the PerformFunction type for the
+          // "FunctionSchema" union. This is done because JSON Schema
+          // doesn't have a way to represent functions, but this is the
+          // most common use-case for downstream code before zapier push
+          // is run.
+          params: [performFuncReference, ...node.params],
         };
       }
       // Leave every other node unchanged.
