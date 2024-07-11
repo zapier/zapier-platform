@@ -62,9 +62,9 @@ mapTransformers.set(
         };
         return {
           ...node,
-          // TODO: Perhaps don't bother with the extra source string
-          // formats, and use the `PerformFunction` type directly
-          // throughout the interfaces.
+          // This removes the underlying string function formats from
+          // the union, and replaces them with a reference to the
+          // PerformFunction defined in the custom types import.
           params: [performFuncReference],
         };
       }
@@ -73,7 +73,7 @@ mapTransformers.set(
     });
     const withFunctionReference = injectFunctionReference(nodeMap, options);
 
-    // Add the `ZObject` and `Bundle` imports to the top of the file.
+    // Add the `PerformFunction` import to the top of the file.
     const withFuncAndImport = insertAtFront(
       withFunctionReference,
       'import PerformFunction from ZPC',
