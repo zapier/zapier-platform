@@ -139,7 +139,7 @@ const writeForStandaloneTemplate = (gen) => {
         '@types/node': '^14',
         '@types/node-fetch': '^2.6.11',
         rimraf: '^3.0.2',
-        typescript: '^4.9.4',
+        typescript: '5.5.3',
       },
     },
   }[gen.options.template];
