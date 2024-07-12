@@ -55,7 +55,48 @@ const extendAppRaw = (base, extension, path) => {
       return result;
     }
   }
-  throw new TypeError('Unexpected type');
+  throw new TypeError('Unexpected extension type');
+};
+
+const mayMoveCreatesToResourcesInExtension = (base, extension) => {
+  // The backend sends an extension for creates.KEY.operation.perform as a
+  // special case for legacy-scripting-runner.
+  // For details, see the MR description at
+  // https://gitlab.com/zapier/zapier/-/merge_requests/57964
+  //
+  // We need to make sure that 'creates.{key}Create' in extension won't collide
+  // with 'resources.{key}.create' in base. Otherwise, the checks in
+  // compileApp() will throw an error. So here we move 'creates.{key}Create' to
+  // 'resources.{key}.create' in extension if base has 'resources.{key}.create'.
+  //
+  // There's a regression test: Search for 'resource key collision' in
+  // integration-test.js.
+  if (
+    !_.isPlainObject(base.resources) ||
+    !_.isPlainObject(extension.creates) ||
+    _.isEmpty(base.resources) ||
+    _.isEmpty(extension.creates)
+  ) {
+    return extension;
+  }
+
+  const creates = extension.creates;
+  extension.creates = {};
+  extension.resources = extension.resources || {};
+
+  for (const [key, resource] of Object.entries(base.resources)) {
+    const standaloneCreate = creates[key + 'Create'];
+    if (resource.create && standaloneCreate) {
+      delete standaloneCreate.key;
+      delete standaloneCreate.noun;
+      extension.resources[key] = {
+        ...extension.resources[key],
+        create: standaloneCreate,
+      };
+    }
+  }
+
+  return extension;
 };
 
 const getAppRawOverride = (rpc, appRawOverride) => {
@@ -70,6 +111,10 @@ const getAppRawOverride = (rpc, appRawOverride) => {
       appRawOverride = appRawOverride[0];
 
       if (typeof appRawOverride !== 'string') {
+        appRawExtension = mayMoveCreatesToResourcesInExtension(
+          appRawOverride,
+          appRawExtension
+        );
         appRawOverride = extendAppRaw(appRawOverride, appRawExtension);
         resolve(appRawOverride);
         return;
