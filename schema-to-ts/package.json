@@ -27,7 +27,7 @@
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "vitest": "^1.5.0"
   }
 }
