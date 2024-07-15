@@ -15,6 +15,7 @@
     "/types/"
   ],
   "scripts": {
+    "postinstall": "cd ../../schema-to-ts && yarn install",
     "preversion": "git pull && yarn test",
     "version": "node bin/bump-dependencies.js && yarn && git add package.json yarn.lock",
     "postversion": "git push && git push --tags",

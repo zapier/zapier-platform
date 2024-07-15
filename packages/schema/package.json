@@ -13,6 +13,7 @@
     "/schema.js"
   ],
   "scripts": {
+    "postinstall": "cd ../../schema-to-ts && yarn install",
     "preversion": "git pull && yarn test && yarn build",
     "test": "mocha -t 10s --recursive test --exit",
     "smoke-test": "mocha -t 10s --recursive smoke-test --exit",
