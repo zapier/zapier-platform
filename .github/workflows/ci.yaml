@@ -63,6 +63,7 @@ jobs:
           cache: yarn
       - name: Install dependencies
         run: yarn --frozen-lockfile
+        working-directory: schema-to-ts
       - name: Test - schema-to-ts
         run: yarn test
         working-directory: schema-to-ts
