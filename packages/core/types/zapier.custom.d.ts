@@ -22,10 +22,6 @@ export const createAppTester: (
   clearZcacheBeforeUse?: boolean
 ) => Promise<T>; // appTester always returns a promise
 
-// internal only
-// export const integrationTestHandler: () => any;
-// export const createAppHandler: (appRaw: object) => any
-
 type HttpMethod =
   | 'GET'
   | 'POST'
@@ -118,9 +114,9 @@ export interface HttpResponse extends BaseHttpResponse {
 
 export interface RawHttpResponse extends BaseHttpResponse {
   body: NodeJS.ReadableStream;
-	buffer(): Promise<Buffer>;
-	json(): Promise<object>;
-	text(): Promise<string>;
+  buffer(): Promise<Buffer>;
+  json(): Promise<object>;
+  text(): Promise<string>;
 }
 
 type DehydrateFunc = <T>(
@@ -204,3 +200,26 @@ export interface ZObject {
     delete: (key: string) => Promise<boolean>;
   };
 }
+
+/**
+ * A function that performs the action.
+ *
+ * @template BI The shape of data in the `bundle.inputData` object.
+ * @template R The return type of the function.
+ */
+export type PerformFunction<BI = Record<string, any>, R = any> = (
+  z: ZObject,
+  bundle: Bundle<BI>
+) => Promise<R>;
+
+export type BeforeRequestMiddleware = (
+  request: HttpRequestOptions,
+  z?: ZObject,
+  bundle?: Bundle
+) => HttpRequestOptions;
+
+export type AfterResponseMiddleware = (
+  response: HttpResponse,
+  z: ZObject,
+  bundle?: Bundle
+) => HttpResponse;
