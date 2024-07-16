@@ -344,6 +344,32 @@ const doTest = (runner) => {
       });
     });
 
+    it('should handle array of [null, appRawExtension] without resource key collision', async () => {
+      const definitionExtension = {
+        // Example app test/userapp/index.js has a 'contact' resource with a
+        // 'create' operation ('contactCreate' after compiled). So this should
+        // merge with that and not collide.
+        creates: {
+          contactCreate: {
+            operation: {
+              perform: {
+                source: 'return { id: 8, name: "Yoshi" }',
+              },
+            },
+          },
+        },
+      };
+
+      const event = {
+        comamnd: 'execute',
+        method: 'creates.contactCreate.operation.perform',
+        appRawOverride: [null, definitionExtension],
+      };
+
+      const response = await runner(event);
+      response.results.should.deepEqual({ id: 8, name: 'Yoshi' });
+    });
+
     it('should handle array of [appRawOverrideHash, appRawExtension] and override perform with request', () => {
       const definition = {
         triggers: {
