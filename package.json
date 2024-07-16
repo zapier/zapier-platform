@@ -22,7 +22,8 @@
     "should": "^13"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "schema-to-ts"
   ],
   "scripts": {
     "test": "yarn workspaces run test && (cd schema-to-ts && yarn test)",
