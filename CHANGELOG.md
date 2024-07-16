@@ -1,3 +1,22 @@
+## 15.11.0
+
+_released `2024-07-16`_
+
+### core
+- :bug: Fixed issue preventing standalone 'creates' in `extension` from colliding with resource keys in `base` ([#819](https://github.com/zapier/zapier-platform/pull/819))
+- :nail_care: Bundle new TypeScript type declarations provided by the `schema-to-ts` tool ([#818](https://github.com/zapier/zapier-platform/pull/818))
+
+### cli
+None!
+
+### schema
+None!
+
+### schema-to-ts
+- :nail_care: Introduced the Schema-to-TS compiler tool ([#818](https://github.com/zapier/zapier-platform/pull/818))
+- :scroll: Updated documentation to reference the schema-to-ts tool ([#821](https://github.com/zapier/zapier-platform/pull/821))
+
+
 ## 15.10.0
 
 _released `2024-07-02`_
