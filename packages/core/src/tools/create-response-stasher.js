@@ -8,7 +8,6 @@ const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
   try {
     return await fn();
   } catch (error) {
-    console.log(error);
     if (attempt >= retries) {
       throw error;
     }
