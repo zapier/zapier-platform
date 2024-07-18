@@ -28,7 +28,6 @@ const uploader = async (
   Object.entries(fields).forEach(([key, value]) => {
     form.append(key, value);
   });
-
   form.append('file', bufferStringStream, {
     knownLength,
     contentType,

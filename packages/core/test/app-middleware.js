@@ -5,6 +5,7 @@ const createApp = require('../src/create-app');
 const createInput = require('../src/tools/create-input');
 const dataTools = require('../src/tools/data');
 const {
+  FAKE_S3_URL,
   makeRpc,
   mockRpcGetPresignedPostCall,
   mockUpload,
@@ -114,8 +115,9 @@ describe('app middleware', () => {
       input._zapier.event.autostashPayloadOutputLimit = 11 * 1024 * 1024;
 
       const output = await app(input);
-      output.resultsUrl.should.eql('https://s3-fake.zapier.com/1234/foo.json');
+      output.resultsUrl.should.eql(`${FAKE_S3_URL}/1234/foo.json`);
     });
+
     it('should not stash if payload is bigger than autostash limit', async () => {
       const rpc = makeRpc();
       mockRpcGetPresignedPostCall('1234/foo.json');
@@ -141,7 +143,7 @@ describe('app middleware', () => {
     });
     it('should always stash if autostash limit is -1', async () => {
       const rpc = makeRpc();
-      mockRpcGetPresignedPostCall('1234/foo.json');
+      mockRpcGetPresignedPostCall('/1234/foo.json');
       mockUpload();
 
       const appDefinition = dataTools.deepCopy(exampleAppDefinition);
@@ -156,11 +158,10 @@ describe('app middleware', () => {
       input._zapier.rpc = rpc;
 
       // set the payload autostash limit
-      // this limit is lower than res, so do not stash, let it fail
       input._zapier.event.autostashPayloadOutputLimit = -1;
 
       const output = await app(input);
-      output.resultsUrl.should.eql('https://s3-fake.zapier.com/1234/foo.json');
+      output.resultsUrl.should.eql(`${FAKE_S3_URL}/1234/foo.json`);
     });
     it('should not stash if limit is not defined', async () => {
       const rpc = makeRpc();
