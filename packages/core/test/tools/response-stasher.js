@@ -38,8 +38,8 @@ describe('stash response', () => {
 
     const s3Response = await request({ url });
     should(s3Response.getHeader('content-type')).startWith('text/plain');
-
-    should(s3Response.content).eql(data);
+    const decoded = Buffer.from(s3Response.content, 'base64').toString();
+    should(decoded).eql(data);
   });
   it('retries on failure', async () => {
     mockRpcGetPresignedPostCall('1234/foo.json');
@@ -54,7 +54,8 @@ describe('stash response', () => {
     should(url).eql(`${FAKE_S3_URL}/1234/foo.json`);
 
     const s3Response = await request({ url });
-    should(s3Response.content).eql(data);
+    const decoded = Buffer.from(s3Response.content, 'base64').toString();
+    should(decoded).eql(data);
   });
   it('throws on persistent failures', async () => {
     mockRpcGetPresignedPostCall('1234/foo.json');

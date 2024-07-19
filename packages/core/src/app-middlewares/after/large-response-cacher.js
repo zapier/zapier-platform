@@ -24,7 +24,7 @@ const largeResponseCachePointer = async (output) => {
       size <= autostashLimit) ||
     autostashLimit === -1
   ) {
-    const url = await responseStasher(output.input, payload, size);
+    const url = await responseStasher(output.input, payload);
     output.resultsUrl = url;
     output.results = Array.isArray(output.results) ? [] : {};
   }
