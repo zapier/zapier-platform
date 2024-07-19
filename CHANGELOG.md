@@ -1,3 +1,18 @@
+## 15.11.1
+
+_released `2024-07-19`_
+
+### core
+- :bug: Add base64 encoding before autostashing large payloads ([#824](https://github.com/zapier/zapier-platform/pull/824))
+
+### cli
+
+None!
+
+### schema
+
+None! 
+
 ## 15.11.0
 
 _released `2024-07-16`_
