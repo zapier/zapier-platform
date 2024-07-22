@@ -216,10 +216,10 @@ export type BeforeRequestMiddleware = (
   request: HttpRequestOptions,
   z?: ZObject,
   bundle?: Bundle
-) => HttpRequestOptions;
+) => HttpRequestOptions | Promise<HttpRequestOptions>;
 
 export type AfterResponseMiddleware = (
   response: HttpResponse,
   z: ZObject,
   bundle?: Bundle
-) => HttpResponse;
+) => HttpResponse | Promise<HttpResponse>;
