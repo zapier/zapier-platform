@@ -124,6 +124,9 @@ const addBearerHeader: BeforeRequestMiddleware = (request, z, bundle) => {
 };
 expectType<BeforeRequestMiddleware>(addBearerHeader);
 
+const asyncBeforeRequest: BeforeRequestMiddleware = async (request) => request;
+expectType<BeforeRequestMiddleware>(asyncBeforeRequest);
+
 const checkPermissionsError: AfterResponseMiddleware = (response, z) => {
   if (response.status === 403) {
     throw new z.errors.Error(
@@ -135,12 +138,18 @@ const checkPermissionsError: AfterResponseMiddleware = (response, z) => {
 };
 expectType<AfterResponseMiddleware>(checkPermissionsError);
 
+const asyncAfterResponse: AfterResponseMiddleware = async (response) =>
+  response;
+expectType<AfterResponseMiddleware>(asyncAfterResponse);
+
 const app: App = {
   platformVersion: '0.0.1',
   version: '0.0.1',
 
-  beforeRequest: [addBearerHeader],
-  afterResponse: [checkPermissionsError],
+  beforeRequest: [addBearerHeader, asyncBeforeRequest],
+  afterResponse: [checkPermissionsError, asyncAfterResponse],
+
+  authentication,
 
   creates: { [create.key]: create },
   triggers: {
