@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const jsonschema = require('jsonschema');
 
-const actionTypes = ['triggers', 'searches', 'creates', 'bulk_reads'];
+const actionTypes = ['triggers', 'searches', 'creates', 'bulkReads'];
 
 const labelWhenVisible = (definition) => {
   const errors = [];
