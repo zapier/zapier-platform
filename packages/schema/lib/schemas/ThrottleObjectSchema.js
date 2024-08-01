@@ -36,6 +36,16 @@ module.exports = makeSchema(
           type: 'string',
         },
       },
+      retry: {
+        description:
+          'The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`. NOTE that it has no effect on polling triggers and should not be set.',
+        type: 'boolean',
+      },
+      filter: {
+        description: `EXPERIMENTAL: Account-based attribute to override the throttle by. You can set to one of the following: "free", "trial", "paid". Therefore, the throttle scope would be automatically set to "account" and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.`,
+        type: 'string',
+        enum: ['free', 'trial', 'paid'],
+      },
       overrides: {
         description:
           'EXPERIMENTAL: Overrides the original throttle configuration based on a Zapier account attribute.',
@@ -72,11 +82,13 @@ module.exports = makeSchema(
         limit: 10,
         key: 'random_key-{{bundle.inputData.test_field}}',
         scope: ['action', 'auth'],
+        retry: false,
       },
       {
         window: 3600,
         limit: 10,
         scope: ['auth'],
+        retry: false,
         overrides: [
           {
             window: 3600,

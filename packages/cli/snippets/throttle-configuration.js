@@ -18,12 +18,13 @@ const App = {
       },
       operation: {
         perform: () => {},
-        inputFields: [{key: 'name', required: true, type: 'string'}],
+        inputFields: [{ key: 'name', required: true, type: 'string' }],
         // overwrites the default, for this action
         throttle: {
           window: 600,
           limit: 5,
           key: 'test-key-{{bundle.inputData.name}}',
+          retry: false,
           scope: ['account'],
           overrides: [
             {

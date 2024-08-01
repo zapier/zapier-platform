@@ -9,15 +9,11 @@ const { randomBytes } = require('crypto');
 
 const _ = require('lodash');
 const contentDisposition = require('content-disposition');
-const FormData = require('form-data');
+
 const mime = require('mime-types');
 
-const request = require('./request-client-internal');
 const { UPLOAD_MAX_SIZE, NON_STREAM_UPLOAD_MAX_SIZE } = require('../constants');
-
-const LENGTH_ERR_MESSAGE =
-  'We could not calculate the length of your file - please ' +
-  'pass a knownLength like z.stashFile(f, knownLength)';
+const uploader = require('./uploader');
 
 const DEFAULT_FILE_NAME = 'unnamedfile';
 const DEFAULT_CONTENT_TYPE = 'application/octet-stream';
@@ -175,64 +171,6 @@ const resolveToBufferStringStream = async (responseOrData) => {
   );
 };
 
-const uploader = async (
-  signedPostData,
-  bufferStringStream,
-  knownLength,
-  filename,
-  contentType
-) => {
-  filename = path.basename(filename).replace('"', '');
-
-  const fields = {
-    ...signedPostData.fields,
-    'Content-Disposition': contentDisposition(filename),
-    'Content-Type': contentType,
-  };
-
-  const form = new FormData();
-
-  Object.entries(fields).forEach(([key, value]) => {
-    form.append(key, value);
-  });
-
-  form.append('file', bufferStringStream, {
-    knownLength,
-    contentType,
-    filename,
-  });
-
-  // Try to catch the missing length early, before upload to S3 fails.
-  try {
-    form.getLengthSync();
-  } catch (err) {
-    throw new Error(LENGTH_ERR_MESSAGE);
-  }
-
-  // Send to S3 with presigned request.
-  const response = await request({
-    url: signedPostData.url,
-    method: 'POST',
-    body: form,
-  });
-
-  if (response.status === 204) {
-    return new URL(signedPostData.fields.key, signedPostData.url).href;
-  }
-
-  if (
-    response.content &&
-    response.content.includes &&
-    response.content.includes(
-      'You must provide the Content-Length HTTP header.'
-    )
-  ) {
-    throw new Error(LENGTH_ERR_MESSAGE);
-  }
-
-  throw new Error(`Got ${response.status} - ${response.content}`);
-};
-
 const ensureUploadMaxSizeNotExceeded = (streamOrData, length) => {
   let uploadMaxSize = NON_STREAM_UPLOAD_MAX_SIZE;
   let uploadMethod = 'non-streaming';
@@ -242,7 +180,9 @@ const ensureUploadMaxSizeNotExceeded = (streamOrData, length) => {
   }
 
   if (length && length > uploadMaxSize) {
-    throw new Error(`${length} bytes is too big, ${uploadMaxSize} is the max for ${uploadMethod} data.`);
+    throw new Error(
+      `${length} bytes is too big, ${uploadMaxSize} is the max for ${uploadMethod} data.`
+    );
   }
 };
 

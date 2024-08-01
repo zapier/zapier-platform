@@ -26,6 +26,24 @@ const List = {
   },
 };
 
+const ListRequire = {
+  key: 'listrequire',
+  noun: 'List',
+  list: {
+    display: {
+      description: 'Trigger on new thing in list.',
+      label: 'List',
+    },
+    operation: {
+      perform: (z, bundle) => {
+        // in prod, process.cwd will return the app root directory
+        const { BASE_URL } = z.require('./test/userapp/constants.js');
+        return BASE_URL;
+      },
+    },
+  },
+};
+
 const Contact = {
   key: 'contact',
   noun: 'Contact',
@@ -552,6 +570,32 @@ const BadCallback = {
   },
 };
 
+const createLargeResponse = (targetSizeInMB) => {
+  const targetSize = targetSizeInMB * 1024 * 1024; // Convert MB to bytes
+  const sampleData = {
+    id: 1,
+    data: 'a'.repeat(targetSize),
+  };
+  return sampleData;
+};
+
+// 10mb of data
+const ReallyBigResponse = {
+  key: 'really_big_response',
+  noun: 'Really Big Response',
+  list: {
+    display: {
+      label: 'Really Big Response',
+      description: 'This is a really big response.',
+    },
+    operation: {
+      perform: (z, bundle) => {
+        return createLargeResponse(10);
+      },
+    },
+  },
+};
+
 // custom HTTP middlewares /////
 
 /*
@@ -568,6 +612,7 @@ const App = {
   afterResponse: [],
   resources: {
     [List.key]: List,
+    [ListRequire.key]: ListRequire,
     [Contact.key]: Contact,
     [ContactError.key]: ContactError,
     [ContactSource.key]: ContactSource,
@@ -591,6 +636,7 @@ const App = {
     [ExecuteCallbackRequest.key]: ExecuteCallbackRequest,
     [EnvironmentVariable.key]: EnvironmentVariable,
     [BadCallback.key]: BadCallback,
+    [ReallyBigResponse.key]: ReallyBigResponse,
   },
   hydrators: {
     getBigStuff: () => {},

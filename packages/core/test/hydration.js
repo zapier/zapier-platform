@@ -52,8 +52,8 @@ describe('hydration', () => {
       );
     });
 
-    it('should not accept payload size bigger than 6000 bytes.', () => {
-      const inputData = { key: 'a'.repeat(6001) };
+    it('should not accept payload size bigger than 12000 bytes.', () => {
+      const inputData = { key: 'a'.repeat(12001) };
       (() => {
         dehydrate(funcToFind, inputData);
       }).should.throw(/Oops! You passed too much data/);
@@ -91,8 +91,8 @@ describe('hydration', () => {
       );
     });
 
-    it('should not accept payload size bigger than 6000 bytes.', () => {
-      const inputData = { key: 'a'.repeat(6001) };
+    it('should not accept payload size bigger than 12000 bytes.', () => {
+      const inputData = { key: 'a'.repeat(12001) };
       (() => {
         dehydrateFile(funcToFind, inputData);
       }).should.throw(/Oops! You passed too much data/);

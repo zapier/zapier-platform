@@ -1,4 +1,4 @@
 # these are the root owners and will be tagged for every PR
-* @eliangcs @rnegron
+* @zapier/epd-dev-platform-backend
 
 # more specific owners can go down here if we want to match certain parts of the codebase, such as legacy-scripting-runner

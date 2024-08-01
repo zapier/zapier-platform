@@ -494,6 +494,55 @@ When using a function, this "hoisting" of data to the top level is skipped, and 
 
 **NOTE:** Do not use sensitive authentication data such as passwords or API keys in the connection label. It's visible in plain text on Zapier. The purpose of the label is to identify the connection for the user, so stick with data such as username or instance identifier that is meaningful but not sensitive.
 
+### Domain and subdomain validation
+
+When adding a subdomain input field, commonly used in OAuth implementations, additional validation is strongly recommended to prevent a potential security vulnerability. If not taken into account, an attacker could utilize a maliciously constructed subdomain field (like `attacker-domain.com/`) in order to redirect OAuth connection requests to that attacker-controlled domain (because `attacker-domain.com/.your-domain.com` resolves to the attacker’s domain instead of the expected one). 
+
+This vulnerability presents itself when:
+
+- The authentication method uses pre-configured tokens or secret values (for example, OAuth v2)
+- User is able to input a domain or subdomain when authenticating within Zapier
+- Integration stores sensitive authentication details (in environment variables, for example) which are used as part of the authentication process
+
+Taking the following steps prevents the potential for an attacker to access your integration’s sensitive authentication information, such as the OAuth client ID or secret.
+
+1. If your integration allows for the user to provide a domain, validate the input against an allow-list of trusted domains.
+
+2. If your integration allows for the user to provide a subdomain, add conditional validation for the subdomain string whenever you include the value in your OAuth HTTP requests. This change will prevent potential exploitation of the subdomain vulnerability.
+
+  - If you’re using OAuth-based authentications, update the `getAccessToken` and optional `refreshAccessToken` configuration methods. If the integration uses [shorthand HTTP requests](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#shorthand-http-requests), switching to [manual HTTP requests](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#manual-http-requests) will allow you to perform this manual subdomain validation.
+  
+  Example code for handling subdomain validation:
+
+```js
+  const refreshAccessToken = async (z, bundle) => {
+ // --- UPDATE: add your validation for the subdomain field before using it ---
+ if (!/^[a-z0-9-]+$/.test(bundle.authData.yourSubdomainField)) {
+   throw new Error(
+     "Subdomain can only contain letters, numbers and dashes (-)."
+   );
+ }
+
+
+ const response = await z.request({
+   url: `https://${bundle.authData.yourSubdomainField}.mydomain.com/oauth/token`,
+   method: "POST",
+   body: {
+     client_id: process.env.CLIENT_ID,
+     client_secret: process.env.CLIENT_SECRET,
+     grant_type: "refresh_token",
+     refresh_token: bundle.authData.refresh_token,
+     redirect_uri: bundle.inputData.redirect_uri,
+   },
+ });
+
+
+ return {
+   access_token: response.data.access_token,
+   refresh_token: response.data.refresh_token,
+ };
+ };
+```
 
 ## Resources
 
@@ -916,7 +965,9 @@ Content-Type: application/json
 ```
 > We recommend using `bundle.meta.isLoadingSample` to determine if the execution is happening in the foreground (IE: during Zap setup) as using `z.generateCallbackUrl()` can be inappropriate given the disconnect. Instead, wait for the long running request without generating a callback, or if you must, return stubbed data.
 
-And finally, in a `performResume` to handle the final step which will receive three bundle properties:
+By default the payload `POST`ed to the callback URL will augment the data returned from the initial `perform` to compose the final value.
+
+If you need to customize what the final value should be you can define a `performResume` method that receives three bundle properties:
 
 * `bundle.outputData` is `{"hello": "world"}`, the data returned from the initial `perform`
 * `bundle.cleanedRequest` is `{"foo": "bar"}`, the payload from the callback URL
@@ -925,6 +976,8 @@ And finally, in a `performResume` to handle the final step which will receive th
 ```js
 const performResume = async (z, bundle) => {
   // this will give a final value of: {"hello": "world", "foo": "bar"}
+  // which is the default behavior when a custom `performResume` is not
+  // defined.
   return  { ...bundle.outputData, ...bundle.cleanedRequest };
 };
 ```
@@ -984,6 +1037,7 @@ You'll usually want to use `bundle.inputData` instead.
 | `limit` | `-1` | The number of items you should fetch. `-1` indicates there's no limit. Build this into your calls insofar as you are able |
 | `page` | `0` | Used in [paging](#paging) to uniquely identify which page of results should be returned |
 | `isTestingAuth` | `false` | (legacy property) If true, the poll was triggered by a user testing their account (via [clicking "test"](https://cdn.zapier.com/storage/photos/5c94c304ce11b02c073a973466a7b846.png) or during setup). We use this data to populate the auth label, but it's mostly used to verify we made a successful authenticated request |
+| `withSearch` | `undefined` | When a create is called as part of a search-or-create step, `withSearch` will be the key of the search. |
 
 > Before v8.0.0, the information in `bundle.meta` was different. See [the old docs](https://github.com/zapier/zapier-platform-cli/blob/a058e6d538a75d215d2e0c52b9f49a97218640c4/README.md#bundlemeta) for the previous values and [the wiki](https://github.com/zapier/zapier-platform/wiki/bundle.meta-changes) for a mapping of old values to new.
 
@@ -1208,16 +1262,18 @@ To throttle an action, you need to set a `throttle` object with the following va
   1. `window [integer]`: The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.
   2. `limit [integer]`: The maximum number of invocations for an action, allowed within the timeframe window.
   3. `key [string]` (_added in v15.6.0_): The key to throttle with in combination with the scope. User data provided for the input fields can be used in the key with the use of the curly braces referencing. For example, to access the user data provided for the input field "test_field", use `{{bundle.inputData.test_field}}`. Note that a required input field should be referenced to get user data always.
-  4. `scope [array]`: The granularity to throttle by. You can set the scope to one or more of the following options;
+  4. `retry [boolean]` (_added in v15.8.0_): The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`. NOTE that it has no effect on polling triggers and should not be set.
+  5. `filter [string]` (_added in v15.8.0_): EXPERIMENTAL: Account-based attribute to override the throttle by. You can set to one of the following: "free", "trial", "paid". Therefore, the throttle scope would be automatically set to "account" and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.
+  6. `scope [array]`: The granularity to throttle by. You can set the scope to one or more of the following options;
         - 'user' - Throttles based on user ids.
         - 'auth' - Throttles based on auth ids.
         - 'account' - Throttles based on account ids for all users under a single account.
         - 'action' - Throttles the action it is set on separately from other actions.
-  5. `overrides [array[object]]` (_added in v15.6.0_): EXPERIMENTAL: Overrides the original throttle configuration based on a Zapier account attribute;
+  7. `overrides [array[object]]` (_added in v15.6.0_): EXPERIMENTAL: Overrides the original throttle configuration based on a Zapier account attribute;
         - `window [integer]`: Same description as above.
         - `limit [integer]`: Same description as above.
         - `filter [string]`: Account-based attribute to override the throttle by. You can set to one of the following: "free", "trial", "paid". Therefore, the throttle scope would be automatically set to "account" and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.
-        - `retry [boolean]` (_added in v15.6.1_): The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`.
+        - `retry [boolean]` (_added in v15.6.1_): The effect of throttling on the tasks of the action. `true` means throttled tasks are automatically retried after some delay, while `false` means tasks are held without retry. It defaults to `true`. NOTE that it has no effect on polling triggers and should not be set.
 
 Both `window` and `limit` are required and others are optional. By default, throttling is scoped to the action and account.
 

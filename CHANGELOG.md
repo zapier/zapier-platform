@@ -1,3 +1,120 @@
+## 15.11.1
+
+_released `2024-07-19`_
+
+### core
+- :bug: Add base64 encoding before autostashing large payloads ([#824](https://github.com/zapier/zapier-platform/pull/824))
+
+### cli
+
+None!
+
+### schema
+
+None! 
+
+## 15.11.0
+
+_released `2024-07-16`_
+
+### core
+- :bug: Fixed issue preventing standalone 'creates' in `extension` from colliding with resource keys in `base` ([#819](https://github.com/zapier/zapier-platform/pull/819))
+- :nail_care: Bundle new TypeScript type declarations provided by the `schema-to-ts` tool ([#818](https://github.com/zapier/zapier-platform/pull/818))
+
+### cli
+None!
+
+### schema
+None!
+
+### schema-to-ts
+- :nail_care: Introduced the Schema-to-TS compiler tool ([#818](https://github.com/zapier/zapier-platform/pull/818))
+- :scroll: Updated documentation to reference the schema-to-ts tool ([#821](https://github.com/zapier/zapier-platform/pull/821))
+
+
+## 15.10.0
+
+_released `2024-07-02`_
+
+### cli
+
+None!
+
+### core
+
+- :nail_care: Update extendAppRaw to override arrays as well as objects ([#813](https://github.com/zapier/zapier-platform/pull/813))
+- :nail_care: Increase hydration payload limit ([#816](https://github.com/zapier/zapier-platform/pull/816))
+- :nail_care: Add allowlist for specific content types to log HTTP response/response for in patched HTTP client ([#810](https://github.com/zapier/zapier-platform/pull/810))
+
+### schema
+
+None!
+
+## 15.9.1
+
+_released `2024-06-27`_
+
+### cli
+
+None!
+
+### core
+
+- :bug: Fix afterApp large response cacher bug ([#814](https://github.com/zapier/zapier-platform/pull/814))
+
+### schema
+
+None!
+
+## 15.9.0
+
+_released `2024-06-26`_
+
+### cli
+
+None!
+
+### core
+
+- :nail_care: Allow relative paths via z.require() ([#809](https://github.com/zapier/zapier-platform/pull/809))
+- :nail_care: Handle large response payloads ([#808](https://github.com/zapier/zapier-platform/pull/808))
+
+### schema
+
+None!
+
+## 15.8.0
+
+_released `2024-06-13`_
+
+### cli
+
+- :scroll: Add docs for domain and subdomain validation as Authentication subheading ([#797](https://github.com/zapier/zapier-platform/pull/797))
+- :scroll: Document performResume default implementation ([#806](https://github.com/zapier/zapier-platform/pull/806))
+
+### core
+
+- :nail_care: Throw error for HTTP redirect made to disallowed domains ([#803](https://github.com/zapier/zapier-platform/pull/803))
+
+### schema
+
+- :test_tube: Add support for `retry` and `filter` at the root-level of the throttle configuration ([#796](https://github.com/zapier/zapier-platform/pull/796))
+- :bug: Update createsSchema to disallow additional properties ([#798](https://github.com/zapier/zapier-platform/pull/798))
+
+### misc
+
+- :hammer: Bump jquery from 2.1.4 to 3.5.0 in the legacy-scripting-runner ([#790](https://github.com/zapier/zapier-platform/pull/790))
+- :hammer: Bump marked from 0.3.19 to 4.2.12 ([#793](https://github.com/zapier/zapier-platform/pull/793))
+- :hammer: Bump braces from 3.0.2 to 3.0.3 ([#805](https://github.com/zapier/zapier-platform/pull/805))
+
+## 15.7.3
+
+_released `2024-05-27`_
+
+### cli
+
+- :bug: Address `CVE-2024-27980` changes in Node.js by always passing `shell: true` as an option for `spawn()` in Windows OS environments (thanks to @jaydamani for the report!) ([#788](https://github.com/zapier/zapier-platform/pull/788)).
+
 ## 15.7.2
 
 _released `2024-05-08`_

@@ -50,6 +50,24 @@ jobs:
         run: yarn test
         working-directory: packages/legacy-scripting-runner
 
+  test-schema-to-ts:
+    name: Test - schema-to-ts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: yarn
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+        working-directory: schema-to-ts
+      - name: Test - schema-to-ts
+        run: yarn test
+        working-directory: schema-to-ts
+
   test-cli:
     name: Test - cli
     runs-on: ${{ matrix.os }}

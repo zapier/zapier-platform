@@ -261,6 +261,7 @@ a code {
 <li><a href="#oauth2">OAuth2</a></li>
 <li><a href="#oauth2-with-pkce">OAuth2 with PKCE</a></li>
 <li><a href="#connection-label">Connection Label</a></li>
+<li><a href="#domain-and-subdomain-validation">Domain and subdomain validation</a></li>
 </ul>
 </li>
 <li><a href="#resources">Resources</a><ul>
@@ -430,7 +431,7 @@ a code {
 <li><a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md">Latest CLI Docs</a></li>
 <li><a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md">Latest CLI Reference</a></li>
 <li><a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md">Latest Schema Docs</a></li>
-</ul><p>Our code is updated frequently. To see a full list of changes, look no further than <a href="https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md">the CHANGELOG</a>.</p><p>This doc describes the latest CLI version (<strong>15.7.2</strong>), as of this writing. If you&apos;re using an older version of the CLI, you may want to check out these historical releases:</p><ul>
+</ul><p>Our code is updated frequently. To see a full list of changes, look no further than <a href="https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md">the CHANGELOG</a>.</p><p>This doc describes the latest CLI version (<strong>15.11.1</strong>), as of this writing. If you&apos;re using an older version of the CLI, you may want to check out these historical releases:</p><ul>
 <li>CLI Docs: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@14.1.2/packages/cli/README.md">14.x</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@13.0.0/packages/cli/README.md">13.x</a></li>
 <li>CLI Reference: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@14.1.2/packages/cli/docs/cli.md">14.x</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@13.0.0/packages/cli/docs/cli.md">13.x</a></li>
 <li>Schema Docs: <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@14.1.2/packages/schema/docs/build/schema.md">14.x</a>, <a href="https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@13.0.0/packages/schema/docs/build/schema.md">13.x</a></li>
@@ -484,6 +485,7 @@ a code {
 <li><a href="#oauth2">OAuth2</a></li>
 <li><a href="#oauth2-with-pkce">OAuth2 with PKCE</a></li>
 <li><a href="#connection-label">Connection Label</a></li>
+<li><a href="#domain-and-subdomain-validation">Domain and subdomain validation</a></li>
 </ul>
 </li>
 <li><a href="#resources">Resources</a><ul>
@@ -1791,6 +1793,64 @@ Since Zapier uses the <code>state</code> to verify that GET requests to your red
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="domain-and-subdomain-validation">Domain and subdomain validation</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>When adding a subdomain input field, commonly used in OAuth implementations, additional validation is strongly recommended to prevent a potential security vulnerability. If not taken into account, an attacker could utilize a maliciously constructed subdomain field (like <code>attacker-domain.com/</code>) in order to redirect OAuth connection requests to that attacker-controlled domain (because <code>attacker-domain.com/.your-domain.com</code> resolves to the attacker&#x2019;s domain instead of the expected one). </p><p>This vulnerability presents itself when:</p><ul>
+<li>The authentication method uses pre-configured tokens or secret values (for example, OAuth v2)</li>
+<li>User is able to input a domain or subdomain when authenticating within Zapier</li>
+<li>Integration stores sensitive authentication details (in environment variables, for example) which are used as part of the authentication process</li>
+</ul><p>Taking the following steps prevents the potential for an attacker to access your integration&#x2019;s sensitive authentication information, such as the OAuth client ID or secret.</p><ol>
+<li><p>If your integration allows for the user to provide a domain, validate the input against an allow-list of trusted domains.</p>
+</li>
+<li><p>If your integration allows for the user to provide a subdomain, add conditional validation for the subdomain string whenever you include the value in your OAuth HTTP requests. This change will prevent potential exploitation of the subdomain vulnerability.</p>
+<ul>
+<li>If you&#x2019;re using OAuth-based authentications, update the <code>getAccessToken</code> and optional <code>refreshAccessToken</code> configuration methods. If the integration uses <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#shorthand-http-requests">shorthand HTTP requests</a>, switching to <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#manual-http-requests">manual HTTP requests</a> will allow you to perform this manual subdomain validation.</li>
+</ul>
+<p>Example code for handling subdomain validation:</p>
+</li>
+</ol>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-js">  <span class="hljs-keyword">const</span> refreshAccessToken = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
+ <span class="hljs-comment">// --- UPDATE: add your validation for the subdomain field before using it ---</span>
+ <span class="hljs-keyword">if</span> (!<span class="hljs-regexp">/^[a-z0-9-]+$/</span>.test(bundle.authData.yourSubdomainField)) {
+   <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(
+     <span class="hljs-string">&quot;Subdomain can only contain letters, numbers and dashes (-).&quot;</span>
+   );
+ }
+
+
+ <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> z.request({
+   <span class="hljs-attr">url</span>: <span class="hljs-string">`https://<span class="hljs-subst">${bundle.authData.yourSubdomainField}</span>.mydomain.com/oauth/token`</span>,
+   <span class="hljs-attr">method</span>: <span class="hljs-string">&quot;POST&quot;</span>,
+   <span class="hljs-attr">body</span>: {
+     <span class="hljs-attr">client_id</span>: process.env.CLIENT_ID,
+     <span class="hljs-attr">client_secret</span>: process.env.CLIENT_SECRET,
+     <span class="hljs-attr">grant_type</span>: <span class="hljs-string">&quot;refresh_token&quot;</span>,
+     <span class="hljs-attr">refresh_token</span>: bundle.authData.refresh_token,
+     <span class="hljs-attr">redirect_uri</span>: bundle.inputData.redirect_uri,
+   },
+ });
+
+
+ <span class="hljs-keyword">return</span> {
+   <span class="hljs-attr">access_token</span>: response.data.access_token,
+   <span class="hljs-attr">refresh_token</span>: response.data.refresh_token,
+ };
+ };
+</code></pre>
     </div>
   </div>
 </div><div class="row">
@@ -3247,7 +3307,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>We recommend using <code>bundle.meta.isLoadingSample</code> to determine if the execution is happening in the foreground (IE: during Zap setup) as using <code>z.generateCallbackUrl()</code> can be inappropriate given the disconnect. Instead, wait for the long running request without generating a callback, or if you must, return stubbed data.</p>
-</blockquote><p>And finally, in a <code>performResume</code> to handle the final step which will receive three bundle properties:</p><ul>
+</blockquote><p>By default the payload <code>POST</code>ed to the callback URL will augment the data returned from the initial <code>perform</code> to compose the final value.</p><p>If you need to customize what the final value should be you can define a <code>performResume</code> method that receives three bundle properties:</p><ul>
 <li><code>bundle.outputData</code> is <code>{&quot;hello&quot;: &quot;world&quot;}</code>, the data returned from the initial <code>perform</code></li>
 <li><code>bundle.cleanedRequest</code> is <code>{&quot;foo&quot;: &quot;bar&quot;}</code>, the payload from the callback URL</li>
 <li><code>bundle.rawRequest</code> is the full request object corresponding to <code>bundle.cleanedRequest</code></li>
@@ -3256,6 +3316,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <div class="col-md-7 col-sm-12 col-height  docs-code">
       <pre><code class="lang-js"><span class="hljs-keyword">const</span> performResume = <span class="hljs-keyword">async</span> (z, bundle) =&gt; {
   <span class="hljs-comment">// this will give a final value of: {&quot;hello&quot;: &quot;world&quot;, &quot;foo&quot;: &quot;bar&quot;}</span>
+  <span class="hljs-comment">// which is the default behavior when a custom `performResume` is not</span>
+  <span class="hljs-comment">// defined.</span>
   <span class="hljs-keyword">return</span>  { ...bundle.outputData, ...bundle.cleanedRequest };
 };
 </code></pre>
@@ -3428,6 +3490,11 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 <td><code>isTestingAuth</code></td>
 <td><code>false</code></td>
 <td>(legacy property) If true, the poll was triggered by a user testing their account (via <a href="https://cdn.zapier.com/storage/photos/5c94c304ce11b02c073a973466a7b846.png">clicking &quot;test&quot;</a> or during setup). We use this data to populate the auth label, but it&apos;s mostly used to verify we made a successful authenticated request</td>
+</tr>
+<tr>
+<td><code>withSearch</code></td>
+<td><code>undefined</code></td>
+<td>When a create is called as part of a search-or-create step, <code>withSearch</code> will be the key of the search.</td>
 </tr>
 </tbody>
 </table>
@@ -3911,6 +3978,8 @@ zapier env:get 1.0.0
 <li><code>window [integer]</code>: The timeframe, in seconds, within which the system tracks the number of invocations for an action. The number of invocations begins at zero at the start of each window.</li>
 <li><code>limit [integer]</code>: The maximum number of invocations for an action, allowed within the timeframe window.</li>
 <li><code>key [string]</code> (<em>added in v15.6.0</em>): The key to throttle with in combination with the scope. User data provided for the input fields can be used in the key with the use of the curly braces referencing. For example, to access the user data provided for the input field &quot;test_field&quot;, use <code>{{bundle.inputData.test_field}}</code>. Note that a required input field should be referenced to get user data always.</li>
+<li><code>retry [boolean]</code> (<em>added in v15.8.0</em>): The effect of throttling on the tasks of the action. <code>true</code> means throttled tasks are automatically retried after some delay, while <code>false</code> means tasks are held without retry. It defaults to <code>true</code>. NOTE that it has no effect on polling triggers and should not be set.</li>
+<li><code>filter [string]</code> (<em>added in v15.8.0</em>): EXPERIMENTAL: Account-based attribute to override the throttle by. You can set to one of the following: &quot;free&quot;, &quot;trial&quot;, &quot;paid&quot;. Therefore, the throttle scope would be automatically set to &quot;account&quot; and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.</li>
 <li><code>scope [array]</code>: The granularity to throttle by. You can set the scope to one or more of the following options;<ul>
 <li>&apos;user&apos; - Throttles based on user ids.</li>
 <li>&apos;auth&apos; - Throttles based on auth ids.</li>
@@ -3922,7 +3991,7 @@ zapier env:get 1.0.0
 <li><code>window [integer]</code>: Same description as above.</li>
 <li><code>limit [integer]</code>: Same description as above.</li>
 <li><code>filter [string]</code>: Account-based attribute to override the throttle by. You can set to one of the following: &quot;free&quot;, &quot;trial&quot;, &quot;paid&quot;. Therefore, the throttle scope would be automatically set to &quot;account&quot; and ONLY the accounts based on the specified filter will have their requests throttled based on the throttle overrides while the rest are throttled based on the original configuration.</li>
-<li><code>retry [boolean]</code> (<em>added in v15.6.1</em>): The effect of throttling on the tasks of the action. <code>true</code> means throttled tasks are automatically retried after some delay, while <code>false</code> means tasks are held without retry. It defaults to <code>true</code>.</li>
+<li><code>retry [boolean]</code> (<em>added in v15.6.1</em>): The effect of throttling on the tasks of the action. <code>true</code> means throttled tasks are automatically retried after some delay, while <code>false</code> means tasks are held without retry. It defaults to <code>true</code>. NOTE that it has no effect on polling triggers and should not be set.</li>
 </ul>
 </li>
 </ol><p>Both <code>window</code> and <code>limit</code> are required and others are optional. By default, throttling is scoped to the action and account.</p><p>Here is a typical usage of the throttle configuration:</p>
@@ -3954,6 +4023,7 @@ zapier env:get 1.0.0
           <span class="hljs-attr">window</span>: <span class="hljs-number">600</span>,
           <span class="hljs-attr">limit</span>: <span class="hljs-number">5</span>,
           <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;test-key-{{bundle.inputData.name}}&apos;</span>,
+          <span class="hljs-attr">retry</span>: <span class="hljs-literal">false</span>,
           <span class="hljs-attr">scope</span>: [<span class="hljs-string">&apos;account&apos;</span>],
           <span class="hljs-attr">overrides</span>: [
             {
@@ -4320,7 +4390,7 @@ zapier env:get 1.0.0
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>For developers using v9.x and below, it&apos;s your responsibility to throw an exception for an error response. That means you should call <code>response.throwForStatus()</code> or throw an error yourself, likely following the <code>z.request</code> call.</p><p>This behavior has changed periodically across major versions, which changes how/when you have to worry about handling errors. Here&apos;s a diagram to illustrate that:</p><p><img src="https://cdn.zappy.app/e835d9beca1b6489a065d51a381613f3.png" alt></p><p>Ensure you&apos;re handling errors correctly for your platform version. The latest released version is <strong>15.7.2</strong>.</p>
+      <p>For developers using v9.x and below, it&apos;s your responsibility to throw an exception for an error response. That means you should call <code>response.throwForStatus()</code> or throw an error yourself, likely following the <code>z.request</code> call.</p><p>This behavior has changed periodically across major versions, which changes how/when you have to worry about handling errors. Here&apos;s a diagram to illustrate that:</p><p><img src="https://cdn.zappy.app/e835d9beca1b6489a065d51a381613f3.png" alt></p><p>Ensure you&apos;re handling errors correctly for your platform version. The latest released version is <strong>15.11.1</strong>.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -6087,7 +6157,7 @@ zapier push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Broadly speaking, all releases will continue to work indefinitely. While you never <em>have</em> to upgrade your app&apos;s <code>zapier-platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md">changelog</a> to see what new features and bug fixes are available.</p><p>For more info about which Node versions are supported, see <a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">the faq</a>.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <strong>15.7.2</strong>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://www.npmjs.com/package/zapier-platform-core?activeTab=versions">here</a> and reinstall your dependencies (either <code>yarn</code> or <code>npm install</code>).</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
+      <p>The Zapier platform and its tools are under active development. While you don&apos;t need to install every release, we release new versions because they are better than the last. We do our best to adhere to <a href="https://semver.org/">Semantic Versioning</a> wherein we won&apos;t break your code unless there&apos;s a <code>major</code> release. Otherwise, we&apos;re just fixing bugs (<code>patch</code>) and adding features (<code>minor</code>).</p><p>Broadly speaking, all releases will continue to work indefinitely. While you never <em>have</em> to upgrade your app&apos;s <code>zapier-platform-core</code> dependency, we recommend keeping an eye on the <a href="https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md">changelog</a> to see what new features and bug fixes are available.</p><p>For more info about which Node versions are supported, see <a href="#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with">the faq</a>.</p><p>The most recently released version of <code>cli</code> and <code>core</code> is <strong>15.11.1</strong>. You can see the versions you&apos;re working with by running <code>zapier -v</code>.</p><p>To update <code>cli</code>, run <code>npm install -g zapier-platform-cli</code>.</p><p>To update the version of <code>core</code> your app depends on, set the <code>zapier-platform-core</code> dependency in your <code>package.json</code> to a version listed <a href="https://www.npmjs.com/package/zapier-platform-core?activeTab=versions">here</a> and reinstall your dependencies (either <code>yarn</code> or <code>npm install</code>).</p><p>For maximum compatibility, keep the versions of <code>cli</code> and <code>core</code> in sync.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

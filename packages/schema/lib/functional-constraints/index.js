@@ -20,6 +20,7 @@ const checks = [
   require('./uniqueInputFieldKeys'),
   require('./bulkWriteConstraints'),
   require('./requirePerformConditionally'),
+  require('./pollingThrottle'),
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {

@@ -19,42 +19,84 @@ const environmentTools = require('./environment');
 const schemaTools = require('./schema');
 const ZapierPromise = require('./promise');
 
-const RequestSchema = require('zapier-platform-schema/lib/schemas/RequestSchema');
-const FunctionSchema = require('zapier-platform-schema/lib/schemas/FunctionSchema');
-
-const isRequestOrFunction = (obj) => {
+const isDefinedPrimitive = (value) => {
   return (
-    RequestSchema.validate(obj).valid || FunctionSchema.validate(obj).valid
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
   );
 };
 
-const extendAppRaw = (base, extension) => {
-  const keysToOverride = [
-    'test',
-    'perform',
-    'performList',
-    'performSubscribe',
-    'performUnsubscribe',
-  ];
-  const concatArrayAndOverrideKeys = (objValue, srcValue, key) => {
-    if (Array.isArray(objValue) && Array.isArray(srcValue)) {
-      return objValue.concat(srcValue);
-    }
+const shouldFullyReplace = (path) => {
+  // covers inputFields, outputFields, sample, throttle, etc
+  const isOperation = path[path.length - 2] === 'operation';
+  return isOperation;
+};
 
-    if (
-      // Do full replacement when it comes to keysToOverride
-      keysToOverride.indexOf(key) !== -1 &&
-      _.isPlainObject(srcValue) &&
-      _.isPlainObject(objValue) &&
-      isRequestOrFunction(srcValue) &&
-      isRequestOrFunction(objValue)
-    ) {
-      return srcValue;
+const extendAppRaw = (base, extension, path) => {
+  if (extension === undefined) {
+    return base;
+  } else if (isDefinedPrimitive(extension)) {
+    return extension;
+  } else if (Array.isArray(extension)) {
+    return [...extension];
+  } else if (_.isPlainObject(extension)) {
+    path = path || [];
+    if (shouldFullyReplace(path)) {
+      return extension;
+    } else {
+      const baseObject = _.isPlainObject(base) ? base : {};
+      const result = { ...baseObject };
+      for (const [key, value] of Object.entries(extension)) {
+        const newPath = [...path, key];
+        result[key] = extendAppRaw(baseObject[key], value, newPath);
+      }
+      return result;
     }
+  }
+  throw new TypeError('Unexpected extension type');
+};
 
-    return undefined;
-  };
-  return _.mergeWith(base, extension, concatArrayAndOverrideKeys);
+const mayMoveCreatesToResourcesInExtension = (base, extension) => {
+  // The backend sends an extension for creates.KEY.operation.perform as a
+  // special case for legacy-scripting-runner.
+  // For details, see the MR description at
+  // https://gitlab.com/zapier/zapier/-/merge_requests/57964
+  //
+  // We need to make sure that 'creates.{key}Create' in extension won't collide
+  // with 'resources.{key}.create' in base. Otherwise, the checks in
+  // compileApp() will throw an error. So here we move 'creates.{key}Create' to
+  // 'resources.{key}.create' in extension if base has 'resources.{key}.create'.
+  //
+  // There's a regression test: Search for 'resource key collision' in
+  // integration-test.js.
+  if (
+    !_.isPlainObject(base.resources) ||
+    !_.isPlainObject(extension.creates) ||
+    _.isEmpty(base.resources) ||
+    _.isEmpty(extension.creates)
+  ) {
+    return extension;
+  }
+
+  const creates = extension.creates;
+  extension.creates = {};
+  extension.resources = extension.resources || {};
+
+  for (const [key, resource] of Object.entries(base.resources)) {
+    const standaloneCreate = creates[key + 'Create'];
+    if (resource.create && standaloneCreate) {
+      delete standaloneCreate.key;
+      delete standaloneCreate.noun;
+      extension.resources[key] = {
+        ...extension.resources[key],
+        create: standaloneCreate,
+      };
+    }
+  }
+
+  return extension;
 };
 
 const getAppRawOverride = (rpc, appRawOverride) => {
@@ -69,6 +111,10 @@ const getAppRawOverride = (rpc, appRawOverride) => {
       appRawOverride = appRawOverride[0];
 
       if (typeof appRawOverride !== 'string') {
+        appRawExtension = mayMoveCreatesToResourcesInExtension(
+          appRawOverride,
+          appRawExtension
+        );
         appRawOverride = extendAppRaw(appRawOverride, appRawExtension);
         resolve(appRawOverride);
         return;
@@ -116,17 +162,25 @@ const getAppRawOverride = (rpc, appRawOverride) => {
 // so allow for that, and an event.appRawOverride for "buildless" apps.
 const loadApp = (event, rpc, appRawOrPath) => {
   return new ZapierPromise((resolve, reject) => {
+    const appRaw = _.isString(appRawOrPath)
+      ? require(appRawOrPath)
+      : appRawOrPath;
+
     if (event && event.appRawOverride) {
+      if (
+        Array.isArray(event.appRawOverride) &&
+        event.appRawOverride.length > 1 &&
+        !event.appRawOverride[0]
+      ) {
+        event.appRawOverride[0] = appRaw;
+      }
+
       return getAppRawOverride(rpc, event.appRawOverride)
         .then((appRawOverride) => resolve(appRawOverride))
         .catch((err) => reject(err));
     }
 
-    if (_.isString(appRawOrPath)) {
-      return resolve(require(appRawOrPath));
-    }
-
-    return resolve(appRawOrPath);
+    return resolve(appRaw);
   });
 };
 
