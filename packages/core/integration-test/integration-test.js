@@ -684,7 +684,7 @@ const doTest = (runner) => {
     it('should log requests', () => {
       const event = {
         command: 'execute',
-        method: 'resources.requestfunc.list.operation.perform',
+        method: 'resources.requestsugar.list.operation.perform',
         logExtra: {
           app_cli_id: 666,
         },

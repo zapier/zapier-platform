@@ -18,7 +18,7 @@ const App = {
       },
       operation: {
         perform: () => {},
-        inputFields: [{key: 'name', required: true, type: 'string'}],
+        inputFields: [{ key: 'name', required: true, type: 'string' }],
         // overwrites the default, for this action
         throttle: {
           window: 600,

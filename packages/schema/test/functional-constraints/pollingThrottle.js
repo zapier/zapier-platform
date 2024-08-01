@@ -46,7 +46,7 @@ describe('pollingThrottle', () => {
     );
 
     // for polling trigger with operation.type unset
-    delete operation.type
+    delete operation.type;
     results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(

@@ -25,8 +25,8 @@ describe('resolve-method-path', () => {
   it('should resolve a request method object with a url', () => {
     resolveMethodPath(
       app,
-      app.resources.contact.list.operation.perform
-    ).should.eql('resources.contact.list.operation.perform');
+      app.resources.contacterror.list.operation.perform
+    ).should.eql('resources.contacterror.list.operation.perform');
   });
 
   it('should resolve a method in a module', () => {
