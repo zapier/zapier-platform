@@ -2,9 +2,9 @@ const crypto = require('crypto');
 const os = require('os');
 const path = require('path');
 
-const dependencyTree = require('dependency-tree');
 const _ = require('lodash');
 const archiver = require('archiver');
+const esbuild = require('esbuild');
 const fs = require('fs');
 const fse = require('fs-extra');
 const klaw = require('klaw');
@@ -51,39 +51,26 @@ const debug = require('debug')('zapier:build');
 
 const stripPath = (cwd, filePath) => filePath.split(cwd).pop();
 
-const requiredFiles = ({ cwd, entryPoints }) => {
+const requiredFiles = async ({ cwd, entryPoints }) => {
   // Add OS-dependent path separator at the end if the
   // current working directory does not have one
   if (!_.endsWith(cwd, path.sep)) {
     cwd += path.sep;
   }
 
-  const dependencyTreeOptions = {
-    directory: cwd,
-  };
-
-  // Using Set() to protect against duplicates
-  const completeDependencyTree = new Set();
-
-  return new Promise((resolve, reject) => {
-    entryPoints.forEach((entryPoint) => {
-      // Add the entry point as the filename parameter in the options
-      // and obtain a dependency list using .toList()
-      const entryOptions = { ...dependencyTreeOptions, filename: entryPoint };
-      const moduleDependencyList = dependencyTree.toList(entryOptions);
-
-      // For each module found, strip the working directory from the path
-      // before adding it to the completeDependencyTree set
-      moduleDependencyList.forEach((dependencyFilePath) => {
-        const strippedDependencyFilePath = stripPath(cwd, dependencyFilePath);
-        completeDependencyTree.add(strippedDependencyFilePath);
-      });
-    });
-
-    // Resolve as a sorted array of module dependencies, containing dependencies for
-    // every entry point files provided
-    resolve(Array.from(completeDependencyTree).sort());
+  const result = await esbuild.build({
+    entryPoints,
+    bundle: true,
+    platform: 'node',
+    // outfile: './build/bundle.js',
+    outdir: './build',
+    metafile: true,
+    logLevel: 'warning',
   });
+  // TODO: Delete bundle.js
+  return Object.keys(result.metafile.inputs).map((path) =>
+    stripPath(cwd, path)
+  );
 };
 
 const listFiles = (dir) => {

@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 
 const { NotImplementedError } = require('../../errors');
 const { md5 } = require('../../tools/hashing');

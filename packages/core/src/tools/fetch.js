@@ -1,4 +1,6 @@
-'use strict';
+module.export = fetch;
+
+/*'use strict';
 
 const { Writable } = require('stream');
 
@@ -81,4 +83,4 @@ const newFetch = (url, opts) => {
 
 newFetch.Promise = require('./promise');
 
-module.exports = newFetch;
+module.exports = newFetch;*/

@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 
 const FORM_TYPE = 'application/x-www-form-urlencoded';
 const JSON_TYPE = 'application/json';

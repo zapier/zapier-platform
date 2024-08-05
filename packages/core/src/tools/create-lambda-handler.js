@@ -186,6 +186,7 @@ const loadApp = async (event, rpc, appRawOrPath) => {
   return appRaw;
 };
 
+
 const createLambdaHandler = (appRawOrPath) => {
   const handler = (event, context, callback) => {
     // Wait for all async events to complete before callback returns.
