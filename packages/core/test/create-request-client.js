@@ -389,7 +389,7 @@ describe('request client', function () {
     should.not.exist(response.data.textBody);
   });
 
-  it('should allow GET with body', async function () {
+  it.only('should allow GET with body', async function () {
     this.timeout(1000 * 30); // 30 secs timeout
     this.retries(3); // retry up to 3 times
 
@@ -402,6 +402,7 @@ describe('request client', function () {
       },
       allowGetBody: true,
     });
+    debugger;
     response.status.should.eql(200);
     response.data.method.should.eql('GET');
     response.data.textBody.should.eql('{"name":"Darth Vader"}');

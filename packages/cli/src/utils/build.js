@@ -2,10 +2,9 @@ const crypto = require('crypto');
 const os = require('os');
 const path = require('path');
 
-const browserify = require('browserify');
-const through = require('through2');
 const _ = require('lodash');
 const archiver = require('archiver');
+const esbuild = require('esbuild');
 const fs = require('fs');
 const fse = require('fs-extra');
 const klaw = require('klaw');
@@ -52,58 +51,26 @@ const debug = require('debug')('zapier:build');
 
 const stripPath = (cwd, filePath) => filePath.split(cwd).pop();
 
-// given entry points in a directory, return a list of files that uses
-// could probably be done better with module-deps...
-// TODO: needs to include package.json files too i think
-//   https://github.com/serverless/serverless-optimizer-plugin?
-const requiredFiles = (cwd, entryPoints) => {
+const requiredFiles = async ({ cwd, entryPoints }) => {
+  // Add OS-dependent path separator at the end if the
+  // current working directory does not have one
   if (!_.endsWith(cwd, path.sep)) {
     cwd += path.sep;
   }
 
-  const argv = {
-    noParse: [undefined],
-    extensions: [],
-    ignoreTransform: [],
-    entries: entryPoints,
-    fullPaths: false,
-    builtins: false,
-    commondir: false,
-    bundleExternal: true,
-    basedir: cwd,
-    browserField: false,
-    detectGlobals: true,
-    insertGlobals: false,
-    insertGlobalVars: {
-      process: undefined,
-      global: undefined,
-      'Buffer.isBuffer': undefined,
-      Buffer: undefined,
-    },
-    ignoreMissing: true,
-    debug: false,
-    standalone: undefined,
-  };
-  const b = browserify(argv);
-
-  return new Promise((resolve, reject) => {
-    b.on('error', reject);
-
-    const paths = [];
-    b.pipeline.get('deps').push(
-      through
-        .obj((row, enc, next) => {
-          const filePath = row.file || row.id;
-          paths.push(stripPath(cwd, filePath));
-          next();
-        })
-        .on('end', () => {
-          paths.sort();
-          resolve(paths);
-        })
-    );
-    b.bundle();
+  const result = await esbuild.build({
+    entryPoints,
+    bundle: true,
+    platform: 'node',
+    // outfile: './build/bundle.js',
+    outdir: './build',
+    metafile: true,
+    logLevel: 'warning',
   });
+  // TODO: Delete bundle.js
+  return Object.keys(result.metafile.inputs).map((path) =>
+    stripPath(cwd, path)
+  );
 };
 
 const listFiles = (dir) => {
@@ -224,7 +191,7 @@ const makeZip = async (dir, zipPath, disableDependencyDetection) => {
 
   const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
-    requiredFiles(dir, entryPoints),
+    requiredFiles({ cwd: dir, entryPoints }),
     getLinkedAppConfig(dir).catch(() => ({})),
   ]);
 
@@ -257,11 +224,9 @@ const makeSourceZip = async (dir, zipPath) => {
 
 // Similar to utils.appCommand, but given a ready to go app
 // with a different location and ready to go zapierwrapper.js.
-const _appCommandZapierWrapper = (dir, event) => {
-  const app = require(`${dir}/zapierwrapper.js`);
-  event = Object.assign({}, event, {
-    calledFromCli: true,
-  });
+const _appCommandZapierWrapper = async (dir, event) => {
+  const app = await import(`${dir}/zapierwrapper.js`);
+  event = { ...event, calledFromCli: true };
   return new Promise((resolve, reject) => {
     app.handler(event, {}, (err, resp) => {
       if (err) {
