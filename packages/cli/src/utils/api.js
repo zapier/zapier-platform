@@ -13,11 +13,13 @@ const AdmZip = require('adm-zip');
 const fetch = require('node-fetch');
 const path = require('path');
 
-const { writeFile, readFile } = require('./files');
+const { writeFile, readFile, ensureDir } = require('./files');
 
 const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
 
 const { localAppCommand } = require('./local');
+const { promisify } = require('./promisify');
+const { pipeline } = require('stream');
 
 // TODO split these out into better files
 
@@ -364,6 +366,72 @@ const validateApp = async (definition) => {
   });
 };
 
+// TODO: docstring, fix ensureDir failure
+const downloadSourceZip = async () => {
+  // appDir should be undefined...just using this for testing
+  // right now the .zapierapprc file should be there or this will blow up
+  const linkedAppConfig = await getLinkedAppConfig('./example-target', false);
+  if (!linkedAppConfig.id) {
+    throw new Error(
+      `This project hasn't yet been associated with an existing Zapier integration.\n\nIf it's a brand new integration, run \`${colors.cyan(
+        'zapier register'
+      )}\`.\n\nIf this project already exists in your Zapier account, run \`${colors.cyan(
+        'zapier link'
+      )}\` instead.`
+    );
+  }
+
+  const credentials = await readCredentials(true)
+
+  try {
+    const url = constants.ENDPOINT + `/apps/${linkedAppConfig.id}/latest/pull`
+
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+        'User-Agent': `${constants.PACKAGE_NAME}/${constants.PACKAGE_VERSION}`,
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-Deploy-Key' : credentials[constants.AUTH_KEY]
+      },
+    };
+    const response = await fetch(url, requestOptions);
+
+    if (!response.ok) {
+      throw new Error(`Got HTTP error, status: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/zip')) {
+      throw new Error('The API did not return a ZIP file');
+    }
+
+    const sourceZipPath = constants.SOURCE_PATH;
+    const appDir = process.cwd();
+    const dirPath = path.dirname(path.resolve(appDir, constants.BUILD_DIR));
+
+    try {
+      // TODO: this still fails if the build folder isn't already there
+      await ensureDir(dirPath);
+    } catch (error) {
+      console.error('Error ensuring directory exists:', error);
+      console.log('Attempting to create directory...');
+      await fs.promises.mkdir(dirPath, { recursive: true });
+    }
+
+    const fullSourceZipPath = path.resolve(appDir, sourceZipPath);
+    const writeStream = fs.createWriteStream(fullSourceZipPath);
+
+    // use pipeline to handle the download stream
+    await promisify(pipeline)(response.body, writeStream);
+
+    console.log(`source.zip file downloaded successfully to ${fullSourceZipPath}`);
+  } catch (error) {
+    console.error('Download failed:', error);
+  }
+}
+
 const upload = async (app, { skipValidation = false } = {}) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
@@ -408,6 +476,7 @@ module.exports = {
   callAPI,
   checkCredentials,
   createCredentials,
+  downloadSourceZip,
   getLinkedAppConfig,
   getWritableApp,
   getVersionInfo,
