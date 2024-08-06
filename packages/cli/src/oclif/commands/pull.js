@@ -14,17 +14,15 @@ class PullCommand extends ZapierBaseCommand {
       this.exit()
     }
 
-    // download file, overwriting existing source.zip
     await downloadSourceZip();
     validateFileExists(constants.SOURCE_PATH)
 
     const tmpDir = makeTempDir()
-    debug('Using temp directory: ', tmpDir);
-
     await ensureDir(tmpDir);
+    debug('Using temp directory for source unzip: ', tmpDir);
 
     try {
-      const zip = new AdmZip('source.zip')
+      const zip = new AdmZip(constants.SOURCE_PATH)
       zip.extractAllTo(tmpDir, true)
     } catch (e) {
       console.error(`Failed to extract zip file: ${e}`);
