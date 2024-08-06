@@ -2155,6 +2155,8 @@ Since v15.6.0, instead of using the default `id` field, you can also define one 
 
 will tell Zapier to use `(userId, slug)` as the unique primary key to deduplicate items when running a polling trigger.
 
+**Limitation:** The `primary` option currently doesn't support nested fields that use double underscores in their keys. For example, if you set `primary: true` on a field like `user__id`, it will be ignored.
+
 ### Node X No Longer Supported
 
 If you're seeing errors like the following:
