@@ -1,5 +1,4 @@
 const _ = require('lodash');
-// const fetch = require('node-fetch');
 
 const FORM_TYPE = 'application/x-www-form-urlencoded';
 const JSON_TYPE = 'application/json';
@@ -111,8 +110,17 @@ const parseDictHeader = (s) => {
   return res;
 };
 
-const unheader = (h) =>
-  h instanceof fetch.Headers && _.isFunction(h.toJSON) ? h.toJSON() : h;
+const unheader = (h) => {
+  if (!h || !_.isFunction(h.entries)) {
+    return h;
+  }
+
+  const headers = {};
+  for (const [k, v] of h.entries()) {
+    headers[k] = `${v}`;
+  }
+  return headers;
+};
 
 module.exports = {
   FORM_TYPE,

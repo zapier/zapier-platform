@@ -5,7 +5,8 @@ const nock = require('nock');
 
 const createlogger = require('../src/tools/create-logger');
 const querystring = require('querystring');
-const { Headers } = require('node-fetch');
+const Headers = import('node-fetch').then(({ Headers }) => Headers);
+
 const {
   replaceHeaders,
 } = require('../src/http-middlewares/after/middleware-utils');

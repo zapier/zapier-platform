@@ -1,62 +1,73 @@
-module.export = fetch;
+'use strict';
 
-/*'use strict';
+const { Writable, Readable } = require('node:stream');
 
-const { Writable } = require('stream');
+let PatchedRequestClass = null;
 
-const fetch = require('node-fetch');
+const getPatchedRequestClass = (BaseRequest) => {
+  if (!PatchedRequestClass) {
+    // XXX: PatchedRequest is to get past node-fetch's check that forbids GET requests
+    // from having a body here:
+    // https://github.com/node-fetch/node-fetch/blob/v2.6.0/src/request.js#L75-L78
+    class _PatchedRequest extends BaseRequest {
+      constructor(url, opts) {
+        const origMethod = ((opts && opts.method) || 'GET').toUpperCase();
 
-// XXX: PatchedRequest is to get past node-fetch's check that forbids GET requests
-// from having a body here:
-// https://github.com/node-fetch/node-fetch/blob/v2.6.0/src/request.js#L75-L78
-class PatchedRequest extends fetch.Request {
-  constructor(url, opts) {
-    const origMethod = ((opts && opts.method) || 'GET').toUpperCase();
+        const isGetWithBody =
+          (origMethod === 'GET' || origMethod === 'HEAD') && opts && opts.body;
+        let newOpts = opts;
+        if (isGetWithBody) {
+          // Temporary remove body to fool fetch.Request constructor
+          newOpts = { ...opts, body: null };
+        }
 
-    const isGetWithBody =
-      (origMethod === 'GET' || origMethod === 'HEAD') && opts && opts.body;
-    let newOpts = opts;
-    if (isGetWithBody) {
-      // Temporary remove body to fool fetch.Request constructor
-      newOpts = { ...opts, body: null };
-    }
+        super(url, newOpts);
 
-    super(url, newOpts);
+        this._isGetWithBody = isGetWithBody;
 
-    this._isGetWithBody = isGetWithBody;
-
-    if (isGetWithBody) {
-      // Restore the body. The body is stored internally using a Symbol key. We
-      // can't just do this[Symbol('Body internals')] as the symbol is internal.
-      // We need to use Object.getOwnPropertySymbols() to get all the keys and
-      // find the one that holds the body.
-      const keys = Object.getOwnPropertySymbols(this);
-      for (const k of keys) {
-        if (this[k].body !== undefined) {
-          this[k].body = Buffer.from(String(opts.body));
-          break;
+        if (isGetWithBody) {
+          // Restore the body. The body is stored internally using a Symbol key. We
+          // can't just do this[Symbol('Body internals')] as the symbol is internal.
+          // We need to use Object.getOwnPropertySymbols() to get all the keys and
+          // find the one that holds the body.
+          const keys = Object.getOwnPropertySymbols(this);
+          for (const k of keys) {
+            if (this[k].body !== undefined) {
+              const body = Buffer.from(String(opts.body));
+              this[k].body = body;
+              this[k].stream = Readable.from(body);
+              break;
+            }
+          }
         }
       }
+
+      get body() {
+        if (this._isGetWithBody && !this._bodyCalled) {
+          // This assumes node-fetch's check that disallows a GET request to have a
+          // body happens on the first time it calls this.body. Might not work if
+          // node-fetch breaks the assumption.
+          this._bodyCalled = true;
+          return null;
+        }
+        return super.body;
+      }
     }
+
+    PatchedRequestClass = _PatchedRequest;
   }
 
-  get body() {
-    if (this._isGetWithBody && !this._bodyCalled) {
-      // This assumes node-fetch's check that disallows a GET request to have a
-      // body happens on the first time it calls this.body. Might not work if
-      // node-fetch breaks the assumption.
-      this._bodyCalled = true;
-      return null;
-    }
-    return super.body;
-  }
-}
+  return PatchedRequestClass;
+};
 
-const newFetch = (url, opts) => {
+const newFetch = async (url, opts) => {
+  const nodeFetch = await import('node-fetch');
+  const PatchedRequest = getPatchedRequestClass(nodeFetch.Request);
   const request = new PatchedRequest(url, opts);
 
   // fetch actually accepts a Request object as an argument. It'll clone the
   // request internally, that's why the PatchedRequest.body hack works.
+  const fetch = nodeFetch.default;
   const responsePromise = fetch(request);
 
   // node-fetch clones request.body and use the cloned body internally. We need
@@ -83,4 +94,4 @@ const newFetch = (url, opts) => {
 
 newFetch.Promise = require('./promise');
 
-module.exports = newFetch;*/
+module.exports = newFetch;
