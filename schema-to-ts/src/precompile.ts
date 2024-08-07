@@ -101,6 +101,7 @@ const compileToAST = async (
     $refOptions: {
       resolve: { customResolver: getResolver(schemas) },
     },
+    ignoreMinAndMaxItems: true,
   });
   const _schema = structuredClone(rootSchema);
 
