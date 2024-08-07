@@ -384,7 +384,8 @@ const downloadSourceZip = async () => {
   const credentials = await readCredentials(true)
 
   try {
-    const url = constants.ENDPOINT + `/apps/${linkedAppConfig.id}/latest/pull`
+    // const url = constants.ENDPOINT + `/apps/${linkedAppConfig.id}/latest/pull`
+    const url = constants.ENDPOINT + `/apps/1/latest/pull`
 
     const requestOptions = {
       method: 'GET',
@@ -409,16 +410,9 @@ const downloadSourceZip = async () => {
 
     const sourceZipPath = constants.SOURCE_PATH;
     const appDir = process.cwd();
-    const dirPath = path.dirname(path.resolve(appDir, constants.BUILD_DIR));
+    const dirPath = path.resolve(appDir, constants.BUILD_DIR);
 
-    try {
-      // TODO: this still fails if the build folder isn't already there
-      await ensureDir(dirPath);
-    } catch (error) {
-      console.error('Error ensuring directory exists:', error);
-      console.log('Attempting to create directory...');
-      await fs.promises.mkdir(dirPath, { recursive: true });
-    }
+    await ensureDir(dirPath);
 
     const fullSourceZipPath = path.resolve(appDir, sourceZipPath);
     const writeStream = fs.createWriteStream(fullSourceZipPath);
@@ -429,6 +423,8 @@ const downloadSourceZip = async () => {
     console.log(`source.zip file downloaded successfully to ${fullSourceZipPath}`);
   } catch (error) {
     console.error('Download failed:', error);
+    // maybe just don't catch this here at all tbh
+    throw error
   }
 }
 

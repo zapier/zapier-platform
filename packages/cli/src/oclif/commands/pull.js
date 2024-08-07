@@ -1,6 +1,7 @@
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { downloadSourceZip } = require('../../utils/api');
-const { ensureDir, copyDir, makeTempDir, removeDir, validateFileExists, deleteUnmatchedFiles } = require('../../utils/files');
+const { ensureDir, copyDir, makeTempDir, removeDir, validateFileExists, deleteUnmatchedFiles,
+} = require('../../utils/files');
 const AdmZip = require('adm-zip');
 const colors = require('colors/safe');
 const constants = require('../../constants');
@@ -11,13 +12,13 @@ class PullCommand extends ZapierBaseCommand {
     if (
       !await this.confirm(colors.yellow('This will overwrite your local integration files with the latest version. Continue?'))
     ) {
-      this.exit()
+      this.exit();
     }
 
     await downloadSourceZip();
-    validateFileExists(constants.SOURCE_PATH)
+    validateFileExists(constants.SOURCE_PATH);
 
-    const tmpDir = makeTempDir()
+    const tmpDir = makeTempDir();
     await ensureDir(tmpDir);
     debug('Using temp directory for source unzip: ', tmpDir);
 
@@ -25,6 +26,7 @@ class PullCommand extends ZapierBaseCommand {
       const zip = new AdmZip(constants.SOURCE_PATH)
       zip.extractAllTo(tmpDir, true)
     } catch (e) {
+      // log and exit instead? or just let this throw an error?
       console.error(`Failed to extract zip file: ${e}`);
     }
 

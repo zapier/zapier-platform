@@ -201,7 +201,6 @@ const makeTempDir = () => {
   return workdir;
 };
 
-// TODO: respect gitignore, debug logs, docstring
 async function deleteUnmatchedFiles(src, dest) {
   try {
     const [filesInTarget, filesInSource] = await Promise.all([
@@ -215,29 +214,22 @@ async function deleteUnmatchedFiles(src, dest) {
       const targetPath = path.join(dest, file.name);
       const sourcePath = path.join(src, file.name);
 
-      // if the file is a directory, recurse into it
       if (file.isDirectory()) {
         if (!sourceFiles.has(file.name)) {
           await fs.promises.rm(targetPath, { recursive: true, force: true });
-          // maybe only do this on debug?
           console.log(`Deleted directory: ${targetPath}`);
         } else {
           await deleteUnmatchedFiles(sourcePath, targetPath);
         }
       } else {
-        // if a file in target does not exist in source, delete it
         if (!sourceFiles.has(file.name)) {
           await fs.promises.unlink(targetPath);
-          // same thing - only log on debug?
           console.log(`Deleted file: ${targetPath}`);
         }
       }
     }
-
-    // again - debug log? maybe a count of files removed?
-    // console.log(`Removed files not found in source.`);
   } catch (err) {
-    console.error(`Error while removing files: ${err.message}`);
+    console.warn(colors.yellow(`Error while removing files: ${err.message}`));
   }
 }
 
