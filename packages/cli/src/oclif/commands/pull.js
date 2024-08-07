@@ -6,6 +6,8 @@ const AdmZip = require('adm-zip');
 const colors = require('colors/safe');
 const constants = require('../../constants');
 const debug = require('debug')('zapier:pull');
+const ignore = require('ignore');
+const { getGitIgnorePatterns } = require('../../utils/pull');
 
 class PullCommand extends ZapierBaseCommand {
   async perform() {
@@ -22,17 +24,15 @@ class PullCommand extends ZapierBaseCommand {
     await ensureDir(tmpDir);
     debug('Using temp directory for source unzip: ', tmpDir);
 
-    try {
-      const zip = new AdmZip(constants.SOURCE_PATH)
-      zip.extractAllTo(tmpDir, true)
-    } catch (e) {
-      // log and exit instead? or just let this throw an error?
-      console.error(`Failed to extract zip file: ${e}`);
-    }
+    const zip = new AdmZip(constants.SOURCE_PATH)
+    zip.extractAllTo(tmpDir, true)
+
+    const gitIgnorePatterns = await getGitIgnorePatterns('example-target');
+    const ig = ignore().add(gitIgnorePatterns);
 
     // TODO: change destination
     await copyDir(tmpDir, 'example-target', {clobber: true})
-    await deleteUnmatchedFiles(tmpDir, 'example-target');
+    await deleteUnmatchedFiles(tmpDir, 'example-target', ig);
     await removeDir(tmpDir);
 
     this.log(colors.green('Pull completed successfully.'));
