@@ -5763,7 +5763,7 @@ zapier push
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>will tell Zapier to use <code>(userId, slug)</code> as the unique primary key to deduplicate items when running a polling trigger.</p><p><strong>Limitation:</strong> The <code>primary</code> option currently doesn&apos;t support nested fields that use double underscores in their keys. For example, if you set <code>primary: true</code> on a field like <code>user__id</code>, it will be ignored.</p>
+      <p>will tell Zapier to use <code>(userId, slug)</code> as the unique primary key to deduplicate items when running a polling trigger.</p><p><strong>Limitation:</strong> The <code>primary</code> option currently doesn&apos;t support mixing top-level fields with nested fields that use double underscores in their keys. For example, if you set <code>primary: true</code> on both <code>id</code> and <code>user__id</code>, the <code>primary</code> setting on the <code>user__id</code> field will be ignored; only <code>id</code> will be used for deduplication.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
