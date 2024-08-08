@@ -1,6 +1,6 @@
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { downloadSourceZip } = require('../../utils/api');
-const { ensureDir, copyDir, makeTempDir, removeDir, validateFileExists, deleteUnmatchedFiles,
+const { copyDir, makeTempDir, removeDir, validateFileExists, deleteUnmatchedFiles,
 } = require('../../utils/files');
 const AdmZip = require('adm-zip');
 const colors = require('colors/safe');
@@ -21,7 +21,6 @@ class PullCommand extends ZapierBaseCommand {
     validateFileExists(constants.SOURCE_PATH);
 
     const tmpDir = makeTempDir();
-    await ensureDir(tmpDir);
     debug('Using temp directory for source unzip: ', tmpDir);
 
     const zip = new AdmZip(constants.SOURCE_PATH)

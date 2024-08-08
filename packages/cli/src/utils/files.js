@@ -218,6 +218,7 @@ async function deleteUnmatchedFiles(src, dest, ig) {
       // if the file is gitignored or blacklisted, do not delete it
       const relativePath = path.relative(dest, targetPath);
       if (ig.ignores(relativePath) || file.name === '.gitignore' || constants.BLACKLISTED_PATHS.includes(file.name)) {
+        // TODO: not working properly for directories
         continue;
       }
 

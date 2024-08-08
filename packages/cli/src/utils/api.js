@@ -383,49 +383,44 @@ const downloadSourceZip = async () => {
 
   const credentials = await readCredentials(true)
 
-  try {
-    // const url = constants.ENDPOINT + `/apps/${linkedAppConfig.id}/latest/pull`
-    const url = constants.ENDPOINT + `/apps/1/latest/pull`
+  const url = constants.ENDPOINT + `/apps/${linkedAppConfig.id}/latest/pull`
 
-    const requestOptions = {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-        'User-Agent': `${constants.PACKAGE_NAME}/${constants.PACKAGE_VERSION}`,
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-Deploy-Key' : credentials[constants.AUTH_KEY]
-      },
-    };
-    const response = await fetch(url, requestOptions);
+  const requestOptions = {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json; charset=utf-8',
+      'User-Agent': `${constants.PACKAGE_NAME}/${constants.PACKAGE_VERSION}`,
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-Deploy-Key' : credentials[constants.AUTH_KEY]
+    },
+  };
+  const response = await fetch(url, requestOptions);
 
-    if (!response.ok) {
-      throw new Error(`Got HTTP error, status: ${response.status}`);
-    }
-
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/zip')) {
-      throw new Error('The API did not return a ZIP file');
-    }
-
-    const sourceZipPath = constants.SOURCE_PATH;
-    const appDir = process.cwd();
-    const dirPath = path.resolve(appDir, constants.BUILD_DIR);
-
-    await ensureDir(dirPath);
-
-    const fullSourceZipPath = path.resolve(appDir, sourceZipPath);
-    const writeStream = fs.createWriteStream(fullSourceZipPath);
-
-    // use pipeline to handle the download stream
-    await promisify(pipeline)(response.body, writeStream);
-
-    console.log(`source.zip file downloaded successfully to ${fullSourceZipPath}`);
-  } catch (error) {
-    console.error('Download failed:', error);
-    // maybe just don't catch this here at all tbh
-    throw error
+  if (!response.ok) {
+    throw new Error(`Got HTTP error, status: ${response.status}`);
   }
+
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/zip')) {
+    throw new Error('The API did not return a ZIP file');
+  }
+
+  const sourceZipPath = constants.SOURCE_PATH;
+  const appDir = process.cwd();
+  const dirPath = path.resolve(appDir, constants.BUILD_DIR);
+
+  await ensureDir(dirPath);
+
+  const fullSourceZipPath = path.resolve(appDir, sourceZipPath);
+  const writeStream = fs.createWriteStream(fullSourceZipPath);
+
+  startSpinner("Downloading most recent source.zip file...");
+
+  // use pipeline to handle the download stream
+  await promisify(pipeline)(response.body, writeStream);
+
+  endSpinner();
 }
 
 const upload = async (app, { skipValidation = false } = {}) => {
