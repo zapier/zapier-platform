@@ -11,6 +11,7 @@ const AUTH_LOCATION_RAW = '~/.zapierrc';
 const AUTH_LOCATION =
   process.env.ZAPIER_AUTH_LOCATION || path.resolve(os.homedir(), '.zapierrc');
 const CURRENT_APP_FILE = process.env.ZAPIER_CURRENT_APP_FILE || '.zapierapprc';
+const ZAPIER_CONFIG = process.env.ZAPIER_CONFIG || '.zapierconfig';
 const PLATFORM_PACKAGE = 'zapier-platform-core';
 const LEGACY_RUNNER_PACKAGE = 'zapier-platform-legacy-scripting-runner';
 const BUILD_DIR = 'build';
@@ -113,4 +114,5 @@ module.exports = {
   STARTER_REPO,
   UPDATE_NOTIFICATION_INTERVAL,
   EXAMPLE_CHANGELOG,
+  ZAPIER_CONFIG,
 };

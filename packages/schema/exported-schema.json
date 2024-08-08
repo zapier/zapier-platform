@@ -1287,10 +1287,7 @@
           }
         }
       },
-      "additionalProperties": false,
-      "docAnnotation": {
-        "hide": true
-      }
+      "additionalProperties": false
     },
     "TriggerSchema": {
       "id": "/TriggerSchema",

@@ -18,6 +18,7 @@ const { writeFile, readFile } = require('./files');
 const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
 
 const { localAppCommand } = require('./local');
+const { calculateAppHash } = require('./pull');
 
 // TODO split these out into better files
 
@@ -198,6 +199,48 @@ const writeLinkedAppConfig = async (app, appDir) => {
     config = {};
   }
   const updatedConfig = { ...config, id: app.id, key: app.key };
+
+  return writeFile(file, prettyJSONstringify(updatedConfig));
+};
+
+/**
+ * read local `.zapierconfig` file
+ */
+const getZapierConfig = async (appDir, explodeIfMissing = true) => {
+  appDir = appDir || '.';
+
+  const file = path.resolve(appDir, constants.ZAPIER_CONFIG);
+  try {
+    const buf = await readFile(file);
+    return JSON.parse(buf.toString());
+  } catch (e) {
+    if (explodeIfMissing) {
+      throw e;
+    }
+    return {};
+  }
+};
+
+/**
+ * write local `.zapierconfig` file
+ */
+const writeZapierConfig = async (appDir, hash) => {
+  const file = appDir
+    ? path.resolve(appDir, constants.ZAPIER_CONFIG)
+    : constants.ZAPIER_CONFIG;
+
+  // we want to eat errors about bad json and missing files
+  // and ensure the below code is passes a js object
+  let config;
+  try {
+    // read contents of existing config before writing
+    const configBuff = await readFile(file);
+
+    config = JSON.parse(configBuff.toString());
+  } catch (e) {
+    config = {};
+  }
+  const updatedConfig = { ...config, hash };
 
   return writeFile(file, prettyJSONstringify(updatedConfig));
 };
@@ -391,6 +434,9 @@ const upload = async (app, { skipValidation = false } = {}) => {
   const binarySourceZip = fs.readFileSync(fullSourceZipPath);
   const sourceBuffer = Buffer.from(binarySourceZip).toString('base64');
 
+  // EXPERIMENT: zapier pull
+  const config = await getZapierConfig(undefined, false);
+
   startSpinner(`Uploading version ${definition.version}`);
   await callAPI(`/apps/${app.id}/versions/${definition.version}`, {
     method: 'PUT',
@@ -398,9 +444,12 @@ const upload = async (app, { skipValidation = false } = {}) => {
       zip_file: buffer,
       source_zip_file: sourceBuffer,
       skip_validation: skipValidation,
+      app_hash: config.hash,
     },
   });
 
+  // EXPERIMENT: replace old hash with new hash
+  await writeZapierConfig(undefined, calculateAppHash(binarySourceZip));
   endSpinner();
 };
 
@@ -411,6 +460,7 @@ module.exports = {
   getLinkedAppConfig,
   getWritableApp,
   getVersionInfo,
+  getZapierConfig,
   isPublished,
   listApps,
   listEndpoint,
@@ -425,4 +475,5 @@ module.exports = {
   upload,
   validateApp,
   writeLinkedAppConfig,
+  writeZapierConfig,
 };
