@@ -185,7 +185,7 @@ export type RefResource = string;
  */
 export type FieldChoices =
   | { [k: string]: unknown }
-  | [string | FieldChoiceWithLabel, ...(string | FieldChoiceWithLabel)[]];
+  | (string | FieldChoiceWithLabel)[];
 
 /**
  * Defines a field an app either needs as input, or gives as output.
@@ -290,10 +290,8 @@ export interface Field {
    * sub-object for this field. Usually used for line items.
    *
    * @minItems 1
-   *
-   * @minItems 1
    */
-  children?: [Field, ...Field[]];
+  children?: Field[];
 
   /** Is this field a key/value input? */
   dict?: boolean;
@@ -353,8 +351,6 @@ export interface FunctionSource {
   /**
    * Function signature. Defaults to `['z', 'bundle']` if not
    * specified.
-   *
-   * @minItems 0
    */
   args?: string[];
 }
@@ -695,8 +691,6 @@ export interface LockObject {
    * scopes. Note that "app" is included, always, in the scope
    * provided. For example, a scope of ['account', 'auth'] would
    * result to ['app', 'account', 'auth'].
-   *
-   * @minItems 0
    */
   scope?: ('user' | 'auth' | 'account')[];
 
@@ -757,8 +751,6 @@ export interface ThrottleObject {
    * on account ids for all users under a single account. 'action' -
    * Throttles the action it is set on separately from other actions.
    * By default, throttling is scoped to the action and account.
-   *
-   * @minItems 0
    */
   scope?: ('user' | 'auth' | 'account' | 'action')[];
 
@@ -787,10 +779,8 @@ export interface ThrottleObject {
    * on a Zapier account attribute.
    *
    * @minItems 1
-   *
-   * @minItems 1
    */
-  overrides?: [ThrottleOverrideObject, ...ThrottleOverrideObject[]];
+  overrides?: ThrottleOverrideObject[];
 }
 
 /**
@@ -843,18 +833,12 @@ export interface BasicOperation {
    */
   perform: Request | Function;
 
-  /**
-   * What should the form a user sees and configures look like?
-   *
-   * @minItems 0
-   */
+  /** What should the form a user sees and configures look like? */
   inputFields?: DynamicFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
-   *
-   * @minItems 0
    */
   outputFields?: DynamicFields;
 
@@ -944,18 +928,12 @@ export interface BasicHookOperation {
    */
   performUnsubscribe?: Request | Function;
 
-  /**
-   * What should the form a user sees and configures look like?
-   *
-   * @minItems 0
-   */
+  /** What should the form a user sees and configures look like? */
   inputFields?: DynamicFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
-   *
-   * @minItems 0
    */
   outputFields?: DynamicFields;
 
@@ -999,18 +977,12 @@ export interface BasicPollingOperation {
    */
   canPaginate?: boolean;
 
-  /**
-   * What should the form a user sees and configures look like?
-   *
-   * @minItems 0
-   */
+  /** What should the form a user sees and configures look like? */
   inputFields?: DynamicFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
-   *
-   * @minItems 0
    */
   outputFields?: DynamicFields;
 
@@ -1064,18 +1036,12 @@ export interface BasicActionOperation {
    */
   performGet?: Request | Function;
 
-  /**
-   * What should the form a user sees and configures look like?
-   *
-   * @minItems 0
-   */
+  /** What should the form a user sees and configures look like? */
   inputFields?: DynamicFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
-   *
-   * @minItems 0
    */
   outputFields?: DynamicFields;
 
@@ -1217,11 +1183,7 @@ export interface Resource {
    */
   create?: ResourceMethodCreate;
 
-  /**
-   * What fields of data will this return?
-   *
-   * @minItems 0
-   */
+  /** What fields of data will this return? */
   outputFields?: DynamicFields;
 
   /** What does a sample of data look like? */
@@ -1283,18 +1245,12 @@ export interface BasicHookToPollOperation {
    */
   performUnsubscribe: Request | Function;
 
-  /**
-   * What should the form a user sees and configures look like?
-   *
-   * @minItems 0
-   */
+  /** What should the form a user sees and configures look like? */
   inputFields?: DynamicFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
-   *
-   * @minItems 0
    */
   outputFields?: DynamicFields;
 
@@ -1389,18 +1345,12 @@ export interface BasicCreateActionOperation {
    */
   performGet?: Request | Function;
 
-  /**
-   * What should the form a user sees and configures look like?
-   *
-   * @minItems 0
-   */
+  /** What should the form a user sees and configures look like? */
   inputFields?: DynamicFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
-   *
-   * @minItems 0
    */
   outputFields?: DynamicFields;
 
@@ -1528,8 +1478,6 @@ export interface Authentication {
   /**
    * Fields you can request from the user before they connect your app
    * to Zapier.
-   *
-   * @minItems 0
    */
   fields?: Fields;
 
