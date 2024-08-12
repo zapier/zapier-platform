@@ -35,6 +35,8 @@ const createInput = (app, event, logger, logBuffer, rpc) => {
       logger,
 
       logBuffer,
+
+      whatHappened: [],
     },
   };
 };

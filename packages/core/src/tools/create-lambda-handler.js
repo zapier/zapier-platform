@@ -17,7 +17,6 @@ const createLogger = require('./create-logger');
 const createRpcClient = require('./create-rpc-client');
 const environmentTools = require('./environment');
 const schemaTools = require('./schema');
-const ZapierPromise = require('./promise');
 
 const isDefinedPrimitive = (value) => {
   return (
@@ -99,102 +98,83 @@ const mayMoveCreatesToResourcesInExtension = (base, extension) => {
   return extension;
 };
 
-const getAppRawOverride = (rpc, appRawOverride) => {
-  return new ZapierPromise((resolve, reject) => {
-    let appRawExtension;
-    if (Array.isArray(appRawOverride) && appRawOverride.length > 1) {
-      // If appRawOverride is too big, we send an md5 hash instead of JSON, so
-      // appRawOverride can be:
-      // - [appDefinition, {'creates': {'foo': {...}}}]
-      // - ['<hash>', {'creates': {'foo': {...}}}] if appRawOverride is too big
-      appRawExtension = appRawOverride[1];
-      appRawOverride = appRawOverride[0];
+const getAppRawOverride = async (rpc, appRawOverride) => {
+  let appRawExtension;
+  if (Array.isArray(appRawOverride) && appRawOverride.length > 1) {
+    // If appRawOverride is too big, we send an md5 hash instead of JSON, so
+    // appRawOverride can be:
+    // - [appDefinition, {'creates': {'foo': {...}}}]
+    // - ['<hash>', {'creates': {'foo': {...}}}] if appRawOverride is too big
+    appRawExtension = appRawOverride[1];
+    appRawOverride = appRawOverride[0];
 
-      if (typeof appRawOverride !== 'string') {
-        appRawExtension = mayMoveCreatesToResourcesInExtension(
-          appRawOverride,
-          appRawExtension
-        );
-        appRawOverride = extendAppRaw(appRawOverride, appRawExtension);
-        resolve(appRawOverride);
-        return;
-      }
-    } else if (typeof appRawOverride === 'object') {
-      resolve(appRawOverride);
-      return;
-    }
-
-    // Lambda keeps the container and /tmp directory around for a bit,
-    // so we can use that to "cache" the hash and override we fetched
-    // from RPC before.
-    const tmpdir = os.tmpdir();
-    const overridePath = path.join(tmpdir, 'cli-override.json');
-    const hashPath = path.join(tmpdir, 'cli-hash.txt');
-
-    // Check if it's "cached", to prevent unnecessary RPC calls
-    if (
-      fs.existsSync(hashPath) &&
-      fs.existsSync(overridePath) &&
-      fs.readFileSync(hashPath).toString() === appRawOverride
-    ) {
-      appRawOverride = JSON.parse(fs.readFileSync(overridePath).toString());
+    if (typeof appRawOverride !== 'string') {
+      appRawExtension = mayMoveCreatesToResourcesInExtension(
+        appRawOverride,
+        appRawExtension
+      );
       appRawOverride = extendAppRaw(appRawOverride, appRawExtension);
-      resolve(appRawOverride);
-      return;
+      return appRawOverride;
     }
+  } else if (typeof appRawOverride === 'object') {
+    return appRawOverride;
+  }
 
-    // Otherwise just get it via RPC
-    rpc('get_definition_override')
-      .then((fetchedOverride) => {
-        // "cache" it.
-        fs.writeFileSync(hashPath, appRawOverride);
-        fs.writeFileSync(overridePath, JSON.stringify(fetchedOverride));
+  // Lambda keeps the container and /tmp directory around for a bit,
+  // so we can use that to "cache" the hash and override we fetched
+  // from RPC before.
+  const tmpdir = os.tmpdir();
+  const overridePath = path.join(tmpdir, 'cli-override.json');
+  const hashPath = path.join(tmpdir, 'cli-hash.txt');
 
-        fetchedOverride = extendAppRaw(fetchedOverride, appRawExtension);
+  // Check if it's "cached", to prevent unnecessary RPC calls
+  if (
+    fs.existsSync(hashPath) &&
+    fs.existsSync(overridePath) &&
+    fs.readFileSync(hashPath).toString() === appRawOverride
+  ) {
+    appRawOverride = JSON.parse(fs.readFileSync(overridePath).toString());
+    appRawOverride = extendAppRaw(appRawOverride, appRawExtension);
+    return appRawOverride;
+  }
 
-        resolve(fetchedOverride);
-      })
-      .catch((err) => reject(err));
-  });
+  const fetchedOverride = await rpc('get_definition_override');
+
+  // "cache" it
+  fs.writeFileSync(hashPath, appRawOverride);
+  fs.writeFileSync(overridePath, JSON.stringify(fetchedOverride));
+
+  return extendAppRaw(fetchedOverride, appRawExtension);
 };
 
 // Sometimes tests want to pass in an app object defined directly in the test,
 // so allow for that, and an event.appRawOverride for "buildless" apps.
-const loadApp = (event, rpc, appRawOrPath) => {
-  return new ZapierPromise((resolve, reject) => {
-    const appRaw = _.isString(appRawOrPath)
-      ? require(appRawOrPath)
-      : appRawOrPath;
+const loadApp = async (event, rpc, appRawOrPath) => {
+  const appRaw = _.isString(appRawOrPath)
+    ? require(appRawOrPath)
+    : appRawOrPath;
 
-    if (event && event.appRawOverride) {
-      if (
-        Array.isArray(event.appRawOverride) &&
-        event.appRawOverride.length > 1 &&
-        !event.appRawOverride[0]
-      ) {
-        event.appRawOverride[0] = appRaw;
-      }
-
-      return getAppRawOverride(rpc, event.appRawOverride)
-        .then((appRawOverride) => resolve(appRawOverride))
-        .catch((err) => reject(err));
+  if (event && event.appRawOverride) {
+    if (
+      Array.isArray(event.appRawOverride) &&
+      event.appRawOverride.length > 1 &&
+      !event.appRawOverride[0]
+    ) {
+      event.appRawOverride[0] = appRaw;
     }
 
-    return resolve(appRaw);
-  });
+    return getAppRawOverride(rpc, event.appRawOverride);
+  }
+
+  return appRaw;
 };
 
 const createLambdaHandler = (appRawOrPath) => {
-  const handler = (event, context, callback) => {
+  const handler = async (event, context) => {
     // Wait for all async events to complete before callback returns.
     // This is not strictly necessary since this is the default now when
     // using the callback; just putting it here to be explicit.
     context.callbackWaitsForEmptyEventLoop = true;
-
-    // replace native Promise with bluebird (works better with domains)
-    if (!event.calledFromCli) {
-      ZapierPromise.patchGlobal();
-    }
 
     // If we're running out of memory, exit the process. Backend will try again.
     checkMemory(event);
@@ -210,18 +190,8 @@ const createLambdaHandler = (appRawOrPath) => {
     const logBuffer = [];
     const logger = createLogger(event, { logBuffer });
 
-    let isCallbackCalled = false;
-    const callbackOnce = (err, resp) => {
-      logger.end().finally(() => {
-        if (!isCallbackCalled) {
-          isCallbackCalled = true;
-          callback(err, resp);
-        }
-      });
-    };
-
-    const logErrorAndCallbackOnce = (logMsg, logData, err) => {
-      logger(logMsg, logData);
+    const logErrorAndThrow = async (logMsg, logData, err) => {
+      await logger(logMsg, logData);
 
       // Check for `.message` in case someone did `throw "My Error"`
       if (!constants.IS_TESTING && err && !err.doNotContextify && err.message) {
@@ -230,51 +200,54 @@ const createLambdaHandler = (appRawOrPath) => {
           .join('')}`;
       }
 
-      callbackOnce(err);
+      throw err;
     };
 
     const handlerDomain = domain.create();
 
-    handlerDomain.on('error', (err) => {
+    handlerDomain.on('error', async (err) => {
+      // This error handler is onlyh called when someone (we or devs) missed
+      // catching an error in a callback. Errors thrown by promises should be
+      // already caught by the try-catch below.
+      // Notice this one starts with "Uncaught error" while the other one starts
+      // with "Unhandled error". You can use this to distinguish between them in
+      // the logs.
       const logMsg = `Uncaught error: ${err}\n${
         (err && err.stack) || '<stack>'
       }`;
       const logData = { err, log_type: 'error' };
-      logErrorAndCallbackOnce(logMsg, logData, err);
+      await logErrorAndThrow(logMsg, logData, err);
     });
 
-    handlerDomain.run(() => {
+    handlerDomain.run(async () => {
       const rpc = createRpcClient(event);
 
-      return loadApp(event, rpc, appRawOrPath)
-        .then((appRaw) => {
-          const app = createApp(appRaw);
+      try {
+        const appRaw = await loadApp(event, rpc, appRawOrPath);
+        const app = createApp(appRaw);
 
-          const { skipHttpPatch } = appRaw.flags || {};
-          // Adds logging for _all_ kinds of http(s) requests, no matter the library
-          if (!skipHttpPatch && !event.calledFromCli) {
-            const httpPatch = createHttpPatch(event);
-            httpPatch(require('http'), logger);
-            httpPatch(require('https'), logger); // 'https' needs to be patched separately
-          }
+        const { skipHttpPatch } = appRaw.flags || {};
+        // Adds logging for _all_ kinds of http(s) requests, no matter the library
+        if (!skipHttpPatch && !event.calledFromCli) {
+          const httpPatch = createHttpPatch(event);
+          httpPatch(require('http'), logger);
+          httpPatch(require('https'), logger); // 'https' needs to be patched separately
+        }
 
-          // TODO: Avoid calling prepareApp(appRaw) repeatedly here as createApp()
-          // already calls prepareApp() but just doesn't return it.
-          const compiledApp = schemaTools.prepareApp(appRaw);
+        // TODO: Avoid calling prepareApp(appRaw) repeatedly here as createApp()
+        // already calls prepareApp() but just doesn't return it.
+        const compiledApp = schemaTools.prepareApp(appRaw);
 
-          const input = createInput(compiledApp, event, logger, logBuffer, rpc);
-          return app(input);
-        })
-        .then((output) => {
-          callbackOnce(null, cleaner.maskOutput(output));
-        })
-        .catch((err) => {
-          const logMsg = `Unhandled error: ${err}\n${
-            (err && err.stack) || '<stack>'
-          }`;
-          const logData = { err, log_type: 'error' };
-          logErrorAndCallbackOnce(logMsg, logData, err);
-        });
+        const input = createInput(compiledApp, event, logger, logBuffer, rpc);
+        const output = await app(input);
+        return cleaner.maskOutput(output);
+      } catch (err) {
+        const logMsg = `Unhandled error: ${err}\n${
+          (err && err.stack) || '<stack>'
+        }`;
+        const logData = { err, log_type: 'error' };
+        await logErrorAndThrow(logMsg, logData, err);
+      }
     });
   };
 
