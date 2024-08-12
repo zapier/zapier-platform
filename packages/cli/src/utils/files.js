@@ -3,10 +3,8 @@ const crypto = require('crypto');
 const os = require('os');
 const path = require('path');
 
-const fs = require('fs');
 const fse = require('fs-extra');
 const colors = require('colors/safe');
-const constants = require('../constants');
 
 const fixHome = (dir) => {
   const home = process.env.HOME || process.env.USERPROFILE;
@@ -202,49 +200,9 @@ const makeTempDir = () => {
   return workdir;
 };
 
-async function deleteUnmatchedFiles(src, dest, ig) {
-  try {
-    const [filesInTarget, filesInSource] = await Promise.all([
-      fs.promises.readdir(dest, { withFileTypes: true }),
-      fs.promises.readdir(src, { withFileTypes: true })
-    ]);
-
-    const sourceFiles = new Set(filesInSource.map(file => file.name));
-
-    for (const file of filesInTarget) {
-      const targetPath = path.join(dest, file.name);
-      const sourcePath = path.join(src, file.name);
-
-      // if the file is gitignored or blacklisted, do not delete it
-      const relativePath = path.relative(dest, targetPath);
-      if (ig.ignores(relativePath) || file.name === '.gitignore' || constants.BLACKLISTED_PATHS.includes(file.name)) {
-        // TODO: not working properly for directories
-        continue;
-      }
-
-      if (file.isDirectory()) {
-        if (!sourceFiles.has(file.name)) {
-          await fs.promises.rm(targetPath, { recursive: true, force: true });
-          console.log(`Deleted directory: ${targetPath}`);
-        } else {
-          await deleteUnmatchedFiles(sourcePath, targetPath, ig);
-        }
-      } else {
-        if (!sourceFiles.has(file.name)) {
-          await fs.promises.unlink(targetPath);
-          console.log(`Deleted file: ${targetPath}`);
-        }
-      }
-    }
-  } catch (err) {
-    console.warn(colors.yellow(`Error while removing files: ${err.message}`));
-  }
-}
-
 module.exports = {
   copyDir,
   deleteFile,
-  deleteUnmatchedFiles,
   ensureDir,
   fileExistsSync,
   isEmptyDir,

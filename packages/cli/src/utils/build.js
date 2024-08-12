@@ -610,4 +610,5 @@ module.exports = {
   listFiles,
   requiredFiles,
   maybeRunBuildScript,
+  respectGitIgnore,
 };

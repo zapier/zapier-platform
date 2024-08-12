@@ -368,9 +368,7 @@ const validateApp = async (definition) => {
 
 // TODO: docstring, fix ensureDir failure
 const downloadSourceZip = async () => {
-  // appDir should be undefined...just using this for testing
-  // right now the .zapierapprc file should be there or this will blow up
-  const linkedAppConfig = await getLinkedAppConfig('./example-target', false);
+  const linkedAppConfig = await getLinkedAppConfig(undefined, false);
   if (!linkedAppConfig.id) {
     throw new Error(
       `This project hasn't yet been associated with an existing Zapier integration.\n\nIf it's a brand new integration, run \`${colors.cyan(
@@ -381,7 +379,7 @@ const downloadSourceZip = async () => {
     );
   }
 
-  const credentials = await readCredentials(true)
+  const credentials = await readCredentials(true);
 
   const url = constants.ENDPOINT + `/apps/${linkedAppConfig.id}/latest/pull`
 

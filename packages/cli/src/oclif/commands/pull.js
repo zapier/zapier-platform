@@ -1,18 +1,26 @@
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { downloadSourceZip } = require('../../utils/api');
-const { copyDir, makeTempDir, removeDir, validateFileExists, deleteUnmatchedFiles,
+const {
+  ensureDir,
+  copyDir,
+  makeTempDir,
+  removeDir,
+  validateFileExists,
 } = require('../../utils/files');
 const AdmZip = require('adm-zip');
 const colors = require('colors/safe');
 const constants = require('../../constants');
-const debug = require('debug')('zapier:pull');
-const ignore = require('ignore');
-const { getGitIgnorePatterns } = require('../../utils/pull');
+const { listFiles } = require('../../utils/build');
+const { deleteIgnorableFiles } = require('../../utils/pull');
 
 class PullCommand extends ZapierBaseCommand {
   async perform() {
     if (
-      !await this.confirm(colors.yellow('This will overwrite your local integration files with the latest version. Continue?'))
+      !(await this.confirm(
+        colors.yellow(
+          'This will overwrite your local integration files with the latest version. Continue?'
+        )
+      ))
     ) {
       this.exit();
     }
@@ -21,23 +29,24 @@ class PullCommand extends ZapierBaseCommand {
     validateFileExists(constants.SOURCE_PATH);
 
     const tmpDir = makeTempDir();
-    debug('Using temp directory for source unzip: ', tmpDir);
+    await ensureDir(tmpDir);
 
-    const zip = new AdmZip(constants.SOURCE_PATH)
-    zip.extractAllTo(tmpDir, true)
+    const zip = new AdmZip(constants.SOURCE_PATH);
+    zip.extractAllTo(tmpDir, true);
 
-    const gitIgnorePatterns = await getGitIgnorePatterns('example-target');
-    const ig = ignore().add(gitIgnorePatterns);
+    const targetFiles = await listFiles('.');
 
-    // TODO: change destination
-    await copyDir(tmpDir, 'example-target', {clobber: true})
-    await deleteUnmatchedFiles(tmpDir, 'example-target', ig);
+    await deleteIgnorableFiles(targetFiles);
+
+    // Copy everything else over
+    await copyDir(tmpDir, '.', { clobber: true });
     await removeDir(tmpDir);
 
     this.log(colors.green('Pull completed successfully.'));
   }
 }
 
-PullCommand.description = "Pull the latest version of your integration from Zapier, updating your local integration files."
+PullCommand.description =
+  'Pull the latest version of your integration from Zapier, updating your local integration files.';
 
 module.exports = PullCommand;
