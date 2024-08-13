@@ -11,36 +11,39 @@ const isBlacklisted = (filePath) => {
   });
 };
 
+const getAbsolutePaths = (dir, files) => {
+  return files.map((file) => path.join(dir, file));
+};
 // Some files were ignored during the original build step
 // This includes anything declared in .gitignore, the file itsefl or blacklisted paths
-const deleteIgnorableFiles = async (targetFiles) => {
-  const cwd = process.cwd();
-
-  // removes the cwd from the full path
-  const targetFileRelative = targetFiles.map((file) =>
-    path.relative(cwd, file)
+const deleteUnignoredFiles = async (dir, targetFiles) => {
+  const deletableFiles = getAbsolutePaths(
+    dir,
+    respectGitIgnore(dir, targetFiles)
   );
 
-  const deletableFiles = respectGitIgnore('.', targetFileRelative).map((file) =>
-    path.join(cwd, file)
-  );
-  const keepFiles = targetFiles.filter(
+  const absTargetFiles = getAbsolutePaths(dir, targetFiles);
+  const keepFiles = absTargetFiles.filter(
     (file) =>
       !deletableFiles.includes(file) ||
       file === '.gitignore' ||
       isBlacklisted(file)
   );
 
-  for (const targetFile of targetFiles) {
-    const stat = fs.statSync(targetFile);
-    if (stat.isDirectory() && !keepFiles.includes(targetFile)) {
-      await fs.promises.rm(targetFile, { recursive: true, force: true });
-    } else if (!keepFiles.includes(targetFile)) {
-      await fs.promises.unlink(targetFile);
+  for (const targetFile of absTargetFiles) {
+    try {
+      const stat = fs.statSync(targetFile);
+      if (stat.isDirectory() && !keepFiles.includes(targetFile)) {
+        await fs.promises.rm(targetFile, { recursive: true, force: true });
+      } else if (!keepFiles.includes(targetFile)) {
+        await fs.promises.unlink(targetFile);
+      }
+    } catch (e) {
+      // can't open symlinked files
     }
   }
 };
 
 module.exports = {
-  deleteIgnorableFiles,
+  deleteUnignoredFiles,
 };

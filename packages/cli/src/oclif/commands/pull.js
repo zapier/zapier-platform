@@ -11,7 +11,8 @@ const AdmZip = require('adm-zip');
 const colors = require('colors/safe');
 const constants = require('../../constants');
 const { listFiles } = require('../../utils/build');
-const { deleteIgnorableFiles } = require('../../utils/pull');
+const { deleteUnignoredFiles } = require('../../utils/pull');
+const { buildFlags } = require('../buildFlags');
 
 class PullCommand extends ZapierBaseCommand {
   async perform() {
@@ -34,18 +35,20 @@ class PullCommand extends ZapierBaseCommand {
     const zip = new AdmZip(constants.SOURCE_PATH);
     zip.extractAllTo(tmpDir, true);
 
-    const targetFiles = await listFiles('.');
+    const currentDir = process.cwd();
+    const targetFiles = await listFiles(currentDir);
 
-    await deleteIgnorableFiles(targetFiles);
+    await deleteUnignoredFiles(currentDir, targetFiles);
 
     // Copy everything else over
-    await copyDir(tmpDir, '.', { clobber: true });
+    await copyDir(tmpDir, currentDir, { clobber: true });
     await removeDir(tmpDir);
 
     this.log(colors.green('Pull completed successfully.'));
   }
 }
 
+PullCommand.flags = buildFlags();
 PullCommand.description =
   'Pull the latest version of your integration from Zapier, updating your local integration files.';
 
