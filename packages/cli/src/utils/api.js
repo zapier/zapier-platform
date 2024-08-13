@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
 const debug = require('debug')('zapier:api');
+const { pipeline } = require('stream/promises');
 
 const constants = require('../constants');
 
@@ -13,13 +14,11 @@ const AdmZip = require('adm-zip');
 const fetch = require('node-fetch');
 const path = require('path');
 
-const { writeFile, readFile, ensureDir } = require('./files');
+const { writeFile, readFile } = require('./files');
 
 const { prettyJSONstringify, startSpinner, endSpinner } = require('./display');
 
 const { localAppCommand } = require('./local');
-const { promisify } = require('./promisify');
-const { pipeline } = require('stream');
 
 // TODO split these out into better files
 
@@ -64,13 +63,18 @@ const callAPI = (
   options = options || {};
   const url = options.url || constants.ENDPOINT + route;
 
+  // Determine content type
+  const isZipRes = options['Content-Type'] === 'application/zip';
+
   const requestOptions = {
     method: options.method || 'GET',
     url,
     body: options.body ? JSON.stringify(options.body) : null,
     headers: {
       Accept: 'application/json',
-      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Type': isZipRes
+        ? options['Content-Type']
+        : 'application/json; charset=utf-8',
       'User-Agent': `${constants.PACKAGE_NAME}/${constants.PACKAGE_VERSION}`,
       'X-Requested-With': 'XMLHttpRequest',
     },
@@ -92,16 +96,21 @@ const callAPI = (
       return fetch(_requestOptions.url, _requestOptions);
     })
     .then((res) => {
-      return Promise.all([res, res.text()]);
+      return Promise.all([res, isZipRes ? res.body : res.text()]);
     })
-    .then(([res, text]) => {
+    .then(([res, bodyOrText]) => {
+      const text = bodyOrText;
       let errors;
       const hitError = res.status >= 400;
       if (hitError) {
         try {
           errors = JSON.parse(text).errors.join(', ');
         } catch (err) {
-          errors = (text || 'Unknown error').slice(0, 250);
+          if (isZipRes) {
+            errors = 'Error downloading zip';
+          } else {
+            errors = (text || 'Unknown error').slice(0, 250);
+          }
         }
       }
 
@@ -120,7 +129,9 @@ const callAPI = (
         debug(`>> ${JSON.stringify(cleanedBody)}`);
       }
       debug(`<< ${res.status}`);
-      debug(`<< ${(text || '').substring(0, 2500)}`);
+      if (!isZipRes) {
+        debug(`<< ${(text || '').substring(0, 2500)}`);
+      }
       debug('------------'); // to help differentiate request from each other
 
       if (hitError) {
@@ -140,7 +151,7 @@ const callAPI = (
         }
       }
 
-      return JSON.parse(text);
+      return isZipRes ? bodyOrText : JSON.parse(text);
     });
 };
 
@@ -366,8 +377,7 @@ const validateApp = async (definition) => {
   });
 };
 
-// TODO: docstring, fix ensureDir failure
-const downloadSourceZip = async () => {
+const downloadSourceZip = async (dst) => {
   const linkedAppConfig = await getLinkedAppConfig(undefined, false);
   if (!linkedAppConfig.id) {
     throw new Error(
@@ -379,47 +389,18 @@ const downloadSourceZip = async () => {
     );
   }
 
-  const credentials = await readCredentials(true);
+  const url = `/apps/${linkedAppConfig.id}/latest/pull`;
+  const resBody = await callAPI(url, { 'Content-Type': 'application/zip' });
 
-  const url = constants.ENDPOINT + `/apps/${linkedAppConfig.id}/latest/pull`
+  const writeStream = fs.createWriteStream(dst);
 
-  const requestOptions = {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json; charset=utf-8',
-      'User-Agent': `${constants.PACKAGE_NAME}/${constants.PACKAGE_VERSION}`,
-      'X-Requested-With': 'XMLHttpRequest',
-      'X-Deploy-Key' : credentials[constants.AUTH_KEY]
-    },
-  };
-  const response = await fetch(url, requestOptions);
-
-  if (!response.ok) {
-    throw new Error(`Got HTTP error, status: ${response.status}`);
-  }
-
-  const contentType = response.headers.get('content-type');
-  if (!contentType || !contentType.includes('application/zip')) {
-    throw new Error('The API did not return a ZIP file');
-  }
-
-  const sourceZipPath = constants.SOURCE_PATH;
-  const appDir = process.cwd();
-  const dirPath = path.resolve(appDir, constants.BUILD_DIR);
-
-  await ensureDir(dirPath);
-
-  const fullSourceZipPath = path.resolve(appDir, sourceZipPath);
-  const writeStream = fs.createWriteStream(fullSourceZipPath);
-
-  startSpinner("Downloading most recent source.zip file...");
+  startSpinner('Downloading most recent source.zip file...');
 
   // use pipeline to handle the download stream
-  await promisify(pipeline)(response.body, writeStream);
+  await pipeline(resBody, writeStream);
 
   endSpinner();
-}
+};
 
 const upload = async (app, { skipValidation = false } = {}) => {
   const zipPath = constants.BUILD_PATH;

@@ -1,55 +1,64 @@
+const AdmZip = require('adm-zip');
+const { ensureFileSync } = require('fs-extra');
+const path = require('path');
+const yeoman = require('yeoman-environment');
+
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { downloadSourceZip } = require('../../utils/api');
-const {
-  ensureDir,
-  copyDir,
-  makeTempDir,
-  removeDir,
-  validateFileExists,
-} = require('../../utils/files');
-const AdmZip = require('adm-zip');
-const colors = require('colors/safe');
-const constants = require('../../constants');
+const { ensureDir, makeTempDir } = require('../../utils/files');
 const { listFiles } = require('../../utils/build');
-const { deleteUnignoredFiles } = require('../../utils/pull');
 const { buildFlags } = require('../buildFlags');
+const PullGenerator = require('../../generators/pull');
+const { respectGitIgnore, isBlacklisted } = require('../../utils/ignore');
+
+// Some files were ignored during the original build step
+// This includes anything declared in .gitignore, the file itsefl or blacklisted paths
+const getDeletableFiles = async (dir, targetFiles) => {
+  const ignoredFiles = respectGitIgnore(dir, targetFiles);
+
+  const keepFiles = targetFiles.filter(
+    (file) =>
+      !ignoredFiles.includes(file) ||
+      file === '.gitignore' ||
+      isBlacklisted(file)
+  );
+
+  return targetFiles.filter((file) => !keepFiles.includes(file));
+};
 
 class PullCommand extends ZapierBaseCommand {
   async perform() {
-    if (
-      !(await this.confirm(
-        colors.yellow(
-          'This will overwrite your local integration files with the latest version. Continue?'
-        )
-      ))
-    ) {
-      this.exit();
-    }
-
-    await downloadSourceZip();
-    validateFileExists(constants.SOURCE_PATH);
-
+    // Fetch the source zip from API
     const tmpDir = makeTempDir();
-    await ensureDir(tmpDir);
+    const srcZipDst = path.join(tmpDir, 'download', 'source.zip');
+    await ensureFileSync(srcZipDst);
+    await downloadSourceZip(srcZipDst);
 
-    const zip = new AdmZip(constants.SOURCE_PATH);
-    zip.extractAllTo(tmpDir, true);
+    // Write source zip to tmp dir
+    const srcDst = path.join(tmpDir, 'source');
+    await ensureDir(srcDst);
+    const zip = new AdmZip(srcZipDst);
+    zip.extractAllTo(srcDst, true);
 
+    // Prompt user to confirm overwrite
     const currentDir = process.cwd();
     const targetFiles = await listFiles(currentDir);
+    const deletableFiles = await getDeletableFiles(currentDir, targetFiles);
+    const sourceFiles = await listFiles(srcDst);
 
-    await deleteUnignoredFiles(currentDir, targetFiles);
-
-    // Copy everything else over
-    await copyDir(tmpDir, currentDir, { clobber: true });
-    await removeDir(tmpDir);
-
-    this.log(colors.green('Pull completed successfully.'));
+    const env = yeoman.createEnv();
+    const namespace = 'zapier:pull';
+    env.registerStub(PullGenerator, namespace);
+    await env.run(
+      namespace,
+      { deletableFiles, sourceFiles, srcDir: srcDst, delDir: currentDir },
+      () => {}
+    );
   }
 }
 
 PullCommand.flags = buildFlags();
 PullCommand.description =
-  'Pull the latest version of your integration from Zapier, updating your local integration files.';
+  'Pull the source code of the latest version of your integration from Zapier, overwriting your local integration files.';
 
 module.exports = PullCommand;
