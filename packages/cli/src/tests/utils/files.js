@@ -2,6 +2,7 @@ const os = require('os');
 const path = require('path');
 const should = require('should');
 const files = require('../../utils/files');
+const { listFiles } = require('../../utils/build');
 
 describe('files', () => {
   let tmpDir;
@@ -224,5 +225,50 @@ describe('files', () => {
           done();
         });
     });
+  });
+  it('getUnignoredFiles', async () => {
+    const fileAndData = [
+      {
+        name: '.gitignore',
+        data: 'secret.txt\ncreds/*',
+      },
+      {
+        name: '.env',
+        data: 'SECRET=123\nKEY=456',
+      },
+      {
+        name: 'deletable_file.js',
+        data: 'console.log("deletable")',
+      },
+      {
+        name: 'secret.txt',
+        data: 'shh',
+      },
+    ];
+
+    // Adding a directory with a file to be ignored from deletion
+    const credsDir = path.join(tmpDir, 'creds');
+    await files.ensureDir(credsDir);
+    await files.writeFile(path.join(credsDir, 'creds.txt'), 'password=123');
+
+    for (const { name, data } of fileAndData) {
+      const fileName = path.join(tmpDir, name);
+      await files.writeFile(fileName, data);
+    }
+    const targetFiles = await listFiles(tmpDir);
+
+    targetFiles.should.containEql('secret.txt');
+    targetFiles.should.containEql('deletable_file.js');
+    targetFiles.should.containEql('creds/creds.txt');
+
+    const deletableFiles = new Set(
+      await files.getUnignoredFiles(tmpDir, targetFiles)
+    );
+
+    should.equal(deletableFiles.has('.gitignore'), false);
+    should.equal(deletableFiles.has('.env'), false);
+    should.equal(deletableFiles.has('.secret.txt'), false);
+    should.equal(deletableFiles.has('creds/creds.txt'), false);
+    should.equal(deletableFiles.has('deletable_file.js'), true);
   });
 });

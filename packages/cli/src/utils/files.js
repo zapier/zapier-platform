@@ -5,6 +5,7 @@ const path = require('path');
 
 const fse = require('fs-extra');
 const colors = require('colors/safe');
+const { respectGitIgnore, isBlocklisted } = require('./ignore');
 
 const fixHome = (dir) => {
   const home = process.env.HOME || process.env.USERPROFILE;
@@ -200,11 +201,27 @@ const makeTempDir = () => {
   return workdir;
 };
 
+// Some files were ignored during the original build step
+// This includes anything declared in .gitignore, the file itself or blocklisted paths
+const getUnignoredFiles = async (dir, targetFiles) => {
+  const ignoredFiles = respectGitIgnore(dir, targetFiles);
+
+  const keepFiles = targetFiles.filter(
+    (file) =>
+      !ignoredFiles.includes(file) ||
+      file === '.gitignore' ||
+      isBlocklisted(file)
+  );
+
+  return targetFiles.filter((file) => !keepFiles.includes(file));
+};
+
 module.exports = {
   copyDir,
   deleteFile,
   ensureDir,
   fileExistsSync,
+  getUnignoredFiles,
   isEmptyDir,
   isExistingEmptyDir,
   readFile,

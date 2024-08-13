@@ -5,26 +5,14 @@ const yeoman = require('yeoman-environment');
 
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { downloadSourceZip } = require('../../utils/api');
-const { ensureDir, makeTempDir } = require('../../utils/files');
+const {
+  ensureDir,
+  makeTempDir,
+  getUnignoredFiles,
+} = require('../../utils/files');
 const { listFiles } = require('../../utils/build');
 const { buildFlags } = require('../buildFlags');
 const PullGenerator = require('../../generators/pull');
-const { respectGitIgnore, isBlocklisted } = require('../../utils/ignore');
-
-// Some files were ignored during the original build step
-// This includes anything declared in .gitignore, the file itsefl or blocklisted paths
-const getDeletableFiles = async (dir, targetFiles) => {
-  const ignoredFiles = respectGitIgnore(dir, targetFiles);
-
-  const keepFiles = targetFiles.filter(
-    (file) =>
-      !ignoredFiles.includes(file) ||
-      file === '.gitignore' ||
-      isBlocklisted(file)
-  );
-
-  return targetFiles.filter((file) => !keepFiles.includes(file));
-};
 
 class PullCommand extends ZapierBaseCommand {
   async perform() {
@@ -43,7 +31,7 @@ class PullCommand extends ZapierBaseCommand {
     // Prompt user to confirm overwrite
     const currentDir = process.cwd();
     const targetFiles = await listFiles(currentDir);
-    const deletableFiles = await getDeletableFiles(currentDir, targetFiles);
+    const deletableFiles = await getUnignoredFiles(currentDir, targetFiles);
     const sourceFiles = await listFiles(srcDst);
 
     const env = yeoman.createEnv();
