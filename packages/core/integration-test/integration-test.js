@@ -22,6 +22,8 @@ const lambda = new AWS.Lambda({
 });
 
 const runLambda = (event) => {
+  // TODO: Outdated. Need to refactor to use async/await handler rather than
+  // callback.
   return new Promise((resolve, reject) => {
     const params = {
       FunctionName: 'integration-test-cli',
@@ -49,20 +51,11 @@ const runLambda = (event) => {
 };
 runLambda.testName = 'runLambda';
 
-const runLocally = (event) => {
-  return new Promise((resolve, reject) => {
-    const handler = createLambdaHandler(
-      path.resolve(__dirname, '../test/userapp')
-    );
-
-    handler(event, {}, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
-  });
+const runLocally = async (event) => {
+  const handler = createLambdaHandler(
+    path.resolve(__dirname, '../test/userapp')
+  );
+  return handler(event, {});
 };
 runLocally.testName = 'runLocally';
 

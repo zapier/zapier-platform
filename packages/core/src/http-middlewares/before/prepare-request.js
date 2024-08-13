@@ -144,7 +144,9 @@ const prepareRequest = function (req) {
   req._requestStart = new Date();
 
   const whatHappened = req.input._zapier.whatHappened;
-  whatHappened.push(`Starting ${req.method} request to ${req.url}`);
+  if (whatHappened) {
+    whatHappened.push(`Starting ${req.method} request to ${req.url}`);
+  }
 
   return finalRequest(req);
 };

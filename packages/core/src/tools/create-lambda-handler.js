@@ -205,49 +205,54 @@ const createLambdaHandler = (appRawOrPath) => {
 
     const handlerDomain = domain.create();
 
-    handlerDomain.on('error', async (err) => {
-      // This error handler is onlyh called when someone (we or devs) missed
-      // catching an error in a callback. Errors thrown by promises should be
-      // already caught by the try-catch below.
-      // Notice this one starts with "Uncaught error" while the other one starts
-      // with "Unhandled error". You can use this to distinguish between them in
-      // the logs.
-      const logMsg = `Uncaught error: ${err}\n${
-        (err && err.stack) || '<stack>'
-      }`;
-      const logData = { err, log_type: 'error' };
-      await logErrorAndThrow(logMsg, logData, err);
-    });
-
-    handlerDomain.run(async () => {
-      const rpc = createRpcClient(event);
-
-      try {
-        const appRaw = await loadApp(event, rpc, appRawOrPath);
-        const app = createApp(appRaw);
-
-        const { skipHttpPatch } = appRaw.flags || {};
-        // Adds logging for _all_ kinds of http(s) requests, no matter the library
-        if (!skipHttpPatch && !event.calledFromCli) {
-          const httpPatch = createHttpPatch(event);
-          httpPatch(require('http'), logger);
-          httpPatch(require('https'), logger); // 'https' needs to be patched separately
-        }
-
-        // TODO: Avoid calling prepareApp(appRaw) repeatedly here as createApp()
-        // already calls prepareApp() but just doesn't return it.
-        const compiledApp = schemaTools.prepareApp(appRaw);
-
-        const input = createInput(compiledApp, event, logger, logBuffer, rpc);
-        const output = await app(input);
-        return cleaner.maskOutput(output);
-      } catch (err) {
-        const logMsg = `Unhandled error: ${err}\n${
+    // domain + promise...yuck! Is there a better way?
+    // Maybe we don't need domain anymore?
+    return new Promise((resolve, reject) => {
+      handlerDomain.on('error', async (err) => {
+        // This error handler is onlyh called when someone (we or devs) missed
+        // catching an error in a callback. Errors thrown by promises should be
+        // already caught by the try-catch below.
+        // Notice this one starts with "Uncaught error" while the other one starts
+        // with "Unhandled error". You can use this to distinguish between them in
+        // the logs.
+        const logMsg = `Uncaught error: ${err}\n${
           (err && err.stack) || '<stack>'
         }`;
         const logData = { err, log_type: 'error' };
         await logErrorAndThrow(logMsg, logData, err);
-      }
+      });
+
+      handlerDomain.run(async () => {
+        const rpc = createRpcClient(event);
+
+        try {
+          const appRaw = await loadApp(event, rpc, appRawOrPath);
+          const app = createApp(appRaw);
+
+          const { skipHttpPatch } = appRaw.flags || {};
+          // Adds logging for _all_ kinds of http(s) requests, no matter the library
+          if (!skipHttpPatch && !event.calledFromCli) {
+            const httpPatch = createHttpPatch(event);
+            httpPatch(require('http'), logger);
+            httpPatch(require('https'), logger); // 'https' needs to be patched separately
+          }
+
+          // TODO: Avoid calling prepareApp(appRaw) repeatedly here as createApp()
+          // already calls prepareApp() but just doesn't return it.
+          const compiledApp = schemaTools.prepareApp(appRaw);
+
+          const input = createInput(compiledApp, event, logger, logBuffer, rpc);
+          const output = await app(input);
+          const result = cleaner.maskOutput(output);
+          resolve(result);
+        } catch (err) {
+          const logMsg = `Unhandled error: ${err}\n${
+            (err && err.stack) || '<stack>'
+          }`;
+          const logData = { err, log_type: 'error' };
+          await logErrorAndThrow(logMsg, logData, err);
+        }
+      });
     });
   };
 
