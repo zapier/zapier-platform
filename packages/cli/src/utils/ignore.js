@@ -5,8 +5,8 @@ const gitIgnore = require('parse-gitignore');
 const path = require('path');
 
 const constants = require('../constants');
-const isBlacklisted = (filePath) => {
-  return constants.BLACKLISTED_PATHS.find((excluded) => {
+const isBlocklisted = (filePath) => {
+  return constants.BLOCKLISTED_PATHS.find((excluded) => {
     return filePath.search(excluded) === 0;
   });
 };
@@ -31,6 +31,6 @@ const respectGitIgnore = (dir, paths) => {
 };
 
 module.exports = {
-  isBlacklisted,
+  isBlocklisted,
   respectGitIgnore,
 };

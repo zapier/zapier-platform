@@ -9,10 +9,10 @@ const { ensureDir, makeTempDir } = require('../../utils/files');
 const { listFiles } = require('../../utils/build');
 const { buildFlags } = require('../buildFlags');
 const PullGenerator = require('../../generators/pull');
-const { respectGitIgnore, isBlacklisted } = require('../../utils/ignore');
+const { respectGitIgnore, isBlocklisted } = require('../../utils/ignore');
 
 // Some files were ignored during the original build step
-// This includes anything declared in .gitignore, the file itsefl or blacklisted paths
+// This includes anything declared in .gitignore, the file itsefl or blocklisted paths
 const getDeletableFiles = async (dir, targetFiles) => {
   const ignoredFiles = respectGitIgnore(dir, targetFiles);
 
@@ -20,7 +20,7 @@ const getDeletableFiles = async (dir, targetFiles) => {
     (file) =>
       !ignoredFiles.includes(file) ||
       file === '.gitignore' ||
-      isBlacklisted(file)
+      isBlocklisted(file)
   );
 
   return targetFiles.filter((file) => !keepFiles.includes(file));

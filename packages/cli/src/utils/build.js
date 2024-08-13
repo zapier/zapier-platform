@@ -106,8 +106,8 @@ const requiredFiles = (cwd, entryPoints) => {
 };
 
 const listFiles = (dir) => {
-  const isBlacklisted = (filePath) => {
-    return constants.BLACKLISTED_PATHS.find((excluded) => {
+  const isBlocklisted = (filePath) => {
+    return constants.BLOCKLISTED_PATHS.find((excluded) => {
       return filePath.search(excluded) === 0;
     });
   };
@@ -118,7 +118,7 @@ const listFiles = (dir) => {
     klaw(dir, { preserveSymlinks: true })
       .on('data', (item) => {
         const strippedPath = stripPath(cwd, item.path);
-        if (!item.stats.isDirectory() && !isBlacklisted(strippedPath)) {
+        if (!item.stats.isDirectory() && !isBlocklisted(strippedPath)) {
           paths.push(strippedPath);
         }
       })

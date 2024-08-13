@@ -75,7 +75,7 @@ describe('build (runs slowly)', function () {
     });
   });
 
-  it('list should not include blacklisted files', () => {
+  it('list should not include blocklisted files', () => {
     const tmpProjectDir = getNewTempDirPath();
 
     [
