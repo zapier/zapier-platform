@@ -5,12 +5,12 @@ const path = require('path');
 const Generator = require('yeoman-generator');
 
 const maybeOverwriteFiles = async (gen) => {
-  const delDir = gen.options.delDir;
+  const dstDir = gen.options.dstDir;
   const srcDir = gen.options.srcDir;
   for (const file of gen.options.sourceFiles) {
     gen.fs.copyTpl(
       gen.templatePath(path.join(srcDir, file)),
-      gen.destinationPath(path.join(delDir, file)),
+      gen.destinationPath(path.join(dstDir, file)),
       gen.options
     );
   }

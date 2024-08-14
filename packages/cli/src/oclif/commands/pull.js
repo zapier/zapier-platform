@@ -5,12 +5,7 @@ const yeoman = require('yeoman-environment');
 
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { downloadSourceZip } = require('../../utils/api');
-const {
-  ensureDir,
-  makeTempDir,
-  getUnignoredFiles,
-  removeDirSync,
-} = require('../../utils/files');
+const { ensureDir, makeTempDir, removeDirSync } = require('../../utils/files');
 const { listFiles } = require('../../utils/build');
 const { buildFlags } = require('../buildFlags');
 const PullGenerator = require('../../generators/pull');
@@ -34,18 +29,15 @@ class PullCommand extends ZapierBaseCommand {
 
       // Prompt user to confirm overwrite
       const currentDir = process.cwd();
-      const targetFiles = await listFiles(currentDir);
-      const deletableFiles = await getUnignoredFiles(currentDir, targetFiles);
       const sourceFiles = await listFiles(srcDst);
 
       const env = yeoman.createEnv();
       const namespace = 'zapier:pull';
       env.registerStub(PullGenerator, namespace);
       await env.run(namespace, {
-        deletableFiles,
         sourceFiles,
         srcDir: srcDst,
-        delDir: currentDir,
+        dstDir: currentDir,
       });
     } finally {
       removeDirSync(tmpDir);
