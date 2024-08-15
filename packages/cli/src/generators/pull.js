@@ -8,18 +8,13 @@ const maybeOverwriteFiles = async (gen) => {
   const dstDir = gen.options.dstDir;
   const srcDir = gen.options.srcDir;
   for (const file of gen.options.sourceFiles) {
-    gen.fs.copyTpl(
-      gen.templatePath(path.join(srcDir, file)),
-      gen.destinationPath(path.join(dstDir, file)),
-      gen.options
-    );
+    gen.fs.copy(path.join(srcDir, file), path.join(dstDir, file), gen.options);
   }
 };
 
 module.exports = class PullGenerator extends Generator {
   initializing() {
     debug('SRC', this.options.sourceFiles);
-    debug('DEL', this.options.deletableFiles);
   }
 
   prompting() {
@@ -29,7 +24,7 @@ module.exports = class PullGenerator extends Generator {
         name: 'confirm',
         message: `Warning: You are about to overwrite existing files.
 
-Before proceeding, please make sure you have saved your work. Consider creating a backup or saving your current state in a git branch. During the process, you may abort anytime by pressing 'x'. 
+Before proceeding, please make sure you have saved your work. Consider creating a backup or saving your current state in a git branch. During the process, you may abort anytime by pressing 'x'.
 
 Do you want to continue?`,
         default: false,

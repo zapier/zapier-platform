@@ -14,7 +14,6 @@ class PullCommand extends ZapierBaseCommand {
   async perform() {
     // Fetch the source zip from API
     const tmpDir = makeTempDir();
-    console.log('TEMP DIR', tmpDir);
     const srcZipDst = path.join(tmpDir, 'download', 'source.zip');
 
     try {
@@ -48,5 +47,6 @@ class PullCommand extends ZapierBaseCommand {
 PullCommand.flags = buildFlags();
 PullCommand.description =
   'Pull the source code of the latest version of your integration from Zapier, overwriting your local integration files.';
+PullCommand.skipValidInstallCheck = true;
 
 module.exports = PullCommand;
