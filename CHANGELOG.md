@@ -1,3 +1,28 @@
+## 15.12.0
+
+_released `2024-08-16`_
+
+### cli 
+- :nail_care: Introduce `zapier pull` command ([#838](https://github.com/zapier/zapier-platform/pull/838))
+- :nail_care: Handle subheadings when interpreting the changelog ([#827](https://github.com/zapier/zapier-platform/pull/827))
+
+### core 
+- :bug: Properly type HTTP Options, replacing generic `object` types ([#840](https://github.com/zapier/zapier-platform/pull/840))
+- :bug: Allow Async Middleware Functions Types ([#826](https://github.com/zapier/zapier-platform/pull/826))
+
+### schema
+- :bug: Correct casing on `bulk reads` action type ([#831](https://github.com/zapier/zapier-platform/pull/831))
+- :bug: Display the `bulk_reads` functional constraint ([#829](https://github.com/zapier/zapier-platform/pull/829))
+
+### schema-to-ts
+- :bug: Simplify and correct Array types in Schema to TS conversion ([#835](https://github.com/zapier/zapier-platform/pull/835))
+
+### misc 
+
+- :scroll: Improve documentation accuracy regarding `primary: true` limitations ([#836](https://github.com/zapier/zapier-platform/pull/836))
+- :scroll: Document limitations regarding `primary` in `outputFields` ([#834](https://github.com/zapier/zapier-platform/pull/834))
+- :scroll: Document `bundle.meta.withSearch` ([#823](https://github.com/zapier/zapier-platform/pull/823))
+
 ## 15.11.1
 
 _released `2024-07-19`_
