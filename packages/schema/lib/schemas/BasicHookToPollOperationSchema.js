@@ -61,6 +61,11 @@ BasicHookToPollOperationSchema.properties = {
   inputFields: BasicHookToPollOperationSchema.properties.inputFields,
   outputFields: BasicHookToPollOperationSchema.properties.outputFields,
   sample: BasicHookToPollOperationSchema.properties.sample,
+  maxPollingDelay: {
+    description:
+      'The maximum amount of time to wait between polling requests in seconds.',
+    type: 'integer',
+  },
 };
 
 BasicHookToPollOperationSchema.examples = [

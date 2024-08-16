@@ -1285,6 +1285,10 @@
               "value": "**yes** (with exceptions, see description)"
             }
           }
+        },
+        "maxPollingDelay": {
+          "description": "The maximum amount of time to wait between polling requests in seconds.",
+          "type": "integer"
         }
       },
       "additionalProperties": false,
