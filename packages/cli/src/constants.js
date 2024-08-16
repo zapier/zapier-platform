@@ -17,7 +17,7 @@ const BUILD_DIR = 'build';
 const DEFINITION_PATH = `${BUILD_DIR}/definition.json`;
 const BUILD_PATH = `${BUILD_DIR}/build.zip`;
 const SOURCE_PATH = `${BUILD_DIR}/source.zip`;
-const BLACKLISTED_PATHS = [
+const BLOCKLISTED_PATHS = [
   // Will be excluded from build.zip and source.zip
   '.git',
   '.env',
@@ -91,7 +91,7 @@ module.exports = {
   AUTH_LOCATION,
   AUTH_LOCATION_RAW,
   BASE_ENDPOINT,
-  BLACKLISTED_PATHS,
+  BLOCKLISTED_PATHS,
   BUILD_DIR,
   BUILD_PATH,
   CHECK_REF_DOC_LINK,

@@ -7,6 +7,7 @@ const prettier = require('gulp-prettier');
 
 const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');
 const authFilesCodegen = require('../utils/auth-files-codegen');
+const { PullGenerator } = require('./pull');
 
 const writeGenericReadme = (gen) => {
   gen.fs.copyTpl(
@@ -207,5 +208,6 @@ class ProjectGenerator extends Generator {
 
 module.exports = {
   TEMPLATE_CHOICES,
+  PullGenerator,
   ProjectGenerator,
 };
