@@ -1260,6 +1260,12 @@ export interface BasicHookToPollOperation {
    * this belongs to a resource that has a top-level sample
    */
   sample?: { [k: string]: unknown };
+
+  /**
+   * The maximum amount of time to wait between polling requests in
+   * seconds.
+   */
+  maxPollingDelay?: number;
 }
 
 /**
