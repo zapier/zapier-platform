@@ -51,8 +51,8 @@ describe('build (runs slowly)', function () {
 
     // check that only the required lodash files are grabbed
     smartPaths.should.containEql('index.js');
-    smartPaths.should.containEql('lib/index.js');
-    smartPaths.should.containEql('lib/triggers/movie.js');
+    smartPaths.should.containEql('dist/index.js');
+    smartPaths.should.containEql('dist/triggers/movie.js');
 
     smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
     smartPaths.should.not.containEql('tsconfig.json');
@@ -307,7 +307,7 @@ describe('build (runs slowly)', function () {
 
     await build.maybeRunBuildScript({ cwd: tmpDir });
 
-    const buildExists = await fs.pathExists(path.join(tmpDir, 'lib'));
+    const buildExists = await fs.pathExists(path.join(tmpDir, 'dist'));
     should.equal(buildExists, true);
   });
 });
