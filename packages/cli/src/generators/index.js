@@ -136,7 +136,7 @@ const writeForStandaloneTemplate = (gen) => {
         '_zapier-build': 'npm run build',
       },
       devDependencies: {
-        rimraf: '^6.0.1',
+        rimraf: '^5.0.10',
         typescript: '5.5.4',
         vitest: '^2.0.5',
       },
