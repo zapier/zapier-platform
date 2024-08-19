@@ -64,8 +64,8 @@ describe('build (runs slowly)', function () {
     return build.listFiles(tmpDir).then((dumbPaths) => {
       // check that way more than the required package files are grabbed
       dumbPaths.should.containEql('index.js');
-      dumbPaths.should.containEql('lib/index.js');
-      dumbPaths.should.containEql('lib/triggers/movie.js');
+      dumbPaths.should.containEql('dist/index.js');
+      dumbPaths.should.containEql('dist/triggers/movie.js');
 
       dumbPaths.should.containEql('src/index.ts');
       dumbPaths.should.containEql('src/triggers/movie.ts');
