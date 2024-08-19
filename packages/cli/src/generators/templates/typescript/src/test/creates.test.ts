@@ -1,6 +1,5 @@
-/* globals describe, expect, test */
-
 import { createAppTester, tools } from 'zapier-platform-core';
+import { describe, test, expect } from 'vitest';
 
 import App from '../index';
 

@@ -1,6 +1,6 @@
-import { Bundle, ZObject } from 'zapier-platform-core';
+import { PerformFunction, Trigger } from 'zapier-platform-core';
 
-const perform = async (z: ZObject, bundle: Bundle) => {
+const perform: PerformFunction = async (z, bundle) => {
   const response = await z.request(
     'https://auth-json-server.zapier-staging.com/movies'
   );
@@ -17,10 +17,11 @@ export default {
   },
 
   operation: {
+    type: 'polling',
     perform,
     sample: {
       id: '1',
       title: 'example',
     },
   },
-};
+} satisfies Trigger;
