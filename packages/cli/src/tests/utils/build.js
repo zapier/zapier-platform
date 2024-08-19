@@ -71,7 +71,7 @@ describe('build (runs slowly)', function () {
       dumbPaths.should.containEql('src/triggers/movie.ts');
       dumbPaths.should.containEql('tsconfig.json');
 
-      dumbPaths.length.should.be.within(5000, 15000);
+      dumbPaths.length.should.be.within(3000, 10000);
     });
   });
 
