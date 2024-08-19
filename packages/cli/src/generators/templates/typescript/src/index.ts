@@ -8,7 +8,7 @@ import packageJson from '../package.json';
 
 const addApiKeyHeader: BeforeRequestMiddleware = (req, z, bundle) => {
   // Hard-coded api key just to demo. DON'T do auth like this for your production app!
-  req.headers = req.headers ?? {};
+  req.headers = req.headers || {};
   req.headers['X-Api-Key'] = 'secret';
   return req;
 };
