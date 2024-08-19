@@ -130,17 +130,15 @@ const writeForStandaloneTemplate = (gen) => {
     },
     typescript: {
       scripts: {
+        test: 'vitest',
+        clean: 'rimraf ./dist ./build',
         build: 'npm run clean && tsc',
-        clean: 'rimraf ./lib ./build',
-        watch: 'npm run clean && tsc --watch',
-        test: 'npm run build && jest --testTimeout 10000 --rootDir ./lib/test',
+        '_zapier-build': 'npm run build',
       },
       devDependencies: {
-        '@types/jest': '^26.0.23',
-        '@types/node': '^14',
-        '@types/node-fetch': '^2.6.11',
-        rimraf: '^3.0.2',
-        typescript: '5.5.3',
+        rimraf: '^6.0.1',
+        typescript: '5.5.4',
+        vitest: '^2.0.5',
       },
     },
   }[gen.options.template];
