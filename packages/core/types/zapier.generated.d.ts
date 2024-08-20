@@ -1263,7 +1263,8 @@ export interface BasicHookToPollOperation {
 
   /**
    * The maximum amount of time to wait between polling requests in
-   * seconds.
+   * seconds. Minimum value is 20s and will default to 20 if not set,
+   * or set to a lower value.
    */
   maxPollingDelay?: number;
 }
