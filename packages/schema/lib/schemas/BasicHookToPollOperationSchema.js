@@ -63,7 +63,7 @@ BasicHookToPollOperationSchema.properties = {
   sample: BasicHookToPollOperationSchema.properties.sample,
   maxPollingDelay: {
     description:
-      'The maximum amount of time to wait between polling requests in seconds.',
+      'The maximum amount of time to wait between polling requests in seconds. Minimum value is 20s and will default to 20 if not set, or set to a lower value.',
     type: 'integer',
   },
 };
