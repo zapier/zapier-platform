@@ -1,3 +1,22 @@
+## 15.13.0 
+
+_released `2024-08-21`_
+
+### cli
+
+None!
+
+### core
+
+None!
+
+### schema 
+- :nail_care: Add configurable poll delay for HookToPoll ([#844](https://github.com/zapier/zapier-platform/pull/844))
+
+### misc
+- :hammer: Bump elliptic from 6.5.4 to 6.5.7 ([#842](https://github.com/zapier/zapier-platform/pull/842))
+- :hammer: Bump axios from 1.6.1 to 1.7.4 ([#843](https://github.com/zapier/zapier-platform/pull/843))
+
 ## 15.12.0
 
 _released `2024-08-16`_
