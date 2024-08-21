@@ -1260,6 +1260,13 @@ export interface BasicHookToPollOperation {
    * this belongs to a resource that has a top-level sample
    */
   sample?: { [k: string]: unknown };
+
+  /**
+   * The maximum amount of time to wait between polling requests in
+   * seconds. Minimum value is 20s and will default to 20 if not set,
+   * or set to a lower value.
+   */
+  maxPollingDelay?: number;
 }
 
 /**
