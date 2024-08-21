@@ -101,7 +101,10 @@ expectType<Trigger>(hookTrigger);
 
 const searchOperation: BasicActionOperation = {
   inputFields: [{ key: 'some-input-key-1', type: 'file', required: true }],
-  perform: async (z: ZObject, b: Bundle) => [{ data: true }],
+  perform: async (z: ZObject, b: Bundle) => {
+    z.request('https://example.com', { customOptions: { resumable: true } });
+    return [{ data: true }];
+  },
 };
 expectType<BasicActionOperation>(searchOperation);
 
@@ -124,7 +127,12 @@ const addBearerHeader: BeforeRequestMiddleware = (request, z, bundle) => {
 };
 expectType<BeforeRequestMiddleware>(addBearerHeader);
 
-const asyncBeforeRequest: BeforeRequestMiddleware = async (request) => request;
+const asyncBeforeRequest: BeforeRequestMiddleware = async (request) => {
+  if (request.customOptions?.resumable) {
+    // do something async etc.
+  }
+  return request;
+};
 expectType<BeforeRequestMiddleware>(asyncBeforeRequest);
 
 const checkPermissionsError: AfterResponseMiddleware = (response, z) => {

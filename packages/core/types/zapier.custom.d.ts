@@ -95,6 +95,14 @@ export interface HttpRequestOptions {
   timeout?: number;
   url?: string;
   skipThrowForStatus?: boolean;
+
+  /**
+   * Custom options for the request. These do not affect the request
+   * itself, but can be used to pass data to middleware. For example,
+   * this is recommended for things like `prefixErrorMessage` fields
+   * etc.
+   */
+  customOptions?: Record<string, any>;
 }
 
 interface BaseHttpResponse {
