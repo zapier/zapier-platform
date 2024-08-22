@@ -95,6 +95,14 @@ export interface HttpRequestOptions {
   timeout?: number;
   url?: string;
   skipThrowForStatus?: boolean;
+
+  /**
+   * This is a special field that can be used to pass data to
+   * middleware. It is not sent with the request, but is available in
+   * the `response` object that middleware receives. This is useful for
+   * things like `prefixErrorMessage` fields etc.
+   */
+  middlewareData?: Record<string, any>;
 }
 
 interface BaseHttpResponse {
