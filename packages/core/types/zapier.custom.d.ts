@@ -97,12 +97,12 @@ export interface HttpRequestOptions {
   skipThrowForStatus?: boolean;
 
   /**
-   * Custom options for the request. These do not affect the request
-   * itself, but can be used to pass data to middleware. For example,
-   * this is recommended for things like `prefixErrorMessage` fields
-   * etc.
+   * This is a special field that can be used to pass data to
+   * middleware. It is not sent with the request, but is available in
+   * the `response` object that middleware receives. This is useful for
+   * things like `prefixErrorMessage` fields etc.
    */
-  customOptions?: Record<string, any>;
+  middlewareData?: Record<string, any>;
 }
 
 interface BaseHttpResponse {
