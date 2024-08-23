@@ -10,7 +10,7 @@ describe('zcache: get, set, delete', () => {
   const cache = createCache({ _zapier: { rpc } });
 
   it('zcache_get: should return the cache entry of an existing key', async () => {
-    const value = {entity:'Zapier', colors: ['Orange', 'black']};
+    const value = { entity: 'Zapier', colors: ['Orange', 'black'] };
     mockRpcCall(JSON.stringify(value));
 
     const result = await cache.get('existing-key');
@@ -27,11 +27,10 @@ describe('zcache: get, set, delete', () => {
   it('zcache_get: should throw error for non-string keys', async () => {
     await cache.get(12345).should.be.rejectedWith('key must be a string');
   });
-
-  it('zcache_set: should set a cache entry based on the app\'s rate-limit', async () => {
-    const key1 = 'random-key1'
-    const key2 = 'random-key2'
-    const value = {entity:'Zapier', colors: ['Orange', 'black']};
+  it("zcache_set: should set a cache entry based on the app's rate-limit", async () => {
+    const key1 = 'random-key1';
+    const key2 = 'random-key2';
+    const value = { entity: 'Zapier', colors: ['Orange', 'black'] };
     const valueLength = JSON.stringify(value).length;
 
     // in bytes/minute
@@ -53,14 +52,24 @@ describe('zcache: get, set, delete', () => {
   it('zcache_set: should throw error for values that are not JSON-encodable', async () => {
     const key = 'random-key';
     let value = console;
-    await cache.set(key, value).should.be.rejectedWith("Type 'object' is not JSON-encodable (path: '')");
+    await cache
+      .set(key, value)
+      .should.be.rejectedWith("Type 'object' is not JSON-encodable (path: '')");
 
-    value = () => { 'this is a function' };
-    await cache.set(key, value).should.be.rejectedWith("Type 'function' is not JSON-encodable (path: '')");
+    value = () => {
+      'this is a function';
+    };
+    await cache
+      .set(key, value)
+      .should.be.rejectedWith(
+        "Type 'function' is not JSON-encodable (path: '')"
+      );
   });
 
   it('zcache_set: should throw error for a non-integer ttl', async () => {
-    await cache.set('random-key', 'random-value', 'twenty').should.be.rejectedWith('ttl must be an integer');
+    await cache
+      .set('random-key', 'random-value', 'twenty')
+      .should.be.rejectedWith('ttl must be an integer');
   });
 
   it('zcache_delete: should delete the cache entry of an existing key', async () => {
@@ -75,5 +84,37 @@ describe('zcache: get, set, delete', () => {
 
     const result = await cache.delete('non-existing-key');
     should(result).eql(false);
+  });
+
+  describe('scopes', () => {
+    beforeEach(() => {
+      mockRpcCall('ok');
+    });
+    it('zcache_set: no scopes is ok', async () => {
+      const res = await cache.set('key', 'ok');
+      should(res).eql('ok');
+    });
+    it('zcache_set: empty array scopes is ok', async () => {
+      const res = await cache.set('key', 'ok', 1, []);
+      should(res).eql('ok');
+    });
+    it('zcache_set: user and auth scopes is ok', async () => {
+      const res = await cache.set('key', 'ok', 1, ['user', 'auth']);
+      should(res).eql('ok');
+    });
+    it('zcache_set: bad scopes is not ok', async () => {
+      await cache
+        .set('key', 'ok', 1, ['bad', 'scope'])
+        .should.be.rejectedWith(
+          'scopes must be an array of strings with values "user" or "auth"'
+        );
+    });
+    it('zcache_set: mix of good and bad is not ok', async () => {
+      await cache
+        .set('key', 'ok', 1, ['bad', 'auth'])
+        .should.be.rejectedWith(
+          'scopes must be an array of strings with values "user" or "auth"'
+        );
+    });
   });
 });
