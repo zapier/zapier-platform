@@ -27,6 +27,7 @@ describe('zcache: get, set, delete', () => {
   it('zcache_get: should throw error for non-string keys', async () => {
     await cache.get(12345).should.be.rejectedWith('key must be a string');
   });
+
   it("zcache_set: should set a cache entry based on the app's rate-limit", async () => {
     const key1 = 'random-key1';
     const key2 = 'random-key2';
