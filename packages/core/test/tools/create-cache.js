@@ -88,22 +88,26 @@ describe('zcache: get, set, delete', () => {
   });
 
   describe('scopes', () => {
-    beforeEach(() => {
-      mockRpcCall('ok');
-    });
     it('zcache_set: no scopes is ok', async () => {
+      mockRpcCall('ok');
       const res = await cache.set('key', 'ok');
       should(res).eql('ok');
     });
     it('zcache_set: empty array scopes is ok', async () => {
+      mockRpcCall('ok');
+
       const res = await cache.set('key', 'ok', 1, []);
       should(res).eql('ok');
     });
     it('zcache_set: user and auth scopes is ok', async () => {
+      mockRpcCall('ok');
+
       const res = await cache.set('key', 'ok', 1, ['user', 'auth']);
       should(res).eql('ok');
     });
     it('zcache_set: bad scopes is not ok', async () => {
+      mockRpcCall('ok');
+
       await cache
         .set('key', 'ok', 1, ['bad', 'scope'])
         .should.be.rejectedWith(
@@ -111,6 +115,8 @@ describe('zcache: get, set, delete', () => {
         );
     });
     it('zcache_set: mix of good and bad is not ok', async () => {
+      mockRpcCall('ok');
+
       await cache
         .set('key', 'ok', 1, ['bad', 'auth'])
         .should.be.rejectedWith(
