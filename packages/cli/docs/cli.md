@@ -256,6 +256,25 @@ This command also checks the current directory for a linked integration.
 * `apps`
 
 
+## invoke
+
+> Invoke an action (trigger/search/create) locally.
+
+**Usage**: `zapier invoke [ACTIONTYPE] [ACTIONKEY]`
+
+**Arguments**
+* `actionType` | The action type you want to invoke.
+* `actionKey` | The action key you want to invoke.
+
+**Flags**
+* `-d, --inputData` | The input data to pass to the action. Must be a JSON-encoded object.
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier invoke trigger new_recipe`
+* `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`
+
+
 ## jobs
 
 > Lists ongoing migration or promotion jobs for the current integration.
@@ -483,8 +502,8 @@ The scaffold command does two general things:
 You can mix and match several options to customize the created scaffold for your project.
 
 **Arguments**
-* (required) `actionType` | undefined
-* (required) `noun` | undefined
+* (required) `actionType` | What type of step type are you creating?
+* (required) `noun` | What sort of object this action acts on. For example, the name of the new thing to create
 
 **Flags**
 * `-d, --dest` | Specify the new file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `[triggers|searches|creates]/{noun}`.

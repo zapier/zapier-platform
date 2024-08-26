@@ -245,6 +245,7 @@ a code {
 <li><a href="#history">history</a></li>
 <li><a href="#init">init</a></li>
 <li><a href="#integrations">integrations</a></li>
+<li><a href="#invoke">invoke</a></li>
 <li><a href="#jobs">jobs</a></li>
 <li><a href="#link">link</a></li>
 <li><a href="#login">login</a></li>
@@ -659,6 +660,35 @@ a code {
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="invoke">invoke</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Invoke an action (trigger/search/create) locally.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier invoke [ACTIONTYPE] [ACTIONKEY]</code></p><p><strong>Arguments</strong></p><ul>
+<li><code>actionType</code> | The action type you want to invoke.</li>
+<li><code>actionKey</code> | The action key you want to invoke.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-d, --inputData</code> | The input data to pass to the action. Must be a JSON-encoded object.</li>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier invoke trigger new_recipe</code></li>
+<li><code>zapier invoke create add_recipe --inputData &apos;{&quot;title&quot;: &quot;Pancakes&quot;}&apos;</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h2 id="jobs">jobs</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -933,8 +963,8 @@ a code {
 <li><p>Imports and registers it inside your <code>index.js</code></p>
 </li>
 </ul><p>You can mix and match several options to customize the created scaffold for your project.</p><p><strong>Arguments</strong></p><ul>
-<li>(required) <code>actionType</code> | undefined</li>
-<li>(required) <code>noun</code> | undefined</li>
+<li>(required) <code>actionType</code> | What type of step type are you creating?</li>
+<li>(required) <code>noun</code> | What sort of object this action acts on. For example, the name of the new thing to create</li>
 </ul><p><strong>Flags</strong></p><ul>
 <li><code>-d, --dest</code> | Specify the new file&apos;s directory. Use this flag when you want to create a different folder structure such as <code>src/triggers</code> instead of the default <code>triggers</code>. Defaults to <code>[triggers|searches|creates]/{noun}</code>.</li>
 <li><code>--test-dest</code> | Specify the new test file&apos;s directory. Use this flag when you want to create a different folder structure such as <code>src/triggers</code> instead of the default <code>triggers</code>. Defaults to <code>test/[triggers|searches|creates]/{noun}</code>.</li>

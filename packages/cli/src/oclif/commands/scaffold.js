@@ -154,13 +154,14 @@ class ScaffoldCommand extends BaseCommand {
 ScaffoldCommand.args = [
   {
     name: 'actionType',
-    help: 'What type of step type are you creating?',
+    description: 'What type of step type are you creating?',
     required: true,
     options: ['trigger', 'search', 'create', 'resource'],
   },
   {
     name: 'noun',
-    help: 'What sort of object this action acts on. For example, the name of the new thing to create',
+    description:
+      'What sort of object this action acts on. For example, the name of the new thing to create',
     required: true,
   },
 ];
