@@ -87,31 +87,31 @@ describe('zcache: get, set, delete', () => {
     should(result).eql(false);
   });
 
-  describe('scopes', () => {
-    it('zcache_set: no scopes is ok', async () => {
+  describe('scope', () => {
+    it('zcache_set: no scope is ok', async () => {
       mockRpcCall('ok');
       const res = await cache.set('key', 'ok');
       should(res).eql('ok');
     });
-    it('zcache_set: empty array scopes is ok', async () => {
+    it('zcache_set: empty array scope is ok', async () => {
       mockRpcCall('ok');
 
       const res = await cache.set('key', 'ok', 1, []);
       should(res).eql('ok');
     });
-    it('zcache_set: user and auth scopes is ok', async () => {
+    it('zcache_set: user and auth scope is ok', async () => {
       mockRpcCall('ok');
 
       const res = await cache.set('key', 'ok', 1, ['user', 'auth']);
       should(res).eql('ok');
     });
-    it('zcache_set: bad scopes is not ok', async () => {
+    it('zcache_set: bad scope is not ok', async () => {
       mockRpcCall('ok');
 
       await cache
         .set('key', 'ok', 1, ['bad', 'scope'])
         .should.be.rejectedWith(
-          'scopes must be an array of strings with values "user" or "auth"'
+          'scope must be an array of strings with values "user" or "auth"'
         );
     });
     it('zcache_set: mix of good and bad is not ok', async () => {
@@ -120,7 +120,7 @@ describe('zcache: get, set, delete', () => {
       await cache
         .set('key', 'ok', 1, ['bad', 'auth'])
         .should.be.rejectedWith(
-          'scopes must be an array of strings with values "user" or "auth"'
+          'scope must be an array of strings with values "user" or "auth"'
         );
     });
   });

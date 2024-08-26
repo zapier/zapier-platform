@@ -12,7 +12,7 @@ const createCache = (input) => {
     key,
     value = null,
     ttl = null,
-    scopes = null
+    scope = null
   ) => {
     if (!rpc) {
       throw new Error('rpc is not available');
@@ -26,12 +26,9 @@ const createCache = (input) => {
       throw new TypeError('ttl must be an integer');
     }
 
-    if (
-      scopes != null &&
-      !scopes.every((scope) => scope === 'user' || scope === 'auth')
-    ) {
+    if (scope != null && !scope.every((v) => v === 'user' || v === 'auth')) {
       throw new TypeError(
-        'scopes must be an array of strings with values "user" or "auth"'
+        'scope must be an array of strings with values "user" or "auth"'
       );
     }
 
@@ -39,21 +36,21 @@ const createCache = (input) => {
   };
 
   return {
-    get: async (key, scopes = null) => {
-      runValidationChecks(rpc, key);
+    get: async (key, scope = null) => {
+      runValidationChecks(rpc, key, scope);
 
-      const result = await rpc('zcache_get', key);
+      const result = await rpc('zcache_get', key, scope);
       return result ? JSON.parse(result) : null;
     },
-    set: async (key, value, ttl = null, scopes = null) => {
-      runValidationChecks(rpc, key, value, ttl, scopes);
+    set: async (key, value, ttl = null, scope = []) => {
+      runValidationChecks(rpc, key, value, ttl, scope);
 
-      return await rpc('zcache_set', key, JSON.stringify(value), ttl, scopes);
+      return await rpc('zcache_set', key, JSON.stringify(value), ttl, scope);
     },
-    delete: async (key, scopes) => {
-      runValidationChecks(rpc, key, scopes);
+    delete: async (key, scope = []) => {
+      runValidationChecks(rpc, key, scope);
 
-      return await rpc('zcache_delete', key);
+      return await rpc('zcache_delete', key, scope);
     },
   };
 };
