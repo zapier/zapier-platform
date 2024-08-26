@@ -105,8 +105,6 @@ describe('zcache: get, set, delete', () => {
     should(res).eql(true);
   });
   it('zcache_set: bad scope is not ok', async () => {
-    mockRpcCall(true);
-
     await cache
       .set('key', 'ok', 1, ['bad', 'scope'])
       .should.be.rejectedWith(
@@ -114,8 +112,6 @@ describe('zcache: get, set, delete', () => {
       );
   });
   it('zcache_set: mix of good and bad is not ok', async () => {
-    mockRpcCall(true);
-
     await cache
       .set('key', 'ok', 1, ['bad', 'auth'])
       .should.be.rejectedWith(
