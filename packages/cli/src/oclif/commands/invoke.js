@@ -1,6 +1,11 @@
+const crypto = require('node:crypto');
+const fs = require('node:fs/promises');
+const https = require('node:https');
+
 const _ = require('lodash');
 const { flags } = require('@oclif/command');
 const debug = require('debug')('zapier:invoke');
+const express = require('express');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
@@ -13,7 +18,7 @@ const ACTION_TYPE_PLURALS = {
   create: 'creates',
 };
 
-const ACTION_TYPES = Object.keys(ACTION_TYPE_PLURALS);
+const ACTION_TYPES = ['auth', ...Object.keys(ACTION_TYPE_PLURALS)];
 
 const getMissingInputFields = (inputData, inputFields) => {
   return inputFields.filter(
@@ -67,6 +72,88 @@ const resolveInputFieldTypes = (inputData, inputFields) => {
 };
 
 class InvokeCommand extends BaseCommand {
+  async startAuth() {
+    startSpinner('Invoking authentication.oauth2Config.authorizeUrl');
+
+    const appDefinition = await localAppCommand({
+      command: 'definition',
+    });
+    const scope = appDefinition.authentication.oauth2Config.scope;
+    const stateParam = crypto.randomBytes(20).toString('hex');
+    const redirectUri = 'https://127.0.0.1:9876/callback';
+    let authorizeUrl = await localAppCommand({
+      command: 'execute',
+      method: 'authentication.oauth2Config.authorizeUrl',
+      bundle: {
+        response_type: 'code',
+        redirect_uri: redirectUri,
+        state: stateParam,
+      },
+    });
+    if (!authorizeUrl.includes('&scope=')) {
+      authorizeUrl += `&scope=${scope}`;
+    }
+
+    endSpinner();
+    startSpinner('Opening browser to authorize');
+
+    const app = express();
+    const port = 9876;
+
+    let resolve;
+    const p = new Promise((_resolve) => {
+      resolve = _resolve;
+    });
+    app.get('/callback', (req, res) => {
+      resolve(req.query.code);
+      res.end('Go back to the terminal to continue.');
+    });
+
+    const server = https
+      .createServer(
+        {
+          key: await fs.readFile('./server.key'),
+          cert: await fs.readFile('./server.crt'),
+        },
+        app
+      )
+      .listen(port);
+
+    const { default: open } = await import('open');
+    open(authorizeUrl);
+
+    const code = await p;
+    await server.close();
+
+    endSpinner();
+    startSpinner('Invoking authentication.oauth2Config.getAccessToken');
+
+    const authData = await localAppCommand({
+      command: 'execute',
+      method: 'authentication.oauth2Config.getAccessToken',
+      bundle: {
+        inputData: {
+          code,
+          redirect_uri: redirectUri,
+        },
+      },
+    });
+
+    endSpinner();
+
+    const shouldSave = await this.confirm('Save auth data to .env file?', true);
+    if (shouldSave) {
+      const envPath = '.env';
+      await fs.appendFile(
+        envPath,
+        Object.entries(authData).map(([k, v]) => `${k.toUpperCase()}=${v}\n`)
+      );
+      console.log(`Auth data saved to ${envPath}`);
+    } else {
+      console.log('Auth data:', authData);
+    }
+  }
+
   async invokeAction(actionTypePlural, action, inputData) {
     // {actionType}.{actionKey}.operation.inputFields
     // {actionType}.{actionKey}.operation.perform
@@ -74,6 +161,27 @@ class InvokeCommand extends BaseCommand {
     // if (search or hook) and hydrate-output:
     //   {actionType}.{actionKey}.operation.performGet
     // action.operation.inputFields;
+
+    const authData = {
+      // TODO: Don't hard-code these
+      access_token: process.env.ACCESS_TOKEN,
+
+      // Slack-specific auth data
+      team_id: process.env.TEAM_ID,
+      user_id: process.env.USER_ID,
+      app_id: process.env.APP_ID,
+      bot_user_id: process.env.BOT_USER_ID,
+      bot_token: process.env.BOT_TOKEN,
+    };
+    const meta = {
+      // TODO: Make these command flags
+      isLoadingSample: false,
+      isFillingDynamicDropdown: false,
+      isTestingAuth: false,
+      isPopulatingDedupe: false,
+      limit: -1,
+      page: 0,
+    };
 
     let methodName = `${actionTypePlural}.${action.key}.operation.inputFields`;
     startSpinner(`Invoking ${methodName}`);
@@ -83,6 +191,8 @@ class InvokeCommand extends BaseCommand {
       method: methodName,
       bundle: {
         inputData,
+        authData,
+        meta,
       },
     });
     endSpinner();
@@ -109,6 +219,8 @@ class InvokeCommand extends BaseCommand {
       method: methodName,
       bundle: {
         inputData,
+        authData,
+        meta,
       },
     });
     endSpinner();
@@ -136,29 +248,61 @@ class InvokeCommand extends BaseCommand {
     // console.log(appDefinition);
 
     if (!actionKey) {
-      const actionKeys = Object.keys(appDefinition[actionTypePlural] || {});
-      if (!actionKeys.length) {
-        throw new Error(`No "${actionTypePlural}" found in your integration.`);
+      if (actionType === 'auth') {
+        // TODO: 'refresh' is only for OAuth
+        const actionKeys = ['start', 'test', 'refresh', 'label'];
+        actionKey = await this.promptWithList(
+          'Which auth action you want to do?',
+          actionKeys
+        );
+      } else {
+        const actionKeys = Object.keys(appDefinition[actionTypePlural] || {});
+        if (!actionKeys.length) {
+          throw new Error(
+            `No "${actionTypePlural}" found in your integration.`
+          );
+        }
+
+        actionKey = await this.promptWithList(
+          `Which action key you want to invoke?`,
+          actionKeys
+        );
+      }
+    }
+
+    if (actionType === 'auth') {
+      switch (actionKey) {
+        case 'start':
+          await this.startAuth();
+          break;
+        case 'test':
+          await this.testAuth();
+          break;
+        case 'refresh':
+          await this.refreshAuth();
+          break;
+        case 'label':
+          await this.getAuthLabel();
+          break;
+        default:
+          throw new Error(`Unknown auth action: ${actionKey}`);
+      }
+    } else {
+      const action = appDefinition[actionTypePlural][actionKey];
+
+      debug('Action type:', actionType);
+      debug('Action key:', actionKey);
+      debug('Action label:', action.display.label);
+
+      let { inputData } = this.flags;
+      if (inputData != null) {
+        inputData = JSON.parse(inputData);
+      } else {
+        inputData = {};
       }
 
-      actionKey = await this.promptWithList(
-        `Which action key you want to invoke?`,
-        actionKeys
-      );
+      await this.invokeAction(actionTypePlural, action, inputData);
     }
-
-    const action = appDefinition[actionTypePlural][actionKey];
-
-    debug('Action type:', actionType);
-    debug('Action key:', actionKey);
-    debug('Action label:', action.display.label);
-
-    let { inputData } = this.flags;
-    if (inputData != null) {
-      inputData = JSON.parse(inputData);
-    }
-
-    await this.invokeAction(actionTypePlural, action, inputData);
   }
 }
 
