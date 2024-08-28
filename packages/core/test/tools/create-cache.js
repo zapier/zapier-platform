@@ -104,6 +104,13 @@ describe('zcache: get, set, delete', () => {
     const res = await cache.set('key', 'ok', 1, ['user', 'auth']);
     should(res).eql(true);
   });
+  it('zcache_set: scope as string is not ok', async () => {
+    await cache
+      .set('key', 'ok', 1, 'bad')
+      .should.be.rejectedWith(
+        'scope must be an array of strings with values "user" or "auth"'
+      );
+  });
   it('zcache_set: bad scope is not ok', async () => {
     await cache
       .set('key', 'ok', 1, ['bad', 'scope'])

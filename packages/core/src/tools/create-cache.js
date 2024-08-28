@@ -26,7 +26,10 @@ const createCache = (input) => {
       throw new TypeError('ttl must be an integer');
     }
 
-    if (scope != null && !scope.every((v) => v === 'user' || v === 'auth')) {
+    if (
+      (scope != null && !_.isArray(scope)) ||
+      !scope.every((v) => v === 'user' || v === 'auth')
+    ) {
       throw new TypeError(
         'scope must be an array of strings with values "user" or "auth"'
       );
