@@ -1,3 +1,23 @@
+## 15.14.0
+
+_released `2024-08-28`_
+
+### cli
+
+None!
+
+### core
+
+- :nail_care: Add scopes as an option for zcache usage ([#849](https://github.com/zapier/zapier-platform/pull/849))
+
+### schema
+
+None!
+
+### misc
+
+- :hammer: Add `customOptions` field to z.request options ([#846](https://github.com/zapier/zapier-platform/pull/846))
+
 ## 15.13.0 
 
 _released `2024-08-21`_
