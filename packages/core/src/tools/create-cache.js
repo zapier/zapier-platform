@@ -27,8 +27,9 @@ const createCache = (input) => {
     }
 
     if (
-      (scope != null && !_.isArray(scope)) ||
-      !scope.every((v) => v === 'user' || v === 'auth')
+      scope !== null &&
+      (!Array.isArray(scope) ||
+        !scope.every((v) => v === 'user' || v === 'auth'))
     ) {
       throw new TypeError(
         'scope must be an array of strings with values "user" or "auth"'
@@ -45,12 +46,12 @@ const createCache = (input) => {
       const result = await rpc('zcache_get', key, scope);
       return result ? JSON.parse(result) : null;
     },
-    set: async (key, value, ttl = null, scope = []) => {
+    set: async (key, value, ttl = null, scope = null) => {
       runValidationChecks(rpc, key, value, ttl, scope);
 
       return await rpc('zcache_set', key, JSON.stringify(value), ttl, scope);
     },
-    delete: async (key, scope = []) => {
+    delete: async (key, scope = null) => {
       runValidationChecks(rpc, key, scope);
 
       return await rpc('zcache_delete', key, scope);
