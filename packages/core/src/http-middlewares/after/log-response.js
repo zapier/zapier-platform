@@ -8,6 +8,7 @@ const prepareRequestLog = (req, resp) => {
   req = req || {};
   resp = resp || {};
 
+  let responseSize = 0;
   let responseBody;
   if (!req.raw) {
     if (typeof resp.content !== 'string') {
@@ -15,6 +16,7 @@ const prepareRequestLog = (req, resp) => {
     } else {
       responseBody = resp.content;
     }
+    responseSize = Buffer.byteLength(responseBody, 'utf8'); // Get size in bytes
   } else {
     responseBody = '<probably streaming data>';
   }
@@ -36,6 +38,7 @@ const prepareRequestLog = (req, resp) => {
     response_status_code: resp.status,
     response_headers: resp.headers,
     response_content: responseBody,
+    response_size: responseSize,
   };
 
   if (req._requestStart) {
