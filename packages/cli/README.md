@@ -47,6 +47,7 @@ This doc describes the latest CLI version (**15.14.0**), as of this writing. If 
   * [Private App Version (default)](#private-app-version-default)
   * [Sharing an App Version](#sharing-an-app-version)
   * [Promoting an App Version](#promoting-an-app-version)
+  * [Pulling the latest version from Zapier](#pulling-the-latest-version-from-zapier)
 - [Converting an Existing App](#converting-an-existing-app)
 - [Authentication](#authentication)
   * [Basic](#basic)
@@ -391,6 +392,7 @@ If you'd like to manage your **Version**, use these commands:
 * `zapier deprecate 1.0.0 2020-06-01` - mark a version as deprecated, but let users continue to use it (we'll email them)
 * `zapier env:set 1.0.0 KEY=VALUE` - set an environment variable to some value
 * `zapier delete:version 1.0.0` - delete a version entirely. This is mostly for clearing out old test apps you used personally. It will fail if there are any users. You probably want `deprecate` instead.
+* `zapier pull` - pull the latest version from Zapier server. This is used in the event that Zapier made an update since your last version
 
 > Note: To see the changes that were just pushed reflected in the browser, you have to manually refresh the browser each time you push.
 
@@ -430,6 +432,12 @@ zapier migrate 1.0.0 1.0.1
 # OR - mark the old version as deprecated
 zapier deprecate 1.0.0 2020-06-01
 ```
+
+### Pulling the latest version from Zapier
+
+Zapier may fix bugs or add new features to your integration and release a new version. If you attempt to use `zapier push` and we've released a newer version, you will be prevented from pushing until you run `zapier pull` to update your local files with the latest version. 
+
+Any destructive file changes will prompt you with a confirmation dialog before continuing.
 
 ## Converting an Existing App
 
