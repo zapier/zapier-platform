@@ -232,6 +232,7 @@ a code {
       <ul>
 <li><a href="#zapier-cli-reference">Zapier CLI Reference</a></li>
 <li><a href="#commands">Commands</a><ul>
+<li><a href="#ai">ai</a></li>
 <li><a href="#analytics">analytics</a></li>
 <li><a href="#build">build</a></li>
 <li><a href="#convert">convert</a></li>
@@ -298,6 +299,48 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <h1 id="commands">Commands</h1>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="ai">ai</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Execute AI-powered operations on your Zapier integration.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier ai OPERATION ACTIONTYPE INSTRUCTIONS</code></p><p>This command allows you to leverage AI to create new triggers, searches, or creates in your Zapier integration.</p><p>Usage:</p><p>zapier ai [new|update] [actionType] [&quot;Some instructions&quot;] [--add-url=<url>] [--add-file=<file>]</file></url></p><ul>
+<li><p>[new|update]: Specify whether to create a new trigger, search, or create in your Zapier integration.</p>
+</li>
+<li><p>[actionType]: The type of action to work on (e.g., trigger, search, create).</p>
+</li>
+<li><p>[&quot;Some instructions&quot;]: Provide instructions for the AI in quotes.</p>
+</li>
+<li><p>[--add-url=<url>]: Optional flag to include additional URL context in the AI request (can be used multiple times).</url></p>
+</li>
+<li><p>[--add-file=<file>]: Optional flag to include local file context in the AI request (can be used multiple times).</file></p>
+</li>
+</ul><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>operation</code> | The operation to perform (new or update)</li>
+<li>(required) <code>actionType</code> | The type of action to work on (e.g., trigger, search, create)</li>
+<li>(required) <code>instructions</code> | Instructions for the AI</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>--add-url</code> | Add a URL for additional context (can be used multiple times)</li>
+<li><code>--add-file</code> | Add a local file for additional context (can be used multiple times)</li>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier ai new trigger &quot;Create a trigger for new email messages&quot;</code></li>
+<li><code>zapier ai update search &quot;Modify the contact search to include phone number&quot; --add-url=&quot;https://example.com/docs/search&quot; --add-file=&quot;./local_schema.json&quot;</code></li>
+</ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       

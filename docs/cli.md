@@ -10,6 +10,43 @@ $ npm install -g zapier-platform-cli
 
 # Commands
 
+## ai
+
+> Execute AI-powered operations on your Zapier integration.
+
+**Usage**: `zapier ai OPERATION ACTIONTYPE INSTRUCTIONS`
+
+This command allows you to leverage AI to create new triggers, searches, or creates in your Zapier integration.
+
+Usage:
+
+zapier ai [new|update] [actionType] ["Some instructions"] [--add-url=<url>] [--add-file=<file>]
+
+- [new|update]: Specify whether to create a new trigger, search, or create in your Zapier integration.
+
+- [actionType]: The type of action to work on (e.g., trigger, search, create).
+
+- ["Some instructions"]: Provide instructions for the AI in quotes.
+
+- [--add-url=<url>]: Optional flag to include additional URL context in the AI request (can be used multiple times).
+
+- [--add-file=<file>]: Optional flag to include local file context in the AI request (can be used multiple times).
+
+**Arguments**
+* (required) `operation` | The operation to perform (new or update)
+* (required) `actionType` | The type of action to work on (e.g., trigger, search, create)
+* (required) `instructions` | Instructions for the AI
+
+**Flags**
+* `--add-url` | Add a URL for additional context (can be used multiple times)
+* `--add-file` | Add a local file for additional context (can be used multiple times)
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier ai new trigger "Create a trigger for new email messages"`
+* `zapier ai update search "Modify the contact search to include phone number" --add-url="https://example.com/docs/search" --add-file="./local_schema.json"`
+
+
 ## analytics
 
 > Show the status of the analytics that are collected. Also used to change what is collected.

@@ -1,6 +1,7 @@
 // this is needed for the old help command so it can import new command info
 
 module.exports = {
+  ai: require('./commands/ai'),
   analytics: require('./commands/analytics'),
   apps: true,
   build: require('./commands/build'),

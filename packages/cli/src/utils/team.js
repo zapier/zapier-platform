@@ -27,6 +27,7 @@ const listTeamMembers = async () => {
     }
   );
 };
+
 module.exports = {
   listTeamMembers,
   transformUserRole,
