@@ -256,6 +256,31 @@ This command also checks the current directory for a linked integration.
 * `apps`
 
 
+## invoke
+
+> Invoke an action (trigger/search/create) locally.
+
+**Usage**: `zapier invoke [ACTIONTYPE] [ACTIONKEY]`
+
+**Arguments**
+* `actionType` | The action type you want to invoke.
+* `actionKey` | The action key you want to invoke.
+
+**Flags**
+* `-D, --inputData` | The input data to pass to the action. Must be a JSON-encoded object. If not provided, the command will try to read from stdin.
+* `-I, --no-prompt-for-optional-input-fields` | Do not prompt for missing optional input fields.
+* `--isLoadingSample` | Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.
+* `--isFillingDynamicDropdown` | Set bundle.meta.isFillingDynamicDropdown to true. Only makes sense for a polling trigger. When true in production, this poll is being used to populate a dynamic dropdown.
+* `--isPopulatingDedupe` | Set bundle.meta.isPopulatingDedupe to true. Only makes sense for a polling trigger. When true in production, the results of this poll will be used initialize the deduplication list rather than trigger a Zap. This happens when a user enables a Zap.
+* `--limit` | Set bundle.meta.limit. Only makes sense for a trigger. When used in production, this indicates the number of items you should fetch. -1 means no limit.  Defaults to `-1`.
+* `-p, --page` | Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier invoke trigger new_recipe`
+* `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`
+
+
 ## jobs
 
 > Lists ongoing migration or promotion jobs for the current integration.
