@@ -1,12 +1,12 @@
 const _ = require('lodash');
 
-const performBulkEchoesIds = {
-  name: 'performBulkReturnType',
+const performBufferEchoesIds = {
+  name: 'performBufferReturnType',
 
   shouldRun: (method, bundle) => {
     return (
-      Array.isArray(bundle.bulk) &&
-      method.endsWith('.operation.performBulk') &&
+      Array.isArray(bundle.buffer) &&
+      method.endsWith('.operation.performBuffer') &&
       method.startsWith('creates.')
     );
   },
@@ -17,7 +17,7 @@ const performBulkEchoesIds = {
       return [];
     }
 
-    const inputIds = bundle.bulk
+    const inputIds = bundle.buffer
       .map((b) => {
         return b && b.meta ? b.meta.id : null;
       })
@@ -62,4 +62,4 @@ const performBulkEchoesIds = {
   },
 };
 
-module.exports = performBulkEchoesIds;
+module.exports = performBufferEchoesIds;

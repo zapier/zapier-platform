@@ -3,22 +3,22 @@
 const _ = require('lodash');
 const jsonschema = require('jsonschema');
 
-const bulkWriteConstraints = (definition) => {
+const bufferedWriteConstraints = (definition) => {
   const errors = [];
   const actionType = 'creates';
 
   if (definition[actionType]) {
     _.each(definition[actionType], (actionDef) => {
-      if (actionDef.operation && actionDef.operation.bulk) {
-        if (!actionDef.operation.performBulk) {
+      if (actionDef.operation && actionDef.operation.buffer) {
+        if (!actionDef.operation.performBuffer) {
           errors.push(
             new jsonschema.ValidationError(
-              'must contain property "performBulk" because property "bulk" is present.',
+              'must contain property "performBuffer" because property "buffer" is present.',
               actionDef.operation,
               '/BasicCreateActionOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
               'missing',
-              'performBulk'
+              'performBuffer'
             )
           );
         }
@@ -26,7 +26,7 @@ const bulkWriteConstraints = (definition) => {
         if (actionDef.operation.perform) {
           errors.push(
             new jsonschema.ValidationError(
-              'must not contain property "perform" because it is mutually exclusive with property "bulk".',
+              'must not contain property "perform" because it is mutually exclusive with property "buffer".',
               actionDef.operation,
               '/BasicCreateActionOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
@@ -36,23 +36,27 @@ const bulkWriteConstraints = (definition) => {
           );
         }
 
-        if (actionDef.operation.bulk.groupedBy) {
+        if (actionDef.operation.buffer.groupedBy) {
           const requiredInputFields = [];
-          const inputFields = _.get(actionDef, ['operation', 'inputFields'], []);
+          const inputFields = _.get(
+            actionDef,
+            ['operation', 'inputFields'],
+            []
+          );
           inputFields.forEach((inputField) => {
             if (inputField.required) {
               requiredInputFields.push(inputField.key);
             }
           });
 
-          actionDef.operation.bulk.groupedBy.forEach((field, index) => {
+          actionDef.operation.buffer.groupedBy.forEach((field, index) => {
             if (!requiredInputFields.includes(field)) {
               errors.push(
                 new jsonschema.ValidationError(
                   `cannot use optional or non-existent inputField "${field}".`,
-                  actionDef.operation.bulk,
-                  '/BulkObjectSchema',
-                  `instance.${actionType}.${actionDef.key}.operation.bulk.groupedBy[${index}]`,
+                  actionDef.operation.buffer,
+                  '/BufferConfigSchema',
+                  `instance.${actionType}.${actionDef.key}.operation.buffer.groupedBy[${index}]`,
                   'invalid',
                   'groupedBy'
                 )
@@ -62,16 +66,16 @@ const bulkWriteConstraints = (definition) => {
         }
       }
 
-      if (actionDef.operation && actionDef.operation.performBulk) {
-        if (!actionDef.operation.bulk) {
+      if (actionDef.operation && actionDef.operation.performBuffer) {
+        if (!actionDef.operation.buffer) {
           errors.push(
             new jsonschema.ValidationError(
-              'must contain property "bulk" because property "performBulk" is present.',
+              'must contain property "buffer" because property "performBuffer" is present.',
               actionDef.operation,
               '/BasicCreateActionOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
               'missing',
-              'bulk'
+              'buffer'
             )
           );
         }
@@ -79,7 +83,7 @@ const bulkWriteConstraints = (definition) => {
         if (actionDef.operation.perform) {
           errors.push(
             new jsonschema.ValidationError(
-              'must not contain property "perform" because it is mutually exclusive with property "performBulk".',
+              'must not contain property "perform" because it is mutually exclusive with property "performBuffer".',
               actionDef.operation,
               '/BasicCreateActionOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
@@ -95,4 +99,4 @@ const bulkWriteConstraints = (definition) => {
   return errors;
 };
 
-module.exports = bulkWriteConstraints;
+module.exports = bufferedWriteConstraints;

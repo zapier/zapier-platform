@@ -18,7 +18,7 @@ const checks = [
   require('./matchingKeys'),
   require('./labelWhenVisible'),
   require('./uniqueInputFieldKeys'),
-  require('./bulkWriteConstraints'),
+  require('./bufferedWriteConstraints'),
   require('./requirePerformConditionally'),
   require('./pollingThrottle'),
 ];

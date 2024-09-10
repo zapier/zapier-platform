@@ -3,9 +3,8 @@
 const makeSchema = require('../utils/makeSchema');
 
 module.exports = makeSchema({
-  id: '/BulkObjectSchema',
-  description:
-    'Zapier uses this configuration for writing in bulk.',
+  id: '/BufferConfigSchema',
+  description: 'Zapier uses this configuration for writing in bulk.',
   type: 'object',
   required: ['groupedBy', 'limit'],
   properties: {
@@ -17,7 +16,7 @@ module.exports = makeSchema({
     },
     limit: {
       description:
-        'The maximum number of items to call performBulk with. **Note** that it is capped by the platform to prevent exceeding the [AWS Lambda\'s request/response payload size quota of 6 MB](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#function-configuration-deployment-and-execution). Also, the execution is time-bound; we recommend reducing it upon consistent timeout.',
+        "The maximum number of items to call `performBuffer` with. **Note** that it is capped by the platform to prevent exceeding the [AWS Lambda's request/response payload size quota of 6 MB](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#function-configuration-deployment-and-execution). Also, the execution is time-bound; we recommend reducing it upon consistent timeout.",
       type: 'integer',
     },
   },
@@ -36,11 +35,11 @@ module.exports = makeSchema({
       reason: 'Empty groupedBy list provided: `[]`.',
     },
     {
-      example: {groupedBy: ['workspace']},
+      example: { groupedBy: ['workspace'] },
       reason: 'Missing required key: `limit`.',
     },
     {
-      example: {limit: 1},
+      example: { limit: 1 },
       reason: 'Missing required key: `groupedBy`.',
     },
   ],

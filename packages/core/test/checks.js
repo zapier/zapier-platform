@@ -248,10 +248,10 @@ describe('checks', () => {
     isFirehoseWebhook('triggers.blah.operation.perform').should.be.false(); // the firehose webhook check is at app level, not trigger
   });
 
-  it('should check performBulk missing IDs', () => {
+  it('should check performBuffer missing IDs', () => {
     const results = { one: {}, two: {} };
     const bundle = {
-      bulk: [
+      buffer: [
         { meta: { id: 'one' } },
         { meta: { id: 'two' } },
         { meta: { id: 'three' } },
@@ -263,8 +263,8 @@ describe('checks', () => {
         { meta: { id: 'nine' } },
       ],
     };
-    const errors = checks.performBulkReturnType.run(
-      'creates.blah.operation.performBulk',
+    const errors = checks.performBufferReturnType.run(
+      'creates.blah.operation.performBuffer',
       results,
       {},
       bundle
@@ -275,7 +275,7 @@ describe('checks', () => {
     );
   });
 
-  it('should check performBulk object shape', () => {
+  it('should check performBuffer object shape', () => {
     const results = {
       one: 'not an object',
       two: { error: 123 },
@@ -286,15 +286,15 @@ describe('checks', () => {
       },
     };
     const bundle = {
-      bulk: [
+      buffer: [
         { meta: { id: 'one' } },
         { meta: { id: 'two' } },
         { meta: { id: 'three' } },
         { meta: { id: 'four' } },
       ],
     };
-    const errors = checks.performBulkReturnType.run(
-      'creates.blah.operation.performBulk',
+    const errors = checks.performBufferReturnType.run(
+      'creates.blah.operation.performBuffer',
       results,
       {},
       bundle
@@ -306,13 +306,13 @@ describe('checks', () => {
     );
   });
 
-  it('should pass performBulk check', () => {
+  it('should pass performBuffer check', () => {
     const results = { one: { outputData: {} }, two: { outputData: {} } };
     const bundle = {
-      bulk: [{ meta: { id: 'one' } }, { meta: { id: 'two' } }],
+      buffer: [{ meta: { id: 'one' } }, { meta: { id: 'two' } }],
     };
-    const errors = checks.performBulkReturnType.run(
-      'creates.blah.operation.performBulk',
+    const errors = checks.performBufferReturnType.run(
+      'creates.blah.operation.performBuffer',
       results,
       {},
       bundle

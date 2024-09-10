@@ -3,7 +3,7 @@
 const makeSchema = require('../utils/makeSchema');
 
 const BasicActionOperationSchema = require('./BasicActionOperationSchema');
-const BulkObjectSchema = require('./BulkObjectSchema');
+const BufferConfigSchema = require('./BufferConfigSchema');
 const FunctionSchema = require('./FunctionSchema');
 const RequestSchema = require('./RequestSchema');
 
@@ -25,7 +25,7 @@ BasicCreateActionOperationSchema.properties.shouldLock = {
 
 BasicCreateActionOperationSchema.properties.perform = {
   description:
-    "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`. Exactly one of `perform` or `performBulk` must be defined. If you choose to define `bulk` and `performBulk`, you must omit `perform`.",
+    "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`. Exactly one of `perform` or `performBuffer` must be defined. If you choose to define `buffer` and `performBuffer`, you must omit `perform`.",
   oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
   docAnnotation: {
     required: {
@@ -35,10 +35,10 @@ BasicCreateActionOperationSchema.properties.perform = {
   },
 };
 
-BasicCreateActionOperationSchema.properties.bulk = {
+BasicCreateActionOperationSchema.properties.buffer = {
   description:
-    'Zapier uses this configuration for writing in bulk with `performBulk`.',
-  $ref: BulkObjectSchema.id,
+    'Zapier uses this configuration for writing in bulk with `performBuffer`.',
+  $ref: BufferConfigSchema.id,
   docAnnotation: {
     required: {
       type: 'replace', // replace or append
@@ -47,9 +47,9 @@ BasicCreateActionOperationSchema.properties.bulk = {
   },
 };
 
-BasicCreateActionOperationSchema.properties.performBulk = {
+BasicCreateActionOperationSchema.properties.performBuffer = {
   description:
-    'A function to write in bulk with. `bulk` and `performBulk` must either both be defined or neither. Additionally, only one of `perform` or `performBulk` can be defined. If you choose to define `perform`, you must omit `bulk` and `performBulk`.',
+    'A function to write in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.',
   $ref: FunctionSchema.id,
   docAnnotation: {
     required: {
@@ -63,5 +63,5 @@ delete BasicCreateActionOperationSchema.required;
 
 module.exports = makeSchema(
   BasicCreateActionOperationSchema,
-  BasicActionOperationSchema.dependencies.concat(BulkObjectSchema)
+  BasicActionOperationSchema.dependencies.concat(BufferConfigSchema)
 );

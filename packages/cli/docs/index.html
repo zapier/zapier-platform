@@ -288,7 +288,7 @@ a code {
 <li><a href="#nested--children-line-item-fields-1">Nested &amp; Children (Line Item) Fields</a></li>
 </ul>
 </li>
-<li><a href="#bulk-create-actions">Bulk Create Actions</a></li>
+<li><a href="#buffered-create-actions">Buffered Create Actions</a></li>
 <li><a href="#z-object">Z Object</a><ul>
 <li><a href="#zrequesturl-options"><code>z.request([url], options)</code></a></li>
 <li><a href="#zconsole"><code>z.console</code></a></li>
@@ -314,12 +314,12 @@ a code {
 <li><a href="#bundlesubscribedata"><code>bundle.subscribeData</code></a></li>
 </ul>
 </li>
-<li><a href="#bulkbundle-object">BulkBundle Object</a><ul>
-<li><a href="#bulkbundleauthdata"><code>bulkbundle.authData</code></a></li>
-<li><a href="#bulkbundlegroupedby"><code>bulkbundle.groupedBy</code></a></li>
-<li><a href="#bulkbundlebulk"><code>bulkbundle.bulk</code></a><ul>
-<li><a href="#bulkbundlebulkinputdata"><code>bulkbundle.bulk[].inputData</code></a></li>
-<li><a href="#bulkbundlebulkmeta"><code>bulkbundle.bulk[].meta</code></a></li>
+<li><a href="#bufferedbundle-object">BufferedBundle Object</a><ul>
+<li><a href="#bufferedbundleauthdata"><code>bufferedBundle.authData</code></a></li>
+<li><a href="#bufferedbundlegroupedby"><code>bufferedBundle.groupedBy</code></a></li>
+<li><a href="#bufferedbundlebuffer"><code>bufferedBundle.buffer</code></a><ul>
+<li><a href="#bufferedbundlebufferinputdata"><code>bufferedBundle.buffer[].inputData</code></a></li>
+<li><a href="#bufferedbundlebuffermeta"><code>bufferedBundle.buffer[].meta</code></a></li>
 </ul>
 </li>
 </ul>
@@ -512,7 +512,7 @@ a code {
 <li><a href="#nested--children-line-item-fields-1">Nested &amp; Children (Line Item) Fields</a></li>
 </ul>
 </li>
-<li><a href="#bulk-create-actions">Bulk Create Actions</a></li>
+<li><a href="#buffered-create-actions">Buffered Create Actions</a></li>
 <li><a href="#z-object">Z Object</a><ul>
 <li><a href="#zrequesturl-options"><code>z.request([url], options)</code></a></li>
 <li><a href="#zconsole"><code>z.console</code></a></li>
@@ -538,12 +538,12 @@ a code {
 <li><a href="#bundlesubscribedata"><code>bundle.subscribeData</code></a></li>
 </ul>
 </li>
-<li><a href="#bulkbundle-object">BulkBundle Object</a><ul>
-<li><a href="#bulkbundleauthdata"><code>bulkbundle.authData</code></a></li>
-<li><a href="#bulkbundlegroupedby"><code>bulkbundle.groupedBy</code></a></li>
-<li><a href="#bulkbundlebulk"><code>bulkbundle.bulk</code></a><ul>
-<li><a href="#bulkbundlebulkinputdata"><code>bulkbundle.bulk[].inputData</code></a></li>
-<li><a href="#bulkbundlebulkmeta"><code>bulkbundle.bulk[].meta</code></a></li>
+<li><a href="#bufferedbundle-object">BufferedBundle Object</a><ul>
+<li><a href="#bufferedbundleauthdata"><code>bufferedBundle.authData</code></a></li>
+<li><a href="#bufferedbundlegroupedby"><code>bufferedBundle.groupedBy</code></a></li>
+<li><a href="#bufferedbundlebuffer"><code>bufferedBundle.buffer</code></a><ul>
+<li><a href="#bufferedbundlebufferinputdata"><code>bufferedBundle.buffer[].inputData</code></a></li>
+<li><a href="#bufferedbundlebuffermeta"><code>bufferedBundle.buffer[].meta</code></a></li>
 </ul>
 </li>
 </ul>
@@ -2945,7 +2945,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="bulk-create-actions">Bulk Create Actions</h2>
+      <h2 id="buffered-create-actions">Buffered Create Actions</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -2954,13 +2954,13 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><em>Added in v15.8.0.</em></p><p>Bulk Create allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server. When enabled, Zapier holds the data until the buffer reaches a size limit or a certain time has passed, then sends the buffered data using the <code>performBulk</code> function you define.</p><p>To implement a Bulk Create, you define a <a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#bulkobjectschema"><code>bulk</code></a> configuration object and a <code>performBulk</code> function in the <code>operation</code> object. In the <code>bulk</code> config object, you specify how you want to group the buffered data using the <code>groupedBy</code> setting and the maximum number of items to buffer using the <code>limit</code> setting.</p><p>The <code>performBulk</code> function should replace the <code>perform</code> function. Note that <code>perform</code> cannot be defined along with <code>performBulk</code>. Check out the <a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#basiccreateactionoperationschema"><code>create</code> action operation schema</a> for details.</p><p>Similar to the general <code>perform</code> function accepting two arguments, <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object"><code>z</code></a> and <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bundle-object"><code>bundle</code></a> objects, the <code>performBulk</code> function accepts <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object"><code>z</code></a> and <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bulkbundle-object"><code>bulkBundle</code></a> objects. They share the same <code>z</code> object, but the <code>bulkBundle</code> object is different from the <code>bundle</code> object. The <code>bulkBundle</code> object has an idempotency ID set at <code>bulkBundle.bulk[].meta.id</code> for each object in the bulk. <code>performBulk</code> would have to return the idempotency IDs to tell Zapier which objects were successfully written. Find the details about the <code>bulkBundle</code> object <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bulkbundle-object">here</a>.</p><p>Here is an example of a Bulk Create action:</p>
+      <p><em>Added in v15.15.0.</em></p><p>Buffered Create allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server. When enabled, Zapier holds the data until the buffer reaches a size limit or a certain time has passed, then sends the buffered data using the <code>performBuffer</code> function you define.</p><p>To implement a Bulk Create, you define a <a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#bulkobjectschema"><code>bulk</code></a> configuration object and a <code>performBuffer</code> function in the <code>operation</code> object. In the <code>buffer</code> config object, you specify how you want to group the buffered data using the <code>groupedBy</code> setting and the maximum number of items to buffer using the <code>limit</code> setting.</p><p>The <code>performBuffer</code> function should replace the <code>perform</code> function. Note that <code>perform</code> cannot be defined along with <code>performBuffer</code>. Check out the <a href="https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#basiccreateactionoperationschema"><code>create</code> action operation schema</a> for details.</p><p>Similar to the general <code>perform</code> function accepting two arguments, <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object"><code>z</code></a> and <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bundle-object"><code>bundle</code></a> objects, the <code>performBuffer</code> function accepts <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object"><code>z</code></a> and <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bulkbundle-object"><code>bufferedBundle</code></a> objects. They share the same <code>z</code> object, but the <code>bufferedBundle</code> object is different from the <code>bundle</code> object. The <code>bufferedBundle</code> object has an idempotency ID set at <code>bufferedBundle.buffer[].meta.id</code> for each object in the buffer. <code>performBuffer</code> would have to return the idempotency IDs to tell Zapier which objects were successfully written. Find the details about the <code>bufferedBundle</code> object <a href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bufferedbundle-object">here</a>.</p><p>Here is an example of a Buffered Create action:</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height  docs-code">
-      <pre><code class="lang-js"><span class="hljs-keyword">const</span> performBulk = <span class="hljs-keyword">async</span> (z, bulkBundle) =&gt; {
+      <pre><code class="lang-js"><span class="hljs-keyword">const</span> performBuffer = <span class="hljs-keyword">async</span> (z, bufferedBundle) =&gt; {
   <span class="hljs-comment">// Grab the line items, preserving the order</span>
-  <span class="hljs-keyword">const</span> rows = bulkBundle.bulk.map(<span class="hljs-function">(<span class="hljs-params">{inputData}</span>) =&gt;</span> {
-    <span class="hljs-keyword">return</span> {<span class="hljs-attr">title</span>: inputData.title, <span class="hljs-attr">year</span>: inputData.year};
+  <span class="hljs-keyword">const</span> rows = bufferedBundle.buffer.map(<span class="hljs-function">(<span class="hljs-params">{ inputData }</span>) =&gt;</span> {
+    <span class="hljs-keyword">return</span> { <span class="hljs-attr">title</span>: inputData.title, <span class="hljs-attr">year</span>: inputData.year };
   });
 
   <span class="hljs-comment">// Make the bulk-write API request</span>
@@ -2968,8 +2968,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <span class="hljs-attr">method</span>: <span class="hljs-string">&apos;POST&apos;</span>,
     <span class="hljs-attr">url</span>: <span class="hljs-string">&apos;https://api.example.com/add_rows&apos;</span>,
     <span class="hljs-attr">body</span>: {
-      <span class="hljs-attr">spreadsheet</span>: bulkBundle.groupedBy.spreadsheet,
-      <span class="hljs-attr">worksheet</span>: bulkBundle.groupedBy.worksheet,
+      <span class="hljs-attr">spreadsheet</span>: bufferedBundle.groupedBy.spreadsheet,
+      <span class="hljs-attr">worksheet</span>: bufferedBundle.groupedBy.worksheet,
       rows,
     },
   });
@@ -2977,7 +2977,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
   <span class="hljs-comment">// Create a matching result using the idempotency ID for each buffered invovation run.</span>
   <span class="hljs-comment">// The returned IDs will tell Zapier backend which items were successfully written.</span>
   <span class="hljs-keyword">const</span> result = {};
-  bulkBundle.bulk.forEach(<span class="hljs-function">(<span class="hljs-params">{inputData, meta}, index</span>) =&gt;</span> {
+  bufferedBundle.buffer.forEach(<span class="hljs-function">(<span class="hljs-params">{ inputData, meta }, index</span>) =&gt;</span> {
     <span class="hljs-keyword">let</span> error = <span class="hljs-string">&apos;&apos;</span>;
     <span class="hljs-keyword">let</span> outputData = {};
 
@@ -2999,7 +2999,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
       }
     }
 
-    <span class="hljs-comment">// the performBulk method must return a data just like this</span>
+    <span class="hljs-comment">// the performBuffer method must return a data just like this</span>
     <span class="hljs-comment">// {</span>
     <span class="hljs-comment">//   &quot;idempotency ID 1&quot;: {</span>
     <span class="hljs-comment">//     &quot;outputData&quot;: {&quot;id&quot;: &quot;12910&quot;},</span>
@@ -3029,11 +3029,11 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     <span class="hljs-attr">description</span>: <span class="hljs-string">&apos;Add rows to a worksheet.&apos;</span>,
   },
   <span class="hljs-attr">operation</span>: {
-    <span class="hljs-attr">bulk</span>: {
+    <span class="hljs-attr">buffer</span>: {
       <span class="hljs-attr">groupedBy</span>: [<span class="hljs-string">&apos;spreadsheet&apos;</span>, <span class="hljs-string">&apos;worksheet&apos;</span>],
       <span class="hljs-attr">limit</span>: <span class="hljs-number">3</span>,
     },
-    performBulk,
+    performBuffer,
     <span class="hljs-attr">inputFields</span>: [
       {
         <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;spreadsheet&apos;</span>,
@@ -3054,9 +3054,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
         <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>,
       },
     ],
-    <span class="hljs-attr">outputFields</span>: [
-      { <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;id&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span> },
-    ],
+    <span class="hljs-attr">outputFields</span>: [{ <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;id&apos;</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span> }],
     <span class="hljs-attr">sample</span>: { <span class="hljs-attr">id</span>: <span class="hljs-string">&apos;12345&apos;</span> },
   },
 };
@@ -3692,7 +3690,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h2 id="bulkbundle-object">BulkBundle Object</h2>
+      <h2 id="bufferedbundle-object">BufferedBundle Object</h2>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3701,8 +3699,8 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p><em>Added in v15.8.0.</em></p><p>This object holds a user&apos;s auth details and the bulked data for the API requests. It is used only with a <code>create</code> action&apos;s <code>performBulk</code> function.</p><blockquote>
-<p>The <code>bulkbundle</code> object is passed into the <code>performBulk</code> function as the second argument - IE: <code>performBulk: (z, bulkbundle) =&gt; {}</code>.</p>
+      <p><em>Added in v15.15.0.</em></p><p>This object holds a user&apos;s auth details and the buffered data for the API requests. It is used only with a <code>create</code> action&apos;s <code>performBuffer</code> function.</p><blockquote>
+<p>The <code>bufferedBundle</code> object is passed into the <code>performBuffer</code> function as the second argument - IE: <code>performBuffer: async (z, bufferedBundle) =&gt; {}</code>.</p>
 </blockquote>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -3712,7 +3710,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="bulkbundleauthdata"><code>bulkbundle.authData</code></h3>
+      <h3 id="bufferedbundleauthdata"><code>bufferedBundle.authData</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3730,7 +3728,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="bulkbundlegroupedby"><code>bulkbundle.groupedBy</code></h3>
+      <h3 id="bufferedbundlegroupedby"><code>bufferedBundle.groupedBy</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3748,7 +3746,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h3 id="bulkbundlebulk"><code>bulkbundle.bulk</code></h3>
+      <h3 id="bufferedbundlebuffer"><code>bufferedBundle.buffer</code></h3>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3766,7 +3764,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h4 id="bulkbundlebulkinputdata"><code>bulkbundle.bulk[].inputData</code></h4>
+      <h4 id="bufferedbundlebufferinputdata"><code>bufferedBundle.buffer[].inputData</code></h4>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3784,7 +3782,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <h4 id="bulkbundlebulkmeta"><code>bulkbundle.bulk[].meta</code></h4>
+      <h4 id="bufferedbundlebuffermeta"><code>bufferedBundle.buffer[].meta</code></h4>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -3793,7 +3791,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>It contains an idempotency <code>id</code> provided to the <code>create</code> action to identify each run&apos;s data in the bulk data.</p>
+      <p>It contains an idempotency <code>id</code> provided to the <code>create</code> action to identify each run&apos;s data in the buffered data.</p>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
@@ -4017,7 +4015,7 @@ zapier env:get 1.0.0
       },
       <span class="hljs-attr">operation</span>: {
         <span class="hljs-attr">perform</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {},
-        <span class="hljs-attr">inputFields</span>: [{<span class="hljs-attr">key</span>: <span class="hljs-string">&apos;name&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span>}],
+        <span class="hljs-attr">inputFields</span>: [{ <span class="hljs-attr">key</span>: <span class="hljs-string">&apos;name&apos;</span>, <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">type</span>: <span class="hljs-string">&apos;string&apos;</span> }],
         <span class="hljs-comment">// overwrites the default, for this action</span>
         <span class="hljs-attr">throttle</span>: {
           <span class="hljs-attr">window</span>: <span class="hljs-number">600</span>,

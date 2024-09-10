@@ -855,22 +855,22 @@ To define an Output Field for a nested field use `{{parent}}__{{key}}`. For chil
 [insert-file:./snippets/output-fields.js]
 ```
 
-## Bulk Create Actions
+## Buffered Create Actions
 
-*Added in v15.8.0.*
+*Added in v15.15.0.*
 
-Bulk Create allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server. When enabled, Zapier holds the data until the buffer reaches a size limit or a certain time has passed, then sends the buffered data using the `performBulk` function you define.
+Buffered Create allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server. When enabled, Zapier holds the data until the buffer reaches a size limit or a certain time has passed, then sends the buffered data using the `performBuffer` function you define.
 
-To implement a Bulk Create, you define a [`bulk`](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#bulkobjectschema) configuration object and a `performBulk` function in the `operation` object. In the `bulk` config object, you specify how you want to group the buffered data using the `groupedBy` setting and the maximum number of items to buffer using the `limit` setting.
+To implement a Bulk Create, you define a [`bulk`](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#bulkobjectschema) configuration object and a `performBuffer` function in the `operation` object. In the `buffer` config object, you specify how you want to group the buffered data using the `groupedBy` setting and the maximum number of items to buffer using the `limit` setting.
 
-The `performBulk` function should replace the `perform` function. Note that `perform` cannot be defined along with `performBulk`. Check out the [`create` action operation schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#basiccreateactionoperationschema) for details.
+The `performBuffer` function should replace the `perform` function. Note that `perform` cannot be defined along with `performBuffer`. Check out the [`create` action operation schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#basiccreateactionoperationschema) for details.
 
-Similar to the general `perform` function accepting two arguments, [`z`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object) and [`bundle`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bundle-object) objects, the `performBulk` function accepts [`z`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object) and [`bulkBundle`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bulkbundle-object) objects. They share the same `z` object, but the `bulkBundle` object is different from the `bundle` object. The `bulkBundle` object has an idempotency ID set at `bulkBundle.bulk[].meta.id` for each object in the bulk. `performBulk` would have to return the idempotency IDs to tell Zapier which objects were successfully written. Find the details about the `bulkBundle` object [here](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bulkbundle-object).
+Similar to the general `perform` function accepting two arguments, [`z`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object) and [`bundle`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bundle-object) objects, the `performBuffer` function accepts [`z`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object) and [`bufferedBundle`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bulkbundle-object) objects. They share the same `z` object, but the `bufferedBundle` object is different from the `bundle` object. The `bufferedBundle` object has an idempotency ID set at `bufferedBundle.buffer[].meta.id` for each object in the buffer. `performBuffer` would have to return the idempotency IDs to tell Zapier which objects were successfully written. Find the details about the `bufferedBundle` object [here](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bufferedbundle-object).
 
-Here is an example of a Bulk Create action:
+Here is an example of a Buffered Create action:
 
 ```js
-[insert-file:./snippets/bulk-create.js]
+[insert-file:./snippets/buffered-create.js]
 ```
 
 ## Z Object
@@ -1153,33 +1153,33 @@ This is an object that contains the data you returned from the `performSubscribe
 
 Read more in the [REST hook example](https://github.com/zapier/zapier-platform/blob/main/example-apps/rest-hooks/triggers/recipe.js).
 
-## BulkBundle Object
+## BufferedBundle Object
 
-*Added in v15.8.0.*
+*Added in v15.15.0.*
 
-This object holds a user's auth details and the bulked data for the API requests. It is used only with a `create` action's `performBulk` function.
+This object holds a user's auth details and the buffered data for the API requests. It is used only with a `create` action's `performBuffer` function.
 
-> The `bulkbundle` object is passed into the `performBulk` function as the second argument - IE: `performBulk: (z, bulkbundle) => {}`.
+> The `bufferedBundle` object is passed into the `performBuffer` function as the second argument - IE: `performBuffer: async (z, bufferedBundle) => {}`.
 
-### `bulkbundle.authData`
+### `bufferedBundle.authData`
 
 It is a user-provided authentication data, like `api_key` or `access_token`. [Read more on authentication.](#authentication)
 
-### `bulkbundle.groupedBy`
+### `bufferedBundle.groupedBy`
 
 It is a user-provided data for a set of selected [`inputFields`](#input-fields) to group the multiple runs of a `create` action by.
 
-### `bulkbundle.bulk`
+### `bufferedBundle.buffer`
 
 It is a list of objects of user-provided data and some meta data to allow multiple runs of a `create` action be processed in a single API request.
 
-#### `bulkbundle.bulk[].inputData`
+#### `bufferedBundle.buffer[].inputData`
 
 It is a user-provided data for a particular run of a `create` action in the bulk, as defined by the [`inputFields`](#input-fields).
 
-#### `bulkbundle.bulk[].meta`
+#### `bufferedBundle.buffer[].meta`
 
-It contains an idempotency `id` provided to the `create` action to identify each run's data in the bulk data.
+It contains an idempotency `id` provided to the `create` action to identify each run's data in the buffered data.
 
 ## Environment
 

@@ -4,7 +4,7 @@ module.exports = (method) => {
   return (
     (method.startsWith('creates.') &&
       (method.endsWith('.operation.perform') ||
-        method.endsWith('.operation.performBulk'))) ||
+        method.endsWith('.operation.performBuffer'))) ||
     (method.startsWith('resources.') &&
       method.endsWith('.create.operation.perform'))
   );

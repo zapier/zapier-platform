@@ -314,7 +314,7 @@ describe('create-app', () => {
   });
 
   describe('output checks', () => {
-    it('should check performBulk output', async () => {
+    it('should check performBuffer output', async () => {
       const definition = dataTools.jsonCopy(appDefinition);
       definition.resources.row = {
         key: 'row',
@@ -324,8 +324,8 @@ describe('create-app', () => {
             label: 'Insert Row',
           },
           operation: {
-            performBulk: (z, bundle) => {
-              const firstId = bundle.bulk[0].meta.id;
+            performBuffer: (z, bundle) => {
+              const firstId = bundle.buffer[0].meta.id;
               return { [firstId]: {} };
             },
           },
@@ -333,7 +333,7 @@ describe('create-app', () => {
       };
       const app = createApp(definition);
       const bundle = {
-        bulk: [
+        buffer: [
           { meta: { id: 'ffee-0000' } },
           { meta: { id: 'ffee-0001' } },
           { meta: { id: 'ffee-0002' } },
@@ -343,7 +343,7 @@ describe('create-app', () => {
         ],
       };
       const input = createTestInput(
-        'creates.rowCreate.operation.performBulk',
+        'creates.rowCreate.operation.performBuffer',
         bundle
       );
       const err = await app(input).should.be.rejected();

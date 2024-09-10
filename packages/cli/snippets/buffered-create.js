@@ -1,7 +1,7 @@
-const performBulk = async (z, bulkBundle) => {
+const performBuffer = async (z, bufferedBundle) => {
   // Grab the line items, preserving the order
-  const rows = bulkBundle.bulk.map(({inputData}) => {
-    return {title: inputData.title, year: inputData.year};
+  const rows = bufferedBundle.buffer.map(({ inputData }) => {
+    return { title: inputData.title, year: inputData.year };
   });
 
   // Make the bulk-write API request
@@ -9,8 +9,8 @@ const performBulk = async (z, bulkBundle) => {
     method: 'POST',
     url: 'https://api.example.com/add_rows',
     body: {
-      spreadsheet: bulkBundle.groupedBy.spreadsheet,
-      worksheet: bulkBundle.groupedBy.worksheet,
+      spreadsheet: bufferedBundle.groupedBy.spreadsheet,
+      worksheet: bufferedBundle.groupedBy.worksheet,
       rows,
     },
   });
@@ -18,7 +18,7 @@ const performBulk = async (z, bulkBundle) => {
   // Create a matching result using the idempotency ID for each buffered invovation run.
   // The returned IDs will tell Zapier backend which items were successfully written.
   const result = {};
-  bulkBundle.bulk.forEach(({inputData, meta}, index) => {
+  bufferedBundle.buffer.forEach(({ inputData, meta }, index) => {
     let error = '';
     let outputData = {};
 
@@ -40,7 +40,7 @@ const performBulk = async (z, bulkBundle) => {
       }
     }
 
-    // the performBulk method must return a data just like this
+    // the performBuffer method must return a data just like this
     // {
     //   "idempotency ID 1": {
     //     "outputData": {"id": "12910"},
@@ -70,11 +70,11 @@ module.exports = {
     description: 'Add rows to a worksheet.',
   },
   operation: {
-    bulk: {
+    buffer: {
       groupedBy: ['spreadsheet', 'worksheet'],
       limit: 3,
     },
-    performBulk,
+    performBuffer,
     inputFields: [
       {
         key: 'spreadsheet',
@@ -95,9 +95,7 @@ module.exports = {
         type: 'string',
       },
     ],
-    outputFields: [
-      { key: 'id', type: 'string' },
-    ],
+    outputFields: [{ key: 'id', type: 'string' }],
     sample: { id: '12345' },
   },
 };

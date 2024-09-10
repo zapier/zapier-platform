@@ -135,13 +135,12 @@ type DehydrateFunc = <T>(
 export interface ZObject {
   request: {
     // most specific overloads go first
-    (
-      url: string,
-      options: HttpRequestOptions & { raw: true }
-    ): Promise<RawHttpResponse>;
-    (
-      options: HttpRequestOptions & { raw: true; url: string }
-    ): Promise<RawHttpResponse>;
+    (url: string, options: HttpRequestOptions & { raw: true }): Promise<
+      RawHttpResponse
+    >;
+    (options: HttpRequestOptions & { raw: true; url: string }): Promise<
+      RawHttpResponse
+    >;
 
     (url: string, options?: HttpRequestOptions): Promise<HttpResponse>;
     (options: HttpRequestOptions & { url: string }): Promise<HttpResponse>;
@@ -232,19 +231,7 @@ export type AfterResponseMiddleware = (
   bundle?: Bundle
 ) => HttpResponse | Promise<HttpResponse>;
 
-interface PerformBulkSuccessItem {
-  outputData: { [x: string]: any };
-  error?: string;
-}
-
-interface PerformBulkErrorItem {
-  outputData?: { [x: string]: any };
-  error: string;
-}
-
-export type PerformBulkItem = PerformBulkSuccessItem | PerformBulkErrorItem;
-
-export interface BufferedBundle<InputData = { [x: string]: any }> {
+export interface BufferedItem<InputData = { [x: string]: any }> {
   inputData: InputData;
   meta: {
     id: string;
@@ -252,17 +239,31 @@ export interface BufferedBundle<InputData = { [x: string]: any }> {
   };
 }
 
-export interface BulkBundle<InputData = { [x: string]: any }> {
+export interface BufferedBundle<InputData = { [x: string]: any }> {
   authData: { [x: string]: string };
-  bulk: BufferedBundle<InputData>[];
+  buffer: BufferedItem<InputData>[];
   groupedBy: { [x: string]: string };
 }
 
-export interface PerformBulkResult {
-  [id: string]: PerformBulkItem;
+interface PerformBufferSuccessItem {
+  outputData: { [x: string]: any };
+  error?: string;
 }
 
-export const performBulk: (
+interface PerformBufferErrorItem {
+  outputData?: { [x: string]: any };
+  error: string;
+}
+
+export type PerformBufferResultItem =
+  | PerformBufferSuccessItem
+  | PerformBufferErrorItem;
+
+export interface PerformBufferResult {
+  [id: string]: PerformBufferResultItem;
+}
+
+export const performBuffer: (
   z: ZObject,
-  bundle: BulkBundle
-) => Promise<PerformBulkResult>;
+  bundle: BufferedBundle
+) => Promise<PerformBufferResult>;

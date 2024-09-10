@@ -9,7 +9,12 @@ const requirePerformConditionally = (definition) => {
 
   if (definition[actionType]) {
     _.each(definition[actionType], (actionDef) => {
-      if (actionDef.operation && !actionDef.operation.bulk && !actionDef.operation.performBulk && !actionDef.operation.perform) {
+      if (
+        actionDef.operation &&
+        !actionDef.operation.buffer &&
+        !actionDef.operation.performBuffer &&
+        !actionDef.operation.perform
+      ) {
         errors.push(
           new jsonschema.ValidationError(
             'requires property "perform".',
