@@ -77,14 +77,14 @@ declare class ThrottledError extends Error {
 // copied http stuff from external typings
 export interface HttpRequestOptions {
   agent?: Agent;
-  body?: string | Buffer | NodeJS.ReadableStream | object;
+  body?: string | Buffer | NodeJS.ReadableStream | Record<string, any>;
   compress?: boolean;
   follow?: number;
-  form?: object;
+  form?: any;
   headers?: { [name: string]: string };
-  json?: object | any[];
+  json?: any;
   method?: HttpMethod;
-  params?: object;
+  params?: Record<string, any>;
   raw?: boolean;
   redirect?: 'manual' | 'error' | 'follow';
   removeMissingValuesFrom?: {
@@ -95,6 +95,14 @@ export interface HttpRequestOptions {
   timeout?: number;
   url?: string;
   skipThrowForStatus?: boolean;
+
+  /**
+   * This is a special field that can be used to pass data to
+   * middleware. It is not sent with the request, but is available in
+   * the `response` object that middleware receives. This is useful for
+   * things like `prefixErrorMessage` fields etc.
+   */
+  middlewareData?: Record<string, any>;
 }
 
 interface BaseHttpResponse {

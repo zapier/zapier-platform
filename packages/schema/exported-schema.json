@@ -1,5 +1,5 @@
 {
-  "version": "15.11.1",
+  "version": "15.14.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -1285,6 +1285,10 @@
               "value": "**yes** (with exceptions, see description)"
             }
           }
+        },
+        "maxPollingDelay": {
+          "description": "The maximum amount of time to wait between polling requests in seconds. Minimum value is 20s and will default to 20 if not set, or set to a lower value.",
+          "type": "integer"
         }
       },
       "additionalProperties": false,

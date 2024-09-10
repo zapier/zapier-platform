@@ -11,8 +11,6 @@ const fse = require('fs-extra');
 const klaw = require('klaw');
 const updateNotifier = require('update-notifier');
 const colors = require('colors/safe');
-const ignore = require('ignore');
-const gitIgnore = require('parse-gitignore');
 const semver = require('semver');
 const { minimatch } = require('minimatch');
 
@@ -47,6 +45,7 @@ const {
 const checkMissingAppInfo = require('./check-missing-app-info');
 
 const { runCommand, isWindows, findCorePackageDir } = require('./misc');
+const { respectGitIgnore } = require('./ignore');
 
 const debug = require('debug')('zapier:build');
 
@@ -107,8 +106,8 @@ const requiredFiles = (cwd, entryPoints) => {
 };
 
 const listFiles = (dir) => {
-  const isBlacklisted = (filePath) => {
-    return constants.BLACKLISTED_PATHS.find((excluded) => {
+  const isBlocklisted = (filePath) => {
+    return constants.BLOCKLISTED_PATHS.find((excluded) => {
       return filePath.search(excluded) === 0;
     });
   };
@@ -119,7 +118,7 @@ const listFiles = (dir) => {
     klaw(dir, { preserveSymlinks: true })
       .on('data', (item) => {
         const strippedPath = stripPath(cwd, item.path);
-        if (!item.stats.isDirectory() && !isBlacklisted(strippedPath)) {
+        if (!item.stats.isDirectory() && !isBlocklisted(strippedPath)) {
           paths.push(strippedPath);
         }
       })
@@ -129,26 +128,6 @@ const listFiles = (dir) => {
         resolve(paths);
       });
   });
-};
-
-// Exclude file paths in .gitignore
-const respectGitIgnore = (dir, paths) => {
-  const gitIgnorePath = path.join(dir, '.gitignore');
-  if (!fs.existsSync(gitIgnorePath)) {
-    if (!constants.IS_TESTING) {
-      console.warn(
-        `\n\n\t${colors.yellow(
-          '!! Warning !!'
-        )}\n\nThere is no .gitignore, so we are including all files. This might make the source.zip file too large\n`
-      );
-    }
-    return paths;
-  }
-  const gitIgnoredPaths = gitIgnore(gitIgnorePath);
-  const validGitIgnorePaths = gitIgnoredPaths.filter(ignore.isPathValid);
-  const gitFilter = ignore().add(validGitIgnorePaths);
-
-  return gitFilter.filter(paths);
 };
 
 const forceIncludeDumbPath = (appConfig, filePath) => {

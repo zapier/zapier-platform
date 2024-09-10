@@ -2,7 +2,6 @@ import type {
   AfterResponseMiddleware,
   BeforeRequestMiddleware,
   Bundle,
-  PerformFunction,
   ZObject,
 } from './zapier.custom';
 import type {
@@ -101,7 +100,10 @@ expectType<Trigger>(hookTrigger);
 
 const searchOperation: BasicActionOperation = {
   inputFields: [{ key: 'some-input-key-1', type: 'file', required: true }],
-  perform: async (z: ZObject, b: Bundle) => [{ data: true }],
+  perform: async (z: ZObject, b: Bundle) => {
+    z.request('https://example.com', { middlewareData: { resumable: true } });
+    return [{ data: true }];
+  },
 };
 expectType<BasicActionOperation>(searchOperation);
 
@@ -124,7 +126,12 @@ const addBearerHeader: BeforeRequestMiddleware = (request, z, bundle) => {
 };
 expectType<BeforeRequestMiddleware>(addBearerHeader);
 
-const asyncBeforeRequest: BeforeRequestMiddleware = async (request) => request;
+const asyncBeforeRequest: BeforeRequestMiddleware = async (request) => {
+  if (request.middlewareData?.resumable) {
+    // do something async etc.
+  }
+  return request;
+};
 expectType<BeforeRequestMiddleware>(asyncBeforeRequest);
 
 const checkPermissionsError: AfterResponseMiddleware = (response, z) => {
