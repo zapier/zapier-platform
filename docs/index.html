@@ -4164,6 +4164,7 @@ zapier env:get 1.0.0
 <li><code>compress</code>: support gzip/deflate content encoding. Set to <code>false</code> to disable. Default is <code>true</code>.</li>
 <li><code>agent</code>: Node.js <code>http.Agent</code> instance, allows custom proxy, certificate etc. Default is <code>null</code>.</li>
 <li><code>timeout</code>: request / response timeout in ms. Set to <code>0</code> to disable (OS limit still applies), timeout reset on <code>redirect</code>. Default is <code>0</code> (disabled).</li>
+<li><code>signal</code> (<em>added in v15.14.1</em>): enables cancelling requests via a timeout set by an <code>AbortController</code>. More details in <code>node-fetch</code> docs <a href="https://www.npmjs.com/package/node-fetch#request-cancellation-with-abortsignal">here</a>. Default is <code>null</code>.</li>
 <li><code>size</code>: maximum response body size in bytes. Set to <code>0</code> to disable. Default is <code>0</code> (disabled).</li>
 <li><code>skipThrowForStatus</code> (<em>added in v10.0.0</em>): don&apos;t call <code>response.throwForStatus()</code> before resolving the request with <code>response</code>. See <a href="#http-response-object">HTTP Response Object</a>.</li>
 </ul>
