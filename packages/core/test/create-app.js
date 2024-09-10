@@ -656,7 +656,8 @@ describe('create-app', () => {
       const appPass = createApp(appDefinition);
 
       const { results } = await appPass(input);
-      results.should.eql('www.base-url.com');
+      results.length.should.eql(1);
+      results[0].url.should.eql('www.base-url.com');
     });
   });
 

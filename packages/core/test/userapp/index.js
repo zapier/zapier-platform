@@ -38,7 +38,7 @@ const ListRequire = {
       perform: (z, bundle) => {
         // in prod, process.cwd will return the app root directory
         const { BASE_URL } = z.require('./test/userapp/constants.js');
-        return BASE_URL;
+        return [{ id: 1, url: BASE_URL }];
       },
     },
   },
