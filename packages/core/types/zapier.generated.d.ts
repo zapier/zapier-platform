@@ -1317,6 +1317,33 @@ export interface Search {
 }
 
 /**
+ * Zapier uses this configuration for writing in bulk.
+ *
+ * [Docs: BufferConfigSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BufferConfigSchema)
+ */
+export interface BufferConfig {
+  /**
+   * The list of keys of input fields to group bulk-write with. The
+   * actual user data provided for the fields will be used during
+   * execution. Note that a required input field should be referenced
+   * to get user data always.
+   *
+   * @minItems 1
+   */
+  groupedBy: unknown[];
+
+  /**
+   * The maximum number of items to call `performBuffer` with.
+   * **Note** that it is capped by the platform to prevent exceeding
+   * the [AWS Lambda's request/response payload size quota of 6
+   * MB](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#function-configuration-deployment-and-execution).
+   * Also, the execution is time-bound; we recommend reducing it upon
+   * consistent timeout.
+   */
+  limit: number;
+}
+
+/**
  * Represents the fundamental mechanics of a create.
  *
  * [Docs: BasicCreateActionOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicCreateActionOperationSchema)
@@ -1332,9 +1359,11 @@ export interface BasicCreateActionOperation {
 
   /**
    * How will Zapier get the data? This can be a function like `(z) =>
-   * [{id: 123}]` or a request like `{url: 'http...'}`.
+   * [{id: 123}]` or a request like `{url: 'http...'}`. Exactly one of
+   * `perform` or `performBuffer` must be defined. If you choose to
+   * define `buffer` and `performBuffer`, you must omit `perform`.
    */
-  perform: Request | Function;
+  perform?: Request | Function;
 
   /**
    * Internal pointer to a function from the original source or the
@@ -1385,6 +1414,21 @@ export interface BasicCreateActionOperation {
    * concurrency)?
    */
   shouldLock?: boolean;
+
+  /**
+   * Zapier uses this configuration for writing in bulk with
+   * `performBuffer`.
+   */
+  buffer?: BufferConfig;
+
+  /**
+   * Internal pointer to a function from the original source or the
+   * source code itself. Encodes arity and if `arguments` is used in
+   * the body. Note - just write normal functions and the system will
+   * encode the pointers for you. Or, provide {source: "return 1 + 2"}
+   * and the system will wrap in a function for you.
+   */
+  performBuffer?: Function;
 }
 
 /**
