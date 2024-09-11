@@ -2570,6 +2570,7 @@ Ensure you're handling errors correctly for your platform version. The latest re
 * `compress`: support gzip/deflate content encoding. Set to `false` to disable. Default is `true`.
 * `agent`: Node.js `http.Agent` instance, allows custom proxy, certificate etc. Default is `null`.
 * `timeout`: request / response timeout in ms. Set to `0` to disable (OS limit still applies), timeout reset on `redirect`. Default is `0` (disabled).
+* `signal` (_added in v15.14.1_): enables cancelling requests via a timeout set by an `AbortController`. More details in `node-fetch` docs [here](https://www.npmjs.com/package/node-fetch#request-cancellation-with-abortsignal). Default is `null`.
 * `size`: maximum response body size in bytes. Set to `0` to disable. Default is `0` (disabled).
 * `skipThrowForStatus` (_added in v10.0.0_): don't call `response.throwForStatus()` before resolving the request with `response`. See [HTTP Response Object](#http-response-object).
 
