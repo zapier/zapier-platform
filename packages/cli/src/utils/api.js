@@ -153,6 +153,32 @@ const createCredentials = (username, password, totpCode) => {
   );
 };
 
+const createCanary = async (versionFrom, versionTo, percentage, duration) => {
+  const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
+
+  return callAPI(
+    `/apps/${linkedAppId}/versions/${versionFrom}/canary-to/${versionTo}`,
+    {
+      method: 'POST',
+      body: {
+        percent: percentage,
+        duration: duration
+      }
+    }
+  )
+}
+
+const deleteCanary = async (versionFrom, versionTo) => {
+  const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
+
+  return callAPI(
+    `/apps/${linkedAppId}/versions/${versionFrom}/canary-to/${versionTo}`,
+    {
+      method: 'DELETE',
+    }
+  )
+}
+
 /**
  * read local `apprc` file
  */
@@ -429,8 +455,10 @@ const upload = async (app, { skipValidation = false } = {}) => {
 
 module.exports = {
   callAPI,
+  createCanary,
   checkCredentials,
   createCredentials,
+  deleteCanary,
   downloadSourceZip,
   getLinkedAppConfig,
   getWritableApp,
