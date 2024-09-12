@@ -1,3 +1,23 @@
+## 15.14.1
+
+_released `2024-09-12`_
+
+### cli
+
+None!
+
+### core
+
+- :nail_care: Add `signal` to z.request options ([#857](https://github.com/zapier/zapier-platform/pull/857))
+
+### schema
+
+None!
+
+### misc
+
+- :scroll: Add documentation around `inputFormat` field type ([#858](https://github.com/zapier/zapier-platform/pull/858))
+
 ## 15.14.0
 
 _released `2024-08-28`_
