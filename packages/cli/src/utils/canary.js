@@ -1,4 +1,4 @@
-const { createCanary, deleteCanary } = require('./api');
+const { createCanary, deleteCanary, listCanaries } = require('./api');
 
 const handleCreate = async (versionFrom, versionTo, percentage, duration) => {
   if (!versionFrom || !versionTo || !percentage || !duration) {
@@ -16,6 +16,8 @@ const handleCreate = async (versionFrom, versionTo, percentage, duration) => {
 
 const handleList = async () => {
   console.log('Listing all canary deployments');
+  const res = await listCanaries();
+  console.log(res);
   // TODO: implement list functionality
   // maybe yeet this into a table
 }

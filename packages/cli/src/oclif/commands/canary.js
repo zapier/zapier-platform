@@ -32,8 +32,8 @@ CanaryCommand.flags = buildFlags({
     'create': flags.boolean({char: 'c', description: 'Create a new canary deployment'}),
     'list': flags.boolean({char: 'l', description: 'List all canary deployments'}),
     'delete': flags.boolean({char: 'd', description: 'Delete a canary deployment'}),
-    'versionFrom': flags.string({char: 'f', description: 'Version to deploy from'}),
-    'versionTo': flags.string({char: 't', description: 'Version to deploy to'}),
+    'versionFrom': flags.string({char: 'f', description: 'Version to divert traffic from'}),
+    'versionTo': flags.string({char: 't', description: 'Version to canary traffic to'}),
     'percentage': flags.integer({char: 'p', description: 'Percentage of traffic to route to new version'}),
     'duration': flags.integer({char: 's', description: 'Duration of the canary in seconds'}),
   }

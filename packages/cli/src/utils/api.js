@@ -168,6 +168,17 @@ const createCanary = async (versionFrom, versionTo, percentage, duration) => {
   )
 }
 
+const listCanaries = async () => {
+  const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
+
+  return callAPI(
+    `/apps/${linkedAppId}/canaries`,
+    {
+      method: 'GET',
+    }
+  )
+}
+
 const deleteCanary = async (versionFrom, versionTo) => {
   const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
 
@@ -465,6 +476,7 @@ module.exports = {
   getVersionInfo,
   isPublished,
   listApps,
+  listCanaries,
   listEndpoint,
   listEndpointMulti,
   listEnv,
