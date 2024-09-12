@@ -63,6 +63,16 @@ class CanaryCommand extends ZapierBaseCommand {
   async deleteCanary(versionFrom, versionTo) {
     this.validateVersions(versionFrom, versionTo);
 
+    const activeCanaries = await listCanaries();
+
+    // ensure an active canary actually exists before trying to delete it
+    // calling delete on a non-existent canary won't throw an error, but this is a better UX
+    const match = activeCanaries.objects.some(c => c.from_version === versionFrom && c.to_version === versionTo);
+    if (!match) {
+      this.log(`There is no active canary from version ${versionFrom} to version ${versionTo}`);
+      return;
+    }
+
     const confirmed = await this.confirm(`Are you sure you want to delete the canary from ${versionFrom} to ${versionTo}?`);
     if (!confirmed) {
       this.log('Canary deletion cancelled.');
