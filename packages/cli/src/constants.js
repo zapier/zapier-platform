@@ -2,8 +2,7 @@ const os = require('os');
 const path = require('path');
 const versionStore = require('./version-store');
 
-// const BASE_ENDPOINT = process.env.ZAPIER_BASE_ENDPOINT || 'https://zapier.com';
-const BASE_ENDPOINT = 'http://localhost:8000'
+const BASE_ENDPOINT = process.env.ZAPIER_BASE_ENDPOINT || 'https://zapier.com';
 const API_PATH = '/api/platform/cli';
 const ENDPOINT = process.env.ZAPIER_ENDPOINT || BASE_ENDPOINT + API_PATH;
 const STARTER_REPO =
