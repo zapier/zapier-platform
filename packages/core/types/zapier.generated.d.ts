@@ -1317,13 +1317,13 @@ export interface Search {
 }
 
 /**
- * Zapier uses this configuration for writing in bulk.
+ * Zapier uses this configuration for creating objects in bulk.
  *
  * [Docs: BufferConfigSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BufferConfigSchema)
  */
 export interface BufferConfig {
   /**
-   * The list of keys of input fields to group bulk-write with. The
+   * The list of keys of input fields to group bulk-create with. The
    * actual user data provided for the fields will be used during
    * execution. Note that a required input field should be referenced
    * to get user data always.
@@ -1416,7 +1416,7 @@ export interface BasicCreateActionOperation {
   shouldLock?: boolean;
 
   /**
-   * Zapier uses this configuration for writing in bulk with
+   * Zapier uses this configuration for creating objects in bulk with
    * `performBuffer`.
    */
   buffer?: BufferConfig;
