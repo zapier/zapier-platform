@@ -1869,7 +1869,7 @@ const performBuffer = async (z, bufferedBundle) => {
     },
   });
 
-  // Create a matching result using the idempotency ID for each buffered invovation run.
+  // Create a matching result using the idempotency ID for each buffered invocation run.
   // The returned IDs will tell Zapier backend which items were successfully written.
   const result = {};
   bufferedBundle.buffer.forEach(({ inputData, meta }, index) => {

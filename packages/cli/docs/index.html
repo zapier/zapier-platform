@@ -2974,7 +2974,7 @@ new records in your system (add a recipe to the catalog).</p><p>The definition f
     },
   });
 
-  <span class="hljs-comment">// Create a matching result using the idempotency ID for each buffered invovation run.</span>
+  <span class="hljs-comment">// Create a matching result using the idempotency ID for each buffered invocation run.</span>
   <span class="hljs-comment">// The returned IDs will tell Zapier backend which items were successfully written.</span>
   <span class="hljs-keyword">const</span> result = {};
   bufferedBundle.buffer.forEach(<span class="hljs-function">(<span class="hljs-params">{ inputData, meta }, index</span>) =&gt;</span> {
