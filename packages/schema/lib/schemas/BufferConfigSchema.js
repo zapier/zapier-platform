@@ -4,13 +4,13 @@ const makeSchema = require('../utils/makeSchema');
 
 module.exports = makeSchema({
   id: '/BufferConfigSchema',
-  description: 'Zapier uses this configuration for writing in bulk.',
+  description: 'Zapier uses this configuration for creating objects in bulk.',
   type: 'object',
   required: ['groupedBy', 'limit'],
   properties: {
     groupedBy: {
       description:
-        'The list of keys of input fields to group bulk-write with. The actual user data provided for the fields will be used during execution. Note that a required input field should be referenced to get user data always.',
+        'The list of keys of input fields to group bulk-create with. The actual user data provided for the fields will be used during execution. Note that a required input field should be referenced to get user data always.',
       type: 'array',
       minItems: 1,
     },

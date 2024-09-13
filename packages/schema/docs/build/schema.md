@@ -429,8 +429,8 @@ Key | Required | Type | Description
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | **INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
 `shouldLock` | no | `boolean` | Should this action be performed one at a time (avoid concurrency)?
-`buffer` | no (with exceptions, see description) | [/BufferConfigSchema](#bufferconfigschema) | Zapier uses this configuration for writing in bulk with `performBuffer`.
-`performBuffer` | no (with exceptions, see description) | [/FunctionSchema](#functionschema) | A function to write in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.
+`buffer` | no (with exceptions, see description) | [/BufferConfigSchema](#bufferconfigschema) | Zapier uses this configuration for creating objects in bulk with `performBuffer`.
+`performBuffer` | no (with exceptions, see description) | [/FunctionSchema](#functionschema) | A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.
 
 #### Examples
 
@@ -597,7 +597,7 @@ Key | Required | Type | Description
 
 ## /BufferConfigSchema
 
-Zapier uses this configuration for writing in bulk.
+Zapier uses this configuration for creating objects in bulk.
 
 #### Details
 
@@ -608,7 +608,7 @@ Zapier uses this configuration for writing in bulk.
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`groupedBy` | **yes** | `array` | The list of keys of input fields to group bulk-write with. The actual user data provided for the fields will be used during execution. Note that a required input field should be referenced to get user data always.
+`groupedBy` | **yes** | `array` | The list of keys of input fields to group bulk-create with. The actual user data provided for the fields will be used during execution. Note that a required input field should be referenced to get user data always.
 `limit` | **yes** | `integer` | The maximum number of items to call `performBuffer` with. **Note** that it is capped by the platform to prevent exceeding the [AWS Lambda's request/response payload size quota of 6 MB](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#function-configuration-deployment-and-execution). Also, the execution is time-bound; we recommend reducing it upon consistent timeout.
 
 #### Examples

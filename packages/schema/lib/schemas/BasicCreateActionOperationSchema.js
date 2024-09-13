@@ -37,7 +37,7 @@ BasicCreateActionOperationSchema.properties.perform = {
 
 BasicCreateActionOperationSchema.properties.buffer = {
   description:
-    'Zapier uses this configuration for writing in bulk with `performBuffer`.',
+    'Zapier uses this configuration for creating objects in bulk with `performBuffer`.',
   $ref: BufferConfigSchema.id,
   docAnnotation: {
     required: {
@@ -49,7 +49,7 @@ BasicCreateActionOperationSchema.properties.buffer = {
 
 BasicCreateActionOperationSchema.properties.performBuffer = {
   description:
-    'A function to write in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.',
+    'A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.',
   $ref: FunctionSchema.id,
   docAnnotation: {
     required: {

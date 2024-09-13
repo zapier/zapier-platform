@@ -26,7 +26,7 @@ const definition = {
   },
 };
 
-describe('bufferedWriteConstraints', () => {
+describe('bufferedCreateConstraints', () => {
   it('should error on creates with both perform and buffer defined without performBuffer', () => {
     operation.perform = '$func$2$f$';
     operation.buffer = {

@@ -1362,12 +1362,12 @@
     },
     "BufferConfigSchema": {
       "id": "/BufferConfigSchema",
-      "description": "Zapier uses this configuration for writing in bulk.",
+      "description": "Zapier uses this configuration for creating objects in bulk.",
       "type": "object",
       "required": ["groupedBy", "limit"],
       "properties": {
         "groupedBy": {
-          "description": "The list of keys of input fields to group bulk-write with. The actual user data provided for the fields will be used during execution. Note that a required input field should be referenced to get user data always.",
+          "description": "The list of keys of input fields to group bulk-create with. The actual user data provided for the fields will be used during execution. Note that a required input field should be referenced to get user data always.",
           "type": "array",
           "minItems": 1
         },
@@ -1451,7 +1451,7 @@
           "type": "boolean"
         },
         "buffer": {
-          "description": "Zapier uses this configuration for writing in bulk with `performBuffer`.",
+          "description": "Zapier uses this configuration for creating objects in bulk with `performBuffer`.",
           "$ref": "/BufferConfigSchema",
           "docAnnotation": {
             "required": {
@@ -1461,7 +1461,7 @@
           }
         },
         "performBuffer": {
-          "description": "A function to write in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.",
+          "description": "A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.",
           "$ref": "/FunctionSchema",
           "docAnnotation": {
             "required": {

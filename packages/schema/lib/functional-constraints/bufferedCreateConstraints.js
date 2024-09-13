@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const jsonschema = require('jsonschema');
 
-const bufferedWriteConstraints = (definition) => {
+const bufferedCreateConstraints = (definition) => {
   const errors = [];
   const actionType = 'creates';
 
@@ -99,4 +99,4 @@ const bufferedWriteConstraints = (definition) => {
   return errors;
 };
 
-module.exports = bufferedWriteConstraints;
+module.exports = bufferedCreateConstraints;

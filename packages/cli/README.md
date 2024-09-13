@@ -1858,7 +1858,7 @@ const performBuffer = async (z, bufferedBundle) => {
     return { title: inputData.title, year: inputData.year };
   });
 
-  // Make the bulk-write API request
+  // Make the bulk-create API request
   const response = await z.request({
     method: 'POST',
     url: 'https://api.example.com/add_rows',
