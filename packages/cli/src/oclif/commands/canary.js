@@ -22,6 +22,13 @@ class CanaryCommand extends ZapierBaseCommand {
     this.validatePercentage(percentage);
     this.validateDuration(duration);
 
+    const existingCanary = await this.findExistingCanary(versionFrom, versionTo);
+    if (existingCanary) {
+      const secondsRemaining = existingCanary.until_timestamp - Math.floor(Date.now() / 1000)
+      this.log(`A canary deployment already exists from version ${versionFrom} to version ${versionTo}, there are ${secondsRemaining} seconds remaining`);
+      return;
+    }
+
     this.startSpinner(`Creating canary deployment
     - From version: ${versionFrom}
     - To version: ${versionTo}
@@ -63,12 +70,8 @@ class CanaryCommand extends ZapierBaseCommand {
   async deleteCanary(versionFrom, versionTo) {
     this.validateVersions(versionFrom, versionTo);
 
-    const activeCanaries = await listCanaries();
-
-    // ensure an active canary actually exists before trying to delete it
-    // calling delete on a non-existent canary won't throw an error, but this is a better UX
-    const match = activeCanaries.objects.some(c => c.from_version === versionFrom && c.to_version === versionTo);
-    if (!match) {
+    const existingCanary = await this.findExistingCanary(versionFrom, versionTo);
+    if (!existingCanary) {
       this.log(`There is no active canary from version ${versionFrom} to version ${versionTo}`);
       return;
     }
@@ -83,6 +86,11 @@ class CanaryCommand extends ZapierBaseCommand {
     await deleteCanary(versionFrom, versionTo);
     this.stopSpinner();
     this.log('Canary deployment deleted successfully.');
+  }
+
+  async findExistingCanary(versionFrom, versionTo) {
+    const activeCanaries = await listCanaries();
+    return activeCanaries.objects.find(c => c.from_version === versionFrom && c.to_version === versionTo) || null;
   }
 
   validateVersions(versionFrom, versionTo) {
