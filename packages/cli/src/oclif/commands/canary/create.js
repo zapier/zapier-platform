@@ -60,7 +60,7 @@ CanaryCreateCommand.flags = buildFlags({
     versionFrom: flags.string({char: 'f', description: 'Version to route traffic from', required: true}),
     versionTo: flags.string({char: 't', description: 'Version to canary traffic to', required: true}),
     percent: flags.integer({char: 'p', description: 'Percent of traffic to route to new version', required: true}),
-    duration: flags.integer({char: 's', description: 'Duration of the canary in seconds', required: true}),
+    duration: flags.integer({char: 'd', description: 'Duration of the canary in seconds', required: true}),
   },
   opts: {
     format: true
@@ -70,7 +70,7 @@ CanaryCreateCommand.description =
   'Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration.'
 CanaryCreateCommand.examples = [
   'zapier canary:create --versionFrom=1.0.0 --versionTo=1.1.0 --percent=25 --duration=720',
-  'zapier canary:create -f 2.0.0 -t 2.1.0 -p 50 -s 300'
+  'zapier canary:create -f 2.0.0 -t 2.1.0 -p 50 -d 300'
 ]
 CanaryCreateCommand.skipValidInstallCheck = true;
 
