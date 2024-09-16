@@ -32,6 +32,7 @@ class CanaryListCommand extends ZapierBaseCommand {
 
 CanaryListCommand.flags = buildFlags({ opts: { format: true } });
 CanaryListCommand.description = 'List all active canary deployments';
+CanaryListCommand.examples = ['zapier canary:list']
 CanaryListCommand.skipValidInstallCheck = true;
 
 module.exports = CanaryListCommand;

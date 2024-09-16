@@ -43,6 +43,10 @@ CanaryDeleteCommand.flags = {
   versionTo: flags.string({char: 't', description: 'Version canary traffic is routed to', required: true}),
 };
 CanaryDeleteCommand.description = 'Delete an active canary deployment';
+CanaryDeleteCommand.examples = [
+  'zapier canary:delete --versionFrom=1.0.0 --versionTo=1.1.0',
+  'zapier canary:delete -f 2.0.0 -t 2.1.0'
+]
 CanaryDeleteCommand.skipValidInstallCheck = true;
 
 module.exports = CanaryDeleteCommand;

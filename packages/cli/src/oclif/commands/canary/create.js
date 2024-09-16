@@ -66,7 +66,12 @@ CanaryCreateCommand.flags = buildFlags({
     format: true
   }
 });
-CanaryCreateCommand.description = 'Create a new canary deployment';
+CanaryCreateCommand.description =
+  'Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration.'
+CanaryCreateCommand.examples = [
+  'zapier canary:create --versionFrom=1.0.0 --versionTo=1.1.0 --percent=25 --duration=720',
+  'zapier canary:create -f 2.0.0 -t 2.1.0 -p 50 -s 300'
+]
 CanaryCreateCommand.skipValidInstallCheck = true;
 
 module.exports = CanaryCreateCommand;
