@@ -153,7 +153,7 @@ const createCredentials = (username, password, totpCode) => {
   );
 };
 
-const createCanary = async (versionFrom, versionTo, percentage, duration) => {
+const createCanary = async (versionFrom, versionTo, percent, duration) => {
   const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
 
   return callAPI(
@@ -161,8 +161,8 @@ const createCanary = async (versionFrom, versionTo, percentage, duration) => {
     {
       method: 'POST',
       body: {
-        percent: percentage,
-        duration: duration
+        percent,
+        duration
       }
     }
   )

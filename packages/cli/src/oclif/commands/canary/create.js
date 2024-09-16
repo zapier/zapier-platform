@@ -6,10 +6,10 @@ const { flags } = require('@oclif/command');
 class CanaryCreateCommand extends ZapierBaseCommand {
   async perform() {
     const { flags } = this.parse(CanaryCreateCommand);
-    const { versionFrom, versionTo, percentage, duration } = flags;
+    const { versionFrom, versionTo, percent, duration } = flags;
 
     this.validateVersions(versionFrom, versionTo);
-    this.validatePercentage(percentage);
+    this.validatePercent(percent);
     this.validateDuration(duration);
 
     const existingCanary = await this.findExistingCanary(versionFrom, versionTo);
@@ -22,11 +22,11 @@ class CanaryCreateCommand extends ZapierBaseCommand {
     this.startSpinner(`Creating canary deployment
     - From version: ${versionFrom}
     - To version: ${versionTo}
-    - Percentage: ${percentage}%
+    - Percent: ${percent}%
     - Duration: ${duration} seconds`
     );
 
-    await createCanary(versionFrom, versionTo, percentage, duration);
+    await createCanary(versionFrom, versionTo, percent, duration);
 
     this.stopSpinner();
     this.log('Canary deployment created successfully.');
@@ -42,9 +42,9 @@ class CanaryCreateCommand extends ZapierBaseCommand {
     this.throwForInvalidVersion(versionTo);
   }
 
-  validatePercentage(percentage) {
-    if (!percentage || percentage < 0 || percentage > 100) {
-      this.error('Percentage must be between 0 and 100');
+  validatePercent(percent) {
+    if (!percent || percent < 0 || percent > 100) {
+      this.error('Percent must be between 0 and 100');
     }
   }
 
@@ -59,7 +59,7 @@ CanaryCreateCommand.flags = buildFlags({
   commandFlags: {
     versionFrom: flags.string({char: 'f', description: 'Version to route traffic from', required: true}),
     versionTo: flags.string({char: 't', description: 'Version to canary traffic to', required: true}),
-    percentage: flags.integer({char: 'p', description: 'Percentage of traffic to route to new version', required: true}),
+    percent: flags.integer({char: 'p', description: 'Percent of traffic to route to new version', required: true}),
     duration: flags.integer({char: 's', description: 'Duration of the canary in seconds', required: true}),
   },
   opts: {
