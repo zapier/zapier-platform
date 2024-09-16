@@ -1839,7 +1839,7 @@ const App = {
 
 ## Buffered Create Actions
 
-*Added in v15.15.0.*
+_Added in v15.15.0. This feature is currently **internal-only**._
 
 A Buffered Create allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server. When enabled, Zapier holds the data until the buffer reaches a size limit or a certain time has passed, then sends the buffered data using the `performBuffer` function you define.
 

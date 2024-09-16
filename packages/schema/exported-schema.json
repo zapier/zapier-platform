@@ -1362,7 +1362,7 @@
     },
     "BufferConfigSchema": {
       "id": "/BufferConfigSchema",
-      "description": "Zapier uses this configuration for creating objects in bulk.",
+      "description": "Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk.",
       "type": "object",
       "required": ["groupedBy", "limit"],
       "properties": {
@@ -1451,7 +1451,7 @@
           "type": "boolean"
         },
         "buffer": {
-          "description": "Zapier uses this configuration for creating objects in bulk with `performBuffer`.",
+          "description": "Currently an **internaly-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.",
           "$ref": "/BufferConfigSchema",
           "docAnnotation": {
             "required": {
@@ -1461,7 +1461,7 @@
           }
         },
         "performBuffer": {
-          "description": "A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.",
+          "description": "Currently an **internal-only** feature. A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.",
           "$ref": "/FunctionSchema",
           "docAnnotation": {
             "required": {

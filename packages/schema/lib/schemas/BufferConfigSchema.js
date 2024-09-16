@@ -4,7 +4,8 @@ const makeSchema = require('../utils/makeSchema');
 
 module.exports = makeSchema({
   id: '/BufferConfigSchema',
-  description: 'Zapier uses this configuration for creating objects in bulk.',
+  description:
+    'Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk.',
   type: 'object',
   required: ['groupedBy', 'limit'],
   properties: {

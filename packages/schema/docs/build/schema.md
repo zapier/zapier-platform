@@ -429,8 +429,8 @@ Key | Required | Type | Description
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | **INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
 `shouldLock` | no | `boolean` | Should this action be performed one at a time (avoid concurrency)?
-`buffer` | no (with exceptions, see description) | [/BufferConfigSchema](#bufferconfigschema) | Zapier uses this configuration for creating objects in bulk with `performBuffer`.
-`performBuffer` | no (with exceptions, see description) | [/FunctionSchema](#functionschema) | A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.
+`buffer` | no (with exceptions, see description) | [/BufferConfigSchema](#bufferconfigschema) | Currently an **internaly-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.
+`performBuffer` | no (with exceptions, see description) | [/FunctionSchema](#functionschema) | Currently an **internal-only** feature. A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.
 
 #### Examples
 
@@ -597,7 +597,7 @@ Key | Required | Type | Description
 
 ## /BufferConfigSchema
 
-Zapier uses this configuration for creating objects in bulk.
+Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk.
 
 #### Details
 

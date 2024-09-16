@@ -1317,7 +1317,8 @@ export interface Search {
 }
 
 /**
- * Zapier uses this configuration for creating objects in bulk.
+ * Currently an **internal-only** feature. Zapier uses this
+ * configuration for creating objects in bulk.
  *
  * [Docs: BufferConfigSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BufferConfigSchema)
  */
@@ -1416,8 +1417,8 @@ export interface BasicCreateActionOperation {
   shouldLock?: boolean;
 
   /**
-   * Zapier uses this configuration for creating objects in bulk with
-   * `performBuffer`.
+   * Currently an **internaly-only** feature. Zapier uses this
+   * configuration for creating objects in bulk with `performBuffer`.
    */
   buffer?: BufferConfig;
 
