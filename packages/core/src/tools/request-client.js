@@ -21,6 +21,7 @@ const request = (options) => {
     'agent',
     'timeout',
     'size',
+    'signal',
   ]);
 
   return fetch(url, options).then((resp) => {
