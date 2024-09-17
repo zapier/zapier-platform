@@ -135,13 +135,12 @@ type DehydrateFunc = <T>(
 export interface ZObject {
   request: {
     // most specific overloads go first
-    (
-      url: string,
-      options: HttpRequestOptions & { raw: true }
-    ): Promise<RawHttpResponse>;
-    (
-      options: HttpRequestOptions & { raw: true; url: string }
-    ): Promise<RawHttpResponse>;
+    (url: string, options: HttpRequestOptions & { raw: true }): Promise<
+      RawHttpResponse
+    >;
+    (options: HttpRequestOptions & { raw: true; url: string }): Promise<
+      RawHttpResponse
+    >;
 
     (url: string, options?: HttpRequestOptions): Promise<HttpResponse>;
     (options: HttpRequestOptions & { url: string }): Promise<HttpResponse>;
@@ -231,3 +230,40 @@ export type AfterResponseMiddleware = (
   z: ZObject,
   bundle?: Bundle
 ) => HttpResponse | Promise<HttpResponse>;
+
+export interface BufferedItem<InputData = { [x: string]: any }> {
+  inputData: InputData;
+  meta: {
+    id: string;
+    [x: string]: any;
+  };
+}
+
+export interface BufferedBundle<InputData = { [x: string]: any }> {
+  authData: { [x: string]: string };
+  buffer: BufferedItem<InputData>[];
+  groupedBy: { [x: string]: string };
+}
+
+interface PerformBufferSuccessItem {
+  outputData: { [x: string]: any };
+  error?: string;
+}
+
+interface PerformBufferErrorItem {
+  outputData?: { [x: string]: any };
+  error: string;
+}
+
+export type PerformBufferResultItem =
+  | PerformBufferSuccessItem
+  | PerformBufferErrorItem;
+
+export interface PerformBufferResult {
+  [id: string]: PerformBufferResultItem;
+}
+
+export const performBuffer: (
+  z: ZObject,
+  bundle: BufferedBundle
+) => Promise<PerformBufferResult>;

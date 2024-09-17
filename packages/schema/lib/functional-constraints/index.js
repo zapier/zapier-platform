@@ -18,6 +18,8 @@ const checks = [
   require('./matchingKeys'),
   require('./labelWhenVisible'),
   require('./uniqueInputFieldKeys'),
+  require('./bufferedCreateConstraints'),
+  require('./requirePerformConditionally'),
   require('./pollingThrottle'),
 ];
 

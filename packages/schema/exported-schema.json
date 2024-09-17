@@ -1360,18 +1360,35 @@
       },
       "additionalProperties": false
     },
+    "BufferConfigSchema": {
+      "id": "/BufferConfigSchema",
+      "description": "Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk.",
+      "type": "object",
+      "required": ["groupedBy", "limit"],
+      "properties": {
+        "groupedBy": {
+          "description": "The list of keys of input fields to group bulk-create with. The actual user data provided for the fields will be used during execution. Note that a required input field should be referenced to get user data always.",
+          "type": "array",
+          "minItems": 1
+        },
+        "limit": {
+          "description": "The maximum number of items to call `performBuffer` with. **Note** that it is capped by the platform to prevent exceeding the [AWS Lambda's request/response payload size quota of 6 MB](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#function-configuration-deployment-and-execution). Also, the execution is time-bound; we recommend reducing it upon consistent timeout.",
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    },
     "BasicCreateActionOperationSchema": {
       "id": "/BasicCreateActionOperationSchema",
       "description": "Represents the fundamental mechanics of a create.",
       "type": "object",
-      "required": ["perform"],
       "properties": {
         "resource": {
           "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
           "$ref": "/KeySchema"
         },
         "perform": {
-          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`. Exactly one of `perform` or `performBuffer` must be defined. If you choose to define `buffer` and `performBuffer`, you must omit `perform`.",
           "oneOf": [
             {
               "$ref": "/RequestSchema"
@@ -1379,7 +1396,13 @@
             {
               "$ref": "/FunctionSchema"
             }
-          ]
+          ],
+          "docAnnotation": {
+            "required": {
+              "type": "replace",
+              "value": "no (with exceptions, see description)"
+            }
+          }
         },
         "performResume": {
           "description": "A function that parses data from a perform (which uses z.generateCallbackUrl()) and callback request to resume this action.",
@@ -1426,6 +1449,26 @@
         "shouldLock": {
           "description": "Should this action be performed one at a time (avoid concurrency)?",
           "type": "boolean"
+        },
+        "buffer": {
+          "description": "Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.",
+          "$ref": "/BufferConfigSchema",
+          "docAnnotation": {
+            "required": {
+              "type": "replace",
+              "value": "no (with exceptions, see description)"
+            }
+          }
+        },
+        "performBuffer": {
+          "description": "Currently an **internal-only** feature. A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.",
+          "$ref": "/FunctionSchema",
+          "docAnnotation": {
+            "required": {
+              "type": "replace",
+              "value": "no (with exceptions, see description)"
+            }
+          }
         }
       },
       "additionalProperties": false
