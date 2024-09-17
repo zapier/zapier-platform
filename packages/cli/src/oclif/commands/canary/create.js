@@ -9,13 +9,13 @@ class CanaryCreateCommand extends ZapierBaseCommand {
     this.validatePercent(percent);
     this.validateDuration(duration);
 
-    const existingCanary = await this.findExistingCanary(versionFrom, versionTo);
-    if (existingCanary) {
+    const activeCanaries = await listCanaries();
+    if (activeCanaries.objects.length > 0) {
+      const existingCanary = activeCanaries.objects[0];
       const secondsRemaining = existingCanary.until_timestamp - Math.floor(Date.now() / 1000);
-      this.log(`A canary deployment already exists from version ${versionFrom} to version ${versionTo}, there are ${secondsRemaining} seconds remaining.
-      
-If you would like to stop this canary now, run \`zapier canary:delete ${versionFrom} ${versionTo}\``);
-
+      this.log(`A canary deployment already exists from version ${existingCanary.from_version} to version ${existingCanary.to_version}, there are ${secondsRemaining} seconds remaining.
+        
+If you would like to stop this canary now, run \`zapier canary:delete ${existingCanary.from_version} ${existingCanary.to_version}\``);
       return;
     }
 
@@ -32,29 +32,24 @@ If you would like to stop this canary now, run \`zapier canary:delete ${versionF
     this.log('Canary deployment created successfully.');
   }
 
-  async findExistingCanary(versionFrom, versionTo) {
-    const activeCanaries = await listCanaries();
-    return activeCanaries.objects.find(c => c.from_version === versionFrom && c.to_version === versionTo);
-  }
-
   validateVersions(versionFrom, versionTo) {
     this.throwForInvalidVersion(versionFrom);
     this.throwForInvalidVersion(versionTo);
 
     if (versionFrom === versionTo) {
-      this.error('Versions can not be the same')
+      this.error('`VERSIONFROM` and `VERSIONTO` can not be the same')
     }
   }
 
   validatePercent(percent) {
-    if (percent < 1 || percent > 100) {
-      this.error('Percent must be between 1 and 100');
+    if (isNaN(percent) || percent < 1 || percent > 100) {
+      this.error('`PERCENT` must be a number between 1 and 100');
     }
   }
 
   validateDuration(duration) {
-    if (duration < 30 || duration > 24 * 60 * 60) {
-      this.error('Duration must be a positive number between 30 and 86400');
+    if (isNaN(duration) || duration < 30 || duration > 24 * 60 * 60) {
+      this.error('`DURATION` must be a positive number between 30 and 86400');
     }
   }
 }
