@@ -10,11 +10,11 @@ None!
 
 ### core
 
-- :tube: Add checks to support Buffered Create Actions ([#832](https://github.com/zapier/zapier-platform/pull/832))
+- :test_tube: Add checks to support Buffered Create Actions ([#832](https://github.com/zapier/zapier-platform/pull/832))
 
 ### schema
 
-- :tube: Add `performBuffer` and `buffer` to `operation` schema to support Buffered Create Actions ([#832](https://github.com/zapier/zapier-platform/pull/832))
+- :test_tube: Add `performBuffer` and `buffer` to `operation` schema to support Buffered Create Actions ([#832](https://github.com/zapier/zapier-platform/pull/832))
 
 ## 15.14.1
 
