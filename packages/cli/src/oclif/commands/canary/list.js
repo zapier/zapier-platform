@@ -20,7 +20,7 @@ class CanaryListCommand extends ZapierBaseCommand {
       headers: [
         ['From Version', 'from_version'],
         ['To Version', 'to_version'],
-        ['Traffic Percent', 'percent'],
+        ['Traffic Amount', 'percent'],
         ['Seconds Remaining', 'seconds_remaining'],
       ],
       emptyMessage: grey(

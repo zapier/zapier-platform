@@ -1,11 +1,9 @@
 const ZapierBaseCommand = require('../../ZapierBaseCommand');
-const { flags } = require('@oclif/command');
 const { deleteCanary, listCanaries } = require('../../../utils/api');
 
 class CanaryDeleteCommand extends ZapierBaseCommand {
   async perform() {
-    const { flags } = this.parse(CanaryDeleteCommand);
-    const { versionFrom, versionTo } = flags;
+    const { versionFrom, versionTo } = this.args;
 
     this.validateVersions(versionFrom, versionTo);
 
@@ -29,24 +27,33 @@ class CanaryDeleteCommand extends ZapierBaseCommand {
 
   async findExistingCanary(versionFrom, versionTo) {
     const activeCanaries = await listCanaries();
-    return activeCanaries.objects.find(c => c.from_version === versionFrom && c.to_version === versionTo) || null;
+    return activeCanaries.objects.find(c => c.from_version === versionFrom && c.to_version === versionTo);
   }
 
   validateVersions(versionFrom, versionTo) {
     this.throwForInvalidVersion(versionFrom);
     this.throwForInvalidVersion(versionTo);
+
+    if (versionFrom === versionTo) {
+      this.error('Versions can not be the same')
+    }
   }
 }
 
-CanaryDeleteCommand.flags = {
-  versionFrom: flags.string({char: 'f', description: 'Version to route traffic from', required: true}),
-  versionTo: flags.string({char: 't', description: 'Version canary traffic is routed to', required: true}),
-};
+CanaryDeleteCommand.args = [
+  {
+    name: 'versionFrom',
+    required: true,
+    description: 'Version to route traffic from',
+  },
+  {
+    name: 'versionTo',
+    required: true,
+    description: 'Version canary traffic is routed to',
+  },
+];
 CanaryDeleteCommand.description = 'Delete an active canary deployment';
-CanaryDeleteCommand.examples = [
-  'zapier canary:delete --versionFrom=1.0.0 --versionTo=1.1.0',
-  'zapier canary:delete -f 2.0.0 -t 2.1.0'
-]
+CanaryDeleteCommand.examples = ['zapier canary:delete 1.0.0 1.1.0'];
 CanaryDeleteCommand.skipValidInstallCheck = true;
 
 module.exports = CanaryDeleteCommand;

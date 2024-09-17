@@ -1,12 +1,9 @@
 const ZapierBaseCommand = require('../../ZapierBaseCommand');
 const { createCanary, listCanaries } = require('../../../utils/api');
-const { buildFlags } = require('../../buildFlags');
-const { flags } = require('@oclif/command');
 
 class CanaryCreateCommand extends ZapierBaseCommand {
   async perform() {
-    const { flags } = this.parse(CanaryCreateCommand);
-    const { versionFrom, versionTo, percent, duration } = flags;
+    const { versionFrom, versionTo, percent, duration } = this.args;
 
     this.validateVersions(versionFrom, versionTo);
     this.validatePercent(percent);
@@ -22,7 +19,7 @@ class CanaryCreateCommand extends ZapierBaseCommand {
     this.startSpinner(`Creating canary deployment
     - From version: ${versionFrom}
     - To version: ${versionTo}
-    - Percent: ${percent}%
+    - Traffic amount: ${percent}%
     - Duration: ${duration} seconds`
     );
 
@@ -34,44 +31,67 @@ class CanaryCreateCommand extends ZapierBaseCommand {
 
   async findExistingCanary(versionFrom, versionTo) {
     const activeCanaries = await listCanaries();
-    return activeCanaries.objects.find(c => c.from_version === versionFrom && c.to_version === versionTo) || null;
+    return activeCanaries.objects.find(c => c.from_version === versionFrom && c.to_version === versionTo);
   }
 
   validateVersions(versionFrom, versionTo) {
     this.throwForInvalidVersion(versionFrom);
     this.throwForInvalidVersion(versionTo);
+
+    if (versionFrom === versionTo) {
+      this.error('Versions can not be the same')
+    }
   }
 
   validatePercent(percent) {
-    if (!percent || percent < 0 || percent > 100) {
+    if (percent <= 0 || percent > 100) {
       this.error('Percent must be between 0 and 100');
     }
   }
 
   validateDuration(duration) {
-    if (!duration || duration <= 30 || duration > 24 * 60 * 60) {
+    if (duration < 30 || duration > 24 * 60 * 60) {
       this.error('Duration must be a positive number between 30 and 86400');
     }
   }
 }
 
-CanaryCreateCommand.flags = buildFlags({
-  commandFlags: {
-    versionFrom: flags.string({char: 'f', description: 'Version to route traffic from', required: true}),
-    versionTo: flags.string({char: 't', description: 'Version to canary traffic to', required: true}),
-    percent: flags.integer({char: 'p', description: 'Percent of traffic to route to new version', required: true}),
-    duration: flags.integer({char: 'd', description: 'Duration of the canary in seconds', required: true}),
+CanaryCreateCommand.args = [
+  {
+    name: 'versionFrom',
+    required: true,
+    description: 'Version to route traffic from',
   },
-  opts: {
-    format: true
-  }
-});
+  {
+    name: 'versionTo',
+    required: true,
+    description: 'Version to canary traffic to',
+  },
+  {
+    name: 'percent',
+    required: true,
+    description: 'Percent of traffic to route to new version',
+    parse: (input) => parseInt(input, 10),
+  },
+  {
+    name: 'duration',
+    required: true,
+    description: 'Duration of the canary in seconds',
+    parse: (input) => parseInt(input, 10),
+  },
+];
+
 CanaryCreateCommand.description =
-  'Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration.'
+  'Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration. \n' +
+  '\n' +
+  'Only one canary can be active at the same time. You can run `zapier canary:list` to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using `zapier canary:delete a.b.c x.y.z`. \n' +
+  '\n' +
+  'Note: this is similar to `zapier migrate` but different in that this is temporary and will "revert" the changes once the specified duration is expired.';
+
 CanaryCreateCommand.examples = [
-  'zapier canary:create --versionFrom=1.0.0 --versionTo=1.1.0 --percent=25 --duration=720',
-  'zapier canary:create -f 2.0.0 -t 2.1.0 -p 50 -d 300'
-]
+  'zapier canary:create 1.0.0 1.1.0 25 720',
+  'zapier canary:create 2.0.0 2.1.0 50 300'
+];
 CanaryCreateCommand.skipValidInstallCheck = true;
 
 module.exports = CanaryCreateCommand;
