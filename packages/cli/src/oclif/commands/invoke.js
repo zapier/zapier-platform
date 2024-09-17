@@ -20,6 +20,28 @@ const ACTION_TYPES = ['auth', ...Object.keys(ACTION_TYPE_PLURALS)];
 
 const AUTH_FIELD_ENV_PREFIX = 'authData_';
 
+const NUMBER_CHARSET = '0123456789.-,';
+
+const FALSE_STRINGS = new Set([
+  'noo',
+  'no',
+  'n',
+  'false',
+  'nope',
+  'f',
+  'never',
+  'no thanks',
+  'no thank you',
+  'nul',
+  '0',
+  'none',
+  'nil',
+  'nill',
+  'null',
+]);
+
+const TRUE_STRINGS = new Set([['yes', 'yeah', 'y', 'true', 't', '1']]);
+
 const loadAuthDataFromEnv = () => {
   return Object.entries(process.env)
     .filter(([k, v]) => k.startsWith(AUTH_FIELD_ENV_PREFIX))
@@ -48,11 +70,40 @@ const getMissingOptionalInputFields = (inputData, inputFields) => {
   return inputFields.filter((f) => !f.required && !inputData[f.key]);
 };
 
-const resolveInputFieldTypes = (inputData, inputFields) => {
+const parseDecimal = (s) => {
+  const chars = [];
+  for (const c of s) {
+    if (NUMBER_CHARSET.includes(c)) {
+      chars.push(c);
+    }
+  }
+  const cleaned = chars.join('').replace(/[.,-]$/, '');
+  return parseFloat(cleaned);
+};
+
+const parseInteger = (s) => {
+  const n = parseInt(s);
+  if (!isNaN(n)) {
+    return n;
+  }
+  return Math.floor(parseDecimal(s));
+};
+
+const parseBoolean = (s) => {
+  s = s.toLowerCase();
+  if (TRUE_STRINGS.has(s)) {
+    return true;
+  }
+  if (FALSE_STRINGS.has(s)) {
+    return false;
+  }
+  return Boolean(s);
+};
+
+const resolveInputDataTypes = (inputData, inputFields) => {
   const fieldsWithDefault = inputFields.filter((f) => f.default);
   for (const f of fieldsWithDefault) {
     if (!inputData[f.key]) {
-      // TODO: Maybe not mutate inputData?
       inputData[f.key] = f.default;
     }
   }
@@ -65,16 +116,14 @@ const resolveInputFieldTypes = (inputData, inputFields) => {
     }
 
     switch (inputField.type) {
-      // TODO: Maybe not mutate inputData?
-      // TODO: Make sure each case is consistent with the backend
       case 'integer':
-        inputData[k] = parseInt(v, 10);
+        inputData[k] = parseInteger(v);
         break;
       case 'number':
-        inputData[k] = parseFloat(v);
+        inputData[k] = parseDecimal(v);
         break;
       case 'boolean':
-        inputData[k] = v === 'true' || v === 'yes' || v === '1';
+        inputData[k] = parseBoolean(v);
         break;
       case 'datetime':
         if (v === 'now') {
@@ -84,6 +133,10 @@ const resolveInputFieldTypes = (inputData, inputFields) => {
         break;
       case 'file':
         // TODO: How to handle a file field?
+        break;
+      // TODO: Handle 'list' and 'dict' types?
+      default:
+        // No need to do anything with 'string' type
         break;
     }
   }
@@ -212,7 +265,7 @@ class InvokeCommand extends BaseCommand {
       }
     }
 
-    inputData = resolveInputFieldTypes(inputData, inputFields);
+    inputData = resolveInputDataTypes(inputData, inputFields);
     methodName = `${actionTypePlural}.${action.key}.operation.perform`;
 
     startSpinner(`Invoking ${methodName}`);
