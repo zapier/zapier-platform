@@ -1,3 +1,21 @@
+## 15.15.0
+
+_released `2024-09-18`_
+
+The release introduces "[Buffered Create Actions](https://github.com/zapier/zapier-platform/blob/8353f32cba12da2a845419f0024b0029090437d9/packages/cli/README.md#buffered-create-actions)", currently only available for **internal** use. This feature allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server.
+
+### cli
+
+None!
+
+### core
+
+- :tube: Add checks to support Buffered Create Actions ([#832](https://github.com/zapier/zapier-platform/pull/832))
+
+### schema
+
+- :tube: Add `performBuffer` and `buffer` to `operation` schema to support Buffered Create Actions ([#832](https://github.com/zapier/zapier-platform/pull/832))
+
 ## 15.14.1
 
 _released `2024-09-12`_
