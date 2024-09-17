@@ -1417,7 +1417,7 @@ export interface BasicCreateActionOperation {
   shouldLock?: boolean;
 
   /**
-   * Currently an **internaly-only** feature. Zapier uses this
+   * Currently an **internal-only** feature. Zapier uses this
    * configuration for creating objects in bulk with `performBuffer`.
    */
   buffer?: BufferConfig;

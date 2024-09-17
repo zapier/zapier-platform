@@ -37,7 +37,7 @@ BasicCreateActionOperationSchema.properties.perform = {
 
 BasicCreateActionOperationSchema.properties.buffer = {
   description:
-    'Currently an **internaly-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.',
+    'Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.',
   $ref: BufferConfigSchema.id,
   docAnnotation: {
     required: {

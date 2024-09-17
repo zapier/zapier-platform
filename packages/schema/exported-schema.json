@@ -1451,7 +1451,7 @@
           "type": "boolean"
         },
         "buffer": {
-          "description": "Currently an **internaly-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.",
+          "description": "Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.",
           "$ref": "/BufferConfigSchema",
           "docAnnotation": {
             "required": {
