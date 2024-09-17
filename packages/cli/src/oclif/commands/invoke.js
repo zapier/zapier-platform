@@ -152,6 +152,12 @@ class InvokeCommand extends BaseCommand {
 
     let missingFields = getMissingRequiredInputFields(inputData, inputFields);
     if (missingFields.length) {
+      if (!process.stdin.isTTY) {
+        throw new Error(
+          'You must specify these required fields in --inputData at least when stdin is not a TTY: \n' +
+            missingFields.map((f) => `* ${f.key}`).join('\n')
+        );
+      }
       for (const f of missingFields) {
         const ftype = f.type || 'string';
         const value = await this.prompt(
@@ -161,12 +167,12 @@ class InvokeCommand extends BaseCommand {
       }
     }
 
-    if (!flags['no-prompt-for-optional-input-fields']) {
+    if (process.stdin.isTTY) {
       missingFields = getMissingOptionalInputFields(inputData, inputFields);
       if (missingFields.length) {
         // Let user select which optional field to fill
         while (true) {
-          const fieldChoices = missingFields.map((f) => {
+          let fieldChoices = missingFields.map((f) => {
             let name;
             if (inputData[f.key]) {
               name = `${f.key} (current: "${inputData[f.key]}")`;
@@ -180,12 +186,16 @@ class InvokeCommand extends BaseCommand {
               value: f.key,
             };
           });
-          fieldChoices.push({
-            name: '>>> Done. Invoke the action! <<<',
-            value: null,
-          });
+          fieldChoices = [
+            {
+              name: '>>> Done. Invoke the action! <<<',
+              short: 'Done',
+              value: null,
+            },
+            ...fieldChoices,
+          ];
           const fieldKey = await this.promptWithList(
-            'Would you like to fill these input fields?',
+            'Would you like to fill these input fields? Select "Done" when you are ready to invoke the action.',
             fieldChoices
           );
           if (!fieldKey) {
@@ -220,15 +230,17 @@ class InvokeCommand extends BaseCommand {
     console.log(JSON.stringify(output, null, 2));
   }
 
-  async promptWithListIfTty(message, choices) {
-  }
-
   async perform() {
     dotenv.config({ override: true });
 
     let { actionType, actionKey } = this.args;
 
     if (!actionType) {
+      if (!process.stdin.isTTY) {
+        throw new Error(
+          'You must specify ACTIONTYPE and ACTIONKEY when stdin is not a TTY.'
+        );
+      }
       actionType = await this.promptWithList(
         'Which action type would you like to invoke?',
         ACTION_TYPES
@@ -239,6 +251,9 @@ class InvokeCommand extends BaseCommand {
     const appDefinition = await localAppCommand({ command: 'definition' });
 
     if (!actionKey) {
+      if (!process.stdin.isTTY) {
+        throw new Error('You must specify ACTIONKEY when stdin is not a TTY.');
+      }
       if (actionType === 'auth') {
         const actionKeys = ['label', 'test'];
         actionKey = await this.promptWithList(
@@ -336,7 +351,7 @@ class InvokeCommand extends BaseCommand {
 InvokeCommand.flags = buildFlags({
   commandFlags: {
     inputData: flags.string({
-      char: 'D',
+      char: 'i',
       description:
         'The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like \'{"key": "value"}\', read from a file like @file.json, or read from stdin like @-.',
     }),
@@ -385,8 +400,8 @@ InvokeCommand.skipValidInstallCheck = true;
 InvokeCommand.examples = [
   'zapier invoke trigger new_recipe',
   `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`,
-  'zapier invoke search find_recipe -D @file.json',
-  'zapier invoke trigger new_recipe -D @-',
+  'zapier invoke search find_recipe -i @file.json',
+  'cat file.json | zapier invoke trigger new_recipe -i @-',
 ];
 InvokeCommand.description =
   'Invoke an auth operation, a trigger, or a create/search action locally.';
