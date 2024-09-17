@@ -12,7 +12,10 @@ class CanaryCreateCommand extends ZapierBaseCommand {
     const existingCanary = await this.findExistingCanary(versionFrom, versionTo);
     if (existingCanary) {
       const secondsRemaining = existingCanary.until_timestamp - Math.floor(Date.now() / 1000);
-      this.log(`A canary deployment already exists from version ${versionFrom} to version ${versionTo}, there are ${secondsRemaining} seconds remaining`);
+      this.log(`A canary deployment already exists from version ${versionFrom} to version ${versionTo}, there are ${secondsRemaining} seconds remaining.
+      
+If you would like to stop this canary now, run \`zapier canary:delete ${versionFrom} ${versionTo}\``);
+
       return;
     }
 
@@ -44,8 +47,8 @@ class CanaryCreateCommand extends ZapierBaseCommand {
   }
 
   validatePercent(percent) {
-    if (percent <= 0 || percent > 100) {
-      this.error('Percent must be between 0 and 100');
+    if (percent < 1 || percent > 100) {
+      this.error('Percent must be between 1 and 100');
     }
   }
 
@@ -70,13 +73,13 @@ CanaryCreateCommand.args = [
   {
     name: 'percent',
     required: true,
-    description: 'Percent of traffic to route to new version',
+    description: 'Percentage (between 1 and 100) of traffic to route to new version',
     parse: (input) => parseInt(input, 10),
   },
   {
     name: 'duration',
     required: true,
-    description: 'Duration of the canary in seconds',
+    description: 'Duration (between 30 and 86400) of the canary in seconds',
     parse: (input) => parseInt(input, 10),
   },
 ];
@@ -86,7 +89,9 @@ CanaryCreateCommand.description =
   '\n' +
   'Only one canary can be active at the same time. You can run `zapier canary:list` to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using `zapier canary:delete a.b.c x.y.z`. \n' +
   '\n' +
-  'Note: this is similar to `zapier migrate` but different in that this is temporary and will "revert" the changes once the specified duration is expired.';
+  'Note: this is similar to `zapier migrate` but different in that this is temporary and will "revert" the changes once the specified duration is expired. \n' +
+  '\n' +
+  '**Only use this command to canary traffic between non-breaking versions!**';
 
 CanaryCreateCommand.examples = [
   'zapier canary:create 1.0.0 1.1.0 25 720',
