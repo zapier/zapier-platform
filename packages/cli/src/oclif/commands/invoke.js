@@ -1,3 +1,5 @@
+const fs = require('node:fs');
+
 const _ = require('lodash');
 const { flags } = require('@oclif/command');
 const debug = require('debug')('zapier:invoke');
@@ -28,13 +30,12 @@ const loadAuthDataFromEnv = () => {
     }, {});
 };
 
-const getInputDataFromStdin = async (inputDataFromCommand) => {
-  if (inputDataFromCommand) {
-    return inputDataFromCommand;
+const readStream = async (stream) => {
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(chunk);
   }
-
-  // TODO: Get inputData from stdin
-  return {};
+  return chunks.join('');
 };
 
 const getMissingRequiredInputFields = (inputData, inputFields) => {
@@ -180,7 +181,7 @@ class InvokeCommand extends BaseCommand {
             };
           });
           fieldChoices.push({
-            name: '*** Done. Invoke the action! ***',
+            name: '>>> Done. Invoke the action! <<<',
             value: null,
           });
           const fieldKey = await this.promptWithList(
@@ -217,6 +218,9 @@ class InvokeCommand extends BaseCommand {
     endSpinner();
 
     console.log(JSON.stringify(output, null, 2));
+  }
+
+  async promptWithListIfTty(message, choices) {
   }
 
   async perform() {
@@ -294,12 +298,19 @@ class InvokeCommand extends BaseCommand {
 
       let { inputData } = this.flags;
       if (inputData) {
+        if (inputData.startsWith('@')) {
+          const filePath = inputData.substr(1);
+          let inputStream;
+          if (filePath === '-') {
+            inputStream = process.stdin;
+          } else {
+            inputStream = fs.createReadStream(filePath, { encoding: 'utf8' });
+          }
+          inputData = await readStream(inputStream);
+        }
         inputData = JSON.parse(inputData);
       } else {
-        inputData = await getInputDataFromStdin();
-        if (!inputData) {
-          inputData = {};
-        }
+        inputData = {};
       }
 
       const meta = {
@@ -327,12 +338,7 @@ InvokeCommand.flags = buildFlags({
     inputData: flags.string({
       char: 'D',
       description:
-        'The input data to pass to the action. Must be a JSON-encoded object. If not provided, the command will try to read from stdin.',
-    }),
-    'no-prompt-for-optional-input-fields': flags.boolean({
-      char: 'I',
-      description: 'Do not prompt for missing optional input fields.',
-      default: false,
+        'The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like \'{"key": "value"}\', read from a file like @file.json, or read from stdin like @-.',
     }),
     isLoadingSample: flags.boolean({
       description:
@@ -379,7 +385,10 @@ InvokeCommand.skipValidInstallCheck = true;
 InvokeCommand.examples = [
   'zapier invoke trigger new_recipe',
   `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`,
+  'zapier invoke search find_recipe -D @file.json',
+  'zapier invoke trigger new_recipe -D @-',
 ];
-InvokeCommand.description = 'Invoke an action (trigger/search/create) locally.';
+InvokeCommand.description =
+  'Invoke an auth operation, a trigger, or a create/search action locally.';
 
 module.exports = InvokeCommand;
