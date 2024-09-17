@@ -9,4 +9,5 @@ module.exports = {
   triggerHasId: require('./trigger-has-id'),
   firehoseSubscriptionIsArray: require('./firehose_is_array'),
   firehoseSubscriptionKeyIsString: require('./firehose_is_string'),
+  performBufferReturnType: require('./perform-buffer-return-type'),
 };

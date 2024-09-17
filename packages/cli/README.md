@@ -22,7 +22,7 @@ You may find some documents on the Zapier site duplicate or outdated. The most u
 
 Our code is updated frequently. To see a full list of changes, look no further than [the CHANGELOG](https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md).
 
-This doc describes the latest CLI version (**15.14.0**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
+This doc describes the latest CLI version (**15.14.1**), as of this writing. If you're using an older version of the CLI, you may want to check out these historical releases:
 
 - CLI Docs: [14.x](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@14.1.2/packages/cli/README.md), [13.x](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@13.0.0/packages/cli/README.md)
 - CLI Reference: [14.x](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@14.1.2/packages/cli/docs/cli.md), [13.x](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@13.0.0/packages/cli/docs/cli.md)
@@ -72,6 +72,7 @@ This doc describes the latest CLI version (**15.14.0**), as of this writing. If 
   * [Nested & Children (Line Item) Fields](#nested--children-line-item-fields)
 - [Output Fields](#output-fields)
   * [Nested & Children (Line Item) Fields](#nested--children-line-item-fields-1)
+- [Buffered Create Actions](#buffered-create-actions)
 - [Z Object](#z-object)
   * [`z.request([url], options)`](#zrequesturl-options)
   * [`z.console`](#zconsole)
@@ -93,6 +94,12 @@ This doc describes the latest CLI version (**15.14.0**), as of this writing. If 
   * [`bundle.outputData`](#bundleoutputdata)
   * [`bundle.targetUrl`](#bundletargeturl)
   * [`bundle.subscribeData`](#bundlesubscribedata)
+- [BufferedBundle Object](#bufferedbundle-object)
+  * [`bufferedBundle.authData`](#bufferedbundleauthdata)
+  * [`bufferedBundle.groupedBy`](#bufferedbundlegroupedby)
+  * [`bufferedBundle.buffer`](#bufferedbundlebuffer)
+    + [`bufferedBundle.buffer[].inputData`](#bufferedbundlebufferinputdata)
+    + [`bufferedBundle.buffer[].meta`](#bufferedbundlebuffermeta)
 - [Environment](#environment)
   * [Defining Environment Variables](#defining-environment-variables)
   * [Accessing Environment Variables](#accessing-environment-variables)
@@ -1830,6 +1837,125 @@ const App = {
 
 ```
 
+## Buffered Create Actions
+
+_Added in v15.15.0. This feature is currently **internal-only**._
+
+A Buffered Create allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server. When enabled, Zapier holds the data until the buffer reaches a size limit or a certain time has passed, then sends the buffered data using the `performBuffer` function you define.
+
+To implement a Buffered Create, you define a [`buffer`](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#bufferconfigschema) configuration object and a `performBuffer` function in the `operation` object. In the `buffer` config object, you specify how you want to group the buffered data using the `groupedBy` setting and the maximum number of items to buffer using the `limit` setting.
+
+The `performBuffer` function should replace the `perform` function. Note that `perform` cannot be defined along with `performBuffer`. Check out the [`create` action operation schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#basiccreateactionoperationschema) for details.
+
+Similar to the general `perform` function accepting two arguments, [`z`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object) and [`bundle`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bundle-object) objects, the `performBuffer` function accepts [`z`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#z-object) and [`bufferedBundle`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bufferedbundle-object) objects. They share the same `z` object, but the `bufferedBundle` object is different from the `bundle` object. The `bufferedBundle` object has an idempotency ID set at `bufferedBundle.buffer[].meta.id` for each object in the buffer. `performBuffer` would have to return the idempotency IDs to tell Zapier which objects were successfully written. Find the details about the `bufferedBundle` object [here](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#bufferedbundle-object).
+
+Here is an example of a Buffered Create action:
+
+```js
+const performBuffer = async (z, bufferedBundle) => {
+  // Grab the line items, preserving the order
+  const rows = bufferedBundle.buffer.map(({ inputData }) => {
+    return { title: inputData.title, year: inputData.year };
+  });
+
+  // Make the bulk-create API request
+  const response = await z.request({
+    method: 'POST',
+    url: 'https://api.example.com/add_rows',
+    body: {
+      spreadsheet: bufferedBundle.groupedBy.spreadsheet,
+      worksheet: bufferedBundle.groupedBy.worksheet,
+      rows,
+    },
+  });
+
+  // Create a matching result using the idempotency ID for each buffered invocation run.
+  // The returned IDs will tell Zapier backend which items were successfully written.
+  const result = {};
+  bufferedBundle.buffer.forEach(({ inputData, meta }, index) => {
+    let error = '';
+    let outputData = {};
+
+    // assuming request order matches response and
+    // response.data = {
+    //   "rows": [
+    //     {"id": "12910"},
+    //     {"id": "92830"},
+    //     {"error": "Not Created"},
+    //     ...
+    //   ]
+    // }
+    if (response.data.rows.length > index) {
+      // assuming an error is returned with an "error" key in the response data
+      if (response.data.rows[index].error) {
+        error = response.data.rows[index].error;
+      } else {
+        outputData = response.data.rows[index];
+      }
+    }
+
+    // the performBuffer method must return a data just like this
+    // {
+    //   "idempotency ID 1": {
+    //     "outputData": {"id": "12910"},
+    //     "error": ""
+    //   },
+    //   "idempotency ID 2": {
+    //     "outputData": {"id": "92830"},
+    //     "error": ""
+    //   },
+    // "idempotency ID 3": {
+    //     "outputData": {},
+    //     "error": "Not Created"
+    //   },
+    //   ...
+    // }
+    result[meta.id] = { outputData, error };
+  });
+
+  return result;
+};
+
+module.exports = {
+  key: 'add_rows',
+  noun: 'Rows',
+  display: {
+    label: 'Add Rows',
+    description: 'Add rows to a worksheet.',
+  },
+  operation: {
+    buffer: {
+      groupedBy: ['spreadsheet', 'worksheet'],
+      limit: 3,
+    },
+    performBuffer,
+    inputFields: [
+      {
+        key: 'spreadsheet',
+        type: 'string',
+        required: true,
+      },
+      {
+        key: 'worksheet',
+        type: 'string',
+        required: true,
+      },
+      {
+        key: 'title',
+        type: 'string',
+      },
+      {
+        key: 'year',
+        type: 'string',
+      },
+    ],
+    outputFields: [{ key: 'id', type: 'string' }],
+    sample: { id: '12345' },
+  },
+};
+
+```
+
 ## Z Object
 
 We provide several methods off of the `z` object, which is provided as the first argument to all function calls in your app.
@@ -2110,6 +2236,34 @@ This is an object that contains the data you returned from the `performSubscribe
 
 Read more in the [REST hook example](https://github.com/zapier/zapier-platform/blob/main/example-apps/rest-hooks/triggers/recipe.js).
 
+## BufferedBundle Object
+
+*Added in v15.15.0.*
+
+This object holds a user's auth details (`bufferedBundle.authData`) and the buffered data (`bufferedBundle.buffer`) for the API requests. It is used only with a `create` action's `performBuffer` function.
+
+> The `bufferedBundle` object is passed into the `performBuffer` function as the second argument - IE: `performBuffer: async (z, bufferedBundle) => {}`.
+
+### `bufferedBundle.authData`
+
+It is a user-provided authentication data, like `api_key` or `access_token`. [Read more on authentication.](#authentication)
+
+### `bufferedBundle.groupedBy`
+
+It is a user-provided data for a set of selected [`inputFields`](#input-fields) to group the multiple runs of a `create` action by.
+
+### `bufferedBundle.buffer`
+
+It is an array of objects of user-provided data and some meta data to allow multiple runs of a `create` action be processed in a single API request.
+
+#### `bufferedBundle.buffer[].inputData`
+
+It is a user-provided data for a particular run of a `create` action in the buffer, as defined by the [`inputFields`](#input-fields).
+
+#### `bufferedBundle.buffer[].meta`
+
+It contains an idempotency `id` provided to the `create` action to identify each run's data in the buffered data.
+
 ## Environment
 
 Apps can define environment variables that are available when the app's code executes. They work just like environment
@@ -2257,7 +2411,7 @@ const App = {
       },
       operation: {
         perform: () => {},
-        inputFields: [{key: 'name', required: true, type: 'string'}],
+        inputFields: [{ key: 'name', required: true, type: 'string' }],
         // overwrites the default, for this action
         throttle: {
           window: 600,
@@ -2550,7 +2704,7 @@ This behavior has changed periodically across major versions, which changes how/
 
 ![](https://cdn.zappy.app/e835d9beca1b6489a065d51a381613f3.png)
 
-Ensure you're handling errors correctly for your platform version. The latest released version is **15.14.0**.
+Ensure you're handling errors correctly for your platform version. The latest released version is **15.14.1**.
 
 ### HTTP Request Options
 
@@ -3750,7 +3904,7 @@ Broadly speaking, all releases will continue to work indefinitely. While you nev
 For more info about which Node versions are supported, see [the faq](#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with).
 
 <!-- TODO: if we decouple releases, change this -->
-The most recently released version of `cli` and `core` is **15.14.0**. You can see the versions you're working with by running `zapier -v`.
+The most recently released version of `cli` and `core` is **15.14.1**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 

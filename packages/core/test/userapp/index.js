@@ -38,7 +38,7 @@ const ListRequire = {
       perform: (z, bundle) => {
         // in prod, process.cwd will return the app root directory
         const { BASE_URL } = z.require('./test/userapp/constants.js');
-        return BASE_URL;
+        return [{ id: 1, url: BASE_URL }];
       },
     },
   },
@@ -53,8 +53,11 @@ const Contact = {
       description: 'Trigger on new contacts.',
     },
     operation: {
-      perform: {
-        url: '{{process.env.BASE_URL}}/get',
+      perform: async (z, bundle) => {
+        const response = await z.request({
+          url: `${process.env.BASE_URL}/get`,
+        });
+        return [{ id: 'dontcare', ...response.data }];
       },
       inputFields: [
         {
@@ -139,28 +142,6 @@ const LoggingFunc = {
   },
 };
 
-const RequestFunc = {
-  key: 'requestfunc',
-  noun: 'requestfunc',
-  list: {
-    display: {
-      label: 'New Request Func',
-      description: 'Makes an http request via z.request.',
-    },
-    operation: {
-      perform: (z /* , bundle */) => {
-        return z
-          .request({ url: '{{process.env.BASE_URL}}/get' })
-          .then((resp) => {
-            const result = resp.data;
-            result.id = 123;
-            return [result];
-          });
-      },
-    },
-  },
-};
-
 const RequestSugar = {
   key: 'requestsugar',
   noun: 'requestsugar',
@@ -172,7 +153,7 @@ const RequestSugar = {
     operation: {
       perform: (z /* , bundle */) => {
         return z.request(`${HTTPBIN_URL}/get`).then((resp) => {
-          return resp.data;
+          return [{ id: 'dontcare', ...resp.data }];
         });
       },
     },
@@ -419,7 +400,11 @@ const HonkerDonker = {
       description: 'This will be dehydrated by list',
     },
     operation: {
-      perform: (z, bundle) => `honker donker number ${bundle.honkerId}`,
+      perform: (z, bundle) => {
+        return {
+          message: `honker donker number ${bundle.honkerId}`,
+        };
+      },
     },
   },
   list: {
@@ -431,9 +416,12 @@ const HonkerDonker = {
       perform: (z, bundle) => {
         const honkerIds = [1, 2, 3];
         return honkerIds.map((id) => {
-          return z.dehydrate(HonkerDonker.get.operation.perform, {
-            honkerId: id,
-          });
+          return {
+            id,
+            $HOIST$: z.dehydrate(HonkerDonker.get.operation.perform, {
+              honkerId: id,
+            }),
+          };
         });
       },
     },
@@ -525,7 +513,7 @@ const EnvironmentVariable = {
 const ExecuteCallbackRequest = {
   key: 'executeCallbackRequest',
   noun: 'Callback',
-  list: {
+  create: {
     display: {
       label: 'Callback Usage in a perform',
       description: 'Used for one-offs in the tests.',
@@ -534,7 +522,7 @@ const ExecuteCallbackRequest = {
       perform: (z) => {
         // we need to access the callback url
         const callbackUrl = z.generateCallbackUrl();
-        return { callbackUrl };
+        return { id: 'dontcare', callbackUrl };
       },
       performResume: (z, bundle) => {
         return Object.assign({}, bundle.outputData, bundle.cleanedRequest);
@@ -629,7 +617,6 @@ const App = {
     [ContactError.key]: ContactError,
     [ContactSource.key]: ContactSource,
     [LoggingFunc.key]: LoggingFunc,
-    [RequestFunc.key]: RequestFunc,
     [RequestSugar.key]: RequestSugar,
     [WorkingFunc.key]: WorkingFunc,
     [WorkingFuncAsync.key]: WorkingFuncAsync,

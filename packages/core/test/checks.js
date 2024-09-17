@@ -247,6 +247,78 @@ describe('checks', () => {
     isFirehoseWebhook(firehoseMethod).should.be.true();
     isFirehoseWebhook('triggers.blah.operation.perform').should.be.false(); // the firehose webhook check is at app level, not trigger
   });
+
+  it('should check performBuffer missing IDs', () => {
+    const results = { one: {}, two: {} };
+    const bundle = {
+      buffer: [
+        { meta: { id: 'one' } },
+        { meta: { id: 'two' } },
+        { meta: { id: 'three' } },
+        { meta: { id: 'four' } },
+        { meta: { id: 'five' } },
+        { meta: { id: 'six' } },
+        { meta: { id: 'seven' } },
+        { meta: { id: 'eight' } },
+        { meta: { id: 'nine' } },
+      ],
+    };
+    const errors = checks.performBufferReturnType.run(
+      'creates.blah.operation.performBuffer',
+      results,
+      {},
+      bundle
+    );
+    errors.length.should.eql(1);
+    errors[0].should.match(
+      /missing these IDs as keys: three, four, five, and 4 more/
+    );
+  });
+
+  it('should check performBuffer object shape', () => {
+    const results = {
+      one: 'not an object',
+      two: { error: 123 },
+      three: { outputData: {} },
+      four: { error: 'test' },
+      five: {
+        outputData: 'this one should pass because it is not in the input',
+      },
+    };
+    const bundle = {
+      buffer: [
+        { meta: { id: 'one' } },
+        { meta: { id: 'two' } },
+        { meta: { id: 'three' } },
+        { meta: { id: 'four' } },
+      ],
+    };
+    const errors = checks.performBufferReturnType.run(
+      'creates.blah.operation.performBuffer',
+      results,
+      {},
+      bundle
+    );
+    errors.length.should.eql(2);
+    errors[0].should.match(/member with ID 'one' must be an object/);
+    errors[1].should.match(
+      /member with ID 'two' must have 'outputData' object or 'error' string/
+    );
+  });
+
+  it('should pass performBuffer check', () => {
+    const results = { one: { outputData: {} }, two: { outputData: {} } };
+    const bundle = {
+      buffer: [{ meta: { id: 'one' } }, { meta: { id: 'two' } }],
+    };
+    const errors = checks.performBufferReturnType.run(
+      'creates.blah.operation.performBuffer',
+      results,
+      {},
+      bundle
+    );
+    errors.should.be.empty();
+  });
 });
 
 describe('checkOutput', () => {

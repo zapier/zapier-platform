@@ -17,9 +17,10 @@ describe('create-app', () => {
 
   const app = createApp(appDefinition);
 
-  const createTestInput = (method) => {
+  const createTestInput = (method, bundle) => {
     const event = {
-      bundle: {},
+      command: 'execute',
+      bundle: { ...bundle },
       method,
       callback_url: 'calback_url',
     };
@@ -108,13 +109,14 @@ describe('create-app', () => {
     const input = createTestInput('resources.contact.list.operation.perform');
     const output = await app(input);
 
-    should.exist(output.results.headers);
+    const result = output.results[0];
+    should.exist(result.headers);
 
     // verify that custom http before middleware was applied
-    output.results.headers['X-Hashy'].should.deepEqual([
+    result.headers['X-Hashy'].should.deepEqual([
       '1a3ba5251cb33ee7ade01af6a7b960b8',
     ]);
-    output.results.headers['X-Author'].should.deepEqual(['One Cool Dev']);
+    result.headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
   it('should fail on a live request call', async () => {
@@ -155,28 +157,18 @@ describe('create-app', () => {
     throw new Error('expected an error');
   });
 
-  it('should make call via z.request', async () => {
-    const input = createTestInput('triggers.requestfuncList.operation.perform');
-
-    const output = await app(input);
-
-    output.results[0].headers['X-Hashy'].should.deepEqual([
-      '1a3ba5251cb33ee7ade01af6a7b960b8',
-    ]);
-    output.results[0].headers['X-Author'].should.deepEqual(['One Cool Dev']);
-  });
-
   it('should make call via z.request with sugar url param', async () => {
     const input = createTestInput(
       'triggers.requestsugarList.operation.perform'
     );
 
     const output = await app(input);
+    const result = output.results[0];
 
-    output.results.headers['X-Hashy'].should.deepEqual([
+    result.headers['X-Hashy'].should.deepEqual([
       '1a3ba5251cb33ee7ade01af6a7b960b8',
     ]);
-    output.results.headers['X-Author'].should.deepEqual(['One Cool Dev']);
+    result.headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
   it('should fail on a sync function', (done) => {
@@ -256,11 +248,13 @@ describe('create-app', () => {
     const input = createTestInput('triggers.contactList.operation.perform');
     const output = await app(input);
 
-    output.results.url.should.eql(`${HTTPBIN_URL}/get`);
-    output.results.headers['X-Hashy'].should.deepEqual([
+    const result = output.results[0];
+
+    result.url.should.eql(`${HTTPBIN_URL}/get`);
+    result.headers['X-Hashy'].should.deepEqual([
       '1a3ba5251cb33ee7ade01af6a7b960b8',
     ]);
-    output.results.headers['X-Author'].should.deepEqual(['One Cool Dev']);
+    result.headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
   it('should return a rendered URL for OAuth2 authorizeURL', (done) => {
@@ -317,6 +311,46 @@ describe('create-app', () => {
         done();
       })
       .catch(done);
+  });
+
+  describe('output checks', () => {
+    it('should check performBuffer output', async () => {
+      const definition = dataTools.jsonCopy(appDefinition);
+      definition.resources.row = {
+        key: 'row',
+        noun: 'Row',
+        create: {
+          display: {
+            label: 'Insert Row',
+          },
+          operation: {
+            performBuffer: (z, bundle) => {
+              const firstId = bundle.buffer[0].meta.id;
+              return { [firstId]: {} };
+            },
+          },
+        },
+      };
+      const app = createApp(definition);
+      const bundle = {
+        buffer: [
+          { meta: { id: 'ffee-0000' } },
+          { meta: { id: 'ffee-0001' } },
+          { meta: { id: 'ffee-0002' } },
+          { meta: { id: 'ffee-0003' } },
+          { meta: { id: 'ffee-0004' } },
+          { meta: { id: 'ffee-0005' } },
+        ],
+      };
+      const input = createTestInput(
+        'creates.rowCreate.operation.performBuffer',
+        bundle
+      );
+      const err = await app(input).should.be.rejected();
+      err.name.should.eql('CheckError');
+      err.message.should.match(/missing these IDs as keys/);
+      err.message.should.match(/ffee-0001, ffee-0002, ffee-0003, and 2 more/);
+    });
   });
 
   describe('HTTP after middleware for auth refresh', () => {
@@ -499,29 +533,37 @@ describe('create-app', () => {
   });
 
   describe('hydration', () => {
-    it('should hydrate method', (done) => {
+    it('should hydrate method', async () => {
       const input = createTestInput(
         'resources.honkerdonker.list.operation.perform'
       );
-
-      app(input)
-        .then((output) => {
-          output.results.should.eql([
+      const output = await app(input);
+      output.results.should.eql([
+        {
+          id: 1,
+          $HOIST$:
             'hydrate|||{"type":"method","method":"resources.honkerdonker.get.operation.perform","bundle":{"honkerId":1}}|||hydrate',
+        },
+        {
+          id: 2,
+          $HOIST$:
             'hydrate|||{"type":"method","method":"resources.honkerdonker.get.operation.perform","bundle":{"honkerId":2}}|||hydrate',
+        },
+        {
+          id: 3,
+          $HOIST$:
             'hydrate|||{"type":"method","method":"resources.honkerdonker.get.operation.perform","bundle":{"honkerId":3}}|||hydrate',
-          ]);
-          done();
-        })
-        .catch(done);
+        },
+      ]);
     });
   });
+
   describe('calling a callback method', () => {
     let results;
     before(() =>
       app(
         createTestInput(
-          'resources.executeCallbackRequest.list.operation.perform'
+          'resources.executeCallbackRequest.create.operation.perform'
         )
       ).then((output) => {
         results = output;
@@ -530,8 +572,12 @@ describe('create-app', () => {
 
     it('returns a CALLBACK envelope', () =>
       results.status.should.eql('CALLBACK'));
+
     it('returns the methods values', () =>
-      results.results.should.eql({ callbackUrl: 'calback_url' }));
+      results.results.should.eql({
+        id: 'dontcare',
+        callbackUrl: 'calback_url',
+      }));
   });
 
   describe('using require', () => {
@@ -579,13 +625,13 @@ describe('create-app', () => {
     it('should import and use the crypto module from node', async () => {
       const definition = createDefinition(`
         const crypto = z.require('crypto');
-        return crypto.createHash('md5').update('abc').digest('hex');
+        return [{id: crypto.createHash('md5').update('abc').digest('hex')}];
       `);
       const input = createTestInput('triggers.testRequire.operation.perform');
 
       const appPass = createApp(definition);
       const { results } = await appPass(input);
-      results.should.eql('900150983cd24fb0d6963f7d28e17f72');
+      results[0].id.should.eql('900150983cd24fb0d6963f7d28e17f72');
     });
 
     it('should handle require errors', async () => {
@@ -610,7 +656,8 @@ describe('create-app', () => {
       const appPass = createApp(appDefinition);
 
       const { results } = await appPass(input);
-      results.should.eql('www.base-url.com');
+      results.length.should.eql(1);
+      results[0].url.should.eql('www.base-url.com');
     });
   });
 
