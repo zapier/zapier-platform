@@ -337,7 +337,7 @@ describe('logger', () => {
     ]);
   });
 
-  it('should replace secret in response content as query params', async () => {
+  it('should replace secret in response content for oauth1 as query params', async () => {
     const event = {
       method: 'authentication.oauth1Config.getAccessToken',
     };
