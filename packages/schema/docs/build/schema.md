@@ -602,7 +602,7 @@ Currently an **internal-only** feature. Zapier uses this configuration for creat
 #### Details
 
 * **Type** - `object`
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.14.0/packages/schema/lib/schemas/BufferConfigSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.14.1/packages/schema/lib/schemas/BufferConfigSchema.js)
 
 #### Properties
 

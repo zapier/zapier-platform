@@ -1,3 +1,23 @@
+## 15.14.2
+
+_released `2024-09-17`_
+
+### cli
+
+None!
+
+### core
+
+- :bug: Ensure censoring of OAuth1 tokens in HTTP logs ([#864](https://github.com/zapier/zapier-platform/pull/864))
+
+### schema
+
+None!
+
+### misc
+
+None!
+
 ## 15.14.1
 
 _released `2024-09-12`_
