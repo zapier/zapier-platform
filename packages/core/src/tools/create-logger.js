@@ -166,7 +166,8 @@ const buildSensitiveValues = (event, data) => {
   const isGettingNewSecret =
     event.method &&
     (event.method.endsWith('refreshAccessToken') ||
-      event.method.endsWith('sessionConfig.perform'));
+      event.method.endsWith('sessionConfig.perform') ||
+      event.method.endsWith('oauth1Config.getAccessToken'));
 
   for (const prop of ['response_content', 'request_data']) {
     if (data[prop]) {

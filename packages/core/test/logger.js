@@ -337,6 +337,44 @@ describe('logger', () => {
     ]);
   });
 
+  it('should replace secret in response content for oauth1 as query params', async () => {
+    const event = {
+      method: 'authentication.oauth1Config.getAccessToken',
+    };
+    const logger = createlogger(event, options);
+
+    const { message, data } = prepareTestRequest({
+      reqBody: {
+        username: 'user1234',
+        password: 'password1234',
+      },
+      resBody: '"oauth_token=1234"',
+    });
+
+    logger(message, data);
+    const response = await logger.end(1000);
+    response.status.should.eql(200);
+
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 POST http://example.com',
+        data: {
+          log_type: 'http',
+          request_type: 'devplatform-outbound',
+          request_url: 'http://example.com',
+          request_method: 'POST',
+          request_headers: 'accept: application/json',
+          request_data:
+            '{"username":"user1234","password":":censored:12:60562c5b6c:"}',
+          request_via_client: true,
+          response_status_code: 200,
+          response_headers: 'content-type: application/json',
+          response_content: '":censored:16:766f32ee8c:"',
+        },
+      },
+    ]);
+  });
+
   it('should replace set-cookie header', async () => {
     const event = {
       method: 'authentication.sessionConfig.perform',
