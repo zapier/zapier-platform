@@ -177,14 +177,6 @@ const buildSensitiveValues = (event, data) => {
   if (data.request_params) {
     result.push(...findSensitiveValues(querystringParse(data.request_params)));
   }
-  if (
-    data.response_content &&
-    event.method.endsWith('oauth1Config.getAccessToken')
-  ) {
-    result.push(
-      ...findSensitiveValues(querystringParse(data.response_content))
-    );
-  }
   // unique- no point in duplicates
   return [...new Set(result)];
 };
