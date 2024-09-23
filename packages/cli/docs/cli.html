@@ -670,22 +670,24 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Invoke an action (trigger/search/create) locally.</p>
+<p>Invoke an auth operation, a trigger, or a create/search action locally.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier invoke [ACTIONTYPE] [ACTIONKEY]</code></p><p><strong>Arguments</strong></p><ul>
 <li><code>actionType</code> | The action type you want to invoke.</li>
 <li><code>actionKey</code> | The action key you want to invoke.</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li><code>-D, --inputData</code> | The input data to pass to the action. Must be a JSON-encoded object. If not provided, the command will try to read from stdin.</li>
-<li><code>-I, --no-prompt-for-optional-input-fields</code> | Do not prompt for missing optional input fields.</li>
+<li><code>-i, --inputData</code> | The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like &apos;{&quot;key&quot;: &quot;value&quot;}&apos;, read from a file like @file.json, or read from stdin like @-.</li>
 <li><code>--isLoadingSample</code> | Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.</li>
 <li><code>--isFillingDynamicDropdown</code> | Set bundle.meta.isFillingDynamicDropdown to true. Only makes sense for a polling trigger. When true in production, this poll is being used to populate a dynamic dropdown.</li>
 <li><code>--isPopulatingDedupe</code> | Set bundle.meta.isPopulatingDedupe to true. Only makes sense for a polling trigger. When true in production, the results of this poll will be used initialize the deduplication list rather than trigger a Zap. This happens when a user enables a Zap.</li>
 <li><code>--limit</code> | Set bundle.meta.limit. Only makes sense for a trigger. When used in production, this indicates the number of items you should fetch. -1 means no limit.  Defaults to <code>-1</code>.</li>
 <li><code>-p, --page</code> | Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.</li>
+<li><code>-z, --timezone</code> | Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier invoke trigger new_recipe</code></li>
 <li><code>zapier invoke create add_recipe --inputData &apos;{&quot;title&quot;: &quot;Pancakes&quot;}&apos;</code></li>
+<li><code>zapier invoke search find_recipe -i @file.json</code></li>
+<li><code>cat file.json | zapier invoke trigger new_recipe -i @-</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

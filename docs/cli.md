@@ -258,7 +258,7 @@ This command also checks the current directory for a linked integration.
 
 ## invoke
 
-> Invoke an action (trigger/search/create) locally.
+> Invoke an auth operation, a trigger, or a create/search action locally.
 
 **Usage**: `zapier invoke [ACTIONTYPE] [ACTIONKEY]`
 
@@ -267,18 +267,20 @@ This command also checks the current directory for a linked integration.
 * `actionKey` | The action key you want to invoke.
 
 **Flags**
-* `-D, --inputData` | The input data to pass to the action. Must be a JSON-encoded object. If not provided, the command will try to read from stdin.
-* `-I, --no-prompt-for-optional-input-fields` | Do not prompt for missing optional input fields.
+* `-i, --inputData` | The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like '{"key": "value"}', read from a file like @file.json, or read from stdin like @-.
 * `--isLoadingSample` | Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.
 * `--isFillingDynamicDropdown` | Set bundle.meta.isFillingDynamicDropdown to true. Only makes sense for a polling trigger. When true in production, this poll is being used to populate a dynamic dropdown.
 * `--isPopulatingDedupe` | Set bundle.meta.isPopulatingDedupe to true. Only makes sense for a polling trigger. When true in production, the results of this poll will be used initialize the deduplication list rather than trigger a Zap. This happens when a user enables a Zap.
 * `--limit` | Set bundle.meta.limit. Only makes sense for a trigger. When used in production, this indicates the number of items you should fetch. -1 means no limit.  Defaults to `-1`.
 * `-p, --page` | Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.
+* `-z, --timezone` | Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
 * `zapier invoke trigger new_recipe`
 * `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`
+* `zapier invoke search find_recipe -i @file.json`
+* `cat file.json | zapier invoke trigger new_recipe -i @-`
 
 
 ## jobs

@@ -5,6 +5,10 @@ const { flags } = require('@oclif/command');
 const debug = require('debug')('zapier:invoke');
 const dotenv = require('dotenv');
 
+// Datetime related imports
+const chrono = require('chrono-node');
+const { DateTime, IANAZone } = require('luxon');
+
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 const { localAppCommand } = require('../../utils/local');
@@ -100,7 +104,88 @@ const parseBoolean = (s) => {
   return Boolean(s);
 };
 
-const resolveInputDataTypes = (inputData, inputFields) => {
+const parsingCompsToString = (parsingComps) => {
+  const yyyy = parsingComps.get('year');
+  const mm = String(parsingComps.get('month')).padStart(2, '0');
+  const dd = String(parsingComps.get('day')).padStart(2, '0');
+  const hh = String(parsingComps.get('hour')).padStart(2, '0');
+  const ii = String(parsingComps.get('minute')).padStart(2, '0');
+  const ss = String(parsingComps.get('second')).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}T${hh}:${ii}:${ss}`;
+};
+
+const hasTimeInfo = (parsingComps) => {
+  const tags = [...parsingComps.tags()];
+  for (const tag of tags) {
+    if (tag.includes('ISOFormat') || tag.includes('Time')) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const maybeImplyTimeInfo = (parsingComps) => {
+  if (!hasTimeInfo(parsingComps)) {
+    parsingComps.imply('hour', 9);
+    parsingComps.imply('minute', 0);
+    parsingComps.imply('second', 0);
+    parsingComps.imply('millisecond', 0);
+  }
+  return parsingComps;
+};
+
+const parseTimestamp = (dtString, tzName) => {
+  const match = dtString.match(/-?\d{10,14}/);
+  if (!match) {
+    return null;
+  }
+
+  dtString = match[0];
+  let timestamp = parseInt(dtString);
+  if (dtString.length <= 12) {
+    timestamp *= 1000;
+  }
+
+  return DateTime.fromMillis(timestamp, { zone: tzName }).toFormat(
+    "yyyy-MM-dd'T'HH:mm:ssZZ"
+  );
+};
+
+const parseDatetime = (dtString, tzName, now) => {
+  const timestampResult = parseTimestamp(dtString, tzName);
+  if (timestampResult) {
+    return timestampResult;
+  }
+
+  const offset = IANAZone.create(tzName).offset(now.getTime());
+  const results = chrono.parse(dtString, {
+    instant: now,
+    timezone: offset,
+  });
+
+  let isoString;
+  if (results.length) {
+    const parsingComps = results[0].start;
+    if (parsingComps.get('timezoneOffset') == null) {
+      // No timezone info in the input string => interpret the datetime string
+      // exactly as it is and append the timezone
+      isoString = parsingCompsToString(maybeImplyTimeInfo(parsingComps));
+    } else {
+      // Timezone info is present or implied in the input string => convert the
+      // datetime to the specified timezone
+      isoString = maybeImplyTimeInfo(parsingComps).date().toISOString();
+    }
+  } else {
+    // No datetime info in the input string => just return the current time
+    isoString = now.toISOString();
+  }
+
+  return DateTime.fromISO(isoString, { zone: tzName }).toFormat(
+    "yyyy-MM-dd'T'HH:mm:ssZZ"
+  );
+};
+
+const resolveInputDataTypes = (inputData, inputFields, timezone) => {
   const fieldsWithDefault = inputFields.filter((f) => f.default);
   for (const f of fieldsWithDefault) {
     if (!inputData[f.key]) {
@@ -126,10 +211,7 @@ const resolveInputDataTypes = (inputData, inputFields) => {
         inputData[k] = parseBoolean(v);
         break;
       case 'datetime':
-        if (v === 'now') {
-          inputData[k] = new Date();
-        }
-        inputData[k] = new Date(v);
+        inputData[k] = parseDatetime(v, timezone, new Date());
         break;
       case 'file':
         // TODO: How to handle a file field?
@@ -181,7 +263,7 @@ class InvokeCommand extends BaseCommand {
     inputData,
     authData,
     meta,
-    flags
+    timezone
   ) {
     // Do these in order:
     // 1. {actionTypePlural}.{actionKey}.operation.inputFields
@@ -265,7 +347,7 @@ class InvokeCommand extends BaseCommand {
       }
     }
 
-    inputData = resolveInputDataTypes(inputData, inputFields);
+    inputData = resolveInputDataTypes(inputData, inputFields, timezone);
     methodName = `${actionTypePlural}.${action.key}.operation.perform`;
 
     startSpinner(`Invoking ${methodName}`);
@@ -381,6 +463,7 @@ class InvokeCommand extends BaseCommand {
         inputData = {};
       }
 
+      const { timezone } = this.flags;
       const meta = {
         isLoadingSample: this.flags.isLoadingSample,
         isFillingDynamicDropdown: this.flags.isFillingDynamicDropdown,
@@ -395,7 +478,7 @@ class InvokeCommand extends BaseCommand {
         inputData,
         authData,
         meta,
-        this.flags
+        timezone
       );
     }
   }
@@ -433,6 +516,11 @@ InvokeCommand.flags = buildFlags({
       description:
         'Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.',
       default: 0,
+    }),
+    timezone: flags.string({
+      char: 'z',
+      description:
+        'Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior.',
     }),
   },
 });
