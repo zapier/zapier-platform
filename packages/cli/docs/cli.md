@@ -262,9 +262,57 @@ This command also checks the current directory for a linked integration.
 
 **Usage**: `zapier invoke [ACTIONTYPE] [ACTIONKEY]`
 
+This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
+
+This command loads `authData` from the `.env` file in the current directory. Create a `.env` file with the necessary auth data before running this command. Each line in `.env` should be in the format `authData_FIELD_KEY=VALUE`. For example, an OAuth2 integration might have a `.env` file like this:
+
+```
+
+authData_access_token=1234567890
+
+authData_other_auth_field=abcdef
+
+```
+
+To test if the auth data is correct, run either one of these:
+
+```
+
+zapier invoke auth test   # invokes authentication.test method
+
+zapier invoke auth label  # invokes authentication.test and renders connection label
+
+```
+
+Then you can test an trigger, a search, or a create action. For example, this is how you invoke a trigger with key `new_recipe`:
+
+```
+
+zapier invoke trigger new_recipe
+
+```
+
+To add input data, use the `--inputData` flag. The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
+
+The following are the current limitations and may be supported in the future:
+
+- `zapier invoke auth start` to help you initialize the auth data in `.env`
+
+- `zapier invoke auth refresh` to refresh the auth data in `.env`
+
+- Line items
+
+- Output hydration
+
+- File upload
+
+- Dynamic dropdown pagination
+
+- Function-based connection label
+
 **Arguments**
 * `actionType` | The action type you want to invoke.
-* `actionKey` | The action key you want to invoke.
+* `actionKey` | The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "test" or "label".
 
 **Flags**
 * `-i, --inputData` | The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like '{"key": "value"}', read from a file like @file.json, or read from stdin like @-.
@@ -273,10 +321,12 @@ This command also checks the current directory for a linked integration.
 * `--isPopulatingDedupe` | Set bundle.meta.isPopulatingDedupe to true. Only makes sense for a polling trigger. When true in production, the results of this poll will be used initialize the deduplication list rather than trigger a Zap. This happens when a user enables a Zap.
 * `--limit` | Set bundle.meta.limit. Only makes sense for a trigger. When used in production, this indicates the number of items you should fetch. -1 means no limit.  Defaults to `-1`.
 * `-p, --page` | Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.
-* `-z, --timezone` | Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior.
+* `-z, --timezone` | Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior.  Defaults to `America/Chicago`.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
+* `zapier invoke`
+* `zapier invoke auth test`
 * `zapier invoke trigger new_recipe`
 * `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`
 * `zapier invoke search find_recipe -i @file.json`

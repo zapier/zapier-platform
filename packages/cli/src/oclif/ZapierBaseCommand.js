@@ -15,6 +15,7 @@ const DATA_FORMATS = ['json', 'raw'];
 
 class ZapierBaseCommand extends Command {
   run() {
+    this._initPromptModules();
     this._parseFlags();
 
     if (this.flags.debug) {
@@ -57,6 +58,13 @@ class ZapierBaseCommand extends Command {
 
   get _staticClassReference() {
     return Object.getPrototypeOf(this).constructor;
+  }
+
+  _initPromptModules() {
+    this._stdoutPrompt = inquirer.prompt;
+    this._stderrPrompt = inquirer.createPromptModule({
+      output: process.stderr,
+    });
   }
 
   _parseFlags() {
@@ -205,7 +213,8 @@ class ZapierBaseCommand extends Command {
     if (Object.keys(opts).length) {
       opts.validate = this._getCustomValidatation(opts);
     }
-    const { ans } = await inquirer.prompt({
+    const prompt = opts.useStderr ? this._stderrPrompt : this._stdoutPrompt;
+    const { ans } = await prompt({
       type: 'string',
       ...opts,
       name: 'ans',
@@ -214,18 +223,23 @@ class ZapierBaseCommand extends Command {
     return ans;
   }
 
-  promptHidden(question) {
+  promptHidden(question, useStderr = false) {
     return this.prompt(question, {
       type: 'password',
       mask: true,
+      useStderr,
     });
   }
 
-  confirm(message, defaultAns = false, showCtrlC = false) {
+  confirm(message, defaultAns = false, showCtrlC = false, useStderr = false) {
     if (showCtrlC) {
       message += ' (Ctrl-C to cancel)';
     }
-    return this.prompt(message, { default: defaultAns, type: 'confirm' });
+    return this.prompt(message, {
+      default: defaultAns,
+      type: 'confirm',
+      useStderr,
+    });
   }
 
   // see here for options for choices: https://github.com/SBoudrias/Inquirer.js/#question

@@ -228,42 +228,114 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
   return inputData;
 };
 
-const invokeAuthTest = async (authData, meta) => {
-  return localAppCommand({
+const testAuth = async (authData, meta, zcacheTestObj) => {
+  startSpinner('Invoking authentication.test');
+  const result = await localAppCommand({
     command: 'execute',
     method: 'authentication.test',
     bundle: {
       authData,
       meta,
     },
+    zcacheTestObj,
   });
+  endSpinner();
+  return result;
 };
 
-const testAuth = async (authData, meta) => {
-  startSpinner('Invoking authentication.test');
-  const result = await invokeAuthTest(authData, meta);
-  endSpinner();
-  console.log(JSON.stringify(result, null, 2));
+const getAuthLabel = async (labelTemplate, authData, meta, zcacheTestObj) => {
+  const testResult = await testAuth(authData, meta, zcacheTestObj);
+  labelTemplate = labelTemplate.replace('__', '.');
+  const tpl = _.template(labelTemplate, { interpolate: /{{([\s\S]+?)}}/g });
+  return tpl(testResult);
 };
 
-const getAuthLabel = async (labelTemplate, authData, meta) => {
-  startSpinner('Invoking authentication.test');
-  const testResult = await invokeAuthTest(authData, meta);
-  endSpinner();
-
-  // TODO: Render label template
-  console.log(JSON.stringify(testResult, null, 2));
-  console.log('Template:', labelTemplate);
+const getLabelForDynamicDropdown = (obj, preferredKey, fallbackKey) => {
+  const keys = [
+    'name',
+    'Name',
+    'display',
+    'Display',
+    'title',
+    'Title',
+    'subject',
+    'Subject',
+  ];
+  if (preferredKey) {
+    keys.unshift(preferredKey.split('__'));
+  }
+  if (fallbackKey) {
+    keys.push(fallbackKey.split('__'));
+  }
+  for (const key of keys) {
+    const label = _.get(obj, key);
+    if (label) {
+      return label;
+    }
+  }
+  return '';
 };
 
 class InvokeCommand extends BaseCommand {
+  async promptForField(field, appDefinition, authData, timezone) {
+    const ftype = field.type || 'string';
+    let message;
+    if (field.required) {
+      message = `Required input field "${field.key}" (${ftype}):`;
+    } else {
+      message = `Input field "${field.key}" (${ftype}):`;
+    }
+
+    if (field.dynamic) {
+      // Dyanmic dropdown
+      const [triggerKey, idField, labelField] = field.dynamic.split('.');
+      const trigger = appDefinition.triggers[triggerKey];
+      const meta = {
+        isLoadingSample: false,
+        isFillingDynamicDropdown: true,
+        isPopulatingDedupe: false,
+        limit: -1,
+        page: 0,
+        isTestingAuth: false,
+      };
+      const choices = await this.invokeAction(
+        appDefinition,
+        'triggers',
+        trigger,
+        {},
+        authData,
+        meta,
+        timezone
+      );
+      return this.promptWithList(
+        message,
+        choices.map((c) => {
+          const id = c[idField];
+          const label = getLabelForDynamicDropdown(c, labelField, idField);
+          return {
+            name: `${label} (${id})`,
+            value: id,
+          };
+        }),
+        { useStderr: true }
+      );
+    } else if (ftype === 'boolean') {
+      const yes = await this.confirm(message, false, !field.required, true);
+      return yes ? 'yes' : 'no';
+    } else {
+      return this.prompt(message, { useStderr: true });
+    }
+  }
+
   async invokeAction(
+    appDefinition,
     actionTypePlural,
     action,
     inputData,
     authData,
     meta,
-    timezone
+    timezone,
+    zcacheTestObj
   ) {
     // Do these in order:
     // 1. {actionTypePlural}.{actionKey}.operation.inputFields
@@ -280,6 +352,7 @@ class InvokeCommand extends BaseCommand {
         authData,
         meta,
       },
+      zcacheTestObj,
     });
     endSpinner();
 
@@ -294,11 +367,12 @@ class InvokeCommand extends BaseCommand {
         );
       }
       for (const f of missingFields) {
-        const ftype = f.type || 'string';
-        const value = await this.prompt(
-          `Required input field "${f.key}" (${ftype}):`
+        inputData[f.key] = await this.promptForField(
+          f,
+          appDefinition,
+          authData,
+          timezone
         );
-        inputData[f.key] = value;
       }
     }
 
@@ -323,26 +397,28 @@ class InvokeCommand extends BaseCommand {
           });
           fieldChoices = [
             {
-              name: '>>> Done. Invoke the action! <<<',
-              short: 'Done',
+              name: '>>> DONE. INVOKE THE ACTION! <<<',
+              short: 'DONE',
               value: null,
             },
             ...fieldChoices,
           ];
           const fieldKey = await this.promptWithList(
-            'Would you like to fill these input fields? Select "Done" when you are ready to invoke the action.',
-            fieldChoices
+            'Would you like to fill optional input fields? Select "DONE" when you are ready to invoke the action.',
+            fieldChoices,
+            { useStderr: true }
           );
           if (!fieldKey) {
             break;
           }
 
           const field = missingFields.find((f) => f.key === fieldKey);
-          const ftype = field.type || 'string';
-          const value = await this.prompt(
-            `Input field "${fieldKey}" (${ftype}):`
+          inputData[fieldKey] = await this.promptForField(
+            field,
+            appDefinition,
+            authData,
+            timezone
           );
-          inputData[fieldKey] = value;
         }
       }
     }
@@ -359,10 +435,11 @@ class InvokeCommand extends BaseCommand {
         authData,
         meta,
       },
+      zcacheTestObj,
     });
     endSpinner();
 
-    console.log(JSON.stringify(output, null, 2));
+    return output;
   }
 
   async perform() {
@@ -378,7 +455,8 @@ class InvokeCommand extends BaseCommand {
       }
       actionType = await this.promptWithList(
         'Which action type would you like to invoke?',
-        ACTION_TYPES
+        ACTION_TYPES,
+        { useStderr: true }
       );
     }
 
@@ -393,7 +471,8 @@ class InvokeCommand extends BaseCommand {
         const actionKeys = ['label', 'test'];
         actionKey = await this.promptWithList(
           'Which auth action would you like to do?',
-          actionKeys
+          actionKeys,
+          { useStderr: true }
         );
       } else {
         const actionKeys = Object.keys(
@@ -407,12 +486,14 @@ class InvokeCommand extends BaseCommand {
 
         actionKey = await this.promptWithList(
           `Which "${actionType}" key would you like to invoke?`,
-          actionKeys
+          actionKeys,
+          { useStderr: true }
         );
       }
     }
 
     const authData = loadAuthDataFromEnv();
+    const zcacheTestObj = {};
 
     if (actionType === 'auth') {
       const meta = {
@@ -425,13 +506,26 @@ class InvokeCommand extends BaseCommand {
       };
       switch (actionKey) {
         // TODO: Add 'start' and 'refresh' commands
-        case 'test':
-          await testAuth(authData, meta);
-          break;
+        case 'test': {
+          const output = await testAuth(authData, meta, zcacheTestObj);
+          console.log(JSON.stringify(output, null, 2));
+          return;
+        }
         case 'label': {
           const labelTemplate = appDefinition.authentication.connectionLabel;
-          await getAuthLabel(labelTemplate, authData, meta);
-          break;
+          if (typeof labelTemplate !== 'string') {
+            throw new Error(
+              'Non-string connection label is currently not supported.'
+            );
+          }
+          const output = await getAuthLabel(
+            labelTemplate,
+            authData,
+            meta,
+            zcacheTestObj
+          );
+          console.log(output);
+          return;
         }
         default:
           throw new Error(`Unknown auth action: ${actionKey}`);
@@ -472,14 +566,17 @@ class InvokeCommand extends BaseCommand {
         page: this.flags.page,
         isTestingAuth: false, // legacy property
       };
-      await this.invokeAction(
+      const output = await this.invokeAction(
+        appDefinition,
         actionTypePlural,
         action,
         inputData,
         authData,
         meta,
-        timezone
+        timezone,
+        zcacheTestObj
       );
+      console.log(JSON.stringify(output, null, 2));
     }
   }
 }
@@ -521,6 +618,7 @@ InvokeCommand.flags = buildFlags({
       char: 'z',
       description:
         'Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior.',
+      default: 'America/Chicago',
     }),
   },
 });
@@ -533,18 +631,55 @@ InvokeCommand.args = [
   },
   {
     name: 'actionKey',
-    description: 'The action key you want to invoke.',
+    description:
+      'The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "test" or "label".',
   },
 ];
 
 InvokeCommand.skipValidInstallCheck = true;
 InvokeCommand.examples = [
+  'zapier invoke',
+  'zapier invoke auth test',
   'zapier invoke trigger new_recipe',
   `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`,
   'zapier invoke search find_recipe -i @file.json',
   'cat file.json | zapier invoke trigger new_recipe -i @-',
 ];
-InvokeCommand.description =
-  'Invoke an auth operation, a trigger, or a create/search action locally.';
+InvokeCommand.description = `Invoke an auth operation, a trigger, or a create/search action locally.
+
+This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
+
+This command loads \`authData\` from the \`.env\` file in the current directory. Create a \`.env\` file with the necessary auth data before running this command. Each line in \`.env\` should be in the format \`authData_FIELD_KEY=VALUE\`. For example, an OAuth2 integration might have a \`.env\` file like this:
+
+\`\`\`
+authData_access_token=1234567890
+authData_other_auth_field=abcdef
+\`\`\`
+
+To test if the auth data is correct, run either one of these:
+
+\`\`\`
+zapier invoke auth test   # invokes authentication.test method
+zapier invoke auth label  # invokes authentication.test and renders connection label
+\`\`\`
+
+Then you can test an trigger, a search, or a create action. For example, this is how you invoke a trigger with key \`new_recipe\`:
+
+\`\`\`
+zapier invoke trigger new_recipe
+\`\`\`
+
+To add input data, use the \`--inputData\` flag. The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
+
+The following are the current limitations and may be supported in the future:
+
+- \`zapier invoke auth start\` to help you initialize the auth data in \`.env\`
+- \`zapier invoke auth refresh\` to refresh the auth data in \`.env\`
+- Line items
+- Output hydration
+- File upload
+- Dynamic dropdown pagination
+- Function-based connection label
+`;
 
 module.exports = InvokeCommand;
