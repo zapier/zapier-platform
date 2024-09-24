@@ -1,3 +1,24 @@
+## 15.16.0 
+
+_released `2024-09-24`_
+
+### cli
+
+- :nail_care: Introduce zapier canary command ([#861](https://github.com/zapier/zapier-platform/pull/861))
+
+### core
+
+None!
+
+### schema 
+
+None!
+
+### misc
+
+- :hammer: Bump vite from 5.3.3 to 5.4.7 in /schema-to-ts ([#868](https://github.com/zapier/zapier-platform/pull/868))
+- :hammer: Bump rollup from 4.18.1 to 4.22.4 in /schema-to-ts ([#867](https://github.com/zapier/zapier-platform/pull/867))
+
 ## 15.15.0
 
 _released `2024-09-18`_
