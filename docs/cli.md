@@ -294,11 +294,13 @@ zapier invoke trigger new_recipe
 
 To add input data, use the `--inputData` flag. The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
 
-The following are the current limitations and may be supported in the future:
+The following are current limitations and may be supported in the future:
 
 - `zapier invoke auth start` to help you initialize the auth data in `.env`
 
 - `zapier invoke auth refresh` to refresh the auth data in `.env`
+
+- Hook triggers, including REST hook subscribe/unsubscribe
 
 - Line items
 
@@ -309,6 +311,8 @@ The following are the current limitations and may be supported in the future:
 - Dynamic dropdown pagination
 
 - Function-based connection label
+
+- Buffered create actions
 
 **Arguments**
 * `actionType` | The action type you want to invoke.

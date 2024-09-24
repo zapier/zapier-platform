@@ -70,10 +70,6 @@ const getMissingRequiredInputFields = (inputData, inputFields) => {
   );
 };
 
-const getMissingOptionalInputFields = (inputData, inputFields) => {
-  return inputFields.filter((f) => !f.required && !inputData[f.key]);
-};
-
 const parseDecimal = (s) => {
   const chars = [];
   for (const c of s) {
@@ -277,7 +273,15 @@ const getLabelForDynamicDropdown = (obj, preferredKey, fallbackKey) => {
 };
 
 class InvokeCommand extends BaseCommand {
-  async promptForField(field, appDefinition, authData, timezone) {
+  async promptForField(
+    field,
+    appDefinition,
+    inputData,
+    authData,
+    timezone,
+    zcacheTestObj,
+    cursorTestObj
+  ) {
     const ftype = field.type || 'string';
     let message;
     if (field.required) {
@@ -302,15 +306,17 @@ class InvokeCommand extends BaseCommand {
         appDefinition,
         'triggers',
         trigger,
-        {},
+        inputData,
         authData,
         meta,
-        timezone
+        timezone,
+        zcacheTestObj,
+        cursorTestObj
       );
       return this.promptWithList(
         message,
         choices.map((c) => {
-          const id = c[idField];
+          const id = c[idField] || 'null';
           const label = getLabelForDynamicDropdown(c, labelField, idField);
           return {
             name: `${label} (${id})`,
@@ -327,6 +333,134 @@ class InvokeCommand extends BaseCommand {
     }
   }
 
+  async promptOrErrorForRequiredInputFields(
+    inputData,
+    inputFields,
+    appDefinition,
+    authData,
+    meta,
+    timezone,
+    zcacheTestObj,
+    cursorTestObj
+  ) {
+    const missingFields = getMissingRequiredInputFields(inputData, inputFields);
+    if (missingFields.length) {
+      if (!process.stdin.isTTY || meta.isFillingDynamicDropdown) {
+        throw new Error(
+          'You must specify these required fields in --inputData at least when stdin is not a TTY: \n' +
+            missingFields.map((f) => `* ${f.key}`).join('\n')
+        );
+      }
+      for (const f of missingFields) {
+        inputData[f.key] = await this.promptForField(
+          f,
+          appDefinition,
+          inputData,
+          authData,
+          timezone,
+          zcacheTestObj,
+          cursorTestObj
+        );
+      }
+    }
+  }
+
+  async promptForInputFieldEdit(
+    inputData,
+    inputFields,
+    appDefinition,
+    authData,
+    timezone,
+    zcacheTestObj,
+    cursorTestObj
+  ) {
+    inputFields = inputFields.filter((f) => f.key);
+    if (!inputFields.length) {
+      return;
+    }
+
+    // Let user select which field to fill/edit
+    while (true) {
+      let fieldChoices = inputFields.map((f) => {
+        let name;
+        if (f.label) {
+          name = `${f.label} (${f.key})`;
+        } else {
+          name = f.key;
+        }
+        if (inputData[f.key]) {
+          name += ` [current: "${inputData[f.key]}"]`;
+        } else if (f.default) {
+          name += ` [default: "${f.default}"]`;
+        }
+        return {
+          name,
+          value: f.key,
+        };
+      });
+      fieldChoices = [
+        {
+          name: '>>> DONE <<<',
+          short: 'DONE',
+          value: null,
+        },
+        ...fieldChoices,
+      ];
+      const fieldKey = await this.promptWithList(
+        'Would you like to edit any of these input fields? Select "DONE" when you are all set.',
+        fieldChoices,
+        { useStderr: true }
+      );
+      if (!fieldKey) {
+        break;
+      }
+
+      const field = inputFields.find((f) => f.key === fieldKey);
+      inputData[fieldKey] = await this.promptForField(
+        field,
+        appDefinition,
+        inputData,
+        authData,
+        timezone,
+        zcacheTestObj,
+        cursorTestObj
+      );
+    }
+  }
+
+  async promptForFields(
+    inputData,
+    inputFields,
+    appDefinition,
+    authData,
+    meta,
+    timezone,
+    zcacheTestObj,
+    cursorTestObj
+  ) {
+    await this.promptOrErrorForRequiredInputFields(
+      inputData,
+      inputFields,
+      appDefinition,
+      authData,
+      meta,
+      timezone,
+      zcacheTestObj,
+      cursorTestObj
+    );
+    if (process.stdin.isTTY && !meta.isFillingDynamicDropdown) {
+      await this.promptForInputFieldEdit(
+        inputData,
+        inputFields,
+        appDefinition,
+        authData,
+        timezone,
+        zcacheTestObj,
+        cursorTestObj
+      );
+    }
+  }
+
   async invokeAction(
     appDefinition,
     actionTypePlural,
@@ -335,11 +469,30 @@ class InvokeCommand extends BaseCommand {
     authData,
     meta,
     timezone,
-    zcacheTestObj
+    zcacheTestObj,
+    cursorTestObj
   ) {
     // Do these in order:
-    // 1. {actionTypePlural}.{actionKey}.operation.inputFields
-    // 2. {actionTypePlural}.{actionKey}.operation.perform
+    // 1. Prompt for static input fields that alter dynamic fields
+    // 2. {actionTypePlural}.{actionKey}.operation.inputFields
+    // 3. Prompt for input fields again
+    // 4. {actionTypePlural}.{actionKey}.operation.perform
+
+    const staticInputFields = (action.operation.inputFields || []).filter(
+      (f) => f.key
+    );
+    debug('staticInputFields:', staticInputFields);
+
+    await this.promptForFields(
+      inputData,
+      staticInputFields,
+      appDefinition,
+      authData,
+      meta,
+      timezone,
+      zcacheTestObj,
+      cursorTestObj
+    );
 
     let methodName = `${actionTypePlural}.${action.key}.operation.inputFields`;
     startSpinner(`Invoking ${methodName}`);
@@ -353,74 +506,23 @@ class InvokeCommand extends BaseCommand {
         meta,
       },
       zcacheTestObj,
+      cursorTestObj,
     });
     endSpinner();
 
     debug('inputFields:', inputFields);
 
-    let missingFields = getMissingRequiredInputFields(inputData, inputFields);
-    if (missingFields.length) {
-      if (!process.stdin.isTTY) {
-        throw new Error(
-          'You must specify these required fields in --inputData at least when stdin is not a TTY: \n' +
-            missingFields.map((f) => `* ${f.key}`).join('\n')
-        );
-      }
-      for (const f of missingFields) {
-        inputData[f.key] = await this.promptForField(
-          f,
-          appDefinition,
-          authData,
-          timezone
-        );
-      }
-    }
-
-    if (process.stdin.isTTY) {
-      missingFields = getMissingOptionalInputFields(inputData, inputFields);
-      if (missingFields.length) {
-        // Let user select which optional field to fill
-        while (true) {
-          let fieldChoices = missingFields.map((f) => {
-            let name;
-            if (inputData[f.key]) {
-              name = `${f.key} (current: "${inputData[f.key]}")`;
-            } else if (f.default) {
-              name = `${f.key} (default: "${f.default}")`;
-            } else {
-              name = f.key;
-            }
-            return {
-              name,
-              value: f.key,
-            };
-          });
-          fieldChoices = [
-            {
-              name: '>>> DONE. INVOKE THE ACTION! <<<',
-              short: 'DONE',
-              value: null,
-            },
-            ...fieldChoices,
-          ];
-          const fieldKey = await this.promptWithList(
-            'Would you like to fill optional input fields? Select "DONE" when you are ready to invoke the action.',
-            fieldChoices,
-            { useStderr: true }
-          );
-          if (!fieldKey) {
-            break;
-          }
-
-          const field = missingFields.find((f) => f.key === fieldKey);
-          inputData[fieldKey] = await this.promptForField(
-            field,
-            appDefinition,
-            authData,
-            timezone
-          );
-        }
-      }
+    if (inputFields.length !== staticInputFields.length) {
+      await this.promptForFields(
+        inputData,
+        inputFields,
+        appDefinition,
+        authData,
+        meta,
+        timezone,
+        zcacheTestObj,
+        cursorTestObj
+      );
     }
 
     inputData = resolveInputDataTypes(inputData, inputFields, timezone);
@@ -436,6 +538,7 @@ class InvokeCommand extends BaseCommand {
         meta,
       },
       zcacheTestObj,
+      cursorTestObj,
     });
     endSpinner();
 
@@ -470,7 +573,7 @@ class InvokeCommand extends BaseCommand {
       if (actionType === 'auth') {
         const actionKeys = ['label', 'test'];
         actionKey = await this.promptWithList(
-          'Which auth action would you like to do?',
+          'Which auth operation would you like to invoke?',
           actionKeys,
           { useStderr: true }
         );
@@ -494,6 +597,7 @@ class InvokeCommand extends BaseCommand {
 
     const authData = loadAuthDataFromEnv();
     const zcacheTestObj = {};
+    const cursorTestObj = {};
 
     if (actionType === 'auth') {
       const meta = {
@@ -513,18 +617,25 @@ class InvokeCommand extends BaseCommand {
         }
         case 'label': {
           const labelTemplate = appDefinition.authentication.connectionLabel;
-          if (typeof labelTemplate !== 'string') {
-            throw new Error(
-              'Non-string connection label is currently not supported.'
+          if (labelTemplate && labelTemplate.startsWith('$func$')) {
+            console.warn(
+              'Function-based connection label is currently not supported; will print auth test result instead.'
             );
+            const output = await testAuth(authData, meta, zcacheTestObj);
+            console.log(JSON.stringify(output, null, 2));
+          } else {
+            const output = await getAuthLabel(
+              labelTemplate,
+              authData,
+              meta,
+              zcacheTestObj
+            );
+            if (output) {
+              console.log(output);
+            } else {
+              console.warn('Connection label is empty.');
+            }
           }
-          const output = await getAuthLabel(
-            labelTemplate,
-            authData,
-            meta,
-            zcacheTestObj
-          );
-          console.log(output);
           return;
         }
         default:
@@ -574,7 +685,8 @@ class InvokeCommand extends BaseCommand {
         authData,
         meta,
         timezone,
-        zcacheTestObj
+        zcacheTestObj,
+        cursorTestObj
       );
       console.log(JSON.stringify(output, null, 2));
     }
@@ -671,15 +783,17 @@ zapier invoke trigger new_recipe
 
 To add input data, use the \`--inputData\` flag. The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
 
-The following are the current limitations and may be supported in the future:
+The following are current limitations and may be supported in the future:
 
 - \`zapier invoke auth start\` to help you initialize the auth data in \`.env\`
 - \`zapier invoke auth refresh\` to refresh the auth data in \`.env\`
+- Hook triggers, including REST hook subscribe/unsubscribe
 - Line items
 - Output hydration
 - File upload
 - Dynamic dropdown pagination
 - Function-based connection label
+- Buffered create actions
 `;
 
 module.exports = InvokeCommand;

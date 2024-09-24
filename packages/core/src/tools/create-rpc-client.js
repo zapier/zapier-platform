@@ -31,15 +31,40 @@ const rpcCacheMock = (zcacheTestObj, method, key, value = null, ttl = null) => {
   throw new Error(`Unexpected method '${method}'`);
 };
 
+const rpcCursorMock = (cursorTestObj, method, key, value = null) => {
+  if (method === 'get_cursor') {
+    return cursorTestObj[key] || null;
+  }
+
+  if (method === 'set_cursor') {
+    cursorTestObj[key] = value;
+    return null;
+  }
+
+  throw new Error(`Unexpected method '${method}'`);
+};
+
 const createRpcClient = (event) => {
   return function (method) {
     const params = _.toArray(arguments);
     params.shift();
 
     const zcacheMethods = ['zcache_get', 'zcache_set', 'zcache_delete'];
-    if (zcacheMethods.includes(method) && _.isPlainObject(event.zcacheTestObj)) {
+    if (
+      zcacheMethods.includes(method) &&
+      _.isPlainObject(event.zcacheTestObj)
+    ) {
       const [key, value = null] = params;
       return rpcCacheMock(event.zcacheTestObj, method, key, value);
+    }
+
+    const cursorMethods = ['get_cursor', 'set_cursor'];
+    if (
+      cursorMethods.includes(method) &&
+      _.isPlainObject(event.cursorTestObj)
+    ) {
+      const [key, value = null] = params;
+      return rpcCursorMock(event.cursorTestObj, method, key, value);
     }
 
     const id = genId();
