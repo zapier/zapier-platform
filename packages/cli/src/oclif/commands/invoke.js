@@ -234,6 +234,7 @@ const testAuth = async (authData, meta, zcacheTestObj) => {
       meta,
     },
     zcacheTestObj,
+    customLogger,
   });
   endSpinner();
   return result;
@@ -292,6 +293,11 @@ const findNonStringPrimitives = (data, path = 'inputData') => {
   } else {
     throw new Error('Unexpected data type');
   }
+};
+
+const customLogger = (message, data) => {
+  debug(message);
+  debug(data);
 };
 
 class InvokeCommand extends BaseCommand {
@@ -529,6 +535,7 @@ class InvokeCommand extends BaseCommand {
       },
       zcacheTestObj,
       cursorTestObj,
+      customLogger,
     });
     endSpinner();
 
@@ -561,6 +568,7 @@ class InvokeCommand extends BaseCommand {
       },
       zcacheTestObj,
       cursorTestObj,
+      customLogger,
     });
     endSpinner();
 

@@ -325,7 +325,7 @@ The following are current limitations and may be supported in the future:
 * `--isPopulatingDedupe` | Set bundle.meta.isPopulatingDedupe to true. Only makes sense for a polling trigger. When true in production, the results of this poll will be used initialize the deduplication list rather than trigger a Zap. This happens when a user enables a Zap.
 * `--limit` | Set bundle.meta.limit. Only makes sense for a trigger. When used in production, this indicates the number of items you should fetch. -1 means no limit.  Defaults to `-1`.
 * `-p, --page` | Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.
-* `-z, --timezone` | Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior.  Defaults to `America/Chicago`.
+* `-z, --timezone` | Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones  Defaults to `America/Chicago`.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
