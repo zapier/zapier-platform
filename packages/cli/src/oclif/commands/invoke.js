@@ -311,12 +311,17 @@ class InvokeCommand extends BaseCommand {
     cursorTestObj
   ) {
     const ftype = field.type || 'string';
+
     let message;
-    if (field.required) {
-      message = `Required input field "${field.key}" (${ftype}):`;
+    if (field.label) {
+      message = `${field.label} | ${field.key} | ${ftype}`;
     } else {
-      message = `Input field "${field.key}" (${ftype}):`;
+      message = `${field.key} | ${ftype}`;
     }
+    if (field.required) {
+      message += ' | required';
+    }
+    message += ':';
 
     if (field.dynamic) {
       // Dyanmic dropdown
