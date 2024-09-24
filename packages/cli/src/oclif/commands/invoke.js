@@ -272,6 +272,28 @@ const getLabelForDynamicDropdown = (obj, preferredKey, fallbackKey) => {
   return '';
 };
 
+const findNonStringPrimitives = (data, path = 'inputData') => {
+  if (typeof data === 'number' || typeof data === 'boolean' || data === null) {
+    return [{ path, value: data }];
+  } else if (typeof data === 'string') {
+    return [];
+  } else if (Array.isArray(data)) {
+    const paths = [];
+    for (let i = 0; i < data.length; i++) {
+      paths.push(...findNonStringPrimitives(data[i], `${path}[${i}]`));
+    }
+    return paths;
+  } else if (_.isPlainObject(data)) {
+    const paths = [];
+    for (const [k, v] of Object.entries(data)) {
+      paths.push(...findNonStringPrimitives(v, `${path}.${k}`));
+    }
+    return paths;
+  } else {
+    throw new Error('Unexpected data type');
+  }
+};
+
 class InvokeCommand extends BaseCommand {
   async promptForField(
     field,
@@ -666,6 +688,17 @@ class InvokeCommand extends BaseCommand {
         inputData = JSON.parse(inputData);
       } else {
         inputData = {};
+      }
+
+      // inputData should only contain strings
+      const nonStringPrimitives = findNonStringPrimitives(inputData);
+      if (nonStringPrimitives.length) {
+        throw new Error(
+          'All primitive values in --inputData must be strings. Found non-string values in these paths:\n' +
+            nonStringPrimitives
+              .map(({ path, value }) => `* ${value} at ${path}`)
+              .join('\n')
+        );
       }
 
       const { timezone } = this.flags;
