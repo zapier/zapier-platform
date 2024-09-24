@@ -234,6 +234,9 @@ a code {
 <li><a href="#commands">Commands</a><ul>
 <li><a href="#analytics">analytics</a></li>
 <li><a href="#build">build</a></li>
+<li><a href="#canarycreate">canary:create</a></li>
+<li><a href="#canarydelete">canary:delete</a></li>
+<li><a href="#canarylist">canary:list</a></li>
 <li><a href="#convert">convert</a></li>
 <li><a href="#deleteintegration">delete:integration</a></li>
 <li><a href="#deleteversion">delete:version</a></li>
@@ -360,6 +363,86 @@ a code {
 </ul><p>This command is typically followed by <code>zapier upload</code>.</p><p><strong>Flags</strong></p><ul>
 <li><code>--disable-dependency-detection</code> | Disable &quot;smart&quot; file inclusion. By default, Zapier only includes files that are required by <code>index.js</code>. If you (or your dependencies) require files dynamically (such as with <code>require(someVar)</code>), then you may see &quot;Cannot find module&quot; errors. Disabling this may make your <code>build.zip</code> too large. If that&apos;s the case, try using the <code>includeInBuild</code> option in your <code>.zapierapprc</code>. See the docs about <code>includeInBuild</code> for more info.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="canarycreate">canary:create</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier canary:create VERSIONFROM VERSIONTO</code></p><p>Only one canary can be active at the same time. You can run <code>zapier canary:list</code> to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using <code>zapier canary:delete a.b.c x.y.z</code>.</p><p>Note: this is similar to <code>zapier migrate</code> but different in that this is temporary and will &quot;revert&quot; the changes once the specified duration is expired.</p><p><strong>Only use this command to canary traffic between non-breaking versions!</strong></p><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>versionFrom</code> | Version to route traffic from</li>
+<li>(required) <code>versionTo</code> | Version to canary traffic to</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li>(required) <code>-p, --percent</code> | Percent of traffic to route to new version</li>
+<li>(required) <code>-d, --duration</code> | Duration of the canary in seconds</li>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier canary:create 1.0.0 1.1.0 -p 25 -d 720</code></li>
+<li><code>zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="canarydelete">canary:delete</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Delete an active canary deployment</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier canary:delete VERSIONFROM VERSIONTO</code></p><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>versionFrom</code> | Version to route traffic from</li>
+<li>(required) <code>versionTo</code> | Version canary traffic is routed to</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier canary:delete 1.0.0 1.1.0</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="canarylist">canary:list</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>List all active canary deployments</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier canary:list</code></p><p><strong>Flags</strong></p><ul>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier canary:list</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

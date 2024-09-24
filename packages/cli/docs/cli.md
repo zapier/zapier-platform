@@ -53,6 +53,60 @@ This command is typically followed by `zapier upload`.
 * `-d, --debug` | Show extra debugging output.
 
 
+## canary:create
+
+> Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration.
+
+**Usage**: `zapier canary:create VERSIONFROM VERSIONTO`
+
+Only one canary can be active at the same time. You can run `zapier canary:list` to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using `zapier canary:delete a.b.c x.y.z`.
+
+Note: this is similar to `zapier migrate` but different in that this is temporary and will "revert" the changes once the specified duration is expired.
+
+**Only use this command to canary traffic between non-breaking versions!**
+
+**Arguments**
+* (required) `versionFrom` | Version to route traffic from
+* (required) `versionTo` | Version to canary traffic to
+
+**Flags**
+* (required) `-p, --percent` | Percent of traffic to route to new version
+* (required) `-d, --duration` | Duration of the canary in seconds
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier canary:create 1.0.0 1.1.0 -p 25 -d 720`
+* `zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300`
+
+
+## canary:delete
+
+> Delete an active canary deployment
+
+**Usage**: `zapier canary:delete VERSIONFROM VERSIONTO`
+
+**Arguments**
+* (required) `versionFrom` | Version to route traffic from
+* (required) `versionTo` | Version canary traffic is routed to
+
+**Examples**
+* `zapier canary:delete 1.0.0 1.1.0`
+
+
+## canary:list
+
+> List all active canary deployments
+
+**Usage**: `zapier canary:list`
+
+**Flags**
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier canary:list`
+
+
 ## convert
 
 > Convert a Visual Builder integration to a CLI integration.
