@@ -770,7 +770,7 @@ InvokeCommand.flags = buildFlags({
     timezone: flags.string({
       char: 'z',
       description:
-        'Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones',
+        'Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.',
       default: 'America/Chicago',
     }),
   },
