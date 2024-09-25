@@ -248,6 +248,7 @@ a code {
 <li><a href="#history">history</a></li>
 <li><a href="#init">init</a></li>
 <li><a href="#integrations">integrations</a></li>
+<li><a href="#invoke">invoke</a></li>
 <li><a href="#jobs">jobs</a></li>
 <li><a href="#link">link</a></li>
 <li><a href="#login">login</a></li>
@@ -733,6 +734,104 @@ a code {
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>apps</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="invoke">invoke</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Invoke an auth operation, a trigger, or a create/search action locally.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier invoke [ACTIONTYPE] [ACTIONKEY]</code></p><p>This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.</p><p>This command loads <code>authData</code> from the <code>.env</code> file in the current directory. Create a <code>.env</code> file with the necessary auth data before running this command. Each line in <code>.env</code> should be in the format <code>authData_FIELD_KEY=VALUE</code>. For example, an OAuth2 integration might have a <code>.env</code> file like this:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code>
+authData_access_token=1234567890
+
+authData_other_auth_field=abcdef
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>To test if the auth data is correct, run either one of these:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code>
+zapier invoke auth test   # invokes authentication.test method
+
+zapier invoke auth label  # invokes authentication.test and renders connection label
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>Then you can test an trigger, a search, or a create action. For example, this is how you invoke a trigger with key <code>new_recipe</code>:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code>
+zapier invoke trigger new_recipe
+
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>To add input data, use the <code>--inputData</code> flag. The input data can come from the command directly, a file, or stdin. See <strong>EXAMPLES</strong> below.</p><p>The following are current limitations and may be supported in the future:</p><ul>
+<li><p><code>zapier invoke auth start</code> to help you initialize the auth data in <code>.env</code></p>
+</li>
+<li><p><code>zapier invoke auth refresh</code> to refresh the auth data in <code>.env</code></p>
+</li>
+<li><p>Hook triggers, including REST hook subscribe/unsubscribe</p>
+</li>
+<li><p>Line items</p>
+</li>
+<li><p>Output hydration</p>
+</li>
+<li><p>File upload</p>
+</li>
+<li><p>Dynamic dropdown pagination</p>
+</li>
+<li><p>Function-based connection label</p>
+</li>
+<li><p>Buffered create actions</p>
+</li>
+</ul><p><strong>Arguments</strong></p><ul>
+<li><code>actionType</code> | The action type you want to invoke.</li>
+<li><code>actionKey</code> | The trigger/action key you want to invoke. If ACTIONTYPE is &quot;auth&quot;, this can be &quot;test&quot; or &quot;label&quot;.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-i, --inputData</code> | The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like &apos;{&quot;key&quot;: &quot;value&quot;}&apos;, read from a file like @file.json, or read from stdin like @-.</li>
+<li><code>--isLoadingSample</code> | Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.</li>
+<li><code>--isFillingDynamicDropdown</code> | Set bundle.meta.isFillingDynamicDropdown to true. Only makes sense for a polling trigger. When true in production, this poll is being used to populate a dynamic dropdown.</li>
+<li><code>--isPopulatingDedupe</code> | Set bundle.meta.isPopulatingDedupe to true. Only makes sense for a polling trigger. When true in production, the results of this poll will be used initialize the deduplication list rather than trigger a Zap. This happens when a user enables a Zap.</li>
+<li><code>--limit</code> | Set bundle.meta.limit. Only makes sense for a trigger. When used in production, this indicates the number of items you should fetch. -1 means no limit.  Defaults to <code>-1</code>.</li>
+<li><code>-p, --page</code> | Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.</li>
+<li><code>-z, --timezone</code> | Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">https://en.wikipedia.org/wiki/List_of_tz_database_time_zones</a>.  Defaults to <code>America/Chicago</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier invoke</code></li>
+<li><code>zapier invoke auth test</code></li>
+<li><code>zapier invoke trigger new_recipe</code></li>
+<li><code>zapier invoke create add_recipe --inputData &apos;{&quot;title&quot;: &quot;Pancakes&quot;}&apos;</code></li>
+<li><code>zapier invoke search find_recipe -i @file.json</code></li>
+<li><code>cat file.json | zapier invoke trigger new_recipe -i @-</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

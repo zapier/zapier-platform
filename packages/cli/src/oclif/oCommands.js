@@ -24,6 +24,7 @@ module.exports = {
   jobs: require('./commands/jobs'),
   init: require('./commands/init'),
   integrations: require('./commands/integrations'),
+  invoke: require('./commands/invoke'),
   link: require('./commands/link'),
   login: require('./commands/login'),
   logs: require('./commands/logs'),

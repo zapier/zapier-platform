@@ -330,6 +330,11 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
     toStdout(event, message, safeData);
   }
 
+  if (event.customLogger && typeof event.customLogger === 'function') {
+    // For `zapier invoke` command
+    event.customLogger(safeMessage, safeData);
+  }
+
   if (options.logBuffer && data.log_type === 'console') {
     // Cap size of messages in log buffer, in case devs log humongous things.
     options.logBuffer.push({ type: safeData.log_type, message: safeMessage });
