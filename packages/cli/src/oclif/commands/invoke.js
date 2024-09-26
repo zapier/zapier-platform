@@ -1,4 +1,4 @@
-const fs = require('node:fs');
+const fs = require('node:fs/promises');
 
 const _ = require('lodash');
 const { flags } = require('@oclif/command');
@@ -224,6 +224,13 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
   return inputData;
 };
 
+const saveAuthData = async (authData) => {
+  await fs.appendFile(
+    '.env',
+    Object.entries(authData).map(([k, v]) => `authData_${k}='${v}'\n`)
+  );
+};
+
 const testAuth = async (authData, meta, zcacheTestObj) => {
   startSpinner('Invoking authentication.test');
   const result = await localAppCommand({
@@ -318,6 +325,60 @@ const formatFieldDisplay = (field) => {
 };
 
 class InvokeCommand extends BaseCommand {
+  async promptForAuthFields(authFields) {
+    const authData = {};
+    for (const field of authFields) {
+      const message = `${field.label || field.key}:`;
+      const value = await this.prompt(message, { useStderr: true });
+      authData[field.key] = value;
+    }
+    return authData;
+  }
+
+  async startBasicAuth() {
+    return this.promptForAuthFields([
+      {
+        key: 'username',
+        label: 'Username',
+      },
+      {
+        key: 'password',
+        label: 'Password',
+      },
+    ]);
+  }
+
+  async startCustomAuth() {}
+
+  async startOAuth2() {
+    return this.promptForAuthFields([
+      {
+        key: 'access_token',
+        label: 'Access Token',
+      },
+    ]);
+  }
+
+  async startSessionAuth() {}
+
+  async startAuth(authType) {
+    switch (authType) {
+      case 'basic':
+        return this.startBasicAuth();
+      case 'custom':
+        return this.startCustomAuth();
+      case 'oauth2':
+        return this.startOAuth2();
+      case 'session':
+        return this.startSessionAuth();
+      default:
+        // TODO: Add support for 'digest' and 'oauth1'
+        throw new Error(
+          `This command doesn't support authentication type "${authType}".`
+        );
+    }
+  }
+
   async promptForField(
     field,
     appDefinition,
@@ -650,7 +711,27 @@ class InvokeCommand extends BaseCommand {
         isTestingAuth: true,
       };
       switch (actionKey) {
-        // TODO: Add 'start' and 'refresh' commands
+        // TODO: Add 'refresh' command
+        case 'start': {
+          const newAuthData = await this.startAuth(
+            appDefinition.authentication.type
+          );
+          const shouldSave = await this.confirm(
+            'Save auth data to .env file? Will print to stdout if you say no.',
+            true,
+            true,
+            true
+          );
+          if (shouldSave) {
+            await saveAuthData(newAuthData);
+            console.log('Auth data appended to .env file.');
+          } else {
+            for (const [k, v] of Object.entries(newAuthData)) {
+              console.log(`authData_${k}='${v}'`);
+            }
+          }
+          return;
+        }
         case 'test': {
           const output = await testAuth(authData, meta, zcacheTestObj);
           console.log(JSON.stringify(output, null, 2));
