@@ -231,7 +231,10 @@ const testAuth = async (authData, meta, zcacheTestObj) => {
     method: 'authentication.test',
     bundle: {
       authData,
-      meta,
+      meta: {
+        ...meta,
+        isTestingAuth: true,
+      },
     },
     zcacheTestObj,
     customLogger,
@@ -677,7 +680,7 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         default:
-          throw new Error(`Unknown auth action: ${actionKey}`);
+          throw new Error(`Unknown auth operation: ${actionKey}`);
       }
     } else {
       const action = appDefinition[actionTypePlural][actionKey];
