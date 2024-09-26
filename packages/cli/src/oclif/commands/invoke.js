@@ -300,6 +300,20 @@ const customLogger = (message, data) => {
   debug(data);
 };
 
+const formatFieldDisplay = (field) => {
+  const ftype = field.type || 'string';
+  let result;
+  if (field.label) {
+    result = `${field.label} | ${field.key} | ${ftype}`;
+  } else {
+    result = `${field.key} | ${ftype}`;
+  }
+  if (field.required) {
+    result += ' | required';
+  }
+  return result;
+};
+
 class InvokeCommand extends BaseCommand {
   async promptForField(
     field,
@@ -310,19 +324,7 @@ class InvokeCommand extends BaseCommand {
     zcacheTestObj,
     cursorTestObj
   ) {
-    const ftype = field.type || 'string';
-
-    let message;
-    if (field.label) {
-      message = `${field.label} | ${field.key} | ${ftype}`;
-    } else {
-      message = `${field.key} | ${ftype}`;
-    }
-    if (field.required) {
-      message += ' | required';
-    }
-    message += ':';
-
+    const message = formatFieldDisplay(field) + ':';
     if (field.dynamic) {
       // Dyanmic dropdown
       const [triggerKey, idField, labelField] = field.dynamic.split('.');
@@ -358,7 +360,7 @@ class InvokeCommand extends BaseCommand {
         }),
         { useStderr: true }
       );
-    } else if (ftype === 'boolean') {
+    } else if (field.type === 'boolean') {
       const yes = await this.confirm(message, false, !field.required, true);
       return yes ? 'yes' : 'no';
     } else {
@@ -378,10 +380,10 @@ class InvokeCommand extends BaseCommand {
   ) {
     const missingFields = getMissingRequiredInputFields(inputData, inputFields);
     if (missingFields.length) {
-      if (!process.stdin.isTTY || meta.isFillingDynamicDropdown) {
+      if (this.nonInteractive || meta.isFillingDynamicDropdown) {
         throw new Error(
-          'You must specify these required fields in --inputData at least when stdin is not a TTY: \n' +
-            missingFields.map((f) => `* ${f.key}`).join('\n')
+          "You're in non-interactive mode, so you must at least specify these required fields with --inputData: \n" +
+            missingFields.map((f) => '* ' + formatFieldDisplay(f)).join('\n')
         );
       }
       for (const f of missingFields) {
@@ -481,7 +483,7 @@ class InvokeCommand extends BaseCommand {
       zcacheTestObj,
       cursorTestObj
     );
-    if (process.stdin.isTTY && !meta.isFillingDynamicDropdown) {
+    if (!this.nonInteractive && !meta.isFillingDynamicDropdown) {
       await this.promptForInputFieldEdit(
         inputData,
         inputFields,
@@ -582,13 +584,14 @@ class InvokeCommand extends BaseCommand {
 
   async perform() {
     dotenv.config({ override: true });
+    this.nonInteractive = this.flags['non-interactive'] || !process.stdin.isTTY;
 
     let { actionType, actionKey } = this.args;
 
     if (!actionType) {
-      if (!process.stdin.isTTY) {
+      if (this.nonInteractive) {
         throw new Error(
-          'You must specify ACTIONTYPE and ACTIONKEY when stdin is not a TTY.'
+          'You must specify ACTIONTYPE and ACTIONKEY in non-interactive mode.'
         );
       }
       actionType = await this.promptWithList(
@@ -602,8 +605,8 @@ class InvokeCommand extends BaseCommand {
     const appDefinition = await localAppCommand({ command: 'definition' });
 
     if (!actionKey) {
-      if (!process.stdin.isTTY) {
-        throw new Error('You must specify ACTIONKEY when stdin is not a TTY.');
+      if (this.nonInteractive) {
+        throw new Error('You must specify ACTIONKEY in non-interactive mode.');
       }
       if (actionType === 'auth') {
         const actionKeys = ['label', 'test'];
@@ -746,14 +749,14 @@ InvokeCommand.flags = buildFlags({
       description:
         'The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like \'{"key": "value"}\', read from a file like @file.json, or read from stdin like @-.',
     }),
-    isLoadingSample: flags.boolean({
-      description:
-        'Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.',
-      default: false,
-    }),
     isFillingDynamicDropdown: flags.boolean({
       description:
         'Set bundle.meta.isFillingDynamicDropdown to true. Only makes sense for a polling trigger. When true in production, this poll is being used to populate a dynamic dropdown.',
+      default: false,
+    }),
+    isLoadingSample: flags.boolean({
+      description:
+        'Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.',
       default: false,
     }),
     isPopulatingDedupe: flags.boolean({
@@ -771,6 +774,10 @@ InvokeCommand.flags = buildFlags({
       description:
         'Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.',
       default: 0,
+    }),
+    'non-interactive': flags.boolean({
+      description: 'Do not show interactive prompts.',
+      default: false,
     }),
     timezone: flags.string({
       char: 'z',
