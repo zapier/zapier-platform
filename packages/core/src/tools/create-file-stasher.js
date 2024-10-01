@@ -12,7 +12,11 @@ const contentDisposition = require('content-disposition');
 
 const mime = require('mime-types');
 
-const { UPLOAD_MAX_SIZE, NON_STREAM_UPLOAD_MAX_SIZE } = require('../constants');
+const {
+  ENCODED_FILENAME_MAX_LENGTH,
+  UPLOAD_MAX_SIZE,
+  NON_STREAM_UPLOAD_MAX_SIZE,
+} = require('../constants');
 const uploader = require('./uploader');
 
 const DEFAULT_FILE_NAME = 'unnamedfile';
@@ -186,6 +190,24 @@ const ensureUploadMaxSizeNotExceeded = (streamOrData, length) => {
   }
 };
 
+// S3's max metadata size is 2KB
+// If the filename needs to be encoded, both the filename
+// and encoded filename are included in the Content-Disposition header
+const ensureMetadataMaxSizeNotExceeded = (filename) => {
+  const filenameMaxSize = ENCODED_FILENAME_MAX_LENGTH;
+  if (filename) {
+    const encodedFilename = encodeURIComponent(filename);
+    if (
+      encodedFilename !== filename &&
+      encodedFilename.length > filenameMaxSize
+    ) {
+      throw new Error(
+        `URI-Encoded Filename is too long at ${encodedFilename.length}, ${ENCODED_FILENAME_MAX_LENGTH} is the max.`
+      );
+    }
+  }
+};
+
 // Designed to be some user provided function/api.
 const createFileStasher = (input) => {
   const rpc = _.get(input, '_zapier.rpc');
@@ -246,6 +268,8 @@ const createFileStasher = (input) => {
 
     const finalLength = knownLength || length;
     ensureUploadMaxSizeNotExceeded(streamOrData, finalLength);
+
+    ensureMetadataMaxSizeNotExceeded(filename || _filename);
 
     return uploader(
       signedPostData,

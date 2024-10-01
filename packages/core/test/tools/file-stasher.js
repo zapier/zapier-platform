@@ -20,7 +20,11 @@ const {
 const createFileStasher = require('../../src/tools/create-file-stasher');
 const createAppRequestClient = require('../../src/tools/create-app-request-client');
 const createInput = require('../../src/tools/create-input');
-const { UPLOAD_MAX_SIZE, NON_STREAM_UPLOAD_MAX_SIZE } = require('../../src/constants');
+const {
+  UPLOAD_MAX_SIZE,
+  NON_STREAM_UPLOAD_MAX_SIZE,
+  ENCODED_FILENAME_MAX_LENGTH,
+} = require('../../src/constants');
 
 const sha1 = (stream) =>
   new Promise((resolve, reject) => {
@@ -178,6 +182,23 @@ describe('file upload', () => {
     );
   });
 
+  it('should fail a file with a too-long encoded text filename', async () => {
+    mockRpcGetPresignedPostCall('8888/new.txt');
+    mockUpload();
+
+    const file = Buffer.from('hello world this is a buffer of text');
+    // length 1026
+    const filename =
+      '太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了太長了';
+    const encodedLength = encodeURIComponent(filename).length;
+
+    const knownLength = Buffer.byteLength(file);
+
+    await stashFile(file, knownLength, filename).should.be.rejectedWith(
+      `URI-Encoded Filename is too long at ${encodedLength}, ${ENCODED_FILENAME_MAX_LENGTH} is the max.`
+    );
+  });
+
   it('should throwForStatus if bad status', async () => {
     mockRpcGetPresignedPostCall('4444/deadbeef');
     mockUpload();
@@ -295,26 +316,26 @@ describe('file upload', () => {
   });
 
   it('should handle bad content-disposition', async () => {
-     mockRpcGetPresignedPostCall('1234/foo.json');
-     mockUpload();
+    mockRpcGetPresignedPostCall('1234/foo.json');
+    mockUpload();
 
-     const file = request({
-       url: 'https://httpbin.zapier-tooling.com/response-headers',
-       params: {
-         // Missing a closing quote at the end
-         'Content-Disposition': 'inline; filename="an example.json',
-       },
-       raw: true,
-     });
-     const url = await stashFile(file);
-     should(url).eql(`${FAKE_S3_URL}/1234/foo.json`);
+    const file = request({
+      url: 'https://httpbin.zapier-tooling.com/response-headers',
+      params: {
+        // Missing a closing quote at the end
+        'Content-Disposition': 'inline; filename="an example.json',
+      },
+      raw: true,
+    });
+    const url = await stashFile(file);
+    should(url).eql(`${FAKE_S3_URL}/1234/foo.json`);
 
-     const s3Response = await request({ url, raw: true });
-     should(s3Response.getHeader('content-type')).startWith('application/json');
-     should(s3Response.getHeader('content-disposition')).eql(
-       'attachment; filename="response-headers.json"'
-     );
-   });
+    const s3Response = await request({ url, raw: true });
+    should(s3Response.getHeader('content-type')).startWith('application/json');
+    should(s3Response.getHeader('content-disposition')).eql(
+      'attachment; filename="response-headers.json"'
+    );
+  });
 
   it('should upload a png image', async () => {
     mockRpcGetPresignedPostCall('1234/pig.png');
