@@ -24,5 +24,6 @@ It consists of a few main packages:
   - The :point_up: docs are also hosted at https://platform.zapier.com
   - [CHANGELOG.md](CHANGELOG.md)
 * Internal-facing docs:
+  - Testing out new features that haven't been released to npm yet? See [INSTALL_DEV.md](INSTALL_DEV.md)
   - Learn about how this repo is structured in [ARCHITECTURE.md](ARCHITECTURE.md)
   - Looking to contribute to this repo? See [CONTRIBUTING.md](CONTRIBUTING.md)
