@@ -45,7 +45,7 @@ const rpcCursorMock = (cursorTestObj, method, key, value = null) => {
 };
 
 const createRpcClient = (event) => {
-  return function (method) {
+  return async function (method) {
     const params = _.toArray(arguments);
     params.shift();
 
@@ -97,25 +97,46 @@ const createRpcClient = (event) => {
       }
     }
 
-    return request(req)
-      .then((res) => {
+    // RPC can fail, so let's retry.
+    // Be careful what we throw here as this will be forwarded to the user.
+    const maxRetries = 3;
+    let attempt = 0;
+    let res;
+
+    while (attempt < maxRetries) {
+      // We will throw here, which will be caught by catch logic to either retry or bubble up.
+      try {
+        res = await request(req);
+
+        if (res.status > 500) {
+          throw new Error('Unable to reach the RPC server');
+        }
         if (res.content) {
+          // check if the ids match
           if (res.content.id !== id) {
             throw new Error(
               `Got id ${res.content.id} but expected ${id} when calling RPC`
             );
           }
-          return res.content;
+          if (res.content.error) {
+            throw new Error(res.content.error);
+          }
+          return res.content.result;
         } else {
           throw new Error(`Got a ${res.status} when calling RPC`);
         }
-      })
-      .then((content) => {
-        if (content.error) {
-          throw new Error(content.error);
+      } catch (err) {
+        attempt++;
+
+        if (attempt === maxRetries || (res && res.status < 500)) {
+          throw new Error(
+            `RPC request failed after ${attempt} attempts: ${err.message}`
+          );
         }
-        return content.result;
-      });
+        // sleep for 100ms before retrying
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+    }
   };
 };
 
