@@ -312,7 +312,7 @@ const customLogger = (message, data) => {
   debug(data);
 };
 
-const formatInputFieldDisplay = (field) => {
+const formatFieldDisplay = (field) => {
   const ftype = field.type || 'string';
   let result;
   if (field.label) {
@@ -326,36 +326,36 @@ const formatInputFieldDisplay = (field) => {
   return result;
 };
 
-const formatAuthFieldDisplay = (field) => {
-  let result;
-  if (field.label) {
-    result = `${field.label} (${field.key})`;
-  } else {
-    result = field.key;
-  }
-  return result;
-};
-
 class InvokeCommand extends BaseCommand {
   async promptForAuthFields(authFields) {
     const authData = {};
     for (const field of authFields) {
-      const message = formatAuthFieldDisplay(field) + ':';
-      const value = await this.prompt(message, { useStderr: true });
+      if (field.computed) {
+        continue;
+      }
+      const message = formatFieldDisplay(field) + ':';
+      let value;
+      if (field.type === 'password') {
+        value = await this.promptHidden(message, true);
+      } else {
+        value = await this.prompt(message, { useStderr: true });
+      }
       authData[field.key] = value;
     }
     return authData;
   }
 
-  async startBasicAuth() {
+  async startBasicAuth(authFields) {
     return this.promptForAuthFields([
       {
         key: 'username',
         label: 'Username',
+        required: true,
       },
       {
         key: 'password',
         label: 'Password',
+        required: true,
       },
     ]);
   }
@@ -505,7 +505,23 @@ class InvokeCommand extends BaseCommand {
     return authData;
   }
 
-  async startSessionAuth() {}
+  async startSessionAuth(appDefinition) {
+    const authData = await this.promptForAuthFields(
+      appDefinition.authentication.fields
+    );
+
+    startSpinner('Invoking authentication.sessionConfig.perform');
+    const sessionData = await localAppCommand({
+      command: 'execute',
+      method: 'authentication.sessionConfig.perform',
+      bundle: {
+        authData,
+      },
+    });
+    endSpinner();
+
+    return { ...authData, ...sessionData };
+  }
 
   async startAuth(appDefinition) {
     const authentication = appDefinition.authentication;
@@ -519,13 +535,13 @@ class InvokeCommand extends BaseCommand {
     }
     switch (authentication.type) {
       case 'basic':
-        return this.startBasicAuth();
+        return this.startBasicAuth(authentication.fields);
       case 'custom':
         return this.startCustomAuth(authentication.fields);
       case 'oauth2':
         return this.startOAuth2(appDefinition);
       case 'session':
-        return this.startSessionAuth(authentication.fields);
+        return this.startSessionAuth(appDefinition);
       default:
         // TODO: Add support for 'digest' and 'oauth1'
         throw new Error(
@@ -543,7 +559,7 @@ class InvokeCommand extends BaseCommand {
     zcacheTestObj,
     cursorTestObj
   ) {
-    const message = formatInputFieldDisplay(field) + ':';
+    const message = formatFieldDisplay(field) + ':';
     if (field.dynamic) {
       // Dyanmic dropdown
       const [triggerKey, idField, labelField] = field.dynamic.split('.');
@@ -602,9 +618,7 @@ class InvokeCommand extends BaseCommand {
       if (this.nonInteractive || meta.isFillingDynamicDropdown) {
         throw new Error(
           "You're in non-interactive mode, so you must at least specify these required fields with --inputData: \n" +
-            missingFields
-              .map((f) => '* ' + formatInputFieldDisplay(f))
-              .join('\n')
+            missingFields.map((f) => '* ' + formatFieldDisplay(f)).join('\n')
         );
       }
       for (const f of missingFields) {
@@ -804,7 +818,15 @@ class InvokeCommand extends BaseCommand {
   }
 
   async perform() {
-    dotenv.config({ override: true });
+    const dotenvResult = dotenv.config({ override: true });
+    debugger;
+    if (_.isEmpty(dotenvResult.parsed)) {
+      console.warn(
+        'The .env file does not exist or is empty. ' +
+          'You may need to set some environment variables in there if your code uses process.env.'
+      );
+    }
+
     this.nonInteractive = this.flags['non-interactive'] || !process.stdin.isTTY;
 
     let { actionType, actionKey } = this.args;
@@ -870,7 +892,7 @@ class InvokeCommand extends BaseCommand {
       switch (actionKey) {
         // TODO: Add 'refresh' command
         case 'start': {
-          const newAuthData = await this.startAuth(appDefinition);
+          const newAuthData = await this.startAuth(appDefinition, authData);
           if (_.isEmpty(newAuthData)) {
             return;
           }
@@ -1038,7 +1060,6 @@ InvokeCommand.args = [
   },
 ];
 
-InvokeCommand.skipValidInstallCheck = true;
 InvokeCommand.examples = [
   'zapier invoke',
   'zapier invoke auth test',
