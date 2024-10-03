@@ -226,10 +226,10 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
   return inputData;
 };
 
-const appendEnv = async (vars) => {
+const appendEnv = async (vars, prefix = '') => {
   await fs.appendFile(
     '.env',
-    Object.entries(vars).map(([k, v]) => `${k}='${v}'\n`)
+    Object.entries(vars).map(([k, v]) => `${prefix}${k}='${v}'\n`)
   );
 };
 
@@ -360,7 +360,9 @@ class InvokeCommand extends BaseCommand {
     ]);
   }
 
-  async startCustomAuth() {}
+  async startCustomAuth(authFields) {
+    return this.promptForAuthFields(authFields);
+  }
 
   async startOAuth2(appDefinition) {
     const redirectUri = this.flags['redirect-uri'];
@@ -381,7 +383,7 @@ class InvokeCommand extends BaseCommand {
       );
     }
 
-    let env = {};
+    const env = {};
 
     if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
       if (this.nonInteractive) {
@@ -397,11 +399,13 @@ class InvokeCommand extends BaseCommand {
     }
 
     if (!process.env.CLIENT_ID) {
-      env.CLIENT_ID = await this.prompt('CLIENT_ID:');
+      env.CLIENT_ID = await this.prompt('CLIENT_ID:', { useStderr: true });
       process.env.CLIENT_ID = env.CLIENT_ID;
     }
     if (!process.env.CLIENT_SECRET) {
-      env.CLIENT_SECRET = await this.prompt('CLIENT_SECRET:');
+      env.CLIENT_SECRET = await this.prompt('CLIENT_SECRET:', {
+        useStderr: true,
+      });
       process.env.CLIENT_SECRET = env.CLIENT_SECRET;
     }
 
@@ -413,7 +417,6 @@ class InvokeCommand extends BaseCommand {
       // Save envs so the user won't have to re-enter them if the command fails
       await appendEnv(env);
       console.warn('CLIENT_ID and CLIENT_SECRET saved to .env file.');
-      env = {};
     }
 
     startSpinner('Invoking authentication.oauth2Config.authorizeUrl');
@@ -499,11 +502,7 @@ class InvokeCommand extends BaseCommand {
     });
 
     endSpinner();
-
-    for (const [k, v] of Object.entries(authData)) {
-      env[AUTH_FIELD_ENV_PREFIX + k] = v;
-    }
-    return env;
+    return authData;
   }
 
   async startSessionAuth() {}
@@ -522,11 +521,11 @@ class InvokeCommand extends BaseCommand {
       case 'basic':
         return this.startBasicAuth();
       case 'custom':
-        return this.startCustomAuth();
+        return this.startCustomAuth(authentication.fields);
       case 'oauth2':
         return this.startOAuth2(appDefinition);
       case 'session':
-        return this.startSessionAuth();
+        return this.startSessionAuth(authentication.fields);
       default:
         // TODO: Add support for 'digest' and 'oauth1'
         throw new Error(
@@ -871,11 +870,11 @@ class InvokeCommand extends BaseCommand {
       switch (actionKey) {
         // TODO: Add 'refresh' command
         case 'start': {
-          const env = await this.startAuth(appDefinition);
-          if (_.isEmpty(env)) {
+          const newAuthData = await this.startAuth(appDefinition);
+          if (_.isEmpty(newAuthData)) {
             return;
           }
-          await appendEnv(env);
+          await appendEnv(newAuthData, AUTH_FIELD_ENV_PREFIX);
           console.warn(
             'Auth data appended to .env file. Run `zapier invoke auth test` to test it.'
           );
