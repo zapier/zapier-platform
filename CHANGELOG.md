@@ -1,3 +1,24 @@
+## 15.16.1
+
+_released `2024-10-04`_
+
+### cli
+
+None!
+
+### core
+
+- :hammer: Return a descriptive error when a filename cannot be uploaded ([#874](https://github.com/zapier/zapier-platform/pull/874))
+
+### schema 
+
+None!
+
+### misc
+
+- :scroll: Add canary command to docs ([#870](https://github.com/zapier/zapier-platform/pull/870))
+- :scroll: Add instructions for installing the Zapier Platform development version to docs ([#873](https://github.com/zapier/zapier-platform/pull/870))
+
 ## 15.16.0 
 
 _released `2024-09-24`_
