@@ -1062,7 +1062,9 @@ InvokeCommand.args = [
 
 InvokeCommand.examples = [
   'zapier invoke',
+  'zapier invoke auth start',
   'zapier invoke auth test',
+  'zapier invoke auth label',
   'zapier invoke trigger new_recipe',
   `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`,
   'zapier invoke search find_recipe -i @file.json',
@@ -1072,11 +1074,21 @@ InvokeCommand.description = `Invoke an auth operation, a trigger, or a create/se
 
 This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
 
-This command loads \`authData\` from the \`.env\` file in the current directory. Create a \`.env\` file with the necessary auth data before running this command. Each line in \`.env\` should be in the format \`authData_FIELD_KEY=VALUE\`. For example, an OAuth2 integration might have a \`.env\` file like this:
+This command loads environment variables and \`authData\` from the \`.env\` file in the current directory. If you don't have an \`.env\` file yet, you can use the \`zapier invoke auth start\` command to help you initialize it, or you can manually create it.
+
+Each line in the \`.env\` file should follow one of these formats:
+
+* \`VAR_NAME=VALUE\` for environment variables
+* \`authData_FIELD_KEY=VALUE\` for auth data fields
+
+For example, a \`.env\` file for an OAuth2 integration might look like this:
 
 \`\`\`
-authData_access_token=1234567890
-authData_other_auth_field=abcdef
+CLIENT_ID='your_client_id'
+CLIENT_SECRET='your_client_secret'
+authData_access_token='1234567890'
+authData_refresh_token='abcdefg'
+authData_account_name='zapier'
 \`\`\`
 
 To test if the auth data is correct, run either one of these:
@@ -1086,7 +1098,7 @@ zapier invoke auth test   # invokes authentication.test method
 zapier invoke auth label  # invokes authentication.test and renders connection label
 \`\`\`
 
-Then you can test an trigger, a search, or a create action. For example, this is how you invoke a trigger with key \`new_recipe\`:
+Once you have the correct auth data, you can test an trigger, a search, or a create action. For example, here's how you invoke a trigger with the key \`new_recipe\`:
 
 \`\`\`
 zapier invoke trigger new_recipe
@@ -1094,9 +1106,12 @@ zapier invoke trigger new_recipe
 
 To add input data, use the \`--inputData\` flag. The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
 
+When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the command will prompt you interactively. If you don't want to get interactive prompts, use the \`--non-interactive\` flag.
+
+The \`--debug\` flag will show you the HTTP request logs and any console logs you have in your code.
+
 The following is a non-exhaustive list of current limitations and may be supported in the future:
 
-- \`zapier invoke auth start\` to help you initialize the auth data in \`.env\`
 - \`zapier invoke auth refresh\` to refresh the auth data in \`.env\`
 - Hook triggers, including REST hook subscribe/unsubscribe
 - Line items
