@@ -1,4 +1,6 @@
+const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
+const http = require('node:http');
 
 const _ = require('lodash');
 const { flags } = require('@oclif/command');
@@ -11,7 +13,7 @@ const { DateTime, IANAZone } = require('luxon');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const { localAppCommand } = require('../../utils/local');
+const { localAppCommand, getLocalAppHandler } = require('../../utils/local');
 const { startSpinner, endSpinner } = require('../../utils/display');
 
 const ACTION_TYPE_PLURALS = {
@@ -224,10 +226,10 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
   return inputData;
 };
 
-const saveAuthData = async (authData) => {
+const appendEnv = async (vars) => {
   await fs.appendFile(
     '.env',
-    Object.entries(authData).map(([k, v]) => `authData_${k}='${v}'\n`)
+    Object.entries(vars).map(([k, v]) => `${k}='${v}'\n`)
   );
 };
 
@@ -310,7 +312,7 @@ const customLogger = (message, data) => {
   debug(data);
 };
 
-const formatFieldDisplay = (field) => {
+const formatInputFieldDisplay = (field) => {
   const ftype = field.type || 'string';
   let result;
   if (field.label) {
@@ -324,11 +326,21 @@ const formatFieldDisplay = (field) => {
   return result;
 };
 
+const formatAuthFieldDisplay = (field) => {
+  let result;
+  if (field.label) {
+    result = `${field.label} (${field.key})`;
+  } else {
+    result = field.key;
+  }
+  return result;
+};
+
 class InvokeCommand extends BaseCommand {
   async promptForAuthFields(authFields) {
     const authData = {};
     for (const field of authFields) {
-      const message = `${field.label || field.key}:`;
+      const message = formatAuthFieldDisplay(field) + ':';
       const value = await this.prompt(message, { useStderr: true });
       authData[field.key] = value;
     }
@@ -350,31 +362,175 @@ class InvokeCommand extends BaseCommand {
 
   async startCustomAuth() {}
 
-  async startOAuth2() {
-    return this.promptForAuthFields([
-      {
-        key: 'access_token',
-        label: 'Access Token',
+  async startOAuth2(appDefinition) {
+    const redirectUri = this.flags['redirect-uri'];
+    let port;
+    try {
+      port = parseInt(new URL(redirectUri).port);
+    } catch (err) {
+      throw new Error(
+        `Invalid redirect URI '${redirectUri}'. ` +
+          "A valid example would be 'http://localhost:8000'."
+      );
+    }
+    port = parseInt(port);
+    if (!port) {
+      throw new Error(
+        `Could not parse port from redirect URI: '${redirectUri}'. ` +
+          "A valid example would be 'http://localhost:8000'."
+      );
+    }
+
+    let env = {};
+
+    if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
+      if (this.nonInteractive) {
+        throw new Error(
+          'CLIENT_ID and CLIENT_SECRET must be set in the .env file in non-interactive mode.'
+        );
+      } else {
+        console.warn(
+          'CLIENT_ID and CLIENT_SECRET are required for OAuth2, ' +
+            "but they are not found in the .env file. I'll prompt you for them now."
+        );
+      }
+    }
+
+    if (!process.env.CLIENT_ID) {
+      env.CLIENT_ID = await this.prompt('CLIENT_ID:');
+      process.env.CLIENT_ID = env.CLIENT_ID;
+    }
+    if (!process.env.CLIENT_SECRET) {
+      env.CLIENT_SECRET = await this.prompt('CLIENT_SECRET:');
+      process.env.CLIENT_SECRET = env.CLIENT_SECRET;
+    }
+
+    if (!_.isEmpty(env)) {
+      // process.env changed, so we need to reload the modules that have loaded
+      // the old values of process.env
+      getLocalAppHandler({ reload: true });
+
+      // Save envs so the user won't have to re-enter them if the command fails
+      await appendEnv(env);
+      console.warn('CLIENT_ID and CLIENT_SECRET saved to .env file.');
+      env = {};
+    }
+
+    startSpinner('Invoking authentication.oauth2Config.authorizeUrl');
+
+    const stateParam = crypto.randomBytes(20).toString('hex');
+    let authorizeUrl = await localAppCommand({
+      command: 'execute',
+      method: 'authentication.oauth2Config.authorizeUrl',
+      bundle: {
+        inputData: {
+          response_type: 'code',
+          redirect_uri: redirectUri,
+          state: stateParam,
+        },
       },
-    ]);
+    });
+    if (!authorizeUrl.includes('&scope=')) {
+      const scope = appDefinition.authentication.oauth2Config.scope;
+      authorizeUrl += `&scope=${encodeURIComponent(scope)}`;
+    }
+    debug('authorizeUrl:', authorizeUrl);
+
+    endSpinner();
+    startSpinner('Starting local HTTP server');
+
+    let resolveCode;
+    const codePromise = new Promise((resolve) => {
+      resolveCode = resolve;
+    });
+
+    const server = http.createServer((req, res) => {
+      // Parse the request URL to extract the query parameters
+      const code = new URL(req.url, redirectUri).searchParams.get('code');
+      if (code) {
+        resolveCode(code);
+        debug(`Received code '${code}' from ${req.headers.referer}`);
+
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end(
+          'Parameter `code` received successfully. Go back to the terminal to continue.'
+        );
+      } else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end(
+          'Error: Did not receive `code` query parameter. ' +
+            'Did you have the right CLIENT_ID and CLIENT_SECRET? ' +
+            'Or did your server respond properly?'
+        );
+      }
+    });
+
+    await new Promise((resolve) => {
+      server.listen(port, resolve);
+    });
+
+    endSpinner();
+    startSpinner('Opening browser to authorize');
+
+    const { default: open } = await import('open');
+    open(authorizeUrl);
+
+    const code = await codePromise;
+    endSpinner();
+
+    startSpinner('Closing local HTTP server');
+    await new Promise((resolve) => {
+      server.close(resolve);
+    });
+    debug('Local HTTP server closed');
+
+    endSpinner();
+    startSpinner('Invoking authentication.oauth2Config.getAccessToken');
+
+    const authData = await localAppCommand({
+      command: 'execute',
+      method: 'authentication.oauth2Config.getAccessToken',
+      bundle: {
+        inputData: {
+          code,
+          redirect_uri: redirectUri,
+        },
+      },
+    });
+
+    endSpinner();
+
+    for (const [k, v] of Object.entries(authData)) {
+      env[AUTH_FIELD_ENV_PREFIX + k] = v;
+    }
+    return env;
   }
 
   async startSessionAuth() {}
 
-  async startAuth(authType) {
-    switch (authType) {
+  async startAuth(appDefinition) {
+    const authentication = appDefinition.authentication;
+    if (!authentication) {
+      console.warn(
+        "Your integration doesn't seem to need authentication. " +
+          "If that isn't true, the app definition should have " +
+          'an `authentication` object at the root level.'
+      );
+      return null;
+    }
+    switch (authentication.type) {
       case 'basic':
         return this.startBasicAuth();
       case 'custom':
         return this.startCustomAuth();
       case 'oauth2':
-        return this.startOAuth2();
+        return this.startOAuth2(appDefinition);
       case 'session':
         return this.startSessionAuth();
       default:
         // TODO: Add support for 'digest' and 'oauth1'
         throw new Error(
-          `This command doesn't support authentication type "${authType}".`
+          `This command doesn't support authentication type "${authentication.type}".`
         );
     }
   }
@@ -388,7 +544,7 @@ class InvokeCommand extends BaseCommand {
     zcacheTestObj,
     cursorTestObj
   ) {
-    const message = formatFieldDisplay(field) + ':';
+    const message = formatInputFieldDisplay(field) + ':';
     if (field.dynamic) {
       // Dyanmic dropdown
       const [triggerKey, idField, labelField] = field.dynamic.split('.');
@@ -447,7 +603,9 @@ class InvokeCommand extends BaseCommand {
       if (this.nonInteractive || meta.isFillingDynamicDropdown) {
         throw new Error(
           "You're in non-interactive mode, so you must at least specify these required fields with --inputData: \n" +
-            missingFields.map((f) => '* ' + formatFieldDisplay(f)).join('\n')
+            missingFields
+              .map((f) => '* ' + formatInputFieldDisplay(f))
+              .join('\n')
         );
       }
       for (const f of missingFields) {
@@ -673,7 +831,7 @@ class InvokeCommand extends BaseCommand {
         throw new Error('You must specify ACTIONKEY in non-interactive mode.');
       }
       if (actionType === 'auth') {
-        const actionKeys = ['label', 'test'];
+        const actionKeys = ['label', 'start', 'test'];
         actionKey = await this.promptWithList(
           'Which auth operation would you like to invoke?',
           actionKeys,
@@ -713,23 +871,14 @@ class InvokeCommand extends BaseCommand {
       switch (actionKey) {
         // TODO: Add 'refresh' command
         case 'start': {
-          const newAuthData = await this.startAuth(
-            appDefinition.authentication.type
-          );
-          const shouldSave = await this.confirm(
-            'Save auth data to .env file? Will print to stdout if you say no.',
-            true,
-            true,
-            true
-          );
-          if (shouldSave) {
-            await saveAuthData(newAuthData);
-            console.log('Auth data appended to .env file.');
-          } else {
-            for (const [k, v] of Object.entries(newAuthData)) {
-              console.log(`authData_${k}='${v}'`);
-            }
+          const env = await this.startAuth(appDefinition);
+          if (_.isEmpty(env)) {
+            return;
           }
+          await appendEnv(env);
+          console.warn(
+            'Auth data appended to .env file. Run `zapier invoke auth test` to test it.'
+          );
           return;
         }
         case 'test': {
@@ -741,7 +890,7 @@ class InvokeCommand extends BaseCommand {
           const labelTemplate = appDefinition.authentication.connectionLabel;
           if (labelTemplate && labelTemplate.startsWith('$func$')) {
             console.warn(
-              'Function-based connection label is currently not supported; will print auth test result instead.'
+              'Function-based connection label is not supported yet. Printing auth test result instead.'
             );
             const output = await testAuth(authData, meta, zcacheTestObj);
             console.log(JSON.stringify(output, null, 2));
@@ -866,8 +1015,13 @@ InvokeCommand.flags = buildFlags({
     timezone: flags.string({
       char: 'z',
       description:
-        'Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.',
+        'Set the default timezone for datetime field interpretation. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.',
       default: 'America/Chicago',
+    }),
+    'redirect-uri': flags.string({
+      description:
+        "The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can either set up port forwarding to route the non-localhost or HTTPS address to localhost.",
+      default: 'http://localhost:9000',
     }),
   },
 });
