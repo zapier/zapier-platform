@@ -892,7 +892,7 @@ class InvokeCommand extends BaseCommand {
       switch (actionKey) {
         // TODO: Add 'refresh' command
         case 'start': {
-          const newAuthData = await this.startAuth(appDefinition, authData);
+          const newAuthData = await this.startAuth(appDefinition);
           if (_.isEmpty(newAuthData)) {
             return;
           }
