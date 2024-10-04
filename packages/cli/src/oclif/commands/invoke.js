@@ -346,6 +346,11 @@ class InvokeCommand extends BaseCommand {
   }
 
   async startBasicAuth(authFields) {
+    if (this.nonInteractive) {
+      throw new Error(
+        'The `auth start` subcommand for "basic" authentication type only works in interactive mode.'
+      );
+    }
     return this.promptForAuthFields([
       {
         key: 'username',
@@ -361,6 +366,11 @@ class InvokeCommand extends BaseCommand {
   }
 
   async startCustomAuth(authFields) {
+    if (this.nonInteractive) {
+      throw new Error(
+        'The `auth start` subcommand for "custom" authentication type only works in interactive mode.'
+      );
+    }
     return this.promptForAuthFields(authFields);
   }
 
@@ -506,6 +516,11 @@ class InvokeCommand extends BaseCommand {
   }
 
   async startSessionAuth(appDefinition) {
+    if (this.nonInteractive) {
+      throw new Error(
+        'The `auth start` subcommand for "session" authentication type only works in interactive mode.'
+      );
+    }
     const authData = await this.promptForAuthFields(
       appDefinition.authentication.fields
     );
@@ -819,7 +834,6 @@ class InvokeCommand extends BaseCommand {
 
   async perform() {
     const dotenvResult = dotenv.config({ override: true });
-    debugger;
     if (_.isEmpty(dotenvResult.parsed)) {
       console.warn(
         'The .env file does not exist or is empty. ' +
@@ -931,7 +945,10 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         default:
-          throw new Error(`Unknown auth operation: ${actionKey}`);
+          throw new Error(
+            `Unknown auth operation "${actionKey}". ` +
+              'The options are "label", "start", and "test". \n'
+          );
       }
     } else {
       const action = appDefinition[actionTypePlural][actionKey];
@@ -1041,7 +1058,7 @@ InvokeCommand.flags = buildFlags({
     }),
     'redirect-uri': flags.string({
       description:
-        "The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can either set up port forwarding to route the non-localhost or HTTPS address to localhost.",
+        "The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.",
       default: 'http://localhost:9000',
     }),
   },
@@ -1056,7 +1073,7 @@ InvokeCommand.args = [
   {
     name: 'actionKey',
     description:
-      'The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "test" or "label".',
+      'The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "label", "start", or "test".',
   },
 ];
 
@@ -1075,6 +1092,8 @@ InvokeCommand.description = `Invoke an auth operation, a trigger, or a create/se
 This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
 
 This command loads environment variables and \`authData\` from the \`.env\` file in the current directory. If you don't have an \`.env\` file yet, you can use the \`zapier invoke auth start\` command to help you initialize it, or you can manually create it.
+
+The \`zapier invoke auth start\` subcommand will prompt you for the necessary auth fields and save them to the \`.env\` file.
 
 Each line in the \`.env\` file should follow one of these formats:
 
