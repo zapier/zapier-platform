@@ -3178,9 +3178,9 @@ There are several ways to test your Zapier integration:
 
 *Added in v15.17.0.*
 
-The `zapier invoke <ACTION_TYPE> <ACTION_KEY>` CLI command emulates how Zapier production environment would invoke your app. Since it runs code locally, it's a fast way to debug and test code interactively without deploying code to Zapier.
+The `zapier invoke <ACTION_TYPE> <ACTION_KEY>` CLI command emulates how the Zapier production environment would invoke your app. Since it runs code locally, it's a fast way to debug and test interactively without needing to deploy the code to Zapier.
 
-Its general flow is call `operation.inputFields` of an action, resolve the input data to the expected types, and then call the `operation.perform` method.
+Its general execution flow invovles calling `operation.inputFields` of an action, resolving the input data to the expected types, and then calling the `operation.perform` method.
 
 `zapier invoke --help` should be self-explanatory, but here's a quick rundown:
 
