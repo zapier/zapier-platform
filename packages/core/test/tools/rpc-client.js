@@ -15,6 +15,9 @@ describe('rpc client', () => {
   });
 
   it('should handle an explosion', () => {
+    // mock 3 explosions due to retry
+    mocky.mockRpcFail('this is an expected explosion');
+    mocky.mockRpcFail('this is an expected explosion');
     mocky.mockRpcFail('this is an expected explosion');
 
     return rpc('explode')
@@ -22,7 +25,9 @@ describe('rpc client', () => {
         throw new Error('this should have exploded');
       })
       .catch((err) => {
-        err.message.should.eql('this is an expected explosion');
+        err.message.should.eql(
+          'RPC request failed after 3 attempts: this is an expected explosion'
+        );
       });
   });
 
