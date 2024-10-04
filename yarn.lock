@@ -8491,6 +8491,11 @@ mock-fs@^5.2.0:
   resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-5.2.0.tgz#3502a9499c84c0a1218ee4bf92ae5bf2ea9b2b5e"
   integrity sha512-2dF2R6YMSZbpip1V1WHKGLNjr/k48uQClqMVb5H3MOvwc9qhYis3/IWbj02qIg/Y8MDXKFF4c5v0rxx2o6xTZw==
 
+mock-fs@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/mock-fs/-/mock-fs-5.3.0.tgz#7dfc95ce5528aff8e10fa117161b91d8129e0e9e"
+  integrity sha512-IMvz1X+RF7vf+ur7qUenXMR7/FSKSIqS3HqFHXcyNI7G0FbpFO8L5lfsUJhl+bhK1AiulVHWKUSxebWauPA+xQ==
+
 mock-stdin@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/mock-stdin/-/mock-stdin-1.0.0.tgz#efcfaf4b18077e14541742fd758b9cae4e5365ea"
