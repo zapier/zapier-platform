@@ -73,6 +73,9 @@ declare class RefreshAuthError extends Error {}
 declare class ThrottledError extends Error {
   constructor(message: string, delay?: number);
 }
+declare class ResponseError extends Error {
+  constructor(response: HttpResponse);
+}
 
 // copied http stuff from external typings
 export interface HttpRequestOptions {
