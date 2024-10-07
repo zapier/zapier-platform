@@ -445,7 +445,9 @@ class InvokeCommand extends BaseCommand {
     });
     if (!authorizeUrl.includes('&scope=')) {
       const scope = appDefinition.authentication.oauth2Config.scope;
-      authorizeUrl += `&scope=${encodeURIComponent(scope)}`;
+      if (scope) {
+        authorizeUrl += `&scope=${encodeURIComponent(scope)}`;
+      }
     }
     debug('authorizeUrl:', authorizeUrl);
 
