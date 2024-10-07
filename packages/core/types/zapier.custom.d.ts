@@ -203,6 +203,7 @@ export interface ZObject {
     ExpiredAuthError: typeof ExpiredAuthError;
     RefreshAuthError: typeof RefreshAuthError;
     ThrottledError: typeof ThrottledError;
+    ResponseError: typeof ResponseError;
   };
 
   cache: {
