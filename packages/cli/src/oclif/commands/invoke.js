@@ -569,6 +569,63 @@ class InvokeCommand extends BaseCommand {
     }
   }
 
+  async refreshOAuth2(appDefinition, authData) {
+    startSpinner('Invoking authentication.oauth2Config.refreshAccessToken');
+
+    const newAuthData = await localAppCommand({
+      command: 'execute',
+      method: 'authentication.oauth2Config.refreshAccessToken',
+      bundle: {
+        authData,
+      },
+    });
+
+    endSpinner();
+    return newAuthData;
+  }
+
+  async refreshSessionAuth(appDefinition, authData) {
+    startSpinner('Invoking authentication.sessionConfig.perform');
+
+    const sessionData = await localAppCommand({
+      command: 'execute',
+      method: 'authentication.sessionConfig.perform',
+      bundle: {
+        authData,
+      },
+    });
+
+    endSpinner();
+    return sessionData;
+  }
+
+  async refreshAuth(appDefinition, authData) {
+    const authentication = appDefinition.authentication;
+    if (!authentication) {
+      console.warn(
+        "Your integration doesn't seem to need authentication. " +
+          "If that isn't true, the app definition should have " +
+          'an `authentication` object at the root level.'
+      );
+      return null;
+    }
+    if (_.isEmpty(authData)) {
+      throw new Error(
+        'No auth data found in the .env file. Run `zapier invoke auth start` first to initialize the auth data.'
+      );
+    }
+    switch (authentication.type) {
+      case 'oauth2':
+        return this.refreshOAuth2(appDefinition, authData);
+      case 'session':
+        return this.refreshSessionAuth(appDefinition, authData);
+      default:
+        throw new Error(
+          `This command doesn't support refreshing authentication type "${authentication.type}".`
+        );
+    }
+  }
+
   async promptForField(
     field,
     appDefinition,
@@ -908,7 +965,6 @@ class InvokeCommand extends BaseCommand {
         isTestingAuth: true,
       };
       switch (actionKey) {
-        // TODO: Add 'refresh' command
         case 'start': {
           const newAuthData = await this.startAuth(appDefinition);
           if (_.isEmpty(newAuthData)) {
@@ -917,6 +973,17 @@ class InvokeCommand extends BaseCommand {
           await appendEnv(newAuthData, AUTH_FIELD_ENV_PREFIX);
           console.warn(
             'Auth data appended to .env file. Run `zapier invoke auth test` to test it.'
+          );
+          return;
+        }
+        case 'refresh': {
+          const newAuthData = await this.refreshAuth(appDefinition, authData);
+          if (_.isEmpty(newAuthData)) {
+            return;
+          }
+          await appendEnv(newAuthData, AUTH_FIELD_ENV_PREFIX);
+          console.warn(
+            'Auth data has been refreshed and appended to .env file. Run `zapier invoke auth test` to test it.'
           );
           return;
         }
