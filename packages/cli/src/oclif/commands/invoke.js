@@ -1151,6 +1151,7 @@ InvokeCommand.args = [
 InvokeCommand.examples = [
   'zapier invoke',
   'zapier invoke auth start',
+  'zapier invoke auth refresh',
   'zapier invoke auth test',
   'zapier invoke auth label',
   'zapier invoke trigger new_recipe',
