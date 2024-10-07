@@ -927,7 +927,7 @@ class InvokeCommand extends BaseCommand {
         throw new Error('You must specify ACTIONKEY in non-interactive mode.');
       }
       if (actionType === 'auth') {
-        const actionKeys = ['label', 'start', 'test'];
+        const actionKeys = ['label', 'refresh', 'start', 'test'];
         actionKey = await this.promptWithList(
           'Which auth operation would you like to invoke?',
           actionKeys,
@@ -1018,7 +1018,7 @@ class InvokeCommand extends BaseCommand {
         default:
           throw new Error(
             `Unknown auth operation "${actionKey}". ` +
-              'The options are "label", "start", and "test". \n'
+              'The options are "label", "refresh", "start", and "test". \n'
           );
       }
     } else {
@@ -1144,7 +1144,7 @@ InvokeCommand.args = [
   {
     name: 'actionKey',
     description:
-      'The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "label", "start", or "test".',
+      'The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "label", "refresh", "start", or "test".',
   },
 ];
 
@@ -1188,6 +1188,8 @@ zapier invoke auth test   # invokes authentication.test method
 zapier invoke auth label  # invokes authentication.test and renders connection label
 \`\`\`
 
+To refresh stale auth data for OAuth2 or session auth, run \`zapier invoke auth refresh\`.
+
 Once you have the correct auth data, you can test an trigger, a search, or a create action. For example, here's how you invoke a trigger with the key \`new_recipe\`:
 
 \`\`\`
@@ -1202,7 +1204,6 @@ The \`--debug\` flag will show you the HTTP request logs and any console logs yo
 
 The following is a non-exhaustive list of current limitations and may be supported in the future:
 
-- \`zapier invoke auth refresh\` to refresh the auth data in \`.env\`
 - Hook triggers, including REST hook subscribe/unsubscribe
 - Line items
 - Output hydration
