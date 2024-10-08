@@ -3,6 +3,8 @@ const os = require('os');
 const path = require('path');
 const { promisify } = require('util');
 
+const _ = require('lodash');
+
 require('should');
 
 const { getPackageLatestVersion, getPackageSize } = require('../utils/npm');
@@ -221,6 +223,66 @@ describe('smoke tests - setup will take some time', function () {
       'typescript',
     ];
 
+    const invokeArgsByTemplate = {
+      // Add an entry here if you want to test a template with an invoke
+      // command. The key is the template name, the value is an array of
+      // objects. Each object represents an invoke command and a verification
+      // function. The commands will be run in order so later commands will be
+      // affected by earlier commands. Each object consists of:
+      // - env: environment variables to append to .env
+      // - command (array): the command to run
+      // - verify: a function that takes the output and asserts something
+      oauth2: [
+        {
+          env: {
+            CLIENT_ID: '1234',
+            CLIENT_SECRET: 'asdf',
+            authData_access_token: 'a_token',
+            authData_refresh_token: 'a_refresh_token',
+          },
+          command: ['invoke', 'auth', 'test', '--non-interactive'],
+          verify: (output, appDir) => {
+            const testResult = JSON.parse(output);
+            testResult.json.username.should.eql('Bret');
+            testResult.json.email.should.eql('Sincere@april.biz');
+          },
+        },
+        {
+          command: ['invoke', 'auth', 'refresh', '--non-interactive'],
+          verify: (output, appDir) => {
+            const envPath = path.join(appDir, '.env');
+            const envContent = fs.readFileSync(envPath, { encoding: 'utf8' });
+            // The refresh command should append a new access token at the end
+            envContent.should.eql(
+              'CLIENT_ID=1234\n' +
+                'CLIENT_SECRET=asdf\n' +
+                'authData_access_token=a_token\n' +
+                'authData_refresh_token=a_refresh_token\n' +
+                "authData_access_token='a_token'\n"
+            );
+          },
+        },
+      ],
+      'dynamic-dropdown': [
+        {
+          command: [
+            'invoke',
+            'trigger',
+            'people',
+            '-i',
+            '{"species_id":"1"}',
+            '--non-interactive',
+          ],
+          verify: (output, appDir) => {
+            const people = JSON.parse(output);
+            const firstPerson = people[0];
+            firstPerson.id.should.eql(1);
+            firstPerson.name.should.eql('Luke Skywalker');
+          },
+        },
+      ],
+    };
+
     const subfolder = 'template-tests';
     let subfolderPath, corePackage;
 
@@ -250,6 +312,27 @@ describe('smoke tests - setup will take some time', function () {
         runCommand(context.cliBin, ['test', '--skip-validate'], {
           cwd: appDir,
         });
+
+        const invokeCommands = invokeArgsByTemplate[template];
+        if (!invokeCommands) {
+          return;
+        }
+
+        const envPath = path.join(appDir, '.env');
+        fs.existsSync(envPath) && fs.unlinkSync(envPath);
+
+        // Test with invoke command
+        for (const { env, command, verify } of invokeCommands) {
+          if (!_.isEmpty(env)) {
+            const envContent =
+              Object.entries(env)
+                .map(([key, value]) => `${key}=${value}`)
+                .join('\n') + '\n';
+            fs.appendFileSync(envPath, envContent);
+          }
+          const output = runCommand(context.cliBin, command, { cwd: appDir });
+          verify(output, appDir);
+        }
       });
     });
   });

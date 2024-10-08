@@ -229,7 +229,9 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
 const appendEnv = async (vars, prefix = '') => {
   await fs.appendFile(
     '.env',
-    Object.entries(vars).map(([k, v]) => `${prefix}${k}='${v}'\n`)
+    Object.entries(vars)
+      .filter(([k, v]) => v !== undefined)
+      .map(([k, v]) => `${prefix}${k}='${v || ''}'\n`)
   );
 };
 
