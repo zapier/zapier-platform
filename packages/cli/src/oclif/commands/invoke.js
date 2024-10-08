@@ -485,7 +485,9 @@ class InvokeCommand extends BaseCommand {
     });
 
     endSpinner();
-    startSpinner('Opening browser to authorize');
+    startSpinner(
+      'Opening browser to authorize (press Ctrl-C to exit on error)'
+    );
 
     const { default: open } = await import('open');
     open(authorizeUrl);
