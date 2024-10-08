@@ -73,6 +73,9 @@ declare class RefreshAuthError extends Error {}
 declare class ThrottledError extends Error {
   constructor(message: string, delay?: number);
 }
+declare class ResponseError extends Error {
+  constructor(response: HttpResponse);
+}
 
 // copied http stuff from external typings
 export interface HttpRequestOptions {
@@ -135,12 +138,13 @@ type DehydrateFunc = <T>(
 export interface ZObject {
   request: {
     // most specific overloads go first
-    (url: string, options: HttpRequestOptions & { raw: true }): Promise<
-      RawHttpResponse
-    >;
-    (options: HttpRequestOptions & { raw: true; url: string }): Promise<
-      RawHttpResponse
-    >;
+    (
+      url: string,
+      options: HttpRequestOptions & { raw: true }
+    ): Promise<RawHttpResponse>;
+    (
+      options: HttpRequestOptions & { raw: true; url: string }
+    ): Promise<RawHttpResponse>;
 
     (url: string, options?: HttpRequestOptions): Promise<HttpResponse>;
     (options: HttpRequestOptions & { url: string }): Promise<HttpResponse>;
@@ -199,6 +203,7 @@ export interface ZObject {
     ExpiredAuthError: typeof ExpiredAuthError;
     RefreshAuthError: typeof RefreshAuthError;
     ThrottledError: typeof ThrottledError;
+    ResponseError: typeof ResponseError;
   };
 
   cache: {
