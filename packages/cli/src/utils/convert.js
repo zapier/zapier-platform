@@ -251,6 +251,7 @@ const renderIndex = async (appDefinition) => {
       triggers: 'Trigger',
       creates: 'Create',
       searches: 'Search',
+      bulkReads: 'BulkRead',
     },
     (importNameSuffix, stepType) => {
       _.each(appDefinition[stepType], (definition, key) => {
@@ -380,7 +381,7 @@ const convertApp = async (appInfo, appDefinition, newAppDir) => {
 
   const promises = [];
 
-  ['triggers', 'creates', 'searches'].forEach((stepType) => {
+  ['triggers', 'creates', 'searches', 'bulkReads'].forEach((stepType) => {
     _.each(appDefinition[stepType], (definition, key) => {
       promises.push(
         writeStep(stepType, definition, key, newAppDir),
