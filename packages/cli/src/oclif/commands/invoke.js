@@ -378,23 +378,7 @@ class InvokeCommand extends BaseCommand {
 
   async startOAuth2(appDefinition) {
     const redirectUri = this.flags['redirect-uri'];
-    let port;
-    try {
-      port = parseInt(new URL(redirectUri).port);
-    } catch (err) {
-      throw new Error(
-        `Invalid redirect URI '${redirectUri}'. ` +
-          "A valid example would be 'http://localhost:8000'."
-      );
-    }
-    port = parseInt(port);
-    if (!port) {
-      throw new Error(
-        `Could not parse port from redirect URI: '${redirectUri}'. ` +
-          "A valid example would be 'http://localhost:8000'."
-      );
-    }
-
+    const port = this.flags['local-port'];
     const env = {};
 
     if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
@@ -1132,8 +1116,13 @@ InvokeCommand.flags = buildFlags({
     }),
     'redirect-uri': flags.string({
       description:
-        "The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.",
+        "Only used by `auth start` subcommand. The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.",
       default: 'http://localhost:9000',
+    }),
+    'local-port': flags.integer({
+      description:
+        'Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.',
+      default: 9000,
     }),
   },
 });
