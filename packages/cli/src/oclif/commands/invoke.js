@@ -1041,7 +1041,8 @@ class InvokeCommand extends BaseCommand {
           if (filePath === '-') {
             inputStream = process.stdin;
           } else {
-            inputStream = fs.createReadStream(filePath, { encoding: 'utf8' });
+            const fd = await fs.open(filePath);
+            inputStream = fd.createReadStream({ encoding: 'utf8' });
           }
           inputData = await readStream(inputStream);
         }

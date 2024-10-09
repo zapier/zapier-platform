@@ -3,8 +3,6 @@ const os = require('os');
 const path = require('path');
 const { promisify } = require('util');
 
-const _ = require('lodash');
-
 require('should');
 
 const { getPackageLatestVersion, getPackageSize } = require('../utils/npm');
@@ -223,23 +221,28 @@ describe('smoke tests - setup will take some time', function () {
       'typescript',
     ];
 
-    const invokeArgsByTemplate = {
+    const invokeCommandsByTemplate = {
       // Add an entry here if you want to test a template with an invoke
-      // command. The key is the template name, the value is an array of
-      // objects. Each object represents an invoke command and a verification
-      // function. The commands will be run in order so later commands will be
-      // affected by earlier commands. Each object consists of:
-      // - env: environment variables to append to .env
-      // - command (array): the command to run
+      // command. The object key is the template name, and the value is an array
+      // of objects. Each object represents an invoke command and a "verify"
+      // function. The commands will be run sequentially so later ones will be
+      // influenced by the earlier ones. Each object consists of:
+      // - files (optional): files to write before running the command
+      // - command: command args to pass to spawnSync()
+      // - options (optional): options to pass to spawnSync()
       // - verify: a function that takes the output and asserts something
       oauth2: [
         {
-          env: {
-            CLIENT_ID: '1234',
-            CLIENT_SECRET: 'asdf',
-            authData_access_token: 'a_token',
-            authData_refresh_token: 'a_refresh_token',
-          },
+          files: [
+            {
+              name: '.env',
+              content:
+                'CLIENT_ID=1234\n' +
+                'CLIENT_SECRET=asdf\n' +
+                'authData_access_token=a_token\n' +
+                'authData_refresh_token=a_refresh_token\n',
+            },
+          ],
           command: ['invoke', 'auth', 'test', '--non-interactive'],
           verify: (output, appDir) => {
             const testResult = JSON.parse(output);
@@ -281,6 +284,45 @@ describe('smoke tests - setup will take some time', function () {
           },
         },
       ],
+      'search-or-create': [
+        {
+          files: [
+            {
+              name: 'recipe.json',
+              content: '{"name":"name 3"}',
+            },
+          ],
+          command: [
+            'invoke',
+            'search',
+            'recipe',
+            '--inputData',
+            '@recipe.json',
+            '--non-interactive',
+          ],
+          verify: (output, appDir) => {
+            const recipes = JSON.parse(output);
+            recipes.length.should.eql(1);
+            recipes[0].name.should.eql('name 3');
+          },
+        },
+        {
+          command: [
+            'invoke',
+            'create',
+            'recipe',
+            '--inputData',
+            '@-', // read from stdin
+          ],
+          options: {
+            input: '{"name":"Pizza"}',
+          },
+          verify: (output, appDir) => {
+            const recipe = JSON.parse(output);
+            recipe.name.should.eql('Pizza');
+          },
+        },
+      ],
     };
 
     const subfolder = 'template-tests';
@@ -313,7 +355,7 @@ describe('smoke tests - setup will take some time', function () {
           cwd: appDir,
         });
 
-        const invokeCommands = invokeArgsByTemplate[template];
+        const invokeCommands = invokeCommandsByTemplate[template];
         if (!invokeCommands) {
           return;
         }
@@ -322,15 +364,17 @@ describe('smoke tests - setup will take some time', function () {
         fs.existsSync(envPath) && fs.unlinkSync(envPath);
 
         // Test with invoke command
-        for (const { env, command, verify } of invokeCommands) {
-          if (!_.isEmpty(env)) {
-            const envContent =
-              Object.entries(env)
-                .map(([key, value]) => `${key}=${value}`)
-                .join('\n') + '\n';
-            fs.appendFileSync(envPath, envContent);
+        for (const { files, command, options, verify } of invokeCommands) {
+          if (files && files.length) {
+            for (const { name, content } of files) {
+              const filePath = path.join(appDir, name);
+              fs.writeFileSync(filePath, content);
+            }
           }
-          const output = runCommand(context.cliBin, command, { cwd: appDir });
+          const output = runCommand(context.cliBin, command, {
+            cwd: appDir,
+            ...options,
+          });
           verify(output, appDir);
         }
       });
