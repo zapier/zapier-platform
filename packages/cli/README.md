@@ -128,6 +128,7 @@ This doc describes the latest CLI version (**15.16.1**), as of this writing. If 
   * [Stale Authentication Credentials](#stale-authentication-credentials)
   * [Handling Throttled Requests](#handling-throttled-requests)
 - [Testing](#testing)
+  * [Using `zapier invoke` Command](#using-zapier-invoke-command)
   * [Writing Unit Tests](#writing-unit-tests)
   * [Using the `z` Object in Tests](#using-the-z-object-in-tests)
   * [Mocking Requests](#mocking-requests)
@@ -3167,8 +3168,37 @@ For throttled requests that occur during processing of a webhook trigger's perfo
 
 ## Testing
 
-You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.
-You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
+There are several ways to test your Zapier integration:
+
+* You can use the `zapier invoke` command to invoke a trigger, search, create, or an auth operation locally.
+* You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.
+* You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
+
+### Using `zapier invoke` Command
+
+*Added in v15.17.0.*
+
+The `zapier invoke <ACTION_TYPE> <ACTION_KEY>` CLI command emulates how the Zapier production environment would invoke your app. Since it runs code locally, it's a fast way to debug and test interactively without needing to deploy the code to Zapier.
+
+Its general execution flow invovles calling `operation.inputFields` of an action, resolving the input data to the expected types, and then calling the `operation.perform` method.
+
+`zapier invoke --help` should be self-explanatory, but here's a quick rundown:
+
+```bash
+# Intialize auth data in .env file
+zapier invoke auth start
+
+# Test your auth data in .env
+zapier invoke auth test
+zapier invoke auth label
+
+# Invoke a polling trigger
+zapier invoke trigger new_recipe
+
+# Invoke a create action
+zapier invoke create add_recipe --inputData '{"name": "Pancakes"}'
+zapier invoke create add_recipe --inputData @file.json
+```
 
 ### Writing Unit Tests
 

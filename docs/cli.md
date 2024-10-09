@@ -318,13 +318,29 @@ This command also checks the current directory for a linked integration.
 
 This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
 
-This command loads `authData` from the `.env` file in the current directory. Create a `.env` file with the necessary auth data before running this command. Each line in `.env` should be in the format `authData_FIELD_KEY=VALUE`. For example, an OAuth2 integration might have a `.env` file like this:
+This command loads environment variables and `authData` from the `.env` file in the current directory. If you don't have an `.env` file yet, you can use the `zapier invoke auth start` command to help you initialize it, or you can manually create it.
+
+The `zapier invoke auth start` subcommand will prompt you for the necessary auth fields and save them to the `.env` file.
+
+Each line in the `.env` file should follow one of these formats:
+
+* `VAR_NAME=VALUE` for environment variables
+
+* `authData_FIELD_KEY=VALUE` for auth data fields
+
+For example, a `.env` file for an OAuth2 integration might look like this:
 
 ```
 
-authData_access_token=1234567890
+CLIENT_ID='your_client_id'
 
-authData_other_auth_field=abcdef
+CLIENT_SECRET='your_client_secret'
+
+authData_access_token='1234567890'
+
+authData_refresh_token='abcdefg'
+
+authData_account_name='zapier'
 
 ```
 
@@ -338,7 +354,7 @@ zapier invoke auth label  # invokes authentication.test and renders connection l
 
 ```
 
-Then you can test an trigger, a search, or a create action. For example, this is how you invoke a trigger with key `new_recipe`:
+Once you have the correct auth data, you can test an trigger, a search, or a create action. For example, here's how you invoke a trigger with the key `new_recipe`:
 
 ```
 
@@ -348,9 +364,11 @@ zapier invoke trigger new_recipe
 
 To add input data, use the `--inputData` flag. The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
 
-The following are current limitations and may be supported in the future:
+When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the command will prompt you interactively. If you don't want to get interactive prompts, use the `--non-interactive` flag.
 
-- `zapier invoke auth start` to help you initialize the auth data in `.env`
+The `--debug` flag will show you the HTTP request logs and any console logs you have in your code.
+
+The following is a non-exhaustive list of current limitations and may be supported in the future:
 
 - `zapier invoke auth refresh` to refresh the auth data in `.env`
 
@@ -368,23 +386,35 @@ The following are current limitations and may be supported in the future:
 
 - Buffered create actions
 
+- Search-or-create actions
+
+- Search-powered fields
+
+- Field choices
+
+- autoRefresh for OAuth2 and session auth
+
 **Arguments**
 * `actionType` | The action type you want to invoke.
-* `actionKey` | The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "test" or "label".
+* `actionKey` | The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "label", "start", or "test".
 
 **Flags**
 * `-i, --inputData` | The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like '{"key": "value"}', read from a file like @file.json, or read from stdin like @-.
-* `--isLoadingSample` | Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.
 * `--isFillingDynamicDropdown` | Set bundle.meta.isFillingDynamicDropdown to true. Only makes sense for a polling trigger. When true in production, this poll is being used to populate a dynamic dropdown.
+* `--isLoadingSample` | Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.
 * `--isPopulatingDedupe` | Set bundle.meta.isPopulatingDedupe to true. Only makes sense for a polling trigger. When true in production, the results of this poll will be used initialize the deduplication list rather than trigger a Zap. This happens when a user enables a Zap.
 * `--limit` | Set bundle.meta.limit. Only makes sense for a trigger. When used in production, this indicates the number of items you should fetch. -1 means no limit.  Defaults to `-1`.
 * `-p, --page` | Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.
-* `-z, --timezone` | Set the default timezone for datetime fields. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.  Defaults to `America/Chicago`.
+* `--non-interactive` | Do not show interactive prompts.
+* `-z, --timezone` | Set the default timezone for datetime field interpretation. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.  Defaults to `America/Chicago`.
+* `--redirect-uri` | The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.  Defaults to `http://localhost:9000`.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
 * `zapier invoke`
+* `zapier invoke auth start`
 * `zapier invoke auth test`
+* `zapier invoke auth label`
 * `zapier invoke trigger new_recipe`
 * `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`
 * `zapier invoke search find_recipe -i @file.json`

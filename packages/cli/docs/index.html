@@ -366,6 +366,7 @@ a code {
 </ul>
 </li>
 <li><a href="#testing">Testing</a><ul>
+<li><a href="#using-zapier-invoke-command">Using <code>zapier invoke</code> Command</a></li>
 <li><a href="#writing-unit-tests">Writing Unit Tests</a></li>
 <li><a href="#using-the-z-object-in-tests">Using the <code>z</code> Object in Tests</a></li>
 <li><a href="#mocking-requests">Mocking Requests</a></li>
@@ -590,6 +591,7 @@ a code {
 </ul>
 </li>
 <li><a href="#testing">Testing</a><ul>
+<li><a href="#using-zapier-invoke-command">Using <code>zapier invoke</code> Command</a></li>
 <li><a href="#writing-unit-tests">Writing Unit Tests</a></li>
 <li><a href="#using-the-z-object-in-tests">Using the <code>z</code> Object in Tests</a></li>
 <li><a href="#mocking-requests">Mocking Requests</a></li>
@@ -5078,11 +5080,45 @@ The delay can be customized by the server response containing a specific
 </div><div class="row">
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
-      <p>You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.
-You can run these tests in a CI tool like <a href="https://travis-ci.com/">Travis</a>.</p>
+      <p>There are several ways to test your Zapier integration:</p><ul>
+<li>You can use the <code>zapier invoke</code> command to invoke a trigger, search, create, or an auth operation locally.</li>
+<li>You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.</li>
+<li>You can run these tests in a CI tool like <a href="https://travis-ci.com/">Travis</a>.</li>
+</ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
       
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h3 id="using-zapier-invoke-command">Using <code>zapier invoke</code> Command</h3>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p><em>Added in v15.17.0.</em></p><p>The <code>zapier invoke &lt;ACTION_TYPE&gt; &lt;ACTION_KEY&gt;</code> CLI command emulates how the Zapier production environment would invoke your app. Since it runs code locally, it&apos;s a fast way to debug and test interactively without needing to deploy the code to Zapier.</p><p>Its general execution flow invovles calling <code>operation.inputFields</code> of an action, resolving the input data to the expected types, and then calling the <code>operation.perform</code> method.</p><p><code>zapier invoke --help</code> should be self-explanatory, but here&apos;s a quick rundown:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code class="lang-bash"><span class="hljs-comment"># Intialize auth data in .env file</span>
+zapier invoke auth start
+
+<span class="hljs-comment"># Test your auth data in .env</span>
+zapier invoke auth <span class="hljs-built_in">test</span>
+zapier invoke auth label
+
+<span class="hljs-comment"># Invoke a polling trigger</span>
+zapier invoke trigger new_recipe
+
+<span class="hljs-comment"># Invoke a create action</span>
+zapier invoke create add_recipe --inputData <span class="hljs-string">&apos;{&quot;name&quot;: &quot;Pancakes&quot;}&apos;</span>
+zapier invoke create add_recipe --inputData @file.json
+</code></pre>
     </div>
   </div>
 </div><div class="row">
