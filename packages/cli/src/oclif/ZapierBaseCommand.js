@@ -1,5 +1,3 @@
-const { stdtermwidth } = require('@oclif/help/lib/screen');
-const { renderList } = require('@oclif/help/lib/list');
 const { Command } = require('@oclif/core');
 const colors = require('colors/safe');
 
@@ -137,6 +135,9 @@ class ZapierBaseCommand extends Command {
     headers = [],
     emptyMessage = '',
     formatOverride = '',
+    hasBorder = true,
+    showHeaders = true,
+    style = undefined,
   } = {}) {
     const formatter = formatOverride
       ? formatStyles[formatOverride]
@@ -149,16 +150,8 @@ class ZapierBaseCommand extends Command {
       this.log(colors.gray(emptyMessage));
     } else {
       // data comes out of the formatter ready to be printed (and it's always in the type to match the format) so we don't need to do anything special with it
-      console.log(formatter(rows, headers));
+      console.log(formatter(rows, headers, showHeaders, hasBorder, style));
     }
-  }
-
-  /**
-   * Print text in a list style.
-   * @param {string[][]} items
-   */
-  logList(items) {
-    this.log(renderList(items, { spacer: '\n', maxWidth: stdtermwidth }));
   }
 
   /**
