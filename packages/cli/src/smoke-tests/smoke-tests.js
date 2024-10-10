@@ -192,6 +192,38 @@ describe('smoke tests - setup will take some time', function () {
     pkg.name.should.containEql('scaffold-town');
   });
 
+  it('zapier scaffold trigger neat (TS)', () => {
+    runCommand(
+      context.cliBin,
+      ['init', 'scaffold-town-ts', '-t', 'typescript'],
+      { cwd: context.workdir }
+    );
+
+    const newAppDir = path.join(context.workdir, 'scaffold-town-ts');
+    fs.existsSync(newAppDir).should.be.true();
+
+    runCommand(
+      context.cliBin,
+      [
+        'scaffold',
+        'trigger',
+        'neat',
+        '--entry=src/index.ts', // TODO: Support automatic entry file detection for TS
+        '--dest=src/triggers', // TODO: Support automatic dest file detection for TS
+        '--test-dest=src/test/triggers', // TODO: Support automatic test dest file detection for TS
+      ],
+      { cwd: newAppDir }
+    );
+
+    const appIndexTs = path.join(newAppDir, 'src', 'index.ts');
+    fs.existsSync(appIndexTs).should.be.true();
+    const appPackageJson = path.join(newAppDir, 'package.json');
+    fs.existsSync(appPackageJson).should.be.true();
+
+    const triggerPath = path.join(newAppDir, 'src', 'triggers', 'neat.ts');
+    fs.existsSync(triggerPath).should.be.true();
+  });
+
   it('zapier integrations', function () {
     if (!context.hasRC) {
       this.skip();
