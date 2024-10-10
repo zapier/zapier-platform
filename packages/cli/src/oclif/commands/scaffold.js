@@ -36,38 +36,13 @@ const getFullActionFilePathWithExtension = (directory, actionKey, isTest) =>
 
 class ScaffoldCommand extends BaseCommand {
   async perform() {
-    const { actionType, noun } = this.args;
-
-    // TODO: interactive portion here?
-    const {
-      dest: newActionDir = getNewFileDirectory(actionType),
-      testDest: newTestActionDir = getNewFileDirectory(actionType, true),
-      entry = 'index.js',
-      force,
-    } = this.flags;
-
-    /** @type {ScaffoldContext} */
-    const context = {
-      actionType,
-      entry,
-      force,
-      newActionDir,
-      newActionFile: getLocalFilePath(newActionDir, noun),
-      newTestActionDir,
-      newTestActionFile: getLocalFilePath(newTestActionDir, noun),
-      noun,
-      templateContext: createTemplateContext({
-        actionType,
-        noun,
-        includeIntroComments: !this.flags['no-help'],
-      }),
-    };
+    const context = this.getContext();
 
     // this is possible, just extra work that's out of scope
     // const tsParser = j.withParser('ts')
     // tsParser(codeStr)
     // will have to change logic probably though
-    if (entry.endsWith('ts')) {
+    if (context.isTypeScript) {
       this.error(
         `Typescript isn't supported for scaffolding yet. Instead, try copying the example code at https://github.com/zapier/zapier-platform/blob/b8224ec9855be91c66c924b731199a068b1e913a/example-apps/typescript/src/resources/recipe.ts`
       );
@@ -77,51 +52,58 @@ class ScaffoldCommand extends BaseCommand {
 
     const actionKey = context.templateContext.KEY;
 
-    const preventOverwrite = !force;
+    const preventOverwrite = !context.force;
     // TODO: read from config file?
 
     this.startSpinner(
-      `Creating new file: ${getLocalFilePath(newActionDir, actionKey)}.js`
+      `Creating new file: ${getLocalFilePath(
+        context.newActionDir,
+        actionKey
+      )}.js`
     );
     await writeTemplateFile(
-      actionType,
+      context.actionType,
       templateContext,
-      getFullActionFilePathWithExtension(newActionDir, actionKey),
+      getFullActionFilePathWithExtension(context.newActionDir, actionKey),
       preventOverwrite
     );
     this.stopSpinner();
 
     this.startSpinner(
       `Creating new test file: ${getLocalFilePath(
-        newTestActionDir,
+        context.newTestActionDir,
         actionKey
       )}.js`
     );
     await writeTemplateFile(
       'test',
       templateContext,
-      getFullActionFilePathWithExtension(newTestActionDir, actionKey, true),
+      getFullActionFilePathWithExtension(
+        context.newTestActionDir,
+        actionKey,
+        true
+      ),
       preventOverwrite
     );
     this.stopSpinner();
 
     // * rewire the index.js to point to the new file
-    this.startSpinner(`Rewriting your ${entry}`);
+    this.startSpinner(`Rewriting your ${context.entry}`);
 
-    const entryFilePath = path.join(process.cwd(), entry);
+    const entryFilePath = path.join(process.cwd(), context.entry);
 
     const originalContents = await updateEntryFile(
       entryFilePath,
       templateContext.VARIABLE,
-      getFullActionFilePath(newActionDir, actionKey),
-      actionType,
+      getFullActionFilePath(context.newActionDir, actionKey),
+      context.actionType,
       templateContext.KEY
     );
 
     if (isValidAppInstall().valid) {
       const success = isValidEntryFileUpdate(
         entryFilePath,
-        actionType,
+        context.actionType,
         templateContext.KEY
       );
 
@@ -143,12 +125,12 @@ class ScaffoldCommand extends BaseCommand {
               templateContext.VARIABLE
             } = require('./${getRelativeRequirePath(
               entryFilePath,
-              getFullActionFilePath(newActionDir, actionKey)
+              getFullActionFilePath(context.newActionDir, actionKey)
             )}');\` at the top-level`,
             ` * \`[${templateContext.VARIABLE}.key]: ${
               templateContext.VARIABLE
             }\` in the "${plural(
-              actionType
+              context.actionType
             )}" object in your exported integration definition.`,
             '',
             `Also, please file an issue at ${ISSUES_URL} with the contents of your ${entryFilePath}.`,
@@ -160,8 +142,40 @@ class ScaffoldCommand extends BaseCommand {
     this.stopSpinner();
 
     if (!this.flags.invokedFromAnotherCommand) {
-      this.log(`\nAll done! Your new ${actionType} is ready to use.`);
+      this.log(`\nAll done! Your new ${context.actionType} is ready to use.`);
     }
+  }
+
+  getContext() {
+    const { actionType, noun } = this.args;
+
+    // TODO: interactive portion here?
+    const {
+      dest: newActionDir = getNewFileDirectory(actionType),
+      testDest: newTestActionDir = getNewFileDirectory(actionType, true),
+      entry = 'index.js',
+      force,
+    } = this.flags;
+
+    /** @type {ScaffoldContext} */
+    const context = {
+      actionType,
+      entry,
+      force,
+      isTypeScript: entry.endsWith('.ts'),
+      newActionDir,
+      newActionFile: getLocalFilePath(newActionDir, noun),
+      newTestActionDir,
+      newTestActionFile: getLocalFilePath(newTestActionDir, noun),
+      noun,
+      templateContext: createTemplateContext({
+        actionType,
+        noun,
+        includeIntroComments: !this.flags['no-help'],
+      }),
+    };
+
+    return context;
   }
 }
 
@@ -243,6 +257,7 @@ module.exports = ScaffoldCommand;
  * @property {string} newTestActionDir - the directory for the new test action
  * @property {string} newTestActionFile - the file for the new test action
  * @property {string} entry - the entry file
+ * @property {boolean} isTypeScript - whether the project is TypeScript
  * @property {boolean} force - whether to force overwrite
  * @property {import('../../utils/scaffold').TemplateContext} templateContext - the context for templates
  */
