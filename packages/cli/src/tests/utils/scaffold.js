@@ -47,7 +47,7 @@ describe('scaffold', () => {
       const path = `${tmpDir}/triggers/thing.js`;
       await writeTemplateFile(
         'trigger',
-        createTemplateContext('trigger', 'thing'),
+        createTemplateContext({ actionType: 'trigger', noun: 'thing' }),
         path
       );
       const newFile = await readFile(path, 'utf-8');
@@ -58,7 +58,11 @@ describe('scaffold', () => {
       const path = `${tmpDir}/triggers/thing.js`;
       await writeTemplateFile(
         'trigger',
-        createTemplateContext('trigger', 'thing', true),
+        createTemplateContext({
+          actionType: 'trigger',
+          noun: 'thing',
+          includeComments: true,
+        }),
         path
       );
       const newFile = await readFile(path, 'utf-8');
@@ -69,13 +73,21 @@ describe('scaffold', () => {
       const path = `${tmpDir}/triggers/thing.js`;
       await writeTemplateFile(
         'trigger',
-        createTemplateContext('trigger', 'thing', true),
+        createTemplateContext({
+          actionType: 'trigger',
+          noun: 'thing',
+          includeComments: true,
+        }),
         path
       );
 
       await writeTemplateFile(
         'trigger',
-        createTemplateContext('trigger', 'thing', true),
+        createTemplateContext({
+          actionType: 'trigger',
+          noun: 'thing',
+          includeComments: true,
+        }),
         path,
         true
       ).should.be.rejected();
@@ -85,13 +97,21 @@ describe('scaffold', () => {
       const path = `${tmpDir}/triggers/thing.js`;
       await writeTemplateFile(
         'trigger',
-        createTemplateContext('trigger', 'thing', true),
+        createTemplateContext({
+          actionType: 'trigger',
+          noun: 'thing',
+          includeComments: true,
+        }),
         path
       );
 
       await writeTemplateFile(
         'trigger',
-        createTemplateContext('trigger', 'thing', true),
+        createTemplateContext({
+          actionType: 'trigger',
+          noun: 'thing',
+          includeComments: true,
+        }),
         path
       ).should.not.be.rejected();
     });
