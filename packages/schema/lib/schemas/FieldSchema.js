@@ -6,6 +6,8 @@ const RefResourceSchema = require('./RefResourceSchema');
 
 const FieldChoicesSchema = require('./FieldChoicesSchema');
 
+const FieldMetaSchema = require('./FieldMetaSchema');
+
 const { INCOMPATIBLE_FIELD_SCHEMA_KEYS } = require('../constants');
 
 // the following takes an array of string arrays (string[][]) and returns the follwing string:
@@ -137,6 +139,11 @@ module.exports = makeSchema(
         // TODO: Check if it contains one and ONLY ONE '{{input}}'
         pattern: '^.*{{input}}.*$',
       },
+      meta: {
+        description:
+          'Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).',
+        $ref: FieldChoicesSchema.id,
+      },
     },
     examples: [
       { key: 'abc' },
@@ -148,6 +155,11 @@ module.exports = makeSchema(
       },
       { key: 'abc', children: [{ key: 'abc' }] },
       { key: 'abc', type: 'integer', helpText: 'neat' },
+      {
+        key: 'abc',
+        type: 'integer',
+        meta: { internalType: 'numeric', shouldRetry: true },
+      },
     ],
     antiExamples: [
       {
@@ -190,5 +202,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [RefResourceSchema, FieldChoicesSchema]
+  [RefResourceSchema, FieldChoicesSchema, FieldMetaSchema]
 );
