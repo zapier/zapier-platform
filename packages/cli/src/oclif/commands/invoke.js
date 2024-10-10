@@ -229,7 +229,9 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
 const appendEnv = async (vars, prefix = '') => {
   await fs.appendFile(
     '.env',
-    Object.entries(vars).map(([k, v]) => `${prefix}${k}='${v}'\n`)
+    Object.entries(vars)
+      .filter(([k, v]) => v !== undefined)
+      .map(([k, v]) => `${prefix}${k}='${v || ''}'\n`)
   );
 };
 
@@ -376,23 +378,7 @@ class InvokeCommand extends BaseCommand {
 
   async startOAuth2(appDefinition) {
     const redirectUri = this.flags['redirect-uri'];
-    let port;
-    try {
-      port = parseInt(new URL(redirectUri).port);
-    } catch (err) {
-      throw new Error(
-        `Invalid redirect URI '${redirectUri}'. ` +
-          "A valid example would be 'http://localhost:8000'."
-      );
-    }
-    port = parseInt(port);
-    if (!port) {
-      throw new Error(
-        `Could not parse port from redirect URI: '${redirectUri}'. ` +
-          "A valid example would be 'http://localhost:8000'."
-      );
-    }
-
+    const port = this.flags['local-port'];
     const env = {};
 
     if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
@@ -565,6 +551,63 @@ class InvokeCommand extends BaseCommand {
         // TODO: Add support for 'digest' and 'oauth1'
         throw new Error(
           `This command doesn't support authentication type "${authentication.type}".`
+        );
+    }
+  }
+
+  async refreshOAuth2(appDefinition, authData) {
+    startSpinner('Invoking authentication.oauth2Config.refreshAccessToken');
+
+    const newAuthData = await localAppCommand({
+      command: 'execute',
+      method: 'authentication.oauth2Config.refreshAccessToken',
+      bundle: {
+        authData,
+      },
+    });
+
+    endSpinner();
+    return newAuthData;
+  }
+
+  async refreshSessionAuth(appDefinition, authData) {
+    startSpinner('Invoking authentication.sessionConfig.perform');
+
+    const sessionData = await localAppCommand({
+      command: 'execute',
+      method: 'authentication.sessionConfig.perform',
+      bundle: {
+        authData,
+      },
+    });
+
+    endSpinner();
+    return sessionData;
+  }
+
+  async refreshAuth(appDefinition, authData) {
+    const authentication = appDefinition.authentication;
+    if (!authentication) {
+      console.warn(
+        "Your integration doesn't seem to need authentication. " +
+          "If that isn't true, the app definition should have " +
+          'an `authentication` object at the root level.'
+      );
+      return null;
+    }
+    if (_.isEmpty(authData)) {
+      throw new Error(
+        'No auth data found in the .env file. Run `zapier invoke auth start` first to initialize the auth data.'
+      );
+    }
+    switch (authentication.type) {
+      case 'oauth2':
+        return this.refreshOAuth2(appDefinition, authData);
+      case 'session':
+        return this.refreshSessionAuth(appDefinition, authData);
+      default:
+        throw new Error(
+          `This command doesn't support refreshing authentication type "${authentication.type}".`
         );
     }
   }
@@ -870,7 +913,7 @@ class InvokeCommand extends BaseCommand {
         throw new Error('You must specify ACTIONKEY in non-interactive mode.');
       }
       if (actionType === 'auth') {
-        const actionKeys = ['label', 'start', 'test'];
+        const actionKeys = ['label', 'refresh', 'start', 'test'];
         actionKey = await this.promptWithList(
           'Which auth operation would you like to invoke?',
           actionKeys,
@@ -908,7 +951,6 @@ class InvokeCommand extends BaseCommand {
         isTestingAuth: true,
       };
       switch (actionKey) {
-        // TODO: Add 'refresh' command
         case 'start': {
           const newAuthData = await this.startAuth(appDefinition);
           if (_.isEmpty(newAuthData)) {
@@ -917,6 +959,17 @@ class InvokeCommand extends BaseCommand {
           await appendEnv(newAuthData, AUTH_FIELD_ENV_PREFIX);
           console.warn(
             'Auth data appended to .env file. Run `zapier invoke auth test` to test it.'
+          );
+          return;
+        }
+        case 'refresh': {
+          const newAuthData = await this.refreshAuth(appDefinition, authData);
+          if (_.isEmpty(newAuthData)) {
+            return;
+          }
+          await appendEnv(newAuthData, AUTH_FIELD_ENV_PREFIX);
+          console.warn(
+            'Auth data has been refreshed and appended to .env file. Run `zapier invoke auth test` to test it.'
           );
           return;
         }
@@ -951,7 +1004,7 @@ class InvokeCommand extends BaseCommand {
         default:
           throw new Error(
             `Unknown auth operation "${actionKey}". ` +
-              'The options are "label", "start", and "test". \n'
+              'The options are "label", "refresh", "start", and "test". \n'
           );
       }
     } else {
@@ -972,7 +1025,8 @@ class InvokeCommand extends BaseCommand {
           if (filePath === '-') {
             inputStream = process.stdin;
           } else {
-            inputStream = fs.createReadStream(filePath, { encoding: 'utf8' });
+            const fd = await fs.open(filePath);
+            inputStream = fd.createReadStream({ encoding: 'utf8' });
           }
           inputData = await readStream(inputStream);
         }
@@ -1062,8 +1116,13 @@ InvokeCommand.flags = buildFlags({
     }),
     'redirect-uri': flags.string({
       description:
-        "The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.",
+        "Only used by `auth start` subcommand. The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.",
       default: 'http://localhost:9000',
+    }),
+    'local-port': flags.integer({
+      description:
+        'Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.',
+      default: 9000,
     }),
   },
 });
@@ -1077,13 +1136,14 @@ InvokeCommand.args = [
   {
     name: 'actionKey',
     description:
-      'The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "label", "start", or "test".',
+      'The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "label", "refresh", "start", or "test".',
   },
 ];
 
 InvokeCommand.examples = [
   'zapier invoke',
   'zapier invoke auth start',
+  'zapier invoke auth refresh',
   'zapier invoke auth test',
   'zapier invoke auth label',
   'zapier invoke trigger new_recipe',
@@ -1121,6 +1181,8 @@ zapier invoke auth test   # invokes authentication.test method
 zapier invoke auth label  # invokes authentication.test and renders connection label
 \`\`\`
 
+To refresh stale auth data for OAuth2 or session auth, run \`zapier invoke auth refresh\`.
+
 Once you have the correct auth data, you can test an trigger, a search, or a create action. For example, here's how you invoke a trigger with the key \`new_recipe\`:
 
 \`\`\`
@@ -1135,7 +1197,6 @@ The \`--debug\` flag will show you the HTTP request logs and any console logs yo
 
 The following is a non-exhaustive list of current limitations and may be supported in the future:
 
-- \`zapier invoke auth refresh\` to refresh the auth data in \`.env\`
 - Hook triggers, including REST hook subscribe/unsubscribe
 - Line items
 - Output hydration

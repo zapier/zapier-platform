@@ -13,7 +13,12 @@ const perform = async (z, bundle) => {
     // API/endpoint can't perform the filtering, we'll perform it here, within
     // the integration, and return the matching objects/records back to Zapier.
     peopleArray = peopleArray.filter((person) => {
-      const speciesID = extractID(person.species[0]);
+      let speciesID;
+      if (!person.species || !person.species.length) {
+        speciesID = 1; // Assume human if species is not provided
+      } else {
+        speciesID = extractID(person.species[0]);
+      }
       return speciesID === bundle.inputData.species_id;
     });
   }

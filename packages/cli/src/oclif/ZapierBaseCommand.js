@@ -304,7 +304,7 @@ class ZapierBaseCommand extends Command {
         )
         .filter(Boolean);
 
-    const descriptionParts = this.description.split('\n').filter(Boolean);
+    const descriptionParts = this.description.split('\n\n').filter(Boolean);
     const blurb = descriptionParts[0];
     const lengthyDescription = colors.stripColors(
       descriptionParts.length > 1 ? descriptionParts.slice(1).join('\n\n') : ''
