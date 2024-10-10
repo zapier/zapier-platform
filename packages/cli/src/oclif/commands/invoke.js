@@ -1157,7 +1157,7 @@ This command emulates how Zapier production environment would invoke your integr
 
 This command loads environment variables and \`authData\` from the \`.env\` file in the current directory. If you don't have a \`.env\` file yet, you can use the \`zapier invoke auth start\` command to help you initialize it, or you can manually create it.
 
-The \`zapier invoke auth start\` subcommand will prompt you for the necessary auth fields and save them to the \`.env\` file. For OAuth2, it will start a local HTTP server, open the browser, and wait for the OAuth2 redirect callback to get the access token.
+The \`zapier invoke auth start\` subcommand will prompt you for the necessary auth fields and save them to the \`.env\` file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.
 
 Each line in the \`.env\` file should follow one of these formats:
 
