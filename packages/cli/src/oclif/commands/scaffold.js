@@ -48,8 +48,6 @@ class ScaffoldCommand extends BaseCommand {
       );
     }
 
-    const templateContext = context.templateContext;
-
     const actionKey = context.templateContext.KEY;
 
     const preventOverwrite = !context.force;
@@ -63,7 +61,7 @@ class ScaffoldCommand extends BaseCommand {
     );
     await writeTemplateFile(
       context.actionType,
-      templateContext,
+      context.templateContext,
       getFullActionFilePathWithExtension(context.newActionDir, actionKey),
       preventOverwrite
     );
@@ -77,7 +75,7 @@ class ScaffoldCommand extends BaseCommand {
     );
     await writeTemplateFile(
       'test',
-      templateContext,
+      context.templateContext,
       getFullActionFilePathWithExtension(
         context.newTestActionDir,
         actionKey,
@@ -94,17 +92,17 @@ class ScaffoldCommand extends BaseCommand {
 
     const originalContents = await updateEntryFile(
       entryFilePath,
-      templateContext.VARIABLE,
+      context.templateContext.VARIABLE,
       getFullActionFilePath(context.newActionDir, actionKey),
       context.actionType,
-      templateContext.KEY
+      context.templateContext.KEY
     );
 
     if (isValidAppInstall().valid) {
       const success = isValidEntryFileUpdate(
         entryFilePath,
         context.actionType,
-        templateContext.KEY
+        context.templateContext.KEY
       );
 
       this.stopSpinner({ success });
@@ -122,13 +120,13 @@ class ScaffoldCommand extends BaseCommand {
           [
             `\nPlease add the following lines to ${entryFilePath}:`,
             ` * \`const ${
-              templateContext.VARIABLE
+              context.templateContext.VARIABLE
             } = require('./${getRelativeRequirePath(
               entryFilePath,
               getFullActionFilePath(context.newActionDir, actionKey)
             )}');\` at the top-level`,
-            ` * \`[${templateContext.VARIABLE}.key]: ${
-              templateContext.VARIABLE
+            ` * \`[${context.templateContext.VARIABLE}.key]: ${
+              context.templateContext.VARIABLE
             }\` in the "${plural(
               context.actionType
             )}" object in your exported integration definition.`,
