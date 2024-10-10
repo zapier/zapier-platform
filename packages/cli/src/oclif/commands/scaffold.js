@@ -55,11 +55,11 @@ class ScaffoldCommand extends BaseCommand {
     }
 
     const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely `init`) this will be false
-    const templateContext = createTemplateContext(
+    const templateContext = createTemplateContext({
       actionType,
       noun,
-      shouldIncludeComments
-    );
+      shouldIncludeComments,
+    });
 
     const actionKey = templateContext.KEY;
 

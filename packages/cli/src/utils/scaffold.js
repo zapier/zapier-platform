@@ -24,13 +24,24 @@ const getVariableName = (action, noun) =>
     ? [noun, 'resource'].join(' ')
     : [variablePrefixes[action], noun];
 
-const createTemplateContext = (action, noun, includeComments) => {
+/**
+ * Create a context object to pass to the template
+ * @param {Object} options
+ * @param {'trigger'| 'search'| 'create'| 'resource'} options.actionType - the action type
+ * @param {string} options.noun - the noun for the action
+ * @param {boolean} [options.includeComments] - whether to include comments in the template
+ */
+const createTemplateContext = ({
+  actionType,
+  noun,
+  includeComments = false,
+}) => {
   // if noun is "Cool Contact"
   return {
-    ACTION: action, // trigger
-    ACTION_PLURAL: plural(action), // triggers
+    ACTION: actionType, // trigger
+    ACTION_PLURAL: plural(actionType), // triggers
 
-    VARIABLE: _.camelCase(getVariableName(action, noun)), // getContact, the variable that's imported
+    VARIABLE: _.camelCase(getVariableName(actionType, noun)), // getContact, the variable that's imported
     KEY: snakeCase(noun), // "cool_contact", the action key
     NOUN: noun
       .split(' ')
@@ -38,7 +49,7 @@ const createTemplateContext = (action, noun, includeComments) => {
       .join(' '), // "Cool Contact", the noun
     LOWER_NOUN: noun.toLowerCase(), // "cool contact", for use in comments
     // resources need an extra line for tests to "just run"
-    MAYBE_RESOURCE: action === 'resource' ? 'list.' : '',
+    MAYBE_RESOURCE: actionType === 'resource' ? 'list.' : '',
     INCLUDE_INTRO_COMMENTS: includeComments,
   };
 };
