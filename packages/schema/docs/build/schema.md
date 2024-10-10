@@ -1029,7 +1029,13 @@ Key | Required | Type | Description
 * `{ key: 'abc', choices: [ { label: 'Red', sample: '#f00', value: '#f00' } ] }`
 * `{ key: 'abc', children: [ { key: 'abc' } ] }`
 * `{ key: 'abc', type: 'integer', helpText: 'neat' }`
-* `{ key: 'abc', type: 'integer', meta: { internalType: 'numeric', shouldRetry: true } }`
+* ```
+  {
+    key: 'abc',
+    type: 'integer',
+    meta: { internalType: 'numeric', should_call_api: true, display_order: 1 }
+  }
+  ```
 
 #### Anti-Examples
 

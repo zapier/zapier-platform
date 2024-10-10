@@ -158,7 +158,11 @@ module.exports = makeSchema(
       {
         key: 'abc',
         type: 'integer',
-        meta: { internalType: 'numeric', shouldRetry: true },
+        meta: {
+          internalType: 'numeric',
+          should_call_api: true,
+          display_order: 1,
+        },
       },
     ],
     antiExamples: [
