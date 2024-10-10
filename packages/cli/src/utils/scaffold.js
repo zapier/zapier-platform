@@ -129,3 +129,15 @@ module.exports = {
   isValidEntryFileUpdate,
   writeTemplateFile,
 };
+
+/**
+ * @typedef {Object} TemplateContext
+ * @property {string} ACTION - the action type
+ * @property {string} ACTION_PLURAL - the plural of the action type
+ * @property {string} VARIABLE - the variable that's imported
+ * @property {string} KEY - the action key
+ * @property {string} NOUN - the noun
+ * @property {string} LOWER_NOUN - the noun in lowercase
+ * @property {string} MAYBE_RESOURCE - an extra line for resources
+ * @property {boolean} INCLUDE_INTRO_COMMENTS - whether to include comments
+ */
