@@ -2,6 +2,7 @@ const should = require('should');
 const { remove, readFile, outputFile } = require('fs-extra');
 const {
   plural,
+  nounToKey,
   writeTemplateFile,
   createTemplateContext,
   updateEntryFile,
@@ -34,6 +35,15 @@ describe('scaffold', () => {
     });
     it('should not throw for unexpected input', () => {
       plural('whatever').should.eql('whatevers');
+    });
+  });
+
+  describe('nounToKey', () => {
+    it('should work for expected cases', () => {
+      nounToKey('Cool Contact').should.eql('cool_contact');
+      nounToKey('Cool Contact V2').should.eql('cool_contact_v2');
+      nounToKey('Cool ContactV3').should.eql('cool_contact_v3');
+      nounToKey('Cool Contact V 10').should.eql('cool_contact_v10');
     });
   });
 

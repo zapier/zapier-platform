@@ -7,7 +7,6 @@ const _ = require('lodash');
 const { ensureDir, fileExistsSync, readFile, writeFile } = require('./files');
 const { splitFileFromPath } = require('./string');
 const { createRootRequire, addKeyToPropertyOnApp } = require('./ast');
-const { snakeCase } = require('./misc');
 
 const plural = (type) => (type === 'search' ? `${type}es` : `${type}s`);
 
@@ -25,6 +24,15 @@ const getVariableName = (action, noun) =>
   action === 'resource'
     ? [noun, 'resource'].join(' ')
     : [variablePrefixes[action], noun].join(' ');
+
+/**
+ * Produce a valid snake_case key from one or more nouns, and fix the
+ * inconsistent version numbers that come from _.snakeCase.
+ *
+ * @example
+ * nounToKey('Cool Contact V10') // cool_contact_v10
+ */
+const nounToKey = (noun) => _.snakeCase(noun).replace(/V_(\d+)$/gi, 'v$1');
 
 /**
  * Create a context object to pass to the template
@@ -45,7 +53,7 @@ const createTemplateContext = ({
     ACTION_PLURAL: plural(actionType), // triggers
 
     VARIABLE: _.camelCase(getVariableName(actionType, noun)), // getContact, the variable that's imported
-    KEY: snakeCase(noun), // "cool_contact", the action key
+    KEY: nounToKey(noun), // "cool_contact", the action key
     NOUN: noun
       .split(' ')
       .map((s) => _.capitalize(s))
@@ -128,6 +136,7 @@ module.exports = {
   createTemplateContext,
   getRelativeRequirePath,
   plural,
+  nounToKey,
   updateEntryFile,
   isValidEntryFileUpdate,
   writeTemplateFile,
