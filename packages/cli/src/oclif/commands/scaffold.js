@@ -1,3 +1,5 @@
+// @ts-check
+
 const path = require('path');
 
 const { flags } = require('@oclif/command');
@@ -44,6 +46,23 @@ class ScaffoldCommand extends BaseCommand {
       force,
     } = this.flags;
 
+    /** @type {ScaffoldContext} */
+    const context = {
+      actionType,
+      entry,
+      force,
+      newActionDir,
+      newActionFile: getLocalFilePath(newActionDir, noun),
+      newTestActionDir,
+      newTestActionFile: getLocalFilePath(newTestActionDir, noun),
+      noun,
+      templateContext: createTemplateContext({
+        actionType,
+        noun,
+        includeIntroComments: !this.flags['no-help'],
+      }),
+    };
+
     // this is possible, just extra work that's out of scope
     // const tsParser = j.withParser('ts')
     // tsParser(codeStr)
@@ -54,14 +73,9 @@ class ScaffoldCommand extends BaseCommand {
       );
     }
 
-    const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely `init`) this will be false
-    const templateContext = createTemplateContext({
-      actionType,
-      noun,
-      shouldIncludeComments,
-    });
+    const templateContext = context.templateContext;
 
-    const actionKey = templateContext.KEY;
+    const actionKey = context.templateContext.KEY;
 
     const preventOverwrite = !force;
     // TODO: read from config file?
@@ -160,7 +174,8 @@ ScaffoldCommand.args = [
   },
   {
     name: 'noun',
-    help: 'What sort of object this action acts on. For example, the name of the new thing to create',
+    help:
+      'What sort of object this action acts on. For example, the name of the new thing to create',
     required: true,
   },
 ];
@@ -218,3 +233,16 @@ You can mix and match several options to customize the created scaffold for your
 ScaffoldCommand.skipValidInstallCheck = true;
 
 module.exports = ScaffoldCommand;
+
+/**
+ * @typedef {Object} ScaffoldContext
+ * @property {string} actionType - the action type
+ * @property {string} noun - the noun for the action
+ * @property {string} newActionDir - the directory for the new action
+ * @property {string} newActionFile - the file for the new action
+ * @property {string} newTestActionDir - the directory for the new test action
+ * @property {string} newTestActionFile - the file for the new test action
+ * @property {string} entry - the entry file
+ * @property {boolean} force - whether to force overwrite
+ * @property {import('../../utils/scaffold').TemplateContext} templateContext - the context for templates
+ */
