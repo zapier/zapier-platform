@@ -56,6 +56,31 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
   );
 };
 
+const writeTypeScriptPackageJson = (gen, packageJsonExtension) => {
+  gen.fs.writeJSON(
+    gen.destinationPath('package.json'),
+    merge(
+      {
+        name: gen.options.packageName,
+        version: '1.0.0',
+        description: '',
+        main: 'src/index.js',
+        scripts: {
+          test: 'vitest',
+        },
+        dependencies: {
+          [PLATFORM_PACKAGE]: PACKAGE_VERSION,
+        },
+        devDependencies: {
+          vitest: '^2.1.2',
+        },
+        private: true,
+      },
+      packageJsonExtension
+    )
+  );
+};
+
 const writeGenericIndex = (gen, hasAuth) => {
   gen.fs.copyTpl(
     gen.templatePath('index.template.js'),
@@ -116,7 +141,6 @@ const writeForMinimalTemplate = (gen) => {
 // example directory
 const writeForStandaloneTemplate = (gen) => {
   writeGitignore(gen);
-
   writeGenericReadme(gen);
   appendReadme(gen);
 
@@ -128,24 +152,38 @@ const writeForStandaloneTemplate = (gen) => {
         'form-data': '4.0.0',
       },
     },
+  }[gen.options.template];
+
+  writeGenericPackageJson(gen, packageJsonExtension);
+
+  gen.fs.copy(
+    gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
+    gen.destinationPath()
+  );
+};
+
+const writeForStandaloneTypeScriptTemplate = (gen) => {
+  writeGitignore(gen);
+  writeGenericReadme(gen);
+  appendReadme(gen);
+
+  const packageJsonExtension = {
     typescript: {
       scripts: {
+        test: 'vitest',
+        clean: 'rimraf ./dist ./build',
         build: 'npm run clean && tsc',
-        clean: 'rimraf ./lib ./build',
-        watch: 'npm run clean && tsc --watch',
-        test: 'npm run build && jest --testTimeout 10000 --rootDir ./lib/test',
+        '_zapier-build': 'npm run build',
       },
       devDependencies: {
-        '@types/jest': '^26.0.23',
-        '@types/node': '^14',
-        '@types/node-fetch': '^2.6.11',
-        rimraf: '^3.0.2',
-        typescript: '5.5.3',
+        rimraf: '^5.0.10',
+        typescript: '5.6.2',
+        vitest: '^2.1.2',
       },
     },
   }[gen.options.template];
 
-  writeGenericPackageJson(gen, packageJsonExtension);
+  writeTypeScriptPackageJson(gen, packageJsonExtension);
 
   gen.fs.copy(
     gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
@@ -165,7 +203,7 @@ const TEMPLATE_ROUTES = {
   oauth2: writeForAuthTemplate,
   'search-or-create': writeForStandaloneTemplate,
   'session-auth': writeForAuthTemplate,
-  typescript: writeForStandaloneTemplate,
+  typescript: writeForStandaloneTypeScriptTemplate,
 };
 
 const TEMPLATE_CHOICES = Object.keys(TEMPLATE_ROUTES);

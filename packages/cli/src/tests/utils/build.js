@@ -51,8 +51,8 @@ describe('build (runs slowly)', function () {
 
     // check that only the required lodash files are grabbed
     smartPaths.should.containEql('index.js');
-    smartPaths.should.containEql('lib/index.js');
-    smartPaths.should.containEql('lib/triggers/movie.js');
+    smartPaths.should.containEql('dist/index.js');
+    smartPaths.should.containEql('dist/triggers/movie.js');
 
     smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
     smartPaths.should.not.containEql('tsconfig.json');
@@ -64,14 +64,14 @@ describe('build (runs slowly)', function () {
     return build.listFiles(tmpDir).then((dumbPaths) => {
       // check that way more than the required package files are grabbed
       dumbPaths.should.containEql('index.js');
-      dumbPaths.should.containEql('lib/index.js');
-      dumbPaths.should.containEql('lib/triggers/movie.js');
+      dumbPaths.should.containEql('dist/index.js');
+      dumbPaths.should.containEql('dist/triggers/movie.js');
 
       dumbPaths.should.containEql('src/index.ts');
       dumbPaths.should.containEql('src/triggers/movie.ts');
       dumbPaths.should.containEql('tsconfig.json');
 
-      dumbPaths.length.should.be.within(5000, 15000);
+      dumbPaths.length.should.be.within(3000, 10000);
     });
   });
 
@@ -307,7 +307,7 @@ describe('build (runs slowly)', function () {
 
     await build.maybeRunBuildScript({ cwd: tmpDir });
 
-    const buildExists = await fs.pathExists(path.join(tmpDir, 'lib'));
+    const buildExists = await fs.pathExists(path.join(tmpDir, 'dist'));
     should.equal(buildExists, true);
   });
 });
