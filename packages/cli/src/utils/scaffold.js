@@ -1,3 +1,5 @@
+// @ts-check
+
 const path = require('path');
 const colors = require('colors/safe');
 const _ = require('lodash');
@@ -22,19 +24,20 @@ const variablePrefixes = {
 const getVariableName = (action, noun) =>
   action === 'resource'
     ? [noun, 'resource'].join(' ')
-    : [variablePrefixes[action], noun];
+    : [variablePrefixes[action], noun].join(' ');
 
 /**
  * Create a context object to pass to the template
  * @param {Object} options
  * @param {'trigger'| 'search'| 'create'| 'resource'} options.actionType - the action type
  * @param {string} options.noun - the noun for the action
- * @param {boolean} [options.includeComments] - whether to include comments in the template
+ * @param {boolean} [options.includeIntroComments] - whether to include comments in the template
+ * @returns {TemplateContext}
  */
 const createTemplateContext = ({
   actionType,
   noun,
-  includeComments = false,
+  includeIntroComments = false,
 }) => {
   // if noun is "Cool Contact"
   return {
@@ -50,7 +53,7 @@ const createTemplateContext = ({
     LOWER_NOUN: noun.toLowerCase(), // "cool contact", for use in comments
     // resources need an extra line for tests to "just run"
     MAYBE_RESOURCE: actionType === 'resource' ? 'list.' : '',
-    INCLUDE_INTRO_COMMENTS: includeComments,
+    INCLUDE_INTRO_COMMENTS: includeIntroComments,
   };
 };
 

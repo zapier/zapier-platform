@@ -61,7 +61,7 @@ describe('scaffold', () => {
         createTemplateContext({
           actionType: 'trigger',
           noun: 'thing',
-          includeComments: true,
+          includeIntroComments: true,
         }),
         path
       );
@@ -76,7 +76,7 @@ describe('scaffold', () => {
         createTemplateContext({
           actionType: 'trigger',
           noun: 'thing',
-          includeComments: true,
+          includeIntroComments: true,
         }),
         path
       );
@@ -86,7 +86,7 @@ describe('scaffold', () => {
         createTemplateContext({
           actionType: 'trigger',
           noun: 'thing',
-          includeComments: true,
+          includeIntroComments: true,
         }),
         path,
         true
@@ -100,7 +100,7 @@ describe('scaffold', () => {
         createTemplateContext({
           actionType: 'trigger',
           noun: 'thing',
-          includeComments: true,
+          includeIntroComments: true,
         }),
         path
       );
@@ -110,7 +110,7 @@ describe('scaffold', () => {
         createTemplateContext({
           actionType: 'trigger',
           noun: 'thing',
-          includeComments: true,
+          includeIntroComments: true,
         }),
         path
       ).should.not.be.rejected();
