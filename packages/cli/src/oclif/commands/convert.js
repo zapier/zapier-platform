@@ -1,3 +1,5 @@
+const { Args, Flags } = require('@oclif/core');
+
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 
@@ -5,8 +7,6 @@ const { callAPI } = require('../../utils/api');
 const { convertApp } = require('../../utils/convert');
 const { isExistingEmptyDir } = require('../../utils/files');
 const { initApp } = require('../../utils/init');
-
-const { flags } = require('@oclif/command');
 
 class ConvertCommand extends BaseCommand {
   generateCreateFunc(appId, version) {
@@ -60,23 +60,22 @@ class ConvertCommand extends BaseCommand {
   }
 }
 
-ConvertCommand.args = [
-  {
-    name: 'integrationId',
-    required: true,
+ConvertCommand.args = {
+  integrationId: Args.string({
     description: `To get the integration/app ID, go to "https://developer.zapier.com", click on an integration, and copy the number directly after "/app/" in the URL.`,
-    parse: (input) => Number(input),
-  },
-  {
-    name: 'path',
     required: true,
+    parse: (input) => Number(input),
+  }),
+  path: Args.string({
     description:
       'Relative to your current path - IE: `.` for current directory.',
-  },
-];
+    required: true,
+  }),
+};
+
 ConvertCommand.flags = buildFlags({
   commandFlags: {
-    version: flags.string({
+    version: Flags.string({
       char: 'v',
       description:
         'Convert a specific version. Required when converting a Visual Builder integration.',
@@ -84,6 +83,7 @@ ConvertCommand.flags = buildFlags({
     }),
   },
 });
+
 ConvertCommand.description = `Convert a Visual Builder integration to a CLI integration.
 
 The resulting CLI integration will be identical to its Visual Builder version and ready to push and use immediately!

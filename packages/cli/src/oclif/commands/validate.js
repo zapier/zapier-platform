@@ -1,5 +1,5 @@
 const colors = require('colors/safe');
-const { flags } = require('@oclif/command');
+const { Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
@@ -110,7 +110,7 @@ class ValidateCommand extends BaseCommand {
 
 ValidateCommand.flags = buildFlags({
   commandFlags: {
-    'without-style': flags.boolean({
+    'without-style': Flags.boolean({
       description: 'Forgo pinging the Zapier server to run further checks.',
     }),
   },
