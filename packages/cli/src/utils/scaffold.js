@@ -132,7 +132,80 @@ const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
   return Boolean(_.get(rewrittenIndex, [plural(actionType), newActionKey]));
 };
 
+/**
+ *
+ * Prepare everything needed to define what's happening in a scaffolding
+ * operation.
+ *
+ * @param {Object} options
+ * @param {'trigger'| 'search'| 'create'| 'resource'} options.actionType - the action type
+ * @param {string} options.noun - the noun for the action
+ * @param {string} options.indexFile - the App's entry point (index.js/ts)
+ * @param {string} options.actionDir - where to put the new action
+ * @param {string} options.testDir - where to put the new action's test
+ * @param {boolean} options.includeIntroComments - whether to include comments in the template
+ * @param {boolean} options.force - whether to force overwrite
+ *
+ * @returns {ScaffoldContext}
+ */
+const createScaffoldingContext = ({
+  actionType,
+  noun,
+  indexFile,
+  actionDir,
+  testDir,
+  includeIntroComments,
+  force,
+}) => {
+  const key = nounToKey(noun);
+  const isTypeScript = indexFile.endsWith('.ts');
+
+  const indexFileResolved = path.join(process.cwd(), indexFile);
+  const actionFileResolved = `${path.join(process.cwd(), actionDir, key)}.js`;
+  const actionFileResolvedStem = path.join(process.cwd(), actionDir, key);
+  const actionFileLocalStem = path.join(actionDir, key);
+  const testFileResolved = `${path.join(process.cwd(), testDir, key)}.test.js`;
+  const testFileLocalStem = path.join(testDir, key);
+  const requirePath = getRelativeRequirePath(
+    indexFileResolved,
+    actionFileResolvedStem
+  );
+
+  return {
+    actionType,
+    actionTypePlural: plural(actionType),
+    noun,
+    force,
+    isTypeScript,
+    templateContext: createTemplateContext({
+      actionType,
+      noun,
+      includeIntroComments,
+    }),
+
+    indexFileResolved,
+
+    actionFileResolved,
+    actionFileResolvedStem,
+    actionFileLocalStem,
+
+    testFileResolved,
+    testFileLocalStem,
+
+    requirePath,
+    actionPlural: plural(actionType),
+
+    // DEPRECATED
+    entry: indexFile,
+    newActionDir: actionDir,
+    newActionFile: path.join(actionDir, noun),
+    newTestActionDir: testDir,
+    newTestActionFile: path.join(testDir, noun),
+  };
+};
+
 module.exports = {
+  createScaffoldingContext,
   createTemplateContext,
   getRelativeRequirePath,
   plural,
@@ -152,4 +225,33 @@ module.exports = {
  * @property {string} LOWER_NOUN - the noun in lowercase
  * @property {string} MAYBE_RESOURCE - an extra line for resources
  * @property {boolean} INCLUDE_INTRO_COMMENTS - whether to include comments
+ */
+
+/**
+ * Everything needed to define a scaffolding operation.
+ *
+ * @typedef {Object} ScaffoldContext
+ * @property {string} actionType - the action type
+ * @property {string} actionTypePlural - plural of the action type, e.g. "triggers".
+ * @property {string} noun - the noun for the action
+ * @property {boolean} isTypeScript - whether the project is TypeScript
+ * @property {boolean} force - whether to force overwrite
+ * @property {TemplateContext} templateContext - the context for templates
+ *
+ * @property {string} indexFileResolved - /Users/sal/my-app/index.js
+ *
+ * @property {string} actionFileResolved - /Users/sal/my-app/triggers/foobar.js
+ * @property {string} actionFileResolvedStem - /Users/sal/my-app/triggers/foobar
+ * @property {string} actionFileLocalStem - triggers/foobar
+ * @property {string} testFileResolved - /Users/sal/my-app/test/triggers/foobar.test.js
+ * @property {string} testFileLocalStem - test/triggers/foobar
+ * @property {string} requirePath - triggers/foobar
+ * @property {string} actionPlural - triggers
+ *
+ * @property {string} newActionDir - **DEPRECATED** the directory for the new action
+ * @property {string} newActionFile - **DEPRECATED** the file for the new action
+ * @property {string} newTestActionDir - **DEPRECATED** the directory for the new test action
+ * @property {string} newTestActionFile - **DEPRECATED** the file for the new test action
+ * @property {string} entry - **DEPRECATED** the entry file
+ *
  */
