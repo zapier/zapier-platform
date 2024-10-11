@@ -1,6 +1,6 @@
-const { Command } = require('@oclif/command');
 const { stdtermwidth } = require('@oclif/help/lib/screen');
 const { renderList } = require('@oclif/help/lib/list');
+const { Command } = require('@oclif/core');
 const colors = require('colors/safe');
 
 const { startSpinner, endSpinner, formatStyles } = require('../utils/display');
@@ -14,9 +14,9 @@ const inquirer = require('inquirer');
 const DATA_FORMATS = ['json', 'raw'];
 
 class ZapierBaseCommand extends Command {
-  run() {
+  async run() {
     this._initPromptModules();
-    this._parseFlags();
+    await this._parseFlags();
 
     if (this.flags.debug) {
       this.debug.enabled = true; // enables this.debug on the command
@@ -67,8 +67,8 @@ class ZapierBaseCommand extends Command {
     });
   }
 
-  _parseFlags() {
-    const { flags, args } = this.parse(this._staticClassReference);
+  async _parseFlags() {
+    const { flags, args } = await this.parse(this._staticClassReference);
 
     this.flags = flags;
     this.args = args;
