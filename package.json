@@ -41,7 +41,7 @@
     }
   },
   "lint-staged": {
-    "*.{js}": [
+    "*.js": [
       "eslint --fix --quiet"
     ],
     "*.{js,json}": [
