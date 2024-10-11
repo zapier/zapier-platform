@@ -16,7 +16,7 @@ yarn
 Then add this line to your shell configuration file, such as `~/.bashrc` or `~/.zshrc`:
 
 ```
-alias zapier-dev="node ~/Projects/zapier-platform/packages/cli/src/bin/run"
+alias zapier-dev="node ~/projects/zapier-platform/packages/cli/src/bin/run"
 ```
 
 Restart your shell with `exec $SHELL` and `zapier-dev` should be available. Test it out by running `zapier-dev` in your terminal. You should see this:

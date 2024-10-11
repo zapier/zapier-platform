@@ -1,3 +1,34 @@
+## 15.17.0
+
+_released `2024-10-11`_
+
+Introducing two major updates to improve your development experience:
+
+- The `zapier invoke` command: This powerful new command enables you to emulate Zapier's production environment locally. Test triggers, actions, and authentication flows right from your terminal without deploying to Zapier. This is especially valuable for debugging, development, and quick testing iterations. Learn more about the command in the [README](https://github.com/zapier/zapier-platform/blob/67d55389/packages/cli/README.md#using-zapier-invoke-command) or by typing `zapier invoke --help` in your teriminal.
+- Refreshed "[typescript](https://github.com/zapier/zapier-platform/tree/67d55389/example-apps/typescript)" project template: We've updated the "typescript" project template with the latest type definitions. Enjoy enhanced type safety, improved autocompletion, and a smoother coding experience overall.
+
+As usual, all other improvements and bug fixes are listed below.
+
+### cli
+
+- :tada: Introduce `zapier invoke` command ([#856](https://github.com/zapier/zapier-platform/pull/856), [#872](https://github.com/zapier/zapier-platform/pull/872), [#878](https://github.com/zapier/zapier-platform/pull/878))
+- :nail_care: Update "typescript" project template and example with latest type definitions ([#845](https://github.com/zapier/zapier-platform/pull/845))
+- :bug: Fix `zapier convert` command not writing `bulkReads` to separate files ([#881](https://github.com/zapier/zapier-platform/pull/881))
+
+### core
+
+- :nail_care: Retry on 5xx errors when calling RPC ([#875](https://github.com/zapier/zapier-platform/pull/875))
+- :nail_care: Add `ResponseError` type ([#877](https://github.com/zapier/zapier-platform/pull/877))
+- :wrench: Bump mock-fs from 5.2.0 to 5.3.0 ([#872](https://github.com/zapier/zapier-platform/pull/872))
+
+### schema
+
+None!
+
+### misc
+
+- :wrench: Drop Node.js 16 and add Node.js 20 from/to CI ([#872](https://github.com/zapier/zapier-platform/pull/872))
+
 ## 15.16.1
 
 _released `2024-10-04`_
@@ -8,7 +39,7 @@ None!
 
 ### core
 
-- :hammer: Return a descriptive error when a filename cannot be uploaded ([#874](https://github.com/zapier/zapier-platform/pull/874))
+- :nail_care: Return a descriptive error when a filename cannot be uploaded ([#874](https://github.com/zapier/zapier-platform/pull/874))
 
 ### schema 
 
@@ -16,7 +47,7 @@ None!
 
 ### misc
 
-- :scroll: Add canary command to docs ([#870](https://github.com/zapier/zapier-platform/pull/870))
+- :scroll: Add `canary` command to docs ([#870](https://github.com/zapier/zapier-platform/pull/870))
 - :scroll: Add instructions for installing the Zapier Platform development version to docs ([#873](https://github.com/zapier/zapier-platform/pull/870))
 
 ## 15.16.0 
@@ -25,7 +56,7 @@ _released `2024-09-24`_
 
 ### cli
 
-- :nail_care: Introduce zapier canary command ([#861](https://github.com/zapier/zapier-platform/pull/861))
+- :tada: Introduce `zapier canary` command ([#861](https://github.com/zapier/zapier-platform/pull/861))
 
 ### core
 
