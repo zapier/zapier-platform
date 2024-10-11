@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // @ts-check
 
 const path = require('path');
@@ -20,17 +21,22 @@ const { isValidAppInstall } = require('../../utils/misc');
 const { writeFile } = require('../../utils/files');
 const { ISSUES_URL } = require('../../constants');
 
+/** * @deprecated */
 const getNewFileDirectory = (action, test = false) =>
   path.join(test ? 'test/' : '', plural(action));
 
+/** * @deprecated */
 const getLocalFilePath = (directory, actionKey) =>
   path.join(directory, actionKey);
+
 /**
- * both the string to `require` and later, the filepath to write to
+ * Both the string to `require` and later, the filepath to write to
+ * @deprecated
  */
 const getFullActionFilePath = (directory, actionKey) =>
   path.join(process.cwd(), getLocalFilePath(directory, actionKey));
 
+/** @deprecated */
 const getFullActionFilePathWithExtension = (directory, actionKey, isTest) =>
   `${getFullActionFilePath(directory, actionKey)}${isTest ? '.test' : ''}.js`;
 
@@ -53,34 +59,48 @@ class ScaffoldCommand extends BaseCommand {
     const preventOverwrite = !context.force;
     // TODO: read from config file?
 
-    this.startSpinner(
-      `Creating new file: ${getLocalFilePath(
-        context.newActionDir,
-        actionKey
-      )}.js`
-    );
+    // ==== EXTRACTION ====
+
+    // '/Users/sal/zoom/triggers/foobar.js',
+    const EX_actionFileResolved = getFullActionFilePathWithExtension(context.newActionDir, actionKey); // prettier-ignore
+
+    // '/Users/sal/zoom/triggers/foobar',
+    const EX_actionFileResolvedStem = getFullActionFilePath(context.newActionDir, actionKey); // prettier-ignore
+
+    // 'triggers/foobar',
+    const EX_actionFileLocalStem = getLocalFilePath(context.newActionDir, actionKey); // prettier-ignore
+
+    // '/Users/sal/zoom/index.js',
+    const EX_entryFileResolved = path.join(process.cwd(), context.entry); // prettier-ignore
+
+    // '/Users/sal/zoom/test/triggers/foobar.test.js',
+    const EX_testFileResolved = getFullActionFilePathWithExtension(context.newTestActionDir, actionKey, true); // prettier-ignore
+
+    // 'test/triggers/foobar'
+    const EX_testFileLocalStem = getLocalFilePath(context.newTestActionDir, actionKey); // prettier-ignore
+
+    // EX_requirePath 'triggers/foobar',
+    const EX_requirePath = getRelativeRequirePath(EX_entryFileResolved, EX_actionFileResolvedStem); // prettier-ignore
+
+    // 'triggers'
+    const EX_actionPlural = plural(context.actionType); // prettier-ignore
+    // ====================
+
+    this.startSpinner(`Creating new file: ${EX_actionFileLocalStem}.js`);
+
     await writeTemplateFile(
       context.actionType,
       context.templateContext,
-      getFullActionFilePathWithExtension(context.newActionDir, actionKey),
+      EX_actionFileResolved,
       preventOverwrite
     );
     this.stopSpinner();
 
-    this.startSpinner(
-      `Creating new test file: ${getLocalFilePath(
-        context.newTestActionDir,
-        actionKey
-      )}.js`
-    );
+    this.startSpinner(`Creating new test file: ${EX_testFileLocalStem}.js`);
     await writeTemplateFile(
       'test',
       context.templateContext,
-      getFullActionFilePathWithExtension(
-        context.newTestActionDir,
-        actionKey,
-        true
-      ),
+      EX_testFileResolved,
       preventOverwrite
     );
     this.stopSpinner();
@@ -88,19 +108,17 @@ class ScaffoldCommand extends BaseCommand {
     // * rewire the index.js to point to the new file
     this.startSpinner(`Rewriting your ${context.entry}`);
 
-    const entryFilePath = path.join(process.cwd(), context.entry);
-
     const originalContents = await updateEntryFile(
-      entryFilePath,
+      EX_entryFileResolved,
       context.templateContext.VARIABLE,
-      getFullActionFilePath(context.newActionDir, actionKey),
+      EX_actionFileResolvedStem,
       context.actionType,
       context.templateContext.KEY
     );
 
     if (isValidAppInstall().valid) {
       const success = isValidEntryFileUpdate(
-        entryFilePath,
+        EX_entryFileResolved,
         context.actionType,
         context.templateContext.KEY
       );
@@ -108,30 +126,21 @@ class ScaffoldCommand extends BaseCommand {
       this.stopSpinner({ success });
 
       if (!success) {
-        const entryName = splitFileFromPath(entryFilePath)[1];
+        const entryName = splitFileFromPath(EX_entryFileResolved)[1];
 
         this.startSpinner(
           `Unable to successfully rewrite your ${entryName}. Rolling back...`
         );
-        await writeFile(entryFilePath, originalContents);
+        await writeFile(EX_entryFileResolved, originalContents);
         this.stopSpinner();
 
         this.error(
           [
-            `\nPlease add the following lines to ${entryFilePath}:`,
-            ` * \`const ${
-              context.templateContext.VARIABLE
-            } = require('./${getRelativeRequirePath(
-              entryFilePath,
-              getFullActionFilePath(context.newActionDir, actionKey)
-            )}');\` at the top-level`,
-            ` * \`[${context.templateContext.VARIABLE}.key]: ${
-              context.templateContext.VARIABLE
-            }\` in the "${plural(
-              context.actionType
-            )}" object in your exported integration definition.`,
+            `\nPlease add the following lines to ${EX_entryFileResolved}:`,
+            ` * \`const ${context.templateContext.VARIABLE} = require('./${EX_requirePath}');\` at the top-level`,
+            ` * \`[${context.templateContext.VARIABLE}.key]: ${context.templateContext.VARIABLE}\` in the "${EX_actionPlural}" object in your exported integration definition.`,
             '',
-            `Also, please file an issue at ${ISSUES_URL} with the contents of your ${entryFilePath}.`,
+            `Also, please file an issue at ${ISSUES_URL} with the contents of your ${EX_entryFileResolved}.`,
           ].join('\n')
         );
       }
@@ -144,6 +153,12 @@ class ScaffoldCommand extends BaseCommand {
     }
   }
 
+  /**
+   * Assemble all of the relevant paths, files, transformations, etc.
+   * ahead of time for an invocation of the scaffold command.
+   *
+   * @returns {ScaffoldContext}
+   */
   getContext() {
     const { actionType, noun } = this.args;
 
@@ -155,8 +170,7 @@ class ScaffoldCommand extends BaseCommand {
       force,
     } = this.flags;
 
-    /** @type {ScaffoldContext} */
-    const context = {
+    return {
       actionType,
       entry,
       force,
@@ -172,8 +186,6 @@ class ScaffoldCommand extends BaseCommand {
         includeIntroComments: !this.flags['no-help'],
       }),
     };
-
-    return context;
   }
 }
 
