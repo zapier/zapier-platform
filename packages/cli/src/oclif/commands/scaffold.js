@@ -84,7 +84,7 @@ class ScaffoldCommand extends BaseCommand {
     this.stopSpinner();
 
     // * rewire the index.js to point to the new file
-    this.startSpinner(`Rewriting your ${context.entry}`);
+    this.startSpinner(`Rewriting your ${context.indexFileLocal}`);
 
     const originalContents = await updateEntryFile(
       context.indexFileResolved,
@@ -115,8 +115,8 @@ class ScaffoldCommand extends BaseCommand {
         this.error(
           [
             `\nPlease add the following lines to ${context.indexFileResolved}:`,
-            ` * \`const ${context.templateContext.VARIABLE} = require('./${context.requirePath}');\` at the top-level`,
-            ` * \`[${context.templateContext.VARIABLE}.key]: ${context.templateContext.VARIABLE}\` in the "${context.actionPlural}" object in your exported integration definition.`,
+            ` * \`const ${context.templateContext.VARIABLE} = require('./${context.indexFileRelativeImportPath}');\` at the top-level`,
+            ` * \`[${context.templateContext.VARIABLE}.key]: ${context.templateContext.VARIABLE}\` in the "${context.actionTypePlural}" object in your exported integration definition.`,
             '',
             `Also, please file an issue at ${ISSUES_URL} with the contents of your ${context.indexFileResolved}.`,
           ].join('\n')
