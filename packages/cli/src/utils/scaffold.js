@@ -166,7 +166,7 @@ const createScaffoldingContext = ({
   const actionFileLocalStem = path.join(actionDir, key);
   const testFileResolved = `${path.join(process.cwd(), testDir, key)}.test.js`;
   const testFileLocalStem = path.join(testDir, key);
-  const requirePath = getRelativeRequirePath(
+  const indexFileRelativeImportPath = getRelativeRequirePath(
     indexFileResolved,
     actionFileResolvedStem
   );
@@ -183,7 +183,9 @@ const createScaffoldingContext = ({
       includeIntroComments,
     }),
 
+    indexFileLocal: indexFile,
     indexFileResolved,
+    indexFileRelativeImportPath,
 
     actionFileResolved,
     actionFileResolvedStem,
@@ -191,16 +193,6 @@ const createScaffoldingContext = ({
 
     testFileResolved,
     testFileLocalStem,
-
-    requirePath,
-    actionPlural: plural(actionType),
-
-    // DEPRECATED
-    entry: indexFile,
-    newActionDir: actionDir,
-    newActionFile: path.join(actionDir, noun),
-    newTestActionDir: testDir,
-    newTestActionFile: path.join(testDir, noun),
   };
 };
 
@@ -238,20 +230,14 @@ module.exports = {
  * @property {boolean} force - whether to force overwrite
  * @property {TemplateContext} templateContext - the context for templates
  *
- * @property {string} indexFileResolved - /Users/sal/my-app/index.js
+ * @property {string} indexFileLocal - e.g. `index.js` or `src/index.ts`
+ * @property {string} indexFileResolved - e.g. `/Users/sal/my-app/index.js`
+ * @property {string} indexFileRelativeImportPath - e.g. `triggers/foobar`
  *
- * @property {string} actionFileResolved - /Users/sal/my-app/triggers/foobar.js
- * @property {string} actionFileResolvedStem - /Users/sal/my-app/triggers/foobar
- * @property {string} actionFileLocalStem - triggers/foobar
- * @property {string} testFileResolved - /Users/sal/my-app/test/triggers/foobar.test.js
- * @property {string} testFileLocalStem - test/triggers/foobar
- * @property {string} requirePath - triggers/foobar
- * @property {string} actionPlural - triggers
+ * @property {string} actionFileResolved - e.g. `/Users/sal/my-app/triggers/foobar.js`
+ * @property {string} actionFileResolvedStem - e.g. `/Users/sal/my-app/triggers/foobar`
+ * @property {string} actionFileLocalStem - e.g. `triggers/foobar`
  *
- * @property {string} newActionDir - **DEPRECATED** the directory for the new action
- * @property {string} newActionFile - **DEPRECATED** the file for the new action
- * @property {string} newTestActionDir - **DEPRECATED** the directory for the new test action
- * @property {string} newTestActionFile - **DEPRECATED** the file for the new test action
- * @property {string} entry - **DEPRECATED** the entry file
- *
+ * @property {string} testFileResolved - e.g. `/Users/sal/my-app/test/triggers/foobar.test.js`
+ * @property {string} testFileLocalStem - e.g. `test/triggers/foobar`
  */
