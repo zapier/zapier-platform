@@ -1799,13 +1799,16 @@ There are several ways to test your Zapier integration:
 
 The `zapier invoke <ACTION_TYPE> <ACTION_KEY>` CLI command emulates how the Zapier production environment would invoke your app. Since it runs code locally, it's a fast way to debug and test interactively without needing to deploy the code to Zapier.
 
-Its general execution flow invovles calling `operation.inputFields` of an action, resolving the input data to the expected types, and then calling the `operation.perform` method.
+Its general execution flow involves calling `operation.inputFields` of an action, resolving the input data to the expected types, and then calling the `operation.perform` method.
 
 `zapier invoke --help` should be self-explanatory, but here's a quick rundown:
 
 ```bash
-# Intialize auth data in .env file
+# Initialize auth data in .env file
 zapier invoke auth start
+
+# Refresh auth data (for OAuth2 or Session auth)
+zapier invoke auth refresh
 
 # Test your auth data in .env
 zapier invoke auth test
