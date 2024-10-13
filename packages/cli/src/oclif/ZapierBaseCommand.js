@@ -66,10 +66,11 @@ class ZapierBaseCommand extends Command {
   }
 
   async _parseFlags() {
-    const { flags, args } = await this.parse(this._staticClassReference);
+    const { flags, args, argv } = await this.parse(this._staticClassReference);
 
     this.flags = flags;
     this.args = args;
+    this.argv = argv;
   }
 
   perform() {
