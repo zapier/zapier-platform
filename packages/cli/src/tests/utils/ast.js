@@ -10,7 +10,7 @@ const {
 /**
  * counts the numbers of times `subStr` occurs in `str`
  */
-const countOcurrances = (str, subStr) =>
+const countOccurrences = (str, subStr) =>
   (str.match(new RegExp(subStr, 'g')) || []).length;
 
 describe('ast', () => {
@@ -76,8 +76,8 @@ describe('ast', () => {
       describe(`${exportType} export`, () => {
         it('should add a property to an existing action type', () => {
           const result = addKeyToPropertyOnApp(codeStr, 'triggers', 'getThing');
-          should(countOcurrances(result, 'triggers:')).eql(1);
-          should(countOcurrances(result, 'searches:')).eql(0);
+          should(countOccurrences(result, 'triggers:')).eql(1);
+          should(countOccurrences(result, 'searches:')).eql(0);
 
           const codeByLine = result.split('\n').map((x) => x.trim());
           const firstIndex = codeByLine.indexOf('triggers: {');
@@ -96,8 +96,8 @@ describe('ast', () => {
             'searches',
             'findThing'
           );
-          should(countOcurrances(result, 'triggers:')).eql(1);
-          should(countOcurrances(result, 'searches:')).eql(1);
+          should(countOccurrences(result, 'triggers:')).eql(1);
+          should(countOccurrences(result, 'searches:')).eql(1);
 
           const codeByLine = result.split('\n').map((x) => x.trim());
           const firstIndex = codeByLine.indexOf('searches: {');
@@ -117,12 +117,12 @@ describe('ast', () => {
           'triggers',
           'getThing'
         );
-        should(countOcurrances(result, 'triggers:')).eql(2);
-        should(countOcurrances(result, 'searches:')).eql(2);
+        should(countOccurrences(result, 'triggers:')).eql(2);
+        should(countOccurrences(result, 'searches:')).eql(2);
 
         const codeByLine = result.split('\n').map((x) => x.trim());
 
-        // find the second occurance, the one that's not in the "legacy" property
+        // find the second occurrence, the one that's not in the "legacy" property
         const operativeIndex = codeByLine.indexOf(
           'triggers: {',
           codeByLine.indexOf('triggers: {') + 1
@@ -143,10 +143,10 @@ describe('ast', () => {
           'searches',
           'findThing'
         );
-        should(countOcurrances(result, 'searches:')).eql(2);
+        should(countOccurrences(result, 'searches:')).eql(2);
 
         const codeByLine = result.split('\n').map((x) => x.trim());
-        // find the second occurance, the one that's not in the "legacy" property
+        // find the second occurrence, the one that's not in the "legacy" property
         const operativeIndex = codeByLine.indexOf('searches: {');
         should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
           operativeIndex + 1
@@ -160,9 +160,9 @@ describe('ast', () => {
           'resources',
           'findThing'
         );
-        should(countOcurrances(result, 'triggers:')).eql(2);
-        should(countOcurrances(result, 'searches:')).eql(2);
-        should(countOcurrances(result, 'resources:')).eql(1);
+        should(countOccurrences(result, 'triggers:')).eql(2);
+        should(countOccurrences(result, 'searches:')).eql(2);
+        should(countOccurrences(result, 'resources:')).eql(1);
 
         const codeByLine = result.split('\n').map((x) => x.trim());
         const firstIndex = codeByLine.indexOf('resources: {');
