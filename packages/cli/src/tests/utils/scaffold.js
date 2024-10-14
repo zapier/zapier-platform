@@ -56,7 +56,7 @@ describe('scaffold', () => {
     });
 
     const commonContext = createTemplateContext({
-      templateType: 'trigger',
+      actionType: 'trigger',
       noun: 'thing',
       includeIntroComments: true,
     });
@@ -117,7 +117,7 @@ describe('scaffold', () => {
         language: 'js',
         preventOverwrite: true,
         templateContext: createTemplateContext({
-          templateType: 'trigger',
+          actionType: 'trigger',
           noun: 'thing',
           includeIntroComments: true,
         }),
@@ -129,7 +129,7 @@ describe('scaffold', () => {
         language: 'js',
         preventOverwrite: false,
         templateContext: createTemplateContext({
-          templateType: 'trigger',
+          actionType: 'trigger',
           noun: 'thing',
           includeIntroComments: true,
         }),
@@ -149,7 +149,7 @@ describe('scaffold', () => {
     });
 
     const commonContext = createTemplateContext({
-      templateType: 'trigger',
+      actionType: 'trigger',
       noun: 'thing',
       includeIntroComments: true,
     });
@@ -210,7 +210,7 @@ describe('scaffold', () => {
         language: 'ts',
         preventOverwrite: true,
         templateContext: createTemplateContext({
-          templateType: 'trigger',
+          actionType: 'trigger',
           noun: 'thing',
           includeIntroComments: true,
         }),
@@ -222,7 +222,7 @@ describe('scaffold', () => {
         language: 'ts',
         preventOverwrite: false,
         templateContext: createTemplateContext({
-          templateType: 'trigger',
+          actionType: 'trigger',
           noun: 'thing',
           includeIntroComments: true,
         }),
