@@ -1,5 +1,5 @@
 const colors = require('colors/safe');
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const {
@@ -252,45 +252,44 @@ class RegisterCommand extends ZapierBaseCommand {
 }
 
 RegisterCommand.skipValidInstallCheck = true;
-RegisterCommand.args = [
-  {
-    name: 'title',
+RegisterCommand.args = {
+  title: Args.string({
     description:
       "Your integration's public title. Asked interactively if not present.",
-  },
-];
+  }),
+};
 
 RegisterCommand.flags = buildFlags({
   commandFlags: {
-    desc: flags.string({
+    desc: Flags.string({
       char: 'D',
       description: `A sentence describing your app in ${MAX_DESCRIPTION_LENGTH} characters or less, e.g. "Trello is a team collaboration tool to organize tasks and keep projects on track."`,
     }),
-    url: flags.string({
+    url: Flags.string({
       char: 'u',
       description: 'The homepage URL of your app, e.g., https://example.com.',
     }),
-    audience: flags.string({
+    audience: Flags.string({
       char: 'a',
       description: 'Are you building a public or private integration?',
     }),
-    role: flags.string({
+    role: Flags.string({
       char: 'r',
       description:
         "What is your relationship with the app you're integrating with Zapier?",
     }),
-    category: flags.string({
+    category: Flags.string({
       char: 'c',
       description:
         "How would you categorize your app? Choose the most appropriate option for your app's core features.",
     }),
-    subscribe: flags.boolean({
+    subscribe: Flags.boolean({
       char: 's',
       description:
         'Get tips and recommendations about this integration along with our monthly newsletter that details the performance of your integration and the latest Zapier news.',
       allowNo: true,
     }),
-    yes: flags.boolean({
+    yes: Flags.boolean({
       char: 'y',
       description:
         'Assume yes for all yes/no prompts. This flag will also update an existing integration (as opposed to registering a new one) if a .zapierapprc file is found.',

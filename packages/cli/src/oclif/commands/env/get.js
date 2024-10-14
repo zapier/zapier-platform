@@ -1,4 +1,5 @@
 const BaseCommand = require('../../ZapierBaseCommand');
+const { Args } = require('@oclif/core');
 const { buildFlags } = require('../../buildFlags');
 const { listEnv } = require('../../../utils/api');
 
@@ -22,13 +23,12 @@ class GetEnvCommand extends BaseCommand {
   }
 }
 
-GetEnvCommand.args = [
-  {
-    name: 'version',
+GetEnvCommand.args = {
+  version: Args.string({
     description: 'The version to get the environment for.',
     required: true,
-  },
-];
+  }),
+};
 GetEnvCommand.flags = buildFlags({ opts: { format: true } });
 GetEnvCommand.description = `Get environment variables for a version.`;
 GetEnvCommand.examples = [`zapier env:get 1.2.3`];

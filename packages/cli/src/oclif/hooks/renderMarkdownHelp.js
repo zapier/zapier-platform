@@ -1,12 +1,11 @@
 const chalk = require('chalk');
 const { marked } = require('marked');
 const TerminalRenderer = require('marked-terminal');
-const { stdtermwidth } = require('@oclif/help/lib/screen');
 
 marked.setOptions({
   renderer: new TerminalRenderer({
     tab: 2,
-    width: stdtermwidth - 2,
+    width: process.stdout.getWindowSize()[0] - 2,
     reflowText: true,
     codespan: chalk.underline.bold,
   }),
