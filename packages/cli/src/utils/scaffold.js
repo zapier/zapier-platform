@@ -178,7 +178,7 @@ const createScaffoldingContext = ({
     actionTypePlural: plural(actionType),
     noun,
     force,
-    isTypeScript,
+    language: isTypeScript ? 'ts' : 'js',
     templateContext: createTemplateContext({
       actionType,
       noun,
@@ -230,7 +230,7 @@ module.exports = {
  * @property {string} actionType - the action type
  * @property {string} actionTypePlural - plural of the action type, e.g. "triggers".
  * @property {string} noun - the noun for the action
- * @property {boolean} isTypeScript - whether the project is TypeScript
+ * @property {'js' | 'ts'} language - the language of the project
  * @property {boolean} force - whether to force overwrite
  * @property {TemplateContext} templateContext - the context for templates
  *
