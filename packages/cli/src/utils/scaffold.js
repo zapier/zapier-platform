@@ -163,8 +163,10 @@ const createScaffoldingContext = ({
   const indexFileResolved = path.join(process.cwd(), indexFile);
   const actionFileResolved = `${path.join(process.cwd(), actionDir, key)}.js`;
   const actionFileResolvedStem = path.join(process.cwd(), actionDir, key);
+  const actionFileLocal = `${path.join(actionDir, key)}.js`;
   const actionFileLocalStem = path.join(actionDir, key);
   const testFileResolved = `${path.join(process.cwd(), testDir, key)}.test.js`;
+  const testFileLocal = `${path.join(testDir, key)}.js`;
   const testFileLocalStem = path.join(testDir, key);
   const indexFileRelativeImportPath = getRelativeRequirePath(
     indexFileResolved,
@@ -189,9 +191,11 @@ const createScaffoldingContext = ({
 
     actionFileResolved,
     actionFileResolvedStem,
+    actionFileLocal,
     actionFileLocalStem,
 
     testFileResolved,
+    testFileLocal,
     testFileLocalStem,
   };
 };
@@ -236,8 +240,10 @@ module.exports = {
  *
  * @property {string} actionFileResolved - e.g. `/Users/sal/my-app/triggers/foobar.js`
  * @property {string} actionFileResolvedStem - e.g. `/Users/sal/my-app/triggers/foobar`
+ * @property {string} actionFileLocal - e.g. `triggers/foobar.js`
  * @property {string} actionFileLocalStem - e.g. `triggers/foobar`
  *
  * @property {string} testFileResolved - e.g. `/Users/sal/my-app/test/triggers/foobar.test.js`
+ * @property {string} testFileLocal - e.g. `test/triggers/foobar.js`
  * @property {string} testFileLocalStem - e.g. `test/triggers/foobar`
  */

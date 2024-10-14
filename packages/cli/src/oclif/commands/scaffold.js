@@ -62,7 +62,7 @@ class ScaffoldCommand extends BaseCommand {
 
     // TODO: read from config file?
 
-    this.startSpinner(`Creating new file: ${context.actionFileLocalStem}.js`);
+    this.startSpinner(`Creating new file: ${context.actionFileLocal}`);
 
     await writeTemplateFile(
       context.actionType,
@@ -72,9 +72,7 @@ class ScaffoldCommand extends BaseCommand {
     );
     this.stopSpinner();
 
-    this.startSpinner(
-      `Creating new test file: ${context.testFileLocalStem}.js`
-    );
+    this.startSpinner(`Creating new test file: ${context.testFileLocal}`);
     await writeTemplateFile(
       'test',
       context.templateContext,
