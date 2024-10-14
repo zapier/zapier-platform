@@ -161,7 +161,7 @@ const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
  * @param {'trigger'| 'search'| 'create'| 'resource'} options.actionType - the action type
  * @param {string} options.noun - the noun for the action
  * @param {'js' | 'ts'} options.language - the language of the project
- * @param {string} options.indexFile - the App's entry point (index.js/ts)
+ * @param {string} options.indexFileLocal - the App's entry point (index.js/ts)
  * @param {string} options.actionDir - where to put the new action
  * @param {string} options.testDir - where to put the new action's test
  * @param {boolean} options.includeIntroComments - whether to include comments in the template
@@ -173,7 +173,7 @@ const createScaffoldingContext = ({
   actionType,
   noun,
   language,
-  indexFile,
+  indexFileLocal,
   actionDir,
   testDir,
   includeIntroComments,
@@ -181,7 +181,7 @@ const createScaffoldingContext = ({
 }) => {
   const key = nounToKey(noun);
 
-  const indexFileResolved = path.join(process.cwd(), indexFile);
+  const indexFileResolved = path.join(process.cwd(), indexFileLocal);
   const actionFileResolved = `${path.join(
     process.cwd(),
     actionDir,
@@ -214,7 +214,7 @@ const createScaffoldingContext = ({
       includeIntroComments,
     }),
 
-    indexFileLocal: indexFile,
+    indexFileLocal,
     indexFileResolved,
     indexFileRelativeImportPath,
 
