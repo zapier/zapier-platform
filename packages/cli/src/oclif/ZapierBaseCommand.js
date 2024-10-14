@@ -14,7 +14,7 @@ const DATA_FORMATS = ['json', 'raw'];
 class ZapierBaseCommand extends Command {
   async run() {
     this._initPromptModules();
-    await this._parseFlags();
+    await this._parseCommand();
 
     if (this.flags.debug) {
       this.debug.enabled = true; // enables this.debug on the command
@@ -65,7 +65,7 @@ class ZapierBaseCommand extends Command {
     });
   }
 
-  async _parseFlags() {
+  async _parseCommand() {
     const { flags, args, argv } = await this.parse(this._staticClassReference);
 
     this.flags = flags;
