@@ -160,6 +160,7 @@ const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
  * @param {Object} options
  * @param {'trigger'| 'search'| 'create'| 'resource'} options.actionType - the action type
  * @param {string} options.noun - the noun for the action
+ * @param {'js' | 'ts'} options.language - the language of the project
  * @param {string} options.indexFile - the App's entry point (index.js/ts)
  * @param {string} options.actionDir - where to put the new action
  * @param {string} options.testDir - where to put the new action's test
@@ -171,6 +172,7 @@ const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
 const createScaffoldingContext = ({
   actionType,
   noun,
+  language,
   indexFile,
   actionDir,
   testDir,
@@ -178,15 +180,22 @@ const createScaffoldingContext = ({
   preventOverwrite,
 }) => {
   const key = nounToKey(noun);
-  const isTypeScript = indexFile.endsWith('.ts');
 
   const indexFileResolved = path.join(process.cwd(), indexFile);
-  const actionFileResolved = `${path.join(process.cwd(), actionDir, key)}.js`;
+  const actionFileResolved = `${path.join(
+    process.cwd(),
+    actionDir,
+    key
+  )}.${language}`;
   const actionFileResolvedStem = path.join(process.cwd(), actionDir, key);
-  const actionFileLocal = `${path.join(actionDir, key)}.js`;
+  const actionFileLocal = `${path.join(actionDir, key)}.${language}`;
   const actionFileLocalStem = path.join(actionDir, key);
-  const testFileResolved = `${path.join(process.cwd(), testDir, key)}.test.js`;
-  const testFileLocal = `${path.join(testDir, key)}.js`;
+  const testFileResolved = `${path.join(
+    process.cwd(),
+    testDir,
+    key
+  )}.test.${language}`;
+  const testFileLocal = `${path.join(testDir, key)}.${language}`;
   const testFileLocalStem = path.join(testDir, key);
   const indexFileRelativeImportPath = getRelativeRequirePath(
     indexFileResolved,
@@ -198,7 +207,7 @@ const createScaffoldingContext = ({
     actionTypePlural: plural(actionType),
     noun,
     preventOverwrite,
-    language: isTypeScript ? 'ts' : 'js',
+    language,
     templateContext: createTemplateContext({
       templateType: actionType,
       noun,
