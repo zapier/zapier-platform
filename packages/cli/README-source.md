@@ -734,6 +734,8 @@ And your New Records trigger has a Spreadsheet and a Worksheet dynamic dropdown.
 [insert-file:./snippets/dynamic-dropdowns-six.js]
 ```
 
+> Note: Even if a trigger to power a dynamic dropdown is hidden for direct use, you still need to define the input fields, and whether these are required. In the above example, when the Worksheet trigger defines a required `spreadsheet_id` field, products such as the editor will use this in two ways. Firstly, the worksheet field will be disabled until the spreadsheet field has been set. Secondly, when the user changes the spreadsheet field, the worksheet field gets cleared.
+
 The [Google Sheets](https://zapier.com/apps/google-sheets/integrations#triggers-and-actions) integration is an example of this pattern.
 
 If you want your trigger to perform specific scripting for a dynamic dropdown you will need to make use of `bundle.meta.isFillingDynamicDropdown`. This can be useful if need to make use of [pagination](#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work) in the dynamic dropdown to load more options.
@@ -882,6 +884,11 @@ zapier migrate 1.0.0 1.0.1
 # OR - mark the old version as deprecated
 zapier deprecate 1.0.0 2020-06-01
 ```
+
+### Pulling Latest Version from Zapier
+Zapier may fix bugs or add new features to your integration and release a new version. If you attempt to use `zapier push` and we've released a newer version, you will be prevented from pushing until you run `zapier pull` to update your local files with the latest version.
+
+Any destructive file changes will prompt you with a confirmation dialog before continuing.
 
 ## Z Object
 
@@ -1799,8 +1806,40 @@ For throttled requests that occur during processing of a webhook trigger's perfo
 
 ## Testing
 
-You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.
-You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
+There are several ways to test your Zapier integration:
+
+* You can use the `zapier invoke` command to invoke a trigger, search, create, or an auth operation locally.
+* You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.
+* You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
+* 
+### Using `zapier invoke` Command
+
+*Added in v15.17.0.*
+
+The `zapier invoke <ACTION_TYPE> <ACTION_KEY>` CLI command emulates how the Zapier production environment would invoke your app. Since it runs code locally, it's a fast way to debug and test interactively without needing to deploy the code to Zapier.
+
+Its general execution flow involves calling `operation.inputFields` of an action, resolving the input data to the expected types, and then calling the `operation.perform` method.
+
+`zapier invoke --help` should be self-explanatory, but here's a quick rundown:
+
+```bash
+# Initialize auth data in .env file
+zapier invoke auth start
+
+# Refresh auth data (for OAuth2 or Session auth)
+zapier invoke auth refresh
+
+# Test your auth data in .env
+zapier invoke auth test
+zapier invoke auth label
+
+# Invoke a polling trigger
+zapier invoke trigger new_recipe
+
+# Invoke a create action
+zapier invoke create add_recipe --inputData '{"name": "Pancakes"}'
+zapier invoke create add_recipe --inputData @file.json
+```
 
 ### Writing Unit Tests
 
