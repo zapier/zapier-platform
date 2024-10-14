@@ -43,42 +43,30 @@ class ScaffoldCommand extends BaseCommand {
       actionDir,
       testDir,
       includeIntroComments: !this.flags['no-help'],
-      force,
+      preventOverwrite: !force,
     });
-
-    // this is possible, just extra work that's out of scope
-    // const tsParser = j.withParser('ts')
-    // tsParser(codeStr)
-    // will have to change logic probably though
-    // if (context.isTypeScript) {
-    //   this.error(
-    //     `Typescript isn't supported for scaffolding yet. Instead, try copying the example code at https://github.com/zapier/zapier-platform/blob/b8224ec9855be91c66c924b731199a068b1e913a/example-apps/typescript/src/resources/recipe.ts`
-    //   );
-    // }
-
-    // const actionKey = context.templateContext.KEY;
-
-    const preventOverwrite = !context.force;
 
     // TODO: read from config file?
 
     this.startSpinner(`Creating new file: ${context.actionFileLocal}`);
 
-    await writeTemplateFile(
-      context.actionType,
-      context.templateContext,
-      context.actionFileResolved,
-      preventOverwrite
-    );
+    await writeTemplateFile({
+      destinationPath: context.actionFileResolved,
+      templateType: context.templateType,
+      language: context.language,
+      preventOverwrite: context.preventOverwrite,
+      templateContext: context.templateContext,
+    });
     this.stopSpinner();
 
     this.startSpinner(`Creating new test file: ${context.testFileLocal}`);
-    await writeTemplateFile(
-      'test',
-      context.templateContext,
-      context.testFileResolved,
-      preventOverwrite
-    );
+    await writeTemplateFile({
+      destinationPath: context.testFileResolved,
+      templateType: context.templateType,
+      language: context.language,
+      preventOverwrite: context.preventOverwrite,
+      templateContext: context.templateContext,
+    });
     this.stopSpinner();
 
     // * rewire the index.js to point to the new file
@@ -88,14 +76,14 @@ class ScaffoldCommand extends BaseCommand {
       context.indexFileResolved,
       context.templateContext.VARIABLE,
       context.actionFileResolvedStem,
-      context.actionType,
+      context.templateType,
       context.templateContext.KEY
     );
 
     if (isValidAppInstall().valid) {
       const success = isValidEntryFileUpdate(
         context.indexFileResolved,
-        context.actionType,
+        context.templateType,
         context.templateContext.KEY
       );
 
@@ -125,7 +113,7 @@ class ScaffoldCommand extends BaseCommand {
     this.stopSpinner();
 
     if (!this.flags.invokedFromAnotherCommand) {
-      this.log(`\nAll done! Your new ${context.actionType} is ready to use.`);
+      this.log(`\nAll done! Your new ${context.templateType} is ready to use.`);
     }
   }
 }

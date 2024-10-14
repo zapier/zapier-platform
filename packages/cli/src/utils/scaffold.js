@@ -10,8 +10,19 @@ const { createRootRequire, addKeyToPropertyOnApp } = require('./ast');
 
 const plural = (type) => (type === 'search' ? `${type}es` : `${type}s`);
 
-const getTemplatePath = (actionType) =>
-  path.join(__dirname, '..', '..', 'scaffold', `${actionType}.template.js`);
+/**
+ * @param {TemplateType} templateType
+ * @param {'js' | 'ts'} language
+ * @returns {string}
+ */
+const getTemplatePath = (templateType, language = 'js') =>
+  path.join(
+    __dirname,
+    '..',
+    '..',
+    'scaffold',
+    `${templateType}.template.${language}`
+  );
 
 // useful for making sure we don't conflict with other, similarly named things
 const variablePrefixes = {
@@ -37,22 +48,22 @@ const nounToKey = (noun) => _.snakeCase(noun).replace(/V_(\d+)$/gi, 'v$1');
 /**
  * Create a context object to pass to the template
  * @param {Object} options
- * @param {'trigger'| 'search'| 'create'| 'resource'} options.actionType - the action type
+ * @param {'trigger'| 'search'| 'create'| 'resource'} options.templateType - the action type
  * @param {string} options.noun - the noun for the action
  * @param {boolean} [options.includeIntroComments] - whether to include comments in the template
  * @returns {TemplateContext}
  */
 const createTemplateContext = ({
-  actionType,
+  templateType,
   noun,
   includeIntroComments = false,
 }) => {
   // if noun is "Cool Contact"
   return {
-    ACTION: actionType, // trigger
-    ACTION_PLURAL: plural(actionType), // triggers
+    ACTION: templateType, // trigger
+    ACTION_PLURAL: plural(templateType), // triggers
 
-    VARIABLE: _.camelCase(getVariableName(actionType, noun)), // getContact, the variable that's imported
+    VARIABLE: _.camelCase(getVariableName(templateType, noun)), // getContact, the variable that's imported
     KEY: nounToKey(noun), // "cool_contact", the action key
     NOUN: noun
       .split(' ')
@@ -60,18 +71,27 @@ const createTemplateContext = ({
       .join(' '), // "Cool Contact", the noun
     LOWER_NOUN: noun.toLowerCase(), // "cool contact", for use in comments
     // resources need an extra line for tests to "just run"
-    MAYBE_RESOURCE: actionType === 'resource' ? 'list.' : '',
+    MAYBE_RESOURCE: templateType === 'resource' ? 'list.' : '',
     INCLUDE_INTRO_COMMENTS: includeIntroComments,
   };
 };
 
-const writeTemplateFile = async (
-  actionType,
-  templateContext,
+/**
+ * @param {Object} options
+ * @param {TemplateType} options.templateType - the action type
+ * @param {'js' | 'ts'} options.language - the language of the project
+ * @param {string} options.destinationPath - where to write the file
+ * @param {boolean} options.preventOverwrite - whether to prevent overwriting
+ * @param {TemplateContext} options.templateContext - the context for the template
+ */
+const writeTemplateFile = async ({
+  templateType,
+  language,
   destinationPath,
-  preventOverwrite
-) => {
-  const templatePath = getTemplatePath(actionType);
+  preventOverwrite,
+  templateContext,
+}) => {
+  const templatePath = getTemplatePath(templateType, language);
 
   if (preventOverwrite && fileExistsSync(destinationPath)) {
     const [location, filename] = splitFileFromPath(destinationPath);
@@ -144,7 +164,7 @@ const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
  * @param {string} options.actionDir - where to put the new action
  * @param {string} options.testDir - where to put the new action's test
  * @param {boolean} options.includeIntroComments - whether to include comments in the template
- * @param {boolean} options.force - whether to force overwrite
+ * @param {boolean} options.preventOverwrite - whether to force overwrite
  *
  * @returns {ScaffoldContext}
  */
@@ -155,7 +175,7 @@ const createScaffoldingContext = ({
   actionDir,
   testDir,
   includeIntroComments,
-  force,
+  preventOverwrite,
 }) => {
   const key = nounToKey(noun);
   const isTypeScript = indexFile.endsWith('.ts');
@@ -174,13 +194,13 @@ const createScaffoldingContext = ({
   );
 
   return {
-    actionType,
+    templateType: actionType,
     actionTypePlural: plural(actionType),
     noun,
-    force,
+    preventOverwrite,
     language: isTypeScript ? 'ts' : 'js',
     templateContext: createTemplateContext({
-      actionType,
+      templateType: actionType,
       noun,
       includeIntroComments,
     }),
@@ -212,6 +232,12 @@ module.exports = {
 };
 
 /**
+ * The varieties of templates that can be generated. The set of Action
+ * Types and "test" too.
+ * @typedef {'create' | 'resource' | 'search' | 'test' | 'trigger'} TemplateType
+ */
+
+/**
  * @typedef {Object} TemplateContext
  * @property {string} ACTION - the action type
  * @property {string} ACTION_PLURAL - the plural of the action type
@@ -227,11 +253,11 @@ module.exports = {
  * Everything needed to define a scaffolding operation.
  *
  * @typedef {Object} ScaffoldContext
- * @property {string} actionType - the action type
- * @property {string} actionTypePlural - plural of the action type, e.g. "triggers".
+ * @property {TemplateType} templateType - the type of template (actions or "test") to use
+ * @property {string} actionTypePlural - plural of the template type, e.g. "triggers".
  * @property {string} noun - the noun for the action
  * @property {'js' | 'ts'} language - the language of the project
- * @property {boolean} force - whether to force overwrite
+ * @property {boolean} preventOverwrite - whether to prevent overwriting
  * @property {TemplateContext} templateContext - the context for templates
  *
  * @property {string} indexFileLocal - e.g. `index.js` or `src/index.ts`

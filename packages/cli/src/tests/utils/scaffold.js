@@ -1,3 +1,5 @@
+// @ts-check
+
 const should = require('should');
 const { remove, readFile, outputFile } = require('fs-extra');
 const {
@@ -53,77 +55,86 @@ describe('scaffold', () => {
       tmpDir = await getNewTempDirPath();
     });
 
+    const commonContext = createTemplateContext({
+      templateType: 'trigger',
+      noun: 'thing',
+      includeIntroComments: true,
+    });
+
     it('should create files without comments', async () => {
       const path = `${tmpDir}/triggers/thing.js`;
-      await writeTemplateFile(
-        'trigger',
-        createTemplateContext({ actionType: 'trigger', noun: 'thing' }),
-        path
-      );
+      await writeTemplateFile({
+        destinationPath: path,
+        templateType: 'trigger',
+        language: 'js',
+        preventOverwrite: true,
+        templateContext: { ...commonContext, INCLUDE_INTRO_COMMENTS: false },
+      });
       const newFile = await readFile(path, 'utf-8');
       should(newFile.includes('// Zapier will pass them in')).be.false();
     });
 
     it('should create files with comments', async () => {
       const path = `${tmpDir}/triggers/thing.js`;
-      await writeTemplateFile(
-        'trigger',
-        createTemplateContext({
-          actionType: 'trigger',
-          noun: 'thing',
-          includeIntroComments: true,
-        }),
-        path
-      );
+      await writeTemplateFile({
+        destinationPath: path,
+        templateType: 'trigger',
+        language: 'js',
+        preventOverwrite: true,
+        templateContext: commonContext,
+      });
       const newFile = await readFile(path, 'utf-8');
       should(newFile.includes('// Zapier will pass them in')).be.true();
     });
 
     it('should not clobber files', async () => {
       const path = `${tmpDir}/triggers/thing.js`;
-      await writeTemplateFile(
-        'trigger',
-        createTemplateContext({
-          actionType: 'trigger',
-          noun: 'thing',
-          includeIntroComments: true,
-        }),
-        path
-      );
 
-      await writeTemplateFile(
-        'trigger',
-        createTemplateContext({
-          actionType: 'trigger',
-          noun: 'thing',
-          includeIntroComments: true,
-        }),
-        path,
-        true
-      ).should.be.rejected();
+      await writeTemplateFile({
+        destinationPath: path,
+        templateType: 'trigger',
+        language: 'js',
+        preventOverwrite: true,
+        templateContext: commonContext,
+      });
+
+      await writeTemplateFile({
+        destinationPath: path,
+        templateType: 'trigger',
+        preventOverwrite: true,
+        language: 'js',
+        templateContext: commonContext,
+        // @ts-ignore
+      }).should.be.rejected();
     });
 
     it('should clobber files with an option', async () => {
       const path = `${tmpDir}/triggers/thing.js`;
-      await writeTemplateFile(
-        'trigger',
-        createTemplateContext({
-          actionType: 'trigger',
-          noun: 'thing',
-          includeIntroComments: true,
-        }),
-        path
-      );
 
-      await writeTemplateFile(
-        'trigger',
-        createTemplateContext({
-          actionType: 'trigger',
+      await writeTemplateFile({
+        destinationPath: path,
+        templateType: 'trigger',
+        language: 'js',
+        preventOverwrite: true,
+        templateContext: createTemplateContext({
+          templateType: 'trigger',
           noun: 'thing',
           includeIntroComments: true,
         }),
-        path
-      ).should.not.be.rejected();
+      });
+
+      await writeTemplateFile({
+        destinationPath: path,
+        templateType: 'trigger',
+        language: 'js',
+        preventOverwrite: false,
+        templateContext: createTemplateContext({
+          templateType: 'trigger',
+          noun: 'thing',
+          includeIntroComments: true,
+        }),
+        // @ts-ignore
+      }).should.not.be.rejected();
     });
 
     afterEach(async () => {
