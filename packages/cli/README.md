@@ -1576,6 +1576,8 @@ const App = {
 
 ```
 
+> Note: Even if a trigger to power a dynamic dropdown is hidden for direct use, you still need to define the input fields, and whether these are required. In the above example, when the Worksheet trigger defines a required `spreadsheet_id` field, products such as the editor will use this in two ways. Firstly, the worksheet field will be disabled until the spreadsheet field has been set. Secondly, when the user changes the spreadsheet field, the worksheet field gets cleared.
+
 The [Google Sheets](https://zapier.com/apps/google-sheets/integrations#triggers-and-actions) integration is an example of this pattern.
 
 If you want your trigger to perform specific scripting for a dynamic dropdown you will need to make use of `bundle.meta.isFillingDynamicDropdown`. This can be useful if need to make use of [pagination](#whats-the-deal-with-pagination-when-is-it-used-and-how-does-it-work) in the dynamic dropdown to load more options.
