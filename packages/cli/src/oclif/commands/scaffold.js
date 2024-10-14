@@ -1,3 +1,6 @@
+/* eslint-disable camelcase */
+// @ts-check
+
 const path = require('path');
 
 const { flags } = require('@oclif/command');
@@ -6,8 +9,7 @@ const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 
 const {
-  createTemplateContext,
-  getRelativeRequirePath,
+  createScaffoldingContext,
   plural,
   updateEntryFile,
   isValidEntryFileUpdate,
@@ -18,126 +20,93 @@ const { isValidAppInstall } = require('../../utils/misc');
 const { writeFile } = require('../../utils/files');
 const { ISSUES_URL } = require('../../constants');
 
-const getNewFileDirectory = (action, test = false) =>
+/** * @deprecated */
+const getLocalDirectory = (action, test = false) =>
   path.join(test ? 'test/' : '', plural(action));
-
-const getLocalFilePath = (directory, actionKey) =>
-  path.join(directory, actionKey);
-/**
- * both the string to `require` and later, the filepath to write to
- */
-const getFullActionFilePath = (directory, actionKey) =>
-  path.join(process.cwd(), getLocalFilePath(directory, actionKey));
-
-const getFullActionFilePathWithExtension = (directory, actionKey, isTest) =>
-  `${getFullActionFilePath(directory, actionKey)}${isTest ? '.test' : ''}.js`;
 
 class ScaffoldCommand extends BaseCommand {
   async perform() {
     const { actionType, noun } = this.args;
-
-    // TODO: interactive portion here?
     const {
-      dest: newActionDir = getNewFileDirectory(actionType),
-      testDest: newTestActionDir = getNewFileDirectory(actionType, true),
-      entry = 'index.js',
+      dest: actionDir = getLocalDirectory(actionType),
+      'test-dest': testDir = getLocalDirectory(actionType, true),
+      entry: indexFileLocal = 'index.js',
       force,
     } = this.flags;
 
-    // this is possible, just extra work that's out of scope
-    // const tsParser = j.withParser('ts')
-    // tsParser(codeStr)
-    // will have to change logic probably though
-    if (entry.endsWith('ts')) {
-      this.error(
-        `Typescript isn't supported for scaffolding yet. Instead, try copying the example code at https://github.com/zapier/zapier-platform/blob/b8224ec9855be91c66c924b731199a068b1e913a/example-apps/typescript/src/resources/recipe.ts`
-      );
-    }
+    // TODO: Auto-detect if index.js points at a TS dist/ etc.
+    const language = indexFileLocal.endsWith('.ts') ? 'ts' : 'js';
 
-    const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely `init`) this will be false
-    const templateContext = createTemplateContext(
+    const context = createScaffoldingContext({
       actionType,
       noun,
-      shouldIncludeComments
-    );
+      language,
+      indexFileLocal,
+      actionDir,
+      testDir,
+      includeIntroComments: !this.flags['no-help'],
+      preventOverwrite: !force,
+    });
 
-    const actionKey = templateContext.KEY;
-
-    const preventOverwrite = !force;
     // TODO: read from config file?
 
-    this.startSpinner(
-      `Creating new file: ${getLocalFilePath(newActionDir, actionKey)}.js`
-    );
-    await writeTemplateFile(
-      actionType,
-      templateContext,
-      getFullActionFilePathWithExtension(newActionDir, actionKey),
-      preventOverwrite
-    );
+    this.startSpinner(`Creating new file: ${context.actionFileLocal}`);
+
+    await writeTemplateFile({
+      destinationPath: context.actionFileResolved,
+      templateType: context.actionType,
+      language: context.language,
+      preventOverwrite: context.preventOverwrite,
+      templateContext: context.templateContext,
+    });
     this.stopSpinner();
 
-    this.startSpinner(
-      `Creating new test file: ${getLocalFilePath(
-        newTestActionDir,
-        actionKey
-      )}.js`
-    );
-    await writeTemplateFile(
-      'test',
-      templateContext,
-      getFullActionFilePathWithExtension(newTestActionDir, actionKey, true),
-      preventOverwrite
-    );
+    this.startSpinner(`Creating new test file: ${context.testFileLocal}`);
+    await writeTemplateFile({
+      destinationPath: context.testFileResolved,
+      templateType: 'test',
+      language: context.language,
+      preventOverwrite: context.preventOverwrite,
+      templateContext: context.templateContext,
+    });
     this.stopSpinner();
 
     // * rewire the index.js to point to the new file
-    this.startSpinner(`Rewriting your ${entry}`);
+    this.startSpinner(`Rewriting your ${context.indexFileLocal}`);
 
-    const entryFilePath = path.join(process.cwd(), entry);
-
-    const originalContents = await updateEntryFile(
-      entryFilePath,
-      templateContext.VARIABLE,
-      getFullActionFilePath(newActionDir, actionKey),
-      actionType,
-      templateContext.KEY
-    );
+    const originalContents = await updateEntryFile({
+      language: context.language,
+      indexFileResolved: context.indexFileResolved,
+      actionFileResolved: context.actionFileResolved,
+      actionImportName: context.templateContext.VARIABLE,
+      actionType: context.actionType,
+    });
 
     if (isValidAppInstall().valid) {
       const success = isValidEntryFileUpdate(
-        entryFilePath,
-        actionType,
-        templateContext.KEY
+        context.indexFileResolved,
+        context.actionType,
+        context.templateContext.KEY
       );
 
       this.stopSpinner({ success });
 
       if (!success) {
-        const entryName = splitFileFromPath(entryFilePath)[1];
+        const entryName = splitFileFromPath(context.indexFileResolved)[1];
 
         this.startSpinner(
           `Unable to successfully rewrite your ${entryName}. Rolling back...`
         );
-        await writeFile(entryFilePath, originalContents);
+        await writeFile(context.indexFileResolved, originalContents);
         this.stopSpinner();
 
         this.error(
           [
-            `\nPlease add the following lines to ${entryFilePath}:`,
-            ` * \`const ${
-              templateContext.VARIABLE
-            } = require('./${getRelativeRequirePath(
-              entryFilePath,
-              getFullActionFilePath(newActionDir, actionKey)
-            )}');\` at the top-level`,
-            ` * \`[${templateContext.VARIABLE}.key]: ${
-              templateContext.VARIABLE
-            }\` in the "${plural(
-              actionType
-            )}" object in your exported integration definition.`,
+            `\nPlease add the following lines to ${context.indexFileResolved}:`,
+            ` * \`const ${context.templateContext.VARIABLE} = require('./${context.indexFileRelativeImportPath}');\` at the top-level`,
+            ` * \`[${context.templateContext.VARIABLE}.key]: ${context.templateContext.VARIABLE}\` in the "${context.actionTypePlural}" object in your exported integration definition.`,
             '',
-            `Also, please file an issue at ${ISSUES_URL} with the contents of your ${entryFilePath}.`,
+            `Also, please file an issue at ${ISSUES_URL} with the contents of your ${context.indexFileResolved}.`,
           ].join('\n')
         );
       }
@@ -146,7 +115,7 @@ class ScaffoldCommand extends BaseCommand {
     this.stopSpinner();
 
     if (!this.flags.invokedFromAnotherCommand) {
-      this.log(`\nAll done! Your new ${actionType} is ready to use.`);
+      this.log(`\nAll done! Your new ${context.actionType} is ready to use.`);
     }
   }
 }
@@ -160,7 +129,8 @@ ScaffoldCommand.args = [
   },
   {
     name: 'noun',
-    help: 'What sort of object this action acts on. For example, the name of the new thing to create',
+    help:
+      'What sort of object this action acts on. For example, the name of the new thing to create',
     required: true,
   },
 ];
