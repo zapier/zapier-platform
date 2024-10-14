@@ -434,8 +434,8 @@ a code {
       <blockquote>
 <p>List all active canary deployments</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier canary:list</code></p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier canary:list</code></li>
 </ul>
@@ -567,8 +567,8 @@ resources convert and relate to different actions.</p><ul>
 <li><strong>Resource</strong>: the resource (if any) this action is tied to</li>
 <li><strong>Available Methods</strong>: testable methods for this action</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -592,8 +592,8 @@ resources convert and relate to different actions.</p><ul>
 </blockquote><p><strong>Usage</strong>: <code>zapier env:get VERSION</code></p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>version</code> | The version to get the environment for.</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier env:get 1.2.3</code></li>
 </ul>
@@ -671,8 +671,8 @@ resources convert and relate to different actions.</p><ul>
       <blockquote>
 <p>Get the history of your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier history</code></p><p>History includes all the changes made over the lifetime of your integration. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -722,8 +722,8 @@ resources convert and relate to different actions.</p><ul>
       <blockquote>
 <p>List integrations you have admin access to.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier integrations</code></p><p>This command also checks the current directory for a linked integration.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>apps</code></li>
 </ul>
@@ -842,8 +842,8 @@ zapier invoke auth label  # invokes authentication.test and renders connection l
       <blockquote>
 <p>Lists ongoing migration or promotion jobs for the current integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier jobs</code></p><p>A job represents a background process that will be queued up when users execute a &quot;migrate&quot; or &quot;promote&quot; command for the current integration.</p><p>Each job will be added to the end of a queue of &quot;promote&quot; and &quot;migration&quot; jobs where the &quot;Job Stage&quot; will then be initialized with &quot;requested&quot;.</p><p>Job stages will then move to &quot;estimating&quot;, &quot;in_progress&quot; and finally one of four &quot;end&quot; stages: &quot;complete&quot;, &quot;aborted&quot;, &quot;errored&quot; or &quot;paused&quot;.</p><p>Job times will vary as it depends on the size of the queue and how many users your integration has.</p><p>Jobs are returned from oldest to newest.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier jobs</code></li>
 </ul>
@@ -940,8 +940,8 @@ zapier invoke auth label  # invokes authentication.test and renders connection l
 <li><code>--detailed</code> | See extra info, like request/response body and headers.</li>
 <li><code>-u, --user</code> | Only show logs for this user. Defaults to your account.  Defaults to <code>me</code>.</li>
 <li><code>--limit</code> | Cap the number of logs returned. Max is 50 (also the default)  Defaults to <code>50</code>.</li>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1196,8 +1196,8 @@ zapier invoke auth label  # invokes authentication.test and renders connection l
 <li><code>collaborator</code>, who has read-only access for the app, and will receive periodic email updates. These updates include quarterly health scores and more.</li>
 <li><code>subscriber</code>, who can&apos;t directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.</li>
 </ul><p>Use the <code>zapier team:add</code> and <code>zapier team:remove</code> commands to modify your team.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>team:list</code></li>
 </ul>
@@ -1329,8 +1329,8 @@ Subscribers won&apos;t receive future email updates.</p><p><strong>Flags</strong
       <blockquote>
 <p>Get a list of users who have been invited to your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier users:get</code></p><p>Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the <code>zapier users:add</code> command or the web UI). Users who joined by clicking links generated using the <code>zapier user:links</code> command won&apos;t show up here.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>users:list</code></li>
 </ul>
@@ -1354,8 +1354,8 @@ Subscribers won&apos;t receive future email updates.</p><p><strong>Flags</strong
       <blockquote>
 <p>Get a list of links that are used to invite users to your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier users:links</code></p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1405,8 +1405,8 @@ Subscribers won&apos;t receive future email updates.</p><p><strong>Flags</strong
 <p>Validate your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier validate</code></p><p>Run the standard validation routine powered by json-schema that checks your integration for any structural errors. This is the same routine that runs during <code>zapier build</code>, <code>zapier upload</code>, <code>zapier push</code> or even as a test in <code>zapier test</code>.</p><p><strong>Flags</strong></p><ul>
 <li><code>--without-style</code> | Forgo pinging the Zapier server to run further checks.</li>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier validate</code></li>
 <li><code>zapier validate --without-style</code></li>
@@ -1432,8 +1432,8 @@ Subscribers won&apos;t receive future email updates.</p><p><strong>Flags</strong
       <blockquote>
 <p>List the versions of your integration available for use in the Zapier editor.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier versions</code></p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
