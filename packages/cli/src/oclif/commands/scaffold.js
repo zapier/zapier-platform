@@ -29,7 +29,7 @@ class ScaffoldCommand extends BaseCommand {
     const { actionType, noun } = this.args;
     const {
       dest: actionDir = getLocalDirectory(actionType),
-      testDest: testDir = getLocalDirectory(actionType, true),
+      'test-dest': testDir = getLocalDirectory(actionType, true),
       entry: indexFile = 'index.js',
       force,
     } = this.flags;
@@ -64,7 +64,7 @@ class ScaffoldCommand extends BaseCommand {
     this.startSpinner(`Creating new test file: ${context.testFileLocal}`);
     await writeTemplateFile({
       destinationPath: context.testFileResolved,
-      templateType: context.templateType,
+      templateType: 'test',
       language: context.language,
       preventOverwrite: context.preventOverwrite,
       templateContext: context.templateContext,
