@@ -10,7 +10,7 @@
   <a href="https://www.npmjs.com/package/zapier-platform-cli"><img src="https://img.shields.io/npm/v/zapier-platform-cli.svg" alt="npm version"></a>
 </p>
 
-Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom applications on the Zapier platform.
+Zapier is a platform for creating integrations and workflows. This CLI is your gateway to creating custom integrations on the Zapier platform.
 
 You may find some documents on the Zapier site duplicate or outdated. The most up-to-date contents are always available on GitHub:
 
@@ -35,12 +35,13 @@ This doc describes the latest CLI version (**PACKAGE_VERSION**), as of this writ
 ## Getting Started
 
 > If you're new to Zapier Platform CLI, we strongly recommend you to walk through the [Tutorial](https://platform.zapier.com/quickstart/cli-tutorial) for a more thorough introduction.
+> If you haven’t used Zapier before, we would highly recommend that you learn the basics in our [Zapier Getting Started Guide](https://zapier.com/learn/zapier-quick-start-guide/).
 
-### What is an App?
+### What is an Integration?
 
-> Note: this document uses "app" while modern Zapier nomenclature refers instead to "integrations". In both cases, the phrase refers to your code that connects your API with Zapier.
+> An integration in this case, refers to your code that connects your API with Zapier.
 
-A CLI App is an implementation of your app's API. You build a Node.js application
+A CLI Integration is an implementation of your app's API. You build a [Node.js](https://nodejs.org/en) application
 that exports a single object ([JSON Schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#appschema)) and upload it to Zapier.
 Zapier introspects that definition to find out what your app is capable of and
 what options to present end users in the Zap Editor.
@@ -54,9 +55,15 @@ For those not familiar with Zapier terminology, here is how concepts in the CLI 
  * [Searches](#triggerssearchescreates), which find specific records *in* your system. These are also listed under "Actions" in the Zap Editor.
  * [Resources](#resources), which define an object type in your API (say a contact) and the operations available to perform on it. These are automatically extracted into Triggers, Searches, and Creates.
 
-### How does Zapier Platform CLI Work?
+It is important for each of the above concepts as well as other sections of the integration to be set up according to our [platform schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md) for an integration to fuction seamlessly.
 
-Zapier takes the App you upload and sends it over to Amazon Web Service's Lambda. We then make calls to execute the operations your App defines as we execute Zaps. Your App takes the input data we provide (if any), makes the necessary HTTP calls, and returns the relevant data, which gets fed back into Zapier.
+### How does the Zapier Platform Work?
+
+Zapier takes the Integration you upload and sends it over to [Amazon Web Service's Lambda](https://aws.amazon.com/lambda/). We then make calls to execute the operations your Integration defines as we execute Zaps. Your Integration takes the input data we provide (if any), makes the necessary HTTP calls, and returns the relevant data, which gets fed back into Zapier.
+
+### The Zapier Platform CLI
+
+The Zapier Platform CLI is a terminal-based app that allows builders to scaffold new integrations locally, using standard JavaScript in your local development environment and code editor. It allows for custom coding for API calls, middleware, file support and other advanced functionality. It’s the preferred tool for engineers comfortable with a standard development workflow and collaborating in a local environment using GIT version control before pushing integration versions to the Zapier server. Platform CLI can be more difficult to use for non-engineers, but will likely be more efficient for an engineering team.
 
 ### Zapier Platform CLI vs UI
 
@@ -64,9 +71,9 @@ The Zapier Platform includes two ways to build integrations: a CLI (to build int
 
 Zapier Platform CLI is designed to be used by development teams who collaborate with version control and CI, and can be used to build more advanced integrations with custom coding for every part of your API calls and response parsing.
 
-[Zapier Platform UI](https://developer.zapier.com/) is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It's the quickest way to start using the Zapier platform—and you can manage your CLI apps' core details from its online UI as well. You can also [export](https://platform.zapier.com/docs/export) Zapier Platform UI integrations to CLI to start development in your browser, then finish out the core features in your local development environment.
+[Zapier Platform UI](https://developer.zapier.com/) is designed to quickly spin up new integrations, and collaborate on them with teams that include non-developers. It's the quickest way to start using the Zapier platform—and you can manage your CLI integration's core details from its online UI as well. You can also [export](https://platform.zapier.com/manage/export-cli) Zapier Platform UI integrations to CLI to start development in your browser, then finish out the core features in your local development environment.
 
-> Learn more in our [Zapier Platform UI vs CLI](https://platform.zapier.com/docs/vs) post.
+> Learn more in our [Zapier Platform UI vs CLI](https://platform.zapier.com/quickstart/ui-vs-cli) documentation.
 
 ### Requirements
 
@@ -76,14 +83,14 @@ You can develop using any version of Node you'd like, but your eventual code mus
 
 To ensure stability for our users, we strongly encourage you run tests on `LAMBDA_VERSION` sometime before your code reaches users. This can be done multiple ways.
 
-Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform/blob/main/example-apps/trigger/.travis.yml) file in our template apps to get you started.
+Firstly, by using a CI tool (like [Travis CI](https://travis-ci.org/) or [Circle CI](https://circleci.com/), which are free for open source projects). We provide a sample [.travis.yml](https://github.com/zapier/zapier-platform/blob/main/example-apps/trigger/.travis.yml) file in our template integrations to get you started.
 
 Alternatively, you can change your local node version with tools such as [nvm](https://github.com/nvm-sh/nvm#installation-and-update). Then you can either swap to that version with `nvm use LAMBDA_VERSION`, or do `nvm exec LAMBDA_VERSION zapier test` so you can run tests without having to switch versions while developing.
 
 
 ### Quick Setup Guide
 
-First up is installing the CLI and setting up your auth to create a working "Zapier Example" application. It will be private to you and visible in your live [Zap Editor](https://zapier.com/app/editor).
+First up is installing the CLI and setting up your auth to create a working "Zapier Example" integration. It will be private to you and visible in your live [Zap Editor](https://zapier.com/app/editor).
 
 ```bash
 # install the CLI globally
@@ -94,21 +101,21 @@ zapier login
 ```
 > Note: If you log into Zapier via the single sign-on (Google, Facebook, or Microsoft), you may not have a Zapier password. If that's the case, you'll need to generate a deploy key, go to [your Zapier developer account here](https://developer.zapier.com/partner-settings/deploy-keys/) and create/copy a key, then run ```zapier login``` command with the --sso flag.
 
-Your Zapier CLI should be installed and ready to go at this point. Next up, we'll create our first app!
+Your Zapier CLI should be installed and ready to go at this point. Next up, we'll create our first integration!
 
 ```bash
 # create a directory with the minimum required files
 zapier init example-app
 
-> Note: When you run `zapier init`, you'll be presented with a list of templates to start with. Pick the one that matches a feature you'll need (such as "dynamic-dropdown" for an integration with [dynamic dropdown fields](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#dynamic-dropdowns)), or select "minimal" for an integration with only the essentials. [View more example apps here](https://github.com/zapier/zapier-platform/tree/main/example-apps).
+> Note: When you run `zapier init`, you'll be presented with a list of templates to start with. Pick the one that matches a feature you'll need (such as "dynamic-dropdown" for an integration with [dynamic dropdown fields](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#dynamic-dropdowns)), or select "minimal" for an integration with only the essentials. [View more example integrations here](https://github.com/zapier/zapier-platform/tree/main/example-apps).
 
 # move into the new directory
 cd example-app
 
-# install all the libraries needed for your app
+# install all the libraries needed for your integration
 npm install
 ```
-Depending on the authentication method for your app, you'll also likely need to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables. These are the consumer key and secret in OAuth1 terminology.
+Depending on the authentication method for your integration, you'll also likely need to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables. These are the consumer key and secret in OAuth1 terminology.
 
 ```bash
 # setting the environment variables on Zapier.com
@@ -116,7 +123,7 @@ $ zapier env:set 1.0.0 CLIENT_ID=1234
 $ zapier env:set 1.0.0 CLIENT_SECRET=abcd
 ```
 
-You should now have a working local app. You can run several local commands to try it out.
+You should now have a working local integration. You can run several local commands to try it out.
 
 ```bash
 # run the local tests
@@ -124,10 +131,10 @@ You should now have a working local app. You can run several local commands to t
 zapier test
 ```
 
-Next, you'll probably want to upload app to Zapier itself so you can start testing live.
+Next, you'll probably want to upload your integration to Zapier itself so you can start testing live.
 
 ```bash
-# push your app to Zapier
+# push your integration to Zapier
 zapier push
 ```
 
@@ -136,13 +143,13 @@ zapier push
 
 ### Tutorial
 
-For a full tutorial, head over to our [Tutorial](https://platform.zapier.com/cli_tutorials/getting-started) for a comprehensive walkthrough for creating your first app. If this isn't your first rodeo, read on!
+For a full tutorial, head over to our [Tutorial](https://platform.zapier.com/quickstart/cli-tutorial) for a comprehensive walkthrough for creating your first integration. If this isn't your first rodeo, read on!
 
-## Creating a Local App
+## Creating a Local Integration
 
 > Tip: Check the [Quick Setup](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#quick-setup-guide) if this is your first time using the platform!
 
-Creating an App can be done entirely locally and they are fairly simple Node.js apps using the standard Node environment and should be completely testable. However, a local app stays local until you `zapier register`.
+Creating an Integration can be done entirely locally and they are fairly simple Node.js integrations using the standard Node environment and should be completely testable. However, a local integration stays local until you `zapier register`.
 
 ```bash
 # make your folder
@@ -152,22 +159,22 @@ cd zapier-example
 # create the needed files from a template
 zapier init . --template minimal
 
-# install all the libraries needed for your app
+# install all the libraries needed for your integration
 npm install
 ```
 
-If you'd like to manage your **local App**, use these commands:
+If you'd like to manage your **local integration**, use these commands:
 
-* `zapier init myapp` - initialize/start a local app project
-* `zapier convert 1234 .` - initialize/start from an existing app
+* `zapier init myapp` - initialize/start a local integration project
+* `zapier convert 1234 .` - initialize/start from an existing integration
 * `zapier scaffold resource Contact` - auto-injects a new resource, trigger, etc.
 * `zapier test` - run the same tests as `npm test`
-* `zapier validate` - ensure your app is valid
-* `zapier describe` - print some helpful information about your app
+* `zapier validate` - ensure your integration is valid
+* `zapier describe` - print some helpful information about your integration
 
 ### Local Project Structure
 
-In your app's folder, you should see this general recommended structure. The `index.js` is Zapier's entry point to your app. Zapier expects you to export an `App` definition there.
+In your integration's folder, you should see this general recommended structure. The `index.js` is Zapier's entry point to your integration. Zapier expects you to export an `Integration` definition there.
 
 ```
 $ tree .
@@ -200,118 +207,53 @@ The core definition of your `App` will look something like this, and is what you
 
 > Tip: You can use higher order functions to create any part of your App definition!
 
+### Zapier Platform Schema
 
-## Registering an App
+The [Zapier Platform Schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md) provides details for various schema components of a Zapier integration. Each schema outlines the required fields, data types, and configurations for features such as authentication, triggers, creates, searches, and HTTP requests. It's essential for integration developers to refer to this schema documentation when building their Zapier integrations, as it ensures that the correct structure is followed and the necessary components are used. The detailed examples, valid configurations, and anti-examples help guide integraton developers in creating reliable and functional integrations, avoid common errors, and ensure compatibility with the Zapier platform.
 
-Registering your App with Zapier is a necessary first step which only enables basic administrative functions. It should happen before `zapier push` which is to used to actually expose an App Version in the Zapier interface and editor.
+## Registering an Integration
+
+Registering your Integration with Zapier is a necessary first step which only enables basic administrative functions. It should happen before `zapier push` which is to used to actually expose an Integration Version in the Zapier interface and editor.
 
 ```bash
-# register your app
+# register your integration
 zapier register "Zapier Example"
 
-# list your apps
+# list your integrations
 zapier integrations
 ```
 
-> Note: This doesn't put your app in the editor - see the docs on pushing an App Version to do that!
+> Note: This doesn't put your integration in the editor - see the docs on pushing an Integration Version to do that!
 
-If you'd like to manage your **App**, use these commands:
+If you'd like to manage your **Integration**, use these commands:
 
-* `zapier integrations` - list the apps in Zapier you can administer
-* `zapier register "App Title"` - creates a new app in Zapier
-* `zapier link` - lists and links a selected app in Zapier to your current folder
-* `zapier history` - print the history of your app
-* `zapier team:add user@example.com admin` - add an admin to help maintain/develop your app
-* `zapier users:add user@example.com 1.0.0` - invite a user try your app version 1.0.0
+* `zapier integrations` - list the integrations in Zapier you can administer
+* `zapier register "Integration Title"` - creates a new integration in Zapier
+* `zapier link` - lists and links a selected integration in Zapier to your current folder
+* `zapier history` - print the history of your integration
+* `zapier team:add user@example.com admin` - add an admin to help maintain/develop your integration
+* `zapier users:add user@example.com 1.0.0` - invite a user try your integration version 1.0.0
 
-## Deploying an App Version
+## Converting an Existing Integration
 
-An App Version is related to a specific App but is an "immutable" implementation of your app. This makes it easy to run multiple versions for multiple users concurrently. The App Version is pulled from the version within the `package.json`. To create a new App Version, update the version number in that file. By default, **every App Version is private** but you can `zapier promote` it to production for use by over 1 million Zapier users.
-
-```bash
-# push your app version to Zapier
-zapier push
-
-# list your versions
-zapier versions
-```
-
-If you'd like to manage your **Version**, use these commands:
-
-* `zapier versions` - list the versions for the current directory's app
-* `zapier push` - push the current version of current directory's app & version (read from `package.json`)
-* `zapier promote 1.0.0` - mark a version as the "production" version
-* `zapier migrate 1.0.0 1.0.1 [100%]` - move users between versions, regardless of deployment status
-* `zapier deprecate 1.0.0 2020-06-01` - mark a version as deprecated, but let users continue to use it (we'll email them)
-* `zapier env:set 1.0.0 KEY=VALUE` - set an environment variable to some value
-* `zapier delete:version 1.0.0` - delete a version entirely. This is mostly for clearing out old test apps you used personally. It will fail if there are any users. You probably want `deprecate` instead.
-* `zapier pull` - pull the latest version from Zapier server. This is used in the event that Zapier made an update since your last version.
-
-> Note: To see the changes that were just pushed reflected in the browser, you have to manually refresh the browser each time you push.
-
-
-### Private App Version (default)
-
-A simple `zapier push` will only create the App Version in your editor. No one else using Zapier can see it or use it.
-
-
-### Sharing an App Version
-
-This is how you would share your app with friends, co-workers or clients. This is perfect for quality assurance, testing with active users or just sharing any app you like.
+If you have an existing Zapier [legacy Web Builder integration](https://platform.zapier.com/manage/versions-legacy), you can use it as a template to kickstart your local integration.
 
 ```bash
-# sends an email this user to let them view the app version 1.0.0 in the UI privately
-zapier users:add user@example.com 1.0.0
-
-# sends an email this user to let them admin the app (make changes just like you)
-zapier team:add user@example.com
+# Convert an existing Web Builder integration to a CLI integration in the my-integration directory
+# Integration ID 1234 is from URL https://zapier.com/developer/builder/app/1234/development
+zapier convert 1234 my-integration
 ```
 
-You can also invite anyone on the internet to your app by using the links from `zapier users:links`. The link should look something like `https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/`. You can put this in your help docs, post it to Twitter, add it to your email campaign, etc. You can choose an invite link specific to an app version or for the entire app (i.e. all app versions).
+Your CLI integration will be created and you can continue working on it.
 
-### Promoting an App Version
-
-Promotion is how you would share your app with every one of the 1 million+ Zapier users. If this is your first time promoting - you may have to wait for the Zapier team to review and approve your app.
-
-If this isn't the first time you've promoted your app - you might have users on older versions. You can `zapier migrate` to either move users over (which can be dangerous if you have breaking changes). Or, you can `zapier deprecate` to give users some time to move over themselves.
-
-```bash
-# promote your app version to all Zapier users
-zapier promote 1.0.1
-
-# OPTIONAL - migrate your users between one app version to another
-zapier migrate 1.0.0 1.0.1
-
-# OR - mark the old version as deprecated
-zapier deprecate 1.0.0 2020-06-01
-```
-
-### Pulling Latest Version from Zapier
-
-Zapier may fix bugs or add new features to your integration and release a new version. If you attempt to use `zapier push` and we've released a newer version, you will be prevented from pushing until you run `zapier pull` to update your local files with the latest version.
-
-Any destructive file changes will prompt you with a confirmation dialog before continuing.
-
-## Converting an Existing App
-
-If you have an existing Zapier [legacy Web Builder app](https://platform.zapier.com/conversion/maintaining), you can use it as a template to kickstart your local application.
-
-```bash
-# Convert an existing Web Builder app to a CLI app in the my-app directory
-# App ID 1234 is from URL https://zapier.com/developer/builder/app/1234/development
-zapier convert 1234 my-app
-```
-
-Your CLI app will be created and you can continue working on it.
-
-> Note: There is no way to convert a CLI app to a Web Builder app and we do not plan on implementing this.
+> Note: There is no way to convert a CLI integration to a Web Builder integration and we do not plan on implementing this.
 
 Introduced in v8.2.0, you are able to convert new integrations built in Zapier Platform UI to CLI.
 
 ```bash
-# the --version flag is what denotes this command is interacting with a Visual Builder app
-# zapier convert <APP_ID> --version <APP_VERSION> <PATH>
-zapier convert 1234 --version 1.0.1 my-app
+# the --version flag is what denotes this command is interacting with a Visual Builder integration
+# zapier convert <INTEGRATION_ID> --version <INTEGRATION_VERSION> <PATH>
+zapier convert 1234 --version 1.0.1 my-integration
 ```
 
 ## Authentication
@@ -322,11 +264,11 @@ When a user authenticates to your application through Zapier, a "connection" is 
 
 ### Basic
 
-Useful if your app requires two pieces of information to authenticate: `username` and `password`, which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).
+Useful if your integration requires two pieces of information to authenticate: `username` and `password`, which only the end user can provide. By default, Zapier will do the standard Basic authentication base64 header encoding for you (via an automatically registered middleware).
 
-> To create a new integration with basic authentication, run `zapier init [your app name] --template basic-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/basic-auth).
+> To create a new integration with basic authentication, run `zapier init [your integration name] --template basic-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/basic-auth).
 
-If your app uses Basic auth with an encoded API key rather than a username and password, like `Authorization: Basic APIKEYHERE:x`, consider the [Custom](#custom) authentication method instead.
+If your integration uses Basic auth with an encoded API key rather than a username and password, like `Authorization: Basic APIKEYHERE:x`, consider the [Custom](#custom) authentication method instead.
 
 ```js
 [insert-file:./snippets/basic-auth.js]
@@ -338,7 +280,7 @@ If your app uses Basic auth with an encoded API key rather than a username and p
 
 The setup and user experience of Digest Auth is identical to Basic Auth. Users provide Zapier their username and password, and Zapier handles all the nonce and quality of protection details automatically.
 
-> To create a new integration with digest authentication, run `zapier init [your app name] --template digest-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/digest-auth).
+> To create a new integration with digest authentication, run `zapier init [your integration name] --template digest-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/digest-auth).
 
 > Limitation: Currently, MD5-sess and SHA are not implemented. Only the MD5 algorithm is supported. In addition, server nonces are not reused. That means for every `z.request` call, Zapier will send an additional request beforehand to get the server nonce.
 
@@ -348,9 +290,9 @@ The setup and user experience of Digest Auth is identical to Basic Auth. Users p
 
 ### Custom
 
-Custom auth is most commonly used for apps that authenticate with API keys, although it also provides flexibility for any unusual authentication setup. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` (see [Making HTTP Requests](#making-http-requests)) to pass in data returned from the authentication process, most commonly by adding/computing needed headers.
+Custom auth is most commonly used for integrations that authenticate with API keys, although it also provides flexibility for any unusual authentication setup. You'll likely provide some custom `beforeRequest` middleware or a `requestTemplate` (see [Making HTTP Requests](#making-http-requests)) to pass in data returned from the authentication process, most commonly by adding/computing needed headers.
 
-> To create a new integration with custom authentication, run `zapier init [your app name] --template custom-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/custom-auth).
+> To create a new integration with custom authentication, run `zapier init [your integration name] --template custom-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/custom-auth).
 
 ```js
 [insert-file:./snippets/custom-auth.js]
@@ -360,7 +302,7 @@ Custom auth is most commonly used for apps that authenticate with API keys, alth
 
 Session auth gives you the ability to exchange some user-provided data for some authentication data; for example, username and password for a session key. It can be used to implement almost any authentication method that uses that pattern - for example, alternative OAuth flows.
 
-> To create a new integration with session authentication, run `zapier init [your app name] --template session-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/session-auth).
+> To create a new integration with session authentication, run `zapier init [your integration name] --template session-auth`. You can also review an example of that code [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/session-auth).
 
 ```js
 [insert-file:./snippets/session-auth.js]
@@ -372,14 +314,14 @@ For Session auth, the function that fetches the additional authentication data n
 
 *Added in `v7.5.0`.*
 
-Zapier's OAuth1 implementation matches [Twitter](https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a) and [Trello](https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth) implementations of the 3-legged OAuth flow.
+Zapier's [OAuth1](https://oauth.net/1/) implementation matches [Twitter](https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a) and [Trello](https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth) implementations of the 3-legged OAuth flow.
 
-> To create a new integration with OAuth1, run `zapier init [your app name] --template oauth1-trello`. You can also check out [oauth1-trello](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth1-trello), [oauth1-tumblr](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth1-twitter) for working example apps with OAuth1.
+> To create a new integration with OAuth1, run `zapier init [your integration name] --template oauth1-trello`. You can also check out [oauth1-trello](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth1-trello), [oauth1-tumblr](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth1-twitter) for working example integrations with OAuth1.
 
 The flow works like this:
 
   1. Zapier makes a call to your API requesting a "request token" (also known as "temporary credentials").
-  2. Zapier sends the user to the authorization URL, defined by your app, along with the request token.
+  2. Zapier sends the user to the authorization URL, defined by your integration, along with the request token.
   3. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/117ECB35-5CCA-4C98-B74A-35F1AD9A3337.png)
   4. Zapier makes a backend call to your API to exchange the request token for an "access token" (also known as "long-lived credentials").
   5. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
@@ -413,15 +355,15 @@ Also, `authentication.oauth1Config.getAccessToken` has access to the additional 
 
 ### OAuth2
 
-Zapier's OAuth2 implementation is based on the `authorization_code` flow, similar to [GitHub](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps) and [Facebook](https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow).
+Zapier's [OAuth2](https://oauth.net/2/) implementation is based on the `authorization_code` flow, similar to [GitHub](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps) and [Facebook](https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow).
 
-> To create a new integration with OAuth2, run `zapier init [your app name] --template oauth2`. You can also check out [our working example app](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth2).
+> To create a new integration with OAuth2, run `zapier init [your integration name] --template oauth2`. You can also check out [our working example integration](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth2).
 
-If your app's OAuth2 flow uses a different grant type, such as `client_credentials`, try using [Session auth](#session) instead.
+If your integration's OAuth2 flow uses a different grant type, such as `client_credentials`, try using [Session auth](#session) instead.
 
 The OAuth2 flow looks like this:
 
-  1. Zapier sends the user to the authorization URL defined by your app.
+  1. Zapier sends the user to the authorization URL defined by your integration.
   2. Once authorized, your website sends the user to the `redirect_uri` Zapier provided. Use the `zapier describe` command to find out what it is: ![](https://zappy.zapier.com/83E12494-0A03-4DB4-AA46-5A2AF6A9ECCC.png)
   3. Zapier makes a backend call to your API to exchange the `code` for an `access_token`.
   4. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
@@ -432,7 +374,7 @@ You are required to define:
   * `authorizeUrl`: The authorization URL
   * `getAccessToken`: The API call to fetch the access token
 
-If the access token has a limited life and you want to refresh the token when it expires, you'll also need to define the API call to perform that refresh (`refreshAccessToken`). You can choose to set `autoRefresh: true`, as in the example app, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See [Stale Authentication Credentials](#stale-authentication-credentials) for more details on handling auth refresh.
+If the access token has a limited life and you want to refresh the token when it expires, you'll also need to define the API call to perform that refresh (`refreshAccessToken`). You can choose to set `autoRefresh: true`, as in the example integration, if you want Zapier to automatically make a call to refresh the token after receiving a 401. See [Stale Authentication Credentials](#stale-authentication-credentials) for more details on handling auth refresh.
 
 You'll also likely want to set your `CLIENT_ID` and `CLIENT_SECRET` as environment variables:
 
@@ -457,8 +399,8 @@ Also, `authentication.oauth2Config.getAccessToken` has access to the additional 
 
 If you define `fields` to collect additional details from the user, please note that `client_id` and `client_secret` are reserved keys and cannot be used as keys for input form fields.
 
-> Note: The OAuth2 `state` param is a [standard security feature](https://auth0.com/docs/secure/attack-protection/state-parameters) that helps ensure that authorization requests are only coming from your servers. Most OAuth clients have support for this and will send back the `state` query param that the user brings to your app. The Zapier Platform performs this check and this required field cannot be disabled. The state parameter is automatically generated by Zapier in the background, and can be accessed at `bundle.inputData.state`.
-Since Zapier uses the `state` to verify that GET requests to your redirect URL truly come from your app, it needs to be generated by Zapier so that it can be validated later (once the user confirms that they'd like to grant Zapier permission to access their account in your app).
+> Note: The OAuth2 `state` param is a [standard security feature](https://auth0.com/docs/secure/attack-protection/state-parameters) that helps ensure that authorization requests are only coming from your servers. Most OAuth clients have support for this and will send back the `state` query param that the user brings to your integration. The Zapier Platform performs this check and this required field cannot be disabled. The state parameter is automatically generated by Zapier in the background, and can be accessed at `bundle.inputData.state`.
+Since Zapier uses the `state` to verify that GET requests to your redirect URL truly come from your integration, it needs to be generated by Zapier so that it can be validated later (once the user confirms that they'd like to grant Zapier permission to access their account in your app).
 
 
 ### OAuth2 with PKCE
@@ -474,7 +416,7 @@ To use PKCE in your OAuth2 flow, you'll need to set the following variables:
 The OAuth2 PKCE flow uses the same flow as OAuth2 but adds a few extra parameters:
 
   1. Zapier computes a `code_verifier` and `code_challenge` internally and stores the `code_verifier` in the Zapier bundle.
-  2. Zapier sends the user to the authorization URL defined by your app. We automatically include the computed `code_challenge` and `code_challenge_method` in the authorization request.
+  2. Zapier sends the user to the authorization URL defined by your integration. We automatically include the computed `code_challenge` and `code_challenge_method` in the authorization request.
   3. Once authorized, your website sends the user to the `redirect_uri` Zapier provided.
   4. Zapier makes a call to your API to exchange the code but you must include the computed `code_verifier` in the request for an `access_token`.
   5. Zapier stores the `access_token` and uses it to make calls on behalf of the user.
@@ -491,7 +433,7 @@ The computed `code_challenge` uses this standard: [RFC 7636 Code Challenge](http
 
 ### Connection Label
 
-When a user connects to your app via Zapier and a connection is created to hold the related data in `bundle.authData`, the connection is automatically labeled with the app name. You also have the option of setting a connection label (`connectionLabel`), which can be extremely helpful to identify information like which user is connected or what instance of your app they are connected to. That way, users don't get confused if they have multiple connections to your app.
+When a user connects to your integration via Zapier and a connection is created to hold the related data in `bundle.authData`, the connection is automatically labeled with the integration name. You also have the option of setting a connection label (`connectionLabel`), which can be extremely helpful to identify information like which user is connected or what instance of your integration they are connected to. That way, users don't get confused if they have multiple connections to your integration.
 
 When setting a connection label, you can use either a string with variable references (as shown in [Basic Auth](#basic)) or a function (as shown in [Digest Auth](#digest)).
 
@@ -554,7 +496,7 @@ Taking the following steps prevents the potential for an attacker to access your
 ## Resources
 
 A `resource` is a representation (as a JavaScript object) of one of the REST resources of your API. Say you have a `/recipes`
-endpoint for working with recipes; you can define a recipe resource in your app that will tell Zapier how to do create,
+endpoint for working with recipes; you can define a recipe resource in your integration that will tell Zapier how to do create,
 read, and search operations on that resource.
 
 ```js
@@ -575,7 +517,7 @@ This will generate the resource file and add the necessary statements to the `in
 A resource has a few basic properties. The first is the `key`, which allows Zapier to identify the resource on our backend.
 The second is the `noun`, the user-friendly name of the resource that is presented to users throughout the Zapier UI.
 
-> Check out [this working example app](https://github.com/zapier/zapier-platform/tree/main/example-apps/resource) to see resources in action.
+> Check out [this working example integration](https://github.com/zapier/zapier-platform/tree/main/example-apps/resource) to see resources in action.
 
 After those, there is a set of optional properties that tell Zapier what methods can be performed on the resource.
 The complete list of available methods can be found in the [Resource Schema Docs](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#resourceschema).
@@ -599,14 +541,14 @@ Adding a create method looks very similar.
 ```
 
 Every method you define on a `resource` Zapier converts to the appropriate Trigger, Create, or Search. Our examples
-above would result in an app with a New Recipe Trigger and an Add Recipe Create.
+above would result in an integration with a New Recipe Trigger and an Add Recipe Create.
 
 Note the keys for the Trigger, Create, Search, and Search or Create are automatically generated (in case you want to use them in a dynamic dropdown), like: `{resourceName}List`, `{resourceName}Create`, `{resourceName}Search`, and `{resourceName}SearchOrCreate`; in the examples above, `{resourceName}` would be `recipe`.
 
 
 ## Triggers/Searches/Creates
 
-Triggers, Searches, and Creates are the way an app defines what it is able to do. Triggers read
+Triggers, Searches, and Creates are the way an integration defines what it is able to do. Triggers read
 data into Zapier (i.e. watch for new recipes). Searches locate individual records (find recipe by title). Creates create
 new records in your system (add a recipe to the catalog).
 
@@ -619,7 +561,7 @@ The definition for each of these follows the same structure. Here is an example 
 You can find more details on the definition for each by looking at the [Trigger Schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#triggerschema),
 [Search Schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#searchschema), and [Create Schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#createschema).
 
-> To create a new integration with a premade trigger, search, or create, run `zapier init [your app name]` and select from the list that appears. You can also check out our working example apps [here](https://github.com/zapier/zapier-platform/tree/main/example-apps).
+> To create a new integration with a premade trigger, search, or create, run `zapier init [your integration name]` and select from the list that appears. You can also check out our working example integrations [here](https://github.com/zapier/zapier-platform/tree/main/example-apps).
 
 > To add a trigger, search, or create to an existing integration, run `zapier scaffold [trigger|search|create] [noun]` to create the necessary files to your project. For example, `zapier scaffold trigger post` will create a new trigger called "New Post".
 ### Return Types
@@ -628,7 +570,7 @@ Each of the 3 types of function should return a certain data type for use by the
 
 | Method  | Return Type | Notes                                                                                                                |
 |---------|-------------|----------------------------------------------------------------------------------------------------------------------|
-| Trigger | Array       | 0 or more objects; passed to the [deduper](https://platform.zapier.com/docs/dedupe/) if polling  |
+| Trigger | Array       | 0 or more objects; passed to the [deduper](https://platform.zapier.com/build/deduplication) if polling  |
 | Search  | Array       | 0 or more objects. Only the first object will be returned, so if len > 1, put the best match first                   |
 | Create  | Object      | Return values are evaluated by [`isPlainObject`](https://lodash.com/docs#isPlainObject)                              |
 
@@ -682,7 +624,7 @@ In cases where Zapier needs to show an example record to the user, but we are un
 
 ## Input Fields
 
-On each trigger, search, or create in the `operation` directive, you can provide fields as an array of objects under `inputFields`. Input Fields are what your users see in Zapier when setting up your app's triggers and actions. For example, you might have a "Create Contact" action with fields like "First name", "Last name", "Email", etc. These fields will be able to accept input from the user, or from previous steps in a Zap. For example:
+On each trigger, search, or create in the `operation` directive, you can provide fields as an array of objects under `inputFields`. Input Fields are what your users see in Zapier when setting up your integration's triggers and actions. For example, you might have a "Create Contact" action with fields like "First name", "Last name", "Email", etc. These fields will be able to accept input from the user, or from previous steps in a Zap. For example:
 
 ![gif of setting up an action field in Zap Editor](https://cdn.zappy.app/52721a3cb202446b7c298e303b710471.gif)
 
@@ -786,13 +728,11 @@ Let's say you have a Worksheet trigger with a `perform` method similar to this.
 [insert-file:./snippets/dynamic-dropdowns-five.js]
 ```
 
-And your New Records trigger has a Spreadsheet and a Worksheet dynamic dropdown. The Spreadsheet dynamic dropdown must have a key of `spreadsheet_id`. When the user selects a spreadsheet via the dynamic dropdown the value chosen is made available in `bundle.inputData`. It will then be passed to the Worksheet trigger when the user clicks on the Worksheet dynamic dropdown.
+And your New Records trigger has a Spreadsheet and a Worksheet dynamic dropdown. The Spreadsheet dynamic dropdown must have a key of `spreadsheet_id`. When the user selects a spreadsheet via the dynamic dropdown, the value chosen is made available in `bundle.inputData`. It will then be passed to the Worksheet trigger when the user clicks on the Worksheet dynamic dropdown.
 
 ```js
 [insert-file:./snippets/dynamic-dropdowns-six.js]
 ```
-
-> Note: Even if a trigger to power a dynamic dropdown is hidden for direct use, you still need to define the input fields, and whether these are required. In the above example, when the Worksheet trigger defines a required `spreadsheet_id` field, products such as the editor will use this in two ways. Firstly, the worksheet field will be disabled until the spreadsheet field has been set. Secondly, when the user changes the spreadsheet field, the worksheet field gets cleared.
 
 The [Google Sheets](https://zapier.com/apps/google-sheets/integrations#triggers-and-actions) integration is an example of this pattern.
 
@@ -850,8 +790,8 @@ The [schema](https://github.com/zapier/zapier-platform/blob/main/packages/schema
 
 - `key` - includes the field when not present in the live sample. When no `label` property is provided, `key` will be *humanized* and displayed as the field name.
 - `label` - defines the field name displayed to users.
-- `type` - defines the type for static sample data. A [validation warning](https://platform.zapier.com/docs/integration-checks-reference#d024---static-sample-respects-output-field-definition) will be displayed if the static sample does not match the specified type.
-- `required` - defines whether the field is required in static sample data. A [validation warning](https://platform.zapier.com/docs/integration-checks-reference#d024---static-sample-respects-output-field-definition) will be displayed if the value is true and the static sample does not contain the field.
+- `type` - defines the type for static sample data. A [validation warning](https://platform.zapier.com/publish/integration-checks-reference#d024---static-sample-respects-output-field-definition) will be displayed if the static sample does not match the specified type.
+- `required` - defines whether the field is required in static sample data. A [validation warning](https://platform.zapier.com/publish/integration-checks-reference#d024---static-sample-respects-output-field-definition) will be displayed if the value is true and the static sample does not contain the field.
 - `primary` - defines whether the field is part of the primary key for polling trigger [deduplication](#how-does-deduplication-work).
 
 Custom/Dynamic Output Fields are defined in the same way as [Custom/Dynamic Input Fields](#customdynamic-fields).
@@ -882,9 +822,70 @@ Here is an example of a Buffered Create action:
 [insert-file:./snippets/buffered-create.js]
 ```
 
+## Deploying an Integration Version
+
+An Integration Version is related to a specific Integration but is an "immutable" implementation of your integration. This makes it easy to run multiple versions for multiple users concurrently. The Integration Version is pulled from the version within the `package.json`. To create a new Integration Version, update the version number in that file. By default, **every Integration Version is private** but you can `zapier promote` it to production for use by over 1 million Zapier users.
+
+```bash
+# push your integration version to Zapier
+zapier push
+
+# list your versions
+zapier versions
+```
+
+If you'd like to manage your **Version**, use these commands:
+
+* `zapier versions` - list the versions for the current directory's integration
+* `zapier push` - push the current version of current directory's integration & version (read from `package.json`)
+* `zapier promote 1.0.0` - mark a version as the "production" version
+* `zapier migrate 1.0.0 1.0.1 [100%]` - move users between versions, regardless of deployment status
+* `zapier deprecate 1.0.0 2020-06-01` - mark a version as deprecated, but let users continue to use it (we'll email them)
+* `zapier env:set 1.0.0 KEY=VALUE` - set an environment variable to some value
+* `zapier delete:version 1.0.0` - delete a version entirely. This is mostly for clearing out old test integrations you used personally. It will fail if there are any users. You probably want `deprecate` instead.
+
+> Note: To see the changes that were just pushed reflected in the browser, you have to manually refresh the browser each time you push.
+
+
+### Private Integration Version (default)
+
+A simple `zapier push` will only create the Integration Version in your editor. No one else using Zapier can see it or use it.
+
+
+### Sharing an Integration Version
+
+This is how you would share your integration with friends, co-workers or clients. This is perfect for quality assurance, testing with active users or just sharing any integration you like.
+
+```bash
+# sends an email to this user to let them view the integration version 1.0.0 in the UI privately
+zapier users:add user@example.com 1.0.0
+
+# sends an email to this user to let them admin the integration (make changes just like you)
+zapier team:add user@example.com
+```
+
+You can also invite anyone on the internet to your integration by using the links from `zapier users:links`. The link should look something like `https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/`. You can put this in your help docs, post it to Twitter, add it to your email campaign, etc. You can choose an invite link specific to an integration version or for the entire integration (i.e. all integration versions).
+
+### Promoting an Integration Version
+
+Promotion is how you would share your integration with every one of the 1 million+ Zapier users. If this is your first time promoting - you may have to wait for the Zapier team to review and approve your integration.
+
+If this isn't the first time you've promoted your integration - you might have users on older versions. You can `zapier migrate` to either move users over (which can be dangerous if you have breaking changes). Or, you can `zapier deprecate` to give users some time to move over themselves.
+
+```bash
+# promote your integration version to all Zapier users
+zapier promote 1.0.1
+
+# OPTIONAL - migrate your users between one integration version to another
+zapier migrate 1.0.0 1.0.1
+
+# OR - mark the old version as deprecated
+zapier deprecate 1.0.0 2020-06-01
+```
+
 ## Z Object
 
-We provide several methods off of the `z` object, which is provided as the first argument to all function calls in your app.
+We provide several methods off of the `z` object, which is provided as the first argument to all function calls in your integration.
 
 > The `z` object is passed into your functions as the first argument - IE: `perform: (z) => {}`.
 
@@ -1192,10 +1193,10 @@ It contains an idempotency `id` provided to the `create` action to identify each
 
 ## Environment
 
-Apps can define environment variables that are available when the app's code executes. They work just like environment
+Integrations can define environment variables that are available when the integration's code executes. They work just like environment
 variables defined on the command line. They are useful when you have data like an OAuth client ID and secret that you
 don't want to commit to source control. Environment variables can also be used as a quick way to toggle between
-a staging and production environment during app development.
+a staging and production environment during integration development.
 
 It is important to note that **variables are defined on a per-version basis!** When you push a new version, the
 existing variables from the previous version are copied, so you don't have to manually add them. However, edits
@@ -1250,7 +1251,7 @@ To view existing environment variables, use the `env` command.
 zapier env:get 1.0.0
 ```
 
-Within your app, you can access the environment via the standard `process.env` - any values set via local `export` or `zapier env:set` will be there.
+Within your integration, you can access the environment via the standard `process.env` - any values set via local `export` or `zapier env:set` will be there.
 
 For example, you can access the `process.env` in your perform functions and in templates:
 
@@ -1354,6 +1355,8 @@ To POST or PUT data to your API you can do this:
 
 ### Using HTTP middleware
 
+HTTP middleware is a function or piece of code that sits between a client request and the server response, allowing you to inspect, modify, or handle the request or response before they reach their destination. You use middleware to perform common tasks like adding security headers, logging requests, handling errors, or modifying data in a centralized way without repeating code. Common examples include adding a header to all outgoing responses to improve security, or catching and handling weird errors so that users receive a friendly error message instead of the system-generated message.
+
 To process all HTTP requests in a certain way, use the `beforeRequest` and `afterResponse` middleware functions.
 
 Middleware functions go in your app definition:
@@ -1383,7 +1386,7 @@ Here is the full request lifecycle when you call `z.request({...})`:
 
 The resulting response object is returned from `z.request()`.
 
-> Example App: check out https://github.com/zapier/zapier-platform/tree/main/example-apps/middleware for a working example app using HTTP middleware.
+> Example Integration: check out https://github.com/zapier/zapier-platform/tree/main/example-apps/middleware for a working example integration using HTTP middleware.
 
 #### Error Response Handling
 
@@ -1538,7 +1541,7 @@ Dehydration, and its counterpart Hydration, is a tool that can lazily load data 
 
 The method `z.dehydrate(func, inputData)` has two required arguments:
 
-* `func` - the function to call to fetch the extra data. Can be any raw `function`, defined in the file doing the dehydration or imported from another part of your app. You must also register the function in the app's `hydrators` property. Note that since v10.1.0, the maximum payload size to pass to `z.dehydrate` / `z.dehydrateFile` is 6KB.
+* `func` - the function to call to fetch the extra data. Can be any raw `function`, defined in the file doing the dehydration or imported from another part of your integration. You must also register the function in the integration's `hydrators` property. Note that since v10.1.0, the maximum payload size to pass to `z.dehydrate` / `z.dehydrateFile` is 6KB.
 * `inputData` - this is an object that contains things like a `path` or `id` - whatever you need to load data on the other side
 * A known limitation of hydration is a 5 minute cache if the hydration call is made with identical `inputData` within that timeframe. To workaround this cache for records triggering hydration in close succession, include a unique value in the `inputData`, for example a `timestamp` in addition to the record `id`. 
 
@@ -1550,7 +1553,7 @@ Here is an example that pulls in extra data for a movie:
 [insert-file:./snippets/dehydration.js]
 ```
 
-And in future steps of the Zap - if Zapier encounters a pointer as returned by `z.dehydrate(func, inputData)` - Zapier will tie it back to your app and pull in the data lazily.
+And in future steps of the Zap - if Zapier encounters a pointer as returned by `z.dehydrate(func, inputData)` - Zapier will tie it back to your integration and pull in the data lazily.
 
 > **Why can't I just load the data immediately?** Isn't it easier? In some cases it can be - but imagine an API that returns 100 records when polling - doing 100x `GET /id.json` aggressive inline HTTP calls when 99% of the time Zapier doesn't _need_ the data yet is wasteful.
 
@@ -1621,14 +1624,14 @@ See a full example with dehydration/hydration wired in correctly:
 [insert-file:./snippets/stash-file.js]
 ```
 
-> To create a new integration for handling files, run `zapier init [your app name] --template files`. You can also check out our working example app [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/files).
+> To create a new integration for handling files, run `zapier init [your integration name] --template files`. You can also check out our working example integration [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/files).
 
 
 ## Logging
 
-To view the logs for your application, use the `zapier logs` command.
+To view the logs for your integration, use the `zapier logs` command.
 
-There are three types of logs for a Zapier app:
+There are three types of logs for a Zapier integration:
 
 * `http`: logged automatically by Zapier on HTTP requests
 * `bundle`: logged automatically on every method execution
@@ -1636,7 +1639,7 @@ There are three types of logs for a Zapier app:
 
 Note that by default, this command will only fetch logs associated to your user.
 
-For advanced logging options, including the option to fetch logs for other users or specific app versions, look at the help for the logs command:
+For advanced logging options, including the option to fetch logs for other users or specific integration versions, look at the help for the logs command:
 
 ```bash
 zapier help logs
@@ -1699,7 +1702,7 @@ zapier logs --type=http --detailed
 ## Error Handling
 
 APIs are not always available. Users do not always input data correctly to
-formulate valid requests. Thus, it is a good idea to write apps defensively and
+formulate valid requests. Thus, it is a good idea to write integrations defensively and
 plan for 4xx and 5xx responses from APIs. Without proper handling, errors often
 have incomprehensible messages for end users, or possibly go uncaught.
 
@@ -1714,7 +1717,7 @@ the behavior of Zaps when various kinds of errors occur.
 
 ### General Errors
 
-Errors due to a misconfiguration in a user's Zap should be handled in your app
+Errors due to a misconfiguration in a user's Zap should be handled in your integration
 by throwing `z.errors.Error` with a user-friendly message and optional error and
 status code. Typically, this will be prettifying 4xx responses or APIs that return
 errors as 200s with a payload that describes the error.
@@ -1754,7 +1757,7 @@ Example: `throw new z.errors.HaltedError('Your reason.');`
 
 ### Stale Authentication Credentials
 
-For apps that require manual refresh of authorization on a regular basis, Zapier
+For integrations that require manual refresh of authorization on a regular basis, Zapier
 provides a mechanism to notify users of expired credentials. With the
 `ExpiredAuthError`, the current operation is interrupted and a predefined email
 is sent out asking the user to refresh the credentials. While the auth is
@@ -1765,7 +1768,7 @@ and the user will be able to replay them after reconnecting.)
 
 Example: `throw new z.errors.ExpiredAuthError('You must manually reconnect this auth.');`
 
-For apps that use OAuth2 with `autoRefresh: true` or Session Auth, `core` injects
+For integrations that use OAuth2 with `autoRefresh: true` or Session Auth, `core` injects
 a built-in `afterResponse` middleware that throws an error when the response status
 is 401. The error will signal Zapier to refresh the credentials and then retry the
 failed operation. You can also throw this error manually if your server doesn't use the 401 status or you want to trigger an auth refresh even if the credentials aren't stale.
@@ -1796,40 +1799,8 @@ For throttled requests that occur during processing of a webhook trigger's perfo
 
 ## Testing
 
-There are several ways to test your Zapier integration:
-
-* You can use the `zapier invoke` command to invoke a trigger, search, create, or an auth operation locally.
-* You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.
-* You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
-
-### Using `zapier invoke` Command
-
-*Added in v15.17.0.*
-
-The `zapier invoke <ACTION_TYPE> <ACTION_KEY>` CLI command emulates how the Zapier production environment would invoke your app. Since it runs code locally, it's a fast way to debug and test interactively without needing to deploy the code to Zapier.
-
-Its general execution flow involves calling `operation.inputFields` of an action, resolving the input data to the expected types, and then calling the `operation.perform` method.
-
-`zapier invoke --help` should be self-explanatory, but here's a quick rundown:
-
-```bash
-# Initialize auth data in .env file
-zapier invoke auth start
-
-# Refresh auth data (for OAuth2 or Session auth)
-zapier invoke auth refresh
-
-# Test your auth data in .env
-zapier invoke auth test
-zapier invoke auth label
-
-# Invoke a polling trigger
-zapier invoke trigger new_recipe
-
-# Invoke a create action
-zapier invoke create add_recipe --inputData '{"name": "Pancakes"}'
-zapier invoke create add_recipe --inputData @file.json
-```
+You can write unit tests for your Zapier integration that run locally, outside of the Zapier editor.
+You can run these tests in a CI tool like [Travis](https://travis-ci.com/).
 
 ### Writing Unit Tests
 
@@ -1975,7 +1946,7 @@ Debugging combined with thorough unit tests will hopefully equip you in keeping 
 
 ## Using `npm` Modules
 
-Use `npm` modules just like you would use them in any other node app, for example:
+Use `npm` [modules](https://docs.npmjs.com/) just like you would use them in any other node app, for example:
 
 ```bash
 npm install --save jwt
@@ -2090,23 +2061,23 @@ zapier test
 zapier push
 ```
 
-There are a lot of details left out - check out the full example app [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/babel).
+There are a lot of details left out - check out the full example integration [here](https://github.com/zapier/zapier-platform/tree/main/example-apps/babel).
 
-> We recommend using `zapier init .`  to create an app - you’ll be presented with a list of currently available example templates to start with.
+> We recommend using `zapier init .`  to create an integration - you’ll be presented with a list of currently available example templates to start with.
 
 ## FAQs
 
 ### Why doesn't Zapier support newer versions of Node.js?
 
-We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node. Sometimes that doesn't include the latest version. Additionally, with thousands of apps running on the Zapier platform, we have to be sure upgrading to the latest Node version will not have a negative impact.
+We run your code on AWS Lambda, which only supports a few [versions](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html) of Node. Sometimes that doesn't include the latest version. Additionally, with thousands of integration running on the Zapier platform, we have to be sure upgrading to the latest Node version will not have a negative impact.
 
-### How do I manually set the Node.js version to run my app with?
+### How do I manually set the Node.js version to run my integration with?
 
 Update your `zapier-platform-core` dependency in `package.json`.  Each major version ties to a specific version of Node.js. You can find the mapping [here](https://github.com/zapier/zapier-platform/blob/main/packages/cli/src/version-store.js). We only support the version(s) supported by [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html).
 
 **IMPORTANT CAVEAT**: AWS periodically deprecates Node versions as they reach EOL. They announce this[on their blog](https://aws.amazon.com/blogs/developer/node-js-6-is-approaching-end-of-life-upgrade-your-aws-lambda-functions-to-the-node-js-10-lts/). Similar info and dates are available on [github](https://github.com/nodejs/Release). Well before this date, we'll have a version of `core` that targets the newer Node version.
 
-If you don't upgrade before the cutoff date, there's a chance that AWS will throw an error when attempting to run your app's code. If that's the case, we'll instead run it under the oldest Node version still supported. All that is to say, **we may run your code on a newer version of Node.js than you intend** if you don't update your app's dependencies periodically.
+If you don't upgrade before the cutoff date, there's a chance that AWS will throw an error when attempting to run your integration's code. If that's the case, we'll instead run it under the oldest Node version still supported. All that is to say, **we may run your code on a newer version of Node.js than you intend** if you don't update your integration's dependencies periodically.
 
 ### When to use placeholders or curlies?
 
@@ -2114,7 +2085,7 @@ You will see both [template literal placeholders](https://developer.mozilla.org/
 
 In general, use `${var}` within functions and use `{{var}}` anywhere else.
 
-Placeholders get evaluated as soon as the line of code is evaluated. This means that if you use `${process.env.VAR}` in a trigger configuration, `zapier push` will substitute it with your local environment's value for `VAR` when it builds your app and the value set via `zapier env:set` will not be used.
+Placeholders get evaluated as soon as the line of code is evaluated. This means that if you use `${process.env.VAR}` in a trigger configuration, `zapier push` will substitute it with your local environment's value for `VAR` when it builds your integration and the value set via `zapier env:set` will not be used.
 
 > If you're not familiar with [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals), know that `const val = "a" + b + "c"` is essentially the same as <code>const val = &#96;a${b}c&#96;</code>.
 
@@ -2150,11 +2121,11 @@ If you need to do more requests conditionally based on the results of an HTTP ca
 
 To understand search-powered fields, we have to have a good understanding of dynamic dropdowns.
 
-When users are selecting specific resources (for instance, a Google Sheet), it's important they're able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via `id` instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a **dynamic dropdown**. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same app.  It provides a list of ids with labels that show the item's name:
+When users are selecting specific resources (for instance, a Google Sheet), it's important they're able to select the exact sheet they want. Instead of referencing the sheet by name (which may change), we match via `id` instead. Rather than directing the user copy and paste an id for every item they might encounter, there is the notion of a **dynamic dropdown**. A dropdown is a trigger that returns a list of resources. It can pull double duty and use its results to power another trigger, search, or action in the same integration.  It provides a list of ids with labels that show the item's name:
 
 ![](https://cdn.zappy.app/2d7eeda63ff34b70f1d1788de0117181.png)
 
-The field's value reaches your app as an id. You define this connection with the `dynamic` property, which is a string: `trigger_key.id_key.label_key`. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.
+The field's value reaches your integration as an id. You define this connection with the `dynamic` property, which is a string: `trigger_key.id_key.label_key`. This approach works great if the user setting up the Zap always wants the Zap to use the same spreadsheet. They specify the id during setup and the Zap runs happily.
 
 **Search fields** take this connection a step further. Rather than set the spreadsheet id at setup, the user could precede the action with a search field to make the id dynamic. For instance, let's say you have a different spreadsheet for every day of the week. You could build the following zap:
 
@@ -2212,7 +2183,7 @@ There's a more in-depth explanation [here](https://platform.zapier.com/build/ded
 
 ### Why are my triggers complaining if I don't provide an explicit `id` field?
 
-For deduplication to work, we need to be able to identify and use a unique field. In older, legacy Zapier Web Builder apps, we guessed if `id` wasn't present. In order to ensure we don't guess wrong, we now require that the developers send us an `id` field. If your objects have a differently-named unique field, feel free to adapt this snippet and ensure this test passes:
+For deduplication to work, we need to be able to identify and use a unique field. In older, legacy Zapier Web Builder integrations, we guessed if `id` wasn't present. In order to ensure we don't guess wrong, we now require that the developers send us an `id` field. If your objects have a differently-named unique field, feel free to adapt this snippet and ensure this test passes:
 
 ```js
 // ...
@@ -2308,9 +2279,9 @@ Follow those instructions to enable completion for `zapier` commands and flags!
 
 The Zapier Platform consists of 3 npm packages that are released simultaneously.
 
-- [`zapier-platform-cli`](https://github.com/zapier/zapier-platform/tree/main/packages/cli) is the code that powers the `zapier` command. You use it most commonly with the `test`, `scaffold`, and `push` commands. It's installed with `npm install -g zapier-platform-cli` and does not correspond to a particular app.
-- [`zapier-platform-core`](https://github.com/zapier/zapier-platform/tree/main/packages/core) is what allows your app to interact with Zapier. It holds the `z` object and app tester code. Your app depends on a specific version of `zapier-platform-core` in the `package.json` file. It's installed via `npm install` along with the rest of your app's dependencies.
-- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/main/packages/schema) enforces app structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
+- [`zapier-platform-cli`](https://github.com/zapier/zapier-platform/tree/main/packages/cli) is the code that powers the `zapier` command. You use it most commonly with the `test`, `scaffold`, and `push` commands. It's installed with `npm install -g zapier-platform-cli` and does not correspond to a particular integration.
+- [`zapier-platform-core`](https://github.com/zapier/zapier-platform/tree/main/packages/core) is what allows your integration to interact with Zapier. It holds the `z` object and integration tester code. Your integration depends on a specific version of `zapier-platform-core` in the `package.json` file. It's installed via `npm install` along with the rest of your integration's dependencies.
+- [`zapier-platform-schema`](https://github.com/zapier/zapier-platform/tree/main/packages/schema) enforces integration structure behind the scenes. It's a dependency of `core`, so it will be installed automatically.
 
 To learn more about the structure of the code (especially if you're interested in contributing), check out the `ARCHITECTURE.md` file(s).
 
@@ -2318,16 +2289,16 @@ To learn more about the structure of the code (especially if you're interested i
 
 The Zapier platform and its tools are under active development. While you don't need to install every release, we release new versions because they are better than the last. We do our best to adhere to [Semantic Versioning](https://semver.org/) wherein we won't break your code unless there's a `major` release. Otherwise, we're just fixing bugs (`patch`) and adding features (`minor`).
 
-Broadly speaking, all releases will continue to work indefinitely. While you never *have* to upgrade your app's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md) to see what new features and bug fixes are available.
+Broadly speaking, all releases will continue to work indefinitely. While you never *have* to upgrade your integration's `zapier-platform-core` dependency, we recommend keeping an eye on the [changelog](https://github.com/zapier/zapier-platform/blob/main/CHANGELOG.md) to see what new features and bug fixes are available.
 
-For more info about which Node versions are supported, see [the faq](#how-do-i-manually-set-the-nodejs-version-to-run-my-app-with).
+For more info about which Node versions are supported, see [the faq](#how-do-i-manually-set-the-nodejs-version-to-run-my-integration-with).
 
 <!-- TODO: if we decouple releases, change this -->
 The most recently released version of `cli` and `core` is **PACKAGE_VERSION**. You can see the versions you're working with by running `zapier -v`.
 
 To update `cli`, run `npm install -g zapier-platform-cli`.
 
-To update the version of `core` your app depends on, set the `zapier-platform-core` dependency in your `package.json` to a version listed [here](https://www.npmjs.com/package/zapier-platform-core?activeTab=versions) and reinstall your dependencies (either `yarn` or `npm install`).
+To update the version of `core` your integration depends on, set the `zapier-platform-core` dependency in your `package.json` to a version listed [here](https://www.npmjs.com/package/zapier-platform-core?activeTab=versions) and reinstall your dependencies (either `yarn` or `npm install`).
 
 For maximum compatibility, keep the versions of `cli` and `core` in sync.
 
