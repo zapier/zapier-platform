@@ -553,6 +553,24 @@ Check `zapier jobs` to track the status of the promotion. Or use `zapier history
 * `zapier promote 1.0.0`
 
 
+## pull
+
+> Retrieve and update your local integration files with the latest version.
+
+**Usage**: `zapier pull`
+
+This command updates your local integration files with the latest version. You will be prompted with a confirmation dialog before continuing if there any destructive file changes.
+
+Zapier may release new versions of your integration with bug fixes or new features. In the event this occurs, you will be unable to do the following until your local files are updated by running `zapier pull`:
+
+* push to the promoted version
+* promote a new version
+* migrate users from one version to another
+
+**Flags**
+* `-d, --debug` | Show extra debugging output.
+
+
 ## push
 
 > Build and upload the current integration.

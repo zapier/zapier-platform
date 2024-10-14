@@ -256,6 +256,7 @@ a code {
 <li><a href="#logs">logs</a></li>
 <li><a href="#migrate">migrate</a></li>
 <li><a href="#promote">promote</a></li>
+<li><a href="#pull">pull</a></li>
 <li><a href="#push">push</a></li>
 <li><a href="#register">register</a></li>
 <li><a href="#scaffold">scaffold</a></li>
@@ -1010,6 +1011,32 @@ zapier invoke auth label  # invokes authentication.test and renders connection l
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier promote 1.0.0</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="pull">pull</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Retrieve and update your local integration files with the latest version.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier pull</code></p><p>This command updates your local integration files with the latest version. You will be prompted with a confirmation dialog before continuing if there any destructive file changes.</p><p>Zapier may release new versions of your integration with bug fixes or new features. In the event this occurs, you will be unable to do the following until your local files are updated by running <code>zapier pull</code>:</p><ul>
+<li>push to the promoted version</li>
+<li>promote a new version</li>
+<li>migrate users from one version to another</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

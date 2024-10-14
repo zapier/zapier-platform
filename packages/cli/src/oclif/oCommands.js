@@ -31,6 +31,7 @@ module.exports = {
   logout: require('./commands/logout'),
   migrate: require('./commands/migrate'),
   promote: require('./commands/promote'),
+  pull: require('./commands/pull'),
   push: require('./commands/push'),
   scaffold: require('./commands/scaffold'),
   register: require('./commands/register'),
