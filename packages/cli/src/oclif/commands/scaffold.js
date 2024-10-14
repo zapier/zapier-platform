@@ -74,13 +74,13 @@ class ScaffoldCommand extends BaseCommand {
     // * rewire the index.js to point to the new file
     this.startSpinner(`Rewriting your ${context.indexFileLocal}`);
 
-    const originalContents = await updateEntryFile(
-      context.indexFileResolved,
-      context.templateContext.VARIABLE,
-      context.actionFileResolvedStem,
-      context.actionType,
-      context.templateContext.KEY
-    );
+    const originalContents = await updateEntryFile({
+      language: context.language,
+      indexFileResolved: context.indexFileResolved,
+      actionFileResolved: context.actionFileResolved,
+      actionImportName: context.templateContext.VARIABLE,
+      actionType: context.actionType,
+    });
 
     if (isValidAppInstall().valid) {
       const success = isValidEntryFileUpdate(
