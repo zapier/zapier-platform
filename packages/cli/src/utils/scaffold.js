@@ -121,28 +121,6 @@ const writeTemplateFile = async ({
 const getRelativeRequirePath = (entryFilePath, newFilePath) =>
   path.relative(path.dirname(entryFilePath), newFilePath);
 
-/**
- * performs a series of updates to a file at a path.
- *
- * returns the original file contents in case a revert is needed
- */
-const updateEntryFile = async (
-  entryFilePath,
-  varName,
-  newFilePath,
-  actionType,
-  newActionKey
-) => {
-  let codeStr = (await readFile(entryFilePath)).toString();
-  const originalCodeStr = codeStr; // untouched copy in case we need to bail
-  const relativePath = getRelativeRequirePath(entryFilePath, newFilePath);
-
-  codeStr = createRootRequire(codeStr, varName, `./${relativePath}`);
-  codeStr = addKeyToPropertyOnApp(codeStr, plural(actionType), varName);
-  await writeFile(entryFilePath, codeStr);
-  return originalCodeStr;
-};
-
 const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
   // ensure a clean access
   delete require.cache[require.resolve(entryFilePath)];
@@ -150,6 +128,64 @@ const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
   // this line fails if `npm install` hasn't been run, since core isn't present yet.
   const rewrittenIndex = require(entryFilePath);
   return Boolean(_.get(rewrittenIndex, [plural(actionType), newActionKey]));
+};
+
+/**
+ * Modify an index.js file to include the newly scaffolded action.
+ * @param {Object} options
+ * @param {'ts'|'js'} options.language - the language of the project
+ * @param {string} options.indexFileResolved - the App's entry point (index.js/ts)
+ * @param {string} options.actionFileResolved - the path to the new action file to import
+ * @param {string} options.actionImportName - the name of the import, i.e the action key converted to camel_case
+ * @param {ActionType} options.actionType - The type of action, e.g. 'trigger'
+ */
+const updateEntryFile = async ({
+  language,
+  indexFileResolved,
+  actionFileResolved,
+  actionImportName,
+  actionType,
+}) => {
+  if (language === 'ts') {
+    throw new Error('TS not yet supported');
+  }
+  return updateEntryFileJs({
+    indexFileResolved,
+    actionFileResolved,
+    actionImportName,
+    actionType,
+  });
+};
+
+/**
+ *
+ * @param {Object} options
+ * @param {string} options.indexFileResolved - the App's entry point (index.js/ts)
+ * @param {string} options.actionFileResolved - the path to the new action file to import
+ * @param {string} options.actionImportName - the name of the import, i.e the action key converted to camel_case
+ * @param {ActionType} options.actionType - The type of action, e.g. 'trigger'
+ */
+const updateEntryFileJs = async ({
+  indexFileResolved,
+  actionFileResolved,
+  actionImportName,
+  actionType,
+}) => {
+  let codeStr = (await readFile(indexFileResolved)).toString();
+  const originalCodeStr = codeStr; // untouched copy in case we need to bail
+  const relativePath = getRelativeRequirePath(
+    indexFileResolved,
+    actionFileResolved
+  );
+
+  codeStr = createRootRequire(codeStr, actionImportName, `./${relativePath}`);
+  codeStr = addKeyToPropertyOnApp(
+    codeStr,
+    plural(actionType),
+    actionImportName
+  );
+  await writeFile(indexFileResolved, codeStr);
+  return originalCodeStr;
 };
 
 /**

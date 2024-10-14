@@ -235,7 +235,7 @@ describe('scaffold', () => {
     });
   });
 
-  describe('modifying entry file', () => {
+  describe('modifying entry file (JS)', () => {
     let tmpDir;
     beforeEach(async () => {
       tmpDir = await getNewTempDirPath();
@@ -247,16 +247,18 @@ describe('scaffold', () => {
       await outputFile(indexPath, basicIndexJs);
       await outputFile(`${tmpDir}/triggers/things.js`, basicTrigger);
 
-      await updateEntryFile(
-        indexPath,
-        'getThing',
-        `${tmpDir}/triggers/things`,
-        'trigger',
-        'thing'
-      );
+      await updateEntryFile({
+        language: 'js',
+        indexFileResolved: indexPath,
+        actionFileResolved: `${tmpDir}/triggers/things.js`,
+        actionImportName: 'thing',
+        actionType: 'trigger',
+      });
 
-      // shouldn't throw
-      await readFile(indexPath, 'utf-8');
+      const index = await readFile(indexPath, 'utf-8');
+
+      should(index.includes('triggers: {')).be.true();
+      should(index.includes('[thing.key]')).be.true();
     });
 
     afterEach(async () => {
