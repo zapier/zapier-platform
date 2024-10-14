@@ -58,7 +58,7 @@
     "gulp-prettier": "4.0.0",
     "ignore": "5.2.4",
     "inquirer": "8.2.5",
-    "jscodeshift": "0.15.0",
+    "jscodeshift": "^17.0.0",
     "klaw": "4.1.0",
     "lodash": "4.17.21",
     "luxon": "3.5.0",
