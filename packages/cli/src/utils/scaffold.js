@@ -48,22 +48,22 @@ const nounToKey = (noun) => _.snakeCase(noun).replace(/V_(\d+)$/gi, 'v$1');
 /**
  * Create a context object to pass to the template
  * @param {Object} options
- * @param {'trigger'| 'search'| 'create'| 'resource'} options.templateType - the action type
+ * @param {ActionType} options.actionType - the action type
  * @param {string} options.noun - the noun for the action
  * @param {boolean} [options.includeIntroComments] - whether to include comments in the template
  * @returns {TemplateContext}
  */
 const createTemplateContext = ({
-  templateType,
+  actionType,
   noun,
   includeIntroComments = false,
 }) => {
   // if noun is "Cool Contact"
   return {
-    ACTION: templateType, // trigger
-    ACTION_PLURAL: plural(templateType), // triggers
+    ACTION: actionType, // trigger
+    ACTION_PLURAL: plural(actionType), // triggers
 
-    VARIABLE: _.camelCase(getVariableName(templateType, noun)), // getContact, the variable that's imported
+    VARIABLE: _.camelCase(getVariableName(actionType, noun)), // getContact, the variable that's imported
     KEY: nounToKey(noun), // "cool_contact", the action key
     NOUN: noun
       .split(' ')
@@ -71,14 +71,14 @@ const createTemplateContext = ({
       .join(' '), // "Cool Contact", the noun
     LOWER_NOUN: noun.toLowerCase(), // "cool contact", for use in comments
     // resources need an extra line for tests to "just run"
-    MAYBE_RESOURCE: templateType === 'resource' ? 'list.' : '',
+    MAYBE_RESOURCE: actionType === 'resource' ? 'list.' : '',
     INCLUDE_INTRO_COMMENTS: includeIntroComments,
   };
 };
 
 /**
  * @param {Object} options
- * @param {TemplateType} options.templateType - the action type
+ * @param {TemplateType} options.templateType - the template to write
  * @param {'js' | 'ts'} options.language - the language of the project
  * @param {string} options.destinationPath - where to write the file
  * @param {boolean} options.preventOverwrite - whether to prevent overwriting
@@ -158,7 +158,7 @@ const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
  * operation.
  *
  * @param {Object} options
- * @param {'trigger'| 'search'| 'create'| 'resource'} options.actionType - the action type
+ * @param {ActionType} options.actionType - the action type
  * @param {string} options.noun - the noun for the action
  * @param {'js' | 'ts'} options.language - the language of the project
  * @param {string} options.indexFileLocal - the App's entry point (index.js/ts)
@@ -203,13 +203,13 @@ const createScaffoldingContext = ({
   );
 
   return {
-    templateType: actionType,
+    actionType,
     actionTypePlural: plural(actionType),
     noun,
     preventOverwrite,
     language,
     templateContext: createTemplateContext({
-      templateType: actionType,
+      actionType,
       noun,
       includeIntroComments,
     }),
@@ -241,9 +241,12 @@ module.exports = {
 };
 
 /**
- * The varieties of templates that can be generated. The set of Action
- * Types and "test" too.
- * @typedef {'create' | 'resource' | 'search' | 'test' | 'trigger'} TemplateType
+ * The varieties of actions that can be generated.
+ * @typedef {'create' | 'resource' | 'search' | 'trigger'} ActionType
+ */
+/**
+ * The types of templates that can be made, including "test" files.
+ * @typedef { ActionType | 'test' } TemplateType
  */
 
 /**
@@ -262,7 +265,7 @@ module.exports = {
  * Everything needed to define a scaffolding operation.
  *
  * @typedef {Object} ScaffoldContext
- * @property {TemplateType} templateType - the type of template (actions or "test") to use
+ * @property {ActionType} actionType - the type of action being created
  * @property {string} actionTypePlural - plural of the template type, e.g. "triggers".
  * @property {string} noun - the noun for the action
  * @property {'js' | 'ts'} language - the language of the project

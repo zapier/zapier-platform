@@ -54,7 +54,7 @@ class ScaffoldCommand extends BaseCommand {
 
     await writeTemplateFile({
       destinationPath: context.actionFileResolved,
-      templateType: context.templateType,
+      templateType: context.actionType,
       language: context.language,
       preventOverwrite: context.preventOverwrite,
       templateContext: context.templateContext,
@@ -78,14 +78,14 @@ class ScaffoldCommand extends BaseCommand {
       context.indexFileResolved,
       context.templateContext.VARIABLE,
       context.actionFileResolvedStem,
-      context.templateType,
+      context.actionType,
       context.templateContext.KEY
     );
 
     if (isValidAppInstall().valid) {
       const success = isValidEntryFileUpdate(
         context.indexFileResolved,
-        context.templateType,
+        context.actionType,
         context.templateContext.KEY
       );
 
@@ -115,7 +115,7 @@ class ScaffoldCommand extends BaseCommand {
     this.stopSpinner();
 
     if (!this.flags.invokedFromAnotherCommand) {
-      this.log(`\nAll done! Your new ${context.templateType} is ready to use.`);
+      this.log(`\nAll done! Your new ${context.actionType} is ready to use.`);
     }
   }
 }
