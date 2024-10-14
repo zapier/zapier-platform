@@ -35,10 +35,12 @@ class ScaffoldCommand extends BaseCommand {
     } = this.flags;
 
     // TODO: Auto-detect if index.js points at a TS dist/ etc.
+    const language = indexFile.endsWith('.ts') ? 'ts' : 'js';
 
     const context = createScaffoldingContext({
       actionType,
       noun,
+      language,
       indexFile,
       actionDir,
       testDir,
