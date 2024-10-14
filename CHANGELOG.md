@@ -6,7 +6,7 @@ Introducing three major updates, with the first two aimed at improving your deve
 
 - The `zapier invoke` command: This powerful new command enables you to emulate Zapier's production environment locally. Test triggers, actions, and authentication flows right from your terminal without deploying to Zapier. This is especially valuable for debugging, development, and quick testing iterations. Learn more about the command in the [README](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#using-zapier-invoke-command) or by typing [`zapier invoke --help`](https://github.com/zapier/zapier-platform/blob/main/docs/cli.md#invoke) in your teriminal.
 - Refreshed "[typescript](https://github.com/zapier/zapier-platform/tree/main/example-apps/typescript)" project template: We've updated the "typescript" project template with the latest type definitions. Enjoy enhanced type safety, improved autocompletion, and a smoother coding experience overall.
-- `zapier-platform-cli` no longer supports Node.js 16: We don't consider this a breaking change because `zapier-platform-core` had stopped supporting Node.js 16 and has been running on Node.js 18 since v15.0.0. The minimum Node.js version required for `zapier-platform-cli` is now Node.js 18, aligning with `zapier-platform-core`.
+- Although we've removed Node.js 16 from `zapier-platform-cli`'s CI testing, it still works on Node.js 16, except for the `zapier invoke auth start` command. But using Node.js 18 or later is recommended, as we'll be dropping support for Node.js 16 in an upcoming major release.
 
 As usual, all other improvements and bug fixes are listed below.
 
