@@ -1,4 +1,4 @@
-import type {Trigger, PerformFunction} from 'zapier-platform-core';
+import type {PerformFunction, Trigger} from 'zapier-platform-core';
 
 // triggers on a new <%= LOWER_NOUN %> with a certain tag
 const perform: PerformFunction = async (z, bundle) => {
@@ -15,7 +15,7 @@ const perform: PerformFunction = async (z, bundle) => {
 export default {
   // see here for a full list of available properties:
   // https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#triggerschema
-  key: '<%= KEY %>',
+  key: '<%= KEY %>' as const,
   noun: '<%= NOUN %>',
 
   display: {
@@ -24,6 +24,7 @@ export default {
   },
 
   operation: {
+    type: 'polling',
     perform,
 
     <%= INCLUDE_INTRO_COMMENTS ? [
