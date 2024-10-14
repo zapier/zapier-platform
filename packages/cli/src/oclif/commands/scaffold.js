@@ -30,18 +30,18 @@ class ScaffoldCommand extends BaseCommand {
     const {
       dest: actionDir = getLocalDirectory(actionType),
       'test-dest': testDir = getLocalDirectory(actionType, true),
-      entry: indexFile = 'index.js',
+      entry: indexFileLocal = 'index.js',
       force,
     } = this.flags;
 
     // TODO: Auto-detect if index.js points at a TS dist/ etc.
-    const language = indexFile.endsWith('.ts') ? 'ts' : 'js';
+    const language = indexFileLocal.endsWith('.ts') ? 'ts' : 'js';
 
     const context = createScaffoldingContext({
       actionType,
       noun,
       language,
-      indexFile,
+      indexFileLocal,
       actionDir,
       testDir,
       includeIntroComments: !this.flags['no-help'],
