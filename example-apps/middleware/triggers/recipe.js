@@ -6,7 +6,7 @@ module.exports = {
   noun: 'Recipe',
   display: {
     label: 'New Recipe',
-    description: 'Trigger when a new recipe is added.'
+    description: 'Trigger when a new recipe is added.',
   },
 
   // `operation` is where we make the call to your API
@@ -15,9 +15,9 @@ module.exports = {
       url: 'https://auth-json-server.zapier-staging.com/recipes',
       params: {
         // Just a demo, this is NOT how you normally do authentication.
-        // Refer to https://zapier.github.io/zapier-platform-cli/#authentication
-        api_key: 'secret'
-      }
+        // Refer to https://docs.zapier.com/platform/reference/cli-docs#authentication
+        api_key: 'secret',
+      },
     },
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
@@ -29,7 +29,7 @@ module.exports = {
       name: 'Best Spagetti Ever',
       authorId: 1,
       directions: '1. Boil Noodles\n2.Serve with sauce',
-      style: 'italian'
+      style: 'italian',
     },
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -42,7 +42,7 @@ module.exports = {
       { key: 'name', label: 'Name' },
       { key: 'directions', label: 'Directions' },
       { key: 'authorId', label: 'Author ID' },
-      { key: 'style', label: 'Style' }
-    ]
-  }
+      { key: 'style', label: 'Style' },
+    ],
+  },
 };
