@@ -314,7 +314,7 @@ For Session auth, the function that fetches the additional authentication data n
 
 *Added in `v7.5.0`.*
 
-Zapier's [OAuth1](https://oauth.net/1/) implementation matches [Twitter](https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a) and [Trello](https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth) implementations of the 3-legged OAuth flow.
+Zapier's [OAuth1](https://oauth.net/1/) implementation matches [X](https://developer.twitter.com/en/docs/tutorials/authenticating-with-twitter-api-for-enterprise/authentication-method-overview#oauth1.0a) (formerlly called Twitter) and [Trello](https://developer.atlassian.com/cloud/trello/guides/rest-api/authorization/#using-basic-oauth) implementations of the 3-legged OAuth flow.
 
 > To create a new integration with OAuth1, run `zapier init [your integration name] --template oauth1-trello`. You can also check out [oauth1-trello](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth1-trello), [oauth1-tumblr](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth1-tumblr), and [oauth1-twitter](https://github.com/zapier/zapier-platform/tree/main/example-apps/oauth1-twitter) for working example integrations with OAuth1.
 
@@ -866,7 +866,7 @@ zapier users:add user@example.com 1.0.0
 zapier team:add user@example.com
 ```
 
-You can also invite anyone on the internet to your integration by using the links from `zapier users:links`. The link should look something like `https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/`. You can put this in your help docs, post it to Twitter, add it to your email campaign, etc. You can choose an invite link specific to an integration version or for the entire integration (i.e. all integration versions).
+You can also invite anyone on the internet to your integration by using the links from `zapier users:links`. The link should look something like `https://zapier.com/platform/public-invite/1/222dcd03aed943a8676dc80e2427a40d/`. You can put this in your help docs, post it to X (formerlly called Twitter), add it to your email campaign, etc. You can choose an invite link specific to an integration version or for the entire integration (i.e. all integration versions).
 
 ### Promoting an Integration Version
 
