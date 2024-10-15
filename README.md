@@ -18,10 +18,9 @@ It consists of a few main packages:
 ## Docs
 
 * Public-facing docs:
-  - [Latest CLI developer guide](packages/cli/README.md)
-  - [Latest CLI command reference](packages/cli/docs/cli.md)
-  - [Latest schema docs](packages/schema/docs/build/schema.md)
-  - The :point_up: docs are also hosted at https://platform.zapier.com
+  - [Platform Docs](https://docs.zapier.com/platform)
+  - [CLI Reference](https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md)
+  - [Schema Reference](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md)
   - [CHANGELOG.md](CHANGELOG.md)
 * Internal-facing docs:
   - Testing out new features that haven't been released to npm yet? See [INSTALL_DEV.md](INSTALL_DEV.md)
