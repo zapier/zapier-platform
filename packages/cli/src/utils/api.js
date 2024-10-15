@@ -78,6 +78,10 @@ const callAPI = async (
   if (!options.skipDeployKey) {
     const credentials = await readCredentials(credentialsRequired);
     requestOptions.headers['X-Deploy-Key'] = credentials[constants.AUTH_KEY];
+    requestOptions.headers.Authorization = `JWT ${
+      credentials[constants.AUTH_KEY]
+    }`;
+    console.log(requestOptions.headers);
   }
 
   const res = await fetch(url, requestOptions);
@@ -162,22 +166,19 @@ const createCanary = async (versionFrom, versionTo, percent, duration) => {
       method: 'POST',
       body: {
         percent,
-        duration
-      }
+        duration,
+      },
     }
-  )
-}
+  );
+};
 
 const listCanaries = async () => {
   const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
 
-  return callAPI(
-    `/apps/${linkedAppId}/canaries`,
-    {
-      method: 'GET',
-    }
-  )
-}
+  return callAPI(`/apps/${linkedAppId}/canaries`, {
+    method: 'GET',
+  });
+};
 
 const deleteCanary = async (versionFrom, versionTo) => {
   const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
@@ -187,8 +188,8 @@ const deleteCanary = async (versionFrom, versionTo) => {
     {
       method: 'DELETE',
     }
-  )
-}
+  );
+};
 
 /**
  * read local `apprc` file

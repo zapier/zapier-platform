@@ -44,6 +44,8 @@
     "@oclif/plugin-autocomplete": "0.3.0",
     "@oclif/plugin-help": "3.2.20",
     "@oclif/plugin-not-found": "1.2.4",
+    "@oclif/plugin-plugins": "^5.4.14",
+    "@oclif/plugin-which": "^2.2.34",
     "adm-zip": "0.5.10",
     "archiver": "5.3.1",
     "browserify": "17.0.0",
@@ -100,8 +102,11 @@
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-not-found",
-      "@oclif/plugin-autocomplete"
+      "@oclif/plugin-autocomplete",
+      "@oclif/plugin-which",
+      "@oclif/plugin-plugins"
     ],
+    "scope": "@zapier",
     "hooks": {
       "init": [
         "./src/oclif/hooks/versionInfo",
@@ -109,7 +114,8 @@
         "./src/oclif/hooks/updateNotifier",
         "./src/oclif/hooks/checkValidNodeVersion",
         "./src/oclif/hooks/renderMarkdownHelp",
-        "./src/oclif/hooks/getAppRegistrationFieldChoices"
+        "./src/oclif/hooks/getAppRegistrationFieldChoices",
+        "./src/oclif/hooks/registerPluginInterface"
       ]
     },
     "topics": {
