@@ -1,8 +1,12 @@
-# Core for Zapier CLI Platform [![Travis](https://img.shields.io/travis/zapier/zapier-platform-core.svg)](https://travis-ci.org/zapier/zapier-platform-core)
+# Zapier Platform Core
 
-This is the code that powers our [Zapier Platform CLI](https://zapier.github.io/zapier-platform-cli). You'll want to head to that repo to see how it's used.
+This is the SDK used in Zapier integrations.
 
 ## Development
+
+See [CONTRIBUTING.md](https://github.com/zapier/zapier-platform/blob/main/CONTRIBUTING.md) and [ARCHITECTURE.md](https://github.com/zapier/zapier-platform/blob/main/packages/core/ARCHITECTURE.md) of this package in particular.
+
+Useful commands:
 
 * `npm install` for getting started
 * `npm test` for running unit tests
@@ -16,6 +20,8 @@ Make sure your AWS access key have permission to update and run Lambda functions
 * `npm run deploy-integration-test` builds and deploys a zip to a function named `integration-test-cli` on Lambda
 * `npm run lambda-integration-test` runs the integration test using the live Lambda function `integration-test-cli`
 
-## Publishing (after merging)
+## Publishing
+
+Only do this after merging your PR to `main`.
 
 * `npm version [patch|minor|major]` will pull, test, update schema version in dependencies for this package, update docs, increment version in package.json, and push tags, which then will tell Travis to publish to npm

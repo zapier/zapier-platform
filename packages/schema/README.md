@@ -1,10 +1,18 @@
-# Schema For Zapier CLI Platform
+# Zapier Platform Schema
 
-[Visit the CLI for basic documentation and instructions on how to use](https://zapier.github.io/zapier-platform-cli).
+This is the schema for Zapier integrations.
 
-[View all the schema definitions](https://zapier.github.io/zapier-platform-schema/build/schema.html).
+For documentation:
+
+- [Platform Docs](https://docs.zapier.com/platform)
+- [CLI Reference](https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md)
+- [Schema Reference](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md)
 
 ## Development
+
+See [CONTRIBUTING.md](https://github.com/zapier/zapier-platform/blob/main/CONTRIBUTING.md) and [ARCHITECTURE.md](https://github.com/zapier/zapier-platform/blob/main/packages/schema/ARCHITECTURE.md) of this package in particular.
+
+Useful commands:
 
 - `yarn` to install packages and get started
 - `yarn lint` to lint code
@@ -16,6 +24,8 @@
 - `yarn docs` to update docs (even if only the version changes)
 - `yarn build` to update docs and the exported-schema (even if only the version changes)
 
-## Publishing (after merging)
+## Publishing
+
+Only do this after merging your PR to `main`.
 
 - `yarn version --[patch|minor|major]` will pull, test, update exported-schema, update docs, increment version in package.json, push tags, and publish to npm

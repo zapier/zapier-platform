@@ -1,3 +1,2 @@
 # this needs to be in `cli` so `yarn lint` works in cli
-snippets/dynamic-dropdowns-*.js
 src/generators/templates/**/*.template.js
