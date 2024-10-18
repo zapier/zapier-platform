@@ -1,4 +1,4 @@
-const sampleExportVarIndex = `
+const sampleExportVarIndexJs = `
 const CryptoCreate = require('./creates/crypto')
 const BlahTrigger = require('./triggers/blah')
 // comment!
@@ -21,7 +21,30 @@ const App = {
 module.exports = App
 `.trim();
 
-const sampleExportObjectIndex = `
+const sampleExportVarIndexTS = `
+import type { App } from 'zapier-platform-core';
+import { version as platformVersion } from 'zapier-platform-core';
+
+import packageJson from '../package.json';
+import CryptoCreate from './creates/crypto';
+import BlahTrigger from './triggers/blah';
+
+// comment!
+const App: App = {
+  version: packageJson.version,
+  platformVersion,
+  triggers: {
+    [BlahTrigger.key]: BlahTrigger
+  },
+  creates: {
+    [CryptoCreate.key]: CryptoCreate
+  }
+};
+
+export default app;
+`.trim();
+
+const sampleExportObjectIndexJs = `
 const CryptoCreate = require('./creates/crypto')
 const BlahTrigger = require('./triggers/blah')
 // comment!
@@ -43,7 +66,7 @@ module.exports = {
 }
 `.trim();
 
-const sampleLegacyAppIndex = `
+const sampleLegacyAppIndexJs = `
 const authentication = require('./authentication');
 const businessTrigger = require('./triggers/business.js');
 const eventSetsTrigger = require('./triggers/event_sets.js');
@@ -110,7 +133,8 @@ module.exports = {
 `.trim();
 
 module.exports = {
-  sampleExportVarIndex,
-  sampleExportObjectIndex,
-  sampleLegacyAppIndex,
+  sampleExportVarIndexJs,
+  sampleExportVarIndexTS,
+  sampleExportObjectIndexJs,
+  sampleLegacyAppIndexJs,
 };

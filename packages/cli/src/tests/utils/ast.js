@@ -1,10 +1,17 @@
+// @ts-check
+
 const should = require('should');
-const { createRootRequire, addKeyToPropertyOnApp } = require('../../utils/ast');
+const {
+  importActionInJsApp,
+  importActionInTsApp,
+  registerActionInJsApp,
+} = require('../../utils/ast');
 
 const {
-  sampleExportVarIndex,
-  sampleExportObjectIndex,
-  sampleLegacyAppIndex,
+  sampleExportVarIndexJs,
+  sampleExportVarIndexTS,
+  sampleExportObjectIndexJs,
+  sampleLegacyAppIndexJs,
 } = require('./astFixtures');
 
 /**
@@ -13,13 +20,13 @@ const {
 const countOccurrences = (str, subStr) =>
   (str.match(new RegExp(subStr, 'g')) || []).length;
 
-describe('ast', () => {
+describe('ast (JS)', () => {
   describe('adding require statements', () => {
     it('should add a new require statement at root', () => {
       // new nodes use a generic pretty printer, hence the ; and "
       // it should be inserted after other top-level imports
-      const result = createRootRequire(
-        sampleExportVarIndex,
+      const result = importActionInJsApp(
+        sampleExportVarIndexJs,
         'getThing',
         './a/b/c'
       );
@@ -31,8 +38,8 @@ describe('ast', () => {
     });
 
     it('should add a new require even when there are none to find', () => {
-      const result = createRootRequire(
-        sampleExportVarIndex
+      const result = importActionInJsApp(
+        sampleExportVarIndexJs
           // drop existing require statements
           .split('\n')
           .slice(2)
@@ -46,8 +53,8 @@ describe('ast', () => {
     });
 
     it('should skip duplicates', () => {
-      const result = createRootRequire(
-        sampleExportVarIndex,
+      const result = importActionInJsApp(
+        sampleExportVarIndexJs,
         'CryptoCreate',
         './a/b/c'
       );
@@ -57,8 +64,8 @@ describe('ast', () => {
     });
 
     it('should not skip sneaky duplicates', () => {
-      const result = createRootRequire(
-        sampleExportVarIndex,
+      const result = importActionInJsApp(
+        sampleExportVarIndexJs,
         'Crypto',
         './a/b/c'
       );
@@ -70,12 +77,12 @@ describe('ast', () => {
   // the only risk we run is that it puts the new object in the wrong spot, but that feels unlikely. we'll also get some coverage in the smoke tests
   describe('adding object properties', () => {
     Object.entries({
-      variable: sampleExportVarIndex,
-      object: sampleExportObjectIndex,
+      variable: sampleExportVarIndexJs,
+      object: sampleExportObjectIndexJs,
     }).forEach(function ([exportType, codeStr]) {
       describe(`${exportType} export`, () => {
         it('should add a property to an existing action type', () => {
-          const result = addKeyToPropertyOnApp(codeStr, 'triggers', 'getThing');
+          const result = registerActionInJsApp(codeStr, 'triggers', 'getThing');
           should(countOccurrences(result, 'triggers:')).eql(1);
           should(countOccurrences(result, 'searches:')).eql(0);
 
@@ -91,7 +98,7 @@ describe('ast', () => {
         });
 
         it('should add a new property if action type is missing', () => {
-          const result = addKeyToPropertyOnApp(
+          const result = registerActionInJsApp(
             codeStr,
             'searches',
             'findThing'
@@ -112,8 +119,8 @@ describe('ast', () => {
 
     describe('legacy apps', () => {
       it('should add a property to an existing action type', () => {
-        const result = addKeyToPropertyOnApp(
-          sampleLegacyAppIndex,
+        const result = registerActionInJsApp(
+          sampleLegacyAppIndexJs,
           'triggers',
           'getThing'
         );
@@ -138,8 +145,8 @@ describe('ast', () => {
       });
 
       it('should add a property to an existing empty action type', () => {
-        const result = addKeyToPropertyOnApp(
-          sampleLegacyAppIndex,
+        const result = registerActionInJsApp(
+          sampleLegacyAppIndexJs,
           'searches',
           'findThing'
         );
@@ -155,8 +162,8 @@ describe('ast', () => {
       });
 
       it('should add a new property if action type is missing', () => {
-        const result = addKeyToPropertyOnApp(
-          sampleLegacyAppIndex,
+        const result = registerActionInJsApp(
+          sampleLegacyAppIndexJs,
           'resources',
           'findThing'
         );
@@ -202,11 +209,20 @@ describe('ast', () => {
     errors.forEach(
       ({ title, input, error, prop = 'triggers', varName = 'newThing' }) => {
         it(`should ${title}`, () => {
-          should(() => addKeyToPropertyOnApp(input, prop, varName)).throw(
+          should(() => registerActionInJsApp(input, prop, varName)).throw(
             new RegExp(error)
           );
         });
       }
     );
+  });
+});
+
+describe('ast (TS)', () => {
+  describe('adding require statements', () => {
+    it('should add a new import statement at root', () => {
+      const result = importActionInTsApp(`const foo: Foo = {bar: 'bar'}`); //, 'getThing', './a/b/c');
+      should(result.includes('Foo')).be.true();
+    });
   });
 });

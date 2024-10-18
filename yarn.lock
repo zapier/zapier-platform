@@ -2160,6 +2160,14 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
+"@types/jscodeshift@^0.12.0":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@types/jscodeshift/-/jscodeshift-0.12.0.tgz#aa18ec771fe0d8a764ac9215e3dc9f712fe90f23"
+  integrity sha512-Jr2fQbEoDmjwEa92TreR/mX2t9iAaY/l5P/GKezvK4BodXahex60PDLXaQR0vAgP0KfCzc1CivHusQB9NhzX8w==
+  dependencies:
+    ast-types "^0.14.1"
+    recast "^0.20.3"
+
 "@types/json-schema@*":
   version "7.0.15"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.15.tgz#596a1747233694d50f6ad8a7869fcb6f56cf5841"
@@ -2701,6 +2709,13 @@ assign-symbols@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/assign-symbols/-/assign-symbols-1.0.0.tgz#59667f41fadd4f20ccbc2bb96b8d4f7f78ec0367"
   integrity sha1-WWZ/QfrdTyDMvCu5a41Pf3jsA2c=
+
+ast-types@0.14.2, ast-types@^0.14.1:
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.14.2.tgz#600b882df8583e3cd4f2df5fa20fa83759d4bdfd"
+  integrity sha512-O0yuUDnZeQDL+ncNGlJ78BiO4jnYI3bvMsD5prT0/nsgijG/LpNBIr63gTjVTNsiGkgQhiyCShTgxt8oXOrklA==
+  dependencies:
+    tslib "^2.0.1"
 
 ast-types@^0.16.1:
   version "0.16.1"
@@ -9904,6 +9919,16 @@ readdirp@~3.6.0:
   integrity sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==
   dependencies:
     picomatch "^2.2.1"
+
+recast@^0.20.3:
+  version "0.20.5"
+  resolved "https://registry.yarnpkg.com/recast/-/recast-0.20.5.tgz#8e2c6c96827a1b339c634dd232957d230553ceae"
+  integrity sha512-E5qICoPoNL4yU0H0NoBDntNB0Q5oMSNh9usFctYniLBluTthi3RsQVBXIJNbApOlvSwW/RGxIuokPcAc59J5fQ==
+  dependencies:
+    ast-types "0.14.2"
+    esprima "~4.0.0"
+    source-map "~0.6.1"
+    tslib "^2.0.1"
 
 recast@^0.23.9:
   version "0.23.9"
