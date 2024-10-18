@@ -4,11 +4,11 @@ import { SCOPES } from './constants';
 
 export default {
   type: 'oauth2',
-  test: { url: 'https://api.example.com/v2/token/authorized_by' },
-  connectionLabel: '{{email}}',
+  test: { url: 'https://auth-json-server.zapier-staging.com/me' },
+  connectionLabel: '{{email}}', // Set this from the test data.
   oauth2Config: {
     authorizeUrl: {
-      url: 'https://example.com/oauth/authorize',
+      url: 'https://auth-json-server.zapier-staging.com/oauth/authorize',
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
         response_type: 'code',
@@ -18,7 +18,7 @@ export default {
       },
     },
     getAccessToken: {
-      url: 'https://api.example.com/oauth/access_token',
+      url: 'https://auth-json-server.zapier-staging.com/oauth/access-token',
       method: 'POST',
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
@@ -28,5 +28,15 @@ export default {
         redirect_uri: '{{bundle.inputData.redirect_uri}}',
       },
     },
+    refreshAccessToken: {
+      url: 'https://auth-json-server.zapier-staging.com/oauth/refresh-token',
+      method: 'POST',
+      params: {
+        client_id: '{{process.env.CLIENT_ID}}',
+        client_secret: '{{process.env.CLIENT_SECRET}}',
+        refresh_token: '{{bundle.authData.refresh_token}}',
+        grant_type: 'refresh_token',
+      },
+    }
   },
 } satisfies Authentication;
