@@ -1,23 +1,19 @@
-import type { App, BeforeRequestMiddleware } from 'zapier-platform-core';
-
-import MovieCreate from './creates/movie';
-import MovieTrigger from './triggers/movie';
+import type { App } from 'zapier-platform-core';
 import { version as platformVersion } from 'zapier-platform-core';
 
 import packageJson from '../package.json';
 
-const addApiKeyHeader: BeforeRequestMiddleware = (req, z, bundle) => {
-  // Hard-coded api key just to demo. DON'T do auth like this for your production app!
-  req.headers = req.headers || {};
-  req.headers['X-Api-Key'] = 'secret';
-  return req;
-};
+import MovieCreate from './creates/movie';
+import MovieTrigger from './triggers/movie';
+import authentication from './authentication';
+import { addBearerHeader } from './middleware';
 
 export default {
   version: packageJson.version,
   platformVersion,
 
-  beforeRequest: [addApiKeyHeader],
+  authentication,
+  beforeRequest: [addBearerHeader],
 
   triggers: {
     [MovieTrigger.key]: MovieTrigger,

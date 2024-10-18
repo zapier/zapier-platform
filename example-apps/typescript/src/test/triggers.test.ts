@@ -8,7 +8,7 @@ tools.env.inject();
 
 describe('movie', () => {
   test('list movies', async () => {
-    const bundle = { inputData: {} };
+    const bundle = { inputData: {}, authData: { access_token: 'a_token' } };
     const results = (await appTester(
       App.triggers.movie.operation.perform,
       bundle
