@@ -18,7 +18,7 @@ import type {
   Trigger,
 } from './zapier.generated';
 
-import { expectType } from 'tsd';
+import { expectType, expectDeprecated } from 'tsd';
 
 const basicDisplay: BasicDisplay = {
   label: 'some-label',
@@ -173,6 +173,7 @@ async (z: ZObject) => {
     'https://example.com'
   );
   expectType<{ id: number; name: string }>(resp.data);
+  expectDeprecated(resp.json);
 };
 
 async (z: ZObject) => {

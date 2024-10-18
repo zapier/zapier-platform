@@ -120,6 +120,7 @@ interface BaseHttpResponse {
 export interface HttpResponse<T = any> extends BaseHttpResponse {
   content: string;
   data: T;
+  /** @deprecated Since v10.0.0. Use `data` instead. */
   json?: T;
 }
 
