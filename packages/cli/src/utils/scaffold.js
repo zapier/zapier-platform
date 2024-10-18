@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 const { ensureDir, fileExistsSync, readFile, writeFile } = require('./files');
 const { splitFileFromPath } = require('./string');
-const { createRootRequire, addKeyToPropertyOnApp } = require('./ast');
+const { importActionInJsApp, registerActionInJsApp } = require('./ast');
 
 const plural = (type) => (type === 'search' ? `${type}es` : `${type}s`);
 
@@ -178,8 +178,8 @@ const updateEntryFileJs = async ({
     actionFileResolved
   );
 
-  codeStr = createRootRequire(codeStr, actionImportName, `./${relativePath}`);
-  codeStr = addKeyToPropertyOnApp(
+  codeStr = importActionInJsApp(codeStr, actionImportName, `./${relativePath}`);
+  codeStr = registerActionInJsApp(
     codeStr,
     plural(actionType),
     actionImportName

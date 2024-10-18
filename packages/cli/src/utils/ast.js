@@ -1,6 +1,9 @@
-// tools for modifiyng an AST
+// @ts-check
+
+// tools for modifying an AST
 
 const j = require('jscodeshift');
+const ts = j.withParser('ts');
 
 // simple helper functions used for searching for nodes
 // can't use j.identifier(name) because it has extra properties and we have to have no extras to find nodes
@@ -21,7 +24,7 @@ const typeHelpers = {
 /**
  * adds a `const verName = require(path)` to the root of a codeStr
  */
-const createRootRequire = (codeStr, varName, path) => {
+const importActionInJsApp = (codeStr, varName, path) => {
   if (codeStr.match(new RegExp(`${varName} ?= ?require`))) {
     // duplicate identifier, no need to re-add
     // this would fail if they used this variable name for something else; we'd keep going and double-declare that variable
@@ -61,7 +64,7 @@ const createRootRequire = (codeStr, varName, path) => {
   return root.toSource();
 };
 
-const addKeyToPropertyOnApp = (codeStr, property, varName) => {
+const registerActionInJsApp = (codeStr, property, varName) => {
   // to play with this, use https://astexplorer.net/#/gist/cb4986b3f1c6eb975339608109a48e7d/0fbf2fabbcf27d0b6ebd8910f979bd5d97dd9404
 
   const root = j(codeStr);
@@ -136,4 +139,14 @@ const addKeyToPropertyOnApp = (codeStr, property, varName) => {
   return root.toSource();
 };
 
-module.exports = { createRootRequire, addKeyToPropertyOnApp };
+const importActionInTsApp = (codeStr) => {
+  const root = ts(codeStr);
+
+  return root.toSource();
+};
+
+module.exports = {
+  importActionInJsApp,
+  importActionInTsApp,
+  registerActionInJsApp,
+};
