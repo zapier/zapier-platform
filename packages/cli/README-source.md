@@ -2349,4 +2349,4 @@ You can get help by either emailing `partners@zapier.com` or by [joining our dev
 
 ## Developing on the CLI
 
-See [CONTRIBUTING.md](https://github.com/zapier/zapier-platform/blob/main/CONTRIBUTING.md).
+See [CONTRIBUTING.md](https://github.com/zapier/zapier-platform/blob/main/CONTRIBUTING.md)
