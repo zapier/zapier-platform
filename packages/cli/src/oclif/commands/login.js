@@ -2,7 +2,7 @@ const colors = require('colors/safe');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const { flags } = require('@oclif/command');
+const { Flags } = require('@oclif/core');
 
 const {
   AUTH_LOCATION,
@@ -143,7 +143,7 @@ class LoginCommand extends BaseCommand {
 
 LoginCommand.flags = buildFlags({
   commandFlags: {
-    sso: flags.boolean({
+    sso: Flags.boolean({
       char: 's',
       description:
         "Use this flag if you log into Zapier a Single Sign-On (SSO) button and don't have a Zapier password.",

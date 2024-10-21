@@ -1,4 +1,4 @@
-const { flags } = require('@oclif/command');
+const { Flags } = require('@oclif/core');
 const chalk = require('chalk');
 
 const BaseCommand = require('../ZapierBaseCommand');
@@ -71,15 +71,15 @@ class TestCommand extends BaseCommand {
 
 TestCommand.flags = buildFlags({
   commandFlags: {
-    'skip-validate': flags.boolean({
+    'skip-validate': Flags.boolean({
       description:
         "Forgo running `zapier validate` before tests are run. This will speed up tests if you're modifying functionality of an existing integration rather than adding new actions.",
     }),
-    yarn: flags.boolean({
+    yarn: Flags.boolean({
       description:
         "Use `yarn` instead of `npm`. This happens automatically if there's a `yarn.lock` file, but you can manually force `yarn` if you run tests from a sub-directory.",
     }),
-    pnpm: flags.boolean({
+    pnpm: Flags.boolean({
       description:
         "Use `pnpm` instead of `npm`. This happens automatically if there's a `pnpm-lock.yaml` file, but you can manually force `pnpm` if you run tests from a sub-directory.",
     }),

@@ -1,4 +1,4 @@
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const PromoteCommand = require('./promote');
@@ -98,35 +98,32 @@ class MigrateCommand extends BaseCommand {
 
 MigrateCommand.flags = buildFlags({
   commandFlags: {
-    user: flags.string({
+    user: Flags.string({
       description:
         "Migrates all of a users' Private Zaps within all accounts for which the specified user is a member",
     }),
-    account: flags.string({
+    account: Flags.string({
       description:
         "Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member",
     }),
   },
 });
 
-MigrateCommand.args = [
-  {
-    name: 'fromVersion',
+MigrateCommand.args = {
+  fromVersion: Args.string({
     required: true,
     description: 'The version FROM which to migrate users.',
-  },
-  {
-    name: 'toVersion',
+  }),
+  toVersion: Args.string({
     required: true,
     description: 'The version TO which to migrate users.',
-  },
-  {
-    name: 'percent',
+  }),
+  percent: Args.string({
     default: 100,
     description: 'Percentage (between 1 and 100) of users to migrate.',
-    parse: (input) => parseInt(input, 10),
-  },
-];
+    parse: async (input) => parseInt(input, 10),
+  }),
+};
 
 MigrateCommand.skipValidInstallCheck = true;
 MigrateCommand.examples = [

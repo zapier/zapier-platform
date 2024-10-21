@@ -1,6 +1,6 @@
 const path = require('path');
 
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
@@ -151,44 +151,42 @@ class ScaffoldCommand extends BaseCommand {
   }
 }
 
-ScaffoldCommand.args = [
-  {
-    name: 'actionType',
+ScaffoldCommand.args = {
+  actionType: Args.string({
     help: 'What type of step type are you creating?',
     required: true,
     options: ['trigger', 'search', 'create', 'resource'],
-  },
-  {
-    name: 'noun',
+  }),
+  noun: Args.string({
     help: 'What sort of object this action acts on. For example, the name of the new thing to create',
     required: true,
-  },
-];
+  }),
+};
 
 ScaffoldCommand.flags = buildFlags({
   commandFlags: {
-    dest: flags.string({
+    dest: Flags.string({
       char: 'd',
       description:
         "Specify the new file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `[triggers|searches|creates]/{noun}`.",
     }),
-    'test-dest': flags.string({
+    'test-dest': Flags.string({
       description:
         "Specify the new test file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `test/[triggers|searches|creates]/{noun}`.",
     }),
-    entry: flags.string({
+    entry: Flags.string({
       char: 'e',
       description:
         "Supply the path to your integration's root (`index.js`). Only needed if your `index.js` is in a subfolder, like `src`.",
       default: 'index.js',
     }),
-    force: flags.boolean({
+    force: Flags.boolean({
       char: 'f',
       description:
         'Should we overwrite an exisiting trigger/search/create file?',
       default: false,
     }),
-    'no-help': flags.boolean({
+    'no-help': Flags.boolean({
       description:
         "When scaffolding, should we skip adding helpful intro comments? Useful if this isn't your first rodeo.",
       default: false,

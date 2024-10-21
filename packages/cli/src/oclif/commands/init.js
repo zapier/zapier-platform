@@ -1,6 +1,6 @@
 const { join } = require('path');
 
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 const yeoman = require('yeoman-environment');
 
 const BaseCommand = require('../ZapierBaseCommand');
@@ -25,21 +25,20 @@ class InitCommand extends BaseCommand {
 
 InitCommand.flags = buildFlags({
   commandFlags: {
-    template: flags.string({
+    template: Flags.string({
       char: 't',
       description: 'The template to start your integration with.',
       options: TEMPLATE_CHOICES,
     }),
   },
 });
-InitCommand.args = [
-  {
-    name: 'path',
-    required: true,
+InitCommand.args = {
+  path: Args.string({
     description:
       "Where to create the new integration. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation",
-  },
-];
+    required: true,
+  }),
+};
 InitCommand.examples = [
   'zapier init myapp',
   'zapier init ./path/myapp --template oauth2',
