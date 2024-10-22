@@ -1,14 +1,14 @@
 import type { Authentication } from 'zapier-platform-core';
 
-import { SCOPES } from './constants';
+import { API_URL, SCOPES } from './constants';
 
 export default {
   type: 'oauth2',
-  test: { url: 'https://auth-json-server.zapier-staging.com/me' },
+  test: { url: `${API_URL}/me` },
   connectionLabel: '{{email}}', // Set this from the test data.
   oauth2Config: {
     authorizeUrl: {
-      url: 'https://auth-json-server.zapier-staging.com/oauth/authorize',
+      url: `${API_URL}/oauth/authorize`,
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
         response_type: 'code',
@@ -18,7 +18,7 @@ export default {
       },
     },
     getAccessToken: {
-      url: 'https://auth-json-server.zapier-staging.com/oauth/access-token',
+      url: `${API_URL}/oauth/access-token`,
       method: 'POST',
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
@@ -29,7 +29,7 @@ export default {
       },
     },
     refreshAccessToken: {
-      url: 'https://auth-json-server.zapier-staging.com/oauth/refresh-token',
+      url: `${API_URL}/oauth/refresh-token`,
       method: 'POST',
       params: {
         client_id: '{{process.env.CLIENT_ID}}',
@@ -37,6 +37,6 @@ export default {
         refresh_token: '{{bundle.authData.refresh_token}}',
         grant_type: 'refresh_token',
       },
-    }
+    },
   },
 } satisfies Authentication;
