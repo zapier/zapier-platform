@@ -231,14 +231,14 @@ export type PerformFunction<BI = Record<string, any>, R = any> = (
 
 export type BeforeRequestMiddleware = (
   request: HttpRequestOptions,
-  z?: ZObject,
-  bundle?: Bundle
+  z: ZObject,
+  bundle: Bundle
 ) => HttpRequestOptions | Promise<HttpRequestOptions>;
 
 export type AfterResponseMiddleware = (
   response: HttpResponse,
   z: ZObject,
-  bundle?: Bundle
+  bundle: Bundle
 ) => HttpResponse | Promise<HttpResponse>;
 
 export interface BufferedItem<InputData = { [x: string]: any }> {
