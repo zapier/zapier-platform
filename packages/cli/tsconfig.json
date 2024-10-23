@@ -1,0 +1,11 @@
+// Check files that opt-in with `// @ts-check` at the top of the file.
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": ["./src/**/*.js"],
+  "exclude": ["./src/tests/**/*.js", "./src/generators/**/*.js"]
+}
