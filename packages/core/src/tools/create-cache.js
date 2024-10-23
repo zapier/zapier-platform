@@ -12,7 +12,8 @@ const createCache = (input) => {
     key,
     value = null,
     ttl = null,
-    scope = null
+    scope = null,
+    nx = null
   ) => {
     if (!rpc) {
       throw new Error('rpc is not available');
@@ -36,6 +37,10 @@ const createCache = (input) => {
       );
     }
 
+    if (nx !== null && !_.isBoolean(nx)) {
+      throw new TypeError('nx must be a boolean');
+    }
+
     ensureJSONEncodable(value);
   };
 
@@ -46,10 +51,10 @@ const createCache = (input) => {
       const result = await rpc('zcache_get', key, scope);
       return result ? JSON.parse(result) : null;
     },
-    set: async (key, value, ttl = null, scope = null) => {
-      runValidationChecks(rpc, key, value, ttl, scope);
+    set: async (key, value, ttl = null, scope = null, nx = null) => {
+      runValidationChecks(rpc, key, value, ttl, scope, nx);
 
-      return await rpc('zcache_set', key, JSON.stringify(value), ttl, scope);
+      return await rpc('zcache_set', key, JSON.stringify(value), ttl, scope, nx);
     },
     delete: async (key, scope = null) => {
       runValidationChecks(rpc, key, scope);
