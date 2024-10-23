@@ -4,7 +4,7 @@ _released `2024-10-11`_
 
 Introducing three major updates, with the first two aimed at improving your development experience:
 
-- The `zapier invoke` command: This powerful new command enables you to emulate Zapier's production environment locally. Test triggers, actions, and authentication flows right from your terminal without deploying to Zapier. This is especially valuable for debugging, development, and quick testing iterations. Learn more about the command in the [README](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#using-zapier-invoke-command) or by typing [`zapier invoke --help`](https://github.com/zapier/zapier-platform/blob/main/docs/cli.md#invoke) in your teriminal.
+- The `zapier invoke` command: This powerful new command enables you to emulate Zapier's production environment locally. Test triggers, actions, and authentication flows right from your terminal without deploying to Zapier. This is especially valuable for debugging, development, and quick testing iterations. Learn more about the command in the [README](https://docs.zapier.com/platform/reference/cli-docs#using-zapier-invoke-command) or by typing [`zapier invoke --help`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md#invoke) in your terminal.
 - Refreshed "[typescript](https://github.com/zapier/zapier-platform/tree/main/example-apps/typescript)" project template: We've updated the "typescript" project template with the latest type definitions. Enjoy enhanced type safety, improved autocompletion, and a smoother coding experience overall.
 - Although we've removed Node.js 16 from `zapier-platform-cli`'s CI testing, it still works on Node.js 16, except for the `zapier invoke auth start` command. But using Node.js 18 or later is recommended, as we'll be dropping support for Node.js 16 in an upcoming major release.
 
@@ -76,7 +76,7 @@ None!
 
 _released `2024-09-18`_
 
-This release introduces "[Buffered Create Actions](https://github.com/zapier/zapier-platform/blob/8353f32cba12da2a845419f0024b0029090437d9/packages/cli/README.md#buffered-create-actions)", currently only available for **internal** use. A Buffered Create allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server. When enabled, Zapier holds the data until the buffer reaches a size limit or a certain time has passed, then sends the buffered data using the `performBuffer` function you define.
+This release introduces "[Buffered Create Actions](https://docs.zapier.com/platform/reference/cli-docs#buffered-create-actions)", currently only available for **internal** use. A Buffered Create allows you to create objects in bulk with a single or fewer API request(s). This is useful when you want to reduce the number of requests made to your server. When enabled, Zapier holds the data until the buffer reaches a size limit or a certain time has passed, then sends the buffered data using the `performBuffer` function you define.
 
 ### cli
 
@@ -420,7 +420,7 @@ _released `2024-03-26`_
 
 ### schema
 
-- :tada: Allow to set `primary` in `outputFields` to define the unique key for [deduplication](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#how-does-deduplication-work) ([#754](https://github.com/zapier/zapier-platform/pull/754))
+- :tada: Allow to set `primary` in `outputFields` to define the unique key for [deduplication](https://docs.zapier.com/platform/reference/cli-docs#how-does-deduplication-work) ([#754](https://github.com/zapier/zapier-platform/pull/754))
 - :test_tube: Add support for `overrides` in the throttle configuration ([#755](https://github.com/zapier/zapier-platform/pull/755))
 - :test_tube: Add support for `key` in the throttle configuration and `action` scope ([#757](https://github.com/zapier/zapier-platform/pull/757))
 
@@ -514,9 +514,7 @@ _released `2023-11-01`_
 ### misc
 
 - :hammer: Bump @babel/traverse from 7.14.0 to 7.23.2 ([#715](https://github.com/zapier/zapier-platform/pull/715))
-
 - :scroll: Fix broken link in README-source.md ([#714](https://github.com/zapier/zapier-platform/pull/714))
-
 - :scroll: Fix broken link in readme.md ([#713](https://github.com/zapier/zapier-platform/pull/713))
 
 ## 15.4.1
@@ -789,7 +787,7 @@ Version `14.0.0` is a breaking change release that contains several important up
 
 3. :exclamation: Now you are required to provide meta information about your app, such as your intended audience and app category (if that information isn't already provided). If you are missing this information, you will be blocked from making updates to your integration (`zapier promote`, `zapier upload`, `zapier push`). Use `zapier register` with `zapier-platform-core@14.0.0` or go to `https://developer.zapier.com/app/{app_id}/version/{version}/settings` to fill it out.
 
-4. On v14, OAuth2 implementation now supports PKCE! See [our documentation](https://github.com/zapier/zapier-platform/blob/zapier-platform-cli@14.0.0/packages/cli/README.md#oauth2-with-pkce) for details.
+4. On v14, OAuth2 implementation now supports PKCE! See [our documentation](https://docs.zapier.com/platform/reference/cli-docs#oauth2-with-pkce) for details.
 
 Read on for a detailed set of release notes. Again, :exclamation: are BREAKING CHANGEs.
 
