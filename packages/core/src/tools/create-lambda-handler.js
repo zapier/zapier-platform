@@ -197,7 +197,16 @@ const createLambdaHandler = (appRawOrPath) => {
     }
 
     // If we're running out of memory, exit the process. Backend will try again.
-    checkMemory(event);
+    try {
+      checkMemory(event);
+    } catch (err) {
+      // Don't crash the invocation if we can't check memory usage.
+      if (err.code === 'EMFILE') {
+        console.error('Too many open files, skipping memory usage check...');
+      } else {
+        throw err;
+      }
+    }
 
     environmentTools.cleanEnvironment();
 
