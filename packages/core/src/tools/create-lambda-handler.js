@@ -196,13 +196,18 @@ const createLambdaHandler = (appRawOrPath) => {
       ZapierPromise.patchGlobal();
     }
 
-    // If we're running out of memory, exit the process. Backend will try again.
+    // If we're running out of memory or file descriptors, force exit the process.
+    // The backend will try again via @retry(ProcessExitedException).
     try {
       checkMemory(event);
     } catch (err) {
-      // Don't crash the invocation if we can't check memory usage.
       if (err.code === 'EMFILE') {
-        console.error('Too many open files, skipping memory usage check...');
+        console.error(
+          'Force killing process by Zapier for too many open file descriptors'
+        );
+
+        /* eslint no-process-exit: 0 */
+        process.exit(1);
       } else {
         throw err;
       }
