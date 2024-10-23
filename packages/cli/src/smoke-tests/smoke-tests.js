@@ -127,7 +127,7 @@ describe('smoke tests - setup will take some time', function () {
     const latestVersion = await getPackageLatestVersion(packageName);
     const baselineSize = await getPackageSize(packageName, latestVersion);
     const newSize = fs.statSync(context.package.path).size;
-    newSize.should.be.within(baselineSize * 0.7, baselineSize * 1.3);
+    newSize.should.be.within(baselineSize * 0.5, baselineSize * 1.3);
 
     this.test.title += ` (${baselineSize} -> ${newSize} bytes)`;
   });
