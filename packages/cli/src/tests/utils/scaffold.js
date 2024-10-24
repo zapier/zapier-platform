@@ -25,7 +25,16 @@ const App = {
 
 module.exports = App;
 `.trim();
-const basicTrigger = 'module.exports = {key: "thing"}\n';
+const basicTriggerJs = 'module.exports = {key: "thing"}\n';
+
+const basicIndexTs = `
+export default {
+  platformVersion,
+  triggers: {},
+  searches: {},
+} satisfies App;
+`.trim();
+const basicTriggerTs = 'export default {key: "thing"} satisfies Trigger;\n';
 
 describe('scaffold', () => {
   describe('plural', () => {
@@ -245,18 +254,48 @@ describe('scaffold', () => {
       // setup
       const indexPath = `${tmpDir}/index.js`;
       await outputFile(indexPath, basicIndexJs);
-      await outputFile(`${tmpDir}/triggers/things.js`, basicTrigger);
+      await outputFile(`${tmpDir}/triggers/things.js`, basicTriggerJs);
 
       await updateEntryFile({
         language: 'js',
         indexFileResolved: indexPath,
-        actionFileResolved: `${tmpDir}/triggers/things.js`,
+        actionRelativeImportPath: `${tmpDir}/triggers/things.js`,
         actionImportName: 'thing',
         actionType: 'trigger',
       });
 
       const index = await readFile(indexPath, 'utf-8');
 
+      should(index.includes('triggers: {')).be.true();
+      should(index.includes('[thing.key]')).be.true();
+    });
+
+    afterEach(async () => {
+      await remove(tmpDir);
+    });
+  });
+
+  describe('modifying entry file (TS)', () => {
+    let tmpDir;
+    beforeEach(async () => {
+      tmpDir = await getNewTempDirPath();
+    });
+
+    it('should modify a file', async () => {
+      // setup
+      const indexPath = `${tmpDir}/src/index.ts`;
+      await outputFile(indexPath, basicIndexTs);
+      await outputFile(`${tmpDir}/src/triggers/things.ts`, basicTriggerTs);
+
+      await updateEntryFile({
+        language: 'ts',
+        indexFileResolved: indexPath,
+        actionRelativeImportPath: `${tmpDir}/src/triggers/things`,
+        actionImportName: 'thing',
+        actionType: 'trigger',
+      });
+
+      const index = await readFile(indexPath, 'utf-8');
       should(index.includes('triggers: {')).be.true();
       should(index.includes('[thing.key]')).be.true();
     });
