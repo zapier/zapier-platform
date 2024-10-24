@@ -1,3 +1,35 @@
+## 15.18.0
+
+_released `2024-10-24`_
+
+### cli
+
+- :nail_care: Fix a failing smoke test based on CLI package size (now that many docs are deleted) ([#899](https://github.com/zapier/zapier-platform/pull/899))
+
+- :tada: Add OAuth2 to TypeScript `init` output ([#894](https://github.com/zapier/zapier-platform/pull/894))
+
+### core
+
+- :tada: Adds `nx` argument to `z.cache.set()` ([#900](https://github.com/zapier/zapier-platform/pull/900))
+
+- :bug: Force a `process.exit(1)` on catching an `EMFILE` error inside `checkMemory()` ([#901](https://github.com/zapier/zapier-platform/pull/901))
+
+### schema
+
+None!
+
+### schema-to-ts
+
+- :tada: Type `z.request` responses and deprecate `.json` ([#895](https://github.com/zapier/zapier-platform/pull/895))
+
+### misc
+
+- :scroll: Typo fixes and link changes ([#885](https://github.com/zapier/zapier-platform/pull/885))
+- :scroll: Add docs explaining why hidden triggers for dynamic dropdowns need to declare input fields ([#887](https://github.com/zapier/zapier-platform/pull/887))
+- :scroll: Migrate docs out of this monorepo ([#893](https://github.com/zapier/zapier-platform/pull/893))
+- :scroll: Updating doc links in `CHANGELOG` ([#898](https://github.com/zapier/zapier-platform/pull/898))
+
+
 ## 15.17.0
 
 _released `2024-10-11`_
@@ -42,7 +74,7 @@ None!
 
 - :nail_care: Return a descriptive error when a filename cannot be uploaded ([#874](https://github.com/zapier/zapier-platform/pull/874))
 
-### schema 
+### schema
 
 None!
 
@@ -51,7 +83,7 @@ None!
 - :scroll: Add `canary` command to docs ([#870](https://github.com/zapier/zapier-platform/pull/870))
 - :scroll: Add instructions for installing the Zapier Platform development version to docs ([#873](https://github.com/zapier/zapier-platform/pull/870))
 
-## 15.16.0 
+## 15.16.0
 
 _released `2024-09-24`_
 
@@ -63,7 +95,7 @@ _released `2024-09-24`_
 
 None!
 
-### schema 
+### schema
 
 None!
 
@@ -150,7 +182,7 @@ None!
 
 - :hammer: Add `customOptions` field to z.request options ([#846](https://github.com/zapier/zapier-platform/pull/846))
 
-## 15.13.0 
+## 15.13.0
 
 _released `2024-08-21`_
 
@@ -162,7 +194,7 @@ None!
 
 None!
 
-### schema 
+### schema
 - :nail_care: Add configurable poll delay for HookToPoll ([#844](https://github.com/zapier/zapier-platform/pull/844))
 
 ### misc
@@ -173,11 +205,11 @@ None!
 
 _released `2024-08-16`_
 
-### cli 
+### cli
 - :nail_care: Introduce `zapier pull` command ([#838](https://github.com/zapier/zapier-platform/pull/838))
 - :nail_care: Handle subheadings when interpreting the changelog ([#827](https://github.com/zapier/zapier-platform/pull/827))
 
-### core 
+### core
 - :bug: Properly type HTTP Options, replacing generic `object` types ([#840](https://github.com/zapier/zapier-platform/pull/840))
 - :bug: Allow Async Middleware Functions Types ([#826](https://github.com/zapier/zapier-platform/pull/826))
 
@@ -188,7 +220,7 @@ _released `2024-08-16`_
 ### schema-to-ts
 - :bug: Simplify and correct Array types in Schema to TS conversion ([#835](https://github.com/zapier/zapier-platform/pull/835))
 
-### misc 
+### misc
 
 - :scroll: Improve documentation accuracy regarding `primary: true` limitations ([#836](https://github.com/zapier/zapier-platform/pull/836))
 - :scroll: Document limitations regarding `primary` in `outputFields` ([#834](https://github.com/zapier/zapier-platform/pull/834))
@@ -207,7 +239,7 @@ None!
 
 ### schema
 
-None! 
+None!
 
 ## 15.11.0
 
@@ -819,7 +851,7 @@ Read on for a detailed set of release notes. Again, :exclamation: are BREAKING C
 - :scroll: Replace issue templates with GitHub forms, update CODEOWNERS ([#622](https://github.com/zapier/zapier-platform/pull/622))
 
 ## Old Releases
-  
+
 <a id="1300"></a>
 <a id="1221"></a>
 <a id="1220"></a>
