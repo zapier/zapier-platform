@@ -126,13 +126,20 @@ const writeTemplateFile = async ({
 const getRelativeRequirePath = (entryFilePath, newFilePath) =>
   path.relative(path.dirname(entryFilePath), newFilePath);
 
-const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
-  // ensure a clean access
-  delete require.cache[require.resolve(entryFilePath)];
-
-  // this line fails if `npm install` hasn't been run, since core isn't present yet.
-  const rewrittenIndex = require(entryFilePath);
-  return Boolean(_.get(rewrittenIndex, [plural(actionType), newActionKey]));
+const isValidEntryFileUpdate = (
+  language,
+  indexFileResolved,
+  actionType,
+  newActionKey
+) => {
+  if (language === 'js') {
+    // ensure a clean access
+    delete require.cache[require.resolve(indexFileResolved)];
+    // this line fails if `npm install` hasn't been run, since core isn't present yet.
+    const rewrittenIndex = require(indexFileResolved);
+    return Boolean(_.get(rewrittenIndex, [plural(actionType), newActionKey]));
+  }
+  return true;
 };
 
 /**

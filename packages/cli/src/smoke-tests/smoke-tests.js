@@ -202,18 +202,9 @@ describe('smoke tests - setup will take some time', function () {
     const newAppDir = path.join(context.workdir, 'scaffold-town-ts');
     fs.existsSync(newAppDir).should.be.true();
 
-    runCommand(
-      context.cliBin,
-      [
-        'scaffold',
-        'trigger',
-        'neat',
-        '--entry=src/index.ts', // TODO: Support automatic entry file detection for TS
-        '--dest=src/triggers', // TODO: Support automatic dest file detection for TS
-        '--test-dest=src/test/triggers', // TODO: Support automatic test dest file detection for TS
-      ],
-      { cwd: newAppDir }
-    );
+    runCommand(context.cliBin, ['scaffold', 'trigger', 'neat'], {
+      cwd: newAppDir,
+    });
 
     const appIndexTs = path.join(newAppDir, 'src', 'index.ts');
     fs.existsSync(appIndexTs).should.be.true();
