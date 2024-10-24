@@ -80,6 +80,7 @@ class ScaffoldCommand extends BaseCommand {
 
     if (isValidAppInstall().valid) {
       const success = isValidEntryFileUpdate(
+        context.language,
         context.indexFileResolved,
         context.actionType,
         context.templateContext.KEY
