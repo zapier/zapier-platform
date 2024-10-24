@@ -1,42 +1,47 @@
-import type { PerformFunction, Trigger } from 'zapier-platform-core';
+import type { PerformFunction, Search } from 'zapier-platform-core';
 
-// triggers on a new <%= LOWER_NOUN %> with a certain tag
+// find a particular <%= LOWER_NOUN %> by name
 const perform: PerformFunction = async (z, bundle) => {
   const response = await z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
-      tag: bundle.inputData.tagName,
+      name: bundle.inputData.name,
     },
   });
-  // this should return an array of objects
+  // this should return an array of objects (but only the first will be used)
   return response.data;
 };
 
 export default {
   // see here for a full list of available properties:
-  // https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#triggerschema
-  key: '<%= KEY %>' as const,
+  // https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#searchschema
+  key: '<%= KEY %>',
   noun: '<%= NOUN %>',
 
   display: {
-    label: 'New <%= NOUN %>',
-    description: 'Triggers when a new <%= LOWER_NOUN %> is created.',
+    label: 'Find <%= NOUN %>',
+    description: 'Finds a <%= LOWER_NOUN %> based on name.',
   },
 
   operation: {
-    type: 'polling',
     perform,
 
     <%= INCLUDE_INTRO_COMMENTS ? [
       '// `inputFields` defines the fields a user could provide',
-      '// Zapier will pass them in as `bundle.inputData` later. They\'re optional.'
+      '// Zapier will pass them in as `bundle.inputData` later. Searches need at least one `inputField`.'
     ].join('\n    ') : '' %>
-    inputFields: [],
+    inputFields: [
+      {
+        key: 'name',
+        required: true,
+        helpText: 'Find the <%= NOUN %> with this name.',
+      },
+    ],
 
     <%= INCLUDE_INTRO_COMMENTS ? [
-      '// In cases where Zapier needs to show an example record to the user, but we are unable to get a live example',
-      '// from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of',
-      '// returned records, and have obvious placeholder values that we can show to any user.'
+    '// In cases where Zapier needs to show an example record to the user, but we are unable to get a live example',
+    '// from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of',
+    '// returned records, and have obvious placeholder values that we can show to any user.'
     ].join('\n    ') : '' %>
     sample: {
       id: 1,
@@ -55,4 +60,4 @@ export default {
       // {key: 'name', label: 'Person Name'}
     ],
   },
-} satisfies Trigger;
+} satisfies Search;
