@@ -198,8 +198,8 @@ const updateEntryFileJs = async ({
  * @param {string} options.noun - the noun for the action
  * @param {'js' | 'ts'} options.language - the language of the project
  * @param {string} options.indexFileLocal - the App's entry point (index.js/ts)
- * @param {string} options.actionDir - where to put the new action
- * @param {string} options.testDir - where to put the new action's test
+ * @param {string} options.actionDirLocal - where to put the new action
+ * @param {string} options.testDirLocal - where to put the new action's test
  * @param {boolean} options.includeIntroComments - whether to include comments in the template
  * @param {boolean} options.preventOverwrite - whether to force overwrite
  *
@@ -210,8 +210,8 @@ const createScaffoldingContext = ({
   noun,
   language,
   indexFileLocal,
-  actionDir,
-  testDir,
+  actionDirLocal,
+  testDirLocal,
   includeIntroComments,
   preventOverwrite,
 }) => {
@@ -220,19 +220,19 @@ const createScaffoldingContext = ({
   const indexFileResolved = path.join(process.cwd(), indexFileLocal);
   const actionFileResolved = `${path.join(
     process.cwd(),
-    actionDir,
+    actionDirLocal,
     key
   )}.${language}`;
-  const actionFileResolvedStem = path.join(process.cwd(), actionDir, key);
-  const actionFileLocal = `${path.join(actionDir, key)}.${language}`;
-  const actionFileLocalStem = path.join(actionDir, key);
+  const actionFileResolvedStem = path.join(process.cwd(), actionDirLocal, key);
+  const actionFileLocal = `${path.join(actionDirLocal, key)}.${language}`;
+  const actionFileLocalStem = path.join(actionDirLocal, key);
   const testFileResolved = `${path.join(
     process.cwd(),
-    testDir,
+    testDirLocal,
     key
   )}.test.${language}`;
-  const testFileLocal = `${path.join(testDir, key)}.${language}`;
-  const testFileLocalStem = path.join(testDir, key);
+  const testFileLocal = `${path.join(testDirLocal, key)}.${language}`;
+  const testFileLocalStem = path.join(testDirLocal, key);
   const indexFileRelativeImportPath = getRelativeRequirePath(
     indexFileResolved,
     actionFileResolvedStem

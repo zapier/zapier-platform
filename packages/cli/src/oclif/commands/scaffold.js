@@ -38,8 +38,8 @@ class ScaffoldCommand extends BaseCommand {
       noun,
       language,
       indexFileLocal,
-      actionDir: actionDirLocal,
-      testDir: testDirLocal,
+      actionDirLocal,
+      testDirLocal,
       includeIntroComments: !this.flags['no-help'],
       preventOverwrite: !force,
     });
