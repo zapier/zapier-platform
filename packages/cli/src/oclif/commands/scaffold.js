@@ -2,6 +2,7 @@
 // @ts-check
 
 const path = require('path');
+const fs = require('fs');
 
 const { flags } = require('@oclif/command');
 
@@ -20,21 +21,16 @@ const { isValidAppInstall } = require('../../utils/misc');
 const { writeFile } = require('../../utils/files');
 const { ISSUES_URL } = require('../../constants');
 
-/** * @deprecated */
-const getLocalDirectory = (action, test = false) =>
-  path.join(test ? 'test/' : '', plural(action));
-
 class ScaffoldCommand extends BaseCommand {
   async perform() {
     const { actionType, noun } = this.args;
+    const indexFileLocal = this.flags.entry ?? this.defaultIndexFileLocal();
     const {
-      dest: actionDir = getLocalDirectory(actionType),
-      'test-dest': testDir = getLocalDirectory(actionType, true),
-      entry: indexFileLocal = 'index.js',
+      dest: actionDirLocal = this.defaultActionDirLocal(indexFileLocal),
+      'test-dest': testDirLocal = this.defaultTestDirLocal(indexFileLocal),
       force,
     } = this.flags;
 
-    // TODO: Auto-detect if index.js points at a TS dist/ etc.
     const language = indexFileLocal.endsWith('.ts') ? 'ts' : 'js';
 
     const context = createScaffoldingContext({
@@ -42,8 +38,8 @@ class ScaffoldCommand extends BaseCommand {
       noun,
       language,
       indexFileLocal,
-      actionDir,
-      testDir,
+      actionDir: actionDirLocal,
+      testDir: testDirLocal,
       includeIntroComments: !this.flags['no-help'],
       preventOverwrite: !force,
     });
@@ -118,6 +114,49 @@ class ScaffoldCommand extends BaseCommand {
       this.log(`\nAll done! Your new ${context.actionType} is ready to use.`);
     }
   }
+
+  /**
+   * If `--entry` is not provided, this will determine the path to the
+   * root index file. Notably, we'll look for tsconfig.json and
+   * src/index.ts first, because even TS apps have a root level plain
+   * index.js that we should ignore.
+   *
+   * @returns {string}
+   */
+  defaultIndexFileLocal() {
+    const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
+    const srcIndexTsPath = path.join(process.cwd(), 'src', 'index.ts');
+    if (fs.existsSync(tsConfigPath) && fs.existsSync(srcIndexTsPath)) {
+      this.log('Automatically detected TypeScript project');
+      return 'src/index.ts';
+    }
+
+    return 'index.js';
+  }
+
+  /**
+   * If `--dest` is not provided, this will determine the directory for
+   * the new action file to be created in.
+   *
+   * @param {string} indexFileLocal - The path to the index file
+   * @returns {string}
+   */
+  defaultActionDirLocal(indexFileLocal) {
+    const parent = path.dirname(indexFileLocal);
+    return path.join(parent, plural(this.args.actionType));
+  }
+
+  /**
+   * If `--test-dest` is not provided, this will determine the directory
+   * for the new test file to be created in.
+   *
+   * @param {string} indexFileLocal - The path to the index file
+   * @returns {string}
+   */
+  defaultTestDirLocal(indexFileLocal) {
+    const parent = path.dirname(indexFileLocal);
+    return path.join(parent, 'test', plural(this.args.actionType));
+  }
 }
 
 ScaffoldCommand.args = [
@@ -129,8 +168,7 @@ ScaffoldCommand.args = [
   },
   {
     name: 'noun',
-    help:
-      'What sort of object this action acts on. For example, the name of the new thing to create',
+    help: 'What sort of object this action acts on. For example, the name of the new thing to create',
     required: true,
   },
 ];
@@ -149,13 +187,12 @@ ScaffoldCommand.flags = buildFlags({
     entry: flags.string({
       char: 'e',
       description:
-        "Supply the path to your integration's root (`index.js`). Only needed if your `index.js` is in a subfolder, like `src`.",
-      default: 'index.js',
+        "Supply the path to your integration's entry point (`index.js` or `src/index.ts`). This will try to automatically detect the correct file if not provided.",
     }),
     force: flags.boolean({
       char: 'f',
       description:
-        'Should we overwrite an exisiting trigger/search/create file?',
+        'Should we overwrite an existing trigger/search/create file?',
       default: false,
     }),
     'no-help': flags.boolean({
