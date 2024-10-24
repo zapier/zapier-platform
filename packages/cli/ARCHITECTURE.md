@@ -10,13 +10,6 @@
 
 > `cli/...`, when used in a path to a file, is shorthand for `zapier-platform/packages/cli/...`
 
-### README
-
-- For legacy reasons, the tooling for the `zapier-platform/README.md` lives in this folder.
-- Changes to the `README` should be made in `cli/README-source.md` and propagated using the `yarn docs` command in the `cli` folder. That command mostly performs text replacements in `README-source.md` for the latest released version number, supported Node.js version, and snippet text
-- Technical examples live in the `cli/snippets` directory, mostly so they can get linted and formatted more easily.
-- After generation, the `cli/docs` folder is _copied_ into the root of `zapier-platform` so it shows up nicely on GitHub.
-
 ### Commands
 
 - We use the [oclif](https://github.com/oclif/oclif) (created for the Heroku CLI) to power our CLI

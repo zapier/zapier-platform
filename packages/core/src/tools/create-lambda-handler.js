@@ -196,7 +196,8 @@ const createLambdaHandler = (appRawOrPath) => {
       ZapierPromise.patchGlobal();
     }
 
-    // If we're running out of memory, exit the process. Backend will try again.
+    // If we're running out of memory or file descriptors, force exit the process.
+    // The backend will try again via @retry(ProcessExitedException).
     checkMemory(event);
 
     environmentTools.cleanEnvironment();

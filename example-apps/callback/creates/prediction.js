@@ -33,7 +33,7 @@ module.exports = {
 
           // This is NOT how you normally do authentication. This is just to demo how to write a create here.
           // Refer to this doc to set up authentication:
-          // https://zapier.github.io/zapier-platform-cli/#authentication
+          // https://docs.zapier.com/platform/reference/cli-docs#authentication
           'X-API-Key': 'secret',
         },
       });

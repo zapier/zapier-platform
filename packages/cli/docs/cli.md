@@ -307,9 +307,9 @@ This command also checks the current directory for a linked integration.
 
 This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
 
-This command loads environment variables and `authData` from the `.env` file in the current directory. If you don't have an `.env` file yet, you can use the `zapier invoke auth start` command to help you initialize it, or you can manually create it.
+This command loads environment variables and `authData` from the `.env` file in the current directory. If you don't have a `.env` file yet, you can use the `zapier invoke auth start` command to help you initialize it, or you can manually create it.
 
-The `zapier invoke auth start` subcommand will prompt you for the necessary auth fields and save them to the `.env` file.
+The `zapier invoke auth start` subcommand will prompt you for the necessary auth fields and save them to the `.env` file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.
 
 Each line in the `.env` file should follow one of these formats:
 
@@ -551,6 +551,24 @@ Check `zapier jobs` to track the status of the promotion. Or use `zapier history
 
 **Examples**
 * `zapier promote 1.0.0`
+
+
+## pull
+
+> Retrieve and update your local integration files with the latest version.
+
+**Usage**: `zapier pull`
+
+This command updates your local integration files with the latest version. You will be prompted with a confirmation dialog before continuing if there any destructive file changes.
+
+Zapier may release new versions of your integration with bug fixes or new features. In the event this occurs, you will be unable to do the following until your local files are updated by running `zapier pull`:
+
+* push to the promoted version
+* promote a new version
+* migrate users from one version to another
+
+**Flags**
+* `-d, --debug` | Show extra debugging output.
 
 
 ## push

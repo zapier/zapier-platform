@@ -117,16 +117,17 @@ interface BaseHttpResponse {
   request: HttpRequestOptions;
 }
 
-export interface HttpResponse extends BaseHttpResponse {
+export interface HttpResponse<T = any> extends BaseHttpResponse {
   content: string;
-  data?: any;
-  json?: any;
+  data: T;
+  /** @deprecated Since v10.0.0. Use `data` instead. */
+  json?: T;
 }
 
-export interface RawHttpResponse extends BaseHttpResponse {
+export interface RawHttpResponse<T = any> extends BaseHttpResponse {
   body: NodeJS.ReadableStream;
   buffer(): Promise<Buffer>;
-  json(): Promise<object>;
+  json(): Promise<T>;
   text(): Promise<string>;
 }
 
@@ -138,16 +139,20 @@ type DehydrateFunc = <T>(
 export interface ZObject {
   request: {
     // most specific overloads go first
-    (
+    <T = any>(
       url: string,
       options: HttpRequestOptions & { raw: true }
-    ): Promise<RawHttpResponse>;
-    (
+    ): Promise<RawHttpResponse<T>>;
+    <T = any>(
       options: HttpRequestOptions & { raw: true; url: string }
-    ): Promise<RawHttpResponse>;
+    ): Promise<RawHttpResponse<T>>;
 
-    (url: string, options?: HttpRequestOptions): Promise<HttpResponse>;
-    (options: HttpRequestOptions & { url: string }): Promise<HttpResponse>;
+    <T = any>(url: string, options?: HttpRequestOptions): Promise<
+      HttpResponse<T>
+    >;
+    <T = any>(options: HttpRequestOptions & { url: string }): Promise<
+      HttpResponse<T>
+    >;
   };
 
   console: Console;
@@ -226,14 +231,14 @@ export type PerformFunction<BI = Record<string, any>, R = any> = (
 
 export type BeforeRequestMiddleware = (
   request: HttpRequestOptions,
-  z?: ZObject,
-  bundle?: Bundle
+  z: ZObject,
+  bundle: Bundle
 ) => HttpRequestOptions | Promise<HttpRequestOptions>;
 
 export type AfterResponseMiddleware = (
   response: HttpResponse,
   z: ZObject,
-  bundle?: Bundle
+  bundle: Bundle
 ) => HttpResponse | Promise<HttpResponse>;
 
 export interface BufferedItem<InputData = { [x: string]: any }> {
