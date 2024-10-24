@@ -1,23 +1,214 @@
-<!-- Used by https://zapier.github.io/zapier-platform-cli/cli.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta
-      http-equiv="Refresh"
-      content="0; url='https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md'"
-    />
-    <title>Zapier Platform Documentation</title>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-K7GFJTV');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Zapier Platform CLI Reference</title>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.5.0/styles/agate.min.css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="./docs.css">
+    <style>body {
+  font-family: 'Open Sans', Helvetica, arial, sans-serif;
+  background-color: #fff;
+  color: #5F6C72;
+  font-size: 14px;
+  font-weight: 400;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative; }
+
+img {
+  max-width: 100%; }
+
+h1 {
+  color: #354147;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.3em;
+  padding: 20px 0; }
+
+h2 {
+  color: #354147;
+  font-size: 20px;
+  line-height: 1.4em;
+  font-weight: 600;
+  padding: 1em 0; }
+
+h3 {
+  color: #354147;
+  font-size: 15px;
+  line-height: 1.5em;
+  font-weight: 600;
+  padding: 0 0 0.5em 0; }
+
+h4 {
+  color: #354147;
+  font-size: 0.9em;
+  letter-spacing: 1px;
+  line-height: 1.2em;
+  font-weight: 600;
+  padding: 0 0 10px;
+  text-transform: uppercase; }
+
+a {
+  color: #499DF3;
+  text-decoration: none; }
+  a:hover {
+    text-decoration: underline; }
+
+::-webkit-input-placeholder {
+  color: #969EA2; }
+
+:-moz-placeholder {
+  color: #969EA2; }
+
+::-moz-placeholder {
+  color: #969EA2; }
+
+:-ms-input-placeholder {
+  color: #969EA2; }
+
+p {
+  line-height: 1.6em;
+  margin: 0 0 15px; }
+
+small {
+  font-size: 13px; }
+
+i, em {
+  font-style: italic; }
+
+strong {
+  font-weight: 600; }
+
+sup, sub, .sup {
+  font-size: 13px;
+  vertical-align: baseline;
+  position: relative;
+  top: -0.4em; }
+  sup.small, sub.small, .sup.small {
+    font-size: 10px; }
+
+sub {
+  top: 0.4em; }
+
+pre {
+  border: none;
+  line-height: 20px;
+  font-family: 'Consolas','Liberation Mono',Courier,monospace; }
+  pre code {
+    display: block;
+    white-space: pre; /* no word wrap */
+    padding: 10px;
+    line-height: 1.7em; }
+
+p code {
+  word-break: break-all;
+  display: inline; }
+
+hr {
+  color: #DADFE2;
+  background: #DADFE2;
+  border: 0;
+  height: 1px; }
+
+ul {
+  line-height: 1.75em;
+  margin: 0 0 20px; }
+
+ol {
+  line-height: 1.75em;
+  list-style-type: decimal;
+  list-style-position: inside;
+  margin: 0 0 20px; }
+
+blockquote {
+  border-left: 3px solid #ff4a00;
+  font-size: 14px;
+  font-style: italic;
+  line-height: 2em;
+  margin: 30px 0;
+  padding-left: 20px; }
+  blockquote p {
+    font-size: inherit;
+    font-style: inherit;
+    line-height: inherit; }
+
+.docs-toc {
+  height: 100%;
+  width: 230px;
+  position: fixed;
+  padding: 40px 20px;
+  overflow-y: scroll;
+  overflow-x: hidden; }
+  .docs-toc ul {
+    margin: 0; 
+    padding: 0 0 0 10px; }
+
+.generated-by {
+  font-size: 12px;
+  color: #969EA2; }
+
+.docs-main {}
+
+.docs-code {
+  /* see media queries */ }
+  .docs-code pre {
+    background: #354147;
+    color: #ffffff;
+    line-height: 20px;
+    font-family: 'Consolas','Liberation Mono',Courier,monospace; }
+    .docs-code pre code {
+      display: block;
+      padding: 10px;
+      line-height: 1.7em; }
+
+a code {
+  color: #499DF3;
+  background-color: #f2f4f9; }
+
+/* targets bootstraps md width */
+
+@media (min-width: 992px) {
+  .row-height {
+    display: table;
+    table-layout: fixed;
+    height: 100%;
+    width: 100%; }
+  .col-height {
+    display: table-cell;
+    float: none;
+    height: 100%; }
+
+  .docs-main {
+    margin-left: 230px; }
+
+  .docs-code {
+    background: #5F6C72;
+    color: #ffffff; }
+}
+
+@media (max-width: 992px) {
+  .docs-toc {
+    display: none; }
+  .is-empty {
+    display: none; }
+}
+</style>
   </head>
   <body>
-<<<<<<< HEAD
-    <p>
-      Redirecting to
-      <a
-        href="https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md"
-        >Zapier Platform CLI Reference</a
-      >...
-    </p>
-=======
     <!-- Header -->
     <div class="docs-header__platform">
       <div class="docs-header__container">
@@ -1274,6 +1465,5 @@ zapier invoke trigger new_recipe
     <script type="text/javascript" src="./lib/lodash.custom.min.js"></script>
     <script type="text/javascript" src="./docs.js"></script>
 
->>>>>>> 104e5cb2 (autodetect TS for `zapier scaffold`)
   </body>
 </html>
