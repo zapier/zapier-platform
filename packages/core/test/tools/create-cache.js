@@ -73,6 +73,12 @@ describe('zcache: get, set, delete', () => {
       .should.be.rejectedWith('ttl must be an integer');
   });
 
+  it('zcache_set: should throw error for a non-boolean nx', async () => {
+    await cache
+      .set('random-key', 'random-value', 1, [], 1)
+      .should.be.rejectedWith('nx must be a boolean');
+  });
+
   it('zcache_delete: should delete the cache entry of an existing key', async () => {
     mockRpcCall(true);
 
