@@ -143,19 +143,23 @@ const registerActionInJsApp = (codeStr, property, varName) => {
  * Adds an import statement to the top of an index.ts file to import a
  * new action, such as `import some_trigger from './triggers/some_trigger';`
  *
- * @param {string} codeStr
- * @param {string} identifierName
- * @param {string} importPath
+ * @param {string} codeStr - The code of the index.ts file to modify.
+ * @param {string} identifierName - The name of imported action used as a variable in the code.
+ * @param {string} actionRelativeImportPath - The relative path to import the action from
  * @returns {string}
  */
-const importActionInTsApp = (codeStr, identifierName, importPath) => {
+const importActionInTsApp = (
+  codeStr,
+  identifierName,
+  actionRelativeImportPath
+) => {
   const root = ts(codeStr);
 
   const imports = root.find(ts.ImportDeclaration);
 
   const newImportStatement = j.importDeclaration(
     [j.importDefaultSpecifier(j.identifier(identifierName))],
-    j.literal(importPath)
+    j.literal(actionRelativeImportPath)
   );
 
   if (imports.length) {

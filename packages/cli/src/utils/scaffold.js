@@ -6,7 +6,12 @@ const _ = require('lodash');
 
 const { ensureDir, fileExistsSync, readFile, writeFile } = require('./files');
 const { splitFileFromPath } = require('./string');
-const { importActionInJsApp, registerActionInJsApp } = require('./ast');
+const {
+  importActionInJsApp,
+  registerActionInJsApp,
+  importActionInTsApp,
+  registerActionInTsApp,
+} = require('./ast');
 
 const plural = (type) => (type === 'search' ? `${type}es` : `${type}s`);
 
@@ -131,27 +136,34 @@ const isValidEntryFileUpdate = (entryFilePath, actionType, newActionKey) => {
 };
 
 /**
- * Modify an index.js file to include the newly scaffolded action.
+ * Modify an index.js/index.ts file to import and reference the newly
+ * scaffolded action.
+ *
  * @param {Object} options
  * @param {'ts'|'js'} options.language - the language of the project
  * @param {string} options.indexFileResolved - the App's entry point (index.js/ts)
- * @param {string} options.actionFileResolved - the path to the new action file to import
+ * @param {string} options.actionRelativeImportPath - The path to import the new action with
  * @param {string} options.actionImportName - the name of the import, i.e the action key converted to camel_case
  * @param {ActionType} options.actionType - The type of action, e.g. 'trigger'
  */
 const updateEntryFile = async ({
   language,
   indexFileResolved,
-  actionFileResolved,
+  actionRelativeImportPath,
   actionImportName,
   actionType,
 }) => {
   if (language === 'ts') {
-    throw new Error('TS not yet supported');
+    return updateEntryFileTs({
+      indexFileResolved,
+      actionRelativeImportPath,
+      actionImportName,
+      actionType,
+    });
   }
   return updateEntryFileJs({
     indexFileResolved,
-    actionFileResolved,
+    actionRelativeImportPath,
     actionImportName,
     actionType,
   });
@@ -161,25 +173,56 @@ const updateEntryFile = async ({
  *
  * @param {Object} options
  * @param {string} options.indexFileResolved - the App's entry point (index.js/ts)
- * @param {string} options.actionFileResolved - the path to the new action file to import
+ * @param {string} options.actionRelativeImportPath - The path to import the new action with
  * @param {string} options.actionImportName - the name of the import, i.e the action key converted to camel_case
  * @param {ActionType} options.actionType - The type of action, e.g. 'trigger'
  */
 const updateEntryFileJs = async ({
   indexFileResolved,
-  actionFileResolved,
+  actionRelativeImportPath,
   actionImportName,
   actionType,
 }) => {
   let codeStr = (await readFile(indexFileResolved)).toString();
   const originalCodeStr = codeStr; // untouched copy in case we need to bail
-  const relativePath = getRelativeRequirePath(
-    indexFileResolved,
-    actionFileResolved
-  );
 
-  codeStr = importActionInJsApp(codeStr, actionImportName, `./${relativePath}`);
+  codeStr = importActionInJsApp(
+    codeStr,
+    actionImportName,
+    actionRelativeImportPath
+  );
   codeStr = registerActionInJsApp(
+    codeStr,
+    plural(actionType),
+    actionImportName
+  );
+  await writeFile(indexFileResolved, codeStr);
+  return originalCodeStr;
+};
+
+/**
+ *
+ * @param {Object} options
+ * @param {string} options.indexFileResolved - The App's entry point (index.js/ts)
+ * @param {string} options.actionRelativeImportPath - The path to import the new action with (relative to the index)
+ * @param {string} options.actionImportName - The name of the import, i.e the action key converted to camel_case
+ * @param {ActionType} options.actionType - The type of action, e.g. 'trigger'
+ */
+const updateEntryFileTs = async ({
+  indexFileResolved,
+  actionRelativeImportPath,
+  actionImportName,
+  actionType,
+}) => {
+  let codeStr = (await readFile(indexFileResolved)).toString();
+  const originalCodeStr = codeStr; // untouched copy in case we need to bail
+
+  codeStr = importActionInTsApp(
+    codeStr,
+    actionImportName,
+    actionRelativeImportPath
+  );
+  codeStr = registerActionInTsApp(
     codeStr,
     plural(actionType),
     actionImportName
@@ -233,10 +276,10 @@ const createScaffoldingContext = ({
   )}.test.${language}`;
   const testFileLocal = `${path.join(testDirLocal, key)}.${language}`;
   const testFileLocalStem = path.join(testDirLocal, key);
-  const indexFileRelativeImportPath = getRelativeRequirePath(
+  const actionRelativeImportPath = `./${getRelativeRequirePath(
     indexFileResolved,
     actionFileResolvedStem
-  );
+  )}`;
 
   return {
     actionType,
@@ -252,7 +295,7 @@ const createScaffoldingContext = ({
 
     indexFileLocal,
     indexFileResolved,
-    indexFileRelativeImportPath,
+    actionRelativeImportPath,
 
     actionFileResolved,
     actionFileResolvedStem,
@@ -310,12 +353,12 @@ module.exports = {
  *
  * @property {string} indexFileLocal - e.g. `index.js` or `src/index.ts`
  * @property {string} indexFileResolved - e.g. `/Users/sal/my-app/index.js`
- * @property {string} indexFileRelativeImportPath - e.g. `triggers/foobar`
  *
  * @property {string} actionFileResolved - e.g. `/Users/sal/my-app/triggers/foobar.js`
  * @property {string} actionFileResolvedStem - e.g. `/Users/sal/my-app/triggers/foobar`
  * @property {string} actionFileLocal - e.g. `triggers/foobar.js`
  * @property {string} actionFileLocalStem - e.g. `triggers/foobar`
+ * @property {string} actionRelativeImportPath - e.g. `triggers/foobar`
  *
  * @property {string} testFileResolved - e.g. `/Users/sal/my-app/test/triggers/foobar.test.js`
  * @property {string} testFileLocal - e.g. `test/triggers/foobar.js`
