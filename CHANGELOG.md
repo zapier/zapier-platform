@@ -4,15 +4,15 @@ _released `2024-10-24`_
 
 ### cli
 
-:nail_care: Fix a failing smoke test based on CLI package size (now that many docs are deleted) ([#899](https://github.com/zapier/zapier-platform/pull/899))
+- :nail_care: Fix a failing smoke test based on CLI package size (now that many docs are deleted) ([#899](https://github.com/zapier/zapier-platform/pull/899))
 
-:tada: Add OAuth2 to TypeScript `init` output ([#894](https://github.com/zapier/zapier-platform/pull/894))
+- :tada: Add OAuth2 to TypeScript `init` output ([#894](https://github.com/zapier/zapier-platform/pull/894))
 
 ### core
 
-:tada: Adds `nx` argument to `z.cache.set()` ([#900](https://github.com/zapier/zapier-platform/pull/900))
+- :tada: Adds `nx` argument to `z.cache.set()` ([#900](https://github.com/zapier/zapier-platform/pull/900))
 
-:bug: Force a `process.exit(1)` on catching an `EMFILE` error inside `checkMemory()` ([#901](https://github.com/zapier/zapier-platform/pull/901))
+- :bug: Force a `process.exit(1)` on catching an `EMFILE` error inside `checkMemory()` ([#901](https://github.com/zapier/zapier-platform/pull/901))
 
 ### schema
 
@@ -20,14 +20,14 @@ None!
 
 ### schema-to-ts
 
-:tada: Type `z.request` responses; deprecate `.json` ([#895](https://github.com/zapier/zapier-platform/pull/895))
+- :tada: Type `z.request` responses and deprecate `.json` ([#895](https://github.com/zapier/zapier-platform/pull/895))
 
 ### misc
 
-:scroll: Typo fixes and link changes ([#885](https://github.com/zapier/zapier-platform/pull/885))
-:scrol: Add docs explaining why hidden triggers for dynamic dropdowns need to declare input fields ([#887](https://github.com/zapier/zapier-platform/pull/887))
-:scroll: Migrate docs out of this monorepo ([#893](https://github.com/zapier/zapier-platform/pull/893))
-:scroll: Updating doc links in `CHANGELOG` ([#898](https://github.com/zapier/zapier-platform/pull/898))
+- :scroll: Typo fixes and link changes ([#885](https://github.com/zapier/zapier-platform/pull/885))
+- :scroll: Add docs explaining why hidden triggers for dynamic dropdowns need to declare input fields ([#887](https://github.com/zapier/zapier-platform/pull/887))
+- :scroll: Migrate docs out of this monorepo ([#893](https://github.com/zapier/zapier-platform/pull/893))
+- :scroll: Updating doc links in `CHANGELOG` ([#898](https://github.com/zapier/zapier-platform/pull/898))
 
 
 ## 15.17.0
