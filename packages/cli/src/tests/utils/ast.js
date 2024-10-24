@@ -3,14 +3,16 @@
 const should = require('should');
 const {
   importActionInJsApp,
-  importActionInTsApp,
   registerActionInJsApp,
+  importActionInTsApp,
+  registerActionInTsApp,
 } = require('../../utils/ast');
 
 const {
   sampleExportVarIndexJs,
-  sampleExportVarIndexTS,
   sampleExportObjectIndexJs,
+  sampleExportDeclaredIndexTS,
+  sampleExportDirectIndexTs,
   sampleLegacyAppIndexJs,
 } = require('./astFixtures');
 
@@ -108,7 +110,7 @@ describe('ast (JS)', () => {
 
           const codeByLine = result.split('\n').map((x) => x.trim());
           const firstIndex = codeByLine.indexOf('searches: {');
-          // assertions about what comes in the trigger property
+          // assertions about what comes in the searches property
           should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
             firstIndex + 1
           );
@@ -219,10 +221,63 @@ describe('ast (JS)', () => {
 });
 
 describe('ast (TS)', () => {
-  describe('adding require statements', () => {
-    it('should add a new import statement at root', () => {
-      const result = importActionInTsApp(`const foo: Foo = {bar: 'bar'}`); //, 'getThing', './a/b/c');
-      should(result.includes('Foo')).be.true();
+  describe('adding import statements', () => {
+    it('should add import as first statement in file', () => {
+      const input = 'export default {};';
+      const expected = `import getThing from './a/b/c';\nexport default {};`;
+      const result = importActionInTsApp(input, 'getThing', './a/b/c');
+
+      should(result).eql(expected);
+    });
+
+    it('should add import below existing imports', () => {
+      const input = `import Foo from './foo';\n\nexport default {};\n`;
+      const expected = `import Foo from './foo';\n\nimport getThing from './a/b/c';\n\nexport default {};\n`;
+      const result = importActionInTsApp(input, 'getThing', './a/b/c');
+
+      should(result).eql(expected);
+    });
+  });
+
+  describe('Adding object properties', () => {
+    Object.entries({
+      declared: sampleExportDeclaredIndexTS,
+      direct: sampleExportDirectIndexTs,
+    }).forEach(function ([exportType, codeStr]) {
+      describe(`${exportType} export`, () => {
+        it('should add a property to an existing action type', () => {
+          const result = registerActionInTsApp(codeStr, 'triggers', 'getThing');
+          should(countOccurrences(result, 'triggers:')).eql(1);
+          should(countOccurrences(result, 'searches:')).eql(0);
+
+          const codeByLine = result.split('\n').map((x) => x.trim());
+          const firstIndex = codeByLine.indexOf('triggers: {');
+          should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
+            firstIndex + 1
+          );
+          should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
+            firstIndex + 2
+          );
+        });
+
+        it('should add a new property if action type is missing', () => {
+          const result = registerActionInTsApp(
+            codeStr,
+            'searches',
+            'findThing'
+          );
+          should(countOccurrences(result, 'triggers:')).eql(1);
+          should(countOccurrences(result, 'searches:')).eql(1);
+
+          const codeByLine = result.split('\n').map((x) => x.trim());
+          const firstIndex = codeByLine.indexOf('searches: {');
+          // assertions about what comes in the searches property
+          should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
+            firstIndex + 1
+          );
+          should(codeByLine[firstIndex + 2]).eql('}');
+        });
+      });
     });
   });
 });
