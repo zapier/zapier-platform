@@ -73,7 +73,7 @@ class ScaffoldCommand extends BaseCommand {
     const originalContents = await updateEntryFile({
       language: context.language,
       indexFileResolved: context.indexFileResolved,
-      actionFileResolved: context.actionFileResolved,
+      actionRelativeImportPath: context.actionRelativeImportPath,
       actionImportName: context.templateContext.VARIABLE,
       actionType: context.actionType,
     });
@@ -99,7 +99,7 @@ class ScaffoldCommand extends BaseCommand {
         this.error(
           [
             `\nPlease add the following lines to ${context.indexFileResolved}:`,
-            ` * \`const ${context.templateContext.VARIABLE} = require('./${context.indexFileRelativeImportPath}');\` at the top-level`,
+            ` * \`const ${context.templateContext.VARIABLE} = require('./${context.actionRelativeImportPath}');\` at the top-level`,
             ` * \`[${context.templateContext.VARIABLE}.key]: ${context.templateContext.VARIABLE}\` in the "${context.actionTypePlural}" object in your exported integration definition.`,
             '',
             `Also, please file an issue at ${ISSUES_URL} with the contents of your ${context.indexFileResolved}.`,
