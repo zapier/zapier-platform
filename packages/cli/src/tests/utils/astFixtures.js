@@ -21,7 +21,29 @@ const App = {
 module.exports = App
 `.trim();
 
-const sampleExportVarIndexTS = `
+const sampleExportObjectIndexJs = `
+const CryptoCreate = require('./creates/crypto')
+const BlahTrigger = require('./triggers/blah')
+// comment!
+module.exports = {
+  version: require('./package.json').version,
+  platformVersion: require('zapier-platform-core').version,
+  resources: {
+  	test: () => {
+      // red herring require
+    	const fs = require('fs')
+    }
+  },
+  triggers: {
+    [BlahTrigger.key]: BlahTrigger
+  },
+  creates: {
+    [CryptoCreate.key]: CryptoCreate
+  }
+}
+`.trim();
+
+const sampleExportDeclaredIndexTS = `
 import type { App } from 'zapier-platform-core';
 import { version as platformVersion } from 'zapier-platform-core';
 
@@ -44,26 +66,25 @@ const App: App = {
 export default app;
 `.trim();
 
-const sampleExportObjectIndexJs = `
-const CryptoCreate = require('./creates/crypto')
-const BlahTrigger = require('./triggers/blah')
+const sampleExportDirectIndexTs = `
+import type { App } from 'zapier-platform-core';
+import { version as platformVersion } from 'zapier-platform-core';
+
+import packageJson from '../package.json';
+import CryptoCreate from './creates/crypto';
+import BlahTrigger from './triggers/blah';
+
 // comment!
-module.exports = {
-  version: require('./package.json').version,
-  platformVersion: require('zapier-platform-core').version,
-  resources: {
-  	test: () => {
-      // red herring require
-    	const fs = require('fs')
-    }
-  },
+export default {
+  version: packageJson.version,
+  platformVersion,
   triggers: {
     [BlahTrigger.key]: BlahTrigger
   },
   creates: {
     [CryptoCreate.key]: CryptoCreate
   }
-}
+} satisfies App;
 `.trim();
 
 const sampleLegacyAppIndexJs = `
@@ -134,7 +155,8 @@ module.exports = {
 
 module.exports = {
   sampleExportVarIndexJs,
-  sampleExportVarIndexTS,
   sampleExportObjectIndexJs,
+  sampleExportDeclaredIndexTS,
+  sampleExportDirectIndexTs,
   sampleLegacyAppIndexJs,
 };

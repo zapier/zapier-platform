@@ -139,14 +139,98 @@ const registerActionInJsApp = (codeStr, property, varName) => {
   return root.toSource();
 };
 
-const importActionInTsApp = (codeStr) => {
+/**
+ * Adds an import statement to the top of an index.ts file to import a
+ * new action, such as `import some_trigger from './triggers/some_trigger';`
+ *
+ * @param {string} codeStr
+ * @param {string} identifierName
+ * @param {string} importPath
+ * @returns {string}
+ */
+const importActionInTsApp = (codeStr, identifierName, importPath) => {
   const root = ts(codeStr);
 
-  return root.toSource();
+  const imports = root.find(ts.ImportDeclaration);
+
+  const newImportStatement = j.importDeclaration(
+    [j.importDefaultSpecifier(j.identifier(identifierName))],
+    j.literal(importPath)
+  );
+
+  if (imports.length) {
+    imports.at(-1).insertAfter(newImportStatement);
+  } else {
+    const body = root.find(ts.Program).get().node.body;
+    body.unshift(newImportStatement);
+    // Add newline after import?
+  }
+
+  return root.toSource({ quote: 'single' });
+};
+
+/**
+ *
+ * @param {string} codeStr
+ * @param {'creates' | 'searches' | 'triggers'} actionTypePlural - The type of action to register within the app
+ * @param {string} identifierName - Name of the action imported to be registered
+ * @returns {string}
+ */
+const registerActionInTsApp = (codeStr, actionTypePlural, identifierName) => {
+  const root = ts(codeStr);
+
+  // the `[thing.key]: thing` entry we'd like to insert.
+  const newProperty = ts.property.from({
+    kind: 'init',
+    key: j.memberExpression(j.identifier(identifierName), j.identifier('key')),
+    value: j.identifier(identifierName),
+    computed: true,
+  });
+
+  // Find the top level app Object; the one with the `platformVersion`
+  // key. This is where we'll insert our new property.
+  const appObjectCandidates = root
+    .find(ts.ObjectExpression)
+    .filter((path) =>
+      path.value.properties.some(
+        (prop) => prop.key && prop.key.name === 'platformVersion'
+      )
+    );
+  if (appObjectCandidates.length !== 1) {
+    throw new Error('Unable to find the app definition to modify');
+  }
+  const appObj = appObjectCandidates.get().node;
+
+  // Now we have an app object to modify.
+
+  // Check if this object already has the actionType group inside it.
+  const existingProp = appObj.properties.find(
+    (props) => props.key.name === actionTypePlural
+  );
+  if (existingProp) {
+    const value = existingProp.value;
+    if (value.type !== 'ObjectExpression') {
+      throw new Error(
+        `Tried to edit the ${actionTypePlural} key, but the value wasn't an object`
+      );
+    }
+    value.properties.push(newProperty);
+  } else {
+    appObj.properties.push(
+      j.property(
+        'init',
+        j.identifier(actionTypePlural),
+        j.objectExpression([newProperty])
+      )
+    );
+  }
+
+  return root.toSource({ quote: 'single' });
 };
 
 module.exports = {
   importActionInJsApp,
-  importActionInTsApp,
   registerActionInJsApp,
+  importActionInTsApp,
+  registerActionInTsApp,
 };
