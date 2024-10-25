@@ -48,24 +48,6 @@ class VersionCommand extends BaseCommand {
       style: { head: [], 'padding-left': 0, 'padding-right': 0 },
     });
 
-    this.logList([
-      [
-        `- ${colors.bold('Errors')}`,
-        'Issues that will prevent your integration from functioning properly. They block you from pushing.',
-      ],
-      [
-        `- ${colors.bold('Publishing Tasks')}`,
-        'To-dos that must be addressed before your integration can be ' +
-          'included in the App Directory. They block you from promoting and ' +
-          'publishing.',
-      ],
-      [
-        `- ${colors.bold('Warnings')}`,
-        'Issues and recommendations that need human reviews by Zapier before ' +
-          "publishing your integration. They don't block.",
-      ],
-    ]);
-
     if (versions.map((v) => v.user_count).filter((c) => c === null).length) {
       this.warn(
         'Some user counts are still being calculated - run this command again in ~10 seconds (or longer if your integration has lots of users).'
