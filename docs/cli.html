@@ -383,17 +383,30 @@ a code {
   <div class="row-height">
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
-<p>Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier canary:create VERSIONFROM VERSIONTO</code></p><p>Only one canary can be active at the same time. You can run <code>zapier canary:list</code> to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using <code>zapier canary:delete a.b.c x.y.z</code>.</p><p>Note: this is similar to <code>zapier migrate</code> but different in that this is temporary and will &quot;revert&quot; the changes once the specified duration is expired.</p><p><strong>Only use this command to canary traffic between non-breaking versions!</strong></p><p><strong>Arguments</strong></p><ul>
+<p>Create a new canary deployment which routes traffic from one version to another for a specified duration.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier canary:create VERSIONFROM VERSIONTO</code></p><p>Canaries can be created to route traffic for one of the following options:</p><ul>
+<li><p>A percentage of all traffic, from all users</p>
+</li>
+<li><p>All traffic for a single user</p>
+</li>
+<li><p>All traffic for a single account</p>
+</li>
+</ul><p>Only one canary can be active at the same time. You can run <code>zapier canary:list</code> to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using <code>zapier canary:delete a.b.c x.y.z</code>.</p><p>Note: this is similar to <code>zapier migrate</code> but different in that this is temporary and will &quot;revert&quot; the changes once the specified duration is expired.</p><p><strong>Only use this command to canary traffic between non-breaking versions!</strong></p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>versionFrom</code> | Version to route traffic from</li>
 <li>(required) <code>versionTo</code> | Version to canary traffic to</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li>(required) <code>-p, --percent</code> | Percent of traffic to route to new version</li>
+<li><code>-a, --account</code> | Account email to route traffic to the new version</li>
 <li>(required) <code>-d, --duration</code> | Duration of the canary in seconds</li>
+<li><code>-p, --percent</code> | Percent of traffic to route to new version</li>
+<li><code>-u, --user</code> | User email to route traffic to the new version (same as email).</li>
+<li><code>-i, --user_id</code> | User id for the user to route traffic to the new version</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
-<li><code>zapier canary:create 1.0.0 1.1.0 -p 25 -d 720</code></li>
-<li><code>zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300</code></li>
+<li><code>zapier canary:create 1.0.0 1.1.0 -d 720 -p 25</code></li>
+<li><code>zapier canary:create 2.0.0 2.1.0 --duration 300</code></li>
+<li><code>zapier canary:create 2.0.0 2.1.0 --duration 300 --user=user@example.com</code></li>
+<li><code>zapier canary:create 2.0.0 2.1.0 --duration 300 --account=account@example.com</code></li>
+<li><code>zapier canary:create 2.0.0 2.1.0 --duration 300 --user_id=123</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

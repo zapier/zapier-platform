@@ -153,7 +153,7 @@ const createCredentials = (username, password, totpCode) => {
   );
 };
 
-const createCanary = async (versionFrom, versionTo, percent, duration) => {
+const createCanary = async (versionFrom, versionTo, options) => {
   const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
 
   return callAPI(
@@ -161,23 +161,19 @@ const createCanary = async (versionFrom, versionTo, percent, duration) => {
     {
       method: 'POST',
       body: {
-        percent,
-        duration
-      }
+        ...options,
+      },
     }
-  )
-}
+  );
+};
 
 const listCanaries = async () => {
   const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
 
-  return callAPI(
-    `/apps/${linkedAppId}/canaries`,
-    {
-      method: 'GET',
-    }
-  )
-}
+  return callAPI(`/apps/${linkedAppId}/canaries`, {
+    method: 'GET',
+  });
+};
 
 const deleteCanary = async (versionFrom, versionTo) => {
   const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
@@ -187,8 +183,8 @@ const deleteCanary = async (versionFrom, versionTo) => {
     {
       method: 'DELETE',
     }
-  )
-}
+  );
+};
 
 /**
  * read local `apprc` file

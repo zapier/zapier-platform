@@ -55,9 +55,17 @@ This command is typically followed by `zapier upload`.
 
 ## canary:create
 
-> Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration.
+> Create a new canary deployment which routes traffic from one version to another for a specified duration.
 
 **Usage**: `zapier canary:create VERSIONFROM VERSIONTO`
+
+Canaries can be created to route traffic for one of the following options:
+
+- A percentage of all traffic, from all users
+
+- All traffic for a single user
+
+- All traffic for a single account
 
 Only one canary can be active at the same time. You can run `zapier canary:list` to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using `zapier canary:delete a.b.c x.y.z`.
 
@@ -70,13 +78,19 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 * (required) `versionTo` | Version to canary traffic to
 
 **Flags**
-* (required) `-p, --percent` | Percent of traffic to route to new version
+* `-a, --account` | Account email to route traffic to the new version
 * (required) `-d, --duration` | Duration of the canary in seconds
+* `-p, --percent` | Percent of traffic to route to new version
+* `-u, --user` | User email to route traffic to the new version (same as email).
+* `-i, --user_id` | User id for the user to route traffic to the new version
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
-* `zapier canary:create 1.0.0 1.1.0 -p 25 -d 720`
-* `zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300`
+* `zapier canary:create 1.0.0 1.1.0 -d 720 -p 25`
+* `zapier canary:create 2.0.0 2.1.0 --duration 300`
+* `zapier canary:create 2.0.0 2.1.0 --duration 300 --user=user@example.com`
+* `zapier canary:create 2.0.0 2.1.0 --duration 300 --account=account@example.com`
+* `zapier canary:create 2.0.0 2.1.0 --duration 300 --user_id=123`
 
 
 ## canary:delete
