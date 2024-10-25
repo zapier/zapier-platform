@@ -1,4 +1,5 @@
 const BaseCommand = require('../../ZapierBaseCommand');
+const { Args } = require('@oclif/core');
 const { buildFlags } = require('../../buildFlags');
 const { listVersions, getWritableApp, callAPI } = require('../../../utils/api');
 const { cyan } = require('colors/safe');
@@ -91,14 +92,13 @@ class ClearCacheCommand extends BaseCommand {
   }
 }
 
-ClearCacheCommand.args = [
-  {
-    name: 'majorVersion',
+ClearCacheCommand.args = {
+  majorVersion: Args.string({
     description:
       '(Optional) The cache data will be deleted for this major version. If not provided, you must pick from a list of major versions for this integration.',
     required: false,
-  },
-];
+  }),
+};
 ClearCacheCommand.flags = buildFlags();
 ClearCacheCommand.description = `Clear the cache data for a major version. 
 
