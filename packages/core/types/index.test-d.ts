@@ -18,7 +18,7 @@ import type {
   Trigger,
 } from './zapier.generated';
 
-import { expectType } from 'tsd';
+import { expectType, expectDeprecated } from 'tsd';
 
 const basicDisplay: BasicDisplay = {
   label: 'some-label',
@@ -166,3 +166,37 @@ const app: App = {
   searches: { [search.key]: search },
 };
 expectType<App>(app);
+
+// Return types from z.request
+async (z: ZObject) => {
+  const resp = await z.request<{ id: number; name: string }>(
+    'https://example.com'
+  );
+  expectType<{ id: number; name: string }>(resp.data);
+  expectDeprecated(resp.json);
+};
+
+async (z: ZObject) => {
+  const resp = await z.request<{ id: number; name: string }>({
+    url: 'https://example.com',
+  });
+  expectType<{ id: number; name: string }>(resp.data);
+};
+
+// Return types from z.request (raw)
+async (z: ZObject) => {
+  const resp = await z.request<{ id: number; name: string }>(
+    'https://example.com',
+    { raw: true }
+  );
+  const result = await resp.json();
+  expectType<{ id: number; name: string }>(result);
+};
+async (z: ZObject) => {
+  const resp = await z.request<{ id: number; name: string }>({
+    raw: true,
+    url: 'https://example.com',
+  });
+  const result = await resp.json();
+  expectType<{ id: number; name: string }>(result);
+};

@@ -1,9 +1,10 @@
-import { Create, PerformFunction } from 'zapier-platform-core';
+import type { Create, PerformFunction } from 'zapier-platform-core';
+import { API_URL } from '../constants';
 
 const perform: PerformFunction = async (z, bundle) => {
   const response = await z.request({
     method: 'POST',
-    url: 'https://auth-json-server.zapier-staging.com/movies',
+    url: `${API_URL}/movies`,
     body: {
       title: bundle.inputData.title,
       year: bundle.inputData.year,
