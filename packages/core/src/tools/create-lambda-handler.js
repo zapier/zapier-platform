@@ -264,6 +264,13 @@ const createLambdaHandler = (appRawOrPath) => {
           const compiledApp = schemaTools.prepareApp(appRaw);
 
           const input = createInput(compiledApp, event, logger, logBuffer, rpc);
+
+          // When the app is done, callback() will be called and the Lambda function will end.
+          // In some cases, perhaps due to fetching large data blobs, the Lambda function
+          // will hang waiting for the event loop to drain. Setting this to false will
+          // prevent that and return when the callback is called.
+          context.callbackWaitsForEmptyEventLoop = false;
+
           return app(input);
         })
         .then((output) => {
