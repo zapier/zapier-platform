@@ -1,13 +1,20 @@
 'use strict';
 
 const EventEmitter = require('events');
+const https = require('node:https');
 
 const should = require('should');
 
-const { JSON_TYPE, XML_TYPE, BINARY_TYPE } = require('../../src/tools/http');
+const {
+  BINARY_TYPE,
+  JSON_TYPE,
+  TEXT_TYPE,
+  XML_TYPE,
+} = require('../../src/tools/http');
 const createAppTester = require('../../src/tools/create-app-tester');
 const createHttpPatch = require('../../src/tools/create-http-patch');
 const appDefinition = require('../userapp');
+const { HTTPBIN_URL } = require('../constants');
 
 describe('create http patch', () => {
   it('should patch by default', async () => {
@@ -150,6 +157,89 @@ describe('create http patch', () => {
         response_status_code: 200,
       },
     ]);
+  });
+
+  it('should not cause missing bytes for late listener', (done) => {
+    // Wrap https.request so httpPatch doesn't modify the real https module
+    const fakeHttpModule = {
+      request: (options, callback) => https.request(options, callback),
+    };
+
+    const logBuffer = [];
+    const stubLogger = (_, data) => {
+      logBuffer.push(data);
+    };
+
+    const httpPatch = createHttpPatch({});
+    httpPatch(fakeHttpModule, stubLogger);
+
+    const chunks = [];
+    const req = fakeHttpModule.request(
+      `${HTTPBIN_URL}/stream/50?chunk_size=100`,
+      (res) => {
+        // Make sure it's a response object
+        should(res.statusCode).eql(200);
+        should(res.headers['content-type']).containEql(TEXT_TYPE);
+
+        setTimeout(() => {
+          // Suppose this listener is some HTTP client library that consumes the
+          // response stream. We use setTimeout to recreate the scenario where
+          // the listener is attached AFTER the logger has already started
+          // consuming the stream.
+          res.on('data', (chunk) => {
+            chunks.push(chunk);
+          });
+          res.on('end', () => {
+            // Assert the library listener gets complete data without missing
+            // bytes
+            {
+              // Make sure the endpoint did return more than one chunk.
+              // Otherwise, we should switch to a different endpoint that does.
+              should(chunks.length).above(1);
+
+              const content = Buffer.concat(chunks).toString();
+              const lines = content.split('\n').filter((line) => line);
+              should(lines).have.length(50);
+
+              for (let i = 0; i < lines.length; i++) {
+                const obj = JSON.parse(lines[i]);
+                should(obj.id).eql(i);
+              }
+            }
+            // Assert the logger listener writes the log as expected
+            {
+              // One request, one log
+              should(logBuffer).have.length(1);
+
+              const log = logBuffer[0];
+              should(log).containEql({
+                log_type: 'http',
+                request_data: '<unsupported format>',
+                request_method: 'GET',
+                request_type: 'patched-devplatform-outbound',
+                request_url:
+                  'https://httpbin.zapier-tooling.com/stream/50?chunk_size=100',
+                request_via_client: false,
+                response_status_code: 200,
+              });
+
+              const loggedIds = Array.from(
+                log.response_content.matchAll(/"id":(\d+)/g),
+                (m) => m[1]
+              );
+              should(loggedIds).have.length(50);
+              for (let i = 0; i < loggedIds.length; i++) {
+                const id = parseInt(loggedIds[i]);
+                should(id).eql(i);
+              }
+            }
+
+            done();
+          });
+        });
+      }
+    );
+    req.end();
   });
 
   // when we run this test, we have to run it without any other test calling createAppTester
