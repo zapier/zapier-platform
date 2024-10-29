@@ -7,6 +7,7 @@ const JSON_TYPE_UTF8 = 'application/json; charset=utf-8';
 const BINARY_TYPE = 'application/octet-stream';
 const HTML_TYPE = 'text/html';
 const TEXT_TYPE = 'text/plain';
+const TEXT_TYPE_UTF8 = 'text/plain; charset=utf-8';
 const YAML_TYPE = 'application/yaml';
 const XML_TYPE = 'application/xml';
 const JSONAPI_TYPE = 'application/vnd.api+json';
@@ -17,6 +18,7 @@ const ALLOWED_HTTP_DATA_CONTENT_TYPES = new Set([
   JSON_TYPE_UTF8,
   HTML_TYPE,
   TEXT_TYPE,
+  TEXT_TYPE_UTF8,
   YAML_TYPE,
   XML_TYPE,
   JSONAPI_TYPE,
