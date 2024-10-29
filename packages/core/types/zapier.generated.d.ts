@@ -338,7 +338,7 @@ export interface Field {
    * Allows for additional metadata to be stored on the field.
    * Supports simple key-values only (no sub-objects or arrays).
    */
-  meta?: FieldChoices;
+  meta?: FieldMeta;
 }
 
 /**
