@@ -189,7 +189,10 @@ const createLambdaHandler = (appRawOrPath) => {
     // Wait for all async events to complete before callback returns.
     // This is not strictly necessary since this is the default now when
     // using the callback; just putting it here to be explicit.
-    context.callbackWaitsForEmptyEventLoop = true;
+    // In some cases, the code hangs and never exits because the event loop is not
+    // empty.
+    context.callbackWaitsForEmptyEventLoop =
+      event.callbackExitsAfterApp || true;
 
     // replace native Promise with bluebird (works better with domains)
     if (!event.calledFromCli) {
@@ -264,12 +267,6 @@ const createLambdaHandler = (appRawOrPath) => {
           const compiledApp = schemaTools.prepareApp(appRaw);
 
           const input = createInput(compiledApp, event, logger, logBuffer, rpc);
-
-          // When the app is done, callback() will be called and the Lambda function will end.
-          // In some cases, perhaps due to fetching large data blobs, the Lambda function
-          // will hang waiting for the event loop to drain. Setting this to false will
-          // prevent that and return when the callback is called.
-          context.callbackWaitsForEmptyEventLoop = false;
 
           return app(input);
         })
