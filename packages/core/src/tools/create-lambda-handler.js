@@ -16,6 +16,7 @@ const createInput = require('./create-input');
 const createLogger = require('./create-logger');
 const createRpcClient = require('./create-rpc-client');
 const environmentTools = require('./environment');
+const patchGlobalFetch = require('./patch-global-fetch');
 const schemaTools = require('./schema');
 const ZapierPromise = require('./promise');
 
@@ -260,6 +261,7 @@ const createLambdaHandler = (appRawOrPath) => {
             const httpPatch = createHttpPatch(event);
             httpPatch(require('http'), logger);
             httpPatch(require('https'), logger); // 'https' needs to be patched separately
+            patchGlobalFetch(logger);
           }
 
           // TODO: Avoid calling prepareApp(appRaw) repeatedly here as createApp()
