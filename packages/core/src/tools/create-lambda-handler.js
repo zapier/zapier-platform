@@ -192,7 +192,7 @@ const createLambdaHandler = (appRawOrPath) => {
     context.callbackWaitsForEmptyEventLoop = true;
 
     // replace native Promise with bluebird (works better with domains)
-    if (!event.calledFromCli) {
+    if (!event.calledFromCli || event.calledFromCliInvoke) {
       ZapierPromise.patchGlobal();
     }
 
@@ -253,7 +253,10 @@ const createLambdaHandler = (appRawOrPath) => {
 
           const { skipHttpPatch } = appRaw.flags || {};
           // Adds logging for _all_ kinds of http(s) requests, no matter the library
-          if (!skipHttpPatch && !event.calledFromCli) {
+          if (
+            !skipHttpPatch &&
+            (!event.calledFromCli || event.calledFromCliInvoke)
+          ) {
             const httpPatch = createHttpPatch(event);
             httpPatch(require('http'), logger);
             httpPatch(require('https'), logger); // 'https' needs to be patched separately
