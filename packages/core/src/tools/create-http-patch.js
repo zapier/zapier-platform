@@ -62,10 +62,12 @@ const createHttpPatch = (event) => {
         const requestContentType = getContentType(options.headers || {});
         const responseContentType = getContentType(response.headers || {});
 
-        const shouldIncludeRequestData =
-          ALLOWED_HTTP_DATA_CONTENT_TYPES.has(requestContentType);
-        const shouldIncludeResponseData =
-          ALLOWED_HTTP_DATA_CONTENT_TYPES.has(responseContentType);
+        const shouldIncludeRequestData = ALLOWED_HTTP_DATA_CONTENT_TYPES.has(
+          requestContentType
+        );
+        const shouldIncludeResponseData = ALLOWED_HTTP_DATA_CONTENT_TYPES.has(
+          responseContentType
+        );
 
         const sendToLogger = (responseBody) => {
           // Prepare data for GL
@@ -112,7 +114,14 @@ const createHttpPatch = (event) => {
           }
         };
 
-        response.on('data', (chunk) => chunks.push(chunk));
+        const originalEmit = response.emit;
+
+        response.emit = function (event, ...args) {
+          if (event === 'data') {
+            chunks.push(args[0]);
+          }
+          return originalEmit.apply(this, [event, ...args]);
+        };
         response.on('end', logResponse);
         response.on('error', logResponse);
 
