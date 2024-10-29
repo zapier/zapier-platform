@@ -142,7 +142,7 @@ module.exports = makeSchema(
       meta: {
         description:
           'Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).',
-        $ref: FieldChoicesSchema.id,
+        $ref: FieldMetaSchema.id,
       },
     },
     examples: [

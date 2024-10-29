@@ -939,7 +939,7 @@ Allows for additional metadata to be stored on the field. Only simple values are
 #### Details
 
 * **Type** - `object`
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.16.1/packages/schema/lib/schemas/FieldMetaSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.18.0/packages/schema/lib/schemas/FieldMetaSchema.js)
 
 
 #### Examples
@@ -1019,7 +1019,7 @@ Key | Required | Type | Description
 `altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?
 `steadyState` | no | `boolean` | Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.
 `inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
-`meta` | no | [/FieldChoicesSchema](#fieldchoicesschema) | Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).
+`meta` | no | [/FieldMetaSchema](#fieldmetaschema) | Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).
 
 #### Examples
 
