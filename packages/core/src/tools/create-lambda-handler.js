@@ -190,7 +190,7 @@ const createLambdaHandler = (appRawOrPath) => {
     // This is not strictly necessary since this is the default now when
     // using the callback; just putting it here to be explicit.
     // In some cases, the code hangs and never exits because the event loop is not
-    // empty.
+    // empty, so we can override the default behavior and exit after the app is done.
     context.callbackWaitsForEmptyEventLoop =
       event.waitForAsyncBeforeExit ?? true;
 
