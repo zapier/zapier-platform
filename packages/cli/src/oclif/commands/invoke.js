@@ -249,6 +249,7 @@ const testAuth = async (authData, meta, zcacheTestObj) => {
     },
     zcacheTestObj,
     customLogger,
+    calledFromCliInvoke: true,
   });
   endSpinner();
   return result;
@@ -367,7 +368,7 @@ class InvokeCommand extends BaseCommand {
     ]);
   }
 
-  async startCustomAuth(authFields) {
+  async startCustomAuth(authFields, zcacheTestObj) {
     if (this.nonInteractive) {
       throw new Error(
         'The `auth start` subcommand for "custom" authentication type only works in interactive mode.'
@@ -376,7 +377,7 @@ class InvokeCommand extends BaseCommand {
     return this.promptForAuthFields(authFields);
   }
 
-  async startOAuth2(appDefinition) {
+  async startOAuth2(appDefinition, zcacheTestObj) {
     const redirectUri = this.flags['redirect-uri'];
     const port = this.flags['local-port'];
     const env = {};
@@ -430,6 +431,9 @@ class InvokeCommand extends BaseCommand {
           code_challenge: codeChallenge,
         },
       },
+      zcacheTestObj,
+      customLogger,
+      calledFromCliInvoke: true,
     });
     if (!authorizeUrl.includes('&scope=')) {
       const scope = appDefinition.authentication.oauth2Config.scope;
@@ -505,13 +509,16 @@ class InvokeCommand extends BaseCommand {
           redirect_uri: redirectUri,
         },
       },
+      zcacheTestObj,
+      customLogger,
+      calledFromCliInvoke: true,
     });
 
     endSpinner();
     return authData;
   }
 
-  async startSessionAuth(appDefinition) {
+  async startSessionAuth(appDefinition, zcacheTestObj) {
     if (this.nonInteractive) {
       throw new Error(
         'The `auth start` subcommand for "session" authentication type only works in interactive mode.'
@@ -528,13 +535,16 @@ class InvokeCommand extends BaseCommand {
       bundle: {
         authData,
       },
+      zcacheTestObj,
+      customLogger,
+      calledFromCliInvoke: true,
     });
     endSpinner();
 
     return { ...authData, ...sessionData };
   }
 
-  async startAuth(appDefinition) {
+  async startAuth(appDefinition, zcacheTestObj) {
     const authentication = appDefinition.authentication;
     if (!authentication) {
       console.warn(
@@ -548,11 +558,11 @@ class InvokeCommand extends BaseCommand {
       case 'basic':
         return this.startBasicAuth(authentication.fields);
       case 'custom':
-        return this.startCustomAuth(authentication.fields);
+        return this.startCustomAuth(authentication.fields, zcacheTestObj);
       case 'oauth2':
-        return this.startOAuth2(appDefinition);
+        return this.startOAuth2(appDefinition, zcacheTestObj);
       case 'session':
-        return this.startSessionAuth(appDefinition);
+        return this.startSessionAuth(appDefinition, zcacheTestObj);
       default:
         // TODO: Add support for 'digest' and 'oauth1'
         throw new Error(
@@ -561,7 +571,7 @@ class InvokeCommand extends BaseCommand {
     }
   }
 
-  async refreshOAuth2(appDefinition, authData) {
+  async refreshOAuth2(appDefinition, authData, zcacheTestObj) {
     startSpinner('Invoking authentication.oauth2Config.refreshAccessToken');
 
     const newAuthData = await localAppCommand({
@@ -570,13 +580,16 @@ class InvokeCommand extends BaseCommand {
       bundle: {
         authData,
       },
+      zcacheTestObj,
+      customLogger,
+      calledFromCliInvoke: true,
     });
 
     endSpinner();
     return newAuthData;
   }
 
-  async refreshSessionAuth(appDefinition, authData) {
+  async refreshSessionAuth(appDefinition, authData, zcacheTestObj) {
     startSpinner('Invoking authentication.sessionConfig.perform');
 
     const sessionData = await localAppCommand({
@@ -585,13 +598,16 @@ class InvokeCommand extends BaseCommand {
       bundle: {
         authData,
       },
+      zcacheTestObj,
+      customLogger,
+      calledFromCliInvoke: true,
     });
 
     endSpinner();
     return sessionData;
   }
 
-  async refreshAuth(appDefinition, authData) {
+  async refreshAuth(appDefinition, authData, zcacheTestObj) {
     const authentication = appDefinition.authentication;
     if (!authentication) {
       console.warn(
@@ -608,9 +624,9 @@ class InvokeCommand extends BaseCommand {
     }
     switch (authentication.type) {
       case 'oauth2':
-        return this.refreshOAuth2(appDefinition, authData);
+        return this.refreshOAuth2(appDefinition, authData, zcacheTestObj);
       case 'session':
-        return this.refreshSessionAuth(appDefinition, authData);
+        return this.refreshSessionAuth(appDefinition, authData, zcacheTestObj);
       default:
         throw new Error(
           `This command doesn't support refreshing authentication type "${authentication.type}".`
@@ -846,6 +862,7 @@ class InvokeCommand extends BaseCommand {
       zcacheTestObj,
       cursorTestObj,
       customLogger,
+      calledFromCliInvoke: true,
     });
     endSpinner();
 
@@ -879,6 +896,7 @@ class InvokeCommand extends BaseCommand {
       zcacheTestObj,
       cursorTestObj,
       customLogger,
+      calledFromCliInvoke: true,
     });
     endSpinner();
 
@@ -958,7 +976,10 @@ class InvokeCommand extends BaseCommand {
       };
       switch (actionKey) {
         case 'start': {
-          const newAuthData = await this.startAuth(appDefinition);
+          const newAuthData = await this.startAuth(
+            appDefinition,
+            zcacheTestObj
+          );
           if (_.isEmpty(newAuthData)) {
             return;
           }
@@ -969,7 +990,11 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         case 'refresh': {
-          const newAuthData = await this.refreshAuth(appDefinition, authData);
+          const newAuthData = await this.refreshAuth(
+            appDefinition,
+            authData,
+            zcacheTestObj
+          );
           if (_.isEmpty(newAuthData)) {
             return;
           }
