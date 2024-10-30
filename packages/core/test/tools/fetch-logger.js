@@ -188,4 +188,20 @@ describe('wrap fetch with logger', () => {
       assert.equal(obj.id, i);
     }
   });
+
+  it('should not log requests with Zapier user-agent', async () => {
+    const url = `${HTTPBIN_URL}/get?made_by=z.request`;
+    const response = await newFetch(url, {
+      headers: {
+        'user-agent': 'Zapier',
+      },
+    });
+    const data = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(data.args.made_by, 'z.request');
+
+    // No logs should be created
+    assert.equal(logs.length, 0);
+  });
 });
