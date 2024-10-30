@@ -419,7 +419,12 @@ class InvokeCommand extends BaseCommand {
     startSpinner('Invoking authentication.oauth2Config.authorizeUrl');
 
     const stateParam = crypto.randomBytes(20).toString('hex');
-    const codeChallenge = crypto.randomBytes(64).toString('hex').slice(0, 43);
+    const codeVerifier = crypto.randomBytes(22).toString('hex').slice(0, 43);
+    const codeChallenge = crypto
+      .createHash('sha256')
+      .update(codeVerifier)
+      .digest('base64url');
+
     let authorizeUrl = await localAppCommand({
       command: 'execute',
       method: 'authentication.oauth2Config.authorizeUrl',
@@ -505,8 +510,11 @@ class InvokeCommand extends BaseCommand {
       bundle: {
         inputData: {
           code: params.get('code'),
-          code_verifier: params.get('code_verifier'),
+          code_verifier: codeVerifier,
           redirect_uri: redirectUri,
+          scope: encodeURIComponent(
+            appDefinition.authentication.oauth2Config.scope
+          ),
         },
       },
       zcacheTestObj,
