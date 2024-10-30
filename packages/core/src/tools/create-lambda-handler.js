@@ -191,7 +191,10 @@ const createLambdaHandler = (appRawOrPath) => {
     // using the callback; just putting it here to be explicit.
     // In some cases, the code hangs and never exits because the event loop is not
     // empty, so we can override the default behavior and exit after the app is done.
-    context.callbackWaitsForEmptyEventLoop = !event.skipWaitForAsync || true;
+    context.callbackWaitsForEmptyEventLoop = true;
+    if (event.skipWaitForAsync === true) {
+      context.callbackWaitsForEmptyEventLoop = false;
+    }
 
     // replace native Promise with bluebird (works better with domains)
     if (!event.calledFromCli) {
