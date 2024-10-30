@@ -48,7 +48,7 @@ const createHttpPatch = (event) => {
         return originalRequest(options, callback);
       }
 
-      // Ignore requests made via the request client
+      // Ignore requests made via the request client (z.request)
       if (_.get(options.headers, 'user-agent', []).indexOf('Zapier') !== -1) {
         return originalRequest(options, callback);
       }
@@ -62,12 +62,10 @@ const createHttpPatch = (event) => {
         const requestContentType = getContentType(options.headers || {});
         const responseContentType = getContentType(response.headers || {});
 
-        const shouldIncludeRequestData = ALLOWED_HTTP_DATA_CONTENT_TYPES.has(
-          requestContentType
-        );
-        const shouldIncludeResponseData = ALLOWED_HTTP_DATA_CONTENT_TYPES.has(
-          responseContentType
-        );
+        const shouldIncludeRequestData =
+          ALLOWED_HTTP_DATA_CONTENT_TYPES.has(requestContentType);
+        const shouldIncludeResponseData =
+          ALLOWED_HTTP_DATA_CONTENT_TYPES.has(responseContentType);
 
         const sendToLogger = (responseBody) => {
           // Prepare data for GL

@@ -54,13 +54,21 @@ const normalizeRequestInfo = (input, init) => {
 const isZapierUserAgent = (headers) =>
   _.get(headers, 'user-agent', []).indexOf('Zapier') !== -1;
 
+const shouldIncludeResponseContent = (contentType) => {
+  for (const ctype of ALLOWED_HTTP_DATA_CONTENT_TYPES) {
+    if (contentType.includes(ctype)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const stringifyResponseContent = async (response) => {
   // Be careful not to consume the original response body, which is why we clone it
   return response.clone().text();
 };
 
 // Usage:
-//
 //   global.fetch = wrapFetchWithLogger(global.fetch, logger);
 const wrapFetchWithLogger = (fetchFunc, logger) => {
   if (fetchFunc.patchedByZapier) {
@@ -72,8 +80,6 @@ const wrapFetchWithLogger = (fetchFunc, logger) => {
     const requestInfo = normalizeRequestInfo(input, init);
     if (requestInfo && !isZapierUserAgent(requestInfo.headers)) {
       const responseContentType = response.headers.get('content-type');
-      const shouldIncludeResponseData =
-        ALLOWED_HTTP_DATA_CONTENT_TYPES.has(responseContentType);
 
       logger(`${response.status} ${requestInfo.method} ${requestInfo.url}`, {
         log_type: 'http',
@@ -85,7 +91,7 @@ const wrapFetchWithLogger = (fetchFunc, logger) => {
         request_via_client: false,
         response_status_code: response.status,
         response_headers: Object.fromEntries(response.headers.entries()),
-        response_content: shouldIncludeResponseData
+        response_content: shouldIncludeResponseContent(responseContentType)
           ? await stringifyResponseContent(response)
           : '<unsupported format>',
       });
