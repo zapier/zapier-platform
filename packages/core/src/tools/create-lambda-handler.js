@@ -190,7 +190,12 @@ const createLambdaHandler = (appRawOrPath) => {
     // Wait for all async events to complete before callback returns.
     // This is not strictly necessary since this is the default now when
     // using the callback; just putting it here to be explicit.
+    // In some cases, the code hangs and never exits because the event loop is not
+    // empty, so we can override the default behavior and exit after the app is done.
     context.callbackWaitsForEmptyEventLoop = true;
+    if (event.skipWaitForAsync === true) {
+      context.callbackWaitsForEmptyEventLoop = false;
+    }
 
     // replace native Promise with bluebird (works better with domains)
     if (!event.calledFromCli || event.calledFromCliInvoke) {
@@ -271,6 +276,7 @@ const createLambdaHandler = (appRawOrPath) => {
           const compiledApp = schemaTools.prepareApp(appRaw);
 
           const input = createInput(compiledApp, event, logger, logBuffer, rpc);
+
           return app(input);
         })
         .then((output) => {
