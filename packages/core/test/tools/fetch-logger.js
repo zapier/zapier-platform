@@ -1,6 +1,6 @@
 /* global Request */
 
-const assert = require('node:assert');
+const assert = require('node:assert/strict');
 
 const { HTTPBIN_URL } = require('../constants');
 const wrapFetchWithLogger = require('../../src/tools/fetch-logger');
@@ -23,7 +23,7 @@ describe('wrap fetch with logger', () => {
 
     // Make sure fetch works as original
     assert.equal(response.status, 200);
-    assert.equal(data.args.foo, 'bar');
+    assert.deepEqual(data.args.foo, ['bar']);
 
     assert.equal(logs.length, 1);
 
@@ -37,7 +37,7 @@ describe('wrap fetch with logger', () => {
     assert.ok(loggedHeaders['content-type'].startsWith('application/json'));
 
     const loggedContent = JSON.parse(log.data.response_content);
-    assert.equal(loggedContent.args.foo, 'bar');
+    assert.deepEqual(loggedContent.args.foo, ['bar']);
   });
 
   it('should log POST with url string input', async () => {
@@ -72,7 +72,7 @@ describe('wrap fetch with logger', () => {
 
     // Make sure fetch works as original
     assert.equal(response.status, 200);
-    assert.equal(data.args.foo, 'bar');
+    assert.deepEqual(data.args.foo, ['bar']);
 
     assert.equal(logs.length, 1);
 
@@ -86,7 +86,7 @@ describe('wrap fetch with logger', () => {
     assert.ok(loggedHeaders['content-type'].startsWith('application/json'));
 
     const loggedContent = JSON.parse(log.data.response_content);
-    assert.equal(loggedContent.args.foo, 'bar');
+    assert.deepEqual(loggedContent.args.foo, ['bar']);
   });
 
   it('should log POST for Request object input', async () => {
@@ -199,7 +199,7 @@ describe('wrap fetch with logger', () => {
     const data = await response.json();
 
     assert.equal(response.status, 200);
-    assert.equal(data.args.made_by, 'z.request');
+    assert.deepEqual(data.args.made_by, ['z.request']);
 
     // No logs should be created
     assert.equal(logs.length, 0);
