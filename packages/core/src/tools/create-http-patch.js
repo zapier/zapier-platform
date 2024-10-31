@@ -48,7 +48,7 @@ const createHttpPatch = (event) => {
         return originalRequest(options, callback);
       }
 
-      // Ignore requests made via the request client
+      // Ignore requests made via the request client (z.request)
       if (_.get(options.headers, 'user-agent', []).indexOf('Zapier') !== -1) {
         return originalRequest(options, callback);
       }
@@ -112,7 +112,14 @@ const createHttpPatch = (event) => {
           }
         };
 
-        response.on('data', (chunk) => chunks.push(chunk));
+        const originalEmit = response.emit;
+
+        response.emit = function (event, ...args) {
+          if (event === 'data') {
+            chunks.push(args[0]);
+          }
+          return originalEmit.apply(this, [event, ...args]);
+        };
         response.on('end', logResponse);
         response.on('error', logResponse);
 

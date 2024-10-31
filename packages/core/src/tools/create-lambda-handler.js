@@ -17,6 +17,7 @@ const createLogger = require('./create-logger');
 const createRpcClient = require('./create-rpc-client');
 const environmentTools = require('./environment');
 const schemaTools = require('./schema');
+const wrapFetchWithLogger = require('./fetch-logger');
 const ZapierPromise = require('./promise');
 
 const isDefinedPrimitive = (value) => {
@@ -192,11 +193,12 @@ const createLambdaHandler = (appRawOrPath) => {
     context.callbackWaitsForEmptyEventLoop = true;
 
     // replace native Promise with bluebird (works better with domains)
-    if (!event.calledFromCli) {
+    if (!event.calledFromCli || event.calledFromCliInvoke) {
       ZapierPromise.patchGlobal();
     }
 
-    // If we're running out of memory, exit the process. Backend will try again.
+    // If we're running out of memory or file descriptors, force exit the process.
+    // The backend will try again via @retry(ProcessExitedException).
     checkMemory(event);
 
     environmentTools.cleanEnvironment();
@@ -252,10 +254,16 @@ const createLambdaHandler = (appRawOrPath) => {
 
           const { skipHttpPatch } = appRaw.flags || {};
           // Adds logging for _all_ kinds of http(s) requests, no matter the library
-          if (!skipHttpPatch && !event.calledFromCli) {
+          if (
+            !skipHttpPatch &&
+            (!event.calledFromCli || event.calledFromCliInvoke)
+          ) {
             const httpPatch = createHttpPatch(event);
             httpPatch(require('http'), logger);
             httpPatch(require('https'), logger); // 'https' needs to be patched separately
+            if (global.fetch) {
+              global.fetch = wrapFetchWithLogger(global.fetch, logger);
+            }
           }
 
           // TODO: Avoid calling prepareApp(appRaw) repeatedly here as createApp()
