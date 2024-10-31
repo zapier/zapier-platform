@@ -11,6 +11,10 @@ _released `2024-11-01`_
 - :bug: Fix issue where HTTP logger can break aws-sdk v3 (and maybe other HTTP client libraries) intermittently ([#905](https://github.com/zapier/zapier-platform/pull/905))
 - :bug: HTTP logging now works with [native fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) ([#908](https://github.com/zapier/zapier-platform/pull/908))
 
+### schema
+
+None!
+
 ## 15.18.0
 
 _released `2024-10-24`_
