@@ -3,6 +3,7 @@ const _ = require('lodash');
 const { ALLOWED_HTTP_DATA_CONTENT_TYPES } = require('./http');
 
 const stringifyRequestData = (data) => {
+  // Be careful not to consume the data if it's a stream
   if (typeof data === 'string') {
     return data;
   } else if (data instanceof URLSearchParams) {
