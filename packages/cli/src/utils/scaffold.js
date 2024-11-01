@@ -266,18 +266,18 @@ const createScaffoldingContext = ({
   preventOverwrite,
 }) => {
   const key = nounToKey(noun);
-
-  const indexFileResolved = path.join(process.cwd(), indexFileLocal);
+  const cwd = process.cwd();
+  const indexFileResolved = path.join(cwd, indexFileLocal);
   const actionFileResolved = `${path.join(
-    process.cwd(),
+    cwd,
     actionDirLocal,
     key
   )}.${language}`;
-  const actionFileResolvedStem = path.join(process.cwd(), actionDirLocal, key);
+  const actionFileResolvedStem = path.join(cwd, actionDirLocal, key);
   const actionFileLocal = `${path.join(actionDirLocal, key)}.${language}`;
   const actionFileLocalStem = path.join(actionDirLocal, key);
   const testFileResolved = `${path.join(
-    process.cwd(),
+    cwd,
     testDirLocal,
     key
   )}.test.${language}`;
