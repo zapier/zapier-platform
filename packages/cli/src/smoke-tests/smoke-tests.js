@@ -213,6 +213,20 @@ describe('smoke tests - setup will take some time', function () {
 
     const triggerPath = path.join(newAppDir, 'src', 'triggers', 'neat.ts');
     fs.existsSync(triggerPath).should.be.true();
+
+    const newTriggerTest = path.join(
+      newAppDir,
+      'src',
+      'test',
+      'triggers',
+      'neat.test.ts'
+    );
+    fs.existsSync(newTriggerTest).should.be.true();
+
+    const pkg = JSON.parse(
+      fs.readFileSync(appPackageJson, { encoding: 'utf8' })
+    );
+    pkg.name.should.containEql('scaffold-town');
   });
 
   it('zapier integrations', function () {
