@@ -11,7 +11,7 @@ const {
 const {
   sampleExportVarIndexJs,
   sampleExportObjectIndexJs,
-  sampleExportDeclaredIndexTS,
+  sampleExportDeclaredIndexTs,
   sampleExportDirectIndexTs,
   sampleLegacyAppIndexJs,
 } = require('./astFixtures');
@@ -241,7 +241,7 @@ describe('ast (TS)', () => {
 
   describe('Adding object properties', () => {
     Object.entries({
-      declared: sampleExportDeclaredIndexTS,
+      declared: sampleExportDeclaredIndexTs,
       direct: sampleExportDirectIndexTs,
     }).forEach(function ([exportType, codeStr]) {
       describe(`${exportType} export`, () => {

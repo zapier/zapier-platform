@@ -43,7 +43,7 @@ module.exports = {
 }
 `.trim();
 
-const sampleExportDeclaredIndexTS = `
+const sampleExportDeclaredIndexTs = `
 import type { App } from 'zapier-platform-core';
 import { version as platformVersion } from 'zapier-platform-core';
 
@@ -156,7 +156,7 @@ module.exports = {
 module.exports = {
   sampleExportVarIndexJs,
   sampleExportObjectIndexJs,
-  sampleExportDeclaredIndexTS,
+  sampleExportDeclaredIndexTs,
   sampleExportDirectIndexTs,
   sampleLegacyAppIndexJs,
 };
