@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
@@ -219,7 +219,7 @@ ${metadataPromptHelper}`);
 
 PromoteCommand.flags = buildFlags({
   commandFlags: {
-    yes: flags.boolean({
+    yes: Flags.boolean({
       char: 'y',
       description:
         'Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.',
@@ -227,13 +227,12 @@ PromoteCommand.flags = buildFlags({
   },
 });
 
-PromoteCommand.args = [
-  {
-    name: 'version',
+PromoteCommand.args = {
+  version: Args.string({
     required: true,
     description: 'The version you want to promote.',
-  },
-];
+  }),
+};
 
 PromoteCommand.skipValidInstallCheck = true;
 PromoteCommand.examples = ['zapier promote 1.0.0'];

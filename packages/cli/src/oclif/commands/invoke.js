@@ -3,7 +3,7 @@ const fs = require('node:fs/promises');
 const http = require('node:http');
 
 const _ = require('lodash');
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 const debug = require('debug')('zapier:invoke');
 const dotenv = require('dotenv');
 
@@ -1098,53 +1098,53 @@ class InvokeCommand extends BaseCommand {
 
 InvokeCommand.flags = buildFlags({
   commandFlags: {
-    inputData: flags.string({
+    inputData: Flags.string({
       char: 'i',
       description:
         'The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like \'{"key": "value"}\', read from a file like @file.json, or read from stdin like @-.',
     }),
-    isFillingDynamicDropdown: flags.boolean({
+    isFillingDynamicDropdown: Flags.boolean({
       description:
         'Set bundle.meta.isFillingDynamicDropdown to true. Only makes sense for a polling trigger. When true in production, this poll is being used to populate a dynamic dropdown.',
       default: false,
     }),
-    isLoadingSample: flags.boolean({
+    isLoadingSample: Flags.boolean({
       description:
         'Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.',
       default: false,
     }),
-    isPopulatingDedupe: flags.boolean({
+    isPopulatingDedupe: Flags.boolean({
       description:
         'Set bundle.meta.isPopulatingDedupe to true. Only makes sense for a polling trigger. When true in production, the results of this poll will be used initialize the deduplication list rather than trigger a Zap. This happens when a user enables a Zap.',
       default: false,
     }),
-    limit: flags.integer({
+    limit: Flags.integer({
       description:
         'Set bundle.meta.limit. Only makes sense for a trigger. When used in production, this indicates the number of items you should fetch. -1 means no limit.',
       default: -1,
     }),
-    page: flags.integer({
+    page: Flags.integer({
       char: 'p',
       description:
         'Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.',
       default: 0,
     }),
-    'non-interactive': flags.boolean({
+    'non-interactive': Flags.boolean({
       description: 'Do not show interactive prompts.',
       default: false,
     }),
-    timezone: flags.string({
+    timezone: Flags.string({
       char: 'z',
       description:
         'Set the default timezone for datetime field interpretation. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.',
       default: 'America/Chicago',
     }),
-    'redirect-uri': flags.string({
+    'redirect-uri': Flags.string({
       description:
         "Only used by `auth start` subcommand. The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.",
       default: 'http://localhost:9000',
     }),
-    'local-port': flags.integer({
+    'local-port': Flags.integer({
       description:
         'Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.',
       default: 9000,
@@ -1152,18 +1152,16 @@ InvokeCommand.flags = buildFlags({
   },
 });
 
-InvokeCommand.args = [
-  {
-    name: 'actionType',
+InvokeCommand.args = {
+  actionType: Args.string({
     description: 'The action type you want to invoke.',
     options: ACTION_TYPES,
-  },
-  {
-    name: 'actionKey',
+  }),
+  actionKey: Args.string({
     description:
       'The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "label", "refresh", "start", or "test".',
-  },
-];
+  }),
+};
 
 InvokeCommand.examples = [
   'zapier invoke',

@@ -1,5 +1,5 @@
 const BaseCommand = require('../ZapierBaseCommand');
-const { flags } = require('@oclif/command');
+const { Flags } = require('@oclif/core');
 const { buildFlags } = require('../buildFlags');
 const {
   currentAnalyticsMode,
@@ -32,7 +32,7 @@ class AnalyticsCommand extends BaseCommand {
 
 AnalyticsCommand.flags = buildFlags({
   commandFlags: {
-    mode: flags.string({
+    mode: Flags.string({
       char: 'm',
       options: Object.keys(modes),
       description:
