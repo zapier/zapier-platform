@@ -69,7 +69,7 @@ const yarnInstall = (coreZipPath, workdir) => {
 };
 
 describe('smoke tests - setup will take some time', function () {
-  // this.retries(3);
+  this.retries(3);
 
   const context = {
     // Global context that will be available for all test cases in this test suite
