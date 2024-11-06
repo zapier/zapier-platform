@@ -1,4 +1,4 @@
-## 3.8.12
+## 3.8.13
 
 - :hammer: Add `aws-sdk v2` to dependency list ([#912](https://github.com/zapier/zapier-platform/pull/912))
 
