@@ -1,3 +1,7 @@
+## 3.8.12
+
+- :hammer: Add `aws-sdk v2` to dependency list ([#912](https://github.com/zapier/zapier-platform/pull/912))
+
 ## 3.8.11
 
 - :bug: sync `z.request` doesn't produce an HTTP log ([#566](https://github.com/zapier/zapier-platform/pull/566))
