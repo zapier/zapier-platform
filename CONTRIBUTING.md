@@ -24,12 +24,6 @@ In the repo directory, install dependencies with yarn:
 yarn
 ```
 
-An additional step is required while we drop Node.js 16 support (see [GitHub comment](https://github.com/zapier/zapier-platform/pull/821#issuecomment-2230958511)) - install `schema-to-ts` dependencies:
-```bash
-cd schema-to-ts
-yarn
-```
-
 That's it! Now you have a local environment for development.
 
 ## Running Tests
