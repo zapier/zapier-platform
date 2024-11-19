@@ -8,7 +8,7 @@ module.exports = makeSchema({
   description:
     'Allows for additional metadata to be stored on the field. Only simple values are allowed (no objects or arrays)',
   additionalProperties: {
-    type: ['string', 'number', 'boolean', 'null'],
+    type: ['string', 'number', 'boolean'],
   },
   examples: [
     { shouldCapitalize: true },
