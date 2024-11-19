@@ -194,7 +194,7 @@ export type FieldChoices =
  * [Docs: FieldMetaSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldMetaSchema)
  */
 export interface FieldMeta {
-  [k: string]: string | number | boolean | null;
+  [k: string]: string | number | boolean;
 }
 
 /**
