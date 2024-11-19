@@ -934,12 +934,12 @@ Yes | Yes | Array of [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
 
 ## /FieldMetaSchema
 
-Allows for additional metadata to be stored on the field. Only simple values are allowed (no objects or arrays)
+Allows for additional metadata to be stored on the field. Only string, numeric or boolean values are allowed
 
 #### Details
 
 * **Type** - `object`
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.18.0/packages/schema/lib/schemas/FieldMetaSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.18.1/packages/schema/lib/schemas/FieldMetaSchema.js)
 
 
 #### Examples
@@ -950,6 +950,7 @@ Allows for additional metadata to be stored on the field. Only simple values are
 #### Anti-Examples
 
 * `{ databank: { primaryContact: 'abc' } }` - _No complex values allowed_
+* `{ needsProcessing: null }` - _No null values allowed_
 
 -----
 

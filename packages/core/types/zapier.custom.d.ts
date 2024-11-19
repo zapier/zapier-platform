@@ -44,6 +44,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
     limit: number;
     page: number;
     zap?: { id: string };
+    inputFields?: { [x: string]: string | number | boolean };
   };
   rawRequest?: Partial<{
     method: HttpMethod;

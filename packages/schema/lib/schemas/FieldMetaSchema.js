@@ -6,7 +6,7 @@ module.exports = makeSchema({
   id: '/FieldMetaSchema',
   type: 'object',
   description:
-    'Allows for additional metadata to be stored on the field. Only simple values are allowed (no objects or arrays)',
+    'Allows for additional metadata to be stored on the field. Only string, numeric or boolean values are allowed',
   additionalProperties: {
     type: ['string', 'number', 'boolean'],
   },
@@ -18,6 +18,10 @@ module.exports = makeSchema({
     {
       example: { databank: { primaryContact: 'abc' } },
       reason: 'No complex values allowed',
+    },
+    {
+      example: { needsProcessing: null },
+      reason: 'No null values allowed',
     },
   ],
 });
