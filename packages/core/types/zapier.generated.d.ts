@@ -189,7 +189,7 @@ export type FieldChoices =
 
 /**
  * Allows for additional metadata to be stored on the field. Only
- * simple values are allowed (no objects or arrays)
+ * string, numeric or boolean values are allowed
  *
  * [Docs: FieldMetaSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldMetaSchema)
  */
