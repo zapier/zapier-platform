@@ -154,7 +154,7 @@
       "type": "object",
       "description": "Allows for additional metadata to be stored on the field. Only simple values are allowed (no objects or arrays)",
       "additionalProperties": {
-        "type": ["string", "number", "boolean", "null"]
+        "type": ["string", "number", "boolean"]
       }
     },
     "FieldSchema": {
