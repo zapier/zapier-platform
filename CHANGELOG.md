@@ -1,3 +1,21 @@
+## 15.18.1
+
+_released `2024-11-01`_
+
+### cli
+
+- :bug: Fix issue where `zapier invoke --debug` doesn't print HTTP logs for requests that aren't sent by `z.request()` ([#907](https://github.com/zapier/zapier-platform/pull/907))
+
+### core
+
+- :bug: Fix issue where HTTP logger can break aws-sdk v3 (and maybe other HTTP client libraries) intermittently ([#905](https://github.com/zapier/zapier-platform/pull/905))
+- :bug: HTTP logging now works with [native fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) ([#908](https://github.com/zapier/zapier-platform/pull/908))
+- :test_tube: Allow to not wait for event loop to be empty to fix a hanging issue ([#904](https://github.com/zapier/zapier-platform/pull/904))
+
+### schema
+
+None!
+
 ## 15.18.0
 
 _released `2024-10-24`_
@@ -5,13 +23,11 @@ _released `2024-10-24`_
 ### cli
 
 - :nail_care: Fix a failing smoke test based on CLI package size (now that many docs are deleted) ([#899](https://github.com/zapier/zapier-platform/pull/899))
-
 - :tada: Add OAuth2 to TypeScript `init` output ([#894](https://github.com/zapier/zapier-platform/pull/894))
 
 ### core
 
 - :tada: Adds `nx` argument to `z.cache.set()` ([#900](https://github.com/zapier/zapier-platform/pull/900))
-
 - :bug: Force a `process.exit(1)` on catching an `EMFILE` error inside `checkMemory()` ([#901](https://github.com/zapier/zapier-platform/pull/901))
 
 ### schema

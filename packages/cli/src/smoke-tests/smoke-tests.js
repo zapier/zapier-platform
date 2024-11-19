@@ -127,7 +127,7 @@ describe('smoke tests - setup will take some time', function () {
     const latestVersion = await getPackageLatestVersion(packageName);
     const baselineSize = await getPackageSize(packageName, latestVersion);
     const newSize = fs.statSync(context.package.path).size;
-    newSize.should.be.within(baselineSize * 0.5, baselineSize * 1.3);
+    newSize.should.be.within(baselineSize * 0.7, baselineSize * 1.3);
 
     this.test.title += ` (${baselineSize} -> ${newSize} bytes)`;
   });
@@ -157,7 +157,7 @@ describe('smoke tests - setup will take some time', function () {
     fs.existsSync(appPackageJson).should.be.true();
   });
 
-  it('zapier scaffold trigger neat', () => {
+  it('zapier scaffold trigger neat (JS)', () => {
     runCommand(context.cliBin, ['init', 'scaffold-town', '-t', 'minimal'], {
       cwd: context.workdir,
     });
@@ -183,6 +183,43 @@ describe('smoke tests - setup will take some time', function () {
       'test',
       'triggers',
       'neat.test.js'
+    );
+    fs.existsSync(newTriggerTest).should.be.true();
+
+    const pkg = JSON.parse(
+      fs.readFileSync(appPackageJson, { encoding: 'utf8' })
+    );
+    pkg.name.should.containEql('scaffold-town');
+  });
+
+  it('zapier scaffold trigger neat (TS)', () => {
+    runCommand(
+      context.cliBin,
+      ['init', 'scaffold-town-ts', '-t', 'typescript'],
+      { cwd: context.workdir }
+    );
+
+    const newAppDir = path.join(context.workdir, 'scaffold-town-ts');
+    fs.existsSync(newAppDir).should.be.true();
+
+    runCommand(context.cliBin, ['scaffold', 'trigger', 'neat'], {
+      cwd: newAppDir,
+    });
+
+    const appIndexTs = path.join(newAppDir, 'src', 'index.ts');
+    fs.existsSync(appIndexTs).should.be.true();
+    const appPackageJson = path.join(newAppDir, 'package.json');
+    fs.existsSync(appPackageJson).should.be.true();
+
+    const triggerPath = path.join(newAppDir, 'src', 'triggers', 'neat.ts');
+    fs.existsSync(triggerPath).should.be.true();
+
+    const newTriggerTest = path.join(
+      newAppDir,
+      'src',
+      'test',
+      'triggers',
+      'neat.test.ts'
     );
     fs.existsSync(newTriggerTest).should.be.true();
 
