@@ -43,6 +43,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
     isTestingAuth: boolean;
     limit: number;
     page: number;
+    timezone: string | null;
     zap?: { id: string };
   };
   rawRequest?: Partial<{
