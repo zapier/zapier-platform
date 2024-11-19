@@ -133,7 +133,8 @@ export interface RawHttpResponse<T = any> extends BaseHttpResponse {
 
 type DehydrateFunc = <T>(
   func: (z: ZObject, bundle: Bundle<T>) => any,
-  inputData: T
+  inputData?: T,
+  cacheExpiration?: number,
 ) => string;
 
 export interface ZObject {
