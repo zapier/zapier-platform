@@ -52,6 +52,13 @@ describe('hydration', () => {
       );
     });
 
+    it('should allow passing of cache expiration argument along in the dehydrated data', () => {
+      const result = dehydrate(funcToFind, {}, 60);
+      result.should.eql(
+        'hydrate|||{"type":"method","method":"some.path.to","bundle":{},"cacheExpiration":60}|||hydrate'
+      );
+    });
+
     it('should not accept payload size bigger than 12000 bytes.', () => {
       const inputData = { key: 'a'.repeat(12001) };
       (() => {
@@ -88,6 +95,14 @@ describe('hydration', () => {
       const result = dehydrateFile(funcToFind, inputData);
       result.should.eql(
         'hydrate|||{"type":"file","method":"some.path.to","bundle":{"key":"value"}}|||hydrate'
+      );
+    });
+
+    it('should allow passing of cache expiration argument along in the dehydrated data', () => {
+      const inputData = { key: 'value' };
+      const result = dehydrateFile(funcToFind, inputData, 60);
+      result.should.eql(
+        'hydrate|||{"type":"file","method":"some.path.to","bundle":{"key":"value"},"cacheExpiration":60}|||hydrate'
       );
     });
 
