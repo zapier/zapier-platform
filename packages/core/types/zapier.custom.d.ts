@@ -213,7 +213,7 @@ export interface ZObject {
 
   cache: {
     get: (key: string) => Promise<any>;
-    set: (key: string, value: any, ttl?: number) => Promise<boolean>;
+    set: (key: string, value: any, ttl?: number, scope?: string[], nx?: boolean) => Promise<boolean|null>;
     delete: (key: string) => Promise<boolean>;
   };
 }
