@@ -934,13 +934,18 @@ Yes | Yes | Array of [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
 
 ## /FieldMetaSchema
 
-Allows for additional metadata to be stored on the field. Only string, numeric or boolean values are allowed
+Allows for additional metadata to be stored on the field.
 
 #### Details
 
 * **Type** - `object`
 * [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@15.18.1/packages/schema/lib/schemas/FieldMetaSchema.js)
 
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`[^\s]+` | no | anyOf(`string`, `integer`, `boolean`) | Only string, integer or boolean values are allowed.
 
 #### Examples
 
