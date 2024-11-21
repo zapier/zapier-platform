@@ -83,7 +83,7 @@ export interface Bundle<InputData = { [x: string]: any }> {
      * When a create is called as part of a search-or-create step,
      * this will be the key of the search.
      */
-    withSearch: string | undefined;
+    withSearch?: string;
 
     /**
      * The timezone the user has configured for their account or
