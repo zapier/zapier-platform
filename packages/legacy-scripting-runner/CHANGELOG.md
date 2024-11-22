@@ -1,3 +1,11 @@
+## 3.8.14
+
+- :bug: Revert `aws-sdk v2` bundling change from 3.8.13 ([#916](https://github.com/zapier/zapier-platform/pull/916)). This release is essentially the same as 3.8.12.
+
+## 3.8.13
+
+- :hammer: Add `aws-sdk v2` to dependency list ([#912](https://github.com/zapier/zapier-platform/pull/912))
+
 ## 3.8.11
 
 - :bug: sync `z.request` doesn't produce an HTTP log ([#566](https://github.com/zapier/zapier-platform/pull/566))

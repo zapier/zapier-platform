@@ -637,8 +637,8 @@ You can mix and match several options to customize the created scaffold for your
 **Flags**
 * `-d, --dest` | Specify the new file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `[triggers|searches|creates]/{noun}`.
 * `--test-dest` | Specify the new test file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `test/[triggers|searches|creates]/{noun}`.
-* `-e, --entry` | Supply the path to your integration's root (`index.js`). Only needed if your `index.js` is in a subfolder, like `src`.  Defaults to `index.js`.
-* `-f, --force` | Should we overwrite an exisiting trigger/search/create file?
+* `-e, --entry` | Supply the path to your integration's entry point (`index.js` or `src/index.ts`). This will try to automatically detect the correct file if not provided.
+* `-f, --force` | Should we overwrite an existing trigger/search/create file?
 * `--no-help` | When scaffolding, should we skip adding helpful intro comments? Useful if this isn't your first rodeo.
 * `-d, --debug` | Show extra debugging output.
 
