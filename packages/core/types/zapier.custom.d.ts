@@ -37,14 +37,78 @@ export interface Bundle<InputData = { [x: string]: any }> {
   inputDataRaw: { [x: string]: string };
   meta: {
     isBulkRead: boolean;
+
+    /**
+     * If true, this poll is being used to populate a dynamic dropdown.
+     * You only need to return the fields you specified (such as id and
+     * name), though returning everything is fine too.
+     */
     isFillingDynamicDropdown: boolean;
+
+    /**
+     * If true, this run was initiated manually via the Zap Editor.
+     */
     isLoadingSample: boolean;
+
+    /**
+     * If true, the results of this poll will be used to initialize the
+     * deduplication list rather than trigger a zap. You should grab as
+     * many items as possible.
+     */
     isPopulatingDedupe: boolean;
+
+    /**
+     * (legacy property) If true, the poll was triggered by a user
+     * testing their account (via clicking “test” or during setup). We
+     * use this data to populate the auth label, but it’s mostly used to
+     * verify we made a successful authenticated request
+     *
+     * @deprecated
+     */
     isTestingAuth: boolean;
+
+    /**
+     * The number of items you should fetch. -1 indicates there’s no
+     * limit. Build this into your calls insofar as you are able.
+     */
     limit: number;
+
+    /**
+     * Used in paging to uniquely identify which page of results should
+     * be returned.
+     */
     page: number;
-    zap?: { id: string };
-    inputFields?: { [x: string]: string | number | boolean };
+
+    /**
+     * When a create is called as part of a search-or-create step,
+     * this will be the key of the search.
+     */
+    withSearch?: string;
+
+    /**
+     * The timezone the user has configured for their account or
+     * specific automation. Received as TZ identifier, such as
+     * “America/New_York”.
+     */
+    timezone: string | null;
+
+    /** @deprecated */
+    zap?: {
+      /** @deprecated */
+      id: string;
+      /** @deprecated */
+      user: {
+        /** @deprecated use meta.timezone instead. */
+        timezone: string;
+      };
+    };
+
+    /**
+     * Contains metadata about the input fields, optionally provided
+     * by the inputField.meta property. Useful for storing extra data
+     * in dynamically created input fields.
+     */
+    inputFields: { [fieldKey: string]: { [metaKey: string]: string | number | boolean } };
   };
   rawRequest?: Partial<{
     method: HttpMethod;
@@ -134,7 +198,8 @@ export interface RawHttpResponse<T = any> extends BaseHttpResponse {
 
 type DehydrateFunc = <T>(
   func: (z: ZObject, bundle: Bundle<T>) => any,
-  inputData: T
+  inputData?: T,
+  cacheExpiration?: number
 ) => string;
 
 export interface ZObject {
@@ -214,7 +279,7 @@ export interface ZObject {
 
   cache: {
     get: (key: string) => Promise<any>;
-    set: (key: string, value: any, ttl?: number) => Promise<boolean>;
+    set: (key: string, value: any, ttl?: number, scope?: string[], nx?: boolean) => Promise<boolean|null>;
     delete: (key: string) => Promise<boolean>;
   };
 }
