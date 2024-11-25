@@ -102,6 +102,13 @@ export interface Bundle<InputData = { [x: string]: any }> {
         timezone: string;
       };
     };
+
+    /**
+     * Contains metadata about the input fields, optionally provided
+     * by the inputField.meta property. Useful for storing extra data
+     * in dynamically created input fields.
+     */
+    inputFields: { [fieldKey: string]: { [metaKey: string]: string | number | boolean } };
   };
   rawRequest?: Partial<{
     method: HttpMethod;

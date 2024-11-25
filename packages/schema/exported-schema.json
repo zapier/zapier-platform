@@ -149,6 +149,27 @@
         }
       ]
     },
+    "FieldMetaSchema": {
+      "id": "/FieldMetaSchema",
+      "type": "object",
+      "description": "Allows for additional metadata to be stored on the field.",
+      "patternProperties": {
+        "[^\\s]+": {
+          "description": "Only string, integer or boolean values are allowed.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
     "FieldSchema": {
       "id": "/FieldSchema",
       "description": "Defines a field an app either needs as input, or gives as output. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
@@ -249,6 +270,10 @@
           "description": "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
           "type": "string",
           "pattern": "^.*{{input}}.*$"
+        },
+        "meta": {
+          "description": "Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).",
+          "$ref": "/FieldMetaSchema"
         }
       },
       "additionalProperties": false

@@ -188,6 +188,22 @@ export type FieldChoices =
   | (string | FieldChoiceWithLabel)[];
 
 /**
+ * Allows for additional metadata to be stored on the field.
+ *
+ * [Docs: FieldMetaSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldMetaSchema)
+ */
+export interface FieldMeta {
+  /**
+   * Only string, integer or boolean values are allowed.
+   *
+   * This interface was referenced by `FieldMetaSchema`'s JSON-Schema
+   * definition
+   * via the `patternProperty` "[^\s]+".
+   */
+  [k: string]: string | number | boolean;
+}
+
+/**
  * Defines a field an app either needs as input, or gives as output.
  * In addition to the requirements below, the following keys are
  * mutually exclusive:
@@ -323,6 +339,12 @@ export interface Field {
    * "https://{{input}}.yourdomain.com").
    */
   inputFormat?: string;
+
+  /**
+   * Allows for additional metadata to be stored on the field.
+   * Supports simple key-values only (no sub-objects or arrays).
+   */
+  meta?: FieldMeta;
 }
 
 /**
