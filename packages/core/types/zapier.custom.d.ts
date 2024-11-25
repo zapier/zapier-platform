@@ -166,6 +166,8 @@ export interface HttpRequestOptions {
   middlewareData?: Record<string, any>;
 }
 
+type HttpRequestOptionsWithUrl = HttpRequestOptions & { url: string };
+
 interface BaseHttpResponse {
   status: number;
   headers: Headers;
@@ -202,16 +204,14 @@ export interface ZObject {
       url: string,
       options: HttpRequestOptions & { raw: true }
     ): Promise<RawHttpResponse<T>>;
-    <T = any>(
-      options: HttpRequestOptions & { raw: true; url: string }
-    ): Promise<RawHttpResponse<T>>;
+    <T = any>(options: HttpRequestOptionsWithUrl & { raw: true }): Promise<
+      RawHttpResponse<T>
+    >;
 
     <T = any>(url: string, options?: HttpRequestOptions): Promise<
       HttpResponse<T>
     >;
-    <T = any>(options: HttpRequestOptions & { url: string }): Promise<
-      HttpResponse<T>
-    >;
+    <T = any>(options: HttpRequestOptionsWithUrl): Promise<HttpResponse<T>>;
   };
 
   console: Console;
@@ -289,10 +289,10 @@ export type PerformFunction<BI = Record<string, any>, R = any> = (
 ) => Promise<R>;
 
 export type BeforeRequestMiddleware = (
-  request: HttpRequestOptions,
+  request: HttpRequestOptionsWithUrl,
   z: ZObject,
   bundle: Bundle
-) => HttpRequestOptions | Promise<HttpRequestOptions>;
+) => HttpRequestOptionsWithUrl | Promise<HttpRequestOptionsWithUrl>;
 
 export type AfterResponseMiddleware = (
   response: HttpResponse,
