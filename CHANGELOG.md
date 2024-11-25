@@ -1,3 +1,36 @@
+## 15.19.0
+
+_released `2024-11-25`_
+
+For optimal performance, an optional argument has been added to [z.dehydrate](https://docs.zapier.com/platform/build-cli/overview#dehydration) to allow devs to control the cache duration on hydrators. The default cache duration for hydrators is unchanged (5 minutes).
+
+Also, with the new optional `meta` field object added to the [FieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#fieldschema) object, devs now have a supported mechanism for storing field-specific context which may be obtained when constructing dynamic needs, and then making that context available during actual action execution in the perform method.
+
+Lastly, the [zapier scaffold](https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md#scaffold) now supports TypeScript (TS) applications. It automatically detects TS and JS projects if the `--entry` flag isn't provided, so that it can generate and edit the right files in the right places, given TS projects tend to keep their files in ./src.
+
+### cli
+
+- :nail_care: Add support for TS on the `zapier scaffold` command ([#884](https://github.com/zapier/zapier-platform/pull/884))
+
+### core
+
+- :tada: Add support for providing the cache expiration for hydrators ([#918](https://github.com/zapier/zapier-platform/pull/918))
+- :scroll: Add `timezone` and `withSearch` fields to the `bundle.meta` object ([#922](https://github.com/zapier/zapier-platform/pull/922))
+- :scroll: Update the `BeforeRequestMiddleware` typings to require `url` in the request object ([#924](https://github.com/zapier/zapier-platform/pull/924))
+
+### schema
+
+- :tada: Add `meta` field support for the `FieldSchema` ([#883](https://github.com/zapier/zapier-platform/pull/883))
+
+### schema-to-ts
+
+None!
+
+### misc
+
+- :hammer: Bump elliptic from 6.5.7 to 6.6.0 ([#911](https://github.com/zapier/zapier-platform/pull/911))
+- :hammer: Bump cross-spawn from 7.0.3 to 7.0.6 in /schema-to-ts ([#919](https://github.com/zapier/zapier-platform/pull/919))
+
 ## 15.18.1
 
 _released `2024-11-01`_
