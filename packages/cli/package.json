@@ -40,11 +40,11 @@
     "validate": "yarn test && yarn smoke-test && yarn lint"
   },
   "dependencies": {
-    "@oclif/core": "4.0.28",
-    "@oclif/plugin-autocomplete": "3.2.6",
-    "@oclif/plugin-help": "6.2.15",
-    "@oclif/plugin-not-found": "3.2.22",
-    "@oclif/plugin-version": "2.2.15",
+    "@oclif/core": "4.0.33",
+    "@oclif/plugin-autocomplete": "3.2.11",
+    "@oclif/plugin-help": "6.2.18",
+    "@oclif/plugin-not-found": "3.2.29",
+    "@oclif/plugin-version": "2.2.16",
     "adm-zip": "0.5.10",
     "archiver": "5.3.1",
     "browserify": "17.0.0",
@@ -97,15 +97,19 @@
   },
   "oclif": {
     "commands": "src/oclif/commands",
-    "additionalHelpFlags": ["-h"],
-    "additionalVersionFlags": ["-v"],
+    "additionalHelpFlags": [
+      "-h"
+    ],
+    "additionalVersionFlags": [
+      "-v"
+    ],
     "bin": "zapier",
     "dirname": "zapier",
     "plugins": [
-        "@oclif/plugin-autocomplete",
-        "@oclif/plugin-help",
-        "@oclif/plugin-not-found",
-        "@oclif/plugin-version"
+      "@oclif/plugin-autocomplete",
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found",
+      "@oclif/plugin-version"
     ],
     "hooks": {
       "init": [
