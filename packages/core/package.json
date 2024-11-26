@@ -50,9 +50,9 @@
     "lodash": "4.17.21",
     "mime-types": "2.1.35",
     "node-abort-controller": "3.1.1",
-    "node-fetch": "2.6.7",
+    "node-fetch": "2.7.0",
     "oauth-sign": "0.9.0",
-    "semver": "7.5.2",
+    "semver": "7.6.3",
     "zapier-platform-schema": "15.19.0"
   },
   "devDependencies": {
