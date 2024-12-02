@@ -23,7 +23,7 @@
     "marked": "^12.0.2",
     "pino": "^9.1.0",
     "pino-pretty": "^11.0.0",
-    "prettier": "^3.2.5",
+    "prettier": "^3.4.1",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
