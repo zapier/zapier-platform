@@ -41,15 +41,8 @@
   {
     "description": "truncateData will do its best to truncate a big string that would push it past the maxLength, but in a case where the last evaluated item isn't a string, it will just 'drop' the last evaluated item and the output length won't match the maxLength. that's okay! here's an example.",
     "input": [
-      1234567890,
-      2345678901,
-      3456789012,
-      4567890123,
-      5678901234,
-      6789012345,
-      7890123456,
-      8901234567,
-      9012345678
+      1234567890, 2345678901, 3456789012, 4567890123, 5678901234, 6789012345,
+      7890123456, 8901234567, 9012345678
     ],
     "maxLength": 94,
     "output": [

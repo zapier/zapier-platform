@@ -112,9 +112,8 @@ const getFileDetailsFromRequest = (url) =>
         const disposition = response.headers.get('content-disposition')
 
         if (disposition) {
-          fileDetails.filename = contentDisposition.parse(
-            disposition
-          ).parameters.filename
+          fileDetails.filename =
+            contentDisposition.parse(disposition).parameters.filename
         }
 
         return response.buffer()

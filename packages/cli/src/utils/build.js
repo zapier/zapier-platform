@@ -285,10 +285,9 @@ const maybeRunBuildScript = async (options = {}) => {
 
   // Make sure we don't accidentally call the Zapier build hook inside itself
   if (process.env.npm_lifecycle_event !== ZAPIER_BUILD_KEY) {
-    const pJson = require(path.resolve(
-      options.cwd || process.cwd(),
-      'package.json'
-    ));
+    const pJson = require(
+      path.resolve(options.cwd || process.cwd(), 'package.json')
+    );
 
     if (_.get(pJson, ['scripts', ZAPIER_BUILD_KEY])) {
       startSpinner(`Running ${ZAPIER_BUILD_KEY} script`);

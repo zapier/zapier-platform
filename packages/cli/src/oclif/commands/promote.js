@@ -52,9 +52,8 @@ class PromoteCommand extends BaseCommand {
     const assumeYes = 'yes' in this.flags;
 
     let shouldContinue;
-    const { changelog, appMetadata, issueMetadata } = await getVersionChangelog(
-      version
-    );
+    const { changelog, appMetadata, issueMetadata } =
+      await getVersionChangelog(version);
 
     const metadataPromptHelper = `Issues are indicated by ${colors.bold.underline(
       '#<issueId>'

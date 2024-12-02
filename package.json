@@ -46,10 +46,11 @@
       "eslint --fix --quiet"
     ],
     "*.{js,json}": [
-      "prettier --write"
+      "prettier --write --ignore-path=.prettierignore"
     ]
   },
   "prettier": {
-    "singleQuote": true
+    "singleQuote": true,
+    "trailingComma": "es5"
   }
 }

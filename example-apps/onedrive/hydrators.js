@@ -6,12 +6,12 @@ const getStringByteSize = utils.getStringByteSize
 const {
   BASE_ITEM_URL,
   BIG_FILE_MSG,
-  BINARY_CONTENT_MSG
+  BINARY_CONTENT_MSG,
 } = require('./constants')
 
 const getFileContents = (z, bundle) => {
   const options = {
-    url: `${BASE_ITEM_URL}/me/drive/items/${bundle.inputData.id}/content`
+    url: `${BASE_ITEM_URL}/me/drive/items/${bundle.inputData.id}/content`,
   }
 
   return z
@@ -46,5 +46,5 @@ const getFileContents = (z, bundle) => {
 }
 
 module.exports = {
-  getFileContents
+  getFileContents,
 }

@@ -26,8 +26,8 @@ const globalBeforeSetup = (done) => {
       authData: {
         access_token: '',
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal'
-      }
+        accountType: 'personal',
+      },
     }
 
     appTester(App.authentication.oauth2Config.refreshAccessToken, bundle)
@@ -54,30 +54,30 @@ const TEST_RESOURCES = {
     id: '',
     name: 'sample.pdf',
     path: '/sample.pdf',
-    parent: ''
+    parent: '',
   },
   nested: {
     id: '',
     name: 'test.txt',
     path: '/Documents/Testing/test.txt',
-    parent: '/Documents/Testing'
+    parent: '/Documents/Testing',
   },
 
   folder: {
     id: '',
     name: 'Documents',
     path: '/Documents',
-    parent: ''
+    parent: '',
   },
   childFolder: {
     id: '',
     name: 'Testing',
     path: '/Documents/Testing',
-    parent: '/Documents'
-  }
+    parent: '/Documents',
+  },
 }
 
 module.exports = {
   globalBeforeSetup,
-  TEST_RESOURCES
+  TEST_RESOURCES,
 }

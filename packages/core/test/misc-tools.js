@@ -441,7 +441,8 @@ describe('Tools', () => {
         },
         {
           name: 'TypeError',
-          message: "Type 'function' is not JSON-encodable (path: 'foo.1.hello')",
+          message:
+            "Type 'function' is not JSON-encodable (path: 'foo.1.hello')",
         }
       );
       assert.throws(

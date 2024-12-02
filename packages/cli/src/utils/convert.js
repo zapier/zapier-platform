@@ -49,12 +49,12 @@ const prettifyJSON = (origString) => JSON.stringify(origString, null, 2);
 const renderTemplate = async (
   templateFile,
   templateContext,
-  prettify = true,
+  prettify = true
 ) => {
   const templateBuf = await readFile(templateFile);
   const template = templateBuf.toString();
   let content = _.template(template, { interpolate: /<%=([\s\S]+?)%>/g })(
-    templateContext,
+    templateContext
   );
 
   if (prettify) {
@@ -101,7 +101,7 @@ const getAuthFieldKeys = (appDefinition) => {
 
 const renderPackageJson = async (appInfo, appDefinition) => {
   const name = _.kebabCase(
-    appInfo.title || _.get(appInfo, ['general', 'title']),
+    appInfo.title || _.get(appInfo, ['general', 'title'])
   );
 
   // Not using escapeSpecialChars because we don't want to escape single quotes (not
@@ -182,7 +182,7 @@ const renderSource = (definition, functions = {}) => {
         funcName = `${funcNameBase}${funcNum}`;
       }
       functions[funcName] = `const ${funcName} = async (${args.join(
-        ', ',
+        ', '
       )}) => {\n${source}\n};`;
 
       this.parent.update(makePlaceholder(funcName));
@@ -197,7 +197,7 @@ const renderDefinitionSlice = async (definitionSlice, filename) => {
   renderSource(exportBlock, functionBlock);
 
   exportBlock = `module.exports = ${replacePlaceholders(
-    JSON.stringify(exportBlock),
+    JSON.stringify(exportBlock)
   )};\n`;
 
   functionBlock = Object.values(functionBlock).join('\n\n');
@@ -208,9 +208,8 @@ const renderDefinitionSlice = async (definitionSlice, filename) => {
   } catch (err) {
     console.warn(
       `Warning: Your code has syntax error in ${chalk.underline.bold(
-        filename,
-      )}. ` +
-        `It will be left as is and won't be prettified.\n\n${err.message}`,
+        filename
+      )}. ` + `It will be left as is and won't be prettified.\n\n${err.message}`
     );
     return uglyCode;
   }
@@ -241,7 +240,7 @@ const renderIndex = async (appDefinition) => {
   // replace version and platformVersion with dynamic reference
   exportBlock.version = makePlaceholder("require('./package.json').version");
   exportBlock.platformVersion = makePlaceholder(
-    "require('zapier-platform-core').version",
+    "require('zapier-platform-core').version"
   );
 
   if (appDefinition.authentication) {
@@ -272,7 +271,7 @@ const renderIndex = async (appDefinition) => {
         exportBlock[stepType][makePlaceholder(`[${importName}.key]`)] =
           makePlaceholder(importName);
       });
-    },
+    }
   );
 
   if (!_.isEmpty(appDefinition.hydrators)) {
@@ -285,20 +284,20 @@ const renderIndex = async (appDefinition) => {
   if (appDefinition.legacy && appDefinition.legacy.scriptingSource) {
     importBlock.push("\nconst fs = require('fs');");
     importBlock.push(
-      "const scriptingSource = fs.readFileSync('./scripting.js', { encoding: 'utf8' });",
+      "const scriptingSource = fs.readFileSync('./scripting.js', { encoding: 'utf8' });"
     );
     exportBlock.legacy.scriptingSource = makePlaceholder('scriptingSource');
   }
 
   exportBlock = `module.exports = ${replacePlaceholders(
-    JSON.stringify(exportBlock),
+    JSON.stringify(exportBlock)
   )};`;
 
   importBlock = importBlock.join('\n');
   functionBlock = Object.values(functionBlock).join('\n\n');
 
   return prettifyJs(
-    importBlock + '\n\n' + functionBlock + '\n\n' + exportBlock,
+    importBlock + '\n\n' + functionBlock + '\n\n' + exportBlock
   );
 };
 
@@ -342,7 +341,7 @@ const writeScripting = async (appDefinition, newAppDir) => {
   await createFile(
     appDefinition.legacy.scriptingSource,
     'scripting.js',
-    newAppDir,
+    newAppDir
   );
 };
 
@@ -388,7 +387,7 @@ const convertApp = async (appInfo, appDefinition, newAppDir) => {
     _.each(appDefinition[stepType], (definition, key) => {
       promises.push(
         writeStep(stepType, definition, key, newAppDir),
-        writeStepTest(stepType, definition, key, newAppDir),
+        writeStepTest(stepType, definition, key, newAppDir)
       );
     });
   });
@@ -408,7 +407,7 @@ const convertApp = async (appInfo, appDefinition, newAppDir) => {
     writeIndex(appDefinition, newAppDir),
     writeEnvironment(appDefinition, newAppDir),
     writeGitIgnore(newAppDir),
-    writeZapierAppRc(appInfo, appDefinition, newAppDir),
+    writeZapierAppRc(appInfo, appDefinition, newAppDir)
   );
 
   return Promise.all(promises);

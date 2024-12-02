@@ -14,8 +14,8 @@ describe('Authentication', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal'
-      }
+        accountType: 'personal',
+      },
     }
 
     appTester(App.authentication.oauth2Config.refreshAccessToken, bundle)
@@ -32,11 +32,11 @@ describe('Authentication', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal'
+        accountType: 'personal',
       },
       inputData: {
-        accountType: 'personal'
-      }
+        accountType: 'personal',
+      },
     }
 
     appTester(App.authentication.test, bundle)
@@ -55,12 +55,12 @@ describe('Authentication', () => {
       inputData: {
         state: '4444',
         redirect_uri: 'https://zapier.com/',
-        accountType: 'personal'
+        accountType: 'personal',
       },
       environment: {
         CLIENT_ID: '1234',
-        CLIENT_SECRET: 'asdf'
-      }
+        CLIENT_SECRET: 'asdf',
+      },
     }
 
     appTester(App.authentication.oauth2Config.authorizeUrl, bundle)

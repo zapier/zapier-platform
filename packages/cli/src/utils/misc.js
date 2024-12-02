@@ -135,10 +135,9 @@ const isValidAppInstall = () => {
     };
   }
 
-  const installedPackageJson = require(path.join(
-    corePackageDir,
-    'package.json'
-  ));
+  const installedPackageJson = require(
+    path.join(corePackageDir, 'package.json')
+  );
   const installedCoreVersion = installedPackageJson.version;
 
   if (installedCoreVersion !== dependedCoreVersion) {
@@ -210,9 +209,9 @@ const printVersionInfo = (context) => {
         )
       ) {
         // double check they have the right version installed
-        const installedPkgVersion = require(path.resolve(
-          `./node_modules/${PLATFORM_PACKAGE}/package.json`
-        )).version;
+        const installedPkgVersion = require(
+          path.resolve(`./node_modules/${PLATFORM_PACKAGE}/package.json`)
+        ).version;
 
         if (requiredVersion !== installedPkgVersion) {
           versions.push(

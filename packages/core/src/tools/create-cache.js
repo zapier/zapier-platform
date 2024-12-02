@@ -54,7 +54,14 @@ const createCache = (input) => {
     set: async (key, value, ttl = null, scope = null, nx = null) => {
       runValidationChecks(rpc, key, value, ttl, scope, nx);
 
-      return await rpc('zcache_set', key, JSON.stringify(value), ttl, scope, nx);
+      return await rpc(
+        'zcache_set',
+        key,
+        JSON.stringify(value),
+        ttl,
+        scope,
+        nx
+      );
     },
     delete: async (key, scope = null) => {
       runValidationChecks(rpc, key, scope);
