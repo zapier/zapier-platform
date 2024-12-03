@@ -9,7 +9,7 @@ class DeprecateCommand extends BaseCommand {
     const app = await this.getWritableApp();
     const { version, date } = this.args;
     this.log(
-      `Preparing to deprecate version ${version} your app "${app.title}".\n`
+      `Preparing to deprecate version ${version} your app "${app.title}".\n`,
     );
     const url = `/apps/${app.id}/versions/${version}/deprecate`;
     this.startSpinner(`Deprecating ${version}`);
@@ -21,7 +21,7 @@ class DeprecateCommand extends BaseCommand {
     });
     this.stopSpinner();
     this.log(
-      `\nWe'll let users know that this version is no longer recommended and will cease to work on ${date}.`
+      `\nWe'll let users know that this version is no longer recommended and will cease to work on ${date}.`,
     );
   }
 }

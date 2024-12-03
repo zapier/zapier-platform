@@ -70,5 +70,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [BasicDisplaySchema, BasicOperationSchema]
+  [BasicDisplaySchema, BasicOperationSchema],
 );

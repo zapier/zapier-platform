@@ -41,11 +41,11 @@ const checkOutput = (output) => {
       if (constants.IS_TESTING || event.isDeveloper || event.calledFromCli) {
         const shortMsgs = checkResults.map((info) => `  - ${info.error}`);
         throw new errors.CheckError(
-          'Invalid API Response:\n' + shortMsgs.join('\n')
+          'Invalid API Response:\n' + shortMsgs.join('\n'),
         );
       } else {
         const longMsgs = checkResults.map(
-          (info) => `Zapier check "${info.name}" failed: ${info.error}`
+          (info) => `Zapier check "${info.name}" failed: ${info.error}`,
         );
         longMsgs.forEach((err) => input.z.console.error(err));
       }

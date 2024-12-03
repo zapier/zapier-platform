@@ -99,7 +99,7 @@ const requiredFiles = (cwd, entryPoints) => {
         .on('end', () => {
           paths.sort();
           resolve(paths);
-        })
+        }),
     );
     b.bundle();
   });
@@ -152,10 +152,10 @@ const forceIncludeDumbPath = (appConfig, filePath) => {
     filePath.endsWith(path.join('bin', 'linux-x64-node-14', 'deasync.node')) ||
     filePath.endsWith(
       // Special, for zapier-platform-legacy-scripting-runner
-      path.join('bin', `linux-x64-node-${nodeMajorVersion}`, 'deasync.node')
+      path.join('bin', `linux-x64-node-${nodeMajorVersion}`, 'deasync.node'),
     ) ||
     filePath.match(
-      path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/
+      path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/,
     ) ||
     matchesConfigInclude
   );
@@ -211,7 +211,7 @@ const makeZip = async (dir, zipPath, disableDependencyDetection) => {
     paths = dumbPaths;
   } else {
     let finalPaths = smartPaths.concat(
-      dumbPaths.filter(forceIncludeDumbPath.bind(null, appConfig))
+      dumbPaths.filter(forceIncludeDumbPath.bind(null, appConfig)),
     );
     finalPaths = _.uniq(finalPaths);
     finalPaths.sort();
@@ -257,7 +257,7 @@ const maybeNotifyAboutOutdated = () => {
   // `build` won't run if package.json isn't there, so if we get to here we're good
   const requiredVersion = _.get(
     require(path.resolve('./package.json')),
-    `dependencies.${constants.PLATFORM_PACKAGE}`
+    `dependencies.${constants.PLATFORM_PACKAGE}`,
   );
 
   if (requiredVersion) {
@@ -269,11 +269,11 @@ const maybeNotifyAboutOutdated = () => {
     if (notifier.update && notifier.update.latest !== requiredVersion) {
       notifier.notify({
         message: `There's a newer version of ${colors.cyan(
-          constants.PLATFORM_PACKAGE
+          constants.PLATFORM_PACKAGE,
         )} available.\nConsider updating the dependency in your\n${colors.cyan(
-          'package.json'
+          'package.json',
         )} (${colors.grey(notifier.update.current)} → ${colors.green(
-          notifier.update.latest
+          notifier.update.latest,
         )}) and then running ${colors.red('zapier test')}.`,
       });
     }
@@ -285,10 +285,9 @@ const maybeRunBuildScript = async (options = {}) => {
 
   // Make sure we don't accidentally call the Zapier build hook inside itself
   if (process.env.npm_lifecycle_event !== ZAPIER_BUILD_KEY) {
-    const pJson = require(path.resolve(
-      options.cwd || process.cwd(),
-      'package.json'
-    ));
+    const pJson = require(
+      path.resolve(options.cwd || process.cwd(), 'package.json'),
+    );
 
     if (_.get(pJson, ['scripts', ZAPIER_BUILD_KEY])) {
       startSpinner(`Running ${ZAPIER_BUILD_KEY} script`);
@@ -314,7 +313,7 @@ const listWorkspaces = (workspaceRoot) => {
   }
 
   return (packageJson.workspaces || []).map((relpath) =>
-    path.resolve(workspaceRoot, relpath)
+    path.resolve(workspaceRoot, relpath),
   );
 };
 
@@ -332,7 +331,7 @@ const _buildFunc = async ({
   const osTmpDir = await fse.realpath(os.tmpdir());
   const tmpDir = path.join(
     osTmpDir,
-    'zapier-' + crypto.randomBytes(4).toString('hex')
+    'zapier-' + crypto.randomBytes(4).toString('hex'),
   );
   debug('Using temp directory: ', tmpDir);
 
@@ -373,7 +372,7 @@ const _buildFunc = async ({
           if (stat.isSymbolicLink()) {
             const realPath = path.resolve(
               path.dirname(src),
-              fse.readlinkSync(src)
+              fse.readlinkSync(src),
             );
             for (const workspace of workspaces) {
               // Use minimatch to do glob pattern match. If match, it means the
@@ -408,11 +407,11 @@ const _buildFunc = async ({
   const corePath = path.join(
     tmpDir,
     'node_modules',
-    constants.PLATFORM_PACKAGE
+    constants.PLATFORM_PACKAGE,
   );
   if (!fs.existsSync(corePath)) {
     throw new Error(
-      'Could not install dependencies properly. Error log:\n' + output.stderr
+      'Could not install dependencies properly. Error log:\n' + output.stderr,
     );
   }
 
@@ -428,12 +427,12 @@ const _buildFunc = async ({
       'node_modules',
       constants.PLATFORM_PACKAGE,
       'include',
-      'zapierwrapper.js'
-    )
+      'zapierwrapper.js',
+    ),
   );
   await writeFile(
     path.join(tmpDir, 'zapierwrapper.js'),
-    zapierWrapperBuf.toString()
+    zapierWrapperBuf.toString(),
   );
 
   if (printProgress) {
@@ -449,13 +448,13 @@ const _buildFunc = async ({
 
   const fileWriteError = await writeFile(
     path.join(tmpDir, 'definition.json'),
-    prettyJSONstringify(rawDefinition)
+    prettyJSONstringify(rawDefinition),
   );
 
   if (fileWriteError) {
     debug('\nFile Write Error:\n', fileWriteError, '\n');
     throw new Error(
-      `Unable to write ${tmpDir}/definition.json, please check file permissions!`
+      `Unable to write ${tmpDir}/definition.json, please check file permissions!`,
     );
   }
 
@@ -481,7 +480,7 @@ const _buildFunc = async ({
     if (validationErrors.length) {
       debug('\nErrors:\n', validationErrors, '\n');
       throw new Error(
-        'We hit some validation errors, try running `zapier validate` to see them!'
+        'We hit some validation errors, try running `zapier validate` to see them!',
       );
     }
 
@@ -493,10 +492,10 @@ const _buildFunc = async ({
       debug(
         '\nErrors:\n',
         prettyJSONstringify(styleChecksResponse.errors.results),
-        '\n'
+        '\n',
       );
       throw new Error(
-        'We hit some style validation errors, try running `zapier validate` to see them!'
+        'We hit some style validation errors, try running `zapier validate` to see them!',
       );
     }
     if (printProgress) {
@@ -524,7 +523,7 @@ const _buildFunc = async ({
   await makeSourceZip(
     tmpDir,
     path.join(wdir, sourceZipPath),
-    disableDependencyDetection
+    disableDependencyDetection,
   );
 
   if (printProgress) {
@@ -541,7 +540,7 @@ const _buildFunc = async ({
     await runCommand(
       'find',
       ['.', '-exec', 'touch', '-t', '201601010000', '{}', '+'],
-      { cwd: tmpDir }
+      { cwd: tmpDir },
     );
   }
 
@@ -561,7 +560,7 @@ const _buildFunc = async ({
 
 const buildAndOrUpload = async (
   { build = false, upload = false } = {},
-  buildOpts
+  buildOpts,
 ) => {
   if (!(build || upload)) {
     throw new Error('must either build or upload');

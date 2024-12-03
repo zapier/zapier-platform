@@ -38,7 +38,7 @@ describe('changelog utils', () => {
           '* Minor docs fixes.\n' +
           '# 0.0.1\n' +
           'initial release\n\n' +
-          'just for internal testing\n\n'
+          'just for internal testing\n\n',
       );
     });
 
@@ -60,14 +60,14 @@ describe('changelog utils', () => {
       should(appMetadata).equal(undefined);
       should(issueMetadata).equal(undefined);
       changelog.should.equal(
-        '### Changed\n\nSwitch changelog format\n### Security\nUpdate dependencies\n### Fixes\nNo code, no issue'
+        '### Changed\n\nSwitch changelog format\n### Security\nUpdate dependencies\n### Fixes\nNo code, no issue',
       );
     });
 
     it('should find changelog for 1.0.0', () =>
       changelogUtil.getVersionChangelog('1.0.0', appDir).then((log) => {
         log.changelog.should.eql(
-          '* Removing beta "label".\n* Minor docs fixes.'
+          '* Removing beta "label".\n* Minor docs fixes.',
         );
       }));
 
@@ -109,7 +109,7 @@ describe('changelog utils', () => {
           '4. Add trigger/new_contact #10\n' +
           '5. New action! create/add_contact\n' +
           'However, we also addressed fixed open issues!\n' +
-          '- Fix #123 and an issue with create/send_message'
+          '- Fix #123 and an issue with create/send_message',
       );
       appMetadata.should.deepEqual([
         {

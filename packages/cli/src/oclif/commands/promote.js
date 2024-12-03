@@ -37,8 +37,8 @@ const hasAppChangeType = (metadata, changeType) => {
     metadata?.some(
       // Existing property name
       // eslint-disable-next-line camelcase
-      ({ app_change_type }) => app_change_type === changeType
-    )
+      ({ app_change_type }) => app_change_type === changeType,
+    ),
   );
 };
 
@@ -52,19 +52,18 @@ class PromoteCommand extends BaseCommand {
     const assumeYes = 'yes' in this.flags;
 
     let shouldContinue;
-    const { changelog, appMetadata, issueMetadata } = await getVersionChangelog(
-      version
-    );
+    const { changelog, appMetadata, issueMetadata } =
+      await getVersionChangelog(version);
 
     const metadataPromptHelper = `Issues are indicated by ${colors.bold.underline(
-      '#<issueId>'
+      '#<issueId>',
     )}, and actions by ${colors.bold.underline(
-      '<trigger|create|search>/<key>'
+      '<trigger|create|search>/<key>',
     )}. Note issue IDs must be numeric and action identifiers are case sensitive.`;
 
     if (!changelog) {
       this.error(`${colors.yellow(
-        'Warning!'
+        'Warning!',
       )} Changelog not found. Please create a CHANGELOG.md file with user-facing descriptions. Example:
 ${colors.cyan(EXAMPLE_CHANGELOG)}
 If bugfixes or updates to actions are present, then should be marked on a line that begins with "Update" or "Fix" (case insensitive) and information that contains the identifier.
@@ -81,7 +80,7 @@ ${metadataPromptHelper}`);
           .filter(({ app_change_type }) => app_change_type === 'FEATURE_UPDATE')
           .map(
             ({ action_type, action_key }) =>
-              `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`
+              `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`,
           );
 
       const issueFeatureUpdates =
@@ -95,7 +94,7 @@ ${metadataPromptHelper}`);
           `Feature updates: ${[
             ...(appFeatureUpdates ?? []),
             ...(issueFeatureUpdates ?? []),
-          ].join(', ')}`
+          ].join(', ')}`,
         );
       }
 
@@ -105,7 +104,7 @@ ${metadataPromptHelper}`);
           .filter(({ app_change_type }) => app_change_type === 'BUGFIX')
           .map(
             ({ action_type, action_key }) =>
-              `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`
+              `${action_key}/${ACTION_TYPE_MAPPING[action_type]}`,
           );
       const issueBugfixes =
         issueMetadata &&
@@ -116,8 +115,8 @@ ${metadataPromptHelper}`);
       if (appBugfixes || issueBugfixes) {
         this.log(
           `Bug fixes: ${[...(appBugfixes ?? []), ...(issueBugfixes ?? [])].join(
-            ', '
-          )}`
+            ', ',
+          )}`,
         );
       }
 
@@ -128,7 +127,7 @@ ${metadataPromptHelper}`);
         !issueBugfixes
       ) {
         this.log(
-          `No metadata was found in the changelog. Remember, you can associate the changelog with issues or triggers/actions.\n\n${metadataPromptHelper}`
+          `No metadata was found in the changelog. Remember, you can associate the changelog with issues or triggers/actions.\n\n${metadataPromptHelper}`,
         );
       }
       this.log();
@@ -137,7 +136,7 @@ ${metadataPromptHelper}`);
       shouldContinue =
         assumeYes ||
         (await this.confirm(
-          'Would you like to continue promoting with this changelog?'
+          'Would you like to continue promoting with this changelog?',
         ));
     }
 
@@ -146,7 +145,7 @@ ${metadataPromptHelper}`);
     }
 
     this.log(
-      `Preparing to promote version ${version} of your integration "${app.title}".`
+      `Preparing to promote version ${version} of your integration "${app.title}".`,
     );
 
     const isFeatureUpdate =
@@ -178,7 +177,7 @@ ${metadataPromptHelper}`);
           method: 'POST',
           body,
         },
-        true
+        true,
       );
     } catch (response) {
       const activationUrl = _.get(response, ['json', 'activationInfo', 'url']);
@@ -187,8 +186,8 @@ ${metadataPromptHelper}`);
         this.log('\nGood news! Your integration passes validation.');
         this.log(
           `The next step is to visit ${colors.cyan(
-            activationUrl
-          )} to request to publish your integration.`
+            activationUrl,
+          )} to request to publish your integration.`,
         );
       } else {
         this.stopSpinner({ success: false });
@@ -211,7 +210,7 @@ ${metadataPromptHelper}`);
     this.log('  Promotion successful!');
     if (!this.flags.invokedFromAnotherCommand) {
       this.log(
-        'Optionally, run the `zapier migrate` command to move users to this version.'
+        'Optionally, run the `zapier migrate` command to move users to this version.',
       );
     }
   }

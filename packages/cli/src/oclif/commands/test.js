@@ -27,7 +27,7 @@ class TestCommand extends BaseCommand {
     const credentials = await readCredentials(false);
     if (credentials.deployKey) {
       this.log(
-        `Adding ${constants.AUTH_LOCATION} to environment as ZAPIER_DEPLOY_KEY...`
+        `Adding ${constants.AUTH_LOCATION} to environment as ZAPIER_DEPLOY_KEY...`,
       );
       extraEnv.ZAPIER_DEPLOY_KEY = credentials.deployKey;
     }
@@ -53,10 +53,10 @@ class TestCommand extends BaseCommand {
     // but the space-joined array made that unclear
     this.log(
       `\n  ${chalk.cyanBright.bold(
-        packageManager.executable
+        packageManager.executable,
       )} ${chalk.cyanBright(
-        argv.map((a) => (a.includes(' ') ? `"${a}"` : a)).join(' ')
-      )}\n`
+        argv.map((a) => (a.includes(' ') ? `"${a}"` : a)).join(' '),
+      )}\n`,
     );
 
     const output = await runCommand(packageManager.executable, argv, {

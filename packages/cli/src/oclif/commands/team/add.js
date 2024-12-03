@@ -29,7 +29,7 @@ class TeamAddCommand extends ZapierBaseCommand {
         `About to invite ${cyan(this.args.email)} to as a team member at the ${
           this.args.role
         } level. An email will be sent with the following message:\n\n"${message}"\n\nIs that ok?`,
-        true
+        true,
       ))
     ) {
       this.log('\ncancelled');
@@ -42,8 +42,8 @@ class TeamAddCommand extends ZapierBaseCommand {
       role === 'admin'
         ? `/apps/${id}/collaborators`
         : role === 'subscriber'
-        ? `${BASE_ENDPOINT}/api/platform/v3/integrations/${id}/subscribers`
-        : `/apps/${id}/limited_collaborators`;
+          ? `${BASE_ENDPOINT}/api/platform/v3/integrations/${id}/subscribers`
+          : `/apps/${id}/limited_collaborators`;
 
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,

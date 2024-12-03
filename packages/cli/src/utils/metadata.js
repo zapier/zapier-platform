@@ -33,7 +33,7 @@ const extractMetadata = (token, context) => {
     };
   }
   const appMetadata = token.match(
-    /(?<actionType>(trigger|create|search))\/(?<actionKey>\w+)/
+    /(?<actionType>(trigger|create|search))\/(?<actionKey>\w+)/,
   );
   if (
     appMetadata?.groups?.actionKey &&

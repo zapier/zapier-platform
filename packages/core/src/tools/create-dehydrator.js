@@ -13,7 +13,7 @@ const createDehydrator = (input, type = 'method') => {
     inputData = inputData || {};
     if (inputData.inputData) {
       throw new DehydrateError(
-        'Oops! You passed a full `bundle` - really you should pass what you want under `inputData`!'
+        'Oops! You passed a full `bundle` - really you should pass what you want under `inputData`!',
       );
     }
     const payload = {

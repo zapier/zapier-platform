@@ -32,7 +32,7 @@ const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
       {
         calledFromCli: true,
       },
-      baseEvent
+      baseEvent,
     );
     handler(event, _, callback);
   };

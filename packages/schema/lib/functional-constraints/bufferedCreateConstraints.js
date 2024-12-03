@@ -18,8 +18,8 @@ const bufferedCreateConstraints = (definition) => {
               '/BasicCreateActionOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
               'missing',
-              'performBuffer'
-            )
+              'performBuffer',
+            ),
           );
         }
 
@@ -31,8 +31,8 @@ const bufferedCreateConstraints = (definition) => {
               '/BasicCreateActionOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
               'invalid',
-              'perform'
-            )
+              'perform',
+            ),
           );
         }
 
@@ -41,7 +41,7 @@ const bufferedCreateConstraints = (definition) => {
           const inputFields = _.get(
             actionDef,
             ['operation', 'inputFields'],
-            []
+            [],
           );
           inputFields.forEach((inputField) => {
             if (inputField.required) {
@@ -58,8 +58,8 @@ const bufferedCreateConstraints = (definition) => {
                   '/BufferConfigSchema',
                   `instance.${actionType}.${actionDef.key}.operation.buffer.groupedBy[${index}]`,
                   'invalid',
-                  'groupedBy'
-                )
+                  'groupedBy',
+                ),
               );
             }
           });
@@ -75,8 +75,8 @@ const bufferedCreateConstraints = (definition) => {
               '/BasicCreateActionOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
               'missing',
-              'buffer'
-            )
+              'buffer',
+            ),
           );
         }
 
@@ -88,8 +88,8 @@ const bufferedCreateConstraints = (definition) => {
               '/BasicCreateActionOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
               'invalid',
-              'perform'
-            )
+              'perform',
+            ),
           );
         }
       }

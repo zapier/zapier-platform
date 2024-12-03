@@ -110,5 +110,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [FlatObjectSchema, FunctionSchema]
+  [FlatObjectSchema, FunctionSchema],
 );

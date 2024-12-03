@@ -102,7 +102,7 @@ const makeRowBasedTable = (rows, columnDefs, { includeIndex = true } = {}) => {
       }
       return maxLength;
     },
-    1
+    1,
   );
   const widthForValue = process.stdout.columns - maxLabelLength - 15; // The last bit accounts for some padding and borders
   if (widthForValue < 1) {
@@ -165,7 +165,7 @@ const makeTable = (
   columnDefs,
   showHeaders = true,
   hasBorder = true,
-  style = undefined
+  style = undefined,
 ) => {
   const tableOptions = {
     head: showHeaders ? columnDefs.map(([label]) => label) : undefined,

@@ -102,8 +102,8 @@ class LogsCommand extends BaseCommand {
       if (this.flags.type === 'http' && !this.flags.detailed) {
         this.log(
           grey(
-            '  TIP: Use `zapier logs --type=http --detailed` to include response information.'
-          )
+            '  TIP: Use `zapier logs --type=http --detailed` to include response information.',
+          ),
         );
       }
     }

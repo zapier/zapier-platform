@@ -45,7 +45,7 @@ class ZapierBaseCommand extends Command {
 
         if (!this.flags.debug && !this.flags.invokedFromAnotherCommand) {
           errTextLines.push(
-            colors.gray('re-run this command with `--debug` for more info')
+            colors.gray('re-run this command with `--debug` for more info'),
           );
         }
 
@@ -92,7 +92,7 @@ class ZapierBaseCommand extends Command {
   throwForInvalidVersion(version) {
     if (!version.match(/^\d+\.\d+\.\d+$/g)) {
       throw new Error(
-        `${version} is an invalid version str. Try something like \`1.2.3\``
+        `${version} is an invalid version str. Try something like \`1.2.3\``,
       );
     }
   }
@@ -303,14 +303,14 @@ class ZapierBaseCommand extends Command {
                   ? ` Defaults to \`${flagValue.default}\`.`
                   : ''
               }
-      `.trim()
+      `.trim(),
         )
         .filter(Boolean);
 
     const descriptionParts = this.description.split('\n\n').filter(Boolean);
     const blurb = descriptionParts[0];
     const lengthyDescription = colors.stripColors(
-      descriptionParts.length > 1 ? descriptionParts.slice(1).join('\n\n') : ''
+      descriptionParts.length > 1 ? descriptionParts.slice(1).join('\n\n') : '',
     );
 
     return [

@@ -13,10 +13,10 @@ class PushCommand extends ZapierBaseCommand {
         skipNpmInstall: this.flags['skip-npm-install'],
         disableDependencyDetection: this.flags['disable-dependency-detection'],
         skipValidation: this.flags['skip-validation'],
-      }
+      },
     );
     this.log(
-      `\nPush complete! Built ${BUILD_PATH} and ${SOURCE_PATH} and uploaded them to Zapier.`
+      `\nPush complete! Built ${BUILD_PATH} and ${SOURCE_PATH} and uploaded them to Zapier.`,
     );
   }
 }

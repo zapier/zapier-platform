@@ -89,7 +89,7 @@ const createHttpPatch = (event) => {
 
           object.zapierLogger(
             `${logData.response_status_code} ${logData.request_method} ${logData.request_url}`,
-            logData
+            logData,
           );
         };
 
@@ -106,7 +106,7 @@ const createHttpPatch = (event) => {
             });
           } else {
             const responseBody = _.map(chunks, (chunk) =>
-              chunk.toString()
+              chunk.toString(),
             ).join('\n');
             sendToLogger(responseBody);
           }

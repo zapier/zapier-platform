@@ -17,11 +17,11 @@ class BuildCommand extends BaseCommand {
         skipNpmInstall: this.flags['skip-npm-install'],
         disableDependencyDetection: this.flags['disable-dependency-detection'],
         skipValidation: this.flags['skip-validation'],
-      }
+      },
     );
 
     this.log(
-      `\nBuild complete! Created ${BUILD_PATH} and ${SOURCE_PATH}. Try the \`zapier upload\` command now.`
+      `\nBuild complete! Created ${BUILD_PATH} and ${SOURCE_PATH}. Try the \`zapier upload\` command now.`,
     );
   }
 }

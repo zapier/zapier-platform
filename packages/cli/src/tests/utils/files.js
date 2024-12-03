@@ -32,7 +32,7 @@ describe('files', () => {
         files.readFile(fileName).then((buf) => {
           buf.toString().should.equal(data);
           done();
-        })
+        }),
       )
       .catch(done);
   });
@@ -73,19 +73,19 @@ describe('files', () => {
       await files.copyDir(srcDir, dstDir);
       should.equal(
         await files.readFileStr(path.join(dstDir, '01.txt')),
-        'ch 1'
+        'ch 1',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', '03.txt')),
-        'ch 3'
+        'ch 3',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', 'fig.png')),
-        'png data'
+        'png data',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', 'photo.jpg')),
-        'photo data'
+        'photo data',
       );
     });
 
@@ -93,23 +93,23 @@ describe('files', () => {
       await files.copyDir(srcDir, dstDir, { clobber: true });
       should.equal(
         await files.readFileStr(path.join(dstDir, '02.txt')),
-        'chapter 2'
+        'chapter 2',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', '03.txt')),
-        'chapter 3'
+        'chapter 3',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', 'cover.jpg')),
-        'image data'
+        'image data',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', 'fig.png')),
-        'png data'
+        'png data',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', 'photo.jpg')),
-        'photo data'
+        'photo data',
       );
     });
 
@@ -120,19 +120,19 @@ describe('files', () => {
       });
       should.equal(
         await files.readFileStr(path.join(dstDir, '02.txt')),
-        'chapter 2'
+        'chapter 2',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', '03.txt')),
-        'ch 3'
+        'ch 3',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', 'cover.jpg')),
-        'old data'
+        'old data',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', 'fig.png')),
-        'png data'
+        'png data',
       );
       files
         .fileExistsSync(path.join(dstDir, '03', 'photo.jpg'))
@@ -150,19 +150,19 @@ describe('files', () => {
       });
       should.equal(
         await files.readFileStr(path.join(dstDir, '01.txt')),
-        'chapter 1'
+        'chapter 1',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', '03.txt')),
-        'chapter 3'
+        'chapter 3',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', 'cover.jpg')),
-        'image data'
+        'image data',
       );
       should.equal(
         await files.readFileStr(path.join(dstDir, '03', 'photo.jpg')),
-        'photo data'
+        'photo data',
       );
       files
         .fileExistsSync(path.join(dstDir, '03', 'fig.png'))
@@ -186,7 +186,7 @@ describe('files', () => {
         })
         .catch((err) => {
           err.message.should.eql(
-            ': File ./i-do-not-exist.txt not found. Oh noes.'
+            ': File ./i-do-not-exist.txt not found. Oh noes.',
           );
           done();
         });

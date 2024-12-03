@@ -142,11 +142,11 @@ const createBeforeRequest = (app) => {
     if (!bundle._legacyBasicDigestAuthMiddlewareApplied) {
       const username = renderTemplate(
         authMapping.username || '',
-        bundle.authData
+        bundle.authData,
       );
       const password = renderTemplate(
         authMapping.password || '',
-        bundle.authData
+        bundle.authData,
       );
       bundle.authData.username = username;
       bundle.authData.password = password;
@@ -169,7 +169,7 @@ const createBeforeRequest = (app) => {
         templateContext = Object.assign({}, bundle.authData, bundle.inputData);
         req.auth.oauth_consumer_key = renderTemplate(
           process.env.CLIENT_ID,
-          templateContext
+          templateContext,
         );
       }
       if (!req.auth.oauth_consumer_secret) {
@@ -177,12 +177,12 @@ const createBeforeRequest = (app) => {
           templateContext = Object.assign(
             {},
             bundle.authData,
-            bundle.inputData
+            bundle.inputData,
           );
         }
         req.auth.oauth_consumer_secret = renderTemplate(
           process.env.CLIENT_SECRET,
-          templateContext
+          templateContext,
         );
       }
 

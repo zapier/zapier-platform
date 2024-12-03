@@ -7,7 +7,7 @@ const BasicOperationSchema = require('./BasicOperationSchema');
 // TODO: would be nice to deep merge these instead
 // or maybe use allOf which is built into json-schema
 const BasicPollingOperationSchema = JSON.parse(
-  JSON.stringify(BasicOperationSchema.schema)
+  JSON.stringify(BasicOperationSchema.schema),
 );
 
 BasicPollingOperationSchema.id = '/BasicPollingOperationSchema';
@@ -38,5 +38,5 @@ BasicPollingOperationSchema.properties = {
 
 module.exports = makeSchema(
   BasicPollingOperationSchema,
-  BasicOperationSchema.dependencies
+  BasicOperationSchema.dependencies,
 );

@@ -36,5 +36,5 @@ lambda.updateFunctionCode(
       console.log(data); // successful response
       console.log('Now you can try `npm run lambda-integration-test`.');
     }
-  }
+  },
 );

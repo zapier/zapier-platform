@@ -40,8 +40,9 @@ const createFile = async (content, filename, dir) => {
   endSpinner();
 };
 
-const prettifyJs = (code) =>
+const prettifyJs = async (code) =>
   prettier.format(code, { singleQuote: true, parser: 'babel' });
+
 const prettifyJSON = (origString) => JSON.stringify(origString, null, 2);
 
 const renderTemplate = async (
@@ -188,7 +189,7 @@ const renderSource = (definition, functions = {}) => {
   });
 };
 
-const renderDefinitionSlice = (definitionSlice, filename) => {
+const renderDefinitionSlice = async (definitionSlice, filename) => {
   let exportBlock = _.cloneDeep(definitionSlice);
   let functionBlock = {};
 

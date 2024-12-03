@@ -10,9 +10,9 @@ class UsersRemoveCommand extends ZapierBaseCommand {
       !this.flags.force &&
       !(await this.confirm(
         `About to revoke access to ${cyan(
-          this.args.email
+          this.args.email,
         )}. They won't be able to see your app in the editor and their Zaps will stop working. Are you sure?`,
-        true
+        true,
       ))
     ) {
       this.log('\ncancelled');

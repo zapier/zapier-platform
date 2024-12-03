@@ -88,8 +88,8 @@ const recurseReplaceBank = (obj, bank = {}) => {
         throw new TypeError(
           'Cannot reliably interpolate objects or arrays into a string. ' +
             `Variable \`${bareKey}\` is an ${getObjectType(
-              replacementValue
-            )}:\n"${replacementValue}"`
+              replacementValue,
+            )}:\n"${replacementValue}"`,
         );
       }
 
@@ -109,7 +109,7 @@ const recurseReplaceBank = (obj, bank = {}) => {
 
 const finalizeBundle = pipe(
   pick(Object.keys(DEFAULT_BUNDLE)),
-  defaults(DEFAULT_BUNDLE)
+  defaults(DEFAULT_BUNDLE),
 );
 
 // Takes a raw app and bundle and composes a bank of {{key}}->val
@@ -169,12 +169,12 @@ const isEmptyQueryParam = (value) =>
 const normalizeEmptyParamFields = normalizeEmptyRequestFields.bind(
   null,
   isEmptyQueryParam,
-  'params'
+  'params',
 );
 const normalizeEmptyBodyFields = normalizeEmptyRequestFields.bind(
   null,
   (v) => typeof v === 'string' && v.search(isCurlies) >= 0,
-  'body'
+  'body',
 );
 
 module.exports = {

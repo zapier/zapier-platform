@@ -51,7 +51,7 @@ describe('RegisterCommand', () => {
       await captureOutput(async function () {
         const { error } = await runCommand(['register', 't']);
         expect(error.message).to.contain(
-          `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`
+          `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`,
         );
       });
     });
@@ -68,7 +68,7 @@ describe('RegisterCommand', () => {
           'Cupidatat non elit non enim enim cupidatat ea in consequat exercitation do nisi occaecat amet id deserunt nostrud quis aliqua id fugiat sit elit.',
         ]);
         expect(error.message).to.contain(
-          `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`
+          `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`,
         );
       });
     });
@@ -85,7 +85,7 @@ describe('RegisterCommand', () => {
           'invalidRole',
         ]);
         expect(error.message).to.contain(
-          'invalidRole is not a valid value for role'
+          'invalidRole is not a valid value for role',
         );
       });
     });
@@ -100,7 +100,7 @@ describe('RegisterCommand', () => {
           'invalidCategory',
         ]);
         expect(error.message).to.contain(
-          'invalidCategory is not a valid value for category'
+          'invalidCategory is not a valid value for category',
         );
       });
     });
@@ -115,7 +115,7 @@ describe('RegisterCommand', () => {
           'invalidAudience',
         ]);
         expect(error.message).to.contain(
-          'invalidAudience is not a valid value for audience'
+          'invalidAudience is not a valid value for audience',
         );
       });
     });
@@ -152,7 +152,7 @@ describe('RegisterCommand', () => {
         ]);
 
         expect(error.message).to.contain(
-          'invalidAudience is not a valid value for audience'
+          'invalidAudience is not a valid value for audience',
         );
       });
     });
@@ -180,7 +180,7 @@ describe('RegisterCommand', () => {
 
     fs.writeFileSync(
       APP_RC_FILE,
-      `{"id":${privateApp.id},"key":"App${privateApp.id}"}`
+      `{"id":${privateApp.id},"key":"App${privateApp.id}"}`,
     );
 
     it('zapier register should successfully register an app with all data provided', async function () {
@@ -204,7 +204,7 @@ describe('RegisterCommand', () => {
         ]);
 
         expect(error.message).to.contain(
-          'zapier register --yes should update an app without prompts'
+          'zapier register --yes should update an app without prompts',
         );
       });
     });
@@ -230,7 +230,7 @@ describe('RegisterCommand', () => {
         ]);
 
         expect(error.message).to.contain(
-          "You can't edit settings for this integration. To edit your integration details on Zapier's public app directory, email partners@zapier.com."
+          "You can't edit settings for this integration. To edit your integration details on Zapier's public app directory, email partners@zapier.com.",
         );
       });
     });

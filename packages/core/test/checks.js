@@ -139,13 +139,13 @@ describe('checks', () => {
         { id: 2, project_id: 2, slug: 'foo' },
         { id: 3, project_id: 1, slug: 'foo' }, // duplicate!
       ],
-      app
+      app,
     );
     errors.length.should.eql(1);
 
     const error = errors[0];
     error.should.containEql(
-      'Got two or more results with primary key of `{"project_id":1,"slug":"foo"}`'
+      'Got two or more results with primary key of `{"project_id":1,"slug":"foo"}`',
     );
   });
 
@@ -172,7 +172,7 @@ describe('checks', () => {
         // non-primitive can't be used as a primary key
         { id: 2, project_id: 2, slug: { foo: 'bar' } },
       ],
-      app
+      app,
     );
     errors.length.should.eql(1);
 
@@ -267,11 +267,11 @@ describe('checks', () => {
       'creates.blah.operation.performBuffer',
       results,
       {},
-      bundle
+      bundle,
     );
     errors.length.should.eql(1);
     errors[0].should.match(
-      /missing these IDs as keys: three, four, five, and 4 more/
+      /missing these IDs as keys: three, four, five, and 4 more/,
     );
   });
 
@@ -297,12 +297,12 @@ describe('checks', () => {
       'creates.blah.operation.performBuffer',
       results,
       {},
-      bundle
+      bundle,
     );
     errors.length.should.eql(2);
     errors[0].should.match(/member with ID 'one' must be an object/);
     errors[1].should.match(
-      /member with ID 'two' must have 'outputData' object or 'error' string/
+      /member with ID 'two' must have 'outputData' object or 'error' string/,
     );
   });
 
@@ -315,7 +315,7 @@ describe('checks', () => {
       'creates.blah.operation.performBuffer',
       results,
       {},
-      bundle
+      bundle,
     );
     errors.should.be.empty();
   });
@@ -375,7 +375,7 @@ describe('checkOutput', () => {
     (() => {
       checkOutput(output);
     }).should.throw(
-      /primary key of `{"timestamp":1710836622,"email":"amy@example.com"}`/
+      /primary key of `{"timestamp":1710836622,"email":"amy@example.com"}`/,
     );
   });
 

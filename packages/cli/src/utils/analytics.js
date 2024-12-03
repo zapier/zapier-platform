@@ -54,7 +54,7 @@ const recordAnalytics = async (command, isValidCommand, argNames, flags) => {
       skipDeployKey: shouldRecordAnonymously,
     },
     true,
-    false
+    false,
   )
     .then(({ success }) => debug('success:', success))
     .catch(({ errText }) => debug('err:', errText));

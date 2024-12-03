@@ -240,7 +240,7 @@ describe('request client', function () {
         ],
       },
       {},
-      testLogger
+      testLogger,
     );
     const request = createAppRequestClient(inputWithBeforeMiddleware);
     request({ url: `${HTTPBIN_URL}/get` })
@@ -284,7 +284,7 @@ describe('request client', function () {
         ],
       },
       {},
-      testLogger
+      testLogger,
     );
     const request = createAppRequestClient(inputWithAfterMiddleware);
     const response = await request({
@@ -309,7 +309,7 @@ describe('request client', function () {
 
     response.status.should.eql(200);
     response.request.body.should.eql(
-      'name=Something+Else&directions=!!No+Way+Jos%C3%A9'
+      'name=Something+Else&directions=!!No+Way+Jos%C3%A9',
     );
     const body = JSON.parse(response.content);
     body.form.name.should.deepEqual(['Something Else']);
@@ -329,7 +329,7 @@ describe('request client', function () {
 
     response.status.should.eql(200);
     response.request.body.should.eql(
-      'name=Something Else&directions=!!No Way José'
+      'name=Something Else&directions=!!No Way José',
     );
     const body = JSON.parse(response.content);
     body.form.name.should.deepEqual(['Something Else']);
@@ -359,7 +359,7 @@ describe('request client', function () {
     return request(`${HTTPBIN_URL}/redirect-to?url=http://example.com`).then(
       (response) => {
         response.status.should.eql(200);
-      }
+      },
     );
   });
 
@@ -478,7 +478,7 @@ describe('request client', function () {
         },
       };
       const request = createAppRequestClient(
-        createInput({}, event, testLogger)
+        createInput({}, event, testLogger),
       );
 
       const responseBefore = await request({
@@ -515,7 +515,7 @@ describe('request client', function () {
 
       const body = JSON.parse(response.content);
       body.url.should.eql(
-        `${HTTPBIN_URL}/get?cool=false&name=zapier&zzz=%5B%5D&yyy=%7B%7D&qqq=%20`
+        `${HTTPBIN_URL}/get?cool=false&name=zapier&zzz=%5B%5D&yyy=%7B%7D&qqq=%20`,
       );
     });
 
@@ -778,7 +778,7 @@ describe('request client', function () {
         },
       }).should.be.rejectedWith(
         'Cannot reliably interpolate objects or arrays into a string. ' +
-          'Variable `bundle.inputData.badData` is an Array:\n"1,2,3"'
+          'Variable `bundle.inputData.badData` is an Array:\n"1,2,3"',
       );
     });
 

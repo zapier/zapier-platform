@@ -10,7 +10,7 @@ class AppError extends Error {
         message,
         code,
         status,
-      })
+      }),
     );
     this.name = 'AppError';
     this.doNotContextify = true;
@@ -38,7 +38,7 @@ class ResponseError extends Error {
         request: {
           url: response.request.url,
         },
-      })
+      }),
     );
     this.name = 'ResponseError';
     this.doNotContextify = true;
@@ -51,7 +51,7 @@ class ThrottledError extends Error {
       JSON.stringify({
         message,
         delay,
-      })
+      }),
     );
     this.name = 'ThrottledError';
     this.doNotContextify = true;
@@ -92,7 +92,7 @@ const exceptions = _.reduce(
     Error: AppError,
     ResponseError,
     ThrottledError,
-  }
+  },
 );
 
 const isRequireError = ({ name, message }) =>
@@ -103,7 +103,7 @@ const handleError = (...args) => {
   const { RequireModuleError } = exceptions;
   if (isRequireError(error)) {
     throw new RequireModuleError(
-      'For technical reasons, use z.require() instead of require().'
+      'For technical reasons, use z.require() instead of require().',
     );
   }
 

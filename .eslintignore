@@ -1,4 +1,5 @@
 # this needs to combine all other eslintignore files so that lint-staged knows what to ignore
 packages/cli/scaffold/*.js
 packages/cli/src/generators/templates/**/*.template.js
+examples-apps/**/*.js
 .yarn

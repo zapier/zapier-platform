@@ -83,16 +83,16 @@ describe('BaseCommand', () => {
   describe('WithArgsCommand', () => {
     it('should error out with missing args', async () => {
       const { error } = await captureOutput(async () =>
-        WithArgsCommand.run([])
+        WithArgsCommand.run([]),
       );
       should(error.message).containEql(
-        'Missing 1 required arg:\nname  name is a required argument\nSee more help with --help'
+        'Missing 1 required arg:\nname  name is a required argument\nSee more help with --help',
       );
     });
 
     it('should not error out without missing args', async () => {
       const { stdout, error } = await captureOutput(async () =>
-        WithArgsCommand.run(['a'])
+        WithArgsCommand.run(['a']),
       );
       should(error).equal(undefined);
       should(stdout).startWith(MESSAGE);
@@ -100,7 +100,7 @@ describe('BaseCommand', () => {
 
     it('should not error out with full args', async () => {
       const { stdout, error } = await captureOutput(async () =>
-        WithArgsCommand.run(['a', 'b'])
+        WithArgsCommand.run(['a', 'b']),
       );
       should(error).equal(undefined);
       should(stdout).startWith(MESSAGE);
@@ -110,7 +110,7 @@ describe('BaseCommand', () => {
   describe('WithFlagsCommand', () => {
     it('should detect flags', async () => {
       const { stdout } = await captureOutput(async () =>
-        WithFlagsCommand.run(['--force', '--file', 'path/to/file'])
+        WithFlagsCommand.run(['--force', '--file', 'path/to/file']),
       );
       should(stdout).containEql('--force is set\n--file is: path/to/file\n');
     });
@@ -124,7 +124,7 @@ describe('BaseCommand', () => {
 
     it('should not log in json mode', async () => {
       const { stdout } = await captureOutput(async () =>
-        LogCommand.run(['--format', 'json', '--skipTable'])
+        LogCommand.run(['--format', 'json', '--skipTable']),
       );
       should(stdout).equal('');
     });
@@ -143,7 +143,7 @@ describe('BaseCommand', () => {
 
     it('should print a plain table', async () => {
       const { stdout } = await captureOutput(async () =>
-        LogCommand.run(['--format', 'plain'])
+        LogCommand.run(['--format', 'plain']),
       );
 
       should(stdout).containEql('Contact ID');
@@ -158,7 +158,7 @@ describe('BaseCommand', () => {
 
     it('should print a row table', async () => {
       const { stdout } = await captureOutput(async () =>
-        LogCommand.run(['--format', 'row'])
+        LogCommand.run(['--format', 'row']),
       );
 
       should(stdout).containEql('Contact ID');
@@ -174,7 +174,7 @@ describe('BaseCommand', () => {
 
     it('should print valid transformed json', async () => {
       const { stdout } = await captureOutput(async () =>
-        LogCommand.run(['--format', 'json'])
+        LogCommand.run(['--format', 'json']),
       );
 
       should(stdout).containEql('Contact ID');
@@ -189,7 +189,7 @@ describe('BaseCommand', () => {
 
     it('should print valid raw json', async () => {
       const { stdout } = await captureOutput(async () =>
-        LogCommand.run(['--format', 'raw'])
+        LogCommand.run(['--format', 'raw']),
       );
 
       should(stdout).not.containEql('Contact ID');
@@ -207,7 +207,7 @@ describe('BaseCommand', () => {
   describe('NoFormatCommand', () => {
     it('should log without format flags', async () => {
       const { stdout } = await captureOutput(async () =>
-        NoFormatCommand.run([])
+        NoFormatCommand.run([]),
       );
       should(stdout).startWith(MESSAGE);
     });
