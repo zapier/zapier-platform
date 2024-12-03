@@ -40,7 +40,7 @@
     "validate": "yarn test && yarn smoke-test && yarn lint"
   },
   "dependencies": {
-    "@oclif/core": "4.0.33",
+    "@oclif/core": "4.0.34",
     "@oclif/plugin-autocomplete": "3.2.11",
     "@oclif/plugin-help": "6.2.18",
     "@oclif/plugin-not-found": "3.2.29",
@@ -52,7 +52,7 @@
     "cli-table3": "0.6.5",
     "colors": "1.4.0",
     "debug": "4.3.7",
-    "dotenv": "16.4.5",
+    "dotenv": "16.4.6",
     "fs-extra": "11.2.0",
     "gulp-filter": "7.0.0",
     "gulp-prettier": "4.0.0",
