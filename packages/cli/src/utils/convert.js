@@ -40,8 +40,9 @@ const createFile = async (content, filename, dir) => {
   endSpinner();
 };
 
-const prettifyJs = async (code) =>
-  prettier.format(code, { singleQuote: true, parser: 'babel' });
+const prettifyJs = async (code) => {
+  return prettier.format(code, { singleQuote: true, parser: 'babel' });
+};
 
 const prettifyJSON = (origString) => JSON.stringify(origString, null, 2);
 
@@ -203,7 +204,8 @@ const renderDefinitionSlice = async (definitionSlice, filename) => {
 
   const uglyCode = functionBlock + '\n\n' + exportBlock;
   try {
-    return prettifyJs(uglyCode);
+    const prettyCode = await prettifyJs(uglyCode);
+    return prettyCode;
   } catch (err) {
     console.warn(
       `Warning: Your code has syntax error in ${chalk.underline.bold(
@@ -295,9 +297,11 @@ const renderIndex = async (appDefinition) => {
   importBlock = importBlock.join('\n');
   functionBlock = Object.values(functionBlock).join('\n\n');
 
-  return prettifyJs(
+  const prettyCode = await prettifyJs(
     importBlock + '\n\n' + functionBlock + '\n\n' + exportBlock
   );
+
+  return prettyCode;
 };
 
 const renderEnvironment = (appDefinition) => {
