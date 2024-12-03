@@ -23,7 +23,7 @@ describe('oauth2 app', () => {
     // It's a good idea to store your Client ID and Secret in the environment rather than in code.
     if (!(process.env.CLIENT_ID && process.env.CLIENT_SECRET)) {
       throw new Error(
-        `Before running the tests, make sure CLIENT_ID and CLIENT_SECRET are available in the environment.`
+        `Before running the tests, make sure CLIENT_ID and CLIENT_SECRET are available in the environment.`,
       );
     }
   });
@@ -43,11 +43,11 @@ describe('oauth2 app', () => {
 
     const authorizeUrl = await appTester(
       App.authentication.oauth2Config.authorizeUrl,
-      bundle
+      bundle,
     );
 
     expect(authorizeUrl).toBe(
-      'https://auth-json-server.zapier-staging.com/oauth/authorize?client_id=1234&state=4444&redirect_uri=https%3A%2F%2Fzapier.com%2F&response_type=code'
+      'https://auth-json-server.zapier-staging.com/oauth/authorize?client_id=1234&state=4444&redirect_uri=https%3A%2F%2Fzapier.com%2F&response_type=code',
     );
   });
 
@@ -75,7 +75,7 @@ describe('oauth2 app', () => {
 
     const result = await appTester(
       App.authentication.oauth2Config.getAccessToken,
-      bundle
+      bundle,
     );
 
     expect(result.access_token).toBe('a_token');
@@ -98,7 +98,7 @@ describe('oauth2 app', () => {
 
     const result = await appTester(
       App.authentication.oauth2Config.refreshAccessToken,
-      bundle
+      bundle,
     );
     expect(result.access_token).toBe('a_token');
   });

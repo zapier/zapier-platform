@@ -19,7 +19,7 @@ const handleBadResponses = (response, z, bundle) => {
       // This message is surfaced to the user
       'The username and/or password you supplied is incorrect',
       'AuthenticationError',
-      response.status
+      response.status,
     );
   }
 

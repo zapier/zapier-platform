@@ -1,14 +1,14 @@
-'use strict'
+'use strict';
 
-require('should')
+require('should');
 
-const zapier = require('zapier-platform-core')
+const zapier = require('zapier-platform-core');
 
-const App = require('../index')
-const appTester = zapier.createAppTester(App)
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 const globalBeforeSetup = (done) => {
-  zapier.tools.env.inject()
+  zapier.tools.env.inject();
 
   if (
     !process.env.CLIENT_ID ||
@@ -16,8 +16,8 @@ const globalBeforeSetup = (done) => {
     !process.env.REFRESH_TOKEN
   ) {
     throw new Error(
-      'Setup your .environment file (or use `export`) according to the README.'
-    )
+      'Setup your .environment file (or use `export`) according to the README.',
+    );
   }
 
   // ACCESS_TOKEN expires very quickly, so we get a new one per test run from REFRESH_TOKEN
@@ -26,22 +26,22 @@ const globalBeforeSetup = (done) => {
       authData: {
         access_token: '',
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal'
-      }
-    }
+        accountType: 'personal',
+      },
+    };
 
     appTester(App.authentication.oauth2Config.refreshAccessToken, bundle)
       .then((result) => {
-        result.should.have.property('access_token')
-        result.should.have.property('refresh_token')
-        process.env.ACCESS_TOKEN = result.access_token
-        done()
+        result.should.have.property('access_token');
+        result.should.have.property('refresh_token');
+        process.env.ACCESS_TOKEN = result.access_token;
+        done();
       })
-      .catch(done)
+      .catch(done);
   } else {
-    done()
+    done();
   }
-}
+};
 
 // Below is a set of files the app can use to test different scenarios.
 // To make the test suite run, add files to your account in the given folders,
@@ -54,30 +54,30 @@ const TEST_RESOURCES = {
     id: '',
     name: 'sample.pdf',
     path: '/sample.pdf',
-    parent: ''
+    parent: '',
   },
   nested: {
     id: '',
     name: 'test.txt',
     path: '/Documents/Testing/test.txt',
-    parent: '/Documents/Testing'
+    parent: '/Documents/Testing',
   },
 
   folder: {
     id: '',
     name: 'Documents',
     path: '/Documents',
-    parent: ''
+    parent: '',
   },
   childFolder: {
     id: '',
     name: 'Testing',
     path: '/Documents/Testing',
-    parent: '/Documents'
-  }
-}
+    parent: '/Documents',
+  },
+};
 
 module.exports = {
   globalBeforeSetup,
-  TEST_RESOURCES
-}
+  TEST_RESOURCES,
+};

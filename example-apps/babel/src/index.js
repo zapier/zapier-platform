@@ -14,14 +14,14 @@ const App = {
   afterResponse: [],
 
   resources: {
-    [Recipe.key]: Recipe
+    [Recipe.key]: Recipe,
   },
 
   triggers: {},
 
   searches: {},
 
-  creates: {}
+  creates: {},
 };
 
 export default App;

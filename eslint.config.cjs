@@ -14,9 +14,12 @@ const compat = new FlatCompat({
 
 module.exports = [{
     ignores: [
+        // this needs to combine all other eslintignore files so that lint-staged knows what to ignore
         "packages/cli/scaffold/*.js",
         "packages/cli/src/generators/templates/**/*.template.js",
         "**/.yarn",
+        "example-apps/onedrive/test/*",
+
     ],
 }, ...compat.extends("eslint:recommended", "standard", "prettier"), {
     plugins: {

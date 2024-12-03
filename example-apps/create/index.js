@@ -21,8 +21,8 @@ const App = {
 
   // If you want your creates to show up, you better include it here!
   creates: {
-    [recipe.key]: recipe
-  }
+    [recipe.key]: recipe,
+  },
 };
 
 // Finally, export the app.
