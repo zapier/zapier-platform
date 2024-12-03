@@ -63,21 +63,17 @@ describe('test-tools', () => {
     // retrieves custom fields from API
     appTester.zcacheTestObj.should.eql({});
     const freshResults = await appTester(
-      appDefinition.resources.cachedcustominputfields.list.operation
-        .inputFields,
+      appDefinition.resources.cachedcustominputfields.list.operation.inputFields,
       {},
-      true
+      true,
     );
     freshResults.should.eql(customInputFields);
 
     // retrieves custom fields from cache
-    _.values(appTester.zcacheTestObj).should.containDeep([
-      JSON.stringify(customInputFields),
-    ]);
+    _.values(appTester.zcacheTestObj).should.containDeep([JSON.stringify(customInputFields)]);
     const cachedResults = await appTester(
-      appDefinition.resources.cachedcustominputfields.list.operation
-        .inputFields,
-      {}
+      appDefinition.resources.cachedcustominputfields.list.operation.inputFields,
+      {},
     );
     cachedResults.should.eql(customInputFields);
   });

@@ -8,5 +8,5 @@ const BINARY_CONTENT_MSG = 'Binary contents unsupported.'
 module.exports = {
   BASE_ITEM_URL,
   BIG_FILE_MSG,
-  BINARY_CONTENT_MSG,
+  BINARY_CONTENT_MSG
 }

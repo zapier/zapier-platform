@@ -14,11 +14,11 @@ describe('Hydrators', () => {
   it('should get file contents', (done) => {
     const bundle = {
       authData: {
-        access_token: process.env.ACCESS_TOKEN,
+        access_token: process.env.ACCESS_TOKEN
       },
       inputData: {
-        id: TEST_RESOURCES.root.id,
-      },
+        id: TEST_RESOURCES.root.id
+      }
     }
 
     appTester(App.hydrators.getFileContents, bundle)

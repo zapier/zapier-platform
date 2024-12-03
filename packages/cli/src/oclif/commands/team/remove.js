@@ -49,8 +49,8 @@ class TeamRemoveCommand extends ZapierBaseCommand {
       role === 'admin'
         ? `/apps/${appId}/collaborators/${invitationId}`
         : role === 'subscriber'
-          ? `${BASE_ENDPOINT}/api/platform/v3/integrations/${appId}/subscribers/${invitationId}`
-          : `/apps/${appId}/limited_collaborators`;
+        ? `${BASE_ENDPOINT}/api/platform/v3/integrations/${appId}/subscribers/${invitationId}`
+        : `/apps/${appId}/limited_collaborators`;
 
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,

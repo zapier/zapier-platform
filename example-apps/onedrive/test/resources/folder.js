@@ -18,11 +18,11 @@ describe('Folder Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
-        id: TEST_RESOURCES.folder.id,
-      },
+        id: TEST_RESOURCES.folder.id
+      }
     }
 
     appTester(App.resources.folder.get.operation.perform, bundle)
@@ -49,14 +49,14 @@ describe('Folder Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
-        folder: '',
+        folder: ''
       },
       meta: {
-        prefill: false,
-      },
+        prefill: false
+      }
     }
 
     appTester(App.resources.folder.list.operation.perform, bundle)
@@ -80,14 +80,14 @@ describe('Folder Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
-        folder: TEST_RESOURCES.childFolder.path,
+        folder: TEST_RESOURCES.childFolder.path
       },
       meta: {
-        prefill: false,
-      },
+        prefill: false
+      }
     }
 
     appTester(App.resources.folder.list.operation.perform, bundle)
@@ -116,14 +116,14 @@ describe('Folder Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
-        folder: TEST_RESOURCES.childFolder.path,
+        folder: TEST_RESOURCES.childFolder.path
       },
       meta: {
-        prefill: true,
-      },
+        prefill: true
+      }
     }
 
     appTester(App.resources.folder.list.operation.perform, bundle)
@@ -152,14 +152,14 @@ describe('Folder Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
-        folder: '',
+        folder: ''
       },
       meta: {
-        prefill: false,
-      },
+        prefill: false
+      }
     }
 
     appTester(App.resources.folder.list.operation.perform, bundle)
@@ -185,12 +185,12 @@ describe('Folder Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
         folder: '',
-        name,
-      },
+        name
+      }
     }
 
     appTester(App.resources.folder.create.operation.perform, bundle)
@@ -217,12 +217,12 @@ describe('Folder Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
         folder: '',
-        name: 'Documents',
-      },
+        name: 'Documents'
+      }
     }
 
     appTester(App.resources.folder.search.operation.perform, bundle)

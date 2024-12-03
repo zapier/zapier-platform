@@ -21,13 +21,13 @@ describe('Create Text File', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
         folder: '',
         file,
-        name,
-      },
+        name
+      }
     }
 
     appTester(App.creates.textFile.operation.perform, bundle)
@@ -53,13 +53,13 @@ describe('Create Text File', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
         folder: TEST_RESOURCES.folder.path,
         name,
-        file,
-      },
+        file
+      }
     }
 
     appTester(App.creates.textFile.operation.perform, bundle)
@@ -85,13 +85,13 @@ describe('Create Text File', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
         folder: '',
         file,
-        name,
-      },
+        name
+      }
     }
 
     appTester(App.creates.textFile.operation.perform, bundle)

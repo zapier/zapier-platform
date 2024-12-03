@@ -83,8 +83,9 @@ const npmPackCore = (schemaPackagePath) => {
     encoding: 'utf8',
   });
   const packageJson = JSON.parse(originalPackageJsonText);
-  packageJson.dependencies['zapier-platform-schema'] =
-    `file:${schemaPackagePath}`;
+  packageJson.dependencies[
+    'zapier-platform-schema'
+  ] = `file:${schemaPackagePath}`;
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
 
   let filename;

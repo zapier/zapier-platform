@@ -18,11 +18,11 @@ describe('File Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
-        id: TEST_RESOURCES.root.id,
-      },
+        id: TEST_RESOURCES.root.id
+      }
     }
 
     appTester(App.resources.file.get.operation.perform, bundle)
@@ -49,11 +49,11 @@ describe('File Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
-        folder: '',
-      },
+        folder: ''
+      }
     }
 
     appTester(App.resources.file.list.operation.perform, bundle)
@@ -74,11 +74,11 @@ describe('File Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
-        folder: '',
-      },
+        folder: ''
+      }
     }
 
     appTester(App.resources.file.list.operation.perform, bundle)
@@ -106,13 +106,13 @@ describe('File Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
         folder: '',
         file,
-        name,
-      },
+        name
+      }
     }
 
     appTester(App.resources.file.create.operation.perform, bundle)
@@ -150,12 +150,12 @@ describe('File Resource', () => {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal',
+        accountType: 'personal'
       },
       inputData: {
         folder: '',
-        name: 'sample',
-      },
+        name: 'sample'
+      }
     }
 
     appTester(App.resources.file.search.operation.perform, bundle)

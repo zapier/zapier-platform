@@ -107,7 +107,8 @@ module.exports = makeSchema(
         $ref: AppFlagsSchema.id,
       },
       throttle: {
-        description: `Zapier uses this configuration to apply throttling when the limit for the window is exceeded. When set here, it is the default throttle configuration used on each action of the integration. And when set in an action's operation object, it gets overwritten for that action only.`,
+        description:
+          `Zapier uses this configuration to apply throttling when the limit for the window is exceeded. When set here, it is the default throttle configuration used on each action of the integration. And when set in an action's operation object, it gets overwritten for that action only.`,
         $ref: ThrottleObjectSchema.id,
       },
       legacy: {

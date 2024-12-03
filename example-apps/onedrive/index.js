@@ -29,7 +29,7 @@ const App = {
    */
   resources: {
     [folder.key]: folder,
-    [file.key]: file,
+    [file.key]: file
   },
 
   triggers: {},
@@ -40,8 +40,8 @@ const App = {
    * allow users to create plain text files, so we register that create here.
    */
   creates: {
-    [createTextFile.key]: createTextFile,
-  },
+    [createTextFile.key]: createTextFile
+  }
 }
 
 module.exports = App

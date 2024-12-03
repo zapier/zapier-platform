@@ -7,11 +7,11 @@ class CanaryListCommand extends ZapierBaseCommand {
   async perform() {
     const canaries = await listCanaries();
 
-    const formattedCanaries = canaries.objects.map((c) => ({
+    const formattedCanaries = canaries.objects.map(c => ({
       from_version: c.from_version,
       to_version: c.to_version,
       percent: c.percent,
-      seconds_remaining: c.until_timestamp - Math.floor(Date.now() / 1000),
+      seconds_remaining: c.until_timestamp - Math.floor(Date.now() / 1000)
     }));
 
     this.log(bold('Active Canaries') + '\n');
@@ -23,14 +23,16 @@ class CanaryListCommand extends ZapierBaseCommand {
         ['Traffic Amount', 'percent'],
         ['Seconds Remaining', 'seconds_remaining'],
       ],
-      emptyMessage: grey(`No active canary deployments found.`),
+      emptyMessage: grey(
+        `No active canary deployments found.`
+      ),
     });
   }
 }
 
 CanaryListCommand.flags = buildFlags({ opts: { format: true } });
 CanaryListCommand.description = 'List all active canary deployments';
-CanaryListCommand.examples = ['zapier canary:list'];
+CanaryListCommand.examples = ['zapier canary:list']
 CanaryListCommand.skipValidInstallCheck = true;
 
 module.exports = CanaryListCommand;

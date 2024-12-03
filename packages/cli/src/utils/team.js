@@ -10,8 +10,8 @@ const transformUserRole = (role) =>
   role === 'collaborator'
     ? 'admin'
     : role === 'subscriber'
-      ? 'subscriber'
-      : 'collaborator';
+    ? 'subscriber'
+    : 'collaborator';
 
 const listTeamMembers = async () => {
   return listEndpointMulti(

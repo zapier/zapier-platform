@@ -30,11 +30,9 @@ const injectZObject = (input) => {
     hash: hashing.hashify,
     JSON: createJSONtool(),
     require: (moduleName) =>
-      require(
-        require.resolve(moduleName, {
-          paths: module.paths.concat([process.cwd()]),
-        })
-      ),
+      require(require.resolve(moduleName, {
+        paths: module.paths.concat([process.cwd()]),
+      })),
     stashFile: createFileStasher(input),
   };
 

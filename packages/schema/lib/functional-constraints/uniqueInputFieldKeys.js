@@ -52,8 +52,9 @@ const uniqueInputFieldKeys = (definition) => {
               )
             );
           } else {
-            existingKeys[subField.key] =
-              `inputFields[${index}].children[${subFieldIndex}]`;
+            existingKeys[
+              subField.key
+            ] = `inputFields[${index}].children[${subFieldIndex}]`;
           }
         });
       });

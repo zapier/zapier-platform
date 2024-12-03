@@ -45,20 +45,20 @@ describe('Utils', () => {
     const tests = [
       {
         string: 'asd',
-        expected: 3,
+        expected: 3
       },
       {
         string: '@€£¶‰dfg',
-        expected: 14,
+        expected: 14
       },
       {
         string: '÷¶[]÷d()ß-°ú',
-        expected: 18,
+        expected: 18
       },
       {
         string: 'ç€is-æ',
-        expected: 10,
-      },
+        expected: 10
+      }
     ]
 
     tests.forEach((test) =>

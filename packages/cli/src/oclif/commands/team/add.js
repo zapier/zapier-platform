@@ -42,8 +42,8 @@ class TeamAddCommand extends ZapierBaseCommand {
       role === 'admin'
         ? `/apps/${id}/collaborators`
         : role === 'subscriber'
-          ? `${BASE_ENDPOINT}/api/platform/v3/integrations/${id}/subscribers`
-          : `/apps/${id}/limited_collaborators`;
+        ? `${BASE_ENDPOINT}/api/platform/v3/integrations/${id}/subscribers`
+        : `/apps/${id}/limited_collaborators`;
 
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,
