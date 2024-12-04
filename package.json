@@ -12,11 +12,11 @@
     "eslint-plugin-n": "^15.6.1",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-standard": "^5.0.0",
-    "husky": "^7.0.4",
+    "husky": "^9.1.7",
     "inquirer": "^8.0.0",
-    "lerna": "^6.4.1",
+    "lerna": "^8.0.2",
     "lint-staged": "^11.2.6",
-    "mocha": "^10.2.0",
+    "mocha": "^11.0.1",
     "prettier": "^2.8.3",
     "semver": "^7.3.8",
     "should": "^13"
@@ -33,7 +33,7 @@
     "lint-examples": "eslint examples",
     "validate": "lerna run validate",
     "bump": "./scripts/bump.js",
-    "prepare": "husky install",
+    "prepare": "husky",
     "generate-types": "cd schema-to-ts && yarn generate-types:build"
   },
   "husky": {
