@@ -83,7 +83,7 @@ class ScaffoldCommand extends BaseCommand {
         context.language,
         context.indexFileResolved,
         context.actionType,
-        context.templateContext.KEY
+        context.templateContext.KEY,
       );
 
       this.stopSpinner({ success });
@@ -92,7 +92,7 @@ class ScaffoldCommand extends BaseCommand {
         const entryName = splitFileFromPath(context.indexFileResolved)[1];
 
         this.startSpinner(
-          `Unable to successfully rewrite your ${entryName}. Rolling back...`
+          `Unable to successfully rewrite your ${entryName}. Rolling back...`,
         );
         await writeFile(context.indexFileResolved, originalContents);
         this.stopSpinner();
@@ -104,7 +104,7 @@ class ScaffoldCommand extends BaseCommand {
             ` * \`[${context.templateContext.VARIABLE}.key]: ${context.templateContext.VARIABLE}\` in the "${context.actionTypePlural}" object in your exported integration definition.`,
             '',
             `Also, please file an issue at ${ISSUES_URL} with the contents of your ${context.indexFileResolved}.`,
-          ].join('\n')
+          ].join('\n'),
         );
       }
     }

@@ -50,7 +50,7 @@ class VersionCommand extends BaseCommand {
 
     if (versions.map((v) => v.user_count).filter((c) => c === null).length) {
       this.warn(
-        'Some user counts are still being calculated - run this command again in ~10 seconds (or longer if your integration has lots of users).'
+        'Some user counts are still being calculated - run this command again in ~10 seconds (or longer if your integration has lots of users).',
       );
     }
   }

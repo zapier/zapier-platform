@@ -13,14 +13,14 @@ const writeGenericReadme = (gen) => {
   gen.fs.copyTpl(
     gen.templatePath('README.template.md'),
     gen.destinationPath('README.md'),
-    { name: gen.options.packageName }
+    { name: gen.options.packageName },
   );
 };
 
 const appendReadme = (gen) => {
   const content = gen.fs.read(
     gen.templatePath(gen.options.template, 'README.md'),
-    { defaults: '' }
+    { defaults: '' },
   );
   if (content) {
     gen.fs.append(gen.destinationPath('README.md'), '\n' + content);
@@ -51,8 +51,8 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
         },
         private: true,
       },
-      packageJsonExtension
-    )
+      packageJsonExtension,
+    ),
   );
 };
 
@@ -76,8 +76,8 @@ const writeTypeScriptPackageJson = (gen, packageJsonExtension) => {
         },
         private: true,
       },
-      packageJsonExtension
-    )
+      packageJsonExtension,
+    ),
   );
 };
 
@@ -85,7 +85,7 @@ const writeGenericIndex = (gen, hasAuth) => {
   gen.fs.copyTpl(
     gen.templatePath('index.template.js'),
     gen.destinationPath('index.js'),
-    { corePackageName: PLATFORM_PACKAGE, hasAuth }
+    { corePackageName: PLATFORM_PACKAGE, hasAuth },
   );
 };
 
@@ -108,14 +108,14 @@ const writeGenericAuthTest = (gen) => {
   const authType = authTypes[gen.options.template];
   gen.fs.copyTpl(
     gen.templatePath(`authTests/${authType || 'generic'}.test.js`),
-    gen.destinationPath('test/authentication.test.js')
+    gen.destinationPath('test/authentication.test.js'),
   );
 };
 
 const writeGenericTest = (gen) => {
   gen.fs.copyTpl(
     gen.templatePath('authTests/generic.test.js'),
-    gen.destinationPath('test/example.test.js')
+    gen.destinationPath('test/example.test.js'),
   );
 };
 
@@ -158,7 +158,7 @@ const writeForStandaloneTemplate = (gen) => {
 
   gen.fs.copy(
     gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
-    gen.destinationPath()
+    gen.destinationPath(),
   );
 };
 
@@ -187,7 +187,7 @@ const writeForStandaloneTypeScriptTemplate = (gen) => {
 
   gen.fs.copy(
     gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
-    gen.destinationPath()
+    gen.destinationPath(),
   );
 };
 

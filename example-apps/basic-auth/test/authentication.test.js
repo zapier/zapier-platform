@@ -18,7 +18,7 @@ describe('basic auth', () => {
 
     expect(response.status).toBe(200);
     expect(response.request.headers.Authorization).toBe(
-      'Basic dXNlcjpzZWNyZXQ='
+      'Basic dXNlcjpzZWNyZXQ=',
     );
   });
 
@@ -34,7 +34,7 @@ describe('basic auth', () => {
       await appTester(App.authentication.test, bundle);
     } catch (err) {
       expect(err.message).toContain(
-        'The username and/or password you supplied is incorrect'
+        'The username and/or password you supplied is incorrect',
       );
       return;
     }

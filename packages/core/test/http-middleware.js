@@ -36,7 +36,7 @@ describe('http requests', () => {
       [addRequestHeader],
       [prepareResponse],
       request,
-      { skipEnvelope: true }
+      { skipEnvelope: true },
     );
 
     const response = await wrappedRequest({ url: `${HTTPBIN_URL}/get` });
@@ -59,7 +59,7 @@ describe('http requests', () => {
       [addRequestHeader],
       [prepareResponse],
       request,
-      { skipEnvelope: true }
+      { skipEnvelope: true },
     );
 
     const response = await wrappedRequest({
@@ -83,7 +83,7 @@ describe('http requests', () => {
       [addRequestHeader],
       [prepareResponse],
       request,
-      { skipEnvelope: true }
+      { skipEnvelope: true },
     );
 
     wrappedRequest({ url: `${HTTPBIN_URL}/get` }).catch((err) => {
@@ -104,7 +104,7 @@ describe('http requests', () => {
       [],
       [prepareResponse, addToResponseBody],
       request,
-      { skipEnvelope: true }
+      { skipEnvelope: true },
     );
 
     wrappedRequest({ url: `${HTTPBIN_URL}/get` })
@@ -129,7 +129,7 @@ describe('http requests', () => {
       [],
       [prepareResponse, addToResponseBody],
       request,
-      { skipEnvelope: true }
+      { skipEnvelope: true },
     );
 
     wrappedRequest({ url: `${HTTPBIN_URL}/get` })
@@ -373,7 +373,7 @@ describe('http querystring before middleware', () => {
     };
     addQueryParams(req);
     should(req.url).eql(
-      'https://example.com?name=asdf%24%24asdf&cool=qwer$$qwer'
+      'https://example.com?name=asdf%24%24asdf&cool=qwer$$qwer',
     );
   });
 
@@ -770,7 +770,7 @@ describe('http prepareResponse', () => {
     should.throws(
       () => response.content,
       Error,
-      /You passed {raw: true} in request()/
+      /You passed {raw: true} in request()/,
     );
     should(response.data).be.Undefined();
     should(response.json).be.Undefined(); // DEPRECATED

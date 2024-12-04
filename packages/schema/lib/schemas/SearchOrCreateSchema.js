@@ -134,5 +134,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [BasicDisplaySchema, KeySchema, FlatObjectSchema]
+  [BasicDisplaySchema, KeySchema, FlatObjectSchema],
 );

@@ -11,7 +11,7 @@ module.exports = function (options) {
     this.warn(
       `The \`${options.id}\` command is deprecated. Use the \`${
         deprecatedCommands[options.id]
-      }\` command instead.`
+      }\` command instead.`,
     );
     console.log();
   }

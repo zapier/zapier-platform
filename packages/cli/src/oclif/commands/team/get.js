@@ -34,8 +34,8 @@ class TeamListCommand extends ZapierBaseCommand {
 
     this.log(
       `To invite more team members, use the \`${cyan(
-        'zapier team:add'
-      )}\` command.`
+        'zapier team:add',
+      )}\` command.`,
     );
   }
 }

@@ -117,7 +117,7 @@ const prepareRequest = function (req) {
     skipThrowForStatus: _.get(
       input,
       ['_zapier', 'app', 'flags', 'skipThrowForStatus'],
-      false
+      false,
     ),
     _addContext: () => {},
   });
@@ -135,7 +135,7 @@ const prepareRequest = function (req) {
     const bank = createBundleBank(
       input._zapier.app,
       input._zapier.event,
-      req.serializeValueForCurlies
+      req.serializeValueForCurlies,
     );
     req = recurseReplaceBank(req, bank);
   }

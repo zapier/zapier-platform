@@ -1,51 +1,51 @@
-require('should')
+require('should');
 
-const zapier = require('zapier-platform-core')
+const zapier = require('zapier-platform-core');
 
-const testUtils = require('./test-utils')
-const App = require('../index')
-const appTester = zapier.createAppTester(App)
+const testUtils = require('./test-utils');
+const App = require('../index');
+const appTester = zapier.createAppTester(App);
 
 describe('Authentication', () => {
-  before(testUtils.globalBeforeSetup)
+  before(testUtils.globalBeforeSetup);
 
   it('should refresh auth', (done) => {
     const bundle = {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal'
-      }
-    }
+        accountType: 'personal',
+      },
+    };
 
     appTester(App.authentication.oauth2Config.refreshAccessToken, bundle)
       .then((result) => {
-        result.should.have.property('access_token')
-        result.should.have.property('refresh_token')
-        done()
+        result.should.have.property('access_token');
+        result.should.have.property('refresh_token');
+        done();
       })
-      .catch(done)
-  })
+      .catch(done);
+  });
 
   it('should test auth', (done) => {
     const bundle = {
       authData: {
         access_token: process.env.ACCESS_TOKEN,
         refresh_token: process.env.REFRESH_TOKEN,
-        accountType: 'personal'
+        accountType: 'personal',
       },
       inputData: {
-        accountType: 'personal'
-      }
-    }
+        accountType: 'personal',
+      },
+    };
 
     appTester(App.authentication.test, bundle)
       .then((result) => {
-        result.should.have.property('userPrincipalName')
-        done()
+        result.should.have.property('userPrincipalName');
+        done();
       })
-      .catch(done)
-  })
+      .catch(done);
+  });
 
   it('should generate an authorize URL', (done) => {
     const bundle = {
@@ -55,21 +55,21 @@ describe('Authentication', () => {
       inputData: {
         state: '4444',
         redirect_uri: 'https://zapier.com/',
-        accountType: 'personal'
+        accountType: 'personal',
       },
       environment: {
         CLIENT_ID: '1234',
-        CLIENT_SECRET: 'asdf'
-      }
-    }
+        CLIENT_SECRET: 'asdf',
+      },
+    };
 
     appTester(App.authentication.oauth2Config.authorizeUrl, bundle)
       .then((authorizeUrl) => {
         authorizeUrl.should.eql(
-          'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=1234&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code&state=4444'
-        )
-        done()
+          'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=1234&redirect_uri=http%3A%2F%2Fzapier.com%2F&response_type=code&state=4444',
+        );
+        done();
       })
-      .catch(done)
-  })
-})
+      .catch(done);
+  });
+});

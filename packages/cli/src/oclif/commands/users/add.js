@@ -12,7 +12,7 @@ class UsersAddCommand extends ZapierBaseCommand {
         `About to invite ${cyan(this.args.email)} to ${
           this.args.version ? `version ${this.args.version}` : 'all versions'
         } of your integration. An invite email will be sent. Is that ok?`,
-        true
+        true,
       ))
     ) {
       this.log('\ncancelled');

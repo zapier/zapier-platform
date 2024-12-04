@@ -92,5 +92,5 @@ module.exports = makeSchema(
     BasicPollingOperationSchema,
     BasicHookOperationSchema,
     BasicHookToPollOperationSchema,
-  ]
+  ],
 );

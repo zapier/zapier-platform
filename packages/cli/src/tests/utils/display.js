@@ -17,7 +17,7 @@ describe('display', () => {
             ['ID', 'id'],
             ['Title', 'title'],
             ['Missing', 'missing'],
-          ]
+          ],
         );
 
         // Verify presence
@@ -54,7 +54,7 @@ describe('display', () => {
             ['ID', 'id'],
             ['Title', 'title'],
             ['Missing', 'missing'],
-          ]
+          ],
         );
 
         // Verify presence

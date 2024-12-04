@@ -42,7 +42,7 @@ const prepareTestRequest = ({
       },
 
       content: resBody,
-    }
+    },
   );
 
 describe('logger', () => {

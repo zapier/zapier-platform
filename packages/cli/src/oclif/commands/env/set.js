@@ -8,7 +8,7 @@ const { callAPI } = require('../../../utils/api');
 
 const successMessage = (version) =>
   `Successfully wrote the following to the environment of version ${cyan(
-    version
+    version,
   )}:`;
 
 class SetEnvCommand extends BaseCommand {
@@ -20,7 +20,7 @@ class SetEnvCommand extends BaseCommand {
 
     if (!valuesToSet.length) {
       this.error(
-        'Must specify at least one key-value pair to set (like `SOME_KEY=1234`)'
+        'Must specify at least one key-value pair to set (like `SOME_KEY=1234`)',
       );
     }
 
@@ -40,7 +40,7 @@ class SetEnvCommand extends BaseCommand {
     const app = await this.getWritableApp();
     if (!app.all_versions.includes(version)) {
       this.error(
-        `Version ${version} doesn't exist on integration "${app.title}"`
+        `Version ${version} doesn't exist on integration "${app.title}"`,
       );
     }
 
@@ -54,7 +54,7 @@ class SetEnvCommand extends BaseCommand {
           body: payload,
           method: 'POST',
         },
-        true
+        true,
       );
 
       this.log(successMessage(version));

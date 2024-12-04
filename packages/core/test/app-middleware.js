@@ -37,7 +37,7 @@ describe('app middleware', () => {
     // the before middleware is gonna re-route this to a real method
     const input = createTestInput(
       'something.that.does.not.exist',
-      appDefinition
+      appDefinition,
     );
 
     app(input)
@@ -62,7 +62,7 @@ describe('app middleware', () => {
     // change the result returned to something else
     const input = createTestInput(
       'resources.list.list.operation.perform',
-      appDefinition
+      appDefinition,
     );
 
     app(input)
@@ -86,7 +86,7 @@ describe('app middleware', () => {
       // returns nothing
       const input = createTestInput(
         'resources.contact.create.operation.perform',
-        appDefinition
+        appDefinition,
       );
       input._zapier.rpc = rpc;
 
@@ -107,7 +107,7 @@ describe('app middleware', () => {
       // change the result returned to something else
       const input = createTestInput(
         'resources.really_big_response.list.operation.perform',
-        appDefinition
+        appDefinition,
       );
       input._zapier.rpc = rpc;
 
@@ -130,7 +130,7 @@ describe('app middleware', () => {
       // returns 10mb of response
       const input = createTestInput(
         'resources.really_big_response.list.operation.perform',
-        appDefinition
+        appDefinition,
       );
       input._zapier.rpc = rpc;
 
@@ -153,7 +153,7 @@ describe('app middleware', () => {
       // returns regular response
       const input = createTestInput(
         'resources.list.list.operation.perform',
-        appDefinition
+        appDefinition,
       );
       input._zapier.rpc = rpc;
 
@@ -175,7 +175,7 @@ describe('app middleware', () => {
       // returns regular response
       const input = createTestInput(
         'resources.list.list.operation.perform',
-        appDefinition
+        appDefinition,
       );
       input._zapier.rpc = rpc;
 
@@ -187,7 +187,7 @@ describe('app middleware', () => {
       // returns 10mb regular response
       const bigInputCall = createTestInput(
         'resources.really_big_response.list.operation.perform',
-        appDefinition
+        appDefinition,
       );
       input._zapier.rpc = rpc;
 

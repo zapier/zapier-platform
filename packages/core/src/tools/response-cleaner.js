@@ -9,7 +9,7 @@ const responseCleaner = (response) => {
     'params',
     'headers',
     'body',
-    'data'
+    'data',
   );
   response = _.pick(response, 'status', 'content', 'headers', 'request');
   return dataTools.jsonCopy(response);

@@ -33,7 +33,7 @@ const validateFileExists = (fileName, errMsg) => {
 // Returns a promise that reads a file and returns a buffer.
 const readFile = (fileName, errMsg) => {
   return validateFileExists(fileName, errMsg).then(() =>
-    fse.readFile(fixHome(fileName))
+    fse.readFile(fixHome(fileName)),
   );
 };
 
@@ -137,8 +137,8 @@ const copyDir = async (src, dst, options) => {
       if (fse.lstatSync(srcItem).isSymbolicLink()) {
         console.warn(
           colors.yellow(
-            `\n! Warning: symlink "${srcItem}" points to a non-existent file. Skipping!\n`
-          )
+            `\n! Warning: symlink "${srcItem}" points to a non-existent file. Skipping!\n`,
+          ),
         );
         return null;
       }

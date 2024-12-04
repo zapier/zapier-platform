@@ -17,8 +17,8 @@ const respectGitIgnore = (dir, paths) => {
     if (!constants.IS_TESTING) {
       console.warn(
         `\n\n\t${colors.yellow(
-          '!! Warning !!'
-        )}\n\nThere is no .gitignore, so we are including all files. This might make the source.zip file too large\n`
+          '!! Warning !!',
+        )}\n\nThere is no .gitignore, so we are including all files. This might make the source.zip file too large\n`,
       );
     }
     return paths;

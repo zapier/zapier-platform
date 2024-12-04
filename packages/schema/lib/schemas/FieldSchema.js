@@ -206,5 +206,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [RefResourceSchema, FieldChoicesSchema, FieldMetaSchema]
+  [RefResourceSchema, FieldChoicesSchema, FieldMetaSchema],
 );

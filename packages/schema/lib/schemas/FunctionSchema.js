@@ -38,5 +38,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [FunctionRequireSchema, FunctionSourceSchema]
+  [FunctionRequireSchema, FunctionSourceSchema],
 );

@@ -10,8 +10,8 @@ const transformUserRole = (role) =>
   role === 'collaborator'
     ? 'admin'
     : role === 'subscriber'
-    ? 'subscriber'
-    : 'collaborator';
+      ? 'subscriber'
+      : 'collaborator';
 
 const listTeamMembers = async () => {
   return listEndpointMulti(
@@ -24,7 +24,7 @@ const listTeamMembers = async () => {
       endpoint: (app) =>
         `${constants.BASE_ENDPOINT}/api/platform/v3/integrations/${app.id}/subscribers`,
       keyOverride: 'subscribers',
-    }
+    },
   );
 };
 module.exports = {

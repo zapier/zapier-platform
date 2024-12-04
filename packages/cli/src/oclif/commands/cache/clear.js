@@ -15,13 +15,13 @@ class ClearCacheCommand extends BaseCommand {
     let selectedMajorVersion = majorVersion ? Number(majorVersion) : null;
     if (Number.isNaN(selectedMajorVersion)) {
       throw new Error(
-        `Invalid major version '${majorVersion}'. Must be a number.`
+        `Invalid major version '${majorVersion}'. Must be a number.`,
       );
     }
 
     const majorVersions = [
       ...new Set(
-        versions.map((appVersion) => Number(appVersion.version.split('.')[0]))
+        versions.map((appVersion) => Number(appVersion.version.split('.')[0])),
       ),
     ];
     // Finds the current version in package.json.
@@ -31,14 +31,14 @@ class ClearCacheCommand extends BaseCommand {
     if (selectedMajorVersion === null) {
       selectedMajorVersion = await this._promptForMajorVersionSelection(
         majorVersions,
-        currentVersion
+        currentVersion,
       );
     } else {
       if (!majorVersions.includes(selectedMajorVersion)) {
         throw new Error(
           `This integration does not have any versions on major version '${selectedMajorVersion}'. Valid versions are: ${majorVersions.join(
-            ', '
-          )}`
+            ', ',
+          )}`,
         );
       }
     }
@@ -46,9 +46,9 @@ class ClearCacheCommand extends BaseCommand {
     if (
       !(await this.confirm(
         `Are you sure you want to clear all cache data for major version '${cyan(
-          selectedMajorVersion
+          selectedMajorVersion,
         )}'?`,
-        true
+        true,
       ))
     ) {
       this.log('\ncancelled');
@@ -87,7 +87,7 @@ class ClearCacheCommand extends BaseCommand {
     return await this.promptWithList(
       "Which major version's cache data would you like to delete?",
       majorVersionChoices,
-      { default: currentMajorVersion }
+      { default: currentMajorVersion },
     );
   }
 }

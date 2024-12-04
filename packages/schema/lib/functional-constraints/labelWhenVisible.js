@@ -18,8 +18,8 @@ const labelWhenVisible = (definition) => {
             `/BasicDisplaySchema`,
             `instance.${actionType}.${key}.display`,
             'invalid',
-            'key'
-          )
+            'key',
+          ),
         );
       }
     });

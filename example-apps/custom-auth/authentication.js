@@ -17,7 +17,7 @@ const handleBadResponses = (response, z, bundle) => {
       // This message is surfaced to the user
       'The API Key you supplied is incorrect',
       'AuthenticationError',
-      response.status
+      response.status,
     );
   }
 

@@ -11,7 +11,7 @@ describe('recipe', () => {
     const bundle = { inputData: { name: 'Pancake' } };
     const result = await appTester(
       App.creates.recipe.operation.perform,
-      bundle
+      bundle,
     );
     expect(result.id).toBeTruthy();
     expect(result.name).toBe('Pancake');

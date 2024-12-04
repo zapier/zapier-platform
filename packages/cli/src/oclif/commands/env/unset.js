@@ -7,7 +7,7 @@ const { callAPI } = require('../../../utils/api');
 
 const successMessage = (version) =>
   `Successfully unset the following keys in the environment of version ${cyan(
-    version
+    version,
   )} (if they existed):`;
 
 class UnsetEnvCommand extends BaseCommand {
@@ -37,7 +37,7 @@ class UnsetEnvCommand extends BaseCommand {
     const app = await this.getWritableApp();
     if (!app.all_versions.includes(version)) {
       this.error(
-        `Version ${version} doesn't exist on integration "${app.title}"`
+        `Version ${version} doesn't exist on integration "${app.title}"`,
       );
     }
 

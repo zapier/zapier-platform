@@ -10,5 +10,5 @@ module.exports = makeSchema(
     id: '/SearchAndCreatesSchema',
     description: 'Alias for /SearchOrCreatesSchema',
   },
-  [SearchOrCreatesSchema]
+  [SearchOrCreatesSchema],
 );

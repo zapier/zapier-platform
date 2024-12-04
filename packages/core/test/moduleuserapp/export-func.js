@@ -1,3 +1,3 @@
 module.exports = (z, bundle) => {
-  return [{ id: 1234 }] || bundle;
+  return [{ id: 1234 }];
 };

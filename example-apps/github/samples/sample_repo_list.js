@@ -18,7 +18,7 @@ module.exports = {
     events_url: 'https://api.github.com/users/octocat/events{/privacy}',
     received_events_url: 'https://api.github.com/users/octocat/received_events',
     type: 'User',
-    site_admin: false
+    site_admin: false,
   },
   name: 'Hello-World',
   full_name: 'octocat/Hello-World',
@@ -109,7 +109,7 @@ module.exports = {
   permissions: {
     admin: false,
     push: false,
-    pull: true
+    pull: true,
   },
   allow_rebase_merge: true,
   allow_squash_merge: true,
@@ -121,6 +121,6 @@ module.exports = {
     name: 'MIT License',
     spdx_id: 'MIT',
     url: 'https://api.github.com/licenses/mit',
-    html_url: 'https://choosealicense.com/licenses/mit/'
-  }
+    html_url: 'https://choosealicense.com/licenses/mit/',
+  },
 };

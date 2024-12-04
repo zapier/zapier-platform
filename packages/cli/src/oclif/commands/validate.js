@@ -29,7 +29,7 @@ class ValidateCommand extends BaseCommand {
 
     if (newErrors.length) {
       this.log(
-        'Your integration is structurally invalid. Address concerns and run this command again.'
+        'Your integration is structurally invalid. Address concerns and run this command again.',
       );
       process.exitCode = 1;
     } else {
@@ -41,8 +41,8 @@ class ValidateCommand extends BaseCommand {
       if (process.exitCode === 1) {
         this.log(
           colors.grey(
-            '\nSkipping integration checks because schema did not validate.'
-          )
+            '\nSkipping integration checks because schema did not validate.',
+          ),
         );
       }
       return;

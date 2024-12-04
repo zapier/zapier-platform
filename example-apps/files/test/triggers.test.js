@@ -11,7 +11,7 @@ describe('newFile', () => {
     const bundle = {};
     const results = await appTester(
       App.triggers.newFile.operation.perform,
-      bundle
+      bundle,
     );
 
     expect(results.length).toBeGreaterThan(0);

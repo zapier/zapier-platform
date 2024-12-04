@@ -18,7 +18,7 @@ describe('uploadFile', () => {
   test('upload file v10', async () => {
     if (CORE_VERSION[0] < 10) {
       console.warn(
-        `skipped because this only works on core v10+ and you're on ${zapier.version}`
+        `skipped because this only works on core v10+ and you're on ${zapier.version}`,
       );
       return;
     }
@@ -34,7 +34,7 @@ describe('uploadFile', () => {
 
     const result = await appTester(
       App.creates.uploadFile_v10.operation.perform,
-      bundle
+      bundle,
     );
     expect(result.filename).toBe('sample.pdf');
     expect(result.file.sha1).toBe(EXPECTED_SHA1);
@@ -52,7 +52,7 @@ describe('uploadFile', () => {
 
     const result = await appTester(
       App.creates.uploadFile_v9.operation.perform,
-      bundle
+      bundle,
     );
     expect(result.filename).toBe('sample.pdf');
     expect(result.file.sha1).toBe(EXPECTED_SHA1);

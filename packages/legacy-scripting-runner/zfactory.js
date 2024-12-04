@@ -123,7 +123,7 @@ const zfactory = (zcli, app, logger) => {
 
     if (_.isFunction(callback)) {
       return request(options, (err, response) =>
-        callback(err, convertResponse(response))
+        callback(err, convertResponse(response)),
       );
     }
 
@@ -145,7 +145,7 @@ const zfactory = (zcli, app, logger) => {
     algorithm,
     string,
     encoding = 'hex',
-    inputEncoding = 'binary'
+    inputEncoding = 'binary',
   ) => {
     const hasher = crypto.createHash(algorithm);
     hasher.update(string, inputEncoding);

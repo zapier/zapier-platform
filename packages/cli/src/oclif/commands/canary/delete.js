@@ -10,17 +10,17 @@ class CanaryDeleteCommand extends ZapierBaseCommand {
 
     const existingCanary = await this.findExistingCanary(
       versionFrom,
-      versionTo
+      versionTo,
     );
     if (!existingCanary) {
       this.log(
-        `There is no active canary from version ${versionFrom} to version ${versionTo}`
+        `There is no active canary from version ${versionFrom} to version ${versionTo}`,
       );
       return;
     }
 
     const confirmed = await this.confirm(
-      `Are you sure you want to delete the canary from ${versionFrom} to ${versionTo}?`
+      `Are you sure you want to delete the canary from ${versionFrom} to ${versionTo}?`,
     );
     if (!confirmed) {
       this.log('Canary deletion cancelled.');
@@ -28,7 +28,7 @@ class CanaryDeleteCommand extends ZapierBaseCommand {
     }
 
     this.startSpinner(
-      `Deleting active canary from ${versionFrom} to ${versionTo}`
+      `Deleting active canary from ${versionFrom} to ${versionTo}`,
     );
     await deleteCanary(versionFrom, versionTo);
     this.stopSpinner();
@@ -38,7 +38,7 @@ class CanaryDeleteCommand extends ZapierBaseCommand {
   async findExistingCanary(versionFrom, versionTo) {
     const activeCanaries = await listCanaries();
     return activeCanaries.objects.find(
-      (c) => c.from_version === versionFrom && c.to_version === versionTo
+      (c) => c.from_version === versionFrom && c.to_version === versionTo,
     );
   }
 

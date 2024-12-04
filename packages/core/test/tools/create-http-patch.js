@@ -225,7 +225,7 @@ describe('create http patch', () => {
 
               const loggedIds = Array.from(
                 log.response_content.matchAll(/"id":(\d+)/g),
-                (m) => m[1]
+                (m) => m[1],
               );
               should(loggedIds).have.length(50);
               for (let i = 0; i < loggedIds.length; i++) {
@@ -237,7 +237,7 @@ describe('create http patch', () => {
             done();
           });
         });
-      }
+      },
     );
     req.end();
   });
@@ -257,6 +257,6 @@ describe('create http patch', () => {
       await appTester(appDefinition.resources.list.list.operation.perform);
       const http = require('http'); // core modules are never cached
       should(http.patchedByZapier).eql(undefined);
-    }
+    },
   );
 });

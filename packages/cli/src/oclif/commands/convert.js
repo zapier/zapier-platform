@@ -23,7 +23,7 @@ class ConvertCommand extends BaseCommand {
 
         if (!versionInfo.definition_override) {
           this.error(
-            `Integration ${appId} @ ${version} is already a CLI integration and can't be converted. Instead, pick a version that was created using the Visual Builder.`
+            `Integration ${appId} @ ${version} is already a CLI integration and can't be converted. Instead, pick a version that was created using the Visual Builder.`,
           );
         }
         this.stopSpinner();
@@ -32,7 +32,7 @@ class ConvertCommand extends BaseCommand {
       } catch (e) {
         if (e.status === 404) {
           this.error(
-            `Visual Builder integration ${appId} @ ${version} not found. Double check the integration id and version.`
+            `Visual Builder integration ${appId} @ ${version} not found. Double check the integration id and version.`,
           );
         }
         this.error(e.json.errors[0]);
@@ -45,7 +45,7 @@ class ConvertCommand extends BaseCommand {
     const { version } = this.flags;
     if (!appId) {
       this.error(
-        'You must provide an integrationId. See zapier convert --help for more info.'
+        'You must provide an integrationId. See zapier convert --help for more info.',
       );
     }
 

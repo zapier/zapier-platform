@@ -18,7 +18,7 @@ const check = (definition) => {
     : new jsonschema.ValidationError(
         'requires "sample", because it\'s not hidden',
         definition,
-        definition.id
+        definition.id,
       );
 };
 
@@ -27,7 +27,7 @@ module.exports = (definition, mainSchema) => {
 
   if (mainSchema.id === RESOURCE_ID) {
     definitions = RESOURCE_METHODS.map((method) => definition[method]).filter(
-      Boolean
+      Boolean,
     );
 
     // allow method definitions to inherit the sample
@@ -44,7 +44,7 @@ module.exports = (definition, mainSchema) => {
         new jsonschema.ValidationError(
           'expected at least one resource operation',
           definition,
-          definition.id
+          definition.id,
         ),
       ];
     }

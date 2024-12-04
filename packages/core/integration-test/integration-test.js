@@ -52,7 +52,7 @@ runLambda.testName = 'runLambda';
 const runLocally = (event) => {
   return new Promise((resolve, reject) => {
     const handler = createLambdaHandler(
-      path.resolve(__dirname, '../test/userapp')
+      path.resolve(__dirname, '../test/userapp'),
     );
 
     handler(event, {}, (err, data) => {
@@ -782,15 +782,15 @@ const doTest = (runner) => {
 
       testError(
         'triggers.failerfuncasyncList.operation.perform',
-        'Failer on async function!'
+        'Failer on async function!',
       );
       testError(
         'resources.failerfunc.list.operation.perform',
-        'Failer on sync function!'
+        'Failer on sync function!',
       );
       testError(
         'resources.failerfuncpromise.list.operation.perform',
-        'Failer on promise function!'
+        'Failer on promise function!',
       );
     });
   });

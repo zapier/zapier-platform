@@ -48,7 +48,7 @@ const performBufferEchoesIds = {
         typeof item.error !== 'string'
       ) {
         errors.push(
-          `Result object member with ID '${id}' must have 'outputData' object or 'error' string`
+          `Result object member with ID '${id}' must have 'outputData' object or 'error' string`,
         );
       }
 

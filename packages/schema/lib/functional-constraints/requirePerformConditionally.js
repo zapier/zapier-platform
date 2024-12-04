@@ -22,8 +22,8 @@ const requirePerformConditionally = (definition) => {
             '/BasicCreateActionOperationSchema',
             `instance.${actionType}.${actionDef.key}.operation`,
             'required',
-            'perform'
-          )
+            'perform',
+          ),
         );
       }
     });
