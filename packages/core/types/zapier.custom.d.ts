@@ -165,6 +165,14 @@ export interface HttpRequestOptions {
   skipThrowForStatus?: boolean;
 
   /**
+   * Contains the characters that you want left unencoded in the query
+   * params (`req.params`). If unspecified, `z.request()` will
+   * percent-encode non-ascii characters and these reserved characters:
+   * ``:$/?#[]@$&+,;=^@`\``.
+   */
+  skipEncodingChars?: string;
+
+  /**
    * This is a special field that can be used to pass data to
    * middleware. It is not sent with the request, but is available in
    * the `response` object that middleware receives. This is useful for
