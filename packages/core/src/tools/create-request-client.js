@@ -32,7 +32,7 @@ const createRequestClient = (befores, afters, options) => {
     httpBefores.concat(ensureArray(befores)),
     httpAfters.concat(ensureArray(afters)),
     request,
-    options
+    options,
   );
   return requestSugar.addUrlOrOptions(client);
 };

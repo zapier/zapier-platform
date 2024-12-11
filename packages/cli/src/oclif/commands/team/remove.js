@@ -17,7 +17,7 @@ class TeamRemoveCommand extends ZapierBaseCommand {
         value: { id, email, role: transformUserRole(role) },
         name: `${email} (${transformUserRole(role)})`,
         short: email,
-      })
+      }),
     );
 
     this.stopSpinner();
@@ -28,15 +28,15 @@ class TeamRemoveCommand extends ZapierBaseCommand {
       id: invitationId,
     } = await this.promptWithList(
       'Which team member do you want to remove?',
-      choices
+      choices,
     );
     this.log();
     if (
       !(await this.confirm(
         `About to revoke ${cyan(role)}-level access from ${cyan(
-          email
+          email,
         )}. Are you sure?`,
-        true
+        true,
       ))
     ) {
       this.log('\ncancelled');
@@ -49,8 +49,8 @@ class TeamRemoveCommand extends ZapierBaseCommand {
       role === 'admin'
         ? `/apps/${appId}/collaborators/${invitationId}`
         : role === 'subscriber'
-        ? `${BASE_ENDPOINT}/api/platform/v3/integrations/${appId}/subscribers/${invitationId}`
-        : `/apps/${appId}/limited_collaborators`;
+          ? `${BASE_ENDPOINT}/api/platform/v3/integrations/${appId}/subscribers/${invitationId}`
+          : `/apps/${appId}/limited_collaborators`;
 
     await callAPI(url, {
       url: url.startsWith('http') ? url : undefined,

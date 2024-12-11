@@ -68,7 +68,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).startWith('text/plain');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="unnamedfile.txt"'
+      'attachment; filename="unnamedfile.txt"',
     );
     should(await s3Response.text()).eql(file);
   });
@@ -83,10 +83,10 @@ describe('file upload', () => {
 
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).eql(
-      'application/octet-stream'
+      'application/octet-stream',
     );
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="unnamedfile"'
+      'attachment; filename="unnamedfile"',
     );
     should(await s3Response.buffer()).eql(file);
   });
@@ -104,7 +104,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).startWith('text/plain');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="test.txt"'
+      'attachment; filename="test.txt"',
     );
 
     const expectedHash = await sha1(fs.createReadStream(filePath));
@@ -125,7 +125,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).startWith('text/plain');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="test.txt"'
+      'attachment; filename="test.txt"',
     );
 
     const expectedHash = await sha1(fs.createReadStream(filePath));
@@ -141,7 +141,7 @@ describe('file upload', () => {
     const knownLength = fs.statSync(filePath).size;
 
     await stashFile(file, knownLength - 1).should.be.rejectedWith(
-      /MalformedPOSTRequest/
+      /MalformedPOSTRequest/,
     );
   });
 
@@ -154,7 +154,7 @@ describe('file upload', () => {
     const knownLength = UPLOAD_MAX_SIZE + 1;
 
     await stashFile(file, knownLength).should.be.rejectedWith(
-      `${knownLength} bytes is too big, ${UPLOAD_MAX_SIZE} is the max for streaming data.`
+      `${knownLength} bytes is too big, ${UPLOAD_MAX_SIZE} is the max for streaming data.`,
     );
   });
 
@@ -166,7 +166,7 @@ describe('file upload', () => {
     const knownLength = NON_STREAM_UPLOAD_MAX_SIZE + 1;
 
     await stashFile(file, knownLength).should.be.rejectedWith(
-      `${knownLength} bytes is too big, ${NON_STREAM_UPLOAD_MAX_SIZE} is the max for non-streaming data.`
+      `${knownLength} bytes is too big, ${NON_STREAM_UPLOAD_MAX_SIZE} is the max for non-streaming data.`,
     );
   });
 
@@ -178,7 +178,7 @@ describe('file upload', () => {
     const knownLength = NON_STREAM_UPLOAD_MAX_SIZE + 1;
 
     await stashFile(file, knownLength).should.be.rejectedWith(
-      `${knownLength} bytes is too big, ${NON_STREAM_UPLOAD_MAX_SIZE} is the max for non-streaming data.`
+      `${knownLength} bytes is too big, ${NON_STREAM_UPLOAD_MAX_SIZE} is the max for non-streaming data.`,
     );
   });
 
@@ -195,7 +195,7 @@ describe('file upload', () => {
     const knownLength = Buffer.byteLength(file);
 
     await stashFile(file, knownLength, filename).should.be.rejectedWith(
-      `URI-Encoded Filename is too long at ${encodedLength}, ${ENCODED_FILENAME_MAX_LENGTH} is the max.`
+      `URI-Encoded Filename is too long at ${encodedLength}, ${ENCODED_FILENAME_MAX_LENGTH} is the max.`,
     );
   });
 
@@ -225,10 +225,10 @@ describe('file upload', () => {
 
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).eql(
-      'application/octet-stream'
+      'application/octet-stream',
     );
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="unnamedfile"'
+      'attachment; filename="unnamedfile"',
     );
     should(await s3Response.buffer()).eql(buffer);
   });
@@ -245,7 +245,7 @@ describe('file upload', () => {
 
     const file = fs.createReadStream(path.join(__dirname, 'test.txt'));
     await stashFileTest(file).should.be.rejectedWith(
-      /Files can only be stashed within a create or hydration function\/method/
+      /Files can only be stashed within a create or hydration function\/method/,
     );
   });
 
@@ -261,7 +261,7 @@ describe('file upload', () => {
 
     const file = fs.createReadStream(path.join(__dirname, 'test.txt'));
     await stashFileTest(file).should.be.rejectedWith(
-      /Files can only be stashed within a create or hydration function\/method/
+      /Files can only be stashed within a create or hydration function\/method/,
     );
   });
 
@@ -285,7 +285,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).startWith('text/plain');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="unnamedfile.txt"'
+      'attachment; filename="unnamedfile.txt"',
     );
 
     // This is what you get when you:
@@ -311,7 +311,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).startWith('application/json');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="an example.json"'
+      'attachment; filename="an example.json"',
     );
   });
 
@@ -333,7 +333,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).startWith('application/json');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="response-headers.json"'
+      'attachment; filename="response-headers.json"',
     );
   });
 
@@ -351,7 +351,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).eql('image/png');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="png.png"'
+      'attachment; filename="png.png"',
     );
 
     // This is what you get when you:
@@ -377,7 +377,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).startWith('application/json');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="gzip.json"'
+      'attachment; filename="gzip.json"',
     );
 
     const data = await s3Response.json();
@@ -399,7 +399,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).startWith('application/xml');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="xml.xml"'
+      'attachment; filename="xml.xml"',
     );
 
     // This is what you get when you:
@@ -420,7 +420,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).startWith('text/plain');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="unnamedfile.txt"'
+      'attachment; filename="unnamedfile.txt"',
     );
     should(await s3Response.text()).eql('hello world');
   });
@@ -444,7 +444,7 @@ describe('file upload', () => {
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).startWith('text/html');
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="html.html"'
+      'attachment; filename="html.html"',
     );
 
     // This is what you get when you:
@@ -482,10 +482,10 @@ describe('file upload', () => {
 
     const s3Response = await request({ url, raw: true });
     should(s3Response.getHeader('content-type')).eql(
-      'application/octet-stream'
+      'application/octet-stream',
     );
     should(s3Response.getHeader('content-disposition')).eql(
-      'attachment; filename="unnamedfile"'
+      'attachment; filename="unnamedfile"',
     );
 
     const expectedHash = await sha1(fileToHash);

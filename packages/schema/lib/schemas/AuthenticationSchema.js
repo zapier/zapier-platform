@@ -114,5 +114,5 @@ module.exports = makeSchema(
     AuthenticationOAuth1ConfigSchema,
     AuthenticationOAuth2ConfigSchema,
     AuthenticationSessionConfigSchema,
-  ]
+  ],
 );

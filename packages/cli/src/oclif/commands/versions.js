@@ -1,3 +1,5 @@
+const colors = require('colors/safe');
+
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 
@@ -23,9 +25,32 @@ class VersionCommand extends BaseCommand {
         'No versions to show. Try adding one with the `zapier push` command',
     });
 
+    this.logTable({
+      headers: [],
+      rows: [
+        {
+          version: `- ${colors.bold('Errors')}`,
+          platform_version:
+            'Issues that will prevent your integration from functioning properly. They block you from pushing.',
+        },
+        {
+          version: `- ${colors.bold('Publishing Tasks')}`,
+          platform_version:
+            'To-dos that must be addressed before your integration can be included in the App Directory. They block you from promoting and publishing.',
+        },
+        {
+          version: `- ${colors.bold('Warnings')}`,
+          platform_version:
+            "Issues and recommendations that need human reviews by Zapier before publishing your integration. They don't block.",
+        },
+      ],
+      hasBorder: false,
+      style: { head: [], 'padding-left': 0, 'padding-right': 0 },
+    });
+
     if (versions.map((v) => v.user_count).filter((c) => c === null).length) {
       this.warn(
-        'Some user counts are still being calculated - run this command again in ~10 seconds (or longer if your integration has lots of users).'
+        'Some user counts are still being calculated - run this command again in ~10 seconds (or longer if your integration has lots of users).',
       );
     }
   }

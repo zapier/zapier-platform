@@ -10,5 +10,5 @@ const includeBearerToken = (request, z, bundle) => {
 };
 
 module.exports = {
-  includeBearerToken
+  includeBearerToken,
 };

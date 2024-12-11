@@ -15,10 +15,9 @@ const checkMemory = (event) => {
   } catch (err) {
     if (err.code === 'EMFILE') {
       console.error(
-        'Force killing process by Zapier for too many open file descriptors'
+        'Force killing process by Zapier for too many open file descriptors',
       );
 
-      /* eslint no-process-exit: 0 */
       process.exit(1);
     } else {
       throw err;

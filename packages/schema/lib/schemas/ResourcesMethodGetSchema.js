@@ -53,5 +53,5 @@ module.exports = makeSchema(
     },
     additionalProperties: false,
   },
-  [BasicDisplaySchema, BasicActionOperationSchema]
+  [BasicDisplaySchema, BasicActionOperationSchema],
 );

@@ -35,8 +35,8 @@ const verifyIncompatibilities = (inputFields, path) => {
             '/FieldSchema',
             `instance.${path}.inputFields[${index}]`,
             'invalid',
-            'inputFields'
-          )
+            'inputFields',
+          ),
         );
       }
     });
@@ -56,7 +56,7 @@ const mutuallyExclusiveFields = (definition) => {
             ...errors,
             ...verifyIncompatibilities(
               actionDef.operation.inputFields,
-              `${typeOf}.${actionDef.key}`
+              `${typeOf}.${actionDef.key}`,
             ),
           ];
         }

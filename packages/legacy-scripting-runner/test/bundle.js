@@ -107,13 +107,13 @@ describe('bundleConverter', () => {
           key: 'trigger',
         };
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });
@@ -176,13 +176,13 @@ describe('bundleConverter', () => {
         const event = _.cloneDeep(eventData);
         event.name = eventName;
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });
@@ -243,7 +243,7 @@ describe('bundleConverter', () => {
     const result = await bundleConverter(bundle, event);
     result.should.eql(
       expectedBundle,
-      `Expected bundle mismatch for "${event.name}".`
+      `Expected bundle mismatch for "${event.name}".`,
     );
   });
 
@@ -299,7 +299,7 @@ describe('bundleConverter', () => {
     const result = await bundleConverter(bundle, event);
     result.should.eql(
       expectedBundle,
-      `Expected bundle mismatch for "${event.name}".`
+      `Expected bundle mismatch for "${event.name}".`,
     );
   });
 
@@ -364,7 +364,7 @@ describe('bundleConverter', () => {
     const result = await bundleConverter(bundle, event);
     result.should.eql(
       expectedBundle,
-      `Expected bundle mismatch for "${event.name}".`
+      `Expected bundle mismatch for "${event.name}".`,
     );
   });
 
@@ -426,7 +426,7 @@ describe('bundleConverter', () => {
     const result = await bundleConverter(bundle, event);
     result.should.eql(
       expectedBundle,
-      `Expected bundle mismatch for "${event.name}".`
+      `Expected bundle mismatch for "${event.name}".`,
     );
   });
 
@@ -477,7 +477,7 @@ describe('bundleConverter', () => {
     const result = await bundleConverter(bundle, event);
     result.should.eql(
       expectedBundle,
-      `Expected bundle mismatch for "${event.name}".`
+      `Expected bundle mismatch for "${event.name}".`,
     );
   });
 
@@ -536,7 +536,7 @@ describe('bundleConverter', () => {
     const result = await bundleConverter(bundle, event);
     result.should.eql(
       expectedBundle,
-      `Expected bundle mismatch for "${event.name}".`
+      `Expected bundle mismatch for "${event.name}".`,
     );
   });
 
@@ -601,13 +601,13 @@ describe('bundleConverter', () => {
           key: 'create',
         };
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });
@@ -673,13 +673,13 @@ describe('bundleConverter', () => {
         const event = _.cloneDeep(eventData);
         event.name = eventName;
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });
@@ -739,13 +739,13 @@ describe('bundleConverter', () => {
           key: 'search',
         };
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });
@@ -805,13 +805,13 @@ describe('bundleConverter', () => {
         const event = _.cloneDeep(eventData);
         event.name = eventName;
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });
@@ -877,13 +877,13 @@ describe('bundleConverter', () => {
         const event = _.cloneDeep(eventData);
         event.name = eventName;
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });
@@ -958,13 +958,13 @@ describe('bundleConverter', () => {
         const event = _.cloneDeep(eventData);
         event.name = eventName;
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });
@@ -1109,13 +1109,13 @@ describe('bundleConverter', () => {
         const event = _.cloneDeep(eventData);
         event.name = eventName;
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });
@@ -1161,13 +1161,13 @@ describe('bundleConverter', () => {
           name: eventName,
         };
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });
@@ -1214,13 +1214,13 @@ describe('bundleConverter', () => {
           name: eventName,
         };
         return bundleConverter(bundle, event);
-      })
+      }),
     );
 
     _.zip(events, results).forEach(([eventName, result]) => {
       result.should.eql(
         expectedBundle,
-        `Expected bundle mismatch for "${eventName}".`
+        `Expected bundle mismatch for "${eventName}".`,
       );
     });
   });

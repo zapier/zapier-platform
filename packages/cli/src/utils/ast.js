@@ -45,7 +45,7 @@ const importActionInJsApp = (codeStr, varName, path) => {
   const newRequireStatement = j.variableDeclaration('const', [
     j.variableDeclarator(
       j.identifier(varName),
-      j.callExpression(j.identifier('require'), [j.literal(path)])
+      j.callExpression(j.identifier('require'), [j.literal(path)]),
     ),
   ]);
 
@@ -80,13 +80,13 @@ const registerActionInJsApp = (codeStr, property, varName) => {
   const exportAssignment = root.find(j.AssignmentExpression, {
     left: typeHelpers.memberExpression(
       typeHelpers.identifier('module'),
-      typeHelpers.identifier('exports')
+      typeHelpers.identifier('exports'),
     ),
   });
 
   if (!exportAssignment.length) {
     throw new Error(
-      'Nothing is exported from this file; unable to find an object to modify'
+      'Nothing is exported from this file; unable to find an object to modify',
     );
   }
 
@@ -115,14 +115,14 @@ const registerActionInJsApp = (codeStr, property, varName) => {
 
   // check if this object already has the property at the top level
   const existingProp = objToModify.properties.find(
-    (props) => props.key.name === property
+    (props) => props.key.name === property,
   );
   if (existingProp) {
     // `triggers: myTriggers` means we shouldn't bother
     const value = existingProp.value;
     if (value.type !== 'ObjectExpression') {
       throw new Error(
-        `Tried to edit the ${property} key, but the value wasn't an object`
+        `Tried to edit the ${property} key, but the value wasn't an object`,
       );
     }
     value.properties.push(newProperty);
@@ -131,8 +131,8 @@ const registerActionInJsApp = (codeStr, property, varName) => {
       j.property(
         'init',
         j.identifier(property),
-        j.objectExpression([newProperty])
-      )
+        j.objectExpression([newProperty]),
+      ),
     );
   }
 
@@ -151,7 +151,7 @@ const registerActionInJsApp = (codeStr, property, varName) => {
 const importActionInTsApp = (
   codeStr,
   identifierName,
-  actionRelativeImportPath
+  actionRelativeImportPath,
 ) => {
   const root = ts(codeStr);
 
@@ -159,7 +159,7 @@ const importActionInTsApp = (
 
   const newImportStatement = j.importDeclaration(
     [j.importDefaultSpecifier(j.identifier(identifierName))],
-    j.literal(actionRelativeImportPath)
+    j.literal(actionRelativeImportPath),
   );
 
   if (imports.length) {
@@ -197,8 +197,8 @@ const registerActionInTsApp = (codeStr, actionTypePlural, identifierName) => {
     .find(ts.ObjectExpression)
     .filter((path) =>
       path.value.properties.some(
-        (prop) => prop.key && prop.key.name === 'platformVersion'
-      )
+        (prop) => prop.key && prop.key.name === 'platformVersion',
+      ),
     );
   if (appObjectCandidates.length !== 1) {
     throw new Error('Unable to find the app definition to modify');
@@ -209,13 +209,13 @@ const registerActionInTsApp = (codeStr, actionTypePlural, identifierName) => {
 
   // Check if this object already has the actionType group inside it.
   const existingProp = appObj.properties.find(
-    (props) => props.key.name === actionTypePlural
+    (props) => props.key.name === actionTypePlural,
   );
   if (existingProp) {
     const value = existingProp.value;
     if (value.type !== 'ObjectExpression') {
       throw new Error(
-        `Tried to edit the ${actionTypePlural} key, but the value wasn't an object`
+        `Tried to edit the ${actionTypePlural} key, but the value wasn't an object`,
       );
     }
     value.properties.push(newProperty);
@@ -224,8 +224,8 @@ const registerActionInTsApp = (codeStr, actionTypePlural, identifierName) => {
       j.property(
         'init',
         j.identifier(actionTypePlural),
-        j.objectExpression([newProperty])
-      )
+        j.objectExpression([newProperty]),
+      ),
     );
   }
 

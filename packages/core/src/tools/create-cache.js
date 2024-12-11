@@ -13,7 +13,7 @@ const createCache = (input) => {
     value = null,
     ttl = null,
     scope = null,
-    nx = null
+    nx = null,
   ) => {
     if (!rpc) {
       throw new Error('rpc is not available');
@@ -33,7 +33,7 @@ const createCache = (input) => {
         !scope.every((v) => v === 'user' || v === 'auth'))
     ) {
       throw new TypeError(
-        'scope must be an array of strings with values "user" or "auth"'
+        'scope must be an array of strings with values "user" or "auth"',
       );
     }
 
@@ -54,7 +54,14 @@ const createCache = (input) => {
     set: async (key, value, ttl = null, scope = null, nx = null) => {
       runValidationChecks(rpc, key, value, ttl, scope, nx);
 
-      return await rpc('zcache_set', key, JSON.stringify(value), ttl, scope, nx);
+      return await rpc(
+        'zcache_set',
+        key,
+        JSON.stringify(value),
+        ttl,
+        scope,
+        nx,
+      );
     },
     delete: async (key, scope = null) => {
       runValidationChecks(rpc, key, scope);

@@ -10,7 +10,7 @@ const RequestSchema = require('./RequestSchema');
 // TODO: would be nice to deep merge these instead
 // or maybe use allOf which is built into json-schema
 const BasicCreateActionOperationSchema = JSON.parse(
-  JSON.stringify(BasicActionOperationSchema.schema)
+  JSON.stringify(BasicActionOperationSchema.schema),
 );
 
 BasicCreateActionOperationSchema.id = '/BasicCreateActionOperationSchema';
@@ -63,5 +63,5 @@ delete BasicCreateActionOperationSchema.required;
 
 module.exports = makeSchema(
   BasicCreateActionOperationSchema,
-  BasicActionOperationSchema.dependencies.concat(BufferConfigSchema)
+  BasicActionOperationSchema.dependencies.concat(BufferConfigSchema),
 );

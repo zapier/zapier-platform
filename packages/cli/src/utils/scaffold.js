@@ -26,7 +26,7 @@ const getTemplatePath = (templateType, language = 'js') =>
     '..',
     '..',
     'scaffold',
-    `${templateType}.template.${language}`
+    `${templateType}.template.${language}`,
   );
 
 // useful for making sure we don't conflict with other, similarly named things
@@ -104,15 +104,15 @@ const writeTemplateFile = async ({
     throw new Error(
       [
         `File ${colors.bold(filename)} already exists within ${colors.bold(
-          location
+          location,
         )}.`,
         'You can either:',
         '  1. Choose a different filename',
         `  2. Delete ${filename} from ${location}`,
         `  3. Run ${colors.italic('scaffold')} with ${colors.bold(
-          '--force'
+          '--force',
         )} to overwrite the current ${filename}`,
-      ].join('\n')
+      ].join('\n'),
     );
   }
 
@@ -130,7 +130,7 @@ const isValidEntryFileUpdate = (
   language,
   indexFileResolved,
   actionType,
-  newActionKey
+  newActionKey,
 ) => {
   if (language === 'js') {
     // ensure a clean access
@@ -196,12 +196,12 @@ const updateEntryFileJs = async ({
   codeStr = importActionInJsApp(
     codeStr,
     actionImportName,
-    actionRelativeImportPath
+    actionRelativeImportPath,
   );
   codeStr = registerActionInJsApp(
     codeStr,
     plural(actionType),
-    actionImportName
+    actionImportName,
   );
   await writeFile(indexFileResolved, codeStr);
   return originalCodeStr;
@@ -227,12 +227,12 @@ const updateEntryFileTs = async ({
   codeStr = importActionInTsApp(
     codeStr,
     actionImportName,
-    actionRelativeImportPath
+    actionRelativeImportPath,
   );
   codeStr = registerActionInTsApp(
     codeStr,
     plural(actionType),
-    actionImportName
+    actionImportName,
   );
   await writeFile(indexFileResolved, codeStr);
   return originalCodeStr;
@@ -271,7 +271,7 @@ const createScaffoldingContext = ({
   const actionFileResolved = `${path.join(
     cwd,
     actionDirLocal,
-    key
+    key,
   )}.${language}`;
   const actionFileResolvedStem = path.join(cwd, actionDirLocal, key);
   const actionFileLocal = `${path.join(actionDirLocal, key)}.${language}`;
@@ -279,13 +279,13 @@ const createScaffoldingContext = ({
   const testFileResolved = `${path.join(
     cwd,
     testDirLocal,
-    key
+    key,
   )}.test.${language}`;
   const testFileLocal = `${path.join(testDirLocal, key)}.${language}`;
   const testFileLocalStem = path.join(testDirLocal, key);
   const actionRelativeImportPath = `./${getRelativeRequirePath(
     indexFileResolved,
-    actionFileResolvedStem
+    actionFileResolvedStem,
   )}`;
 
   return {

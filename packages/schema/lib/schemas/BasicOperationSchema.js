@@ -81,5 +81,13 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [DynamicFieldsSchema, FunctionSchema, KeySchema, LockObjectSchema, RequestSchema, ResultsSchema, ThrottleObjectSchema]
+  [
+    DynamicFieldsSchema,
+    FunctionSchema,
+    KeySchema,
+    LockObjectSchema,
+    RequestSchema,
+    ResultsSchema,
+    ThrottleObjectSchema,
+  ],
 );

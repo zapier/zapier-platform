@@ -76,7 +76,7 @@ describe('deepNestedFields', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.creates.foo.inputFields[1] must not contain deeply nested child fields. One level max.'
+      'instance.creates.foo.inputFields[1] must not contain deeply nested child fields. One level max.',
     );
   });
 });

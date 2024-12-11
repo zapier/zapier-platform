@@ -54,7 +54,7 @@ const collectParamsForBaseString = (req, authParams) => {
   _.extendWith(
     params,
     querystring.parse(new urllib.URL(req.url).search.substr(1)),
-    makeArrayOnDupeKey
+    makeArrayOnDupeKey,
   );
 
   if (req.body && getContentType(req.headers) === FORM_TYPE) {
@@ -67,7 +67,7 @@ const collectParamsForBaseString = (req, authParams) => {
 const buildAuthorizationHeader = (params) => {
   const paramList = _.map(
     params,
-    (v, k) => `${oauth.rfc3986(k)}="${oauth.rfc3986(v)}"`
+    (v, k) => `${oauth.rfc3986(k)}="${oauth.rfc3986(v)}"`,
   );
   return `OAuth ${paramList.join(',')}`;
 };
@@ -83,7 +83,7 @@ const oauth1SignRequest = (req) => {
       stripQueryFromUrl(req.url),
       paramsForBaseString,
       req.auth.oauth_consumer_secret,
-      req.auth.oauth_token_secret
+      req.auth.oauth_token_secret,
     );
 
     // Implements https://tools.ietf.org/html/rfc5849#section-3.5.1

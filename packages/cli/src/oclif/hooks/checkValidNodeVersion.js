@@ -5,7 +5,7 @@ const { LAMBDA_VERSION } = require('../../constants');
 module.exports = function () {
   if (!isValidNodeVersion()) {
     this.error(
-      `Requires node version >= ${LAMBDA_VERSION}, found ${process.versions.node}. Please upgrade Node.js.`
+      `Requires node version >= ${LAMBDA_VERSION}, found ${process.versions.node}. Please upgrade Node.js.`,
     );
   }
 };

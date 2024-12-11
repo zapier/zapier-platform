@@ -18,7 +18,7 @@ module.exports = (options) => {
       `* CLI version: ${options.config.version}`,
       `* Node.js version: ${process.version}`,
       `* OS info: ${options.config.platform}-${options.config.arch}`,
-    ].join('\n')
+    ].join('\n'),
   );
 
   try {
@@ -28,7 +28,7 @@ module.exports = (options) => {
     const maybeCoreDepVersion = get(pJson, ['dependencies', PLATFORM_PACKAGE]);
     if (maybeCoreDepVersion) {
       console.log(
-        `* \`${PLATFORM_PACKAGE}\` dependency: ${maybeCoreDepVersion}`
+        `* \`${PLATFORM_PACKAGE}\` dependency: ${maybeCoreDepVersion}`,
       );
     }
   } catch {}

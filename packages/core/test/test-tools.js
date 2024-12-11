@@ -11,7 +11,7 @@ describe('test-tools', () => {
 
   it('should run an explicit path', async () => {
     const results = await appTester(
-      appDefinition.resources.list.list.operation.perform
+      appDefinition.resources.list.list.operation.perform,
     );
     results.should.eql([{ id: 1234 }, { id: 5678 }]);
   });
@@ -34,7 +34,7 @@ describe('test-tools', () => {
         functionsWork: z.hash('md5', 'david'),
         zRequestExists: Boolean(z.request),
       }),
-      { authData: { secret: 'password' } }
+      { authData: { secret: 'password' } },
     );
 
     results.should.eql({
@@ -63,16 +63,20 @@ describe('test-tools', () => {
     // retrieves custom fields from API
     appTester.zcacheTestObj.should.eql({});
     const freshResults = await appTester(
-      appDefinition.resources.cachedcustominputfields.list.operation.inputFields,
+      appDefinition.resources.cachedcustominputfields.list.operation
+        .inputFields,
       {},
       true,
     );
     freshResults.should.eql(customInputFields);
 
     // retrieves custom fields from cache
-    _.values(appTester.zcacheTestObj).should.containDeep([JSON.stringify(customInputFields)]);
+    _.values(appTester.zcacheTestObj).should.containDeep([
+      JSON.stringify(customInputFields),
+    ]);
     const cachedResults = await appTester(
-      appDefinition.resources.cachedcustominputfields.list.operation.inputFields,
+      appDefinition.resources.cachedcustominputfields.list.operation
+        .inputFields,
       {},
     );
     cachedResults.should.eql(customInputFields);

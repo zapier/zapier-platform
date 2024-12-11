@@ -22,8 +22,8 @@ const pollingThrottle = (definition) => {
             '/ThrottleObjectSchema',
             `instance.${actionType}.${actionDef.key}.operation.throttle`,
             'invalid',
-            'throttle'
-          )
+            'throttle',
+          ),
         );
       }
     });

@@ -1,9 +1,9 @@
 const BaseCommand = require('../oclif/ZapierBaseCommand');
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 const { buildFlags } = require('../oclif/buildFlags');
+const { captureOutput } = require('@oclif/test');
 
 const should = require('should');
-const { stdout } = require('stdout-stderr');
 
 const MESSAGE = 'Here is a very cool message';
 const ROWS = [
@@ -22,8 +22,41 @@ class TestBaseCommand extends BaseCommand {
     return Promise.resolve();
   }
 }
-// logs both text and a table, which behave differently baed on the format flag
-class TestSampleCommand extends TestBaseCommand {
+
+class WithArgsCommand extends TestBaseCommand {
+  async perform() {
+    this.log(MESSAGE);
+  }
+}
+WithArgsCommand.args = {
+  name: Args.string({
+    description: 'name is a required argument',
+    required: true,
+  }),
+  number: Args.string({
+    description: 'number is an optional argument',
+  }),
+};
+
+class WithFlagsCommand extends TestBaseCommand {
+  async perform() {
+    if (this.flags.force) {
+      this.log('--force is set');
+    }
+    if (this.flags.file) {
+      this.log(`--file is: ${this.flags.file}`);
+    }
+  }
+}
+WithFlagsCommand.flags = buildFlags({
+  commandFlags: {
+    force: Flags.boolean({ char: 'f' }),
+    file: Flags.string(),
+  },
+});
+
+// logs both text and a table, which behave differently based on the format flag
+class LogCommand extends TestBaseCommand {
   async perform() {
     this.log(MESSAGE);
     if (!this.flags.skipTable) {
@@ -31,13 +64,10 @@ class TestSampleCommand extends TestBaseCommand {
     }
   }
 }
-
-TestSampleCommand.flags = buildFlags({
+LogCommand.flags = buildFlags({
   opts: { format: true },
   commandFlags: {
-    skipTable: flags.boolean({
-      char: 's',
-    }),
+    skipTable: Flags.boolean({ char: 's' }),
   },
 });
 
@@ -50,115 +80,136 @@ class NoFormatCommand extends TestBaseCommand {
 NoFormatCommand.flags = buildFlags();
 
 describe('BaseCommand', () => {
-  describe('log', () => {
-    beforeEach(() => {
-      // stdout.print = true;
-      stdout.start();
+  describe('WithArgsCommand', () => {
+    it('should error out with missing args', async () => {
+      const { error } = await captureOutput(async () =>
+        WithArgsCommand.run([]),
+      );
+      should(error.message).containEql(
+        'Missing 1 required arg:\nname  name is a required argument\nSee more help with --help',
+      );
     });
-    // this is annoying - with stdout mocked, mocha's success check doesn't get logged (since mock isn't restored
-    //  until after the checkmark should have been printed). So we call this manually to get the nice printing.
-    const customAfter = () => {
-      stdout.stop();
-    };
 
+    it('should not error out without missing args', async () => {
+      const { stdout, error } = await captureOutput(async () =>
+        WithArgsCommand.run(['a']),
+      );
+      should(error).equal(undefined);
+      should(stdout).startWith(MESSAGE);
+    });
+
+    it('should not error out with full args', async () => {
+      const { stdout, error } = await captureOutput(async () =>
+        WithArgsCommand.run(['a', 'b']),
+      );
+      should(error).equal(undefined);
+      should(stdout).startWith(MESSAGE);
+    });
+  });
+
+  describe('WithFlagsCommand', () => {
+    it('should detect flags', async () => {
+      const { stdout } = await captureOutput(async () =>
+        WithFlagsCommand.run(['--force', '--file', 'path/to/file']),
+      );
+      should(stdout).containEql('--force is set\n--file is: path/to/file\n');
+    });
+  });
+
+  describe('LogCommand', () => {
     it('should normally log', async () => {
-      await TestSampleCommand.run([]);
-      should(stdout.output).startWith(MESSAGE);
-      customAfter();
-    });
-
-    it('should log without format flags', async () => {
-      await NoFormatCommand.run([]);
-      should(stdout.output).startWith(MESSAGE);
-
-      customAfter();
+      const { stdout } = await captureOutput(async () => LogCommand.run([]));
+      should(stdout).startWith(MESSAGE);
     });
 
     it('should not log in json mode', async () => {
-      await TestSampleCommand.run(['--format', 'json', '--skipTable']);
-      should(stdout.output).equal('');
-
-      customAfter();
+      const { stdout } = await captureOutput(async () =>
+        LogCommand.run(['--format', 'json', '--skipTable']),
+      );
+      should(stdout).equal('');
     });
 
     it('should print a table', async () => {
-      await TestSampleCommand.run([]);
+      const { stdout } = await captureOutput(async () => LogCommand.run([]));
 
-      should(stdout.output).containEql('Contact ID');
-      should(stdout.output).containEql('123');
-      should(stdout.output).containEql('Here');
-      should(stdout.output).containEql('┌');
+      should(stdout).containEql('Contact ID');
+      should(stdout).containEql('123');
+      should(stdout).containEql('Here');
+      should(stdout).containEql('┌');
 
-      const p = () => JSON.parse(stdout.output);
+      const p = () => JSON.parse(stdout);
       p.should.throw();
-
-      customAfter();
     });
 
     it('should print a plain table', async () => {
-      await TestSampleCommand.run(['--format', 'plain']);
+      const { stdout } = await captureOutput(async () =>
+        LogCommand.run(['--format', 'plain']),
+      );
 
-      should(stdout.output).containEql('Contact ID');
-      should(stdout.output).containEql('123');
-      should(stdout.output).containEql('Here');
-      should(stdout.output).containEql('==');
-      should(stdout.output).not.containEql('┌');
+      should(stdout).containEql('Contact ID');
+      should(stdout).containEql('123');
+      should(stdout).containEql('Here');
+      should(stdout).containEql('==');
+      should(stdout).not.containEql('┌');
 
-      const p = () => JSON.parse(stdout.output);
+      const p = () => JSON.parse(stdout);
       p.should.throw();
-
-      customAfter();
     });
 
     it('should print a row table', async () => {
-      await TestSampleCommand.run(['--format', 'row']);
+      const { stdout } = await captureOutput(async () =>
+        LogCommand.run(['--format', 'row']),
+      );
 
-      should(stdout.output).containEql('Contact ID');
-      should(stdout.output).containEql('123');
-      should(stdout.output).containEql('Here');
-      should(stdout.output).containEql('= 1 =');
-      should(stdout.output).containEql('│');
-      should(stdout.output).containEql('┌');
+      should(stdout).containEql('Contact ID');
+      should(stdout).containEql('123');
+      should(stdout).containEql('Here');
+      should(stdout).containEql('= 1 =');
+      should(stdout).containEql('│');
+      should(stdout).containEql('┌');
 
-      const p = () => JSON.parse(stdout.output);
+      const p = () => JSON.parse(stdout);
       p.should.throw();
-
-      customAfter();
     });
 
     it('should print valid transformed json', async () => {
-      await TestSampleCommand.run(['--format', 'json']);
+      const { stdout } = await captureOutput(async () =>
+        LogCommand.run(['--format', 'json']),
+      );
 
-      should(stdout.output).containEql('Contact ID');
-      should(stdout.output).containEql('123');
-      should(stdout.output).not.containEql('Here');
+      should(stdout).containEql('Contact ID');
+      should(stdout).containEql('123');
+      should(stdout).not.containEql('Here');
 
-      const rows = JSON.parse(stdout.output); // shouldn't throw
+      const rows = JSON.parse(stdout); // shouldn't throw
       rows.length.should.eql(2);
       rows[0]['Contact ID'].should.eql('123');
       rows[0]['Neat Title'].should.eql('hello');
-
-      customAfter();
     });
 
     it('should print valid raw json', async () => {
-      await TestSampleCommand.run(['--format', 'raw']);
+      const { stdout } = await captureOutput(async () =>
+        LogCommand.run(['--format', 'raw']),
+      );
 
-      should(stdout.output).not.containEql('Contact ID');
-      should(stdout.output).containEql('id');
-      should(stdout.output).containEql('123');
-      should(stdout.output).not.containEql('Here');
+      should(stdout).not.containEql('Contact ID');
+      should(stdout).containEql('id');
+      should(stdout).containEql('123');
+      should(stdout).not.containEql('Here');
 
-      const rows = JSON.parse(stdout.output); // shouldn't throw
+      const rows = JSON.parse(stdout); // shouldn't throw
       rows.length.should.eql(2);
       rows[0].id.should.eql(123);
       rows[0].title.should.eql('hello');
-
-      customAfter();
     });
+  });
 
-    afterEach(() => {
-      stdout.stop();
+  describe('NoFormatCommand', () => {
+    it('should log without format flags', async () => {
+      const { stdout } = await captureOutput(async () =>
+        NoFormatCommand.run([]),
+      );
+      should(stdout).startWith(MESSAGE);
     });
   });
 });

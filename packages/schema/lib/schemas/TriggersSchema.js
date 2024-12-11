@@ -57,5 +57,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [TriggerSchema]
+  [TriggerSchema],
 );

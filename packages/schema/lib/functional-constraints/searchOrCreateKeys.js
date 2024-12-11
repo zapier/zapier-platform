@@ -15,7 +15,7 @@ const getSearchOutputSampleKeys = (definition, searchKey) => {
   const searchOutputSampleFields = _.get(
     definition.searches,
     `${searchKey}.operation.sample`,
-    {}
+    {},
   );
 
   return Object.keys(searchOutputSampleFields);
@@ -41,19 +41,19 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
 
     const updateInputKeys = getFieldKeys(
       definition.creates,
-      `${updateKey}.operation.inputFields`
+      `${updateKey}.operation.inputFields`,
     );
     const searchInputKeys = getFieldKeys(
       definition.searches,
-      `${searchKey}.operation.inputFields`
+      `${searchKey}.operation.inputFields`,
     );
     const searchOutputKeys = getFieldKeys(
       definition.searches,
-      `${searchKey}.operation.outputFields`
+      `${searchKey}.operation.outputFields`,
     );
     const searchOutputSampleKeys = getSearchOutputSampleKeys(
       definition,
-      searchKey
+      searchKey,
     );
 
     // There are constraints where we check for keys in either outputFields or sample, so combining them is a shortcut
@@ -65,11 +65,11 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
     // For some constraints, there is a difference between not "having" a key defined versus having one but with empty values
     const hasSearchOutputFields = _.has(
       definition.searches,
-      `${searchKey}.operation.outputFields`
+      `${searchKey}.operation.outputFields`,
     );
     const hasSearchOutputSample = _.has(
       definition.searches,
-      `${searchKey}.operation.sample`
+      `${searchKey}.operation.sample`,
     );
 
     // Confirm searchOrCreate.key matches a searches.key (current Zapier editor limitation)
@@ -81,8 +81,8 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
           '/SearchOrCreateSchema',
           `instance.${searchCreatesKey}.${key}.key`,
           'invalidKey',
-          'key'
-        )
+          'key',
+        ),
       );
     }
 
@@ -95,8 +95,8 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
           '/SearchOrCreateSchema',
           `instance.${searchCreatesKey}.${key}.search`,
           'invalidKey',
-          'search'
-        )
+          'search',
+        ),
       );
     }
 
@@ -109,8 +109,8 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
           '/SearchOrCreateSchema',
           `instance.${searchCreatesKey}.${key}.create`,
           'invalidKey',
-          'create'
-        )
+          'create',
+        ),
       );
     }
 
@@ -122,8 +122,8 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.${searchCreatesKey}.${key}.update`,
-          'invalidKey'
-        )
+          'invalidKey',
+        ),
       );
     }
 
@@ -135,8 +135,8 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.${searchCreatesKey}.${key}.updateInputFromSearchOutput`,
-          'invalid'
-        )
+          'invalid',
+        ),
       );
     }
 
@@ -148,8 +148,8 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
           searchOrCreateDef,
           '/SearchOrCreateSchema',
           `instance.${searchCreatesKey}.${key}.searchUniqueInputToOutputConstraint`,
-          'invalid'
-        )
+          'invalid',
+        ),
       );
     }
 
@@ -167,7 +167,7 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
       const searchOutputOptionHint = `(options: ${[...allSearchOutputKeys]})`;
 
       for (const [updateInputField, searchOutputField] of Object.entries(
-        searchOrCreateDef.updateInputFromSearchOutput
+        searchOrCreateDef.updateInputFromSearchOutput,
       )) {
         if (!updateInputKeys.includes(updateInputField)) {
           errors.push(
@@ -176,8 +176,8 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
               searchOrCreateDef,
               '/SearchOrCreateSchema',
               `instance.${searchCreatesKey}.${key}.updateInputFromSearchOutput`,
-              'invalidKey'
-            )
+              'invalidKey',
+            ),
           );
         }
 
@@ -191,8 +191,8 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
               searchOrCreateDef,
               '/SearchOrCreateSchema',
               `instance.${searchCreatesKey}.${key}.updateInputFromSearchOutput`,
-              'invalidKey'
-            )
+              'invalidKey',
+            ),
           );
         }
       }
@@ -212,7 +212,7 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
       const searchOutputOptionHint = `(options: ${[...allSearchOutputKeys]})`;
 
       for (const [searchInputField, searchOutputField] of Object.entries(
-        searchOrCreateDef.searchUniqueInputToOutputConstraint
+        searchOrCreateDef.searchUniqueInputToOutputConstraint,
       )) {
         if (!searchInputKeys.includes(searchInputField)) {
           errors.push(
@@ -221,8 +221,8 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
               searchOrCreateDef,
               '/SearchOrCreateSchema',
               `instance.${searchCreatesKey}.${key}.searchUniqueInputToOutputConstraint`,
-              'invalidKey'
-            )
+              'invalidKey',
+            ),
           );
         }
 
@@ -237,8 +237,8 @@ const validateSearchCreateKeys = (definition, searchCreatesKey) => {
               searchOrCreateDef,
               '/SearchOrCreateSchema',
               `instance.${searchCreatesKey}.${key}.searchUniqueInputToOutputConstraint`,
-              'invalidKey'
-            )
+              'invalidKey',
+            ),
           );
         }
       }

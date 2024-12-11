@@ -13,7 +13,7 @@ const uploader = async (
   bufferStringStream,
   knownLength,
   filename,
-  contentType
+  contentType,
 ) => {
   filename = path.basename(filename).replace('"', '');
 
@@ -56,7 +56,7 @@ const uploader = async (
     response.content &&
     response.content.includes &&
     response.content.includes(
-      'You must provide the Content-Length HTTP header.'
+      'You must provide the Content-Length HTTP header.',
     )
   ) {
     throw new Error(LENGTH_ERR_MESSAGE);

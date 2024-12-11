@@ -53,7 +53,7 @@ const resolveRemoteStream = async (stream) => {
   // https://github.com/node-fetch/node-fetch#streams
   const tmpFilePath = path.join(
     os.tmpdir(),
-    'stash-' + randomBytes(16).toString('hex')
+    'stash-' + randomBytes(16).toString('hex'),
   );
 
   try {
@@ -171,7 +171,7 @@ const resolveToBufferStringStream = async (responseOrData) => {
 
   throw new TypeError(
     `z.stashFile() cannot stash type '${typeof responseOrData}'. ` +
-      'Pass it a request, readable stream, string, or Buffer.'
+      'Pass it a request, readable stream, string, or Buffer.',
   );
 };
 
@@ -185,7 +185,7 @@ const ensureUploadMaxSizeNotExceeded = (streamOrData, length) => {
 
   if (length && length > uploadMaxSize) {
     throw new Error(
-      `${length} bytes is too big, ${uploadMaxSize} is the max for ${uploadMethod} data.`
+      `${length} bytes is too big, ${uploadMaxSize} is the max for ${uploadMethod} data.`,
     );
   }
 };
@@ -202,7 +202,7 @@ const ensureMetadataMaxSizeNotExceeded = (filename) => {
       encodedFilename.length > filenameMaxSize
     ) {
       throw new Error(
-        `URI-Encoded Filename is too long at ${encodedFilename.length}, ${ENCODED_FILENAME_MAX_LENGTH} is the max.`
+        `URI-Encoded Filename is too long at ${encodedFilename.length}, ${ENCODED_FILENAME_MAX_LENGTH} is the max.`,
       );
     }
   }
@@ -222,17 +222,17 @@ const createFileStasher = (input) => {
     const isRunningOnHydrator = _.get(
       input,
       '_zapier.event.method',
-      ''
+      '',
     ).startsWith('hydrators.');
     const isRunningOnCreate = _.get(
       input,
       '_zapier.event.method',
-      ''
+      '',
     ).startsWith('creates.');
 
     if (!isRunningOnHydrator && !isRunningOnCreate) {
       throw new Error(
-        'Files can only be stashed within a create or hydration function/method.'
+        'Files can only be stashed within a create or hydration function/method.',
       );
     }
 
@@ -276,7 +276,7 @@ const createFileStasher = (input) => {
       streamOrData,
       finalLength,
       filename || _filename,
-      contentType || _contentType
+      contentType || _contentType,
     );
   };
 };

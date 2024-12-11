@@ -18,7 +18,7 @@ describe('shouldPaginate', () => {
           },
         },
       },
-      'triggers.trigger.operation.perform'
+      'triggers.trigger.operation.perform',
     ).should.eql(true);
   });
 
@@ -34,7 +34,7 @@ describe('shouldPaginate', () => {
           },
         },
       },
-      'triggers.trigger.operation.perform'
+      'triggers.trigger.operation.perform',
     ).should.eql(false);
   });
 
@@ -50,7 +50,7 @@ describe('shouldPaginate', () => {
           },
         },
       },
-      'triggers.trigger.operation.perform'
+      'triggers.trigger.operation.perform',
     ).should.eql(true);
   });
 
@@ -65,7 +65,7 @@ describe('shouldPaginate', () => {
           },
         },
       },
-      'triggers.trigger.operation.perform'
+      'triggers.trigger.operation.perform',
     ).should.eql(false);
   });
 
@@ -84,11 +84,11 @@ describe('shouldPaginate', () => {
     };
     shouldPaginate(
       definition,
-      'triggers.trigger.operation.perform'
+      'triggers.trigger.operation.perform',
     ).should.equal(false);
     shouldPaginate(
       definition,
-      'triggers.trigger.operation.performList'
+      'triggers.trigger.operation.performList',
     ).should.equal(true);
   });
 
@@ -106,11 +106,11 @@ describe('shouldPaginate', () => {
     };
     shouldPaginate(
       definition,
-      'triggers.trigger.operation.perform'
+      'triggers.trigger.operation.perform',
     ).should.equal(false);
     shouldPaginate(
       definition,
-      'triggers.trigger.operation.performList'
+      'triggers.trigger.operation.performList',
     ).should.equal(false);
   });
 
@@ -128,7 +128,7 @@ describe('shouldPaginate', () => {
           },
         },
       },
-      'resources.resource.list.operation.perform'
+      'resources.resource.list.operation.perform',
     ).should.eql(true);
   });
 
@@ -145,7 +145,7 @@ describe('shouldPaginate', () => {
           },
         },
       },
-      'resources.resource.list.operation.perform'
+      'resources.resource.list.operation.perform',
     ).should.eql(false);
   });
 
@@ -165,11 +165,11 @@ describe('shouldPaginate', () => {
     };
     shouldPaginate(
       definition,
-      'resources.resource.hook.operation.perform'
+      'resources.resource.hook.operation.perform',
     ).should.equal(false);
     shouldPaginate(
       definition,
-      'resources.resource.hook.operation.performList'
+      'resources.resource.hook.operation.performList',
     ).should.equal(true);
   });
 
@@ -188,11 +188,11 @@ describe('shouldPaginate', () => {
     };
     shouldPaginate(
       definition,
-      'resources.resource.hook.operation.perform'
+      'resources.resource.hook.operation.perform',
     ).should.equal(false);
     shouldPaginate(
       definition,
-      'resources.resource.hook.operation.performList'
+      'resources.resource.hook.operation.performList',
     ).should.equal(false);
   });
 });

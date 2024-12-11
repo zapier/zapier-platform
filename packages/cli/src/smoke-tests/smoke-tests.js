@@ -22,7 +22,7 @@ const setupZapierRC = () => {
   } else if (process.env.ZAPIER_DEPLOY_KEY) {
     fs.writeFileSync(
       rcPath,
-      JSON.stringify({ deployKey: process.env.ZAPIER_DEPLOY_KEY })
+      JSON.stringify({ deployKey: process.env.ZAPIER_DEPLOY_KEY }),
     );
     hasRC = true;
   }
@@ -98,7 +98,7 @@ describe('smoke tests - setup will take some time', function () {
       context.workdir,
       'node_modules',
       '.bin',
-      'zapier'
+      'zapier',
     );
   });
 
@@ -182,12 +182,12 @@ describe('smoke tests - setup will take some time', function () {
       newAppDir,
       'test',
       'triggers',
-      'neat.test.js'
+      'neat.test.js',
     );
     fs.existsSync(newTriggerTest).should.be.true();
 
     const pkg = JSON.parse(
-      fs.readFileSync(appPackageJson, { encoding: 'utf8' })
+      fs.readFileSync(appPackageJson, { encoding: 'utf8' }),
     );
     pkg.name.should.containEql('scaffold-town');
   });
@@ -196,7 +196,7 @@ describe('smoke tests - setup will take some time', function () {
     runCommand(
       context.cliBin,
       ['init', 'scaffold-town-ts', '-t', 'typescript'],
-      { cwd: context.workdir }
+      { cwd: context.workdir },
     );
 
     const newAppDir = path.join(context.workdir, 'scaffold-town-ts');
@@ -219,12 +219,12 @@ describe('smoke tests - setup will take some time', function () {
       'src',
       'test',
       'triggers',
-      'neat.test.ts'
+      'neat.test.ts',
     );
     fs.existsSync(newTriggerTest).should.be.true();
 
     const pkg = JSON.parse(
-      fs.readFileSync(appPackageJson, { encoding: 'utf8' })
+      fs.readFileSync(appPackageJson, { encoding: 'utf8' }),
     );
     pkg.name.should.containEql('scaffold-town');
   });
@@ -298,7 +298,7 @@ describe('smoke tests - setup will take some time', function () {
                 'CLIENT_SECRET=asdf\n' +
                 'authData_access_token=a_token\n' +
                 'authData_refresh_token=a_refresh_token\n' +
-                "authData_access_token='a_token'\n"
+                "authData_access_token='a_token'\n",
             );
           },
         },

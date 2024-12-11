@@ -34,7 +34,7 @@ describe('app', () => {
       delete appCopy.triggers.contact_by_tag;
       const results = schema.validateAppDefinition(appCopy);
       results.errors[0].stack.should.eql(
-        'instance.triggers additionalProperty "3contact_by_tag" exists in instance when not allowed'
+        'instance.triggers additionalProperty "3contact_by_tag" exists in instance when not allowed',
       );
       results.errors.length.should.eql(2); // additional property error + top-level key doesn't match trigger key
     });
@@ -45,7 +45,7 @@ describe('app', () => {
       delete appCopy.creates.tag_create;
       const results = schema.validateAppDefinition(appCopy);
       results.errors[0].stack.should.eql(
-        'instance.creates additionalProperty "3contact_by_tag" exists in instance when not allowed'
+        'instance.creates additionalProperty "3contact_by_tag" exists in instance when not allowed',
       );
       results.errors.length.should.eql(2); // additional property error + top-level key doesn't match create key
     });
@@ -55,7 +55,7 @@ describe('app', () => {
       appCopy.creates.tag_create.key = 'tag:create';
       const results = schema.validateAppDefinition(appCopy);
       results.errors[0].stack.should.eql(
-        'instance.creates.tag_create.key does not match pattern "^[a-zA-Z]+[a-zA-Z0-9_]*$"'
+        'instance.creates.tag_create.key does not match pattern "^[a-zA-Z]+[a-zA-Z0-9_]*$"',
       );
       results.errors.length.should.eql(2); // invalid name and top-level key doesn't match create key
     });
@@ -155,13 +155,13 @@ describe('app', () => {
       const results = schema.validateAppDefinition(definition);
       results.errors.should.have.length(3);
       results.errors[0].stack.should.eql(
-        'instance.searchOrCreates.fooSearchOrCreate.key must match a "key" from a search (options: fooSearch)'
+        'instance.searchOrCreates.fooSearchOrCreate.key must match a "key" from a search (options: fooSearch)',
       );
       results.errors[1].stack.should.eql(
-        'instance.searchOrCreates.fooSearchOrCreate.search must match a "key" from a search (options: fooSearch)'
+        'instance.searchOrCreates.fooSearchOrCreate.search must match a "key" from a search (options: fooSearch)',
       );
       results.errors[2].stack.should.eql(
-        'instance.searchOrCreates.fooSearchOrCreate.create must match a "key" from a create (options: fooCreate)'
+        'instance.searchOrCreates.fooSearchOrCreate.create must match a "key" from a create (options: fooCreate)',
       );
     });
 
@@ -238,6 +238,6 @@ describe('app', () => {
 describe('auto test', () => {
   const _exportedSchema = schema.exportSchema();
   Object.keys(_exportedSchema.schemas).map((id) =>
-    testUtils.testInlineSchemaExamples(id)
+    testUtils.testInlineSchemaExamples(id),
   );
 });

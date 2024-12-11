@@ -10,7 +10,7 @@ class UploadCommand extends BaseCommand {
     // it would be cool if we differentiated between new/updated here
     await buildAndOrUpload({ upload: true });
     this.log(
-      `\nUpload complete! Uploaded ${BUILD_PATH} and ${SOURCE_PATH} to Zapier. If it's a new version, it should now be available in the Zap editor.`
+      `\nUpload complete! Uploaded ${BUILD_PATH} and ${SOURCE_PATH} to Zapier. If it's a new version, it should now be available in the Zap editor.`,
     );
   }
 }

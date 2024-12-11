@@ -1,35 +1,35 @@
-'use strict'
+'use strict';
 
-const _ = require('lodash')
+const _ = require('lodash');
 
-const utils = require('../utils')
-const parseResponse = utils.parseResponse
-const handleError = utils.handleError
-const cleanupPaths = utils.cleanupPaths
-const extractParentsFromPath = utils.extractParentsFromPath
-const { BASE_ITEM_URL } = require('../constants')
-const baseItem = require('./base-item')
+const utils = require('../utils');
+const parseResponse = utils.parseResponse;
+const handleError = utils.handleError;
+const cleanupPaths = utils.cleanupPaths;
+const extractParentsFromPath = utils.extractParentsFromPath;
+const { BASE_ITEM_URL } = require('../constants');
+const baseItem = require('./base-item');
 
-const getFolder = _.partial(baseItem.getItem, 'folder')
+const getFolder = _.partial(baseItem.getItem, 'folder');
 
 const listFolders = (z, bundle) => {
   return baseItem.listItems('folder', z, bundle).then((results) => {
     // Add parents when being called in the context of populating a dynamic dropdown (prefill).
     // This allows users to "navigate back" to previous dirs in the Zap Editor
     if (bundle.meta.prefill && bundle.inputData.folder) {
-      const parents = extractParentsFromPath(bundle.inputData.folder)
-      parents.forEach((result) => results.unshift(result))
+      const parents = extractParentsFromPath(bundle.inputData.folder);
+      parents.forEach((result) => results.unshift(result));
     }
 
-    return results
-  })
-}
+    return results;
+  });
+};
 
 const createFolder = (z, bundle) => {
-  let folder = bundle.inputData.folder || ''
+  let folder = bundle.inputData.folder || '';
 
   if (folder) {
-    folder = `:${encodeURIComponent(folder)}:` // OneDrive URI format
+    folder = `:${encodeURIComponent(folder)}:`; // OneDrive URI format
   }
 
   return z
@@ -47,10 +47,10 @@ const createFolder = (z, bundle) => {
     })
     .then(_.partial(parseResponse, z, 'folder'))
     .then(cleanupPaths)
-    .catch(handleError)
-}
+    .catch(handleError);
+};
 
-const searchFolder = _.partial(baseItem.searchItem, 'folder')
+const searchFolder = _.partial(baseItem.searchItem, 'folder');
 
 module.exports = {
   key: 'folder',
@@ -167,4 +167,4 @@ module.exports = {
     { key: '_parent', label: 'Parent Folder' },
     { key: 'webUrl', label: 'URL' },
   ],
-}
+};

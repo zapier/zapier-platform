@@ -32,7 +32,7 @@ const readCredentials = (explodeIfMissing = true) => {
     return Promise.resolve(
       readFile(
         constants.AUTH_LOCATION,
-        `Please run \`${colors.cyan('zapier login')}\`.`
+        `Please run \`${colors.cyan('zapier login')}\`.`,
       )
         .then((buf) => {
           return JSON.parse(buf.toString());
@@ -43,7 +43,7 @@ const readCredentials = (explodeIfMissing = true) => {
           } else {
             return {};
           }
-        })
+        }),
     );
   }
 };
@@ -54,7 +54,7 @@ const callAPI = async (
   options,
   rawError = false,
   credentialsRequired = true,
-  returnStreamBody = false
+  returnStreamBody = false,
 ) => {
   // temp manual enable while we're not all the way moved over
   if (_.get(global, ['argOpts', 'debug'])) {
@@ -149,7 +149,7 @@ const createCredentials = (username, password, totpCode) => {
       },
     },
     // if totp is empty, we want a raw request so we can supress an error. If it's here, we want it to be "non-raw"
-    !totpCode
+    !totpCode,
   );
 };
 
@@ -162,22 +162,19 @@ const createCanary = async (versionFrom, versionTo, percent, duration) => {
       method: 'POST',
       body: {
         percent,
-        duration
-      }
-    }
-  )
-}
+        duration,
+      },
+    },
+  );
+};
 
 const listCanaries = async () => {
   const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
 
-  return callAPI(
-    `/apps/${linkedAppId}/canaries`,
-    {
-      method: 'GET',
-    }
-  )
-}
+  return callAPI(`/apps/${linkedAppId}/canaries`, {
+    method: 'GET',
+  });
+};
 
 const deleteCanary = async (versionFrom, versionTo) => {
   const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
@@ -186,9 +183,9 @@ const deleteCanary = async (versionFrom, versionTo) => {
     `/apps/${linkedAppId}/versions/${versionFrom}/canary-to/${versionTo}`,
     {
       method: 'DELETE',
-    }
-  )
-}
+    },
+  );
+};
 
 /**
  * read local `apprc` file
@@ -242,10 +239,10 @@ const getWritableApp = async () => {
   if (!linkedAppConfig.id) {
     throw new Error(
       `This project hasn't yet been associated with an existing Zapier integration.\n\nIf it's a brand new integration, run \`${colors.cyan(
-        'zapier register'
+        'zapier register',
       )}\`.\n\nIf this project already exists in your Zapier account, run \`${colors.cyan(
-        'zapier link'
-      )}\` instead.`
+        'zapier link',
+      )}\` instead.`,
     );
   }
 
@@ -261,7 +258,7 @@ const getWritableApp = async () => {
       throw new Error(
         `Your credentials are present, but invalid${
           process.env.ZAPIER_BASE_ENDPOINT ? ' in this environment' : ''
-        }. Please run \`${colors.cyan('zapier login')}\` to resolve.`
+        }. Please run \`${colors.cyan('zapier login')}\` to resolve.`,
       );
     } else if (errOrRejectedResponse.status === 404) {
       // if this fails, we know the issue is they can't see this app
@@ -272,9 +269,9 @@ const getWritableApp = async () => {
       }). Try running \`${colors.cyan('zapier link')}\` to correct that.${
         process.env.ZAPIER_BASE_ENDPOINT
           ? `\n\nFor local dev: make sure you've run  \`${colors.cyan(
-              'zapier login'
+              'zapier login',
             )}\` and \`${colors.cyan(
-              'zapier register'
+              'zapier register',
             )}\` while providing ZAPIER_BASE_ENDPOINT.`
           : ''
       }`;
@@ -399,10 +396,10 @@ const downloadSourceZip = async (dst) => {
   if (!linkedAppConfig.id) {
     throw new Error(
       `This project hasn't yet been associated with an existing Zapier integration.\n\nIf it's a brand new integration, run \`${colors.cyan(
-        'zapier register'
+        'zapier register',
       )}\`.\n\nIf this project already exists in your Zapier account, run \`${colors.cyan(
-        'zapier link'
-      )}\` instead.`
+        'zapier link',
+      )}\` instead.`,
     );
   }
 
@@ -434,7 +431,7 @@ const upload = async (app, { skipValidation = false } = {}) => {
 
   if (!fs.existsSync(fullZipPath)) {
     throw new Error(
-      'Missing a built integration. Try running `zapier build` first.\nAlternatively, run `zapier push`, which will build and upload in one command.'
+      'Missing a built integration. Try running `zapier build` first.\nAlternatively, run `zapier push`, which will build and upload in one command.',
     );
   }
 

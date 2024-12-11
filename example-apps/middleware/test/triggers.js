@@ -9,9 +9,9 @@ const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
   describe('new recipe trigger', () => {
-    it('should load recipes', done => {
+    it('should load recipes', (done) => {
       appTester(App.triggers.recipe.operation.perform)
-        .then(results => {
+        .then((results) => {
           results.should.be.an.Array();
           results.length.should.be.above(1);
 
@@ -31,9 +31,9 @@ describe('triggers', () => {
   });
 
   describe('new movie trigger', () => {
-    it('should load movies', done => {
+    it('should load movies', (done) => {
       appTester(App.triggers.movie.operation.perform)
-        .then(results => {
+        .then((results) => {
           results.should.be.an.Array();
           results.length.should.be.above(1);
 

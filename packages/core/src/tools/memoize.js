@@ -38,7 +38,7 @@ var _slicedToArray = (function () {
       return sliceIterator(arr, i);
     } else {
       throw new TypeError(
-        'Invalid attempt to destructure non-iterable instance'
+        'Invalid attempt to destructure non-iterable instance',
       );
     }
   };

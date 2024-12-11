@@ -13,5 +13,5 @@ module.exports = makeSchema(
     examples: [[{ key: 'abc' }]],
     antiExamples: [{ example: {}, reason: 'Must be an array' }],
   },
-  [FieldSchema]
+  [FieldSchema],
 );

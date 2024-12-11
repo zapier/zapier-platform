@@ -21,5 +21,5 @@ const child = childProcess.exec(cmd);
 child.stdout.pipe(process.stdout);
 child.stderr.pipe(process.stderr);
 child.on('exit', (code) =>
-  console.log(`Finished with code "${code.toString()}"!`)
+  console.log(`Finished with code "${code.toString()}"!`),
 );

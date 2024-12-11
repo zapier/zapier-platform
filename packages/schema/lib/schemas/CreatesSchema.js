@@ -75,5 +75,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [CreateSchema]
+  [CreateSchema],
 );
