@@ -2,7 +2,7 @@
 
 _released `2024-12-16`_
 
-Version `16.0.0` is a breaking change release that contains a few housekeeping changes that put us in a better spot to support some exciting changes in future versions. **Here is a quick breakdown of the two main breaking changes:**
+Version `16.0.0` is a breaking change release that contains some important housekeeping updates that put us in a better spot to support some exciting changes coming up in future versions. **Here is a quick breakdown of the two main breaking changes:**
 
 **1. The minimum supported version of Node.js is now v18.18.** We’ve officially dropped support for Node.js v16.x, which has been designated [end-of-life since September 2023](https://nodejs.org/en/blog/announcements/nodejs16-eol).
 
@@ -16,11 +16,11 @@ Here are the detailed release notes for this release (**note that ❗ denotes a 
 
 ### core
 
-- ** :exclamation: Node.js v16.x is no longer supported ([#890](https://github.com/zapier/zapier-platform/pull/890))**
+- **:exclamation: Node.js v16.x is no longer supported ([#890](https://github.com/zapier/zapier-platform/pull/890))**
 
-- ** :exclamation: Integrations running on `zapier-platform-core` v16 and onwards will run on the ARM architecture by default. ** This means means they will run on AWS Graviton2 processors (previously, the AWS Lambda runtime was based on x86 architecture). For more details on what this means on a technical level, please check out: [AWS Lambda on Graviton 2](https://github.com/aws/aws-graviton-getting-started/blob/main/aws-lambda/README.md#aws-lambda-on-graviton2).
+- **:exclamation: Integrations running on `zapier-platform-core` v16 and onwards will run on the ARM architecture by default.** This means means they will run on AWS Graviton2 processors (previously, the AWS Lambda runtime was based on x86 architecture). For more details on what this means on a technical level, please check out: [AWS Lambda on Graviton 2](https://github.com/aws/aws-graviton-getting-started/blob/main/aws-lambda/README.md#aws-lambda-on-graviton2).
 
-- ** :exclamation: Due to changes in the underlying `dotenv` library ([see changelog](https://github.com/motdotla/dotenv/blob/master/CHANGELOG.md)), when using `zapier.tools.env.inject()`, we always recommend "double quoting" your environment variable values. Please make sure to consider if the following cases would apply to your `.env` files: **
+- **:exclamation: Due to changes in the underlying `dotenv` library ([see changelog](https://github.com/motdotla/dotenv/blob/master/CHANGELOG.md)), when using `zapier.tools.env.inject()`, we always recommend "double quoting" your environment variable values.** Please make sure to consider if the following cases would apply to your `.env` files:
   * ```SECRET_HASH=something-with-a-#-hash```: change it to ```SECRET_HASH="something-with-a-#-hash"```
   * ```SECRET_BACKTICK=something-with-a-`-backtick```: change it to ```SECRET_BACKTICK="something-with-a-`-backtick"```
 * Add `skipEncodingChars` property typing for z.request object ([#928](https://github.com/zapier/zapier-platform/pull/928))
