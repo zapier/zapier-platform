@@ -12,7 +12,7 @@ Here are the detailed release notes for this release (**note that ❗ denotes a 
 
 ### cli
 
-- :hammer: The `oclif` suite of packages have been upgraded to support the latest `oclif` major version (v4).
+- :hammer: The `oclif` suite of packages have been upgraded to support the latest `oclif` major version (v4) ([#890](https://github.com/zapier/zapier-platform/pull/890)).
 
 ### core
 
@@ -20,7 +20,7 @@ Here are the detailed release notes for this release (**note that ❗ denotes a 
 
 - **:exclamation: Integrations running on `zapier-platform-core` v16 and onwards will run on the ARM architecture by default.** This means means they will run on AWS Graviton2 processors (previously, the AWS Lambda runtime was based on x86 architecture). For more details on what this means on a technical level, please check out: [AWS Lambda on Graviton 2](https://github.com/aws/aws-graviton-getting-started/blob/main/aws-lambda/README.md#aws-lambda-on-graviton2).
 
-- **:exclamation: Due to changes in the underlying `dotenv` library ([see changelog](https://github.com/motdotla/dotenv/blob/master/CHANGELOG.md)), when using `zapier.tools.env.inject()`, we always recommend "double quoting" your environment variable values.** Please make sure to consider if the following cases would apply to your `.env` files:
+- **:exclamation: Due to changes in the underlying `dotenv` library ([see changelog](https://github.com/motdotla/dotenv/blob/master/CHANGELOG.md)) ([#926](https://github.com/zapier/zapier-platform/pull/926)), when using `zapier.tools.env.inject()`, we always recommend "double quoting" your environment variable values.** Please make sure to consider if the following cases would apply to your `.env` files:
   * ```SECRET_HASH=something-with-a-#-hash```: change it to ```SECRET_HASH="something-with-a-#-hash"```
   * ```SECRET_BACKTICK=something-with-a-`-backtick```: change it to ```SECRET_BACKTICK="something-with-a-`-backtick"```
 * Add `skipEncodingChars` property typing for z.request object ([#928](https://github.com/zapier/zapier-platform/pull/928))
