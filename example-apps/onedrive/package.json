@@ -21,7 +21,7 @@
     "async": "2.4.1",
     "content-disposition": "0.5.2",
     "lodash": "4.17.11",
-    "node-fetch": "1.7.1",
+    "node-fetch": "2.6.7",
     "zapier-platform-core": "16.0.0"
   },
   "devDependencies": {
