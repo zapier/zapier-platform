@@ -85,7 +85,7 @@ const httpDetailsLogMessage = (data) => {
       }
       return result;
     },
-    {}
+    {},
   );
 
   if (trimmedData.request_params) {
@@ -343,12 +343,12 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
   if (options.token) {
     const logStream = logStreamFactory.getOrCreate(
       options.endpoint,
-      options.token
+      options.token,
     );
     logStream.write(
       // JSON Lines format: It's important the serialized JSON object itself has
       // no line breaks, and after an object it ends with a line break.
-      JSON.stringify({ message: safeMessage, data: safeData }) + '\n'
+      JSON.stringify({ message: safeMessage, data: safeData }) + '\n',
     );
 
     if (logStreamFactory.ended) {

@@ -10,7 +10,7 @@ const RequestSchema = require('./RequestSchema');
 // TODO: would be nice to deep merge these instead
 // or maybe use allOf which is built into json-schema
 const BasicHookToPollOperationSchema = JSON.parse(
-  JSON.stringify(BasicOperationSchema.schema)
+  JSON.stringify(BasicOperationSchema.schema),
 );
 
 BasicHookToPollOperationSchema.id = '/BasicHookToPollOperationSchema';
@@ -94,5 +94,5 @@ BasicHookToPollOperationSchema.antiExamples = [
 
 module.exports = makeSchema(
   BasicHookToPollOperationSchema,
-  BasicOperationSchema.dependencies
+  BasicOperationSchema.dependencies,
 );

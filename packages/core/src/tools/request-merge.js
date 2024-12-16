@@ -27,7 +27,7 @@ const caseInsensitiveMerge = (requestOne, requestTwo, requestThree) => {
     requestKeys.forEach((checkingKey) => {
       const foundKeyIndex = _.findIndex(
         existingKeys,
-        (key) => key.toLowerCase() === checkingKey.toLowerCase()
+        (key) => key.toLowerCase() === checkingKey.toLowerCase(),
       );
 
       if (foundKeyIndex === -1) {

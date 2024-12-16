@@ -307,15 +307,15 @@ describe('convert', () => {
           tempAppDir,
           'node_modules',
           'zapier-platform-core',
-          'index.js'
+          'index.js',
         ),
-        `module.exports = {version: "${visualAppDefinition.platformVersion}"}`
+        `module.exports = {version: "${visualAppDefinition.platformVersion}"}`,
       );
 
       const pkg = require(path.join(tempAppDir, 'package.json'));
       should(pkg.name).eql('my-w-istia-app');
       should(pkg.dependencies['zapier-platform-core']).eql(
-        visualAppDefinition.platformVersion
+        visualAppDefinition.platformVersion,
       );
       should(pkg.version).eql('1.0.2');
 
@@ -339,11 +339,11 @@ describe('convert', () => {
 
       should(idxFile.includes("require('./package.json').version")).be.true();
       should(
-        idxFile.includes("require('zapier-platform-core').version")
+        idxFile.includes("require('zapier-platform-core').version"),
       ).be.true();
       should(idxFile.includes('source:')).be.false();
       should(
-        idxFile.includes('const beforeRequest = async(z, bundle)')
+        idxFile.includes('const beforeRequest = async(z, bundle)'),
       ).be.false();
 
       // requiring the file ensures the js is syntactically valid
@@ -355,11 +355,11 @@ describe('convert', () => {
       const createFile = readTempFile('creates/create_project.js');
       should(createFile.includes('source:')).be.false();
       should(
-        createFile.includes('const inputFields = async (z, bundle)')
+        createFile.includes('const inputFields = async (z, bundle)'),
       ).be.true();
       should(createFile.includes('inputFields0')).be.false();
       should(
-        createFile.includes('const inputFields1 = async (z, bundle)')
+        createFile.includes('const inputFields1 = async (z, bundle)'),
       ).be.true();
 
       // renderStep -> perform etc
@@ -372,19 +372,19 @@ describe('convert', () => {
       const authenticationFile = readTempFile('authentication.js');
       should(authenticationFile.includes('source:')).be.false();
       should(
-        authenticationFile.includes('const test = async (z, bundle)')
+        authenticationFile.includes('const test = async (z, bundle)'),
       ).be.true();
       should(
         authenticationFile.includes(
-          'const refreshAccessToken = async (z, bundle)'
-        )
+          'const refreshAccessToken = async (z, bundle)',
+        ),
       ).be.true();
 
       // renderHydrators
       const hydratorsFile = readTempFile('hydrators.js');
       should(hydratorsFile.includes('source:')).be.false();
       should(
-        hydratorsFile.includes('getMovieDetails = async (z, bundle)')
+        hydratorsFile.includes('getMovieDetails = async (z, bundle)'),
       ).be.true();
     });
 
@@ -408,7 +408,7 @@ describe('convert', () => {
 
       const authenticationFile = readTempFile('authentication.js');
       should(
-        authenticationFile.includes('const test = async (z, bundle)')
+        authenticationFile.includes('const test = async (z, bundle)'),
       ).be.true();
       should(authenticationFile.includes('{ bad code }')).be.true();
     });
@@ -441,7 +441,7 @@ describe('convert', () => {
 
       const hydratorsFile = readTempFile('hydrators.js');
       should(
-        hydratorsFile.includes('getMovieDetails = async (z, bundle)')
+        hydratorsFile.includes('getMovieDetails = async (z, bundle)'),
       ).be.true();
       should(hydratorsFile.includes('{ bad code }')).be.true();
     });
@@ -459,7 +459,7 @@ describe('convert', () => {
 
       const createFile = readTempFile('creates/create_project.js');
       should(
-        createFile.includes('const inputFields = async (z, bundle)')
+        createFile.includes('const inputFields = async (z, bundle)'),
       ).be.true();
       should(createFile.includes("[{ source: 'not a function' }]")).be.true();
     });

@@ -90,7 +90,7 @@ const createRpcClient = (event) => {
       if (constants.IS_TESTING) {
         throw new Error(
           'No deploy key found. Make sure you set the `ZAPIER_DEPLOY_KEY` environment variable ' +
-            'to write tests that rely on the RPC API (i.e. z.stashFile)'
+            'to write tests that rely on the RPC API (i.e. z.stashFile)',
         );
       } else {
         throw new Error('No token found - cannot call RPC');
@@ -115,7 +115,7 @@ const createRpcClient = (event) => {
           // check if the ids match
           if (res.content.id !== id) {
             throw new Error(
-              `Got id ${res.content.id} but expected ${id} when calling RPC`
+              `Got id ${res.content.id} but expected ${id} when calling RPC`,
             );
           }
           if (res.content.error) {
@@ -130,7 +130,7 @@ const createRpcClient = (event) => {
 
         if (attempt === maxRetries || (res && res.status < 500)) {
           throw new Error(
-            `RPC request failed after ${attempt} attempts: ${err.message}`
+            `RPC request failed after ${attempt} attempts: ${err.message}`,
           );
         }
         // sleep for 100ms before retrying

@@ -38,17 +38,17 @@ if (process.platform === 'win32') {
   ensureDataDir = ensureDir.bind(
     null,
     'XDG_DATA_HOME',
-    path.join(HOME_DIR, '.local', 'share')
+    path.join(HOME_DIR, '.local', 'share'),
   );
   ensureCacheDir = ensureDir.bind(
     null,
     'XDG_CACHE_HOME',
-    path.join(HOME_DIR, '.cache')
+    path.join(HOME_DIR, '.cache'),
   );
   ensureConfigDir = ensureDir.bind(
     null,
     'XDG_CONFIG_HOME',
-    path.join(HOME_DIR, '.config')
+    path.join(HOME_DIR, '.config'),
   );
 }
 

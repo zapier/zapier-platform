@@ -25,5 +25,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [FunctionSchema]
+  [FunctionSchema],
 );

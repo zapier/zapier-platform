@@ -30,12 +30,12 @@ describe('ast (JS)', () => {
       const result = importActionInJsApp(
         sampleExportVarIndexJs,
         'getThing',
-        './a/b/c'
+        './a/b/c',
       );
       should(
         result.includes(
-          'const BlahTrigger = require(\'./triggers/blah\')\nconst getThing = require("./a/b/c");'
-        )
+          'const BlahTrigger = require(\'./triggers/blah\')\nconst getThing = require("./a/b/c");',
+        ),
       ).be.true();
     });
 
@@ -47,10 +47,10 @@ describe('ast (JS)', () => {
           .slice(2)
           .join('\n'),
         'getThing',
-        './a/b/c'
+        './a/b/c',
       );
       should(
-        result.startsWith('// comment!\nconst getThing = require("./a/b/c");')
+        result.startsWith('// comment!\nconst getThing = require("./a/b/c");'),
       ).be.true();
     });
 
@@ -58,10 +58,10 @@ describe('ast (JS)', () => {
       const result = importActionInJsApp(
         sampleExportVarIndexJs,
         'CryptoCreate',
-        './a/b/c'
+        './a/b/c',
       );
       should(
-        result.includes("const CryptoCreate = require('./a/b/c')")
+        result.includes("const CryptoCreate = require('./a/b/c')"),
       ).be.false();
     });
 
@@ -69,7 +69,7 @@ describe('ast (JS)', () => {
       const result = importActionInJsApp(
         sampleExportVarIndexJs,
         'Crypto',
-        './a/b/c'
+        './a/b/c',
       );
       should(result.includes('const Crypto = require("./a/b/c");')).be.true();
     });
@@ -92,10 +92,10 @@ describe('ast (JS)', () => {
           const firstIndex = codeByLine.indexOf('triggers: {');
           // assertions about what comes in the trigger property
           should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
-            firstIndex + 1
+            firstIndex + 1,
           );
           should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
-            firstIndex + 2
+            firstIndex + 2,
           );
         });
 
@@ -103,7 +103,7 @@ describe('ast (JS)', () => {
           const result = registerActionInJsApp(
             codeStr,
             'searches',
-            'findThing'
+            'findThing',
           );
           should(countOccurrences(result, 'triggers:')).eql(1);
           should(countOccurrences(result, 'searches:')).eql(1);
@@ -112,7 +112,7 @@ describe('ast (JS)', () => {
           const firstIndex = codeByLine.indexOf('searches: {');
           // assertions about what comes in the searches property
           should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
-            firstIndex + 1
+            firstIndex + 1,
           );
           should(codeByLine[firstIndex + 2]).eql('}');
         });
@@ -124,7 +124,7 @@ describe('ast (JS)', () => {
         const result = registerActionInJsApp(
           sampleLegacyAppIndexJs,
           'triggers',
-          'getThing'
+          'getThing',
         );
         should(countOccurrences(result, 'triggers:')).eql(2);
         should(countOccurrences(result, 'searches:')).eql(2);
@@ -134,14 +134,14 @@ describe('ast (JS)', () => {
         // find the second occurrence, the one that's not in the "legacy" property
         const operativeIndex = codeByLine.indexOf(
           'triggers: {',
-          codeByLine.indexOf('triggers: {') + 1
+          codeByLine.indexOf('triggers: {') + 1,
         );
 
         should(
-          codeByLine.indexOf('[businessTrigger.key]: businessTrigger,')
+          codeByLine.indexOf('[businessTrigger.key]: businessTrigger,'),
         ).eql(operativeIndex + 1);
         should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
-          operativeIndex + 2
+          operativeIndex + 2,
         );
         should(codeByLine[operativeIndex + 3]).eql('},');
       });
@@ -150,7 +150,7 @@ describe('ast (JS)', () => {
         const result = registerActionInJsApp(
           sampleLegacyAppIndexJs,
           'searches',
-          'findThing'
+          'findThing',
         );
         should(countOccurrences(result, 'searches:')).eql(2);
 
@@ -158,7 +158,7 @@ describe('ast (JS)', () => {
         // find the second occurrence, the one that's not in the "legacy" property
         const operativeIndex = codeByLine.indexOf('searches: {');
         should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
-          operativeIndex + 1
+          operativeIndex + 1,
         );
         should(codeByLine[operativeIndex + 2]).eql('},');
       });
@@ -167,7 +167,7 @@ describe('ast (JS)', () => {
         const result = registerActionInJsApp(
           sampleLegacyAppIndexJs,
           'resources',
-          'findThing'
+          'findThing',
         );
         should(countOccurrences(result, 'triggers:')).eql(2);
         should(countOccurrences(result, 'searches:')).eql(2);
@@ -177,7 +177,7 @@ describe('ast (JS)', () => {
         const firstIndex = codeByLine.indexOf('resources: {');
         // assertions about what comes in the trigger property
         should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
-          firstIndex + 1
+          firstIndex + 1,
         );
         should(codeByLine[firstIndex + 2]).eql('}');
       });
@@ -212,10 +212,10 @@ describe('ast (JS)', () => {
       ({ title, input, error, prop = 'triggers', varName = 'newThing' }) => {
         it(`should ${title}`, () => {
           should(() => registerActionInJsApp(input, prop, varName)).throw(
-            new RegExp(error)
+            new RegExp(error),
           );
         });
-      }
+      },
     );
   });
 });
@@ -253,10 +253,10 @@ describe('ast (TS)', () => {
           const codeByLine = result.split('\n').map((x) => x.trim());
           const firstIndex = codeByLine.indexOf('triggers: {');
           should(codeByLine.indexOf('[BlahTrigger.key]: BlahTrigger,')).eql(
-            firstIndex + 1
+            firstIndex + 1,
           );
           should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
-            firstIndex + 2
+            firstIndex + 2,
           );
         });
 
@@ -264,7 +264,7 @@ describe('ast (TS)', () => {
           const result = registerActionInTsApp(
             codeStr,
             'searches',
-            'findThing'
+            'findThing',
           );
           should(countOccurrences(result, 'triggers:')).eql(1);
           should(countOccurrences(result, 'searches:')).eql(1);
@@ -273,7 +273,7 @@ describe('ast (TS)', () => {
           const firstIndex = codeByLine.indexOf('searches: {');
           // assertions about what comes in the searches property
           should(codeByLine.indexOf('[findThing.key]: findThing')).eql(
-            firstIndex + 1
+            firstIndex + 1,
           );
           should(codeByLine[firstIndex + 2]).eql('}');
         });

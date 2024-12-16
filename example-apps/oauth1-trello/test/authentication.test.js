@@ -24,7 +24,7 @@ describe('oauth1 app', () => {
     // It's a good idea to store your Client ID and Secret in the environment rather than in code.
     if (!(process.env.CLIENT_ID && process.env.CLIENT_SECRET)) {
       throw new Error(
-        `Before running the tests, make sure CLIENT_ID and CLIENT_SECRET are available in the environment.`
+        `Before running the tests, make sure CLIENT_ID and CLIENT_SECRET are available in the environment.`,
       );
     }
   });
@@ -38,7 +38,7 @@ describe('oauth1 app', () => {
     };
     const tokens = await appTester(
       App.authentication.oauth1Config.getRequestToken,
-      bundle
+      bundle,
     );
     expect(tokens).toHaveProperty('oauth_token');
     expect(tokens).toHaveProperty('oauth_token_secret');
@@ -55,11 +55,11 @@ describe('oauth1 app', () => {
 
     const authorizeUrl = await appTester(
       App.authentication.oauth1Config.authorizeUrl,
-      bundle
+      bundle,
     );
 
     expect(authorizeUrl).toBe(
-      'https://trello.com/1/OAuthAuthorizeToken?oauth_token=4444&name=Zapier%2FTrello%20OAuth1%20Test'
+      'https://trello.com/1/OAuthAuthorizeToken?oauth_token=4444&name=Zapier%2FTrello%20OAuth1%20Test',
     );
   });
 });

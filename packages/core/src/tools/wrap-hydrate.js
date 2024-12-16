@@ -15,7 +15,7 @@ const wrapHydrate = (payload) => {
 
   if (payload.length > MAX_PAYLOAD_SIZE) {
     throw new DehydrateError(
-      `Oops! You passed too much data (${payload.length} bytes) to your dehydration function - try slimming it down under ${MAX_PAYLOAD_SIZE} bytes (usually by just passing the needed IDs).`
+      `Oops! You passed too much data (${payload.length} bytes) to your dehydration function - try slimming it down under ${MAX_PAYLOAD_SIZE} bytes (usually by just passing the needed IDs).`,
     );
   }
 
@@ -26,7 +26,7 @@ const wrapHydrate = (payload) => {
       crypto
         .createHmac('sha1', process.env._ZAPIER_ONE_TIME_SECRET)
         .update(payload)
-        .digest()
+        .digest(),
     ).toString('base64');
 
     payload += ':' + signature;

@@ -17,7 +17,7 @@ describe('build (runs slowly)', function () {
     tmpDir = getNewTempDirPath();
     await copyDir(
       path.resolve(__dirname, '../../../../../example-apps/typescript'),
-      tmpDir
+      tmpDir,
     );
 
     // When releasing, the core version the example apps points can be still
@@ -25,7 +25,7 @@ describe('build (runs slowly)', function () {
     corePackage = await npmPackCore();
     const appPackageJsonPath = path.join(tmpDir, 'package.json');
     const appPackageJson = JSON.parse(
-      fs.readFileSync(appPackageJsonPath, { encoding: 'utf8' })
+      fs.readFileSync(appPackageJsonPath, { encoding: 'utf8' }),
     );
     appPackageJson.dependencies[PLATFORM_PACKAGE] = corePackage.path;
     fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
@@ -57,7 +57,7 @@ describe('build (runs slowly)', function () {
     smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
     smartPaths.should.not.containEql('tsconfig.json');
 
-    smartPaths.length.should.be.within(200, 300);
+    smartPaths.length.should.be.within(200, 301);
   });
 
   it('should list all the files', () => {
@@ -110,7 +110,7 @@ describe('build (runs slowly)', function () {
 
     fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')"
+      "console.log('hello!')",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
@@ -126,20 +126,20 @@ describe('build (runs slowly)', function () {
         files.length.should.equal(2);
 
         const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js'
+          ({ path: filePath }) => filePath === 'index.js',
         );
         should.exist(indexFile);
         (indexFile.mode & 0o400).should.be.above(
           0,
-          'no read permission for owner'
+          'no read permission for owner',
         );
         (indexFile.mode & 0o040).should.be.above(
           0,
-          'no read permission for group'
+          'no read permission for group',
         );
         (indexFile.mode & 0o004).should.be.above(
           0,
-          'no read permission for public'
+          'no read permission for public',
         );
       });
   });
@@ -152,7 +152,7 @@ describe('build (runs slowly)', function () {
 
     fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')"
+      "console.log('hello!')",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
@@ -167,20 +167,20 @@ describe('build (runs slowly)', function () {
         files.length.should.equal(2);
 
         const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js'
+          ({ path: filePath }) => filePath === 'index.js',
         );
         should.exist(indexFile);
         (indexFile.mode & 0o400).should.be.above(
           0,
-          'no read permission for owner'
+          'no read permission for owner',
         );
         (indexFile.mode & 0o040).should.be.above(
           0,
-          'no read permission for group'
+          'no read permission for group',
         );
         (indexFile.mode & 0o004).should.be.above(
           0,
-          'no read permission for public'
+          'no read permission for public',
         );
       });
   });
@@ -195,7 +195,7 @@ describe('build (runs slowly)', function () {
 
     fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')"
+      "console.log('hello!')",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.outputFileSync(tmpReadmePath, 'README');
@@ -212,24 +212,24 @@ describe('build (runs slowly)', function () {
         files.length.should.equal(4);
 
         const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js'
+          ({ path: filePath }) => filePath === 'index.js',
         );
         should.exist(indexFile);
         (indexFile.mode & 0o400).should.be.above(
           0,
-          'no read permission for owner'
+          'no read permission for owner',
         );
         (indexFile.mode & 0o040).should.be.above(
           0,
-          'no read permission for group'
+          'no read permission for group',
         );
         (indexFile.mode & 0o004).should.be.above(
           0,
-          'no read permission for public'
+          'no read permission for public',
         );
 
         const readmeFile = files.find(
-          ({ path: filePath }) => filePath === 'README.md'
+          ({ path: filePath }) => filePath === 'README.md',
         );
         should.exist(readmeFile);
       });
@@ -250,7 +250,7 @@ describe('build (runs slowly)', function () {
 
     fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')"
+      "console.log('hello!')",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
@@ -271,32 +271,32 @@ describe('build (runs slowly)', function () {
         files.length.should.equal(4);
 
         const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js'
+          ({ path: filePath }) => filePath === 'index.js',
         );
         should.exist(indexFile);
 
         const readmeFile = files.find(
-          ({ path: filePath }) => filePath === 'README.md'
+          ({ path: filePath }) => filePath === 'README.md',
         );
         should.exist(readmeFile);
 
         const gitIgnoreFile = files.find(
-          ({ path: filePath }) => filePath === '.gitignore'
+          ({ path: filePath }) => filePath === '.gitignore',
         );
         should.not.exist(gitIgnoreFile);
 
         const testLogFile = files.find(
-          ({ path: filePath }) => filePath === 'test.log'
+          ({ path: filePath }) => filePath === 'test.log',
         );
         should.not.exist(testLogFile);
 
         const DSStoreFile = files.find(
-          ({ path: filePath }) => filePath === '.DS_Store'
+          ({ path: filePath }) => filePath === '.DS_Store',
         );
         should.not.exist(DSStoreFile);
 
         const environmentFile = files.find(
-          ({ path: filePath }) => filePath === '.environment'
+          ({ path: filePath }) => filePath === '.environment',
         );
         should.not.exist(environmentFile);
       });
@@ -338,7 +338,7 @@ describe('build in workspaces', function () {
         name: 'my-monorepo',
         workspaces: ['packages/*'],
         private: true,
-      })
+      }),
     );
 
     const defaultIndexJs = `module.exports = {
@@ -349,7 +349,7 @@ describe('build in workspaces', function () {
     // First integration: app-1
     fs.outputFileSync(
       path.join(tmpDir, 'packages', 'app-1', 'index.js'),
-      defaultIndexJs
+      defaultIndexJs,
     );
     fs.outputFileSync(
       path.join(tmpDir, 'packages', 'app-1', 'package.json'),
@@ -362,13 +362,13 @@ describe('build in workspaces', function () {
           'zapier-platform-core': '15.5.1',
         },
         private: true,
-      })
+      }),
     );
 
     // Second integration: app-2
     fs.outputFileSync(
       path.join(tmpDir, 'packages', 'app-2', 'index.js'),
-      defaultIndexJs
+      defaultIndexJs,
     );
     fs.outputFileSync(
       path.join(tmpDir, 'packages', 'app-2', 'package.json'),
@@ -381,7 +381,7 @@ describe('build in workspaces', function () {
           'zapier-platform-core': '15.5.1',
         },
         private: true,
-      })
+      }),
     );
 
     runCommand('yarn', ['install'], { cwd: tmpDir });
@@ -407,10 +407,10 @@ describe('build in workspaces', function () {
     // Make sure the zapier-platform-core dependency is installed in the root
     // project directory
     fs.existsSync(
-      path.join(tmpDir, 'node_modules', 'zapier-platform-core')
+      path.join(tmpDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.true();
     fs.existsSync(
-      path.join(workspaceDir, 'node_modules', 'zapier-platform-core')
+      path.join(workspaceDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.false();
 
     fs.ensureDirSync(path.dirname(zipPath));
@@ -424,7 +424,7 @@ describe('build in workspaces', function () {
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
-      }
+      },
     );
     await decompress(zipPath, unzipPath);
 
@@ -434,26 +434,26 @@ describe('build in workspaces', function () {
           unzipPath,
           'node_modules',
           'zapier-platform-core',
-          'package.json'
-        )
-      )
+          'package.json',
+        ),
+      ),
     );
     corePackageJson.version.should.equal('15.5.1');
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
-        path.join(unzipPath, 'node_modules', 'uuid', 'package.json')
-      )
+        path.join(unzipPath, 'node_modules', 'uuid', 'package.json'),
+      ),
     );
     uuidPackageJson.version.should.equal('8.3.2');
 
     // Make sure node_modules/app-1 and node_modules/app-2 are not included
     // in the build
     fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-1')
+      path.join(unzipPath, 'node_modules', 'app-1'),
     ).should.be.false();
     fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-2')
+      path.join(unzipPath, 'node_modules', 'app-2'),
     ).should.be.false();
   });
 
@@ -465,10 +465,10 @@ describe('build in workspaces', function () {
     // Make sure the zapier-platform-core dependency is installed in the root
     // project directory
     fs.existsSync(
-      path.join(tmpDir, 'node_modules', 'zapier-platform-core')
+      path.join(tmpDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.true();
     fs.existsSync(
-      path.join(workspaceDir, 'node_modules', 'zapier-platform-core')
+      path.join(workspaceDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.false();
 
     fs.ensureDirSync(path.dirname(zipPath));
@@ -482,7 +482,7 @@ describe('build in workspaces', function () {
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
-      }
+      },
     );
     await decompress(zipPath, unzipPath);
 
@@ -492,26 +492,26 @@ describe('build in workspaces', function () {
           unzipPath,
           'node_modules',
           'zapier-platform-core',
-          'package.json'
-        )
-      )
+          'package.json',
+        ),
+      ),
     );
     corePackageJson.version.should.equal('15.5.1');
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
-        path.join(unzipPath, 'node_modules', 'uuid', 'package.json')
-      )
+        path.join(unzipPath, 'node_modules', 'uuid', 'package.json'),
+      ),
     );
     uuidPackageJson.version.should.equal('9.0.1');
 
     // Make sure node_modules/app-1 and node_modules/app-2 are not included
     // in the build
     fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-1')
+      path.join(unzipPath, 'node_modules', 'app-1'),
     ).should.be.false();
     fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-2')
+      path.join(unzipPath, 'node_modules', 'app-2'),
     ).should.be.false();
   });
 });

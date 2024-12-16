@@ -42,7 +42,7 @@ describe('pollingThrottle', () => {
     results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.triggers.foo.operation.throttle must not use the "retry" field for a polling trigger.'
+      'instance.triggers.foo.operation.throttle must not use the "retry" field for a polling trigger.',
     );
 
     // for polling trigger with operation.type unset
@@ -50,7 +50,7 @@ describe('pollingThrottle', () => {
     results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.triggers.foo.operation.throttle must not use the "retry" field for a polling trigger.'
+      'instance.triggers.foo.operation.throttle must not use the "retry" field for a polling trigger.',
     );
   });
 

@@ -36,8 +36,8 @@ const stashResponse = async (input, response) => {
       encodedResponse,
       encodedResponse.length,
       crypto.randomUUID() + '.txt',
-      'text/plain'
-    )
+      'text/plain',
+    ),
   );
 };
 

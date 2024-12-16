@@ -127,5 +127,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [ThrottleOverrideObjectSchema]
+  [ThrottleOverrideObjectSchema],
 );

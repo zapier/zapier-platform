@@ -139,7 +139,7 @@ const makeMultipartForm = async (data, lazyFilesObject) => {
   _.zip(fileFieldKeys, fileMetas, fileStreams).forEach(
     ([k, meta, fileStream]) => {
       form.append(k, fileStream, meta);
-    }
+    },
   );
 
   return form;
@@ -161,7 +161,7 @@ const addFilesToRequestBodyFromPreResult = async (request, event) => {
         lazyFile = LazyFile(
           newFileValue,
           { filename, contentType },
-          { dontLoadUrl: !loadUrl }
+          { dontLoadUrl: !loadUrl },
         );
       } else if (typeof file === 'string') {
         lazyFile = LazyFile(file);
@@ -172,7 +172,7 @@ const addFilesToRequestBodyFromPreResult = async (request, event) => {
       }
       return result;
     },
-    {}
+    {},
   );
 
   delete request.headers['Content-Type'];
@@ -476,7 +476,7 @@ const compileLegacyScriptingSource = (source, zcli, app, logger) => {
     'ExpiredAuthException',
     'RefreshTokenException',
     'InvalidSessionException',
-    source + '\nreturn Zap;'
+    source + '\nreturn Zap;',
   )(
     underscore,
     require('crypto'),
@@ -495,7 +495,7 @@ const compileLegacyScriptingSource = (source, zcli, app, logger) => {
     StopRequestException,
     ExpiredAuthException,
     RefreshTokenException,
-    InvalidSessionException
+    InvalidSessionException,
   );
 };
 
@@ -503,7 +503,7 @@ const applyBeforeMiddleware = (befores, request, z, bundle) => {
   befores = befores || [];
   return befores.reduce(
     (prev, cur) => prev.then((req) => cur(req, z, bundle)),
-    Promise.resolve(request)
+    Promise.resolve(request),
   );
 };
 
@@ -739,7 +739,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
 
     // To know if request.files is changed by scripting
     event.originalFiles = _.cloneDeep(
-      _.get(convertedBundle, 'request.files') || {}
+      _.get(convertedBundle, 'request.files') || {},
     );
 
     const method = Zap[methodName].bind(Zap);
@@ -779,7 +779,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     preEventName,
     postEventName,
     fullEventName,
-    options
+    options,
   ) => {
     options = {
       // Options to deal with the final result returned by this function.
@@ -911,7 +911,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
           result = await runEvent(
             { key, name: postEventName, response },
             zcli,
-            bundle
+            bundle,
           );
         } catch (error) {
           scriptError = error;
@@ -978,14 +978,14 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   const runOAuth1GetRequestToken = (bundle) => {
     const url = _.get(
       app,
-      'legacy.authentication.oauth1Config.requestTokenUrl'
+      'legacy.authentication.oauth1Config.requestTokenUrl',
     );
 
     const templateContext = { ...bundle.authData, ...bundle.inputData };
     const consumerKey = renderTemplate(process.env.CLIENT_ID, templateContext);
     const consumerSecret = renderTemplate(
       process.env.CLIENT_SECRET,
-      templateContext
+      templateContext,
     );
 
     return fetchOAuth1Token(url, {
@@ -1022,7 +1022,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const consumerKey = renderTemplate(process.env.CLIENT_ID, templateContext);
     const consumerSecret = renderTemplate(
       process.env.CLIENT_SECRET,
-      templateContext
+      templateContext,
     );
 
     return fetchOAuth1Token(url, {
@@ -1077,11 +1077,11 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
     const clientSecret = renderTemplate(
       process.env.CLIENT_SECRET,
-      templateContext
+      templateContext,
     );
 
     const authFieldKeys = (_.get(app, 'authentication.fields') || []).map(
-      (f) => f.key
+      (f) => f.key,
     );
     authFieldKeys.push('_zapier_account_id');
 
@@ -1109,7 +1109,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         'auth.oauth2.token.pre',
         'auth.oauth2.token.post',
         undefined,
-        { defaultToResponse: true }
+        { defaultToResponse: true },
       );
     } catch (err) {
       if (err.name !== 'ResponseError' || Zap.pre_oauthv2_token) {
@@ -1131,7 +1131,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         'auth.oauth2.token.pre',
         'auth.oauth2.token.post',
         undefined,
-        { defaultToResponse: true }
+        { defaultToResponse: true },
       );
     }
 
@@ -1141,7 +1141,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   const runOAuth2RefreshAccessToken = async (bundle) => {
     const url = _.get(
       app,
-      'legacy.authentication.oauth2Config.refreshTokenUrl'
+      'legacy.authentication.oauth2Config.refreshTokenUrl',
     );
 
     const request = bundle.request;
@@ -1155,7 +1155,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     const clientId = renderTemplate(process.env.CLIENT_ID, templateContext);
     const clientSecret = renderTemplate(
       process.env.CLIENT_SECRET,
-      templateContext
+      templateContext,
     );
 
     const body = request.body;
@@ -1227,7 +1227,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'trigger.pre',
       'trigger.post',
       'trigger.poll',
-      { ensureType }
+      { ensureType },
     );
 
     if (needsFlattenedData) {
@@ -1322,7 +1322,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       bundle,
       key,
       'trigger.hook.subscribe.pre',
-      'trigger.hook.subscribe.post'
+      'trigger.hook.subscribe.post',
     );
   };
 
@@ -1347,7 +1347,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'trigger.hook.unsubscribe.pre',
       undefined,
       undefined,
-      { parseResponse: false }
+      { parseResponse: false },
     );
   };
 
@@ -1356,7 +1356,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     key,
     typeOf,
     url,
-    supportFullMethod = true
+    supportFullMethod = true,
   ) => {
     let preEventName, postEventName, fullEventName;
     if (url) {
@@ -1380,7 +1380,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       preEventName,
       postEventName,
       fullEventName,
-      { ensureType: 'array-wrap', resetRequestForFullMethod: true }
+      { ensureType: 'array-wrap', resetRequestForFullMethod: true },
     );
     return cleanCustomFields(fields);
   };
@@ -1438,7 +1438,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'create.pre',
       'create.post',
       'create.write',
-      { ensureType: 'object-first' }
+      { ensureType: 'object-first' },
     );
   };
 
@@ -1473,7 +1473,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'search.pre',
       'search.post',
       'search.search',
-      { ensureType: 'array-first' }
+      { ensureType: 'array-first' },
     );
   };
 
@@ -1487,7 +1487,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
       'search.resource.pre',
       'search.resource.post',
       'search.resource',
-      { parseResponseForPostMethod: true, ensureType: 'object-first' }
+      { parseResponseForPostMethod: true, ensureType: 'object-first' },
     );
   };
 
@@ -1550,7 +1550,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         app.beforeRequest,
         request,
         zcli,
-        bundle
+        bundle,
       );
     }
 

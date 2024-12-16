@@ -1,21 +1,21 @@
-'use strict'
+'use strict';
 
-const utils = require('../utils')
-const getStringByteSize = utils.getStringByteSize
-const baseItem = require('../resources/base-item')
-const fileResource = require('../resources/file')
+const utils = require('../utils');
+const getStringByteSize = utils.getStringByteSize;
+const baseItem = require('../resources/base-item');
+const fileResource = require('../resources/file');
 
 const createTextFile = (z, bundle) => {
-  const folder = bundle.inputData.folder || ''
-  let name = `${bundle.inputData.name}.txt`
+  const folder = bundle.inputData.folder || '';
+  let name = `${bundle.inputData.name}.txt`;
 
   // Remove potential duplicate extension
   if (name.endsWith('.txt.txt')) {
-    name = name.slice(0, -4)
+    name = name.slice(0, -4);
   }
 
-  const fileSize = getStringByteSize(bundle.inputData.file)
-  const contentType = 'text/plain; charset=UTF-8'
+  const fileSize = getStringByteSize(bundle.inputData.file);
+  const contentType = 'text/plain; charset=UTF-8';
 
   return baseItem.handleCreateWithSession(
     z,
@@ -24,9 +24,9 @@ const createTextFile = (z, bundle) => {
     fileSize,
     contentType,
     folder,
-    name
-  )
-}
+    name,
+  );
+};
 
 module.exports = {
   key: 'textFile',
@@ -77,4 +77,4 @@ module.exports = {
 
     outputFields: fileResource.outputFields,
   },
-}
+};

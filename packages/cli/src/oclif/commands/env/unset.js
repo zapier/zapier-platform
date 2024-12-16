@@ -1,3 +1,4 @@
+const { Args } = require('@oclif/core');
 const { cyan } = require('colors/safe');
 
 const BaseCommand = require('../../ZapierBaseCommand');
@@ -6,7 +7,7 @@ const { callAPI } = require('../../../utils/api');
 
 const successMessage = (version) =>
   `Successfully unset the following keys in the environment of version ${cyan(
-    version
+    version,
   )} (if they existed):`;
 
 class UnsetEnvCommand extends BaseCommand {
@@ -36,7 +37,7 @@ class UnsetEnvCommand extends BaseCommand {
     const app = await this.getWritableApp();
     if (!app.all_versions.includes(version)) {
       this.error(
-        `Version ${version} doesn't exist on integration "${app.title}"`
+        `Version ${version} doesn't exist on integration "${app.title}"`,
       );
     }
 
@@ -54,17 +55,15 @@ class UnsetEnvCommand extends BaseCommand {
   }
 }
 
-UnsetEnvCommand.args = [
-  {
-    name: 'version',
+UnsetEnvCommand.args = {
+  version: Args.string({
     description: 'The version to set the environment for.',
     required: true,
-  },
-  {
-    name: 'keys...',
+  }),
+  'keys...': Args.string({
     description: 'The keys to unset. Keys are case-insensitive.',
-  },
-];
+  }),
+};
 UnsetEnvCommand.flags = buildFlags();
 UnsetEnvCommand.description = `Unset environment variables for a version.`;
 UnsetEnvCommand.examples = [`zapier env:unset 1.2.3 SECRET OTHER`];

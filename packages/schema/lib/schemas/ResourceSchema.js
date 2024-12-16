@@ -164,5 +164,5 @@ module.exports = makeSchema(
     ResourceMethodCreateSchema,
     DynamicFieldsSchema,
     KeySchema,
-  ]
+  ],
 );

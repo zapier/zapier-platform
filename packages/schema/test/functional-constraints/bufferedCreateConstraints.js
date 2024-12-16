@@ -38,10 +38,10 @@ describe('bufferedCreateConstraints', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(2);
     results.errors[0].stack.should.eql(
-      'instance.creates.foo.operation must contain property "performBuffer" because property "buffer" is present.'
+      'instance.creates.foo.operation must contain property "performBuffer" because property "buffer" is present.',
     );
     results.errors[1].stack.should.eql(
-      'instance.creates.foo.operation must not contain property "perform" because it is mutually exclusive with property "buffer".'
+      'instance.creates.foo.operation must not contain property "perform" because it is mutually exclusive with property "buffer".',
     );
   });
 
@@ -53,10 +53,10 @@ describe('bufferedCreateConstraints', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(2);
     results.errors[0].stack.should.eql(
-      'instance.creates.foo.operation must contain property "buffer" because property "performBuffer" is present.'
+      'instance.creates.foo.operation must contain property "buffer" because property "performBuffer" is present.',
     );
     results.errors[1].stack.should.eql(
-      'instance.creates.foo.operation must not contain property "perform" because it is mutually exclusive with property "performBuffer".'
+      'instance.creates.foo.operation must not contain property "perform" because it is mutually exclusive with property "performBuffer".',
     );
   });
 
@@ -71,7 +71,7 @@ describe('bufferedCreateConstraints', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.creates.foo.operation must contain property "performBuffer" because property "buffer" is present.'
+      'instance.creates.foo.operation must contain property "performBuffer" because property "buffer" is present.',
     );
   });
 
@@ -86,10 +86,10 @@ describe('bufferedCreateConstraints', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(2);
     results.errors[0].stack.should.eql(
-      'instance.creates.foo.operation must contain property "performBuffer" because property "buffer" is present.'
+      'instance.creates.foo.operation must contain property "performBuffer" because property "buffer" is present.',
     );
     results.errors[1].stack.should.eql(
-      'instance.creates.foo.operation.buffer.groupedBy[0] cannot use optional or non-existent inputField "location".'
+      'instance.creates.foo.operation.buffer.groupedBy[0] cannot use optional or non-existent inputField "location".',
     );
   });
 
@@ -101,7 +101,7 @@ describe('bufferedCreateConstraints', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.creates.foo.operation must contain property "buffer" because property "performBuffer" is present.'
+      'instance.creates.foo.operation must contain property "buffer" because property "performBuffer" is present.',
     );
   });
 
@@ -113,7 +113,7 @@ describe('bufferedCreateConstraints', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.creates.foo.operation requires property "perform".'
+      'instance.creates.foo.operation requires property "perform".',
     );
   });
 

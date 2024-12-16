@@ -1,4 +1,4 @@
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const PromoteCommand = require('./promote');
@@ -24,13 +24,13 @@ class MigrateCommand extends BaseCommand {
 
     if (user && account) {
       this.error(
-        'Cannot specify both `--user` and `--account`. Use only one or the other.'
+        'Cannot specify both `--user` and `--account`. Use only one or the other.',
       );
     }
 
     if ((user || account) && percent !== 100) {
       this.error(
-        `Cannot specify both \`PERCENT\` and \`--${flagType}\`. Use only one or the other.`
+        `Cannot specify both \`PERCENT\` and \`--${flagType}\`. Use only one or the other.`,
       );
     }
 
@@ -45,12 +45,12 @@ class MigrateCommand extends BaseCommand {
       toVersion !== app.latest_version
     ) {
       this.log(
-        `You're trying to migrate all the users to ${toVersion}, which is not the current production version.`
+        `You're trying to migrate all the users to ${toVersion}, which is not the current production version.`,
       );
       promoteFirst = await this.confirm(
         `Do you want to promote ${toVersion} to production first?`,
         true,
-        true
+        true,
       );
     }
 
@@ -71,11 +71,11 @@ class MigrateCommand extends BaseCommand {
       this.startSpinner(
         `Starting migration from ${fromVersion} to ${toVersion} for ${
           user || account
-        }`
+        }`,
       );
     } else {
       this.startSpinner(
-        `Starting migration from ${fromVersion} to ${toVersion} for ${percent}%`
+        `Starting migration from ${fromVersion} to ${toVersion} for ${percent}%`,
       );
     }
     if (percent) {
@@ -91,42 +91,39 @@ class MigrateCommand extends BaseCommand {
     }
 
     this.log(
-      '\nMigration successfully queued, please check `zapier jobs` to track the status. Migrations usually take between 5-10 minutes.'
+      '\nMigration successfully queued, please check `zapier jobs` to track the status. Migrations usually take between 5-10 minutes.',
     );
   }
 }
 
 MigrateCommand.flags = buildFlags({
   commandFlags: {
-    user: flags.string({
+    user: Flags.string({
       description:
         "Migrates all of a users' Private Zaps within all accounts for which the specified user is a member",
     }),
-    account: flags.string({
+    account: Flags.string({
       description:
         "Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member",
     }),
   },
 });
 
-MigrateCommand.args = [
-  {
-    name: 'fromVersion',
+MigrateCommand.args = {
+  fromVersion: Args.string({
     required: true,
     description: 'The version FROM which to migrate users.',
-  },
-  {
-    name: 'toVersion',
+  }),
+  toVersion: Args.string({
     required: true,
     description: 'The version TO which to migrate users.',
-  },
-  {
-    name: 'percent',
+  }),
+  percent: Args.string({
     default: 100,
     description: 'Percentage (between 1 and 100) of users to migrate.',
-    parse: (input) => parseInt(input, 10),
-  },
-];
+    parse: async (input) => parseInt(input, 10),
+  }),
+};
 
 MigrateCommand.skipValidInstallCheck = true;
 MigrateCommand.examples = [

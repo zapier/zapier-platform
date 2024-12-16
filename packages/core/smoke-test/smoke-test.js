@@ -30,7 +30,7 @@ const setupZapierRC = () => {
   } else if (process.env.DEPLOY_KEY) {
     fs.writeFileSync(
       rcPath,
-      JSON.stringify({ deployKey: process.env.DEPLOY_KEY })
+      JSON.stringify({ deployKey: process.env.DEPLOY_KEY }),
     );
     hasRC = true;
   }
@@ -48,7 +48,7 @@ const setupZapierAppRC = (workdir) => {
         JSON.stringify({
           id: parseInt(process.env.TEST_APP_ID),
           key: process.env.TEST_APP_KEY,
-        })
+        }),
       );
       hasAppRC = true;
     }
@@ -83,9 +83,8 @@ const npmPackCore = (schemaPackagePath) => {
     encoding: 'utf8',
   });
   const packageJson = JSON.parse(originalPackageJsonText);
-  packageJson.dependencies[
-    'zapier-platform-schema'
-  ] = `file:${schemaPackagePath}`;
+  packageJson.dependencies['zapier-platform-schema'] =
+    `file:${schemaPackagePath}`;
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
 
   let filename;
@@ -113,7 +112,7 @@ const setupTempWorkingDir = () => {
   while (!workdir || fs.existsSync(workdir)) {
     workdir = path.join(
       tmpBaseDir,
-      'zapier-' + crypto.randomBytes(20).toString('hex')
+      'zapier-' + crypto.randomBytes(20).toString('hex'),
     );
   }
   fs.mkdirSync(workdir);
@@ -190,13 +189,13 @@ describe('smoke tests - setup will take some time', () => {
     context.schemaPackage.filename = npmPack(schemaDir);
     context.schemaPackage.path = path.join(
       schemaDir,
-      context.schemaPackage.filename
+      context.schemaPackage.filename,
     );
 
     context.corePackage.filename = npmPackCore(context.schemaPackage.path);
     context.corePackage.path = path.join(
       process.cwd(),
-      context.corePackage.filename
+      context.corePackage.filename,
     );
 
     context.workRepoDir = setupTempWorkingDir();
@@ -232,7 +231,7 @@ describe('smoke tests - setup will take some time', () => {
         npmInstalls(
           context.corePackage.path,
           context.cliPackage.path,
-          context.workAppDir
+          context.workAppDir,
         );
 
         context.hasAppRC = setupZapierAppRC(context.workAppDir);
@@ -241,7 +240,7 @@ describe('smoke tests - setup will take some time', () => {
           context.workAppDir,
           'node_modules',
           '.bin',
-          'zapier'
+          'zapier',
         );
       });
 
@@ -277,7 +276,7 @@ describe('smoke tests - setup will take some time', () => {
               PATH: process.env.PATH,
               DISABLE_ZAPIER_ANALYTICS: 1,
             },
-          }
+          },
         );
         if (proc.status !== 0) {
           console.log(proc.stdout);

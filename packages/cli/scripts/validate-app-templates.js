@@ -18,7 +18,7 @@ const validateAppTemplate = (template, rootTmpDir) => {
   const logStream = fse.createWriteStream(logFile);
 
   console.log(
-    `Validating ${template} app template, writing logs to ${logFile}`
+    `Validating ${template} app template, writing logs to ${logFile}`,
   );
   return fse
     .ensureFile(logFile)
@@ -53,7 +53,7 @@ fse.removeSync(rootTmpDir);
 fse.ensureDirSync(rootTmpDir);
 
 const tasks = _.map(appTemplates, (template) =>
-  validateAppTemplate(template, rootTmpDir)
+  validateAppTemplate(template, rootTmpDir),
 );
 
 Promise.all(tasks).then((results) => {
@@ -61,7 +61,7 @@ Promise.all(tasks).then((results) => {
   if (failures.length) {
     console.error(
       'these app templates failed to validate:',
-      failures.join(', ')
+      failures.join(', '),
     );
   } else {
     console.log('app templates validated successfully');

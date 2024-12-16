@@ -4,7 +4,7 @@
 const path = require('path');
 const fs = require('fs');
 
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
@@ -83,7 +83,7 @@ class ScaffoldCommand extends BaseCommand {
         context.language,
         context.indexFileResolved,
         context.actionType,
-        context.templateContext.KEY
+        context.templateContext.KEY,
       );
 
       this.stopSpinner({ success });
@@ -92,7 +92,7 @@ class ScaffoldCommand extends BaseCommand {
         const entryName = splitFileFromPath(context.indexFileResolved)[1];
 
         this.startSpinner(
-          `Unable to successfully rewrite your ${entryName}. Rolling back...`
+          `Unable to successfully rewrite your ${entryName}. Rolling back...`,
         );
         await writeFile(context.indexFileResolved, originalContents);
         this.stopSpinner();
@@ -104,7 +104,7 @@ class ScaffoldCommand extends BaseCommand {
             ` * \`[${context.templateContext.VARIABLE}.key]: ${context.templateContext.VARIABLE}\` in the "${context.actionTypePlural}" object in your exported integration definition.`,
             '',
             `Also, please file an issue at ${ISSUES_URL} with the contents of your ${context.indexFileResolved}.`,
-          ].join('\n')
+          ].join('\n'),
         );
       }
     }
@@ -160,43 +160,41 @@ class ScaffoldCommand extends BaseCommand {
   }
 }
 
-ScaffoldCommand.args = [
-  {
-    name: 'actionType',
+ScaffoldCommand.args = {
+  actionType: Args.string({
     help: 'What type of step type are you creating?',
     required: true,
     options: ['trigger', 'search', 'create', 'resource'],
-  },
-  {
-    name: 'noun',
+  }),
+  noun: Args.string({
     help: 'What sort of object this action acts on. For example, the name of the new thing to create',
     required: true,
-  },
-];
+  }),
+};
 
 ScaffoldCommand.flags = buildFlags({
   commandFlags: {
-    dest: flags.string({
+    dest: Flags.string({
       char: 'd',
       description:
         "Specify the new file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `[triggers|searches|creates]/{noun}`.",
     }),
-    'test-dest': flags.string({
+    'test-dest': Flags.string({
       description:
         "Specify the new test file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `test/[triggers|searches|creates]/{noun}`.",
     }),
-    entry: flags.string({
+    entry: Flags.string({
       char: 'e',
       description:
         "Supply the path to your integration's entry point (`index.js` or `src/index.ts`). This will try to automatically detect the correct file if not provided.",
     }),
-    force: flags.boolean({
+    force: Flags.boolean({
       char: 'f',
       description:
         'Should we overwrite an existing trigger/search/create file?',
       default: false,
     }),
-    'no-help': flags.boolean({
+    'no-help': Flags.boolean({
       description:
         "When scaffolding, should we skip adding helpful intro comments? Useful if this isn't your first rodeo.",
       default: false,

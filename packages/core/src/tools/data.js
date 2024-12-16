@@ -294,7 +294,7 @@ const truncateData = (data, maxLength) => {
       parent,
       key,
       item,
-      maxLength - length - truncateMessageSize
+      maxLength - length - truncateMessageSize,
     );
 
     if (itemWasTruncated) {

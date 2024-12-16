@@ -75,7 +75,7 @@ describe('mutuallyExclusiveFields', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      "instance.creates.foo.inputFields[1] must not contain children and list, as they're mutually exclusive."
+      "instance.creates.foo.inputFields[1] must not contain children and list, as they're mutually exclusive.",
     );
   });
 
@@ -146,7 +146,7 @@ describe('mutuallyExclusiveFields', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      "instance.creates.foo.inputFields[1] must not contain dict and list, as they're mutually exclusive."
+      "instance.creates.foo.inputFields[1] must not contain dict and list, as they're mutually exclusive.",
     );
   });
 
@@ -185,7 +185,7 @@ describe('mutuallyExclusiveFields', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      "instance.creates.foo.inputFields[0] must not contain dynamic and dict, as they're mutually exclusive."
+      "instance.creates.foo.inputFields[0] must not contain dynamic and dict, as they're mutually exclusive.",
     );
   });
 
@@ -263,7 +263,7 @@ describe('mutuallyExclusiveFields', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      "instance.creates.foo.inputFields[0] must not contain dynamic and choices, as they're mutually exclusive."
+      "instance.creates.foo.inputFields[0] must not contain dynamic and choices, as they're mutually exclusive.",
     );
   });
 });

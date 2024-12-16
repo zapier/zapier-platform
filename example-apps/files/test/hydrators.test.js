@@ -21,7 +21,7 @@ describe('downloadFile', () => {
 
     const url = await appTester(App.hydrators.downloadFile, bundle);
     expect(url).toContain(
-      'https://zapier-dev-files.s3.amazonaws.com/cli-platform/'
+      'https://zapier-dev-files.s3.amazonaws.com/cli-platform/',
     );
   });
 });

@@ -17,7 +17,7 @@ module.exports = makeSchema({
     },
     sample: {
       description:
-        "A legacy field that is no longer used by the editor, but it is still required for now and should match the value.",
+        'A legacy field that is no longer used by the editor, but it is still required for now and should match the value.',
       type: 'string',
       minLength: 1,
     },

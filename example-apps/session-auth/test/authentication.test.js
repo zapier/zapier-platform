@@ -16,7 +16,7 @@ describe('session auth app', () => {
 
     const newAuthData = await appTester(
       App.authentication.sessionConfig.perform,
-      bundle
+      bundle,
     );
 
     expect(newAuthData.sessionKey).toBe('secret');

@@ -12,7 +12,7 @@ const exportSchema = (InitSchema) => {
     exportedSchema.schemas[Schema.id.replace('/', '')] = _.omit(
       Schema.schema,
       'examples',
-      'antiExamples'
+      'antiExamples',
     );
     Schema.dependencies.map(addAndRecurse);
   };

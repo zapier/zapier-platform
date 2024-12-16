@@ -114,7 +114,7 @@ const getAppRawOverride = (rpc, appRawOverride) => {
       if (typeof appRawOverride !== 'string') {
         appRawExtension = mayMoveCreatesToResourcesInExtension(
           appRawOverride,
-          appRawExtension
+          appRawExtension,
         );
         appRawOverride = extendAppRaw(appRawOverride, appRawExtension);
         resolve(appRawOverride);

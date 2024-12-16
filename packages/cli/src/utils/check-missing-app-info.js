@@ -12,13 +12,13 @@ module.exports = (app) => {
     { apiName: 'role' },
   ];
   const missingRequiredFields = requiredFields.filter(
-    (field) => app[field.apiName] == null
+    (field) => app[field.apiName] == null,
   );
   if (missingRequiredFields.length) {
     throw new Error(
       `Your integration is missing required info (${missingRequiredFields
         .map((field) => field.cliName ?? field.apiName)
-        .join(', ')}). Please, run "zapier register" to add it.`
+        .join(', ')}). Please, run "zapier register" to add it.`,
     );
   }
 

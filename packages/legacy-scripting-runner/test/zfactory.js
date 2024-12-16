@@ -7,7 +7,7 @@ describe('z', () => {
   it('z.hash', (done) => {
     const result = z.hash('sha256', 'my awesome string');
     result.should.equal(
-      '97f13a1635524dd41daca6601e5d9fe07e10e62790851e527b039851b1f8b9a1'
+      '97f13a1635524dd41daca6601e5d9fe07e10e62790851e527b039851b1f8b9a1',
     );
     done();
   });
@@ -93,7 +93,7 @@ describe('z', () => {
     } catch (e) {
       e.name.should.eql('Error');
       e.message.should.eql(
-        `Error parsing response. We got: "${invalidJsonString}"`
+        `Error parsing response. We got: "${invalidJsonString}"`,
       );
       done();
     }

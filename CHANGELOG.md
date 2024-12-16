@@ -1,3 +1,86 @@
+## 16.0.0
+
+_released `2024-12-16`_
+
+Version `16.0.0` is a breaking change release that contains some important housekeeping updates that put us in a better spot to support some exciting changes coming up in future versions. **Here is a quick breakdown of the two main breaking changes:**
+
+**1. The minimum supported version of Node.js is now v18.18.** We’ve officially dropped support for Node.js v16.x, which has been designated [end-of-life since September 2023](https://nodejs.org/en/blog/announcements/nodejs16-eol).
+
+**2. Integrations using `zapier-platform-core@16.0.0` and onwards will default to running on the ARM architecture in AWS Lambda.**  Note: If you believe your integrations have run into runtime incompatibilities due to this change, please [reach out to our support team](https://developer.zapier.com/contact) and we may be able to opt your integration out of running on ARM.
+
+Here are the detailed release notes for this release (**note that ❗ denotes a breaking change**):
+
+### cli
+
+- :hammer: The `oclif` suite of packages have been upgraded to support the latest `oclif` major version (v4) ([#890](https://github.com/zapier/zapier-platform/pull/890)).
+
+### core
+
+- **:exclamation: Node.js v16.x is no longer supported ([#890](https://github.com/zapier/zapier-platform/pull/890))**
+
+- **:exclamation: Integrations running on `zapier-platform-core` v16 and onwards will run on the ARM architecture by default.** This means means they will run on AWS Graviton2 processors (previously, the AWS Lambda runtime was based on x86 architecture). For more details on what this means on a technical level, please check out: [AWS Lambda on Graviton 2](https://github.com/aws/aws-graviton-getting-started/blob/main/aws-lambda/README.md#aws-lambda-on-graviton2).
+
+- **:exclamation: Due to changes in the underlying `dotenv` library ([see changelog](https://github.com/motdotla/dotenv/blob/master/CHANGELOG.md)) ([#926](https://github.com/zapier/zapier-platform/pull/926)), when using `zapier.tools.env.inject()`, we always recommend "double quoting" your environment variable values.** Please make sure to consider if the following cases would apply to your `.env` files:
+  * ```SECRET_HASH=something-with-a-#-hash```: change it to ```SECRET_HASH="something-with-a-#-hash"```
+  * ```SECRET_BACKTICK=something-with-a-`-backtick```: change it to ```SECRET_BACKTICK="something-with-a-`-backtick"```
+* Add `skipEncodingChars` property typing for z.request object ([#928](https://github.com/zapier/zapier-platform/pull/928))
+
+### schema
+
+* N/A
+
+### schema-to-ts
+
+- :wrench: The `schema-to-ts` package is now part of the repository root "yarn workspaces" ([#913](https://github.com/zapier/zapier-platform/pull/913))
+
+### misc
+- :hammer: Dependency updates ([#890](https://github.com/zapier/zapier-platform/pull/890), [#926](https://github.com/zapier/zapier-platform/pull/926), [#927](https://github.com/zapier/zapier-platform/pull/927))
+  - repo root
+    - Add `@eslint/eslintrc@^3.2.0`
+    - Add `@eslint/js@^9.16.0`
+    - Add `globals@^15.13.0`
+    - Remove `eslint-plugin-standard`
+    - Update `lerna` from 6.4.1 to 8.0.2
+    - Update `husky` from 7.0.4 to 9.1.7
+    - Update `mocha` from 10.8.2 to 11.0.1
+    - Update `eslint` from 8.32.0 to 9.16.0
+    - Update `eslint-plugin-import` from 2.27.5 to 2.31.0
+    - Update `eslint-plugin-mocha` from 9.0.0 to 10.5.0
+    - Update `eslint-plugin-n` from 15.6.1 to 17.14.0
+    - Update `eslint-plugin-promise` from 6.1.1 to 7.2.1
+    - Update `prettier` from 2.8.3 to 3.4.1
+  - cli
+    - Add `oclif@^4.15.1`
+    - Add `@oclif/core@4.0.28`
+    - Add `@oclif/plugin-version@2.2.15`
+    - Remove `stdout-stderr`
+    - Remove `oclif/dev-cli`
+    - Remove `@oclif/command`
+    - Remove `@oclif/config`
+    - Update `archiver` 5.3.1 to 7.0.1
+    - Update `gulp-prettier` from 4.0.0 to 5.0.0
+    - Update `marked` 4.2.12 to 14.1.4
+    - Update `marked-terminal` from 5.2.0 to 7.2.1
+    - Update `read` from 2.1.0 to 4.0.0
+    - Update `fs-extra` from 11.1.1 to 11.2.0
+    - Update `yeoman-environment` from 3.3.0 to 3.19.3
+    - Update `semver` from 7.5.2 to 7.6.3
+    - Update `node-fetch` from 2.6.7 to 2.7.0
+    - Update `adm-zip` from 0.5.10 to 0.5.16
+    - Update `browserify` from 17.0.0 to 17.0.1
+    - Update `cli-table3` from 0.6.3 to 0.6.5
+    - Update `tmp` from 0.2.1 to 0.2.3
+    - Update `traverse` from 0.6.7 to 0.6.10
+    - Update prettier from 2.8.9 to 3.4.1
+  - core
+    - Update `dotenv` from 12.0.4 to 16.4.5
+    - Update `semver` from 7.5.2 to 7.6.3
+    - Update `node-fetch` from 2.6.7 to 2.7.0
+    - Update `form-data` from 4.0.0 to 4.0.1
+  - schema-to-ts
+    - Update `prettier` from 3.2.5 to 3.4.1
+
+
 ## 15.19.0
 
 _released `2024-11-25`_

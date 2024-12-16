@@ -63,7 +63,7 @@ describe('zcache: get, set, delete', () => {
     await cache
       .set(key, value)
       .should.be.rejectedWith(
-        "Type 'function' is not JSON-encodable (path: '')"
+        "Type 'function' is not JSON-encodable (path: '')",
       );
   });
 
@@ -114,21 +114,21 @@ describe('zcache: get, set, delete', () => {
     await cache
       .set('key', 'ok', 1, 'bad')
       .should.be.rejectedWith(
-        'scope must be an array of strings with values "user" or "auth"'
+        'scope must be an array of strings with values "user" or "auth"',
       );
   });
   it('zcache_set: bad scope is not ok', async () => {
     await cache
       .set('key', 'ok', 1, ['bad', 'scope'])
       .should.be.rejectedWith(
-        'scope must be an array of strings with values "user" or "auth"'
+        'scope must be an array of strings with values "user" or "auth"',
       );
   });
   it('zcache_set: mix of good and bad is not ok', async () => {
     await cache
       .set('key', 'ok', 1, ['bad', 'auth'])
       .should.be.rejectedWith(
-        'scope must be an array of strings with values "user" or "auth"'
+        'scope must be an array of strings with values "user" or "auth"',
       );
   });
 });

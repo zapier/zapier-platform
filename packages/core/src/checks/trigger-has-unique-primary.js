@@ -53,7 +53,7 @@ const stringifyValuesFromPrimaryKeys = (result, primaryKeys) => {
       }
       if (!isPrimitive(v)) {
         throw new TypeError(
-          `As part of primary key, field "${k}" must be a primitive (non-object like number or string)`
+          `As part of primary key, field "${k}" must be a primitive (non-object like number or string)`,
         );
       }
       return [k, v];

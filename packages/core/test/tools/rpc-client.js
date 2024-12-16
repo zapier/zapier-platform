@@ -26,7 +26,7 @@ describe('rpc client', () => {
       })
       .catch((err) => {
         err.message.should.eql(
-          'RPC request failed after 3 attempts: this is an expected explosion'
+          'RPC request failed after 3 attempts: this is an expected explosion',
         );
       });
   });

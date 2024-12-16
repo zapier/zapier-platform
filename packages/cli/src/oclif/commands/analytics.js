@@ -1,5 +1,5 @@
 const BaseCommand = require('../ZapierBaseCommand');
-const { flags } = require('@oclif/command');
+const { Flags } = require('@oclif/core');
 const { buildFlags } = require('../buildFlags');
 const {
   currentAnalyticsMode,
@@ -13,8 +13,8 @@ class AnalyticsCommand extends BaseCommand {
     const currentMode = await currentAnalyticsMode();
     this.log(
       `The current analytics mode is ${colors.cyan(
-        currentMode
-      )}. Analytics may be skipped anyway if you've got DISABLE_ZAPIER_ANALYTICS set to a truthy value.`
+        currentMode,
+      )}. Analytics may be skipped anyway if you've got DISABLE_ZAPIER_ANALYTICS set to a truthy value.`,
     );
 
     if (this.flags.mode) {
@@ -23,8 +23,8 @@ class AnalyticsCommand extends BaseCommand {
     } else {
       this.log(
         `You can see what data is sent by running \`${colors.yellow(
-          'DEBUG=zapier:analytics zapier someCommand'
-        )}\`.\n\nYou can change your analytics preferences by re-running this command with the \`--mode\` flag.\n\nThe data collected is as generic as we can make it while still getting useful input. No specific information about your filesystem is collected. Your Zapier user id is collected so that we can better debug issues. We will never use this data for any advertising puposes.`
+          'DEBUG=zapier:analytics zapier someCommand',
+        )}\`.\n\nYou can change your analytics preferences by re-running this command with the \`--mode\` flag.\n\nThe data collected is as generic as we can make it while still getting useful input. No specific information about your filesystem is collected. Your Zapier user id is collected so that we can better debug issues. We will never use this data for any advertising puposes.`,
       );
     }
   }
@@ -32,7 +32,7 @@ class AnalyticsCommand extends BaseCommand {
 
 AnalyticsCommand.flags = buildFlags({
   commandFlags: {
-    mode: flags.string({
+    mode: Flags.string({
       char: 'm',
       options: Object.keys(modes),
       description:
