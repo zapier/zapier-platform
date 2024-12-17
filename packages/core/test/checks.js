@@ -319,6 +319,28 @@ describe('checks', () => {
     );
     errors.should.be.empty();
   });
+
+  it('should error if input field is missing key', () => {
+    const results = [{ key: 'foo' }, { title: 'bar' }, { status: 400 }];
+    const errors = checks.dynamicFieldsHaveKeys.run(
+      'creates.blah.operation.inputFields',
+      results,
+    );
+    errors.length.should.eql(2);
+    errors[0].should.eql('inputFields[1] is missing a key');
+    errors[1].should.eql('inputFields[2] is missing a key');
+  });
+
+  it('should error if output field is missing key', () => {
+    const results = [{ title: 'bar' }, { key: 'foo' }, { status: 400 }];
+    const errors = checks.dynamicFieldsHaveKeys.run(
+      'creates.blah.operation.outputFields',
+      results,
+    );
+    errors.length.should.eql(2);
+    errors[0].should.eql('outputFields[0] is missing a key');
+    errors[1].should.eql('outputFields[2] is missing a key');
+  });
 });
 
 describe('checkOutput', () => {
