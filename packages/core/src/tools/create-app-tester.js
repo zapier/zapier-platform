@@ -62,7 +62,7 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       method,
       bundle,
       storeKey,
-      callback_url: 'https://auth-json-server.zapier-staging.com/echo',
+      callback_url: 'https://hooks.zapier.com/hooks/callback/0193d9fa-4b71-303c-9b8b-6d988174cb4a/pvh_9Em7nK73CXBsUlMvOorzGyU/',
       zcacheTestObj: appTester.zcacheTestObj,
     };
 
