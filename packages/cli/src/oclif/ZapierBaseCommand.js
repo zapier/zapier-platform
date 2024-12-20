@@ -346,7 +346,7 @@ class ZapierBaseCommand extends Command {
     if (!this.args) {
       throw new Error('unable to record analytics until args are parsed');
     }
-    return recordAnalytics(this.id, true, Object.keys(this.args), this.flags);
+    return recordAnalytics(this.id, true, Object.values(this.args), this.flags);
   }
 }
 
