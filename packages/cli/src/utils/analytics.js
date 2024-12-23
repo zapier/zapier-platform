@@ -39,7 +39,7 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
 
   // Some commands ( like "zapier convert" ) won't have an app directory when called.
   // Instead, having the app ID in the arguments.
-  // Fallback to using "integrationid" in arguments ( if it's there )
+  // In this case, we fallback to using "integrationid" in arguments ( if it's there )
   // and don't want to "explode" if appID is missing
   const linkedAppId =
     (await getLinkedAppConfig(undefined, false))?.id || integrationID;
