@@ -73,6 +73,9 @@ const stringifyResponseContent = async (response) => {
 //   global.fetch = wrapFetchWithLogger(global.fetch, logger);
 const wrapFetchWithLogger = (fetchFunc, logger) => {
   if (fetchFunc.patchedByZapier) {
+    // Important not to reuse logger between calls, because we always destroy
+    // the logger at the end of a Lambda call.
+    fetchFunc.zapierLogger = logger;
     return fetchFunc;
   }
 
@@ -82,25 +85,29 @@ const wrapFetchWithLogger = (fetchFunc, logger) => {
     if (requestInfo && !isZapierUserAgent(requestInfo.headers)) {
       const responseContentType = response.headers.get('content-type');
 
-      logger(`${response.status} ${requestInfo.method} ${requestInfo.url}`, {
-        log_type: 'http',
-        request_type: 'patched-devplatform-outbound',
-        request_url: requestInfo.url,
-        request_method: requestInfo.method,
-        request_headers: requestInfo.headers,
-        request_data: requestInfo.data,
-        request_via_client: false,
-        response_status_code: response.status,
-        response_headers: Object.fromEntries(response.headers.entries()),
-        response_content: shouldIncludeResponseContent(responseContentType)
-          ? await stringifyResponseContent(response)
-          : '<unsupported format>',
-      });
+      newFetch.zapierLogger(
+        `${response.status} ${requestInfo.method} ${requestInfo.url}`,
+        {
+          log_type: 'http',
+          request_type: 'patched-devplatform-outbound',
+          request_url: requestInfo.url,
+          request_method: requestInfo.method,
+          request_headers: requestInfo.headers,
+          request_data: requestInfo.data,
+          request_via_client: false,
+          response_status_code: response.status,
+          response_headers: Object.fromEntries(response.headers.entries()),
+          response_content: shouldIncludeResponseContent(responseContentType)
+            ? await stringifyResponseContent(response)
+            : '<unsupported format>',
+        },
+      );
     }
     return response;
   };
 
   newFetch.patchedByZapier = true;
+  newFetch.zapierLogger = logger;
   return newFetch;
 };
 

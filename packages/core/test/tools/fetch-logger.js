@@ -204,4 +204,27 @@ describe('wrap fetch with logger', () => {
     // No logs should be created
     assert.equal(logs.length, 0);
   });
+
+  it('should not reuse logger between calls', async () => {
+    const otherLogs = [];
+    const anotherLogger = (message, data) => {
+      otherLogs.push({ message, data });
+    };
+    const evenNewerFetch = wrapFetchWithLogger(newFetch, anotherLogger);
+
+    const url = `${HTTPBIN_URL}/get`;
+    const response = await evenNewerFetch(url);
+
+    assert.equal(response.status, 200);
+    assert.equal(logs.length, 0);
+
+    assert.equal(otherLogs.length, 1);
+
+    const log = otherLogs[0];
+    assert.equal(log.message, `200 GET ${url}`);
+    assert.equal(log.data.request_url, url);
+    assert.equal(log.data.request_method, 'GET');
+    assert.equal(log.data.request_data, '');
+    assert.equal(log.data.response_status_code, 200);
+  });
 });
