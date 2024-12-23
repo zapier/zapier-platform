@@ -21,7 +21,7 @@ const shouldSkipAnalytics = (mode) =>
   process.env.DISABLE_ZAPIER_ANALYTICS ||
   mode === ANALYTICS_MODES.disabled;
 
-const recordAnalytics = async (command, isValidCommand, argValues, flags) => {
+const recordAnalytics = async (command, isValidCommand, argNames, flags) => {
   const analyticsMode = await currentAnalyticsMode();
 
   if (shouldSkipAnalytics(analyticsMode)) {
@@ -35,12 +35,11 @@ const recordAnalytics = async (command, isValidCommand, argValues, flags) => {
   const analyticsBody = {
     command,
     isValidCommand,
-    numArgs: argValues.length,
-    arguments: argValues,
+    numArgs: argNames.length,
     app_id: linkedAppId,
     flags: {
       ...flags,
-      ...(command === 'help' ? { helpCommand: argValues[0] } : {}), // include the beginning of args so we know what they want help on
+      ...(command === 'help' ? { helpCommand: argNames[0] } : {}), // include the beginning of args so we know what they want help on
     },
     cliVersion: pkg.version,
     os: shouldRecordAnonymously ? undefined : process.platform,
