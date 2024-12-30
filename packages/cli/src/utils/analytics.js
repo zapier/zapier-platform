@@ -49,7 +49,7 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     command,
     isValidCommand,
     numArgs: argKeys.length,
-    app_id: linkedAppId,
+    appId: linkedAppId,
     flags: {
       ...flags,
       ...(command === 'help' ? { helpCommand: argKeys[0] } : {}), // include the beginning of args so we know what they want help on
