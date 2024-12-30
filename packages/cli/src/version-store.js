@@ -17,4 +17,5 @@ module.exports = [
   { nodeVersion: '14', npmVersion: '>=5.6.0' }, // 12.x
   { nodeVersion: '16', npmVersion: '>=5.6.0' }, // 13.x
   { nodeVersion: '18', npmVersion: '>=5.6.0' }, // 15.x
+  { nodeVersion: '18', npmVersion: '>=10.7.0' }, // 16.x
 ];
