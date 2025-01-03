@@ -52,7 +52,7 @@ class SetEnvCommand extends BaseCommand {
 
     if (this.flags.force) {
       requestOptions.extraHeaders = {
-        'X-Force-Env-Var-Update': true,
+        'X-Force-Env-Var-Update': 'true',
       };
     }
 
