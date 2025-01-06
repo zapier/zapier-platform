@@ -42,7 +42,7 @@
   },
   "engineStrict": true,
   "dependencies": {
-    "@zapier/secret-scrubber": "^1.1.1",
+    "@zapier/secret-scrubber": "^1.1.2",
     "bluebird": "3.7.2",
     "content-disposition": "0.5.4",
     "dotenv": "16.4.6",

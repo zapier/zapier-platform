@@ -3216,10 +3216,10 @@
     js-yaml "^3.10.0"
     tslib "^2.4.0"
 
-"@zapier/secret-scrubber@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@zapier/secret-scrubber/-/secret-scrubber-1.1.1.tgz#ccb7b75e320d5662efd2ff23eb66cf7fea764a39"
-  integrity sha512-4w0lsz8lpsl/+c1u8h5LDNioCdLloPobryH7voawgO6hoPkwJxYhXB1xZYLAxycFSZmCXajRmzZyzma26pdIOQ==
+"@zapier/secret-scrubber@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@zapier/secret-scrubber/-/secret-scrubber-1.1.2.tgz#4fc237c6fe0d0d91c787a1933d8d34562dfdf25f"
+  integrity sha512-a4siIYOLgLkfd4TY5FP2gO0Qu4I4kf781wnyR2aMMZbI7CmXD1VS3JcOjPpVHDlC0GKynF/yJd+CmZLkfIUEYg==
   dependencies:
     create-hash "^1.2.0"
     lodash.isplainobject "^4.0.6"
