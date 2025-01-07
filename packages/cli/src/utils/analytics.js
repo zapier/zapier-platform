@@ -21,6 +21,24 @@ const shouldSkipAnalytics = (mode) =>
   process.env.DISABLE_ZAPIER_ANALYTICS ||
   mode === ANALYTICS_MODES.disabled;
 
+const cleanArgs = (args) => {
+  // Do not record "arguments" for following commands
+  const BLACKLISTED_ARGS = [
+    'key-value pairs...',
+    'keys...',
+    'path',
+    'email',
+    'message',
+  ];
+  const cleanedArgs = Object.keys(args)
+    .filter((key) => !BLACKLISTED_ARGS.includes(key))
+    .reduce((obj, key) => {
+      obj[key] = args[key];
+      return obj;
+    }, {});
+  return cleanedArgs;
+};
+
 const recordAnalytics = async (command, isValidCommand, args, flags) => {
   const analyticsMode = await currentAnalyticsMode();
 
@@ -28,6 +46,9 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     debug('skipping analytics');
     return;
   }
+  debug('args...', args);
+  const cleanedArgs = cleanArgs(args);
+  debug('cleaned args...', cleanedArgs);
   const argKeys = Object.keys(args);
 
   const shouldRecordAnonymously = analyticsMode === ANALYTICS_MODES.anonymous;
