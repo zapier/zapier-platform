@@ -21,27 +21,6 @@ const shouldSkipAnalytics = (mode) =>
   process.env.DISABLE_ZAPIER_ANALYTICS ||
   mode === ANALYTICS_MODES.disabled;
 
-const cleanValues = (args) => {
-  // List of arguments we don't want to record.
-  const doNotRecord = [
-    'key-value pairs...',
-    'keys...',
-    'path',
-    'email',
-    'message',
-    'user',
-    'account',
-    'redirect-uri',
-    'inputData',
-  ];
-  return Object.keys(args)
-    .filter((key) => !doNotRecord.includes(key))
-    .reduce((obj, key) => {
-      obj[key] = args[key];
-      return obj;
-    }, {});
-};
-
 const recordAnalytics = async (command, isValidCommand, args, flags) => {
   const analyticsMode = await currentAnalyticsMode();
 
@@ -49,10 +28,8 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     debug('skipping analytics');
     return;
   }
-  const cleanedArgs = cleanValues(args);
-  const cleanedFlags = cleanValues(flags);
   const argKeys = Object.keys(args);
-
+  const flagKeys = Object.keys(flags);
   const shouldRecordAnonymously = analyticsMode === ANALYTICS_MODES.anonymous;
 
   const integrationIDKey = argKeys.find(
@@ -74,10 +51,10 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     numArgs: argKeys.length,
     appId: linkedAppId,
     flags: {
-      ...cleanedFlags,
+      ...flagKeys,
       ...(command === 'help' ? { helpCommand: argKeys[0] } : {}), // include the beginning of args so we know what they want help on
     },
-    args: shouldRecordAnonymously ? undefined : cleanedArgs,
+    argsKeys: argKeys,
     cliVersion: pkg.version,
     os: shouldRecordAnonymously ? undefined : process.platform,
   };
