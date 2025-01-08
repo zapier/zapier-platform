@@ -97,7 +97,6 @@ const callAPI = async (
   }
 
   debug(`>> ${requestOptions.method} ${requestOptions.url || res.url}`);
-  debug(`>> Request Headers: ${JSON.stringify(requestOptions.headers)}`);
 
   if (requestOptions.body) {
     const replacementStr = 'raw zip removed in logs';

@@ -100,7 +100,6 @@ SetEnvCommand.flags = buildFlags({
       char: 'f',
       description:
         'Force the update of environment variables regardless if the app version is production or not. Use with caution.',
-      hidden: true,
     }),
   },
 });

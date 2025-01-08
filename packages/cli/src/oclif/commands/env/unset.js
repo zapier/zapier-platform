@@ -61,6 +61,8 @@ class UnsetEnvCommand extends BaseCommand {
           `App version ${version} is the production version. Are you sure you want to unset potentially live environment variables?` +
             ` If so, run this command again with the --force flag.`,
         );
+      } else {
+        throw e;
       }
     }
 
@@ -84,7 +86,6 @@ UnsetEnvCommand.flags = buildFlags({
       char: 'f',
       description:
         'Force the update of environment variables regardless if the app version is production or not. Use with caution.',
-      hidden: true,
     }),
   },
 });
