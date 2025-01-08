@@ -51,10 +51,11 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     numArgs: argKeys.length,
     appId: linkedAppId,
     flags: {
-      ...flagKeys,
+      ...flags,
       ...(command === 'help' ? { helpCommand: argKeys[0] } : {}), // include the beginning of args so we know what they want help on
     },
     argsKeys: argKeys,
+    flagKeys: flagKeys,
     cliVersion: pkg.version,
     os: shouldRecordAnonymously ? undefined : process.platform,
   };
