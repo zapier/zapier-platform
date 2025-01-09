@@ -1,3 +1,30 @@
+
+## 16.1.0
+
+_released `2025-01-09`_
+
+### cli
+
+- :bug: Prevent malformed field definitions from causing undefined behaviors. [#934](https://github.com/zapier/zapier-platform/pull/934)
+- :bug: Update dynamic-dropdown template to use `swapi.info`. [#935](https://github.com/zapier/zapier-platform/pull/935)
+- :tada: Include integration `appId` and argument keys in collected analytics. [#939](https://github.com/zapier/zapier-platform/pull/939), [#944](https://github.com/zapier/zapier-platform/pull/944)
+- :tada: Include `version` column when fetching history logs. [#941](https://github.com/zapier/zapier-platform/pull/941)
+- :hammer: Update `zapier-secret-scrubber` from 1.1.1 to 1.1.2. [#943](https://github.com/zapier/zapier-platform/pull/943)
+- :hammer: Update `version-store` and package as a followup to v16 release. [#940](https://github.com/zapier/zapier-platform/pull/940)
+
+### core
+
+- :bug: Prevent logger instance reuse across Lambda invocations. [#938](https://github.com/zapier/zapier-platform/pull/938)
+
+### schema
+
+None!
+
+### schema-to-ts
+
+None!
+
+
 ## 16.0.0
 
 _released `2024-12-16`_
