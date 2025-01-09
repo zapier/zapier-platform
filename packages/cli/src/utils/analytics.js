@@ -29,7 +29,7 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     return;
   }
   const argKeys = Object.keys(args);
-
+  const flagKeys = Object.keys(flags);
   const shouldRecordAnonymously = analyticsMode === ANALYTICS_MODES.anonymous;
 
   const integrationIDKey = argKeys.find(
@@ -50,10 +50,8 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     isValidCommand,
     numArgs: argKeys.length,
     appId: linkedAppId,
-    flags: {
-      ...flags,
-      ...(command === 'help' ? { helpCommand: argKeys[0] } : {}), // include the beginning of args so we know what they want help on
-    },
+    argsKeys: argKeys,
+    flagKeys: flagKeys,
     cliVersion: pkg.version,
     os: shouldRecordAnonymously ? undefined : process.platform,
   };
