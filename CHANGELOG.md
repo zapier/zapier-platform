@@ -9,6 +9,8 @@ _released `2025-01-09`_
 - :bug: Update dynamic-dropdown template to use `swapi.info`. [#935](https://github.com/zapier/zapier-platform/pull/935)
 - :tada: Include integration `appId` and argument keys in collected analytics. [#939](https://github.com/zapier/zapier-platform/pull/939), [#944](https://github.com/zapier/zapier-platform/pull/944)
 - :tada: Include `version` column when fetching history logs. [#941](https://github.com/zapier/zapier-platform/pull/941)
+- :hammer: Update `zapier-secret-scrubber` from 1.1.1 to 1.1.2. [#943](https://github.com/zapier/zapier-platform/pull/943)
+- :hammer: Update `version-store` and package as a followup to v16 release. [#940](https://github.com/zapier/zapier-platform/pull/940)
 
 ### core
 
@@ -22,10 +24,6 @@ None!
 
 None!
 
-### misc
-
-- :hammer: Update `zapier-secret-scrubber` from 1.1.1 to 1.1.2. [#943](https://github.com/zapier/zapier-platform/pull/943)
-- :hammer: Update `version-store` and package as a followup to v16 release. [#940](https://github.com/zapier/zapier-platform/pull/940)
 
 ## 16.0.0
 
