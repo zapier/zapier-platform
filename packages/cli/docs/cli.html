@@ -352,7 +352,7 @@ a code {
 <li>Copies all code into the temporary folder</li>
 <li>Adds an entry point: <code>zapierwrapper.js</code></li>
 <li>Generates and validates app definition.</li>
-<li>Detects dependencies via browserify (optional, on by default)</li>
+<li>Detects dependencies via esbuild (optional, on by default)</li>
 <li>Zips up all needed <code>.js</code> files. If you want to include more files, add a &quot;includeInBuild&quot; property (array with strings of regexp paths) to your <code>.zapierapprc</code>.</li>
 <li>Moves the zip to <code>build/build.zip</code> and <code>build/source.zip</code> and deletes the temp folder</li>
 </ul><p>This command is typically followed by <code>zapier upload</code>.</p><p><strong>Flags</strong></p><ul>
