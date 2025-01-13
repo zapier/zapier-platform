@@ -1,3 +1,10 @@
+## 16.1.1
+
+_released `2025-01-13`_
+
+### cli
+
+- :bug: Fix "integration check reference" doc URL's anchor tags [#947](https://github.com/zapier/zapier-platform/pull/947)
 
 ## 16.1.0
 
