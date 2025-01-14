@@ -68,6 +68,7 @@ const callAPI = async (
     method: options.method || 'GET',
     body: options.body ? JSON.stringify(options.body) : null,
     headers: {
+      ...options.extraHeaders, // extra headers first so they don't override defaults
       Accept: 'application/json',
       'Content-Type': 'application/json; charset=utf-8',
       'User-Agent': `${constants.PACKAGE_NAME}/${constants.PACKAGE_VERSION}`,
