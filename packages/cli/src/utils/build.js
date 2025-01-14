@@ -60,10 +60,10 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
     entryPoints,
     bundle: true,
     platform: 'node',
-    // outfile: './build/bundle.js',
     outdir: './build',
     metafile: true,
     logLevel: 'warning',
+    external: ['../test/userapp'],
   });
 
   return Object.keys(result.metafile.inputs).map((path) =>
