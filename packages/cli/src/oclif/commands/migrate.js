@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
@@ -6,6 +7,41 @@ const { callAPI } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
 
 class MigrateCommand extends BaseCommand {
+  async run_migration_pre_checks(app, requestBody) {
+    const assumeYes = 'yes' in this.flags;
+    const url = `/apps/${app.id}/migrations/pre-checks`;
+
+    try {
+      await callAPI(
+        url,
+        {
+          method: 'POST',
+          body: requestBody,
+        },
+        true,
+      );
+    } catch (response) {
+      // 409 from the backend specifically signals pre-checks failed
+      if (response.status === 409) {
+        const softCheckErrors = _.get(response, 'json.errors');
+
+        this.log('Non-blocking checks prior to migration returned warnings:');
+        this.log(softCheckErrors);
+        this.log();
+
+        const shouldContinuePreChecks =
+          assumeYes ||
+          (await this.confirm(
+            'Would you like to continue with the migration regardless?',
+          ));
+
+        if (!shouldContinuePreChecks) {
+          this.error('Cancelled migration.');
+        }
+      }
+    }
+  }
+
   async perform() {
     const percent = this.args.percent;
     if (isNaN(percent) || percent < 1 || percent > 100) {
@@ -14,6 +50,7 @@ class MigrateCommand extends BaseCommand {
 
     const account = this.flags.account;
     const user = this.flags.user;
+
     const fromVersion = this.args.fromVersion;
     const toVersion = this.args.toVersion;
     let flagType;
@@ -67,6 +104,11 @@ class MigrateCommand extends BaseCommand {
         email_type: flagType,
       },
     };
+
+    this.startSpinner(`Running pre-checks before migration`);
+    await this.run_migration_pre_checks(app, body);
+    this.stopSpinner();
+
     if (user || account) {
       this.startSpinner(
         `Starting migration from ${fromVersion} to ${toVersion} for ${
@@ -86,6 +128,19 @@ class MigrateCommand extends BaseCommand {
 
     try {
       await callAPI(url, { method: 'POST', body });
+    } catch (errorResponse) {
+      // Verify if this error is something we can retry with confirmation
+      const requiresConfirmation = errorResponse.status === 409;
+      if (requiresConfirmation) {
+        this.stopSpinner();
+
+        this.log('');
+
+        this.log();
+      } else {
+        // Unhandled error
+        throw errorResponse;
+      }
     } finally {
       this.stopSpinner();
     }
@@ -105,6 +160,11 @@ MigrateCommand.flags = buildFlags({
     account: Flags.string({
       description:
         "Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member",
+    }),
+    yes: Flags.boolean({
+      char: 'y',
+      description:
+        'Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.',
     }),
   },
 });

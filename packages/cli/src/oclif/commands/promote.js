@@ -43,6 +43,43 @@ const hasAppChangeType = (metadata, changeType) => {
 };
 
 class PromoteCommand extends BaseCommand {
+  async run_promotion_pre_checks(app, requestBody) {
+    const assumeYes = 'yes' in this.flags;
+    const url = `/apps/${app.id}/migrations/pre-checks`;
+
+    try {
+      await callAPI(
+        url,
+        {
+          method: 'POST',
+          body: requestBody,
+        },
+        true,
+      );
+    } catch (response) {
+      // 409 from the backend specifically signals pre-checks failed
+      if (response.status === 409) {
+        const softCheckErrors = _.get(response, 'json.errors');
+
+        this.log(
+          'Non-blocking checks prior to promoting the integration returned warnings:',
+        );
+        this.log(softCheckErrors);
+        this.log();
+
+        const shouldContinuePreChecks =
+          assumeYes ||
+          (await this.confirm(
+            'Would you like to continue with the promotion process regardless?',
+          ));
+
+        if (!shouldContinuePreChecks) {
+          this.error('Cancelled promote.');
+        }
+      }
+    }
+  }
+
   async perform() {
     const app = await this.getWritableApp();
 
@@ -51,7 +88,8 @@ class PromoteCommand extends BaseCommand {
     const version = this.args.version;
     const assumeYes = 'yes' in this.flags;
 
-    let shouldContinue;
+    let shouldContinueChangelog;
+
     const { changelog, appMetadata, issueMetadata } =
       await getVersionChangelog(version);
 
@@ -133,15 +171,15 @@ ${metadataPromptHelper}`);
       this.log();
       /* eslint-enable camelcase */
 
-      shouldContinue =
+      shouldContinueChangelog =
         assumeYes ||
         (await this.confirm(
           'Would you like to continue promoting with this changelog?',
         ));
-    }
 
-    if (!shouldContinue) {
-      this.error('Cancelled promote.');
+      if (!shouldContinueChangelog) {
+        this.error('Cancelled promote.');
+      }
     }
 
     this.log(
@@ -166,6 +204,10 @@ ${metadataPromptHelper}`);
         is_other: !isFeatureUpdate && !isBugfix,
       },
     };
+
+    this.startSpinner(`Running pre-checks before promoting ${version}`);
+    await this.run_promotion_pre_checks(app, body);
+    this.stopSpinner();
 
     this.startSpinner(`Verifying and promoting ${version}`);
 
