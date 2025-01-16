@@ -1013,7 +1013,7 @@ Key | Required | Type | Description
 `type` | no | `string` in (`'string'`, `'text'`, `'integer'`, `'number'`, `'boolean'`, `'datetime'`, `'file'`, `'password'`, `'copy'`, `'code'`) | The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
 `required` | no | `boolean` | If this value is required or not.
 `placeholder` | no | `string` | An example value that is not saved.
-`default` | no | `string` | A default value that is saved the first time a Zap is created.
+`default` | no | anyOf(`string`, `number`, `boolean`) | A default value that is saved the first time a Zap is created.
 `primary` | no | `boolean` | Use this field as part of the primary key for deduplication. You can set multiple fields as "primary", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`; it will be ignored if set in `inputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).
 `dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.
 `search` | no | [/RefResourceSchema](#refresourceschema) | A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.

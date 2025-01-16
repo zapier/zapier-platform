@@ -262,7 +262,7 @@ export interface Field {
   /**
    * A default value that is saved the first time a Zap is created.
    */
-  default?: string;
+  default?: string | number | boolean;
 
   /**
    * Use this field as part of the primary key for deduplication. You

@@ -21,6 +21,7 @@ const checks = [
   require('./bufferedCreateConstraints'),
   require('./requirePerformConditionally'),
   require('./pollingThrottle'),
+  require('./alignedInputFieldDefaultType'),
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {

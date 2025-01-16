@@ -78,7 +78,7 @@ module.exports = makeSchema(
       default: {
         description:
           'A default value that is saved the first time a Zap is created.',
-        type: 'string',
+        anyOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }],
         minLength: 1,
       },
       primary: {
