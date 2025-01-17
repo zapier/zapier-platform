@@ -43,9 +43,11 @@ const hasAppChangeType = (metadata, changeType) => {
 };
 
 class PromoteCommand extends BaseCommand {
-  async run_promotion_pre_checks(app, requestBody) {
+  async run_require_confirmation_pre_checks(app, requestBody) {
     const assumeYes = 'yes' in this.flags;
-    const url = `/apps/${app.id}/migrations/pre-checks`;
+    const url = `/apps/${app.id}/pre-migration-require-confirmation-checks`;
+
+    this.startSpinner(`Running pre-checks before promoting...`);
 
     try {
       await callAPI(
@@ -57,14 +59,17 @@ class PromoteCommand extends BaseCommand {
         true,
       );
     } catch (response) {
+      this.stopSpinner();
       // 409 from the backend specifically signals pre-checks failed
       if (response.status === 409) {
         const softCheckErrors = _.get(response, 'json.errors');
+        const formattedErrors = softCheckErrors.map((e) => `* ${e}`).join('\n');
 
+        this.log();
         this.log(
           'Non-blocking checks prior to promoting the integration returned warnings:',
         );
-        this.log(softCheckErrors);
+        this.log(formattedErrors);
         this.log();
 
         const shouldContinuePreChecks =
@@ -77,6 +82,8 @@ class PromoteCommand extends BaseCommand {
           this.error('Cancelled promote.');
         }
       }
+    } finally {
+      this.stopSpinner();
     }
   }
 
@@ -205,9 +212,7 @@ ${metadataPromptHelper}`);
       },
     };
 
-    this.startSpinner(`Running pre-checks before promoting ${version}`);
-    await this.run_promotion_pre_checks(app, body);
-    this.stopSpinner();
+    await this.run_require_confirmation_pre_checks(app, body);
 
     this.startSpinner(`Verifying and promoting ${version}`);
 

@@ -7,9 +7,11 @@ const { callAPI } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
 
 class MigrateCommand extends BaseCommand {
-  async run_migration_pre_checks(app, requestBody) {
+  async run_require_confirmation_pre_checks(app, requestBody) {
     const assumeYes = 'yes' in this.flags;
-    const url = `/apps/${app.id}/migrations/pre-checks`;
+    const url = `/apps/${app.id}/pre-migration-require-confirmation-checks`;
+
+    this.startSpinner(`Running pre-checks before migration...`);
 
     try {
       await callAPI(
@@ -21,12 +23,16 @@ class MigrateCommand extends BaseCommand {
         true,
       );
     } catch (response) {
+      this.stopSpinner();
+
       // 409 from the backend specifically signals pre-checks failed
       if (response.status === 409) {
         const softCheckErrors = _.get(response, 'json.errors');
+        const formattedErrors = softCheckErrors.map((e) => `* ${e}`).join('\n');
 
+        this.log();
         this.log('Non-blocking checks prior to migration returned warnings:');
-        this.log(softCheckErrors);
+        this.log(formattedErrors);
         this.log();
 
         const shouldContinuePreChecks =
@@ -39,6 +45,8 @@ class MigrateCommand extends BaseCommand {
           this.error('Cancelled migration.');
         }
       }
+    } finally {
+      this.stopSpinner();
     }
   }
 
@@ -105,9 +113,7 @@ class MigrateCommand extends BaseCommand {
       },
     };
 
-    this.startSpinner(`Running pre-checks before migration`);
-    await this.run_migration_pre_checks(app, body);
-    this.stopSpinner();
+    await this.run_require_confirmation_pre_checks(app, body);
 
     if (user || account) {
       this.startSpinner(
