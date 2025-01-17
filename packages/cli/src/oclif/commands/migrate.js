@@ -134,19 +134,6 @@ class MigrateCommand extends BaseCommand {
 
     try {
       await callAPI(url, { method: 'POST', body });
-    } catch (errorResponse) {
-      // Verify if this error is something we can retry with confirmation
-      const requiresConfirmation = errorResponse.status === 409;
-      if (requiresConfirmation) {
-        this.stopSpinner();
-
-        this.log('');
-
-        this.log();
-      } else {
-        // Unhandled error
-        throw errorResponse;
-      }
     } finally {
       this.stopSpinner();
     }
