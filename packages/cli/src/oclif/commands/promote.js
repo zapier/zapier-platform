@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const debug = require('debug')('zapier:promote');
 const colors = require('colors/safe');
 const { Args, Flags } = require('@oclif/core');
 
@@ -59,7 +60,7 @@ class PromoteCommand extends BaseCommand {
         true,
       );
     } catch (response) {
-      this.stopSpinner();
+      this.stopSpinner({ success: false });
       // 409 from the backend specifically signals pre-checks failed
       if (response.status === 409) {
         const softCheckErrors = _.get(response, 'json.errors', []);
@@ -81,6 +82,8 @@ class PromoteCommand extends BaseCommand {
         if (!shouldContinuePreChecks) {
           this.error('Cancelled promote.');
         }
+      } else {
+        debug('Soft pre-checks before promotion failed:', response.errText);
       }
     } finally {
       this.stopSpinner();

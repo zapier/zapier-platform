@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const debug = require('debug')('zapier:migrate');
 const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
@@ -23,7 +24,7 @@ class MigrateCommand extends BaseCommand {
         true,
       );
     } catch (response) {
-      this.stopSpinner();
+      this.stopSpinner({ success: false });
 
       // 409 from the backend specifically signals pre-checks failed
       if (response.status === 409) {
@@ -44,6 +45,8 @@ class MigrateCommand extends BaseCommand {
         if (!shouldContinuePreChecks) {
           this.error('Cancelled migration.');
         }
+      } else {
+        debug('Soft pre-checks before migration failed:', response.errText);
       }
     } finally {
       this.stopSpinner();
