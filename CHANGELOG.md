@@ -1,3 +1,13 @@
+## 16.2.0
+
+_released `2025-01-21`_
+
+### cli
+
+- :tada: Require `--force` flag when updating production integration version environment variables via `env:set` or `env:unset` [#942](https://github.com/zapier/zapier-platform/pull/942)
+- :tada: Run environment variable soft checks (which require user confirmation to proceed) during `promote` and `migrate` [#951](https://github.com/zapier/zapier-platform/pull/951)
+
+
 ## 16.1.1
 
 _released `2025-01-13`_
