@@ -54,7 +54,7 @@ class UnsetEnvCommand extends BaseCommand {
     }
 
     try {
-      await callAPI(url, requestOptions);
+      await callAPI(url, requestOptions, true);
     } catch (e) {
       if (e.status === 409) {
         this.error(
