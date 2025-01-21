@@ -62,7 +62,7 @@ class PromoteCommand extends BaseCommand {
       this.stopSpinner();
       // 409 from the backend specifically signals pre-checks failed
       if (response.status === 409) {
-        const softCheckErrors = _.get(response, 'json.errors');
+        const softCheckErrors = _.get(response, 'json.errors', []);
         const formattedErrors = softCheckErrors.map((e) => `* ${e}`).join('\n');
 
         this.log();
