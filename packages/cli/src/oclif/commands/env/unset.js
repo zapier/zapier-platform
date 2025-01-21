@@ -56,7 +56,7 @@ class UnsetEnvCommand extends BaseCommand {
     try {
       await callAPI(url, requestOptions);
     } catch (e) {
-      if (e.statusCode === 409) {
+      if (e.status === 409) {
         this.error(
           `App version ${version} is the production version. Are you sure you want to unset potentially live environment variables?` +
             ` If so, run this command again with the --force flag.`,
