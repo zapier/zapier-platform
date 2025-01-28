@@ -24,7 +24,10 @@ module.exports = class PullGenerator extends Generator {
         name: 'confirm',
         message: `Warning: You are about to overwrite existing files.
 
-Before proceeding, please make sure you have saved your work. Consider creating a backup or saving your current state in a git branch. During the process, you may abort anytime by pressing 'x'.
+Before proceeding, please make sure you have saved your work. Consider creating a backup or saving your current state in a git branch.
+
+If presented with a series of options ('ynarxdeiH'), you may
+press Enter to view more details about each option. For example, 'x' will abort the process.
 
 Do you want to continue?`,
         default: false,
