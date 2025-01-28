@@ -5,17 +5,12 @@ const FieldSchema = require('./FieldSchema');
 
 module.exports = makeSchema(
   {
-    // spread over base schema's top-level keys
     ...FieldSchema.schema,
     id: '/AuthInputFieldSchema',
     description:
       'Field schema specialized for auth input fields (e.g., OAuth).',
-
-    // add or override the "properties" key
     properties: {
-      // all properties from FieldSchema
       ...FieldSchema.schema.properties,
-
       isSafe: {
         description: 'Indicates if this auth input field is safe (not secret).',
         type: 'boolean',
