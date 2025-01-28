@@ -106,6 +106,21 @@ module.exports = makeSchema(
         description: 'Top-level app options',
         $ref: AppFlagsSchema.id,
       },
+      // inputFields: {
+      //   description:
+      //     'An array or collection of input fields.',
+      //   $ref: InputFieldsSchema.id,
+      // },
+      // outputFields: {
+      //   description:
+      //     'An array or collection of output fields.',
+      //   $ref: OutputFieldsSchema.id,
+      // },
+      // authFields: {
+      //   description:
+      //     'An array or collection of auth input fields.',
+      //   $ref: AuthFieldsSchema.id,
+      // },
       throttle: {
         description: `Zapier uses this configuration to apply throttling when the limit for the window is exceeded. When set here, it is the default throttle configuration used on each action of the integration. And when set in an action's operation object, it gets overwritten for that action only.`,
         $ref: ThrottleObjectSchema.id,
@@ -143,6 +158,10 @@ module.exports = makeSchema(
   [
     AuthenticationSchema,
     FlatObjectSchema,
+    // OutputFieldsSchema,
+    // InputFieldsSchema,
+    // AuthFieldsSchema,
+    // BaseFieldSchema,
     ResourcesSchema,
     ReadBulksSchema,
     TriggersSchema,
