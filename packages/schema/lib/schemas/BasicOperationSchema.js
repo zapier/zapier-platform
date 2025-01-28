@@ -3,13 +3,15 @@
 const makeSchema = require('../utils/makeSchema');
 const { SKIP_KEY } = require('../constants');
 
-const DynamicFieldsSchema = require('./DynamicFieldsSchema');
 const FunctionSchema = require('./FunctionSchema');
 const RequestSchema = require('./RequestSchema');
 const ResultsSchema = require('./ResultsSchema');
 const KeySchema = require('./KeySchema');
 const LockObjectSchema = require('./LockObjectSchema');
 const ThrottleObjectSchema = require('./ThrottleObjectSchema');
+// const DynamicInputFieldsSchema = require('./DynamicInputFieldsSchema');
+// const DynamicOutputFieldsSchema = require('./DynamicOutputFieldsSchema');
+const DynamicFieldsSchema = require('./DynamicFieldsSchema');
 
 module.exports = makeSchema(
   {
@@ -83,6 +85,7 @@ module.exports = makeSchema(
   },
   [
     DynamicFieldsSchema,
+    // DynamicOutputFieldsSchema,
     FunctionSchema,
     KeySchema,
     LockObjectSchema,

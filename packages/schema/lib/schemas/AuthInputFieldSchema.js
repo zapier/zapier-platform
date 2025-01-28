@@ -1,24 +1,26 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
-const BaseFieldSchema = require('./BaseFieldSchema');
+const FieldSchema = require('./FieldSchema');
+
 const schema = makeSchema(
   {
-    id: '/AuthFieldSchema',
-    description: 'Field schema specialized for auth fields (e.g., OAuth).',
+    id: '/AuthInputFieldSchema',
+    description:
+      'Field schema specialized for auth input fields (e.g., OAuth).',
     type: 'object',
     allOf: [
-      { $ref: BaseFieldSchema.id },
+      { $ref: FieldSchema.id },
       {
         type: 'object',
         properties: {
           // New property
           isSafe: {
-            description: 'Indicates if this auth field is safe (not secret).',
+            description:
+              'Indicates if this auth input field is safe (not secret).',
             type: 'boolean',
           },
         },
-        additionalProperties: false,
       },
       // Forbid certain keys from having isSafe = true
       {
@@ -40,8 +42,7 @@ const schema = makeSchema(
       },
     ],
   },
-  [BaseFieldSchema],
+  [FieldSchema],
 );
 
-schema.dependencies = [BaseFieldSchema];
 module.exports = schema;

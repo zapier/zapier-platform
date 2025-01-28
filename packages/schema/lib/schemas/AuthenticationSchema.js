@@ -8,9 +8,9 @@ const AuthenticationDigestConfigSchema = require('./AuthenticationDigestConfigSc
 const AuthenticationOAuth1ConfigSchema = require('./AuthenticationOAuth1ConfigSchema.js');
 const AuthenticationOAuth2ConfigSchema = require('./AuthenticationOAuth2ConfigSchema.js');
 const AuthenticationSessionConfigSchema = require('./AuthenticationSessionConfigSchema.js');
-const FieldsSchema = require('./FieldsSchema');
 const FunctionSchema = require('./FunctionSchema');
 const RequestSchema = require('./RequestSchema');
+const FieldsSchema = require('./FieldsSchema');
 
 module.exports = makeSchema(
   {
@@ -105,9 +105,9 @@ module.exports = makeSchema(
     ],
   },
   [
-    FieldsSchema,
     FunctionSchema,
     RequestSchema,
+    FieldsSchema,
     AuthenticationBasicConfigSchema,
     AuthenticationCustomConfigSchema,
     AuthenticationDigestConfigSchema,
