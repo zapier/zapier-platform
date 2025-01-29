@@ -185,13 +185,13 @@ Key | Required | Type | Description
 #### Examples
 
 * `{ key: 'email', type: 'string', isSafe: true, required: true }`
-* `{ key: 'password', type: 'string', isSafe: false, required: true }`
+* `{ key: 'password', type: 'password', isSafe: false, required: true }`
 * `{ key: 'api_key', type: 'string', isSafe: false, required: true }`
 
 #### Anti-Examples
 
-* `{ key: 'password', type: 'string', isSafe: true, required: true }` - _A "password" field cannot have isSafe = true._
-* `{ key: 'api_key', isSafe: true }` - _Missing "type". Also "api_key" is a sensitive field and cannot have isSafe=true._
+* `{ key: 'password', type: 'password', isSafe: true, required: true }` - _A "password" field cannot have isSafe = true._
+* `{ key: 'api_key', isSafe: true }` - _"api_key" is a sensitive field and cannot have isSafe set as true._
 * `{ type: 'string', isSafe: false }` - _Missing required key: key_
 
 -----
@@ -211,14 +211,14 @@ An array or collection of authentication fields.
 * ```
   [
     { key: 'username', type: 'string', isSafe: true, required: true },
-    { key: 'password', type: 'string', isSafe: false, required: true }
+    { key: 'password', type: 'password', isSafe: false, required: true }
   ]
   ```
 * `[ { key: 'api_key', type: 'string', isSafe: false, required: true } ]`
 * ```
   [
     { key: 'email', type: 'string', isSafe: true },
-    { key: 'password', type: 'string', required: true },
+    { key: 'password', type: 'password', required: true },
     { key: 'mfa_token', type: 'string', isSafe: false }
   ]
   ```
@@ -226,10 +226,10 @@ An array or collection of authentication fields.
 #### Anti-Examples
 
 * `{}` - _Must be an array (currently an object)._
-* `[ { key: 'password', isSafe: true } ]` - _A password field cannot be marked as isSafe: true (violates AuthFieldSchema)._
-* `[ { key: 'api_key', isSafe: true } ]` - _api_key is considered sensitive and cannot have isSafe = true._
+* `[ { key: 'password', isSafe: true } ]` - _"password" is a sensitive field and cannot have isSafe set as true._
+* `[ { key: 'api_key', isSafe: true } ]` - _"api_key" is a sensitive field and cannot have isSafe set as true._
 * `[ { isSafe: false } ]` - _Missing required "key" property._
-* `[ { key: 'username', type: 'string', isSafe: true }, 12345 ]` - _An array item is not an object (must match AuthFieldSchema)._
+* `[ { key: 'username', type: 'string', isSafe: true }, 12345 ]` - _Array item 12345 is not an object (must match AuthFieldSchema)._
 
 -----
 
