@@ -45,7 +45,7 @@ module.exports = makeSchema(
       {
         example: [{ key: 'api_key', isSafe: true }],
         reason:
-          'api_key is considered sensitive and cannot have isSafe = true.',
+          '"api_key" is a sensitive field and cannot have isSafe set as true.',
       },
       {
         example: [{ isSafe: false }],
