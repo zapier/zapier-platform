@@ -17,22 +17,6 @@ module.exports = makeSchema(
       },
     },
 
-    // Do not allow certain isSafe = True if sensitive tokens exists
-    not: {
-      properties: {
-        key: {
-          enum: [
-            'access_token',
-            'refresh_token',
-            'api_key',
-            'password',
-            'secret',
-          ],
-        },
-        isSafe: { const: true },
-      },
-      required: ['key', 'isSafe'],
-    },
     // Add examples and anti-examples specifically for basic & custom auth
     examples: [
       // Basic Auth - email & password

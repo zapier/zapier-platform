@@ -282,12 +282,16 @@ describe('app', () => {
       const results = schema.validateAppDefinition(appCopy);
 
       // Expect at least one error because "password" can't have isSafe = true
+      console.log(results);
       results.errors.should.have.length(1);
       should(results.valid).eql(false);
 
       const [error] = results.errors;
       // Check that the error specifically complains about a "not" rule or something similar
-      error.name.should.equal('not');
+      error.name.should.equal('sensitive');
+      error.message.should.equal(
+        'Cannot set isSafe=true for the sensitive key "password".',
+      );
     });
   });
 

@@ -465,24 +465,7 @@
           "type": "boolean"
         }
       },
-      "additionalProperties": false,
-      "not": {
-        "properties": {
-          "key": {
-            "enum": [
-              "access_token",
-              "refresh_token",
-              "api_key",
-              "password",
-              "secret"
-            ]
-          },
-          "isSafe": {
-            "const": true
-          }
-        },
-        "required": ["key", "isSafe"]
-      }
+      "additionalProperties": false
     },
     "RequestSchema": {
       "id": "/RequestSchema",
