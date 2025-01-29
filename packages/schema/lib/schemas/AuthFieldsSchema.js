@@ -26,7 +26,7 @@ module.exports = makeSchema(
       // 3) Mix of fields for extended usage
       [
         { key: 'email', type: 'string', isSafe: true },
-        { key: 'password', type: 'string', required: true },
+        { key: 'password', type: 'password', required: true },
         { key: 'mfa_token', type: 'string', isSafe: false },
       ],
     ],
