@@ -357,7 +357,7 @@
     },
     "AuthFieldSchema": {
       "id": "/AuthFieldSchema",
-      "description": "Field schema specialized for auth input fields.",
+      "description": "Field schema specialized for authentication fields.",
       "type": "object",
       "required": ["key"],
       "properties": {
@@ -461,7 +461,7 @@
           "$ref": "/FieldMetaSchema"
         },
         "isSafe": {
-          "description": "Indicates if this auth input field is safe (not secret).",
+          "description": "Indicates if this authentication field is safe (not secret).",
           "type": "boolean"
         }
       },

@@ -150,7 +150,7 @@ Key | Required | Type | Description
 
 ## /AuthFieldSchema
 
-Field schema specialized for auth input fields.
+Field schema specialized for authentication fields.
 
 #### Details
 
@@ -180,34 +180,19 @@ Key | Required | Type | Description
 `steadyState` | no | `boolean` | Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.
 `inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
 `meta` | no | [/FieldMetaSchema](#fieldmetaschema) | Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).
-`isSafe` | no | `boolean` | Indicates if this auth input field is safe (not secret).
+`isSafe` | no | `boolean` | Indicates if this authentication field is safe (not secret).
 
 #### Examples
 
-* `{ key: 'abc' }`
-* `{ key: 'abc', choices: { mobile: 'Mobile Phone' } }`
-* `{ key: 'abc', choices: [ 'first', 'second', 'third' ] }`
-* `{ key: 'abc', choices: [ { label: 'Red', sample: '#f00', value: '#f00' } ] }`
-* `{ key: 'abc', children: [ { key: 'abc' } ] }`
-* `{ key: 'abc', type: 'integer', helpText: 'neat' }`
-* ```
-  {
-    key: 'abc',
-    type: 'integer',
-    meta: { internalType: 'numeric', should_call_api: true, display_order: 1 }
-  }
-  ```
+* `{ key: 'email', type: 'string', isSafe: true, required: true }`
+* `{ key: 'password', type: 'string', isSafe: false, required: true }`
+* `{ key: 'api_key', type: 'string', isSafe: false, required: true }`
 
 #### Anti-Examples
 
-* `{}` - _Missing required key: key_
-* `{ key: 'abc', type: 'loltype' }` - _Invalid value for key: type_
-* `{ key: 'abc', choices: {} }` - _Invalid value for key: choices (cannot be empty)_
-* `{ key: 'abc', choices: [] }` - _Invalid value for key: choices (cannot be empty)_
-* `{ key: 'abc', choices: [ 3 ] }` - _Invalid value for key: choices (if an array, must be of either string or FieldChoiceWithLabelSchema)_
-* `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }` - _Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)_
-* `{ key: 'abc', choices: 'mobile' }` - _Invalid value for key: choices (must be either object or array)_
-* `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of FieldSchema)_
+* `{ key: 'password', type: 'string', isSafe: true, required: true }` - _A "password" field cannot have isSafe = true._
+* `{ key: 'api_key', isSafe: true }` - _Missing "type". Also "api_key" is a sensitive field and cannot have isSafe=true._
+* `{ type: 'string', isSafe: false }` - _Missing required key: key_
 
 -----
 
@@ -223,11 +208,28 @@ An array or collection of auth input fields.
 
 #### Examples
 
-* `[ { key: 'abc' } ]`
+* ```
+  [
+    { key: 'username', type: 'string', isSafe: true, required: true },
+    { key: 'password', type: 'string', isSafe: false, required: true }
+  ]
+  ```
+* `[ { key: 'api_key', type: 'string', isSafe: false, required: true } ]`
+* ```
+  [
+    { key: 'email', type: 'string', isSafe: true },
+    { key: 'password', type: 'string', required: true },
+    { key: 'mfa_token', type: 'string', isSafe: false }
+  ]
+  ```
 
 #### Anti-Examples
 
-* `{}` - _Must be an array_
+* `{}` - _Must be an array (currently an object)._
+* `[ { key: 'password', isSafe: true } ]` - _A password field cannot be marked as isSafe: true (violates AuthFieldSchema)._
+* `[ { key: 'api_key', isSafe: true } ]` - _api_key is considered sensitive and cannot have isSafe = true._
+* `[ { isSafe: false } ]` - _Missing required "key" property._
+* `[ { key: 'username', type: 'string', isSafe: true }, 12345 ]` - _An array item is not an object (must match AuthFieldSchema)._
 
 -----
 

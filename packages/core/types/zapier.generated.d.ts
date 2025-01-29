@@ -410,7 +410,7 @@ export interface Field {
 }
 
 /**
- * Field schema specialized for auth input fields.
+ * Field schema specialized for authentication fields.
  *
  * [Docs: AuthFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldSchema)
  */
@@ -540,7 +540,9 @@ export interface AuthField {
    */
   meta?: FieldMeta;
 
-  /** Indicates if this auth input field is safe (not secret). */
+  /**
+   * Indicates if this authentication field is safe (not secret).
+   */
   isSafe?: boolean;
 }
 

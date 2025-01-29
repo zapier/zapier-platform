@@ -12,8 +12,50 @@ module.exports = makeSchema(
     items: {
       oneOf: [{ $ref: AuthFieldSchema.id }],
     },
-    examples: [[{ key: 'abc' }]],
-    antiExamples: [{ example: {}, reason: 'Must be an array' }],
+    // Some complete examples
+    examples: [
+      // 1) Basic Auth: username (safe) + password (not safe)
+      [
+        { key: 'username', type: 'string', isSafe: true, required: true },
+        { key: 'password', type: 'string', isSafe: false, required: true },
+      ],
+
+      // 2) Just a single auth field for custom usage (e.g., api_key)
+      [{ key: 'api_key', type: 'string', isSafe: false, required: true }],
+
+      // 3) Mix of fields for extended usage
+      [
+        { key: 'email', type: 'string', isSafe: true },
+        { key: 'password', type: 'string', required: true },
+        { key: 'mfa_token', type: 'string', isSafe: false },
+      ],
+    ],
+
+    // Anti-examples showing invalid arrays or invalid field objects
+    antiExamples: [
+      {
+        example: {},
+        reason: 'Must be an array (currently an object).',
+      },
+      {
+        example: [{ key: 'password', isSafe: true }],
+        reason:
+          'A password field cannot be marked as isSafe: true (violates AuthFieldSchema).',
+      },
+      {
+        example: [{ key: 'api_key', isSafe: true }],
+        reason:
+          'api_key is considered sensitive and cannot have isSafe = true.',
+      },
+      {
+        example: [{ isSafe: false }],
+        reason: 'Missing required "key" property.',
+      },
+      {
+        example: [{ key: 'username', type: 'string', isSafe: true }, 12345],
+        reason: 'An array item is not an object (must match AuthFieldSchema).',
+      },
+    ],
   },
   [AuthFieldSchema],
 );
