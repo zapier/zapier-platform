@@ -17,7 +17,7 @@ module.exports = makeSchema(
       // 1) Basic Auth: username (safe) + password (not safe)
       [
         { key: 'username', type: 'string', isSafe: true, required: true },
-        { key: 'password', type: 'string', isSafe: false, required: true },
+        { key: 'password', type: 'password', isSafe: false, required: true },
       ],
 
       // 2) Just a single auth field for custom usage (e.g., api_key)
