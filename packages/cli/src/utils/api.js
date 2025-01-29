@@ -483,8 +483,8 @@ const upload = async (
       );
     }
 
-    // Don't ignore other errors, re-throw them
-    throw err;
+    // Don't ignore other errors, re-throw them with a user-friendly message
+    throw new Error(err.errText);
   } finally {
     endSpinner();
   }
