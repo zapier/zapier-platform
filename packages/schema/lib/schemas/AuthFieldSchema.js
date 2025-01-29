@@ -62,7 +62,7 @@ module.exports = makeSchema(
       {
         example: {
           key: 'password',
-          type: 'string',
+          type: 'password',
           isSafe: true,
           required: true,
         },
