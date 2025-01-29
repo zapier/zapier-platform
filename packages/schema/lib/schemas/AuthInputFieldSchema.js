@@ -17,9 +17,6 @@ module.exports = makeSchema(
       },
     },
 
-    // if FieldSchema had required fields, keep them (like ["key"])
-    required: [...(FieldSchema.schema.required || [])],
-
     // Do not allow certain isSafe = True if sensitive tokens exists
     not: {
       properties: {
