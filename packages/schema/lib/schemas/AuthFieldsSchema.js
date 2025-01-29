@@ -2,18 +2,18 @@
 
 const makeSchema = require('../utils/makeSchema');
 
-const AuthInputFieldSchema = require('./AuthInputFieldSchema');
+const AuthFieldSchema = require('./AuthFieldSchema');
 
 module.exports = makeSchema(
   {
-    id: '/DynamicAuthInputFieldsSchema',
+    id: '/AuthFieldsSchema',
     description: 'An array or collection of auth input fields.',
     type: 'array',
     items: {
-      oneOf: [{ $ref: AuthInputFieldSchema.id }],
+      oneOf: [{ $ref: AuthFieldSchema.id }],
     },
     examples: [[{ key: 'abc' }]],
     antiExamples: [{ example: {}, reason: 'Must be an array' }],
   },
-  [AuthInputFieldSchema],
+  [AuthFieldSchema],
 );

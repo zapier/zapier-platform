@@ -595,8 +595,8 @@
       },
       "additionalProperties": false
     },
-    "DynamicAuthInputFieldsSchema": {
-      "id": "/DynamicAuthInputFieldsSchema",
+    "AuthFieldsSchema": {
+      "id": "/AuthFieldsSchema",
       "description": "An array or collection of auth input fields.",
       "type": "array",
       "items": {
@@ -1957,7 +1957,7 @@
         },
         "fields": {
           "description": "Fields you can request from the user before they connect your app to Zapier.",
-          "$ref": "/DynamicAuthInputFieldsSchema"
+          "$ref": "/AuthFieldsSchema"
         },
         "connectionLabel": {
           "description": "A string with variables, function, or request that returns the connection label for the authenticated user.",

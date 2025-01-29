@@ -10,7 +10,7 @@ const AuthenticationOAuth2ConfigSchema = require('./AuthenticationOAuth2ConfigSc
 const AuthenticationSessionConfigSchema = require('./AuthenticationSessionConfigSchema.js');
 const FunctionSchema = require('./FunctionSchema');
 const RequestSchema = require('./RequestSchema');
-const DynamicAuthInputFieldsSchema = require('./DynamicAuthInputFieldsSchema');
+const AuthFieldsSchema = require('./AuthFieldsSchema');
 
 module.exports = makeSchema(
   {
@@ -32,7 +32,7 @@ module.exports = makeSchema(
       fields: {
         description:
           'Fields you can request from the user before they connect your app to Zapier.',
-        $ref: DynamicAuthInputFieldsSchema.id,
+        $ref: AuthFieldsSchema.id,
       },
       connectionLabel: {
         description:
@@ -107,7 +107,7 @@ module.exports = makeSchema(
   [
     FunctionSchema,
     RequestSchema,
-    DynamicAuthInputFieldsSchema,
+    AuthFieldsSchema,
     AuthenticationBasicConfigSchema,
     AuthenticationCustomConfigSchema,
     AuthenticationDigestConfigSchema,

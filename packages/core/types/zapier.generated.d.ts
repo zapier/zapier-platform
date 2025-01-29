@@ -644,9 +644,9 @@ export interface RedirectRequest {
 /**
  * An array or collection of auth input fields.
  *
- * [Docs: DynamicAuthInputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#DynamicAuthInputFieldsSchema)
+ * [Docs: AuthFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldsSchema)
  */
-export type DynamicAuthInputFields = AuthInputField[];
+export type AuthFields = AuthInputField[];
 
 /**
  * Config for Basic Authentication. No extra properties are required
@@ -1951,7 +1951,7 @@ export interface Authentication {
    * Fields you can request from the user before they connect your app
    * to Zapier.
    */
-  fields?: DynamicAuthInputFields;
+  fields?: AuthFields;
 
   /**
    * A string with variables, function, or request that returns the
