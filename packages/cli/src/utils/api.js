@@ -459,15 +459,19 @@ const upload = async (
 
   startSpinner(`Uploading version ${definition.version}`);
   try {
-    await callAPI(`/apps/${app.id}/versions/${definition.version}`, {
-      method: 'PUT',
-      body: {
-        zip_file: buffer,
-        source_zip_file: sourceBuffer,
-        skip_validation: skipValidation,
+    await callAPI(
+      `/apps/${app.id}/versions/${definition.version}`,
+      {
+        method: 'PUT',
+        body: {
+          zip_file: buffer,
+          source_zip_file: sourceBuffer,
+          skip_validation: skipValidation,
+        },
+        extraHeaders: headers,
       },
-      extraHeaders: headers,
-    });
+      true,
+    );
   } catch (err) {
     endSpinner({ success: false });
     // 409 from the backend specifically signals that the last changes were from a partner
