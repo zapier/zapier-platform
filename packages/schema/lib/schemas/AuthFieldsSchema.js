@@ -40,7 +40,7 @@ module.exports = makeSchema(
       {
         example: [{ key: 'password', isSafe: true }],
         reason:
-          'A password field cannot be marked as isSafe: true (violates AuthFieldSchema).',
+          '"password" is a sensitive field and cannot have isSafe set as true.',
       },
       {
         example: [{ key: 'api_key', isSafe: true }],
