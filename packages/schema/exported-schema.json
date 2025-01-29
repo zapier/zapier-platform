@@ -355,9 +355,9 @@
       },
       "additionalProperties": false
     },
-    "AuthInputFieldSchema": {
-      "id": "/AuthInputFieldSchema",
-      "description": "Field schema specialized for auth input fields (e.g., OAuth).",
+    "AuthFieldSchema": {
+      "id": "/AuthFieldSchema",
+      "description": "Field schema specialized for auth input fields.",
       "type": "object",
       "required": ["key"],
       "properties": {
@@ -602,7 +602,7 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "/AuthInputFieldSchema"
+            "$ref": "/AuthFieldSchema"
           }
         ]
       }

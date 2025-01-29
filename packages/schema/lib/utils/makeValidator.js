@@ -64,12 +64,6 @@ const processBaseError = (err, path) => {
  */
 const cleanError = (validationError, path, validator, definition) => {
   if (ambiguousTypes.includes(validationError.name)) {
-    // If argument is not an array, we can't do .every(...)
-    if (!Array.isArray(validationError.argument)) {
-      // fallback: treat it like a standard error
-      return processBaseError(validationError, path);
-    }
-
     // flatObjectSchema requires each property to be a type. instead of recursing down, it's more valuable to say "hey, it's not of these types"
     if (validationError.argument.every((s) => s.includes('subschema'))) {
       return processBaseError(validationError, path);

@@ -410,11 +410,11 @@ export interface Field {
 }
 
 /**
- * Field schema specialized for auth input fields (e.g., OAuth).
+ * Field schema specialized for auth input fields.
  *
- * [Docs: AuthInputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthInputFieldSchema)
+ * [Docs: AuthFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldSchema)
  */
-export interface AuthInputField {
+export interface AuthField {
   /** A unique machine readable key for this value (IE: "fname"). */
   key: string;
 
@@ -646,7 +646,7 @@ export interface RedirectRequest {
  *
  * [Docs: AuthFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldsSchema)
  */
-export type AuthFields = AuthInputField[];
+export type AuthFields = AuthField[];
 
 /**
  * Config for Basic Authentication. No extra properties are required
