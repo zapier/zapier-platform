@@ -1,10 +1,10 @@
 const ZapierBaseCommand = require('../ZapierBaseCommand');
+const { BUILD_PATH, SOURCE_PATH } = require('../../constants');
 const { Flags } = require('@oclif/core');
 
 const BuildCommand = require('./build');
 
 const { buildAndOrUpload } = require('../../utils/build');
-const { BUILD_PATH, SOURCE_PATH } = require('../../constants');
 
 class PushCommand extends ZapierBaseCommand {
   async perform() {
@@ -25,7 +25,7 @@ class PushCommand extends ZapierBaseCommand {
 
 PushCommand.flags = {
   ...BuildCommand.flags,
-  overwritePartnerChanges: Flags.boolean({
+  'overwrite-partner-changes': Flags.boolean({
     description:
       '(Internal Use Only) Allows Zapier Staff to push changes to integrations in certain situations.',
     hidden: true,
