@@ -225,6 +225,70 @@ describe('app', () => {
       const results = schema.validateAppDefinition(appCopy);
       results.errors.should.eql([]);
     });
+
+    it('should validate safe/unsafe auth fields', () => {
+      const appCopy = copy(appDefinition);
+
+      // Set up a "custom" auth that has two fields:
+      //   - "username" which is safe
+      //   - "password" which is not safe
+      appCopy.authentication = {
+        type: 'custom',
+        test: {
+          url: 'https://example.com',
+        },
+        fields: [
+          {
+            key: 'username',
+            type: 'string',
+            isSafe: true, // allowed
+            required: true,
+          },
+          {
+            key: 'password',
+            type: 'string',
+            isSafe: false, // password is not safe
+            required: true,
+          },
+        ],
+      };
+
+      const results = schema.validateAppDefinition(appCopy);
+
+      // Expect zero errors
+      results.errors.should.have.length(0);
+      should(results.valid).eql(true);
+    });
+
+    it('should invalidate a "safe" password field', () => {
+      const appCopy = copy(appDefinition);
+
+      // Same "custom" auth but now marking "password" as isSafe=true
+      appCopy.authentication = {
+        type: 'custom',
+        test: {
+          url: 'https://example.com',
+        },
+        fields: [
+          {
+            key: 'password',
+            type: 'string',
+            isSafe: true, // invalid: password cannot be safe
+            required: true,
+          },
+        ],
+      };
+
+      const results = schema.validateAppDefinition(appCopy);
+
+      // Expect at least one error because "password" can't have isSafe = true
+      results.errors.should.have.length(1);
+      should(results.valid).eql(false);
+
+      const [error] = results.errors;
+      // Check that the error specifically complains about a "not" rule or something similar
+      error.name.should.equal('not');
+    });
   });
 
   describe('export', () => {
