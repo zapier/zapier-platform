@@ -644,7 +644,7 @@ export interface RedirectRequest {
 }
 
 /**
- * An array or collection of auth input fields.
+ * An array or collection of authentication fields.
  *
  * [Docs: AuthFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldsSchema)
  */

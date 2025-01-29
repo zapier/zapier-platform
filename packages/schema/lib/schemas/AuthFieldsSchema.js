@@ -7,7 +7,7 @@ const AuthFieldSchema = require('./AuthFieldSchema');
 module.exports = makeSchema(
   {
     id: '/AuthFieldsSchema',
-    description: 'An array or collection of auth input fields.',
+    description: 'An array or collection of authentication fields.',
     type: 'array',
     items: {
       oneOf: [{ $ref: AuthFieldSchema.id }],

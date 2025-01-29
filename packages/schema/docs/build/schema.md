@@ -198,7 +198,7 @@ Key | Required | Type | Description
 
 ## /AuthFieldsSchema
 
-An array or collection of auth input fields.
+An array or collection of authentication fields.
 
 #### Details
 
