@@ -53,7 +53,7 @@ module.exports = makeSchema(
       },
       {
         example: [{ key: 'username', type: 'string', isSafe: true }, 12345],
-        reason: 'An array item is not an object (must match AuthFieldSchema).',
+        reason: 'Array item 12345 is not an object (must match AuthFieldSchema).',
       },
     ],
   },
