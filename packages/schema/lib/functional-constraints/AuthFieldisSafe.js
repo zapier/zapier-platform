@@ -24,7 +24,7 @@ const checkAuthField = (field) => {
         '/AuthFieldSchema',
         'instance.key',
         'sensitive',
-        'key',
+        'field',
       ),
     );
   }
