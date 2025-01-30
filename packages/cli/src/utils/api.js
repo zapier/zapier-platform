@@ -422,7 +422,10 @@ const downloadSourceZip = async (dst) => {
   }
 };
 
-const upload = async (app, { skipValidation = false } = {}) => {
+const upload = async (
+  app,
+  { skipValidation = false, overwritePartnerChanges = false } = {},
+) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
   const appDir = process.cwd();
@@ -449,17 +452,42 @@ const upload = async (app, { skipValidation = false } = {}) => {
   const binarySourceZip = fs.readFileSync(fullSourceZipPath);
   const sourceBuffer = Buffer.from(binarySourceZip).toString('base64');
 
-  startSpinner(`Uploading version ${definition.version}`);
-  await callAPI(`/apps/${app.id}/versions/${definition.version}`, {
-    method: 'PUT',
-    body: {
-      zip_file: buffer,
-      source_zip_file: sourceBuffer,
-      skip_validation: skipValidation,
-    },
-  });
+  const headers = {};
+  if (overwritePartnerChanges) {
+    headers['X-Overwrite-Partner-Changes'] = 'true';
+  }
 
-  endSpinner();
+  startSpinner(`Uploading version ${definition.version}`);
+  try {
+    await callAPI(
+      `/apps/${app.id}/versions/${definition.version}`,
+      {
+        method: 'PUT',
+        body: {
+          zip_file: buffer,
+          source_zip_file: sourceBuffer,
+          skip_validation: skipValidation,
+        },
+        extraHeaders: headers,
+      },
+      true,
+    );
+  } catch (err) {
+    endSpinner({ success: false });
+    // 409 from the backend specifically signals that the last changes were from a partner
+    // and this is a staff user which could unintentionally overwrite those changes
+    if (err.status === 409) {
+      throw new Error(
+        `The latest integration changes appear to be from a partner. OK to overwrite?` +
+          ` If so, run this command again using the '--overwrite-partner-changes' flag.`,
+      );
+    }
+
+    // Don't ignore other errors, re-throw them with a user-friendly message
+    throw new Error(err.errText);
+  } finally {
+    endSpinner();
+  }
 };
 
 module.exports = {
