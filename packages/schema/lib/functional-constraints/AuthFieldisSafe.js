@@ -41,7 +41,7 @@ module.exports = (definition, mainSchema) => {
     definitions.forEach((field, index) => {
       checkAuthField(field).forEach((err) => {
         err.property = `instance[${index}]`;
-        err.stack = err.stack.replace('instance.key', `instance[${index}].key`);
+        err.stack = err.stack.replace('instance.field', err.property);
         errors.push(err);
       });
     });
