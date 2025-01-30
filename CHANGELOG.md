@@ -1,3 +1,13 @@
+## 16.3.0
+
+_released `2025-01-30`_
+
+### cli
+
+- :scroll: Update `pull` command help text to clarify `ynarxdeiH` options if file conflicts detected [#959](https://github.com/zapier/zapier-platform/pull/959)
+- :tada: Add `--overwrite-partner-changes` flag in `push` command to help reduce partner integration clobbering (currently only supported for **internal** use) [#960](https://github.com/zapier/zapier-platform/pull/960)
+
+
 ## 16.2.0
 
 _released `2025-01-21`_
