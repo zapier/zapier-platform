@@ -282,7 +282,6 @@ describe('app', () => {
       const results = schema.validateAppDefinition(appCopy);
 
       // Expect at least one error because "password" can't have isSafe = true
-      console.log(results);
       results.errors.should.have.length(1);
       should(results.valid).eql(false);
 
