@@ -19,7 +19,7 @@ const checkAuthField = (field) => {
   if (FORBIDDEN_KEYS.includes(field.key) && field.isSafe === true) {
     errors.push(
       new jsonschema.ValidationError(
-        `Cannot set isSafe=true for the sensitive key "${field.key}".`,
+        `cannot set isSafe as true for the sensitive key "${field.key}".`,
         field,
         '/AuthFieldSchema',
         'instance.key',
