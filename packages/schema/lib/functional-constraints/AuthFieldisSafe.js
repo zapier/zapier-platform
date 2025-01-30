@@ -22,7 +22,7 @@ const checkAuthField = (field) => {
         `cannot set isSafe as true for the sensitive key "${field.key}".`,
         field,
         '/AuthFieldSchema',
-        'instance.key',
+        'instance.field',
         'sensitive',
         'field',
       ),
