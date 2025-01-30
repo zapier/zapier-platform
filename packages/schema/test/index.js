@@ -288,8 +288,8 @@ describe('app', () => {
 
       const [error] = results.errors;
       error.name.should.equal('sensitive');
-      error.message.should.equal(
-        'Cannot set isSafe=true for the sensitive key "password".',
+      error.stack.should.eql(
+        'instance.authentication.fields[0] cannot set isSafe as true for the sensitive key "password".',
       );
     });
   });
