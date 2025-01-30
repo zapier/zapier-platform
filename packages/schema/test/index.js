@@ -287,7 +287,6 @@ describe('app', () => {
       should(results.valid).eql(false);
 
       const [error] = results.errors;
-      // Check that the error specifically complains about a "not" rule or something similar
       error.name.should.equal('sensitive');
       error.message.should.equal(
         'Cannot set isSafe=true for the sensitive key "password".',
