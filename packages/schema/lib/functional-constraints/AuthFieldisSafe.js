@@ -7,10 +7,19 @@ const AUTH_FIELDS_ID = '/AuthFieldsSchema';
 
 const FORBIDDEN_KEYS = [
   'access_token',
-  'refresh_token',
   'api_key',
+  'apikey',
+  'api-key',
+  'auth',
+  'jwt',
+  'passwd',
   'password',
+  'pswd',
+  'refresh_token',
   'secret',
+  'set-cookie',
+  'signature',
+  'token',
 ];
 
 const checkAuthField = (field) => {

@@ -286,6 +286,7 @@ describe('app', () => {
       should(results.valid).eql(false);
 
       const [error] = results.errors;
+      console.log(error);
       error.name.should.equal('sensitive');
       error.stack.should.eql(
         'instance.authentication.fields[0] cannot set isSafe as true for the sensitive key "password".',
