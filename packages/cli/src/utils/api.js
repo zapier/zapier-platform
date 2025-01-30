@@ -475,7 +475,7 @@ const upload = async (
   } catch (err) {
     endSpinner({ success: false });
     // 409 from the backend specifically signals that the last changes were from a partner
-    // and this is a staff user which is likely
+    // and this is a staff user which could unintentionally overwrite those changes
     if (err.status === 409) {
       throw new Error(
         `The latest integration changes appear to be from a partner. OK to overwrite?` +
