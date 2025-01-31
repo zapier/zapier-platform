@@ -42,7 +42,7 @@ const PACKAGE_VERSION = packageJson.version;
 const UPDATE_NOTIFICATION_INTERVAL = 1000 * 60 * 60 * 24 * 7; // one week
 
 const CHECK_REF_DOC_LINK =
-  'https://docs.zapier.com/platform/publish/integration-checks-reference#integration-check-reference';
+  'https://docs.zapier.com/platform/publish/integration-checks-reference';
 
 const ISSUES_URL =
   'https://github.com/zapier/zapier-platform/issues/new/choose';

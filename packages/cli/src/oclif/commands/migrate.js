@@ -1,3 +1,5 @@
+const _ = require('lodash');
+const debug = require('debug')('zapier:migrate');
 const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
@@ -6,6 +8,51 @@ const { callAPI } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
 
 class MigrateCommand extends BaseCommand {
+  async run_require_confirmation_pre_checks(app, requestBody) {
+    const assumeYes = 'yes' in this.flags;
+    const url = `/apps/${app.id}/pre-migration-require-confirmation-checks`;
+
+    this.startSpinner(`Running pre-checks before migration...`);
+
+    try {
+      await callAPI(
+        url,
+        {
+          method: 'POST',
+          body: requestBody,
+        },
+        true,
+      );
+    } catch (response) {
+      this.stopSpinner({ success: false });
+
+      // 409 from the backend specifically signals pre-checks failed
+      if (response.status === 409) {
+        const softCheckErrors = _.get(response, 'json.errors', []);
+        const formattedErrors = softCheckErrors.map((e) => `* ${e}`).join('\n');
+
+        this.log();
+        this.log('Non-blocking checks prior to migration returned warnings:');
+        this.log(formattedErrors);
+        this.log();
+
+        const shouldContinuePreChecks =
+          assumeYes ||
+          (await this.confirm(
+            'Would you like to continue with the migration regardless?',
+          ));
+
+        if (!shouldContinuePreChecks) {
+          this.error('Cancelled migration.');
+        }
+      } else {
+        debug('Soft pre-checks before migration failed:', response.errText);
+      }
+    } finally {
+      this.stopSpinner();
+    }
+  }
+
   async perform() {
     const percent = this.args.percent;
     if (isNaN(percent) || percent < 1 || percent > 100) {
@@ -14,6 +61,7 @@ class MigrateCommand extends BaseCommand {
 
     const account = this.flags.account;
     const user = this.flags.user;
+
     const fromVersion = this.args.fromVersion;
     const toVersion = this.args.toVersion;
     let flagType;
@@ -67,6 +115,9 @@ class MigrateCommand extends BaseCommand {
         email_type: flagType,
       },
     };
+
+    await this.run_require_confirmation_pre_checks(app, body);
+
     if (user || account) {
       this.startSpinner(
         `Starting migration from ${fromVersion} to ${toVersion} for ${
@@ -105,6 +156,11 @@ MigrateCommand.flags = buildFlags({
     account: Flags.string({
       description:
         "Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member",
+    }),
+    yes: Flags.boolean({
+      char: 'y',
+      description:
+        'Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.',
     }),
   },
 });

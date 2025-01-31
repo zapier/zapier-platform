@@ -1,3 +1,30 @@
+## 16.3.0
+
+_released `2025-01-30`_
+
+### cli
+
+- :scroll: Update `pull` command help text to clarify `ynarxdeiH` options if file conflicts detected [#959](https://github.com/zapier/zapier-platform/pull/959)
+- :tada: Add `--overwrite-partner-changes` flag in `push` command to help reduce partner integration clobbering (currently only supported for **internal** use) [#960](https://github.com/zapier/zapier-platform/pull/960)
+
+
+## 16.2.0
+
+_released `2025-01-21`_
+
+### cli
+
+- :tada: Require `--force` flag when updating production integration version environment variables via `env:set` or `env:unset` [#942](https://github.com/zapier/zapier-platform/pull/942)
+- :tada: Run environment variable soft checks (which require user confirmation to proceed) during `promote` and `migrate` [#951](https://github.com/zapier/zapier-platform/pull/951)
+
+
+## 16.1.1
+
+_released `2025-01-13`_
+
+### cli
+
+- :bug: Fix "integration check reference" doc URL's anchor tags [#947](https://github.com/zapier/zapier-platform/pull/947)
 
 ## 16.1.0
 

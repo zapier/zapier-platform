@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const debug = require('debug')('zapier:promote');
 const colors = require('colors/safe');
 const { Args, Flags } = require('@oclif/core');
 
@@ -43,6 +44,52 @@ const hasAppChangeType = (metadata, changeType) => {
 };
 
 class PromoteCommand extends BaseCommand {
+  async run_require_confirmation_pre_checks(app, requestBody) {
+    const assumeYes = 'yes' in this.flags;
+    const url = `/apps/${app.id}/pre-migration-require-confirmation-checks`;
+
+    this.startSpinner(`Running pre-checks before promoting...`);
+
+    try {
+      await callAPI(
+        url,
+        {
+          method: 'POST',
+          body: requestBody,
+        },
+        true,
+      );
+    } catch (response) {
+      this.stopSpinner({ success: false });
+      // 409 from the backend specifically signals pre-checks failed
+      if (response.status === 409) {
+        const softCheckErrors = _.get(response, 'json.errors', []);
+        const formattedErrors = softCheckErrors.map((e) => `* ${e}`).join('\n');
+
+        this.log();
+        this.log(
+          'Non-blocking checks prior to promoting the integration returned warnings:',
+        );
+        this.log(formattedErrors);
+        this.log();
+
+        const shouldContinuePreChecks =
+          assumeYes ||
+          (await this.confirm(
+            'Would you like to continue with the promotion process regardless?',
+          ));
+
+        if (!shouldContinuePreChecks) {
+          this.error('Cancelled promote.');
+        }
+      } else {
+        debug('Soft pre-checks before promotion failed:', response.errText);
+      }
+    } finally {
+      this.stopSpinner();
+    }
+  }
+
   async perform() {
     const app = await this.getWritableApp();
 
@@ -51,7 +98,8 @@ class PromoteCommand extends BaseCommand {
     const version = this.args.version;
     const assumeYes = 'yes' in this.flags;
 
-    let shouldContinue;
+    let shouldContinueChangelog;
+
     const { changelog, appMetadata, issueMetadata } =
       await getVersionChangelog(version);
 
@@ -133,15 +181,15 @@ ${metadataPromptHelper}`);
       this.log();
       /* eslint-enable camelcase */
 
-      shouldContinue =
+      shouldContinueChangelog =
         assumeYes ||
         (await this.confirm(
           'Would you like to continue promoting with this changelog?',
         ));
-    }
 
-    if (!shouldContinue) {
-      this.error('Cancelled promote.');
+      if (!shouldContinueChangelog) {
+        this.error('Cancelled promote.');
+      }
     }
 
     this.log(
@@ -166,6 +214,8 @@ ${metadataPromptHelper}`);
         is_other: !isFeatureUpdate && !isBugfix,
       },
     };
+
+    await this.run_require_confirmation_pre_checks(app, body);
 
     this.startSpinner(`Verifying and promoting ${version}`);
 

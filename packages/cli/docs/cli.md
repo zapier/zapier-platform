@@ -225,6 +225,7 @@ resources convert and relate to different actions.
 * `key-value pairs...` | The key-value pairs to set. Keys are case-insensitive. Each pair should be space separated and pairs should be separated by an `=`. For example: `A=123 B=456`
 
 **Flags**
+* `-f, --force` | Force the update of environment variables regardless if the app version is production or not. Use with caution.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
@@ -242,6 +243,7 @@ resources convert and relate to different actions.
 * `keys...` | The keys to unset. Keys are case-insensitive.
 
 **Flags**
+* `-f, --force` | Force the update of environment variables regardless if the app version is production or not. Use with caution.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
@@ -512,6 +514,7 @@ You cannot pass both `--user` and `--account`.
 **Flags**
 * `--user` | Migrates all of a users' Private Zaps within all accounts for which the specified user is a member
 * `--account` | Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member
+* `-y, --yes` | Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
