@@ -14,7 +14,7 @@ module.exports = makeSchema({
       type: 'string',
       minLength: 1,
     },
-    isSecret: {
+    isNotSecret: {
       description:
         'Indicates if this authentication field is safe (not secret).',
       type: 'boolean',
@@ -88,13 +88,13 @@ module.exports = makeSchema({
     {
       key: 'email',
       type: 'string',
-      isSecret: true,
+      isNotSecret: true,
       required: true,
     },
     {
       key: 'password',
       type: 'password',
-      isSecret: false,
+      isNotSecret: false,
       required: true,
     },
 
@@ -102,7 +102,7 @@ module.exports = makeSchema({
     {
       key: 'api_key',
       type: 'string',
-      isSecret: false,
+      isNotSecret: false,
       required: true,
     },
   ],
@@ -112,7 +112,7 @@ module.exports = makeSchema({
       example: {
         key: 'password',
         type: 'password',
-        isSecret: true,
+        isNotSecret: true,
         required: true,
       },
       reason: 'A "password" field cannot have isSafe = true.',
@@ -120,7 +120,7 @@ module.exports = makeSchema({
     {
       example: {
         key: 'api_key',
-        isSecret: true,
+        isNotSecret: true,
       },
       reason:
         '"api_key" is a sensitive field and cannot have isSafe set as true.',
@@ -128,7 +128,7 @@ module.exports = makeSchema({
     {
       example: {
         type: 'string',
-        isSecret: false,
+        isNotSecret: false,
       },
       reason: 'Missing required key: key',
     },

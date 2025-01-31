@@ -161,7 +161,7 @@ Field schema specialized for authentication fields.
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
-`isSecret` | no | `boolean` | Indicates if this authentication field is safe (not secret).
+`isNotSecret` | no | `boolean` | Indicates if this authentication field is safe (not secret).
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
 `type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`, `'copy'`, `'code'`) | The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
@@ -174,15 +174,15 @@ Key | Required | Type | Description
 
 #### Examples
 
-* `{ key: 'email', type: 'string', isSecret: true, required: true }`
-* `{ key: 'password', type: 'password', isSecret: false, required: true }`
-* `{ key: 'api_key', type: 'string', isSecret: false, required: true }`
+* `{ key: 'email', type: 'string', isNotSecret: true, required: true }`
+* `{ key: 'password', type: 'password', isNotSecret: false, required: true }`
+* `{ key: 'api_key', type: 'string', isNotSecret: false, required: true }`
 
 #### Anti-Examples
 
-* `{ key: 'password', type: 'password', isSecret: true, required: true }` - _A "password" field cannot have isSafe = true._
-* `{ key: 'api_key', isSecret: true }` - _"api_key" is a sensitive field and cannot have isSafe set as true._
-* `{ type: 'string', isSecret: false }` - _Missing required key: key_
+* `{ key: 'password', type: 'password', isNotSecret: true, required: true }` - _A "password" field cannot have isSafe = true._
+* `{ key: 'api_key', isNotSecret: true }` - _"api_key" is a sensitive field and cannot have isSafe set as true._
+* `{ type: 'string', isNotSecret: false }` - _Missing required key: key_
 
 -----
 
@@ -200,26 +200,26 @@ An array or collection of authentication fields.
 
 * ```
   [
-    { key: 'username', type: 'string', isSecret: true, required: true },
-    { key: 'password', type: 'password', isSecret: false, required: true }
+    { key: 'username', type: 'string', isNotSecret: true, required: true },
+    { key: 'password', type: 'password', isNotSecret: false, required: true }
   ]
   ```
-* `[ { key: 'api_key', type: 'string', isSecret: false, required: true } ]`
+* `[ { key: 'api_key', type: 'string', isNotSecret: false, required: true } ]`
 * ```
   [
-    { key: 'email', type: 'string', isSecret: true },
+    { key: 'email', type: 'string', isNotSecret: true },
     { key: 'password', type: 'password', required: true },
-    { key: 'mfa_token', type: 'string', isSecret: false }
+    { key: 'mfa_token', type: 'string', isNotSecret: false }
   ]
   ```
 
 #### Anti-Examples
 
 * `{}` - _Must be an array (currently an object)._
-* `[ { key: 'password', isSecret: true } ]` - _"password" is a sensitive field and cannot have isSecret set as true._
-* `[ { key: 'api_key', isSecret: true } ]` - _"api_key" is a sensitive field and cannot have isSecret set as true._
-* `[ { isSecret: false } ]` - _Missing required "key" property._
-* `[ { key: 'username', type: 'string', isSecret: true }, 12345 ]` - _Array item 12345 is not an object (must match AuthFieldSchema)._
+* `[ { key: 'password', isNotSecret: true } ]` - _"password" is a sensitive field and cannot have isNotSecret set as true._
+* `[ { key: 'api_key', isNotSecret: true } ]` - _"api_key" is a sensitive field and cannot have isNotSecret set as true._
+* `[ { isNotSecret: false } ]` - _Missing required "key" property._
+* `[ { key: 'username', type: 'string', isNotSecret: true }, 12345 ]` - _Array item 12345 is not an object (must match AuthFieldSchema)._
 
 -----
 

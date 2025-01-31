@@ -184,7 +184,7 @@
           "type": "string",
           "minLength": 1
         },
-        "isSecret": {
+        "isNotSecret": {
           "description": "Indicates if this authentication field is safe (not secret).",
           "type": "boolean"
         },

@@ -209,7 +209,7 @@ export interface AuthField {
   /**
    * Indicates if this authentication field is safe (not secret).
    */
-  isSecret?: boolean;
+  isNotSecret?: boolean;
 
   /** A human readable label for this value (IE: "First Name"). */
   label?: string;

@@ -241,13 +241,13 @@ describe('app', () => {
           {
             key: 'username',
             type: 'string',
-            isSecret: true, // allowed
+            isNotSecret: true, // allowed
             required: true,
           },
           {
             key: 'password',
-            type: 'string',
-            isSecret: false, // password is not safe
+            type: 'password',
+            isNotSecret: false, // password is not safe
             required: true,
           },
         ],
@@ -263,7 +263,7 @@ describe('app', () => {
     it('should invalidate a "safe" password field', () => {
       const appCopy = copy(appDefinition);
 
-      // Same "custom" auth but now marking "password" as isSecret=true
+      // Same "custom" auth but now marking "password" as isNotSecret=true
       appCopy.authentication = {
         type: 'custom',
         test: {
@@ -273,7 +273,7 @@ describe('app', () => {
           {
             key: 'password',
             type: 'string',
-            isSecret: true, // invalid: password cannot be safe
+            isNotSecret: true, // invalid: password cannot be safe
             required: true,
           },
         ],
@@ -281,7 +281,7 @@ describe('app', () => {
 
       const results = schema.validateAppDefinition(appCopy);
 
-      // Expect at least one error because "password" can't have isSecret = true
+      // Expect at least one error because "password" can't have isNotSecret = true
       results.errors.should.have.length(1);
       should(results.valid).eql(false);
 
@@ -289,7 +289,7 @@ describe('app', () => {
       console.log(error);
       error.name.should.equal('sensitive');
       error.stack.should.eql(
-        'instance.authentication.fields[0] cannot set isSecret as true for the sensitive key "password".',
+        'instance.authentication.fields[0] cannot set isNotSecret as true for the sensitive key "password".',
       );
     });
   });
