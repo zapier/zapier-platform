@@ -1,4 +1,4 @@
-const { Args } = require('@oclif/core');
+const { Args, Flags } = require('@oclif/core');
 const { cyan } = require('colors/safe');
 const { omit } = require('lodash');
 
@@ -45,21 +45,30 @@ class SetEnvCommand extends BaseCommand {
     }
 
     const url = `/apps/${app.id}/versions/${version}/multi-environment`;
+    const requestOptions = {
+      body: payload,
+      method: 'POST',
+    };
+
+    if (this.flags.force) {
+      requestOptions.extraHeaders = {
+        'X-Force-Env-Var-Update': 'true',
+      };
+    }
 
     try {
-      // currently, this returns nothing
-      await callAPI(
-        url,
-        {
-          body: payload,
-          method: 'POST',
-        },
-        true,
-      );
+      await callAPI(url, requestOptions, true);
 
       this.log(successMessage(version));
       this.logJSON(payload);
     } catch (e) {
+      if (e.status === 409) {
+        this.error(
+          `App version ${version} is the production version. Are you sure you want to set potentially live environment variables?` +
+            ` If so, run this command again with the --force flag.`,
+        );
+      }
+
       // comes back as json: { errors: [ 'The following keys failed to update: 3QER, 4WER' ] },
       const failedKeys = e.json.errors[0].split('update: ')[1].split(', ');
       const successfulResult = omit(payload, failedKeys);
@@ -85,7 +94,15 @@ SetEnvCommand.args = {
       'The key-value pairs to set. Keys are case-insensitive. Each pair should be space separated and pairs should be separated by an `=`. For example: `A=123 B=456`',
   }),
 };
-SetEnvCommand.flags = buildFlags();
+SetEnvCommand.flags = buildFlags({
+  commandFlags: {
+    force: Flags.boolean({
+      char: 'f',
+      description:
+        'Force the update of environment variables regardless if the app version is production or not. Use with caution.',
+    }),
+  },
+});
 SetEnvCommand.description = `Set environment variables for a version.`;
 SetEnvCommand.examples = [`zapier env:set 1.2.3 SECRET=12345 OTHER=4321`];
 SetEnvCommand.strict = false;
