@@ -9,7 +9,7 @@ const appDefinition = require('../examples/definition.json');
 
 const copy = (o) => JSON.parse(JSON.stringify(o));
 
-const NUM_SCHEMAS = 60; // changes regularly as we expand
+const NUM_SCHEMAS = 59; // changes regularly as we expand
 
 describe('app', () => {
   describe('validation', () => {
@@ -241,13 +241,13 @@ describe('app', () => {
           {
             key: 'username',
             type: 'string',
-            isSafe: true, // allowed
+            isSecret: true, // allowed
             required: true,
           },
           {
             key: 'password',
             type: 'string',
-            isSafe: false, // password is not safe
+            isSecret: false, // password is not safe
             required: true,
           },
         ],
@@ -263,7 +263,7 @@ describe('app', () => {
     it('should invalidate a "safe" password field', () => {
       const appCopy = copy(appDefinition);
 
-      // Same "custom" auth but now marking "password" as isSafe=true
+      // Same "custom" auth but now marking "password" as isSecret=true
       appCopy.authentication = {
         type: 'custom',
         test: {
@@ -273,7 +273,7 @@ describe('app', () => {
           {
             key: 'password',
             type: 'string',
-            isSafe: true, // invalid: password cannot be safe
+            isSecret: true, // invalid: password cannot be safe
             required: true,
           },
         ],
@@ -281,7 +281,7 @@ describe('app', () => {
 
       const results = schema.validateAppDefinition(appCopy);
 
-      // Expect at least one error because "password" can't have isSafe = true
+      // Expect at least one error because "password" can't have isSecret = true
       results.errors.should.have.length(1);
       should(results.valid).eql(false);
 
@@ -289,7 +289,7 @@ describe('app', () => {
       console.log(error);
       error.name.should.equal('sensitive');
       error.stack.should.eql(
-        'instance.authentication.fields[0] cannot set isSafe as true for the sensitive key "password".',
+        'instance.authentication.fields[0] cannot set isSecret as true for the sensitive key "password".',
       );
     });
   });

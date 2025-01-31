@@ -22,13 +22,20 @@ const FORBIDDEN_KEYS = [
   'token',
 ];
 
+const isSensitiveKey = (key = '') =>
+  FORBIDDEN_KEYS.some((forbidden) =>
+    key.toLowerCase().includes(forbidden.toLowerCase()),
+  );
+
 const checkAuthField = (field) => {
   const errors = [];
 
-  if (FORBIDDEN_KEYS.includes(field.key) && field.isSafe === true) {
+  // if the field key contains any forbidden substring (case-insensitive),
+  // AND 'isSecret' is true, throw a validation error
+  if (isSensitiveKey(field.key) && field.isSecret === true) {
     errors.push(
       new jsonschema.ValidationError(
-        `cannot set isSafe as true for the sensitive key "${field.key}".`,
+        `cannot set isSecret as true for the sensitive key "${field.key}".`,
         field,
         '/AuthFieldSchema',
         'instance.field',
@@ -46,7 +53,6 @@ module.exports = (definition, mainSchema) => {
   // Done to validate anti-examples declaratively defined in the schema
   if ([AUTH_FIELD_ID, AUTH_FIELDS_ID].includes(mainSchema.id)) {
     const definitions = Array.isArray(definition) ? definition : [definition];
-
     definitions.forEach((field, index) => {
       checkAuthField(field).forEach((err) => {
         err.property = `instance[${index}]`;
@@ -60,7 +66,6 @@ module.exports = (definition, mainSchema) => {
   if (!definition.authentication || !definition.authentication.fields) {
     return errors;
   }
-
   definition.authentication.fields.forEach((field, index) => {
     checkAuthField(field).forEach((err) => {
       err.property = `instance.authentication.fields[${index}]`;

@@ -16,18 +16,18 @@ module.exports = makeSchema(
     examples: [
       // 1) Basic Auth: username (safe) + password (not safe)
       [
-        { key: 'username', type: 'string', isSafe: true, required: true },
-        { key: 'password', type: 'password', isSafe: false, required: true },
+        { key: 'username', type: 'string', isSecret: true, required: true },
+        { key: 'password', type: 'password', isSecret: false, required: true },
       ],
 
       // 2) Just a single auth field for custom usage (e.g., api_key)
-      [{ key: 'api_key', type: 'string', isSafe: false, required: true }],
+      [{ key: 'api_key', type: 'string', isSecret: false, required: true }],
 
       // 3) Mix of fields for extended usage
       [
-        { key: 'email', type: 'string', isSafe: true },
+        { key: 'email', type: 'string', isSecret: true },
         { key: 'password', type: 'password', required: true },
-        { key: 'mfa_token', type: 'string', isSafe: false },
+        { key: 'mfa_token', type: 'string', isSecret: false },
       ],
     ],
 
@@ -38,22 +38,23 @@ module.exports = makeSchema(
         reason: 'Must be an array (currently an object).',
       },
       {
-        example: [{ key: 'password', isSafe: true }],
+        example: [{ key: 'password', isSecret: true }],
         reason:
-          '"password" is a sensitive field and cannot have isSafe set as true.',
+          '"password" is a sensitive field and cannot have isSecret set as true.',
       },
       {
-        example: [{ key: 'api_key', isSafe: true }],
+        example: [{ key: 'api_key', isSecret: true }],
         reason:
-          '"api_key" is a sensitive field and cannot have isSafe set as true.',
+          '"api_key" is a sensitive field and cannot have isSecret set as true.',
       },
       {
-        example: [{ isSafe: false }],
+        example: [{ isSecret: false }],
         reason: 'Missing required "key" property.',
       },
       {
-        example: [{ key: 'username', type: 'string', isSafe: true }, 12345],
-        reason: 'Array item 12345 is not an object (must match AuthFieldSchema).',
+        example: [{ key: 'username', type: 'string', isSecret: true }, 12345],
+        reason:
+          'Array item 12345 is not an object (must match AuthFieldSchema).',
       },
     ],
   },
