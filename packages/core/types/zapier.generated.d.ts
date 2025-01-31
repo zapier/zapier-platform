@@ -198,218 +198,6 @@ export type Function =
   | FunctionSource;
 
 /**
- * An object describing a labeled choice in a static dropdown.
- * Useful if the value a user picks isn't exactly what the zap uses.
- * For instance, when they click on a nickname, but the zap uses the
- * user's full name
- * ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).
- *
- * [Docs: FieldChoiceWithLabelSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldChoiceWithLabelSchema)
- */
-export interface FieldChoiceWithLabel {
-  /**
-   * The actual value that is sent into the Zap. This is displayed as
-   * light grey text in the editor. Should match sample exactly.
-   */
-  value: string;
-
-  /**
-   * A legacy field that is no longer used by the editor, but it is
-   * still required for now and should match the value.
-   */
-  sample: string;
-
-  /** A human readable label for this value. */
-  label: string;
-  [k: string]: unknown;
-}
-
-/**
- * Reference a resource by key and the data it returns. In the
- * format of: `{resource_key}.{foreign_key}(.{human_label_key})`.
- *
- * [Docs: RefResourceSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#RefResourceSchema)
- */
-export type RefResource = string;
-
-/**
- * A static dropdown of options. Which you use depends on your order
- * and label requirements:
- *
- * Need a Label? | Does Order Matter? | Type to Use
- * ---|---|---
- * Yes | No | Object of value -> label
- * No | Yes | Array of Strings
- * Yes | Yes | Array of
- * [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
- *
- * [Docs: FieldChoicesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldChoicesSchema)
- */
-export type FieldChoices =
-  | { [k: string]: unknown }
-  | (string | FieldChoiceWithLabel)[];
-
-/**
- * Allows for additional metadata to be stored on the field.
- *
- * [Docs: FieldMetaSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldMetaSchema)
- */
-export interface FieldMeta {
-  /**
-   * Only string, integer or boolean values are allowed.
-   *
-   * This interface was referenced by `FieldMetaSchema`'s JSON-Schema
-   * definition
-   * via the `patternProperty` "[^\s]+".
-   */
-  [k: string]: string | number | boolean;
-}
-
-/**
- * Defines a field an app either needs as input, or gives as output.
- * In addition to the requirements below, the following keys are
- * mutually exclusive:
- *
- * * `children` & `list`
- * * `children` & `dict`
- * * `children` & `type`
- * * `children` & `placeholder`
- * * `children` & `helpText`
- * * `children` & `default`
- * * `dict` & `list`
- * * `dynamic` & `dict`
- * * `dynamic` & `choices`
- *
- * [Docs: FieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldSchema)
- */
-export interface Field {
-  /** A unique machine readable key for this value (IE: "fname"). */
-  key: string;
-
-  /** A human readable label for this value (IE: "First Name"). */
-  label?: string;
-
-  /**
-   * A human readable description of this value (IE: "The first part
-   * of a full name."). You can use Markdown.
-   */
-  helpText?: string;
-
-  /**
-   * The type of this value. Use `string` for basic text input, `text`
-   * for a large, `<textarea>` style box, and `code` for a
-   * `<textarea>` with a fixed-width font. Field type of `file` will
-   * accept either a file object or a string. If a URL is provided in
-   * the string, Zapier will automatically make a GET for that file.
-   * Otherwise, a .txt file will be generated.
-   */
-  type?:
-    | 'string'
-    | 'text'
-    | 'integer'
-    | 'number'
-    | 'boolean'
-    | 'datetime'
-    | 'file'
-    | 'password'
-    | 'copy'
-    | 'code';
-
-  /** If this value is required or not. */
-  required?: boolean;
-
-  /** An example value that is not saved. */
-  placeholder?: string;
-
-  /**
-   * A default value that is saved the first time a Zap is created.
-   */
-  default?: string;
-
-  /**
-   * Use this field as part of the primary key for deduplication. You
-   * can set multiple fields as "primary", provided they are unique
-   * together. If no fields are set, Zapier will default to using the
-   * `id` field. `primary` only makes sense for `outputFields`; it
-   * will be ignored if set in `inputFields`. It only works in static
-   * `outputFields`; will not work in custom/dynamic `outputFields`.
-   * For more information, see [How deduplication works in
-   * Zapier](https://platform.zapier.com/build/deduplication).
-   */
-  primary?: boolean;
-
-  /**
-   * A reference to a trigger that will power a dynamic dropdown.
-   */
-  dynamic?: RefResource;
-
-  /**
-   * A reference to a search that will guide the user to add a search
-   * step to populate this field when creating a Zap.
-   */
-  search?: RefResource;
-
-  /**
-   * An object of machine keys and human values to populate a static
-   * dropdown.
-   */
-  choices?: FieldChoices;
-
-  /**
-   * Acts differently when used in inputFields vs. when used in
-   * outputFields. In inputFields: Can a user provide multiples of
-   * this field? In outputFields: Does this field return an array of
-   * items of type `type`?
-   */
-  list?: boolean;
-
-  /**
-   * An array of child fields that define the structure of a
-   * sub-object for this field. Usually used for line items.
-   *
-   * @minItems 1
-   */
-  children?: Field[];
-
-  /** Is this field a key/value input? */
-  dict?: boolean;
-
-  /**
-   * Is this field automatically populated (and hidden from the user)?
-   * Note: Only OAuth and Session Auth support fields with this key.
-   */
-  computed?: boolean;
-
-  /**
-   * Does the value of this field affect the definitions of other
-   * fields in the set?
-   */
-  altersDynamicFields?: boolean;
-
-  /**
-   * Prevents triggering on new output until all values for fields
-   * with this property remain unchanged for 2 polls. It can be used
-   * to, e.g., not trigger on a new contact until the contact has
-   * completed typing their name. NOTE that this only applies to the
-   * `outputFields` of polling triggers.
-   */
-  steadyState?: boolean;
-
-  /**
-   * Useful when you expect the input to be part of a longer string.
-   * Put "{{input}}" in place of the user's input (IE:
-   * "https://{{input}}.yourdomain.com").
-   */
-  inputFormat?: string;
-
-  /**
-   * Allows for additional metadata to be stored on the field.
-   * Supports simple key-values only (no sub-objects or arrays).
-   */
-  meta?: FieldMeta;
-}
-
-/**
  * Field schema specialized for authentication fields.
  *
  * [Docs: AuthFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldSchema)
@@ -418,6 +206,11 @@ export interface AuthField {
   /** A unique machine readable key for this value (IE: "fname"). */
   key: string;
 
+  /**
+   * Indicates if this authentication field is safe (not secret).
+   */
+  isSecret?: boolean;
+
   /** A human readable label for this value (IE: "First Name"). */
   label?: string;
 
@@ -428,71 +221,27 @@ export interface AuthField {
   helpText?: string;
 
   /**
-   * The type of this value. Use `string` for basic text input, `text`
-   * for a large, `<textarea>` style box, and `code` for a
-   * `<textarea>` with a fixed-width font. Field type of `file` will
-   * accept either a file object or a string. If a URL is provided in
-   * the string, Zapier will automatically make a GET for that file.
-   * Otherwise, a .txt file will be generated.
+   * The type of this value. Field type of `file` will accept either a
+   * file object or a string. If a URL is provided in the string,
+   * Zapier will automatically make a GET for that file. Otherwise, a
+   * .txt file will be generated.
    */
   type?:
     | 'string'
-    | 'text'
-    | 'integer'
     | 'number'
     | 'boolean'
     | 'datetime'
-    | 'file'
     | 'password'
     | 'copy'
     | 'code';
 
-  /** If this value is required or not. */
+  /** If this value is required or not. This defaults to True. */
   required?: boolean;
 
   /** An example value that is not saved. */
   placeholder?: string;
 
-  /**
-   * A default value that is saved the first time a Zap is created.
-   */
-  default?: string;
-
-  /**
-   * Use this field as part of the primary key for deduplication. You
-   * can set multiple fields as "primary", provided they are unique
-   * together. If no fields are set, Zapier will default to using the
-   * `id` field. `primary` only makes sense for `outputFields`; it
-   * will be ignored if set in `inputFields`. It only works in static
-   * `outputFields`; will not work in custom/dynamic `outputFields`.
-   * For more information, see [How deduplication works in
-   * Zapier](https://platform.zapier.com/build/deduplication).
-   */
-  primary?: boolean;
-
-  /**
-   * A reference to a trigger that will power a dynamic dropdown.
-   */
-  dynamic?: RefResource;
-
-  /**
-   * A reference to a search that will guide the user to add a search
-   * step to populate this field when creating a Zap.
-   */
-  search?: RefResource;
-
-  /**
-   * An object of machine keys and human values to populate a static
-   * dropdown.
-   */
-  choices?: FieldChoices;
-
-  /**
-   * Acts differently when used in inputFields vs. when used in
-   * outputFields. In inputFields: Can a user provide multiples of
-   * this field? In outputFields: Does this field return an array of
-   * items of type `type`?
-   */
+  /** Can a user provide multiples of this field? */
   list?: boolean;
 
   /**
@@ -501,31 +250,10 @@ export interface AuthField {
    *
    * @minItems 1
    */
-  children?: Field[];
+  children?: AuthField[];
 
   /** Is this field a key/value input? */
   dict?: boolean;
-
-  /**
-   * Is this field automatically populated (and hidden from the user)?
-   * Note: Only OAuth and Session Auth support fields with this key.
-   */
-  computed?: boolean;
-
-  /**
-   * Does the value of this field affect the definitions of other
-   * fields in the set?
-   */
-  altersDynamicFields?: boolean;
-
-  /**
-   * Prevents triggering on new output until all values for fields
-   * with this property remain unchanged for 2 polls. It can be used
-   * to, e.g., not trigger on a new contact until the contact has
-   * completed typing their name. NOTE that this only applies to the
-   * `outputFields` of polling triggers.
-   */
-  steadyState?: boolean;
 
   /**
    * Useful when you expect the input to be part of a longer string.
@@ -533,17 +261,7 @@ export interface AuthField {
    * "https://{{input}}.yourdomain.com").
    */
   inputFormat?: string;
-
-  /**
-   * Allows for additional metadata to be stored on the field.
-   * Supports simple key-values only (no sub-objects or arrays).
-   */
-  meta?: FieldMeta;
-
-  /**
-   * Indicates if this authentication field is safe (not secret).
-   */
-  isSafe?: boolean;
+  [k: string]: unknown;
 }
 
 /**
@@ -759,6 +477,74 @@ export interface AuthenticationSessionConfig {
 }
 
 /**
+ * An object describing a labeled choice in a static dropdown.
+ * Useful if the value a user picks isn't exactly what the zap uses.
+ * For instance, when they click on a nickname, but the zap uses the
+ * user's full name
+ * ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).
+ *
+ * [Docs: FieldChoiceWithLabelSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldChoiceWithLabelSchema)
+ */
+export interface FieldChoiceWithLabel {
+  /**
+   * The actual value that is sent into the Zap. This is displayed as
+   * light grey text in the editor. Should match sample exactly.
+   */
+  value: string;
+
+  /**
+   * A legacy field that is no longer used by the editor, but it is
+   * still required for now and should match the value.
+   */
+  sample: string;
+
+  /** A human readable label for this value. */
+  label: string;
+  [k: string]: unknown;
+}
+
+/**
+ * Reference a resource by key and the data it returns. In the
+ * format of: `{resource_key}.{foreign_key}(.{human_label_key})`.
+ *
+ * [Docs: RefResourceSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#RefResourceSchema)
+ */
+export type RefResource = string;
+
+/**
+ * A static dropdown of options. Which you use depends on your order
+ * and label requirements:
+ *
+ * Need a Label? | Does Order Matter? | Type to Use
+ * ---|---|---
+ * Yes | No | Object of value -> label
+ * No | Yes | Array of Strings
+ * Yes | Yes | Array of
+ * [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
+ *
+ * [Docs: FieldChoicesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldChoicesSchema)
+ */
+export type FieldChoices =
+  | { [k: string]: unknown }
+  | (string | FieldChoiceWithLabel)[];
+
+/**
+ * Allows for additional metadata to be stored on the field.
+ *
+ * [Docs: FieldMetaSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldMetaSchema)
+ */
+export interface FieldMeta {
+  /**
+   * Only string, integer or boolean values are allowed.
+   *
+   * This interface was referenced by `FieldMetaSchema`'s JSON-Schema
+   * definition
+   * via the `patternProperty` "[^\s]+".
+   */
+  [k: string]: string | number | boolean;
+}
+
+/**
  * Field schema specialized for input fields.
  *
  * [Docs: InputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#InputFieldSchema)
@@ -803,23 +589,6 @@ export interface InputField {
   placeholder?: string;
 
   /**
-   * A default value that is saved the first time a Zap is created.
-   */
-  default?: string;
-
-  /**
-   * Use this field as part of the primary key for deduplication. You
-   * can set multiple fields as "primary", provided they are unique
-   * together. If no fields are set, Zapier will default to using the
-   * `id` field. `primary` only makes sense for `outputFields`; it
-   * will be ignored if set in `inputFields`. It only works in static
-   * `outputFields`; will not work in custom/dynamic `outputFields`.
-   * For more information, see [How deduplication works in
-   * Zapier](https://platform.zapier.com/build/deduplication).
-   */
-  primary?: boolean;
-
-  /**
    * A reference to a trigger that will power a dynamic dropdown.
    */
   dynamic?: RefResource;
@@ -836,12 +605,7 @@ export interface InputField {
    */
   choices?: FieldChoices;
 
-  /**
-   * Acts differently when used in inputFields vs. when used in
-   * outputFields. In inputFields: Can a user provide multiples of
-   * this field? In outputFields: Does this field return an array of
-   * items of type `type`?
-   */
+  /** Can a user provide multiples of this field? */
   list?: boolean;
 
   /**
@@ -850,16 +614,10 @@ export interface InputField {
    *
    * @minItems 1
    */
-  children?: Field[];
+  children?: InputField[];
 
   /** Is this field a key/value input? */
   dict?: boolean;
-
-  /**
-   * Is this field automatically populated (and hidden from the user)?
-   * Note: Only OAuth and Session Auth support fields with this key.
-   */
-  computed?: boolean;
 
   /**
    * Does the value of this field affect the definitions of other
@@ -868,13 +626,9 @@ export interface InputField {
   altersDynamicFields?: boolean;
 
   /**
-   * Prevents triggering on new output until all values for fields
-   * with this property remain unchanged for 2 polls. It can be used
-   * to, e.g., not trigger on a new contact until the contact has
-   * completed typing their name. NOTE that this only applies to the
-   * `outputFields` of polling triggers.
+   * A default value that is saved the first time a Zap is created.
    */
-  steadyState?: boolean;
+  default?: string;
 
   /**
    * Useful when you expect the input to be part of a longer string.
@@ -903,30 +657,19 @@ export interface OutputField {
   label?: string;
 
   /**
-   * A human readable description of this value (IE: "The first part
-   * of a full name."). You can use Markdown.
-   */
-  helpText?: string;
-
-  /**
-   * The type of this value. Use `string` for basic text input, `text`
-   * for a large, `<textarea>` style box, and `code` for a
-   * `<textarea>` with a fixed-width font. Field type of `file` will
-   * accept either a file object or a string. If a URL is provided in
-   * the string, Zapier will automatically make a GET for that file.
-   * Otherwise, a .txt file will be generated.
+   * The type of this value. Field type of `file` will accept either a
+   * file object or a string. If a URL is provided in the string,
+   * Zapier will automatically make a GET for that file. Otherwise, a
+   * .txt file will be generated.
    */
   type?:
     | 'string'
-    | 'text'
-    | 'integer'
     | 'number'
     | 'boolean'
+    | 'integer'
     | 'datetime'
     | 'file'
-    | 'password'
-    | 'copy'
-    | 'code';
+    | 'password';
 
   /** If this value is required or not. */
   required?: boolean;
@@ -935,18 +678,13 @@ export interface OutputField {
   placeholder?: string;
 
   /**
-   * A default value that is saved the first time a Zap is created.
-   */
-  default?: string;
-
-  /**
    * Use this field as part of the primary key for deduplication. You
    * can set multiple fields as "primary", provided they are unique
    * together. If no fields are set, Zapier will default to using the
-   * `id` field. `primary` only makes sense for `outputFields`; it
-   * will be ignored if set in `inputFields`. It only works in static
-   * `outputFields`; will not work in custom/dynamic `outputFields`.
-   * For more information, see [How deduplication works in
+   * `id` field. `primary` only makes sense for `outputFields`. It
+   * only works in static `outputFields`; will not work in
+   * custom/dynamic `outputFields`. For more information, see [How
+   * deduplication works in
    * Zapier](https://platform.zapier.com/build/deduplication).
    */
   primary?: boolean;
@@ -962,18 +700,7 @@ export interface OutputField {
    */
   search?: RefResource;
 
-  /**
-   * An object of machine keys and human values to populate a static
-   * dropdown.
-   */
-  choices?: FieldChoices;
-
-  /**
-   * Acts differently when used in inputFields vs. when used in
-   * outputFields. In inputFields: Can a user provide multiples of
-   * this field? In outputFields: Does this field return an array of
-   * items of type `type`?
-   */
+  /** Can a user provide multiples of this field? */
   list?: boolean;
 
   /**
@@ -982,44 +709,10 @@ export interface OutputField {
    *
    * @minItems 1
    */
-  children?: Field[];
+  children?: OutputField[];
 
-  /** Is this field a key/value input? */
+  /** Is this field a key/value output? */
   dict?: boolean;
-
-  /**
-   * Is this field automatically populated (and hidden from the user)?
-   * Note: Only OAuth and Session Auth support fields with this key.
-   */
-  computed?: boolean;
-
-  /**
-   * Does the value of this field affect the definitions of other
-   * fields in the set?
-   */
-  altersDynamicFields?: boolean;
-
-  /**
-   * Prevents triggering on new output until all values for fields
-   * with this property remain unchanged for 2 polls. It can be used
-   * to, e.g., not trigger on a new contact until the contact has
-   * completed typing their name. NOTE that this only applies to the
-   * `outputFields` of polling triggers.
-   */
-  steadyState?: boolean;
-
-  /**
-   * Useful when you expect the input to be part of a longer string.
-   * Put "{{input}}" in place of the user's input (IE:
-   * "https://{{input}}.yourdomain.com").
-   */
-  inputFormat?: string;
-
-  /**
-   * Allows for additional metadata to be stored on the field.
-   * Supports simple key-values only (no sub-objects or arrays).
-   */
-  meta?: FieldMeta;
 }
 
 /**
