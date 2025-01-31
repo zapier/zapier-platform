@@ -45,25 +45,10 @@ module.exports = makeSchema(
         description: 'If this value is required or not.',
         type: 'boolean',
       },
-      placeholder: {
-        description: 'An example value that is not saved.',
-        type: 'string',
-        minLength: 1,
-      },
       primary: {
         description:
           'Use this field as part of the primary key for deduplication. You can set multiple fields as "primary", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).',
         type: 'boolean',
-      },
-      dynamic: {
-        description:
-          'A reference to a trigger that will power a dynamic dropdown.',
-        $ref: RefResourceSchema.id,
-      },
-      search: {
-        description:
-          'A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.',
-        $ref: RefResourceSchema.id,
       },
       list: {
         description: 'Can a user provide multiples of this field?',
@@ -84,7 +69,7 @@ module.exports = makeSchema(
     examples: [
       { key: 'abc' },
       { key: 'abc', children: [{ key: 'abc' }] },
-      { key: 'abc', type: 'integer', placeholder: 'neat' },
+      { key: 'abc', type: 'integer', label: 'neat' },
       { key: 'abc', type: 'integer' },
     ],
     antiExamples: [

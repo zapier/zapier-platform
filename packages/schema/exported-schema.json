@@ -610,12 +610,6 @@
           "type": "string",
           "minLength": 1
         },
-        "helpText": {
-          "description": "A human readable description of this value (IE: \"The first part of a full name.\"). You can use Markdown.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        },
         "type": {
           "description": "The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.",
           "type": "string",
@@ -635,11 +629,6 @@
         "required": {
           "description": "If this value is required or not.",
           "type": "boolean"
-        },
-        "placeholder": {
-          "description": "An example value that is not saved.",
-          "type": "string",
-          "minLength": 1
         },
         "dynamic": {
           "description": "A reference to a trigger that will power a dynamic dropdown.",
@@ -672,11 +661,6 @@
         "altersDynamicFields": {
           "description": "Does the value of this field affect the definitions of other fields in the set?",
           "type": "boolean"
-        },
-        "default": {
-          "description": "A default value that is saved the first time a Zap is created.",
-          "type": "string",
-          "minLength": 1
         },
         "inputFormat": {
           "description": "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
@@ -723,22 +707,9 @@
           "description": "If this value is required or not.",
           "type": "boolean"
         },
-        "placeholder": {
-          "description": "An example value that is not saved.",
-          "type": "string",
-          "minLength": 1
-        },
         "primary": {
           "description": "Use this field as part of the primary key for deduplication. You can set multiple fields as \"primary\", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).",
           "type": "boolean"
-        },
-        "dynamic": {
-          "description": "A reference to a trigger that will power a dynamic dropdown.",
-          "$ref": "/RefResourceSchema"
-        },
-        "search": {
-          "description": "A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.",
-          "$ref": "/RefResourceSchema"
         },
         "list": {
           "description": "Can a user provide multiples of this field?",

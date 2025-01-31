@@ -1202,10 +1202,8 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
-`helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
 `type` | no | `string` in (`'string'`, `'text'`, `'integer'`, `'number'`, `'boolean'`, `'datetime'`, `'file'`, `'password'`, `'copy'`, `'code'`) | The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
 `required` | no | `boolean` | If this value is required or not.
-`placeholder` | no | `string` | An example value that is not saved.
 `dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.
 `search` | no | [/RefResourceSchema](#refresourceschema) | A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.
 `choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
@@ -1213,7 +1211,6 @@ Key | Required | Type | Description
 `children` | no | `array`[[/InputFieldSchema](#inputfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?
 `altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?
-`default` | no | `string` | A default value that is saved the first time a Zap is created.
 `inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
 `meta` | no | [/FieldMetaSchema](#fieldmetaschema) | Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).
 
@@ -1224,7 +1221,7 @@ Key | Required | Type | Description
 * `{ key: 'abc', choices: [ 'first', 'second', 'third' ] }`
 * `{ key: 'abc', choices: [ { label: 'Red', sample: '#f00', value: '#f00' } ] }`
 * `{ key: 'abc', children: [ { key: 'abc' } ] }`
-* `{ key: 'abc', type: 'integer', helpText: 'neat' }`
+* `{ key: 'abc', type: 'integer' }`
 * ```
   {
     key: 'abc',
@@ -1340,10 +1337,7 @@ Key | Required | Type | Description
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
 `type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'integer'`, `'datetime'`, `'file'`, `'password'`) | The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
 `required` | no | `boolean` | If this value is required or not.
-`placeholder` | no | `string` | An example value that is not saved.
 `primary` | no | `boolean` | Use this field as part of the primary key for deduplication. You can set multiple fields as "primary", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).
-`dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.
-`search` | no | [/RefResourceSchema](#refresourceschema) | A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.
 `list` | no | `boolean` | Can a user provide multiples of this field?
 `children` | no | `array`[[/OutputFieldSchema](#outputfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value output?
@@ -1352,7 +1346,7 @@ Key | Required | Type | Description
 
 * `{ key: 'abc' }`
 * `{ key: 'abc', children: [ { key: 'abc' } ] }`
-* `{ key: 'abc', type: 'integer', placeholder: 'neat' }`
+* `{ key: 'abc', type: 'integer', label: 'neat' }`
 * `{ key: 'abc', type: 'integer' }`
 
 #### Anti-Examples

@@ -25,13 +25,6 @@ module.exports = makeSchema(
         type: 'string',
         minLength: 1,
       },
-      helpText: {
-        description:
-          'A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.',
-        type: 'string',
-        minLength: 1,
-        maxLength: 1000,
-      },
       type: {
         description:
           'The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.',
@@ -56,11 +49,6 @@ module.exports = makeSchema(
       required: {
         description: 'If this value is required or not.',
         type: 'boolean',
-      },
-      placeholder: {
-        description: 'An example value that is not saved.',
-        type: 'string',
-        minLength: 1,
       },
       dynamic: {
         description:
@@ -97,12 +85,6 @@ module.exports = makeSchema(
           'Does the value of this field affect the definitions of other fields in the set?',
         type: 'boolean',
       },
-      default: {
-        description:
-          'A default value that is saved the first time a Zap is created.',
-        type: 'string',
-        minLength: 1,
-      },
       inputFormat: {
         description:
           'Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user\'s input (IE: "https://{{input}}.yourdomain.com").',
@@ -125,7 +107,7 @@ module.exports = makeSchema(
         choices: [{ label: 'Red', sample: '#f00', value: '#f00' }],
       },
       { key: 'abc', children: [{ key: 'abc' }] },
-      { key: 'abc', type: 'integer', helpText: 'neat' },
+      { key: 'abc', type: 'integer' },
       {
         key: 'abc',
         type: 'integer',

@@ -557,12 +557,6 @@ export interface InputField {
   label?: string;
 
   /**
-   * A human readable description of this value (IE: "The first part
-   * of a full name."). You can use Markdown.
-   */
-  helpText?: string;
-
-  /**
    * The type of this value. Use `string` for basic text input, `text`
    * for a large, `<textarea>` style box, and `code` for a
    * `<textarea>` with a fixed-width font. Field type of `file` will
@@ -584,9 +578,6 @@ export interface InputField {
 
   /** If this value is required or not. */
   required?: boolean;
-
-  /** An example value that is not saved. */
-  placeholder?: string;
 
   /**
    * A reference to a trigger that will power a dynamic dropdown.
@@ -624,11 +615,6 @@ export interface InputField {
    * fields in the set?
    */
   altersDynamicFields?: boolean;
-
-  /**
-   * A default value that is saved the first time a Zap is created.
-   */
-  default?: string;
 
   /**
    * Useful when you expect the input to be part of a longer string.
@@ -674,9 +660,6 @@ export interface OutputField {
   /** If this value is required or not. */
   required?: boolean;
 
-  /** An example value that is not saved. */
-  placeholder?: string;
-
   /**
    * Use this field as part of the primary key for deduplication. You
    * can set multiple fields as "primary", provided they are unique
@@ -688,17 +671,6 @@ export interface OutputField {
    * Zapier](https://platform.zapier.com/build/deduplication).
    */
   primary?: boolean;
-
-  /**
-   * A reference to a trigger that will power a dynamic dropdown.
-   */
-  dynamic?: RefResource;
-
-  /**
-   * A reference to a search that will guide the user to add a search
-   * step to populate this field when creating a Zap.
-   */
-  search?: RefResource;
 
   /** Can a user provide multiples of this field? */
   list?: boolean;
