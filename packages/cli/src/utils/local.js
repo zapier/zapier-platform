@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const path = require('path');
 
 const { findCorePackageDir } = require('./misc');
@@ -24,23 +23,24 @@ const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
     // maybe we could do require('syntax-error') in the future
     return (event, ctx, callback) => callback(err);
   }
+
+  if (appRaw && appRaw.default) {
+    appRaw = appRaw.default;
+  }
+
   const handler = zapier.createAppHandler(appRaw);
   return (event, ctx, callback) => {
-    event = _.merge(
-      {},
-      event,
-      {
-        calledFromCli: true,
-      },
-      baseEvent,
-    );
-    handler(event, _, callback);
+    event = {
+      ...event,
+      calledFromCli: true,
+    };
+    handler(event, ctx, callback);
   };
 };
 
 // Runs a local app command (./index.js) like {command: 'validate'};
-const localAppCommand = (event) => {
-  const handler = getLocalAppHandler();
+const localAppCommand = async (event) => {
+  const handler = await getLocalAppHandler();
   return new Promise((resolve, reject) => {
     handler(event, {}, (err, resp) => {
       if (err) {
