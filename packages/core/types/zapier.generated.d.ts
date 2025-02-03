@@ -607,6 +607,11 @@ export interface InputField {
    */
   children?: InputField[];
 
+  /**
+   * A default value that is saved the first time a Zap is created.
+   */
+  default?: string;
+
   /** Is this field a key/value input? */
   dict?: boolean;
 
@@ -664,6 +669,11 @@ export interface OutputField {
    * Zapier](https://platform.zapier.com/build/deduplication).
    */
   primary?: boolean;
+
+  /**
+   * A default value that is saved the first time a Zap is created.
+   */
+  default?: string;
 
   /** Can a user provide multiples of this field? */
   list?: boolean;

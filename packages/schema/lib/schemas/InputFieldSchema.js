@@ -83,6 +83,12 @@ module.exports = makeSchema(
           'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
         minItems: 1,
       },
+      default: {
+        description:
+          'A default value that is saved the first time a Zap is created.',
+        type: 'string',
+        minLength: 1,
+      },
       dict: {
         description: 'Is this field a key/value input?',
         type: 'boolean',

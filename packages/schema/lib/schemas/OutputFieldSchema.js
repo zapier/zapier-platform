@@ -41,6 +41,12 @@ module.exports = makeSchema(
           'Use this field as part of the primary key for deduplication. You can set multiple fields as "primary", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).',
         type: 'boolean',
       },
+      default: {
+        description:
+          'A default value that is saved the first time a Zap is created.',
+        type: 'string',
+        minLength: 1,
+      },
       list: {
         description: 'Can a user provide multiples of this field?',
         type: 'boolean',

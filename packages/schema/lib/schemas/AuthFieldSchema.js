@@ -34,8 +34,6 @@ module.exports = makeSchema({
     type: {
       description: 'The type of this value used to be.',
       type: 'string',
-      // string == unicode
-      // number == float
       enum: ['string', 'number', 'boolean', 'datetime', 'password'],
     },
     required: {
