@@ -1345,6 +1345,7 @@ Key | Required | Type | Description
 `required` | no | `boolean` | If this value is required or not.
 `primary` | no | `boolean` | Use this field as part of the primary key for deduplication. You can set multiple fields as "primary", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).
 `default` | no | `string` | A default value for an output field.
+`steadyState` | no | `boolean` | Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.
 `list` | no | `boolean` | Can a user provide multiples of this field?
 `children` | no | `array`[[/OutputFieldSchema](#outputfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value output?

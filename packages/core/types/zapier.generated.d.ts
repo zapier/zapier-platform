@@ -686,6 +686,15 @@ export interface OutputField {
   /** A default value for an output field. */
   default?: string;
 
+  /**
+   * Prevents triggering on new output until all values for fields
+   * with this property remain unchanged for 2 polls. It can be used
+   * to, e.g., not trigger on a new contact until the contact has
+   * completed typing their name. NOTE that this only applies to the
+   * `outputFields` of polling triggers.
+   */
+  steadyState?: boolean;
+
   /** Can a user provide multiples of this field? */
   list?: boolean;
 
