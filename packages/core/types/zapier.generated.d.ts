@@ -222,7 +222,7 @@ export interface AuthField {
   helpText?: string;
 
   /** The type of this value used to be. */
-  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'password' | 'copy';
+  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'password';
 
   /** If this value is required or not. This defaults to `true`. */
   required?: boolean;

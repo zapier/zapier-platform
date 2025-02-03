@@ -36,7 +36,7 @@ module.exports = makeSchema({
       type: 'string',
       // string == unicode
       // number == float
-      enum: ['string', 'number', 'boolean', 'datetime', 'password', 'copy'],
+      enum: ['string', 'number', 'boolean', 'datetime', 'password'],
     },
     required: {
       description: 'If this value is required or not. This defaults to `true`.',

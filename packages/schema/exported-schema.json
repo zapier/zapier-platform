@@ -202,14 +202,7 @@
         "type": {
           "description": "The type of this value used to be.",
           "type": "string",
-          "enum": [
-            "string",
-            "number",
-            "boolean",
-            "datetime",
-            "password",
-            "copy"
-          ]
+          "enum": ["string", "number", "boolean", "datetime", "password"]
         },
         "required": {
           "description": "If this value is required or not. This defaults to `true`.",

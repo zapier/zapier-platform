@@ -164,7 +164,7 @@ Key | Required | Type | Description
 `isNoSecret` | no | `boolean` | Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
-`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`, `'copy'`) | The type of this value used to be.
+`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`) | The type of this value used to be.
 `required` | no | `boolean` | If this value is required or not. This defaults to `true`.
 `placeholder` | no | `string` | An example value that is not saved.
 `default` | no | `string` | A default value that is saved the first time a Zap is created.
