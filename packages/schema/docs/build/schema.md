@@ -1202,6 +1202,7 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
+`helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
 `type` | no | `string` in (`'string'`, `'text'`, `'integer'`, `'number'`, `'boolean'`, `'datetime'`, `'file'`, `'password'`, `'copy'`, `'code'`) | The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
 `required` | no | `boolean` | If this value is required or not.
 `dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.

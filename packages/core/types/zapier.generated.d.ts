@@ -557,6 +557,12 @@ export interface InputField {
   label?: string;
 
   /**
+   * A human readable description of this value (IE: "The first part
+   * of a full name."). You can use Markdown.
+   */
+  helpText?: string;
+
+  /**
    * The type of this value. Use `string` for basic text input, `text`
    * for a large, `<textarea>` style box, and `code` for a
    * `<textarea>` with a fixed-width font. Field type of `file` will
