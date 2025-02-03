@@ -175,15 +175,15 @@ Key | Required | Type | Description
 
 #### Examples
 
-* `{ key: 'email', type: 'string', isNotSecret: true, required: true }`
-* `{ key: 'password', type: 'password', isNotSecret: false, required: true }`
-* `{ key: 'api_key', type: 'string', isNotSecret: false, required: true }`
+* `{ key: 'email', type: 'string', isNoSecret: true, required: true }`
+* `{ key: 'password', type: 'password', isNoSecret: false, required: true }`
+* `{ key: 'api_key', type: 'string', isNoSecret: false, required: true }`
 
 #### Anti-Examples
 
-* `{ key: 'password', type: 'password', isNotSecret: true, required: true }` - _A "password" field cannot have isSafe = true._
-* `{ key: 'api_key', isNotSecret: true }` - _"api_key" is a sensitive field and cannot have isSafe set as true._
-* `{ type: 'string', isNotSecret: false }` - _Missing required key: key_
+* `{ key: 'password', type: 'password', isNoSecret: true, required: true }` - _A "password" field cannot have isSafe = true._
+* `{ key: 'api_key', isNoSecret: true }` - _"api_key" is a sensitive field and cannot have isSafe set as true._
+* `{ type: 'string', isNoSecret: false }` - _Missing required key: key_
 
 -----
 
@@ -201,26 +201,26 @@ An array or collection of authentication fields.
 
 * ```
   [
-    { key: 'username', type: 'string', isNotSecret: true, required: true },
-    { key: 'password', type: 'password', isNotSecret: false, required: true }
+    { key: 'username', type: 'string', isNoSecret: true, required: true },
+    { key: 'password', type: 'password', isNoSecret: false, required: true }
   ]
   ```
-* `[ { key: 'api_key', type: 'string', isNotSecret: false, required: true } ]`
+* `[ { key: 'api_key', type: 'string', isNoSecret: false, required: true } ]`
 * ```
   [
-    { key: 'email', type: 'string', isNotSecret: true },
+    { key: 'email', type: 'string', isNoSecret: true },
     { key: 'password', type: 'password', required: true },
-    { key: 'mfa_token', type: 'string', isNotSecret: false }
+    { key: 'mfa_token', type: 'string', isNoSecret: false }
   ]
   ```
 
 #### Anti-Examples
 
 * `{}` - _Must be an array (currently an object)._
-* `[ { key: 'password', isNotSecret: true } ]` - _"password" is a sensitive field and cannot have isNotSecret set as true._
-* `[ { key: 'api_key', isNotSecret: true } ]` - _"api_key" is a sensitive field and cannot have isNotSecret set as true._
-* `[ { isNotSecret: false } ]` - _Missing required "key" property._
-* `[ { key: 'username', type: 'string', isNotSecret: true }, 12345 ]` - _Array item 12345 is not an object (must match AuthFieldSchema)._
+* `[ { key: 'password', isNoSecret: true } ]` - _"password" is a sensitive field and cannot have isNoSecret set as true._
+* `[ { key: 'api_key', isNoSecret: true } ]` - _"api_key" is a sensitive field and cannot have isNoSecret set as true._
+* `[ { isNoSecret: false } ]` - _Missing required "key" property._
+* `[ { key: 'username', type: 'string', isNoSecret: true }, 12345 ]` - _Array item 12345 is not an object (must match AuthFieldSchema)._
 
 -----
 

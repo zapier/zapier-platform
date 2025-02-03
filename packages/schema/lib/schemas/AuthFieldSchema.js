@@ -83,13 +83,13 @@ module.exports = makeSchema({
     {
       key: 'email',
       type: 'string',
-      isNotSecret: true,
+      isNoSecret: true,
       required: true,
     },
     {
       key: 'password',
       type: 'password',
-      isNotSecret: false,
+      isNoSecret: false,
       required: true,
     },
 
@@ -97,7 +97,7 @@ module.exports = makeSchema({
     {
       key: 'api_key',
       type: 'string',
-      isNotSecret: false,
+      isNoSecret: false,
       required: true,
     },
   ],
@@ -107,7 +107,7 @@ module.exports = makeSchema({
       example: {
         key: 'password',
         type: 'password',
-        isNotSecret: true,
+        isNoSecret: true,
         required: true,
       },
       reason: 'A "password" field cannot have isSafe = true.',
@@ -115,7 +115,7 @@ module.exports = makeSchema({
     {
       example: {
         key: 'api_key',
-        isNotSecret: true,
+        isNoSecret: true,
       },
       reason:
         '"api_key" is a sensitive field and cannot have isSafe set as true.',
@@ -123,7 +123,7 @@ module.exports = makeSchema({
     {
       example: {
         type: 'string',
-        isNotSecret: false,
+        isNoSecret: false,
       },
       reason: 'Missing required key: key',
     },

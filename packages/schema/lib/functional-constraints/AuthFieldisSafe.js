@@ -34,11 +34,11 @@ const checkAuthField = (field) => {
   // AND 'isNoSecret' is true, throw a validation error
   if (
     (field.key === 'password' || isSensitiveKey(field.key)) &&
-    field.isNotSecret === true
+    field.isNoSecret === true
   ) {
     errors.push(
       new jsonschema.ValidationError(
-        `cannot set isNotSecret as true for the sensitive key "${field.key}".`,
+        `cannot set isNoSecret as true for the sensitive key "${field.key}".`,
         field,
         '/AuthFieldSchema',
         'instance.field',
