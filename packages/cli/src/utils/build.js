@@ -160,16 +160,13 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
 };
 
 const makeZip = async (dir, zipPath, disableDependencyDetection) => {
-  const entryPoints = [
-    path.resolve(dir, 'zapierwrapper.js'),
-    path.resolve(dir, 'index.js'),
-  ];
+  const entryPoints = [path.resolve(dir, 'zapierwrapper.js'), dir];
 
   let paths;
 
   const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
-    requiredFiles({ cwd: dir, entryPoints: entryPoints }),
+    requiredFiles({ cwd: dir, entryPoints }),
     getLinkedAppConfig(dir).catch(() => ({})),
   ]);
 
