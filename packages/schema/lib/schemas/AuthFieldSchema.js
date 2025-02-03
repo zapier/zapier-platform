@@ -14,9 +14,9 @@ module.exports = makeSchema({
       type: 'string',
       minLength: 1,
     },
-    isNotSecret: {
+    isNoSecret: {
       description:
-        'Indicates if this authentication field is safe (not secret).',
+        'Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).',
       type: 'boolean',
     },
     label: {
@@ -32,21 +32,24 @@ module.exports = makeSchema({
       maxLength: 1000,
     },
     type: {
-      description:
-        'The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.',
+      description: 'The type of this value used to be.',
       type: 'string',
       // string == unicode
-      // text == a long textarea string
-      // integer == int
       // number == float
       enum: ['string', 'number', 'boolean', 'datetime', 'password', 'copy'],
     },
     required: {
-      description: 'If this value is required or not. This defaults to True.',
+      description: 'If this value is required or not. This defaults to `true`.',
       type: 'boolean',
     },
     placeholder: {
       description: 'An example value that is not saved.',
+      type: 'string',
+      minLength: 1,
+    },
+    default: {
+      description:
+        'A default value that is saved the first time a Zap is created.',
       type: 'string',
       minLength: 1,
     },

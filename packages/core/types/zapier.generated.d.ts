@@ -207,9 +207,10 @@ export interface AuthField {
   key: string;
 
   /**
-   * Indicates if this authentication field is safe (not secret).
+   * Indicates if this authentication field is safe to e.g. be stored
+   * without encryption or displayed (not a secret).
    */
-  isNotSecret?: boolean;
+  isNoSecret?: boolean;
 
   /** A human readable label for this value (IE: "First Name"). */
   label?: string;
@@ -220,19 +221,19 @@ export interface AuthField {
    */
   helpText?: string;
 
-  /**
-   * The type of this value. Field type of `file` will accept either a
-   * file object or a string. If a URL is provided in the string,
-   * Zapier will automatically make a GET for that file. Otherwise, a
-   * .txt file will be generated.
-   */
+  /** The type of this value used to be. */
   type?: 'string' | 'number' | 'boolean' | 'datetime' | 'password' | 'copy';
 
-  /** If this value is required or not. This defaults to True. */
+  /** If this value is required or not. This defaults to `true`. */
   required?: boolean;
 
   /** An example value that is not saved. */
   placeholder?: string;
+
+  /**
+   * A default value that is saved the first time a Zap is created.
+   */
+  default?: string;
 
   /** Can a user provide multiples of this field? */
   list?: boolean;

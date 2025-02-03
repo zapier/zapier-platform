@@ -161,12 +161,13 @@ Field schema specialized for authentication fields.
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
-`isNotSecret` | no | `boolean` | Indicates if this authentication field is safe (not secret).
+`isNoSecret` | no | `boolean` | Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
-`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`, `'copy'`) | The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
-`required` | no | `boolean` | If this value is required or not. This defaults to True.
+`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`, `'copy'`) | The type of this value used to be.
+`required` | no | `boolean` | If this value is required or not. This defaults to `true`.
 `placeholder` | no | `string` | An example value that is not saved.
+`default` | no | `string` | A default value that is saved the first time a Zap is created.
 `list` | no | `boolean` | Can a user provide multiples of this field?
 `children` | no | `array`[[/AuthFieldSchema](#authfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?

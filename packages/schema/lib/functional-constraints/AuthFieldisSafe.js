@@ -31,8 +31,11 @@ const checkAuthField = (field) => {
   const errors = [];
 
   // if the field key contains any forbidden substring (case-insensitive),
-  // AND 'isSecret' is true, throw a validation error
-  if (isSensitiveKey(field.key) && field.isNotSecret === true) {
+  // AND 'isNoSecret' is true, throw a validation error
+  if (
+    (field.key === 'password' || isSensitiveKey(field.key)) &&
+    field.isNotSecret === true
+  ) {
     errors.push(
       new jsonschema.ValidationError(
         `cannot set isNotSecret as true for the sensitive key "${field.key}".`,
