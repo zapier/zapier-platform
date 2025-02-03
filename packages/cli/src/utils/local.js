@@ -1,22 +1,11 @@
-const path = require('path');
-
 const { findCorePackageDir } = require('./misc');
 
-const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
-  const entryPath = `${process.cwd()}/index`;
-  const rootPath = path.dirname(require.resolve(entryPath));
+const getLocalAppHandler = async () => {
   const corePackageDir = findCorePackageDir();
-
-  if (reload) {
-    Object.keys(require.cache).forEach((cachePath) => {
-      if (cachePath.startsWith(rootPath)) {
-        delete require.cache[cachePath];
-      }
-    });
-  }
   let appRaw, zapier;
+
   try {
-    appRaw = require(entryPath);
+    appRaw = await import(process.cwd());
     zapier = require(corePackageDir);
   } catch (err) {
     // this err.stack doesn't give a nice traceback at all :-(
@@ -53,6 +42,5 @@ const localAppCommand = async (event) => {
 };
 
 module.exports = {
-  getLocalAppHandler,
   localAppCommand,
 };
