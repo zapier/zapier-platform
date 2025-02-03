@@ -39,15 +39,7 @@ module.exports = makeSchema({
       // text == a long textarea string
       // integer == int
       // number == float
-      enum: [
-        'string',
-        'number',
-        'boolean',
-        'datetime',
-        'password',
-        'copy',
-        'code',
-      ],
+      enum: ['string', 'number', 'boolean', 'datetime', 'password', 'copy'],
     },
     required: {
       description: 'If this value is required or not. This defaults to True.',

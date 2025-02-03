@@ -226,14 +226,7 @@ export interface AuthField {
    * Zapier will automatically make a GET for that file. Otherwise, a
    * .txt file will be generated.
    */
-  type?:
-    | 'string'
-    | 'number'
-    | 'boolean'
-    | 'datetime'
-    | 'password'
-    | 'copy'
-    | 'code';
+  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'password' | 'copy';
 
   /** If this value is required or not. This defaults to True. */
   required?: boolean;
@@ -654,14 +647,7 @@ export interface OutputField {
    * Zapier will automatically make a GET for that file. Otherwise, a
    * .txt file will be generated.
    */
-  type?:
-    | 'string'
-    | 'number'
-    | 'boolean'
-    | 'integer'
-    | 'datetime'
-    | 'file'
-    | 'password';
+  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'file' | 'password';
 
   /** If this value is required or not. */
   required?: boolean;

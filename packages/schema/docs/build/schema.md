@@ -164,7 +164,7 @@ Key | Required | Type | Description
 `isNotSecret` | no | `boolean` | Indicates if this authentication field is safe (not secret).
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
-`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`, `'copy'`, `'code'`) | The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
+`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`, `'copy'`) | The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
 `required` | no | `boolean` | If this value is required or not. This defaults to True.
 `placeholder` | no | `string` | An example value that is not saved.
 `list` | no | `boolean` | Can a user provide multiples of this field?
@@ -1336,7 +1336,7 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
-`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'integer'`, `'datetime'`, `'file'`, `'password'`) | The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
+`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'file'`, `'password'`) | The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
 `required` | no | `boolean` | If this value is required or not.
 `primary` | no | `boolean` | Use this field as part of the primary key for deduplication. You can set multiple fields as "primary", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).
 `list` | no | `boolean` | Can a user provide multiples of this field?
@@ -1347,8 +1347,8 @@ Key | Required | Type | Description
 
 * `{ key: 'abc' }`
 * `{ key: 'abc', children: [ { key: 'abc' } ] }`
-* `{ key: 'abc', type: 'integer', label: 'neat' }`
-* `{ key: 'abc', type: 'integer' }`
+* `{ key: 'abc', type: 'number', label: 'neat' }`
+* `{ key: 'abc', type: 'number' }`
 
 #### Anti-Examples
 

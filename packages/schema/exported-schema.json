@@ -208,8 +208,7 @@
             "boolean",
             "datetime",
             "password",
-            "copy",
-            "code"
+            "copy"
           ]
         },
         "required": {
@@ -703,7 +702,6 @@
             "string",
             "number",
             "boolean",
-            "integer",
             "datetime",
             "file",
             "password"

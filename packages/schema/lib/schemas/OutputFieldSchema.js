@@ -29,17 +29,8 @@ module.exports = makeSchema(
           'The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.',
         type: 'string',
         // string == unicode
-        // integer == int
         // number == float
-        enum: [
-          'string',
-          'number',
-          'boolean',
-          'integer',
-          'datetime',
-          'file',
-          'password',
-        ],
+        enum: ['string', 'number', 'boolean', 'datetime', 'file', 'password'],
       },
       required: {
         description: 'If this value is required or not.',
@@ -69,8 +60,8 @@ module.exports = makeSchema(
     examples: [
       { key: 'abc' },
       { key: 'abc', children: [{ key: 'abc' }] },
-      { key: 'abc', type: 'integer', label: 'neat' },
-      { key: 'abc', type: 'integer' },
+      { key: 'abc', type: 'number', label: 'neat' },
+      { key: 'abc', type: 'number' },
     ],
     antiExamples: [
       {
