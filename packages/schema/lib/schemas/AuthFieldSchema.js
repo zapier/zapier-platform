@@ -2,6 +2,7 @@
 
 const makeSchema = require('../utils/makeSchema');
 const FieldChoicesSchema = require('./FieldChoicesSchema');
+const FieldSchema = require('./FieldSchema');
 
 module.exports = makeSchema(
   {
@@ -10,22 +11,11 @@ module.exports = makeSchema(
     required: ['key'],
     type: 'object',
     properties: {
-      key: {
-        description:
-          'A unique machine readable key for this value (IE: "fname").',
-        type: 'string',
-        minLength: 1,
-      },
+      ...FieldSchema.schema.properties,
       isNoSecret: {
         description:
           'Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).',
         type: 'boolean',
-      },
-      label: {
-        description:
-          'A human readable label for this value (IE: "First Name").',
-        type: 'string',
-        minLength: 1,
       },
       choices: {
         description:
@@ -49,35 +39,10 @@ module.exports = makeSchema(
         type: 'string',
         enum: ['string', 'number', 'boolean', 'datetime', 'password'],
       },
-      required: {
-        description:
-          'If this value is required or not. This defaults to `true`.',
-        type: 'boolean',
-      },
       placeholder: {
         description: 'An example value that is not saved.',
         type: 'string',
         minLength: 1,
-      },
-      default: {
-        description: 'A default value for authentication field.',
-        type: 'string',
-        minLength: 1,
-      },
-      list: {
-        description: 'Can a user provide multiples of this field?',
-        type: 'boolean',
-      },
-      children: {
-        type: 'array',
-        items: { $ref: '/AuthFieldSchema' },
-        description:
-          'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
-        minItems: 1,
-      },
-      dict: {
-        description: 'Is this field a key/value input?',
-        type: 'boolean',
       },
       inputFormat: {
         description:
@@ -140,5 +105,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [FieldChoicesSchema],
+  [FieldChoicesSchema, FieldSchema],
 );

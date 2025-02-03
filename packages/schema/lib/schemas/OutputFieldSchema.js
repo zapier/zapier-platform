@@ -1,9 +1,7 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
-const RefResourceSchema = require('./RefResourceSchema');
-const FieldChoicesSchema = require('./FieldChoicesSchema');
-const FieldMetaSchema = require('./FieldMetaSchema');
+const FieldSchema = require('./FieldSchema');
 
 module.exports = makeSchema(
   {
@@ -12,18 +10,7 @@ module.exports = makeSchema(
     type: 'object',
     required: ['key'],
     properties: {
-      key: {
-        description:
-          'A unique machine readable key for this value (IE: "fname").',
-        type: 'string',
-        minLength: 1,
-      },
-      label: {
-        description:
-          'A human readable label for this value (IE: "First Name").',
-        type: 'string',
-        minLength: 1,
-      },
+      ...FieldSchema.schema.properties,
       type: {
         description:
           'The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.',
@@ -32,38 +19,14 @@ module.exports = makeSchema(
         // number == float
         enum: ['string', 'number', 'boolean', 'datetime', 'file', 'password'],
       },
-      required: {
-        description: 'If this value is required or not.',
-        type: 'boolean',
-      },
       primary: {
         description:
           'Use this field as part of the primary key for deduplication. You can set multiple fields as "primary", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).',
         type: 'boolean',
       },
-      default: {
-        description: 'A default value for an output field.',
-        type: 'string',
-        minLength: 1,
-      },
       steadyState: {
         description:
           'Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.',
-        type: 'boolean',
-      },
-      list: {
-        description: 'Can a user provide multiples of this field?',
-        type: 'boolean',
-      },
-      children: {
-        type: 'array',
-        items: { $ref: '/OutputFieldSchema' },
-        description:
-          'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
-        minItems: 1,
-      },
-      dict: {
-        description: 'Is this field a key/value output?',
         type: 'boolean',
       },
     },
@@ -114,5 +77,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [RefResourceSchema, FieldChoicesSchema, FieldMetaSchema],
+  [FieldSchema],
 );

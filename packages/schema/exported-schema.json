@@ -220,6 +220,69 @@
         }
       ]
     },
+    "FieldSchema": {
+      "id": "/FieldSchema",
+      "description": "Defines a field an app either needs as input, or gives as output. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
+      "type": "object",
+      "required": ["key"],
+      "docAnnotation": {
+        "hide": true
+      },
+      "properties": {
+        "key": {
+          "description": "A unique machine readable key for this value (IE: \"fname\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "description": "A human readable label for this value (IE: \"First Name\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "description": "The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.",
+          "type": "string",
+          "enum": [
+            "string",
+            "text",
+            "integer",
+            "number",
+            "boolean",
+            "datetime",
+            "file",
+            "password",
+            "copy",
+            "code"
+          ]
+        },
+        "required": {
+          "description": "If this value is required or not.",
+          "type": "boolean"
+        },
+        "default": {
+          "description": "A default value that is saved the first time a Zap is created.",
+          "type": "string",
+          "minLength": 1
+        },
+        "list": {
+          "description": "Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?",
+          "type": "boolean"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "/FieldSchema"
+          },
+          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
+          "minItems": 1
+        },
+        "dict": {
+          "description": "Is this field a key/value input?",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
     "AuthFieldSchema": {
       "id": "/AuthFieldSchema",
       "description": "Field schema specialized for authentication fields.",
@@ -231,14 +294,44 @@
           "type": "string",
           "minLength": 1
         },
-        "isNoSecret": {
-          "description": "Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).",
-          "type": "boolean"
-        },
         "label": {
           "description": "A human readable label for this value (IE: \"First Name\").",
           "type": "string",
           "minLength": 1
+        },
+        "type": {
+          "description": "The type of this value used to be.",
+          "type": "string",
+          "enum": ["string", "number", "boolean", "datetime", "password"]
+        },
+        "required": {
+          "description": "If this value is required or not.",
+          "type": "boolean"
+        },
+        "default": {
+          "description": "A default value that is saved the first time a Zap is created.",
+          "type": "string",
+          "minLength": 1
+        },
+        "list": {
+          "description": "Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?",
+          "type": "boolean"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "/FieldSchema"
+          },
+          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
+          "minItems": 1
+        },
+        "dict": {
+          "description": "Is this field a key/value input?",
+          "type": "boolean"
+        },
+        "isNoSecret": {
+          "description": "Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).",
+          "type": "boolean"
         },
         "choices": {
           "description": "An object of machine keys and human values to populate a static dropdown.",
@@ -254,40 +347,10 @@
           "minLength": 1,
           "maxLength": 1000
         },
-        "type": {
-          "description": "The type of this value used to be.",
-          "type": "string",
-          "enum": ["string", "number", "boolean", "datetime", "password"]
-        },
-        "required": {
-          "description": "If this value is required or not. This defaults to `true`.",
-          "type": "boolean"
-        },
         "placeholder": {
           "description": "An example value that is not saved.",
           "type": "string",
           "minLength": 1
-        },
-        "default": {
-          "description": "A default value for authentication field.",
-          "type": "string",
-          "minLength": 1
-        },
-        "list": {
-          "description": "Can a user provide multiples of this field?",
-          "type": "boolean"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "/AuthFieldSchema"
-          },
-          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
-          "minItems": 1
-        },
-        "dict": {
-          "description": "Is this field a key/value input?",
-          "type": "boolean"
         },
         "inputFormat": {
           "description": "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
@@ -615,12 +678,6 @@
           "type": "string",
           "minLength": 1
         },
-        "helpText": {
-          "description": "A human readable description of this value (IE: \"The first part of a full name.\"). You can use Markdown.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        },
         "type": {
           "description": "The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.",
           "type": "string",
@@ -641,6 +698,33 @@
           "description": "If this value is required or not.",
           "type": "boolean"
         },
+        "default": {
+          "description": "A default value that is saved the first time a Zap is created.",
+          "type": "string",
+          "minLength": 1
+        },
+        "list": {
+          "description": "Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?",
+          "type": "boolean"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "/FieldSchema"
+          },
+          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
+          "minItems": 1
+        },
+        "dict": {
+          "description": "Is this field a key/value input?",
+          "type": "boolean"
+        },
+        "helpText": {
+          "description": "A human readable description of this value (IE: \"The first part of a full name.\"). You can use Markdown.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
         "dynamic": {
           "description": "A reference to a trigger that will power a dynamic dropdown.",
           "$ref": "/RefResourceSchema"
@@ -657,27 +741,6 @@
           "description": "An example value that is not saved.",
           "type": "string",
           "minLength": 1
-        },
-        "list": {
-          "description": "Can a user provide multiples of this field?",
-          "type": "boolean"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "/InputFieldSchema"
-          },
-          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
-          "minItems": 1
-        },
-        "default": {
-          "description": "A default value that is saved the first time a Zap is created.",
-          "type": "string",
-          "minLength": 1
-        },
-        "dict": {
-          "description": "Is this field a key/value input?",
-          "type": "boolean"
         },
         "altersDynamicFields": {
           "description": "Does the value of this field affect the definitions of other fields in the set?",
@@ -727,33 +790,33 @@
           "description": "If this value is required or not.",
           "type": "boolean"
         },
-        "primary": {
-          "description": "Use this field as part of the primary key for deduplication. You can set multiple fields as \"primary\", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).",
-          "type": "boolean"
-        },
         "default": {
-          "description": "A default value for an output field.",
+          "description": "A default value that is saved the first time a Zap is created.",
           "type": "string",
           "minLength": 1
         },
-        "steadyState": {
-          "description": "Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.",
-          "type": "boolean"
-        },
         "list": {
-          "description": "Can a user provide multiples of this field?",
+          "description": "Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?",
           "type": "boolean"
         },
         "children": {
           "type": "array",
           "items": {
-            "$ref": "/OutputFieldSchema"
+            "$ref": "/FieldSchema"
           },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
         },
         "dict": {
-          "description": "Is this field a key/value output?",
+          "description": "Is this field a key/value input?",
+          "type": "boolean"
+        },
+        "primary": {
+          "description": "Use this field as part of the primary key for deduplication. You can set multiple fields as \"primary\", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).",
+          "type": "boolean"
+        },
+        "steadyState": {
+          "description": "Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.",
           "type": "boolean"
         }
       },

@@ -242,6 +242,78 @@ export type FieldChoices =
   | (string | FieldChoiceWithLabel)[];
 
 /**
+ * Defines a field an app either needs as input, or gives as output.
+ * In addition to the requirements below, the following keys are
+ * mutually exclusive:
+ *
+ * * `children` & `list`
+ * * `children` & `dict`
+ * * `children` & `type`
+ * * `children` & `placeholder`
+ * * `children` & `helpText`
+ * * `children` & `default`
+ * * `dict` & `list`
+ * * `dynamic` & `dict`
+ * * `dynamic` & `choices`
+ *
+ * [Docs: FieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldSchema)
+ */
+export interface Field {
+  /** A unique machine readable key for this value (IE: "fname"). */
+  key: string;
+
+  /** A human readable label for this value (IE: "First Name"). */
+  label?: string;
+
+  /**
+   * The type of this value. Use `string` for basic text input, `text`
+   * for a large, `<textarea>` style box, and `code` for a
+   * `<textarea>` with a fixed-width font. Field type of `file` will
+   * accept either a file object or a string. If a URL is provided in
+   * the string, Zapier will automatically make a GET for that file.
+   * Otherwise, a .txt file will be generated.
+   */
+  type?:
+    | 'string'
+    | 'text'
+    | 'integer'
+    | 'number'
+    | 'boolean'
+    | 'datetime'
+    | 'file'
+    | 'password'
+    | 'copy'
+    | 'code';
+
+  /** If this value is required or not. */
+  required?: boolean;
+
+  /**
+   * A default value that is saved the first time a Zap is created.
+   */
+  default?: string;
+
+  /**
+   * Acts differently when used in inputFields vs. when used in
+   * outputFields. In inputFields: Can a user provide multiples of
+   * this field? In outputFields: Does this field return an array of
+   * items of type `type`?
+   */
+  list?: boolean;
+
+  /**
+   * An array of child fields that define the structure of a
+   * sub-object for this field. Usually used for line items.
+   *
+   * @minItems 1
+   */
+  children?: Field[];
+
+  /** Is this field a key/value input? */
+  dict?: boolean;
+}
+
+/**
  * Field schema specialized for authentication fields.
  *
  * [Docs: AuthFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldSchema)
@@ -250,14 +322,44 @@ export interface AuthField {
   /** A unique machine readable key for this value (IE: "fname"). */
   key: string;
 
+  /** A human readable label for this value (IE: "First Name"). */
+  label?: string;
+
+  /** The type of this value used to be. */
+  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'password';
+
+  /** If this value is required or not. */
+  required?: boolean;
+
+  /**
+   * A default value that is saved the first time a Zap is created.
+   */
+  default?: string;
+
+  /**
+   * Acts differently when used in inputFields vs. when used in
+   * outputFields. In inputFields: Can a user provide multiples of
+   * this field? In outputFields: Does this field return an array of
+   * items of type `type`?
+   */
+  list?: boolean;
+
+  /**
+   * An array of child fields that define the structure of a
+   * sub-object for this field. Usually used for line items.
+   *
+   * @minItems 1
+   */
+  children?: Field[];
+
+  /** Is this field a key/value input? */
+  dict?: boolean;
+
   /**
    * Indicates if this authentication field is safe to e.g. be stored
    * without encryption or displayed (not a secret).
    */
   isNoSecret?: boolean;
-
-  /** A human readable label for this value (IE: "First Name"). */
-  label?: string;
 
   /**
    * An object of machine keys and human values to populate a static
@@ -277,31 +379,8 @@ export interface AuthField {
    */
   helpText?: string;
 
-  /** The type of this value used to be. */
-  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'password';
-
-  /** If this value is required or not. This defaults to `true`. */
-  required?: boolean;
-
   /** An example value that is not saved. */
   placeholder?: string;
-
-  /** A default value for authentication field. */
-  default?: string;
-
-  /** Can a user provide multiples of this field? */
-  list?: boolean;
-
-  /**
-   * An array of child fields that define the structure of a
-   * sub-object for this field. Usually used for line items.
-   *
-   * @minItems 1
-   */
-  children?: AuthField[];
-
-  /** Is this field a key/value input? */
-  dict?: boolean;
 
   /**
    * Useful when you expect the input to be part of a longer string.
@@ -561,12 +640,6 @@ export interface InputField {
   label?: string;
 
   /**
-   * A human readable description of this value (IE: "The first part
-   * of a full name."). You can use Markdown.
-   */
-  helpText?: string;
-
-  /**
    * The type of this value. Use `string` for basic text input, `text`
    * for a large, `<textarea>` style box, and `code` for a
    * `<textarea>` with a fixed-width font. Field type of `file` will
@@ -590,6 +663,36 @@ export interface InputField {
   required?: boolean;
 
   /**
+   * A default value that is saved the first time a Zap is created.
+   */
+  default?: string;
+
+  /**
+   * Acts differently when used in inputFields vs. when used in
+   * outputFields. In inputFields: Can a user provide multiples of
+   * this field? In outputFields: Does this field return an array of
+   * items of type `type`?
+   */
+  list?: boolean;
+
+  /**
+   * An array of child fields that define the structure of a
+   * sub-object for this field. Usually used for line items.
+   *
+   * @minItems 1
+   */
+  children?: Field[];
+
+  /** Is this field a key/value input? */
+  dict?: boolean;
+
+  /**
+   * A human readable description of this value (IE: "The first part
+   * of a full name."). You can use Markdown.
+   */
+  helpText?: string;
+
+  /**
    * A reference to a trigger that will power a dynamic dropdown.
    */
   dynamic?: RefResource;
@@ -608,25 +711,6 @@ export interface InputField {
 
   /** An example value that is not saved. */
   placeholder?: string;
-
-  /** Can a user provide multiples of this field? */
-  list?: boolean;
-
-  /**
-   * An array of child fields that define the structure of a
-   * sub-object for this field. Usually used for line items.
-   *
-   * @minItems 1
-   */
-  children?: InputField[];
-
-  /**
-   * A default value that is saved the first time a Zap is created.
-   */
-  default?: string;
-
-  /** Is this field a key/value input? */
-  dict?: boolean;
 
   /**
    * Does the value of this field affect the definitions of other
@@ -672,6 +756,30 @@ export interface OutputField {
   required?: boolean;
 
   /**
+   * A default value that is saved the first time a Zap is created.
+   */
+  default?: string;
+
+  /**
+   * Acts differently when used in inputFields vs. when used in
+   * outputFields. In inputFields: Can a user provide multiples of
+   * this field? In outputFields: Does this field return an array of
+   * items of type `type`?
+   */
+  list?: boolean;
+
+  /**
+   * An array of child fields that define the structure of a
+   * sub-object for this field. Usually used for line items.
+   *
+   * @minItems 1
+   */
+  children?: Field[];
+
+  /** Is this field a key/value input? */
+  dict?: boolean;
+
+  /**
    * Use this field as part of the primary key for deduplication. You
    * can set multiple fields as "primary", provided they are unique
    * together. If no fields are set, Zapier will default to using the
@@ -683,9 +791,6 @@ export interface OutputField {
    */
   primary?: boolean;
 
-  /** A default value for an output field. */
-  default?: string;
-
   /**
    * Prevents triggering on new output until all values for fields
    * with this property remain unchanged for 2 polls. It can be used
@@ -694,20 +799,6 @@ export interface OutputField {
    * `outputFields` of polling triggers.
    */
   steadyState?: boolean;
-
-  /** Can a user provide multiples of this field? */
-  list?: boolean;
-
-  /**
-   * An array of child fields that define the structure of a
-   * sub-object for this field. Usually used for line items.
-   *
-   * @minItems 1
-   */
-  children?: OutputField[];
-
-  /** Is this field a key/value output? */
-  dict?: boolean;
 }
 
 /**
