@@ -167,7 +167,7 @@ Key | Required | Type | Description
 `type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`) | The type of this value used to be.
 `required` | no | `boolean` | If this value is required or not. This defaults to `true`.
 `placeholder` | no | `string` | An example value that is not saved.
-`default` | no | `string` | A default value that is saved the first time a Zap is created.
+`default` | no | `string` | A default value for authentication field.
 `list` | no | `boolean` | Can a user provide multiples of this field?
 `children` | no | `array`[[/AuthFieldSchema](#authfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?
@@ -1341,7 +1341,7 @@ Key | Required | Type | Description
 `type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'file'`, `'password'`) | The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
 `required` | no | `boolean` | If this value is required or not.
 `primary` | no | `boolean` | Use this field as part of the primary key for deduplication. You can set multiple fields as "primary", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).
-`default` | no | `string` | A default value that is saved the first time a Zap is created.
+`default` | no | `string` | A default value for an output field.
 `list` | no | `boolean` | Can a user provide multiples of this field?
 `children` | no | `array`[[/OutputFieldSchema](#outputfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value output?

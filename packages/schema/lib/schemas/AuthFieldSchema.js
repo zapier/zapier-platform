@@ -46,8 +46,7 @@ module.exports = makeSchema({
       minLength: 1,
     },
     default: {
-      description:
-        'A default value that is saved the first time a Zap is created.',
+      description: 'A default value for authentication field.',
       type: 'string',
       minLength: 1,
     },

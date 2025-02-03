@@ -42,8 +42,7 @@ module.exports = makeSchema(
         type: 'boolean',
       },
       default: {
-        description:
-          'A default value that is saved the first time a Zap is created.',
+        description: 'A default value for an output field.',
         type: 'string',
         minLength: 1,
       },

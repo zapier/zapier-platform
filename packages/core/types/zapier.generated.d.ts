@@ -230,9 +230,7 @@ export interface AuthField {
   /** An example value that is not saved. */
   placeholder?: string;
 
-  /**
-   * A default value that is saved the first time a Zap is created.
-   */
+  /** A default value for authentication field. */
   default?: string;
 
   /** Can a user provide multiples of this field? */
@@ -670,9 +668,7 @@ export interface OutputField {
    */
   primary?: boolean;
 
-  /**
-   * A default value that is saved the first time a Zap is created.
-   */
+  /** A default value for an output field. */
   default?: string;
 
   /** Can a user provide multiples of this field? */
