@@ -198,6 +198,50 @@ export type Function =
   | FunctionSource;
 
 /**
+ * An object describing a labeled choice in a static dropdown.
+ * Useful if the value a user picks isn't exactly what the zap uses.
+ * For instance, when they click on a nickname, but the zap uses the
+ * user's full name
+ * ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).
+ *
+ * [Docs: FieldChoiceWithLabelSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldChoiceWithLabelSchema)
+ */
+export interface FieldChoiceWithLabel {
+  /**
+   * The actual value that is sent into the Zap. This is displayed as
+   * light grey text in the editor. Should match sample exactly.
+   */
+  value: string;
+
+  /**
+   * A legacy field that is no longer used by the editor, but it is
+   * still required for now and should match the value.
+   */
+  sample: string;
+
+  /** A human readable label for this value. */
+  label: string;
+  [k: string]: unknown;
+}
+
+/**
+ * A static dropdown of options. Which you use depends on your order
+ * and label requirements:
+ *
+ * Need a Label? | Does Order Matter? | Type to Use
+ * ---|---|---
+ * Yes | No | Object of value -> label
+ * No | Yes | Array of Strings
+ * Yes | Yes | Array of
+ * [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
+ *
+ * [Docs: FieldChoicesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldChoicesSchema)
+ */
+export type FieldChoices =
+  | { [k: string]: unknown }
+  | (string | FieldChoiceWithLabel)[];
+
+/**
  * Field schema specialized for authentication fields.
  *
  * [Docs: AuthFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldSchema)
@@ -214,6 +258,18 @@ export interface AuthField {
 
   /** A human readable label for this value (IE: "First Name"). */
   label?: string;
+
+  /**
+   * An object of machine keys and human values to populate a static
+   * dropdown.
+   */
+  choices?: FieldChoices;
+
+  /**
+   * Is this field automatically populated (and hidden from the user)?
+   * Note: Only OAuth and Session Auth support fields with this key.
+   */
+  computed?: boolean;
 
   /**
    * A human readable description of this value (IE: "The first part
@@ -469,56 +525,12 @@ export interface AuthenticationSessionConfig {
 }
 
 /**
- * An object describing a labeled choice in a static dropdown.
- * Useful if the value a user picks isn't exactly what the zap uses.
- * For instance, when they click on a nickname, but the zap uses the
- * user's full name
- * ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).
- *
- * [Docs: FieldChoiceWithLabelSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldChoiceWithLabelSchema)
- */
-export interface FieldChoiceWithLabel {
-  /**
-   * The actual value that is sent into the Zap. This is displayed as
-   * light grey text in the editor. Should match sample exactly.
-   */
-  value: string;
-
-  /**
-   * A legacy field that is no longer used by the editor, but it is
-   * still required for now and should match the value.
-   */
-  sample: string;
-
-  /** A human readable label for this value. */
-  label: string;
-  [k: string]: unknown;
-}
-
-/**
  * Reference a resource by key and the data it returns. In the
  * format of: `{resource_key}.{foreign_key}(.{human_label_key})`.
  *
  * [Docs: RefResourceSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#RefResourceSchema)
  */
 export type RefResource = string;
-
-/**
- * A static dropdown of options. Which you use depends on your order
- * and label requirements:
- *
- * Need a Label? | Does Order Matter? | Type to Use
- * ---|---|---
- * Yes | No | Object of value -> label
- * No | Yes | Array of Strings
- * Yes | Yes | Array of
- * [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
- *
- * [Docs: FieldChoicesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldChoicesSchema)
- */
-export type FieldChoices =
-  | { [k: string]: unknown }
-  | (string | FieldChoiceWithLabel)[];
 
 /**
  * Allows for additional metadata to be stored on the field.
@@ -593,6 +605,9 @@ export interface InputField {
    * dropdown.
    */
   choices?: FieldChoices;
+
+  /** An example value that is not saved. */
+  placeholder?: string;
 
   /** Can a user provide multiples of this field? */
   list?: boolean;

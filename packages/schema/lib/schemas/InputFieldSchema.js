@@ -72,6 +72,11 @@ module.exports = makeSchema(
           'An object of machine keys and human values to populate a static dropdown.',
         $ref: FieldChoicesSchema.id,
       },
+      placeholder: {
+        description: 'An example value that is not saved.',
+        type: 'string',
+        minLength: 1,
+      },
       list: {
         description: 'Can a user provide multiples of this field?',
         type: 'boolean',

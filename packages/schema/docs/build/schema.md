@@ -163,6 +163,8 @@ Key | Required | Type | Description
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
 `isNoSecret` | no | `boolean` | Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
+`choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
+`computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
 `type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`) | The type of this value used to be.
 `required` | no | `boolean` | If this value is required or not. This defaults to `true`.
@@ -1209,6 +1211,7 @@ Key | Required | Type | Description
 `dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.
 `search` | no | [/RefResourceSchema](#refresourceschema) | A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.
 `choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
+`placeholder` | no | `string` | An example value that is not saved.
 `list` | no | `boolean` | Can a user provide multiples of this field?
 `children` | no | `array`[[/InputFieldSchema](#inputfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `default` | no | `string` | A default value that is saved the first time a Zap is created.
