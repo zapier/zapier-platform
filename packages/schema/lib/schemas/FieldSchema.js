@@ -15,7 +15,7 @@ const incompatibleFieldsList =
 
 module.exports = makeSchema({
   id: '/FieldSchema',
-  description: `Defines a field an app either needs as input, or gives as output. In addition to the requirements below, the following keys are mutually exclusive:\n\n${incompatibleFieldsList}`,
+  description: `In addition to the requirements below, the following keys are mutually exclusive:\n\n${incompatibleFieldsList}`,
   type: 'object',
   required: ['key'],
   docAnnotation: { hide: true },
