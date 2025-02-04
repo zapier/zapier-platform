@@ -86,13 +86,13 @@ describe('readability', () => {
       operation: {
         perform: '$func$2$f$',
         sample: { id: 1 },
-        inputFields: [{ key: 'field', type: 'string', children: [] }],
+        inputFields: [{ key: 'field', type: 'string', default: '' }],
       },
     });
     results.errors.should.have.length(1);
     should(results.errors[0].property.endsWith('instance')).be.false();
     results.errors[0].property.should.eql(
-      'instance.operation.inputFields[0].children',
+      'instance.operation.inputFields[0].default',
     );
     results.errors[0].message.should.eql('does not meet minimum length of 1');
   });

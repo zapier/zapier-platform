@@ -8,7 +8,7 @@ const FieldMetaSchema = require('./FieldMetaSchema');
 
 module.exports = makeSchema(
   {
-    description: 'Field schema specialized for input fields. ${FieldSchema.schema.description}',
+    description: `Field schema specialized for input fields. ${FieldSchema.schema.description}`,
     id: '/InputFieldSchema',
     type: 'object',
     required: ['key'],

@@ -7,26 +7,11 @@ const FieldSchema = require('./FieldSchema');
 module.exports = makeSchema(
   {
     id: '/AuthFieldSchema',
-    description: 'Field schema specialized for authentication fields. ${FieldSchema.schema.description}',
+    description: `Field schema specialized for authentication fields. ${FieldSchema.schema.description}`,
     required: ['key'],
     type: 'object',
     properties: {
       ...FieldSchema.schema.properties,
-      isNoSecret: {
-        description:
-          'Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).',
-        type: 'boolean',
-      },
-      choices: {
-        description:
-          'An object of machine keys and human values to populate a static dropdown.',
-        $ref: FieldChoicesSchema.id,
-      },
-      computed: {
-        description:
-          'Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.',
-        type: 'boolean',
-      },
       helpText: {
         description:
           'A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.',
@@ -39,10 +24,26 @@ module.exports = makeSchema(
         type: 'string',
         enum: ['string', 'number', 'boolean', 'datetime', 'password'],
       },
+      required: {
+        description:
+          'If this value is required or not. This defaults to `true`.',
+        type: 'boolean',
+      },
+
       placeholder: {
         description: 'An example value that is not saved.',
         type: 'string',
         minLength: 1,
+      },
+      choices: {
+        description:
+          'An object of machine keys and human values to populate a static dropdown.',
+        $ref: FieldChoicesSchema.id,
+      },
+      computed: {
+        description:
+          'Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.',
+        type: 'boolean',
       },
       inputFormat: {
         description:
@@ -50,6 +51,11 @@ module.exports = makeSchema(
         type: 'string',
         // TODO: Check if it contains one and ONLY ONE '{{input}}'
         pattern: '^.*{{input}}.*$',
+      },
+      isNoSecret: {
+        description:
+          'Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).',
+        type: 'boolean',
       },
     },
 
@@ -86,7 +92,8 @@ module.exports = makeSchema(
           isNoSecret: true,
           required: true,
         },
-        reason: '"password" is a sensitive field and cannot have isNoSecret set as true.',
+        reason:
+          '"password" is a sensitive field and cannot have isNoSecret set as true.',
       },
       {
         example: {

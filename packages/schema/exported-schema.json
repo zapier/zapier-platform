@@ -222,7 +222,7 @@
     },
     "FieldSchema": {
       "id": "/FieldSchema",
-      "description": "Defines a field an app either needs as input, or gives as output. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
+      "description": "In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "type": "object",
       "required": ["key"],
       "docAnnotation": {
@@ -285,7 +285,7 @@
     },
     "AuthFieldSchema": {
       "id": "/AuthFieldSchema",
-      "description": "Field schema specialized for authentication fields.",
+      "description": "Field schema specialized for authentication fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "required": ["key"],
       "type": "object",
       "properties": {
@@ -305,7 +305,7 @@
           "enum": ["string", "number", "boolean", "datetime", "password"]
         },
         "required": {
-          "description": "If this value is required or not.",
+          "description": "If this value is required or not. This defaults to `true`.",
           "type": "boolean"
         },
         "default": {
@@ -329,18 +329,6 @@
           "description": "Is this field a key/value input?",
           "type": "boolean"
         },
-        "isNoSecret": {
-          "description": "Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).",
-          "type": "boolean"
-        },
-        "choices": {
-          "description": "An object of machine keys and human values to populate a static dropdown.",
-          "$ref": "/FieldChoicesSchema"
-        },
-        "computed": {
-          "description": "Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.",
-          "type": "boolean"
-        },
         "helpText": {
           "description": "A human readable description of this value (IE: \"The first part of a full name.\"). You can use Markdown.",
           "type": "string",
@@ -352,10 +340,22 @@
           "type": "string",
           "minLength": 1
         },
+        "choices": {
+          "description": "An object of machine keys and human values to populate a static dropdown.",
+          "$ref": "/FieldChoicesSchema"
+        },
+        "computed": {
+          "description": "Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.",
+          "type": "boolean"
+        },
         "inputFormat": {
           "description": "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
           "type": "string",
           "pattern": "^.*{{input}}.*$"
+        },
+        "isNoSecret": {
+          "description": "Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).",
+          "type": "boolean"
         }
       }
     },
@@ -663,7 +663,7 @@
       }
     },
     "InputFieldSchema": {
-      "description": "Field schema specialized for input fields.",
+      "description": "Field schema specialized for input fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "id": "/InputFieldSchema",
       "type": "object",
       "required": ["key"],
@@ -759,7 +759,7 @@
       "additionalProperties": false
     },
     "OutputFieldSchema": {
-      "description": "Field schema specialized for output fields.",
+      "description": "Field schema specialized for output fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "id": "/OutputFieldSchema",
       "type": "object",
       "required": ["key"],

@@ -242,7 +242,6 @@ export type FieldChoices =
   | (string | FieldChoiceWithLabel)[];
 
 /**
- * Defines a field an app either needs as input, or gives as output.
  * In addition to the requirements below, the following keys are
  * mutually exclusive:
  *
@@ -314,7 +313,19 @@ export interface Field {
 }
 
 /**
- * Field schema specialized for authentication fields.
+ * Field schema specialized for authentication fields. In addition
+ * to the requirements below, the following keys are mutually
+ * exclusive:
+ *
+ * * `children` & `list`
+ * * `children` & `dict`
+ * * `children` & `type`
+ * * `children` & `placeholder`
+ * * `children` & `helpText`
+ * * `children` & `default`
+ * * `dict` & `list`
+ * * `dynamic` & `dict`
+ * * `dynamic` & `choices`
  *
  * [Docs: AuthFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldSchema)
  */
@@ -328,7 +339,7 @@ export interface AuthField {
   /** The type of this value used to be. */
   type?: 'string' | 'number' | 'boolean' | 'datetime' | 'password';
 
-  /** If this value is required or not. */
+  /** If this value is required or not. This defaults to `true`. */
   required?: boolean;
 
   /**
@@ -356,10 +367,13 @@ export interface AuthField {
   dict?: boolean;
 
   /**
-   * Indicates if this authentication field is safe to e.g. be stored
-   * without encryption or displayed (not a secret).
+   * A human readable description of this value (IE: "The first part
+   * of a full name."). You can use Markdown.
    */
-  isNoSecret?: boolean;
+  helpText?: string;
+
+  /** An example value that is not saved. */
+  placeholder?: string;
 
   /**
    * An object of machine keys and human values to populate a static
@@ -374,20 +388,17 @@ export interface AuthField {
   computed?: boolean;
 
   /**
-   * A human readable description of this value (IE: "The first part
-   * of a full name."). You can use Markdown.
-   */
-  helpText?: string;
-
-  /** An example value that is not saved. */
-  placeholder?: string;
-
-  /**
    * Useful when you expect the input to be part of a longer string.
    * Put "{{input}}" in place of the user's input (IE:
    * "https://{{input}}.yourdomain.com").
    */
   inputFormat?: string;
+
+  /**
+   * Indicates if this authentication field is safe to e.g. be stored
+   * without encryption or displayed (not a secret).
+   */
+  isNoSecret?: boolean;
   [k: string]: unknown;
 }
 
@@ -628,7 +639,18 @@ export interface FieldMeta {
 }
 
 /**
- * Field schema specialized for input fields.
+ * Field schema specialized for input fields. In addition to the
+ * requirements below, the following keys are mutually exclusive:
+ *
+ * * `children` & `list`
+ * * `children` & `dict`
+ * * `children` & `type`
+ * * `children` & `placeholder`
+ * * `children` & `helpText`
+ * * `children` & `default`
+ * * `dict` & `list`
+ * * `dynamic` & `dict`
+ * * `dynamic` & `choices`
  *
  * [Docs: InputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#InputFieldSchema)
  */
@@ -733,7 +755,18 @@ export interface InputField {
 }
 
 /**
- * Field schema specialized for output fields.
+ * Field schema specialized for output fields. In addition to the
+ * requirements below, the following keys are mutually exclusive:
+ *
+ * * `children` & `list`
+ * * `children` & `dict`
+ * * `children` & `type`
+ * * `children` & `placeholder`
+ * * `children` & `helpText`
+ * * `children` & `default`
+ * * `dict` & `list`
+ * * `dynamic` & `dict`
+ * * `dynamic` & `choices`
  *
  * [Docs: OutputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#OutputFieldSchema)
  */

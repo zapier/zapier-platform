@@ -149,7 +149,17 @@ Key | Required | Type | Description
 
 ## /AuthFieldSchema
 
-Field schema specialized for authentication fields.
+Field schema specialized for authentication fields. In addition to the requirements below, the following keys are mutually exclusive:
+
+* `children` & `list`
+* `children` & `dict`
+* `children` & `type`
+* `children` & `placeholder`
+* `children` & `helpText`
+* `children` & `default`
+* `dict` & `list`
+* `dynamic` & `dict`
+* `dynamic` & `choices`
 
 #### Details
 
@@ -163,17 +173,17 @@ Key | Required | Type | Description
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
 `type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`) | The type of this value used to be.
-`required` | no | `boolean` | If this value is required or not.
+`required` | no | `boolean` | If this value is required or not. This defaults to `true`.
 `default` | no | `string` | A default value that is saved the first time a Zap is created.
 `list` | no | `boolean` | Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?
 `children` | no | `array`[undefined] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?
-`isNoSecret` | no | `boolean` | Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).
-`choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
-`computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
 `placeholder` | no | `string` | An example value that is not saved.
+`choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
+`computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.
 `inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
+`isNoSecret` | no | `boolean` | Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).
 
 #### Examples
 
@@ -183,8 +193,8 @@ Key | Required | Type | Description
 
 #### Anti-Examples
 
-* `{ key: 'password', type: 'password', isNoSecret: true, required: true }` - _A "password" field cannot have isSafe = true._
-* `{ key: 'api_key', isNoSecret: true }` - _"api_key" is a sensitive field and cannot have isSafe set as true._
+* `{ key: 'password', type: 'password', isNoSecret: true, required: true }` - _"password" is a sensitive field and cannot have isNoSecret set as true._
+* `{ key: 'api_key', isNoSecret: true }` - _"api_key" is a sensitive field and cannot have isNoSecret set as true._
 * `{ type: 'string', isNoSecret: false }` - _Missing required key: key_
 
 -----
@@ -1192,7 +1202,17 @@ Key | Required | Type | Description
 
 ## /InputFieldSchema
 
-Field schema specialized for input fields.
+Field schema specialized for input fields. In addition to the requirements below, the following keys are mutually exclusive:
+
+* `children` & `list`
+* `children` & `dict`
+* `children` & `type`
+* `children` & `placeholder`
+* `children` & `helpText`
+* `children` & `default`
+* `dict` & `list`
+* `dynamic` & `dict`
+* `dynamic` & `choices`
 
 #### Details
 
@@ -1328,7 +1348,17 @@ List of before or after middlewares. Can be an array of functions or a single fu
 
 ## /OutputFieldSchema
 
-Field schema specialized for output fields.
+Field schema specialized for output fields. In addition to the requirements below, the following keys are mutually exclusive:
+
+* `children` & `list`
+* `children` & `dict`
+* `children` & `type`
+* `children` & `placeholder`
+* `children` & `helpText`
+* `children` & `default`
+* `dict` & `list`
+* `dynamic` & `dict`
+* `dynamic` & `choices`
 
 #### Details
 

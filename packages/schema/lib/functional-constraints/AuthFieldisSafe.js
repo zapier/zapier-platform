@@ -7,6 +7,8 @@ const AUTH_FIELDS_ID = '/AuthFieldsSchema';
 
 const FORBIDDEN_KEYS = [
   'access_token',
+  'access-token',
+  'accesstoken',
   'api_key',
   'apikey',
   'api-key',
@@ -16,16 +18,18 @@ const FORBIDDEN_KEYS = [
   'password',
   'pswd',
   'refresh_token',
+  'refresh-token',
+  'refreshtoken',
   'secret',
   'set-cookie',
+  'set_cookie',
+  'setcookie',
   'signature',
   'token',
 ];
 
 const isSensitiveKey = (key = '') =>
-  FORBIDDEN_KEYS.some((forbidden) =>
-    key.toLowerCase().includes(forbidden),
-  );
+  FORBIDDEN_KEYS.some((forbidden) => key.toLowerCase().includes(forbidden));
 
 const checkAuthField = (field) => {
   const errors = [];

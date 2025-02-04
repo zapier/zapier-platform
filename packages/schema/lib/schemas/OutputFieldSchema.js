@@ -5,7 +5,7 @@ const FieldSchema = require('./FieldSchema');
 
 module.exports = makeSchema(
   {
-    description: 'Field schema specialized for output fields. ${FieldSchema.schema.description}',
+    description: `Field schema specialized for output fields. ${FieldSchema.schema.description}`,
     id: '/OutputFieldSchema',
     type: 'object',
     required: ['key'],
