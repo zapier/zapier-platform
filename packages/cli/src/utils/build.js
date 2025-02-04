@@ -160,7 +160,10 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
 };
 
 const makeZip = async (dir, zipPath, disableDependencyDetection) => {
-  const entryPoints = [path.resolve(dir, 'zapierwrapper.js'), dir];
+  const entryPoints = [
+    path.resolve(dir, 'zapierwrapper.js'),
+    path.resolve(dir, 'index.js'),
+  ];
 
   let paths;
 

@@ -5,7 +5,7 @@ const getLocalAppHandler = async () => {
   let appRaw, zapier;
 
   try {
-    appRaw = await import(process.cwd());
+    appRaw = await import(`${process.cwd()}/index.js`);
     zapier = require(corePackageDir);
   } catch (err) {
     // this err.stack doesn't give a nice traceback at all :-(
