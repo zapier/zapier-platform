@@ -29,7 +29,6 @@ module.exports = makeSchema(
           'If this value is required or not. This defaults to `true`.',
         type: 'boolean',
       },
-
       placeholder: {
         description: 'An example value that is not saved.',
         type: 'string',
