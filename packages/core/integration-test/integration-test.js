@@ -52,7 +52,7 @@ runLambda.testName = 'runLambda';
 const runLocally = (event) => {
   return new Promise((resolve, reject) => {
     const handler = createLambdaHandler(
-      path.resolve(__dirname, '../test/userapp'),
+      path.resolve(__dirname, '../test/userapp/index.js'),
     );
 
     handler(event, {}, (err, data) => {

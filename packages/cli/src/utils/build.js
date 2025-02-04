@@ -169,7 +169,7 @@ const makeZip = async (dir, zipPath, disableDependencyDetection) => {
 
   const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
-    requiredFiles({ cwd: dir, entryPoints: entryPoints }),
+    requiredFiles({ cwd: dir, entryPoints }),
     getLinkedAppConfig(dir).catch(() => ({})),
   ]);
 
@@ -202,11 +202,9 @@ const makeSourceZip = async (dir, zipPath) => {
 
 // Similar to utils.appCommand, but given a ready to go app
 // with a different location and ready to go zapierwrapper.js.
-const _appCommandZapierWrapper = (dir, event) => {
-  const app = require(`${dir}/zapierwrapper.js`);
-  event = Object.assign({}, event, {
-    calledFromCli: true,
-  });
+const _appCommandZapierWrapper = async (dir, event) => {
+  const app = await import(`${dir}/zapierwrapper.js`);
+  event = { ...event, calledFromCli: true };
   return new Promise((resolve, reject) => {
     app.handler(event, {}, (err, resp) => {
       if (err) {
