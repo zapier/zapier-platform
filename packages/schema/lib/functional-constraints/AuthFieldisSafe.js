@@ -24,7 +24,7 @@ const FORBIDDEN_KEYS = [
 
 const isSensitiveKey = (key = '') =>
   FORBIDDEN_KEYS.some((forbidden) =>
-    key.toLowerCase().includes(forbidden.toLowerCase()),
+    key.toLowerCase().includes(forbidden),
   );
 
 const checkAuthField = (field) => {
