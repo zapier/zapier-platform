@@ -86,7 +86,7 @@ module.exports = makeSchema(
           isNoSecret: true,
           required: true,
         },
-        reason: 'A "password" field cannot have isSafe = true.',
+        reason: '"password" is a sensitive field and cannot have isNoSecret set as true.',
       },
       {
         example: {
