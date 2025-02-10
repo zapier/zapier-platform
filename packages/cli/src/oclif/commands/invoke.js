@@ -15,6 +15,12 @@ const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 const { localAppCommand, getLocalAppHandler } = require('../../utils/local');
 const { startSpinner, endSpinner } = require('../../utils/display');
+const {
+  getLinkedAppConfig,
+  listAuthentications,
+  readCredentials,
+} = require('../../utils/api');
+const { AUTH_KEY } = require('../../constants');
 
 const ACTION_TYPE_PLURALS = {
   trigger: 'triggers',
@@ -235,7 +241,14 @@ const appendEnv = async (vars, prefix = '') => {
   );
 };
 
-const testAuth = async (authData, meta, zcacheTestObj) => {
+const testAuth = async (
+  authId,
+  authData,
+  meta,
+  zcacheTestObj,
+  appId,
+  deployKey,
+) => {
   startSpinner('Invoking authentication.test');
   const result = await localAppCommand({
     command: 'execute',
@@ -250,13 +263,31 @@ const testAuth = async (authData, meta, zcacheTestObj) => {
     zcacheTestObj,
     customLogger,
     calledFromCliInvoke: true,
+    appId,
+    deployKey,
+    relayAuthenticationId: authId,
   });
   endSpinner();
   return result;
 };
 
-const getAuthLabel = async (labelTemplate, authData, meta, zcacheTestObj) => {
-  const testResult = await testAuth(authData, meta, zcacheTestObj);
+const getAuthLabel = async (
+  labelTemplate,
+  authId,
+  authData,
+  meta,
+  zcacheTestObj,
+  appId,
+  deployKey,
+) => {
+  const testResult = await testAuth(
+    authId,
+    authData,
+    meta,
+    zcacheTestObj,
+    appId,
+    deployKey,
+  );
   labelTemplate = labelTemplate.replace('__', '.');
   const tpl = _.template(labelTemplate, { interpolate: /{{([\s\S]+?)}}/g });
   return tpl(testResult);
@@ -897,6 +928,26 @@ class InvokeCommand extends BaseCommand {
     return output;
   }
 
+  async promptForAuthentication() {
+    const auths = (await listAuthentications()).authentications;
+    if (!auths || auths.length === 0) {
+      throw new Error(
+        'No authentications/connections found for your integration. ' +
+          'Add a new connection at https://zapier.com/app/connections ' +
+          'or use local auth data by removing the `--authentication-id` flag.',
+      );
+    }
+    const authChoices = auths.map((auth) => ({
+      name: `${auth.title} (${auth.version}) (ID: ${auth.id})`,
+      value: auth.id,
+    }));
+    return this.promptWithList(
+      'Which authentication/connection would you like to use?',
+      authChoices,
+      { useStderr: true },
+    );
+  }
+
   async perform() {
     const dotenvResult = dotenv.config({ override: true });
     if (_.isEmpty(dotenvResult.parsed)) {
@@ -955,6 +1006,19 @@ class InvokeCommand extends BaseCommand {
       }
     }
 
+    const appId = (await getLinkedAppConfig())?.id;
+    const deployKey = (await readCredentials(false))[AUTH_KEY];
+
+    let authId = this.flags['authentication-id'];
+    if (authId === '-' || authId === '') {
+      if (this.nonInteractive) {
+        throw new Error(
+          "You cannot specify '-' or an empty string for `--authentication-id` in non-interactive mode.",
+        );
+      }
+      authId = (await this.promptForAuthentication()).toString();
+    }
+
     const authData = loadAuthDataFromEnv();
     const zcacheTestObj = {};
     const cursorTestObj = {};
@@ -970,6 +1034,13 @@ class InvokeCommand extends BaseCommand {
       };
       switch (actionKey) {
         case 'start': {
+          if (authId) {
+            throw new Error(
+              'The `--authentication-id` flag is not applicable. ' +
+                'The `auth start` subcommand is to initialize local auth data in the .env file, ' +
+                'whereas `--authentication-id` is for proxying requests using production auth data.',
+            );
+          }
           const newAuthData = await this.startAuth(
             appDefinition,
             zcacheTestObj,
@@ -984,6 +1055,13 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         case 'refresh': {
+          if (authId) {
+            throw new Error(
+              'The `--authentication-id` flag is not applicable. ' +
+                'The `auth refresh` subcommand can only refresh your local auth data in the .env file. ' +
+                'You might want to run `auth test` instead, which tests and may refresh auth data with the specified authentication ID in production.',
+            );
+          }
           const newAuthData = await this.refreshAuth(
             appDefinition,
             authData,
@@ -999,7 +1077,14 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         case 'test': {
-          const output = await testAuth(authData, meta, zcacheTestObj);
+          const output = await testAuth(
+            authId,
+            authData,
+            meta,
+            zcacheTestObj,
+            appId,
+            deployKey,
+          );
           console.log(JSON.stringify(output, null, 2));
           return;
         }
@@ -1009,14 +1094,24 @@ class InvokeCommand extends BaseCommand {
             console.warn(
               'Function-based connection label is not supported yet. Printing auth test result instead.',
             );
-            const output = await testAuth(authData, meta, zcacheTestObj);
+            const output = await testAuth(
+              authId,
+              authData,
+              meta,
+              zcacheTestObj,
+              appId,
+              deployKey,
+            );
             console.log(JSON.stringify(output, null, 2));
           } else {
             const output = await getAuthLabel(
               labelTemplate,
+              authId,
               authData,
               meta,
               zcacheTestObj,
+              appId,
+              deployKey,
             );
             if (output) {
               console.log(output);
@@ -1148,6 +1243,11 @@ InvokeCommand.flags = buildFlags({
       description:
         'Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.',
       default: 9000,
+    }),
+    'authentication-id': Flags.string({
+      char: 'a',
+      description:
+        'Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/connections or specify \'-\' to interactively select one from your available authentications. When specified, the code will be still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.',
     }),
   },
 });

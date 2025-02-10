@@ -363,6 +363,8 @@ const listEnv = (version) =>
 
 const listMigrations = () => listEndpoint('migrations');
 
+const listAuthentications = () => listEndpoint('authentications');
+
 // the goal of this is to call `/check` with as much info as possible
 // if the app is registered and auth is available, then we can send app id
 // otherwise, we should just send the definition and get back checks about that
@@ -502,6 +504,7 @@ module.exports = {
   getVersionInfo,
   isPublished,
   listApps,
+  listAuthentications,
   listCanaries,
   listEndpoint,
   listEndpointMulti,
