@@ -663,10 +663,13 @@ class InvokeCommand extends BaseCommand {
     field,
     appDefinition,
     inputData,
+    authId,
     authData,
     timezone,
     zcacheTestObj,
     cursorTestObj,
+    appId,
+    deployKey,
   ) {
     const message = formatFieldDisplay(field) + ':';
     if (field.dynamic) {
@@ -686,11 +689,14 @@ class InvokeCommand extends BaseCommand {
         'triggers',
         trigger,
         inputData,
+        authId,
         authData,
         meta,
         timezone,
         zcacheTestObj,
         cursorTestObj,
+        appId,
+        deployKey,
       );
       return this.promptWithList(
         message,
@@ -716,11 +722,14 @@ class InvokeCommand extends BaseCommand {
     inputData,
     inputFields,
     appDefinition,
+    authId,
     authData,
     meta,
     timezone,
     zcacheTestObj,
     cursorTestObj,
+    appId,
+    deployKey,
   ) {
     const missingFields = getMissingRequiredInputFields(inputData, inputFields);
     if (missingFields.length) {
@@ -735,10 +744,13 @@ class InvokeCommand extends BaseCommand {
           f,
           appDefinition,
           inputData,
+          authId,
           authData,
           timezone,
           zcacheTestObj,
           cursorTestObj,
+          appId,
+          deployKey,
         );
       }
     }
@@ -748,10 +760,13 @@ class InvokeCommand extends BaseCommand {
     inputData,
     inputFields,
     appDefinition,
+    authId,
     authData,
     timezone,
     zcacheTestObj,
     cursorTestObj,
+    appId,
+    deployKey,
   ) {
     inputFields = inputFields.filter((f) => f.key);
     if (!inputFields.length) {
@@ -799,10 +814,13 @@ class InvokeCommand extends BaseCommand {
         field,
         appDefinition,
         inputData,
+        authId,
         authData,
         timezone,
         zcacheTestObj,
         cursorTestObj,
+        appId,
+        deployKey,
       );
     }
   }
@@ -811,31 +829,40 @@ class InvokeCommand extends BaseCommand {
     inputData,
     inputFields,
     appDefinition,
+    authId,
     authData,
     meta,
     timezone,
     zcacheTestObj,
     cursorTestObj,
+    appId,
+    deployKey,
   ) {
     await this.promptOrErrorForRequiredInputFields(
       inputData,
       inputFields,
       appDefinition,
+      authId,
       authData,
       meta,
       timezone,
       zcacheTestObj,
       cursorTestObj,
+      appId,
+      deployKey,
     );
     if (!this.nonInteractive && !meta.isFillingDynamicDropdown) {
       await this.promptForInputFieldEdit(
         inputData,
         inputFields,
         appDefinition,
+        authId,
         authData,
         timezone,
         zcacheTestObj,
         cursorTestObj,
+        appId,
+        deployKey,
       );
     }
   }
@@ -845,11 +872,14 @@ class InvokeCommand extends BaseCommand {
     actionTypePlural,
     action,
     inputData,
+    authId,
     authData,
     meta,
     timezone,
     zcacheTestObj,
     cursorTestObj,
+    appId,
+    deployKey,
   ) {
     // Do these in order:
     // 1. Prompt for static input fields that alter dynamic fields
@@ -866,11 +896,14 @@ class InvokeCommand extends BaseCommand {
       inputData,
       staticInputFields,
       appDefinition,
+      authId,
       authData,
       meta,
       timezone,
       zcacheTestObj,
       cursorTestObj,
+      appId,
+      deployKey,
     );
 
     let methodName = `${actionTypePlural}.${action.key}.operation.inputFields`;
@@ -888,6 +921,9 @@ class InvokeCommand extends BaseCommand {
       cursorTestObj,
       customLogger,
       calledFromCliInvoke: true,
+      appId,
+      deployKey,
+      relayAuthenticationId: authId,
     });
     endSpinner();
 
@@ -898,11 +934,14 @@ class InvokeCommand extends BaseCommand {
         inputData,
         inputFields,
         appDefinition,
+        authId,
         authData,
         meta,
         timezone,
         zcacheTestObj,
         cursorTestObj,
+        appId,
+        deployKey,
       );
     }
 
@@ -922,6 +961,9 @@ class InvokeCommand extends BaseCommand {
       cursorTestObj,
       customLogger,
       calledFromCliInvoke: true,
+      appId,
+      deployKey,
+      relayAuthenticationId: authId,
     });
     endSpinner();
 
@@ -1180,11 +1222,14 @@ class InvokeCommand extends BaseCommand {
         actionTypePlural,
         action,
         inputData,
+        authId,
         authData,
         meta,
         timezone,
         zcacheTestObj,
         cursorTestObj,
+        appId,
+        deployKey,
       );
       console.log(JSON.stringify(output, null, 2));
     }

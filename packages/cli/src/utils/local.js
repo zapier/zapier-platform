@@ -11,7 +11,7 @@ const { BASE_ENDPOINT } = require('../constants');
  * @param {Function} originalHttpRequest - The original http.request function.
  * @param {Function} originalHttpsRequest - The original https.request function.
  * @param {string} relayUrl - The base URL to which we relay. (e.g., 'http://my-relay.test')
- * @param {Object} [relayHeaders={}] - Extra headers to add to each request sent to the relay.
+ * @param {Object} relayHeaders - Extra headers to add to each request sent to the relay.
  * @returns {Function} A function with the same signature as http(s).request that relays instead.
  *
  * Usage:
@@ -22,19 +22,19 @@ const { BASE_ENDPOINT } = require('../constants');
  *   https.request = wrapHttpRequestFuncWithRelay(
  *     http.request,
  *     https.request,
- *     'http://my-relay.test',
+ *     'https://my-relay.test',
  *     { 'X-Relayed-By': 'MyRelayProxy' }
  *   );
  *
  *   // Now, calling https.request('https://example.com/hello') will actually
- *   // send a request to "http://my-relay.test/https://example.com/hello"
+ *   // send a request to "https://my-relay.test/example.com/hello"
  *   // with X-Relayed-By header attached.
  */
 function wrapHttpRequestFuncWithRelay(
   originalHttpRequest,
   originalHttpsRequest,
   relayUrl,
-  relayHeaders = {},
+  relayHeaders,
 ) {
   const parsedRelayUrl = new URL(relayUrl);
 
@@ -87,9 +87,10 @@ function wrapHttpRequestFuncWithRelay(
     } else {
       // Called like request(optionsObject, [callback])
       options = { ...originalOptions };
-      callback = arguments[1];
+      callback = originalCallback;
     }
 
+    // 2. Default method and headers
     if (!options.method) {
       options.method = 'GET';
     }
@@ -97,19 +98,41 @@ function wrapHttpRequestFuncWithRelay(
       options.headers = {};
     }
 
-    // 2. Construct the path for the relay call
-    let host = options.host;
-    if (options.port && options.port.toString() !== '443') {
-      host += `:${options.port}`;
-    }
-    const combinedPath = `${parsedRelayUrl.pathname}/${host}${options.path}`;
+    // 3. Decide whether to relay or not
+    // If the request is being sent to the same host:port as our relay,
+    // we do NOT want to relay again. We just call the original request.
+    const targetHost = options.hostname || options.host;
+    const targetPort = options.port ? String(options.port) : '';
+    const relayHost = parsedRelayUrl.hostname;
+    const relayPort = parsedRelayUrl.port ? String(parsedRelayUrl.port) : '';
 
-    // 3. Build final options to send to the relay
+    const isAlreadyRelay =
+      targetHost === relayHost &&
+      // If no port was specified, assume default port comparison as needed
+      (targetPort === relayPort || (!targetPort && !relayPort));
+
+    if (isAlreadyRelay) {
+      // Just call the original function; do *not* re-relay
+      const originalFn =
+        options.protocol === 'https:'
+          ? originalHttpsRequest
+          : originalHttpRequest;
+      return originalFn(options, callback);
+    }
+
+    // 4. Otherwise, build the path we want to relay to
+    let finalHost = targetHost;
+    if (targetPort && targetPort !== '443') {
+      finalHost += `:${targetPort}`;
+    }
+    const combinedPath = `${parsedRelayUrl.pathname}/${finalHost}${options.path}`;
+
+    // 5. Build final options for the relay request
     const relayedOptions = {
       protocol: parsedRelayUrl.protocol,
-      hostname: parsedRelayUrl.hostname,
-      port: parsedRelayUrl.port,
-      path: combinedPath + (parsedRelayUrl.search || ''),
+      hostname: relayHost,
+      port: relayPort,
+      path: combinedPath,
       method: options.method,
       headers: {
         ...options.headers,
@@ -117,21 +140,71 @@ function wrapHttpRequestFuncWithRelay(
       },
     };
 
-    // 4. Wrap the callback to manipulate the response (if desired)
-    const wrappedCallback = callback
-      ? function relayResponseInterceptor(relayRes) {
-          // Example: remove any "Via" header that might reveal the relay
-          delete relayRes.headers.via;
-          // Pass through to the original callback
-          callback(relayRes);
-        }
-      : undefined;
-
-    // 5. Make the request to the relay using whichever request function is appropriate
-    const relayReq = relayRequestFunc(relayedOptions, wrappedCallback);
-
-    // Return the actual ClientRequest so the caller can .write(), .end(), etc.
+    // 6. Make the relay request
+    const relayReq = relayRequestFunc(relayedOptions, callback);
     return relayReq;
+  };
+}
+
+/**
+ * Wraps a fetch function so that all requests get relayed to a specified relay URL.
+ * The final relay URL includes: relayUrl + "/" + originalHost + originalPath
+ *
+ * @param {Function} fetchFunc - The original fetch function (e.g., global.fetch).
+ * @param {string} relayUrl - The base URL to which we relay. (e.g. 'https://my-relay.test')
+ * @param {Object} relayHeaders - Extra headers to add to each request sent to the relay.
+ * @returns {Function} A function with the same signature as `fetch(url, options)`.
+ *
+ * Usage:
+ *   const wrappedFetch = wrapFetchWithRelay(
+ *     fetch,
+ *     'https://my-relay.test',
+ *     { 'X-Relayed-By': 'MyRelayProxy' },
+ *   );
+ *
+ *   // Now when you do:
+ *   //   wrappedFetch('https://example.com/api/user?id=123', { method: 'POST' });
+ *   // it actually sends a request to:
+ *   //   https://my-relay.test/example.com/api/user?id=123
+ *   // with "X-Relayed-By" header included.
+ */
+function wrapFetchWithRelay(fetchFunc, relayUrl, relayHeaders) {
+  const parsedRelayUrl = new URL(relayUrl);
+
+  return async function wrappedFetch(originalUrl, originalOptions = {}) {
+    // Attempt to parse the originalUrl as an absolute URL
+    const parsedOriginalUrl = new URL(originalUrl);
+
+    // Build the portion that includes the original host (and port if present)
+    let host = parsedOriginalUrl.hostname;
+    // If there's a port that isn't 443 (for HTTPS) or 80 (for HTTP), append it
+    // (Adjust to your preferences; here we loosely check for 443 only.)
+    if (parsedOriginalUrl.port && parsedOriginalUrl.port.toString() !== '443') {
+      host += `:${parsedOriginalUrl.port}`;
+    }
+
+    // Combine the relay's pathname with the "host + path" from the original
+    // For example: relayUrl = http://my-relay.test
+    //   => parsedRelayUrl.pathname might be '/'
+    //   => combinedPath = '/example.com:8080/some/path'
+    const combinedPath = `${parsedRelayUrl.pathname}/${host}${parsedOriginalUrl.pathname}`;
+
+    // Merge in the search strings: the relay's own search (if any) plus the original URL's search
+    const finalUrl = `${parsedRelayUrl.origin}${combinedPath}${parsedRelayUrl.search}${parsedOriginalUrl.search}`;
+
+    // Merge the user's headers with the relayHeaders
+    const mergedHeaders = {
+      ...(originalOptions.headers || {}),
+      ...relayHeaders,
+    };
+
+    const finalOptions = {
+      ...originalOptions,
+      headers: mergedHeaders,
+    };
+
+    // Call the real fetch with our new URL and merged options
+    return fetchFunc(finalUrl, finalOptions);
   };
 }
 
@@ -169,6 +242,7 @@ const getLocalAppHandler = ({
       'x-relay-authentication-id': relayAuthenticationId,
       'x-deploy-key': deployKey,
     };
+
     const http = require('http');
     const https = require('https');
     const origHttpRequest = http.request;
@@ -185,6 +259,8 @@ const getLocalAppHandler = ({
       relayUrl,
       relayHeaders,
     );
+
+    global.fetch = wrapFetchWithRelay(global.fetch, relayUrl, relayHeaders);
   }
 
   const handler = zapier.createAppHandler(appRaw);
