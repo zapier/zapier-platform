@@ -259,7 +259,7 @@ const getAuthLabel = async (labelTemplate, authData, meta, zcacheTestObj) => {
   const testResult = await testAuth(authData, meta, zcacheTestObj);
   labelTemplate = labelTemplate.replace('__', '.');
   const tpl = _.template(labelTemplate, { interpolate: /{{([\s\S]+?)}}/g });
-  return tpl({ bundle: { authData, inputData: testResult } });
+  return tpl({ ...testResult, bundle: { authData, inputData: testResult } });
 };
 
 const getLabelForDynamicDropdown = (obj, preferredKey, fallbackKey) => {
