@@ -201,6 +201,7 @@ const TEMPLATE_ROUTES = {
   minimal: writeForMinimalTemplate,
   'oauth1-trello': writeForAuthTemplate,
   oauth2: writeForAuthTemplate,
+  openai: writeForStandaloneTemplate,
   'search-or-create': writeForStandaloneTemplate,
   'session-auth': writeForAuthTemplate,
   typescript: writeForStandaloneTypeScriptTemplate,
