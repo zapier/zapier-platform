@@ -1762,8 +1762,8 @@ export interface Authentication {
   test: Request | Function;
 
   /**
-   * **DEPRECATED** fields requested from the user before they connect
-   * the app.
+   * **DEPRECATED: use inputFields/outputFields instead** fields
+   * requested from the user before they connect the app.
    */
   fields?: AuthFields;
 

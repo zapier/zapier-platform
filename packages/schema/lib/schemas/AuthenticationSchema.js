@@ -31,7 +31,7 @@ module.exports = makeSchema(
       },
       fields: {
         description:
-          '**DEPRECATED** fields requested from the user before they connect the app.',
+          '**DEPRECATED: use inputFields/outputFields instead** fields requested from the user before they connect the app.',
         $ref: AuthFieldsSchema.id,
       },
       inputFields: {
