@@ -31,12 +31,12 @@ module.exports = makeSchema(
       },
       inputFields: {
         description:
-          'Fields you can request from the user before they connect your app to Zapier.',
+          'Fields requested from the user before they connect the app.',
         $ref: AuthFieldsSchema.id,
       },
       outputFields: {
         description:
-          'Fields you can request from the user before they connect your app to Zapier.',
+          'Fields that will be returned by the app after successful authentication.',
         $ref: AuthFieldsSchema.id,
       },
       connectionLabel: {

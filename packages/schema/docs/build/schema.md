@@ -414,8 +414,8 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `type` | **yes** | `string` in (`'basic'`, `'custom'`, `'digest'`, `'oauth1'`, `'oauth2'`, `'session'`) | Choose which scheme you want to use.
 `test` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | A function or request that confirms the authentication is working.
-`inputFields` | no | [/AuthFieldsSchema](#authfieldsschema) | Fields you can request from the user before they connect your app to Zapier.
-`outputFields` | no | [/AuthFieldsSchema](#authfieldsschema) | Fields you can request from the user before they connect your app to Zapier.
+`inputFields` | no | [/AuthFieldsSchema](#authfieldsschema) | Fields requested from the user before they connect the app.
+`outputFields` | no | [/AuthFieldsSchema](#authfieldsschema) | Fields that will be returned by the app after successful authentication.
 `connectionLabel` | no | anyOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema), `string`) | A string with variables, function, or request that returns the connection label for the authenticated user.
 `basicConfig` | no | [/AuthenticationBasicConfigSchema](#authenticationbasicconfigschema) | _No description given._
 `customConfig` | no | [/AuthenticationCustomConfigSchema](#authenticationcustomconfigschema) | _No description given._

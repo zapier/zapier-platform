@@ -1761,15 +1761,12 @@ export interface Authentication {
    */
   test: Request | Function;
 
-  /**
-   * Fields you can request from the user before they connect your app
-   * to Zapier.
-   */
+  /** Fields requested from the user before they connect the app. */
   inputFields?: AuthFields;
 
   /**
-   * Fields you can request from the user before they connect your app
-   * to Zapier.
+   * Fields that will be returned by the app after successful
+   * authentication.
    */
   outputFields?: AuthFields;
 
