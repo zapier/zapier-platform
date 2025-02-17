@@ -253,6 +253,14 @@ describe('smoke tests - setup will take some time', () => {
             DISABLE_ZAPIER_ANALYTICS: 1,
           },
         });
+        console.log(
+          'START HsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsd',
+        );
+        console.log(proc.stdout);
+        console.log(proc.stderr);
+        console.log(
+          'END HsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsdHsd',
+        );
         if (proc.status !== 0) {
           console.log(proc.stdout);
           console.log(proc.stderr);
