@@ -1801,6 +1801,10 @@
             }
           ]
         },
+        "fields": {
+          "description": "**DEPRECATED** fields requested from the user before they connect the app.",
+          "$ref": "/AuthFieldsSchema"
+        },
         "inputFields": {
           "description": "Fields requested from the user before they connect the app.",
           "$ref": "/AuthFieldsSchema"

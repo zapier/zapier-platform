@@ -29,6 +29,11 @@ module.exports = makeSchema(
           'A function or request that confirms the authentication is working.',
         oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
       },
+      fields: {
+        description:
+          '**DEPRECATED** fields requested from the user before they connect the app.',
+        $ref: AuthFieldsSchema.id,
+      },
       inputFields: {
         description:
           'Fields requested from the user before they connect the app.',
