@@ -8,9 +8,9 @@ const AuthenticationDigestConfigSchema = require('./AuthenticationDigestConfigSc
 const AuthenticationOAuth1ConfigSchema = require('./AuthenticationOAuth1ConfigSchema.js');
 const AuthenticationOAuth2ConfigSchema = require('./AuthenticationOAuth2ConfigSchema.js');
 const AuthenticationSessionConfigSchema = require('./AuthenticationSessionConfigSchema.js');
+const AuthFieldsSchema = require('./AuthFieldsSchema');
 const FunctionSchema = require('./FunctionSchema');
 const RequestSchema = require('./RequestSchema');
-const AuthFieldsSchema = require('./AuthFieldsSchema');
 
 module.exports = makeSchema(
   {
@@ -29,7 +29,12 @@ module.exports = makeSchema(
           'A function or request that confirms the authentication is working.',
         oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
       },
-      fields: {
+      inputFields: {
+        description:
+          'Fields you can request from the user before they connect your app to Zapier.',
+        $ref: AuthFieldsSchema.id,
+      },
+      outputFields: {
         description:
           'Fields you can request from the user before they connect your app to Zapier.',
         $ref: AuthFieldsSchema.id,
@@ -60,7 +65,37 @@ module.exports = makeSchema(
       {
         type: 'custom',
         test: '$func$2$f$',
-        fields: [{ key: 'abc' }],
+        inputFields: [
+          { key: 'email', type: 'string', isNoSecret: true, required: true },
+          { key: 'password', type: 'password', required: true },
+          { key: 'mfa_token', type: 'string', isNoSecret: false },
+        ],
+      },
+      {
+        type: 'custom',
+        test: '$func$2$f$',
+        inputFields: [
+          { key: 'username', type: 'string', isNoSecret: true, required: true },
+          { key: 'api_key', type: 'string', isNoSecret: false, required: true },
+        ],
+      },
+      {
+        type: 'custom',
+        test: '$func$2$f$',
+        outputFields: [
+          { key: 'account_id', type: 'string', isNoSecret: true },
+          { key: 'account_name', type: 'string', isNoSecret: true },
+          { key: 'account_type', type: 'string', isNoSecret: true },
+        ],
+      },
+      {
+        type: 'custom',
+        test: '$func$2$f$',
+        outputFields: [
+          { key: 'api_version', type: 'string', isNoSecret: true },
+          { key: 'access_level', type: 'string', isNoSecret: true },
+          { key: 'rate_limit', type: 'number', isNoSecret: true },
+        ],
       },
       {
         type: 'custom',
@@ -105,9 +140,9 @@ module.exports = makeSchema(
     ],
   },
   [
+    AuthFieldsSchema,
     FunctionSchema,
     RequestSchema,
-    AuthFieldsSchema,
     AuthenticationBasicConfigSchema,
     AuthenticationCustomConfigSchema,
     AuthenticationDigestConfigSchema,

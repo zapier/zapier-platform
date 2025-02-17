@@ -14,14 +14,22 @@
       "url": "https://fake-crm.getsandbox.com/ping",
       "method": "GET"
     },
-    "fields": [
+    "inputFields": [
       {
         "key": "access_token",
-        "computed": true
+        "isNoSecret": false
       },
       {
         "key": "refresh_token",
-        "computed": true
+        "computed": true,
+        "isNoSecret": false
+      }
+    ],
+    "outputFields": [
+      {
+        "key": "username",
+        "computed": true,
+        "isNoSecret": true
       }
     ],
     "oauth2Config": {

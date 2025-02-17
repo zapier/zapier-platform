@@ -96,83 +96,6 @@
       },
       "additionalProperties": false
     },
-    "FunctionRequireSchema": {
-      "id": "/FunctionRequireSchema",
-      "description": "A path to a file that might have content like `module.exports = (z, bundle) => [{id: 123}];`.",
-      "type": "object",
-      "required": ["require"],
-      "properties": {
-        "require": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    },
-    "FunctionSourceSchema": {
-      "id": "/FunctionSourceSchema",
-      "description": "Source code like `{source: \"return 1 + 2\"}` which the system will wrap in a function for you.",
-      "type": "object",
-      "required": ["source"],
-      "properties": {
-        "source": {
-          "type": "string",
-          "pattern": "return",
-          "description": "JavaScript code for the function body. This must end with a `return` statement."
-        },
-        "args": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Function signature. Defaults to `['z', 'bundle']` if not specified."
-        }
-      },
-      "additionalProperties": false
-    },
-    "FlatObjectSchema": {
-      "id": "/FlatObjectSchema",
-      "description": "An object whose values can only be primitives",
-      "type": "object",
-      "patternProperties": {
-        "[^\\s]+": {
-          "description": "Any key may exist in this flat object as long as its values are simple.",
-          "anyOf": [
-            {
-              "type": "null"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "integer"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "boolean"
-            }
-          ]
-        }
-      },
-      "additionalProperties": false
-    },
-    "FunctionSchema": {
-      "id": "/FunctionSchema",
-      "description": "Internal pointer to a function from the original source or the source code itself. Encodes arity and if `arguments` is used in the body. Note - just write normal functions and the system will encode the pointers for you. Or, provide {source: \"return 1 + 2\"} and the system will wrap in a function for you.",
-      "oneOf": [
-        {
-          "type": "string",
-          "pattern": "^\\$func\\$\\d+\\$[tf]\\$$"
-        },
-        {
-          "$ref": "/FunctionRequireSchema"
-        },
-        {
-          "$ref": "/FunctionSourceSchema"
-        }
-      ]
-    },
     "FieldChoiceWithLabelSchema": {
       "id": "/FieldChoiceWithLabelSchema",
       "description": "An object describing a labeled choice in a static dropdown. Useful if the value a user picks isn't exactly what the zap uses. For instance, when they click on a nickname, but the zap uses the user's full name ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).",
@@ -358,6 +281,83 @@
           "type": "boolean"
         }
       }
+    },
+    "FunctionRequireSchema": {
+      "id": "/FunctionRequireSchema",
+      "description": "A path to a file that might have content like `module.exports = (z, bundle) => [{id: 123}];`.",
+      "type": "object",
+      "required": ["require"],
+      "properties": {
+        "require": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FunctionSourceSchema": {
+      "id": "/FunctionSourceSchema",
+      "description": "Source code like `{source: \"return 1 + 2\"}` which the system will wrap in a function for you.",
+      "type": "object",
+      "required": ["source"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "return",
+          "description": "JavaScript code for the function body. This must end with a `return` statement."
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Function signature. Defaults to `['z', 'bundle']` if not specified."
+        }
+      },
+      "additionalProperties": false
+    },
+    "FlatObjectSchema": {
+      "id": "/FlatObjectSchema",
+      "description": "An object whose values can only be primitives",
+      "type": "object",
+      "patternProperties": {
+        "[^\\s]+": {
+          "description": "Any key may exist in this flat object as long as its values are simple.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "FunctionSchema": {
+      "id": "/FunctionSchema",
+      "description": "Internal pointer to a function from the original source or the source code itself. Encodes arity and if `arguments` is used in the body. Note - just write normal functions and the system will encode the pointers for you. Or, provide {source: \"return 1 + 2\"} and the system will wrap in a function for you.",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^\\$func\\$\\d+\\$[tf]\\$$"
+        },
+        {
+          "$ref": "/FunctionRequireSchema"
+        },
+        {
+          "$ref": "/FunctionSourceSchema"
+        }
+      ]
     },
     "RequestSchema": {
       "id": "/RequestSchema",
@@ -1801,7 +1801,11 @@
             }
           ]
         },
-        "fields": {
+        "inputFields": {
+          "description": "Fields you can request from the user before they connect your app to Zapier.",
+          "$ref": "/AuthFieldsSchema"
+        },
+        "outputFields": {
           "description": "Fields you can request from the user before they connect your app to Zapier.",
           "$ref": "/AuthFieldsSchema"
         },

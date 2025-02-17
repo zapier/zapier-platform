@@ -69,17 +69,28 @@ module.exports = (definition, mainSchema) => {
     });
   }
 
-  // If there's no authentication or no fields, we have nothing to check
-  if (!definition.authentication || !definition.authentication.fields) {
+  // If there's no authentication, we have nothing to check
+  if (!definition.authentication) {
     return errors;
   }
-  definition.authentication.fields.forEach((field, index) => {
-    checkAuthField(field).forEach((err) => {
-      err.property = `instance.authentication.fields[${index}]`;
-      err.stack = err.stack.replace('instance.field', err.property);
-      errors.push(err);
-    });
-  });
 
+  if (definition.authentication.inputFields) {
+    definition.authentication.inputFields.forEach((field, index) => {
+      checkAuthField(field).forEach((err) => {
+        err.property = `instance.authentication.inputFields[${index}]`;
+        err.stack = err.stack.replace('instance.field', err.property);
+        errors.push(err);
+      });
+    });
+  }
+  if (definition.authentication.outputFields) {
+    definition.authentication.outputFields.forEach((field, index) => {
+      checkAuthField(field).forEach((err) => {
+        err.property = `instance.authentication.outputFields[${index}]`;
+        err.stack = err.stack.replace('instance.field', err.property);
+        errors.push(err);
+      });
+    });
+  }
   return errors;
 };

@@ -136,68 +136,6 @@ export interface App {
 }
 
 /**
- * A path to a file that might have content like `module.exports =
- * (z, bundle) => [{id: 123}];`.
- *
- * [Docs: FunctionRequireSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FunctionRequireSchema)
- */
-export interface FunctionRequire {
-  require: string;
-}
-
-/**
- * Source code like `{source: "return 1 + 2"}` which the system will
- * wrap in a function for you.
- *
- * [Docs: FunctionSourceSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FunctionSourceSchema)
- */
-export interface FunctionSource {
-  /**
-   * JavaScript code for the function body. This must end with a
-   * `return` statement.
-   */
-  source: string;
-
-  /**
-   * Function signature. Defaults to `['z', 'bundle']` if not
-   * specified.
-   */
-  args?: string[];
-}
-
-/**
- * An object whose values can only be primitives
- *
- * [Docs: FlatObjectSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FlatObjectSchema)
- */
-export interface FlatObject {
-  /**
-   * Any key may exist in this flat object as long as its values are
-   * simple.
-   *
-   * This interface was referenced by `FlatObjectSchema`'s JSON-Schema
-   * definition
-   * via the `patternProperty` "[^\s]+".
-   */
-  [k: string]: null | string | number | boolean;
-}
-
-/**
- * Internal pointer to a function from the original source or the
- * source code itself. Encodes arity and if `arguments` is used in
- * the body. Note - just write normal functions and the system will
- * encode the pointers for you. Or, provide {source: "return 1 + 2"}
- * and the system will wrap in a function for you.
- *
- * [Docs: FunctionSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FunctionSchema)
- */
-export type Function =
-  | PerformFunction
-  | string
-  | FunctionRequire
-  | FunctionSource;
-
-/**
  * An object describing a labeled choice in a static dropdown.
  * Useful if the value a user picks isn't exactly what the zap uses.
  * For instance, when they click on a nickname, but the zap uses the
@@ -401,6 +339,68 @@ export interface AuthField {
   isNoSecret?: boolean;
   [k: string]: unknown;
 }
+
+/**
+ * A path to a file that might have content like `module.exports =
+ * (z, bundle) => [{id: 123}];`.
+ *
+ * [Docs: FunctionRequireSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FunctionRequireSchema)
+ */
+export interface FunctionRequire {
+  require: string;
+}
+
+/**
+ * Source code like `{source: "return 1 + 2"}` which the system will
+ * wrap in a function for you.
+ *
+ * [Docs: FunctionSourceSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FunctionSourceSchema)
+ */
+export interface FunctionSource {
+  /**
+   * JavaScript code for the function body. This must end with a
+   * `return` statement.
+   */
+  source: string;
+
+  /**
+   * Function signature. Defaults to `['z', 'bundle']` if not
+   * specified.
+   */
+  args?: string[];
+}
+
+/**
+ * An object whose values can only be primitives
+ *
+ * [Docs: FlatObjectSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FlatObjectSchema)
+ */
+export interface FlatObject {
+  /**
+   * Any key may exist in this flat object as long as its values are
+   * simple.
+   *
+   * This interface was referenced by `FlatObjectSchema`'s JSON-Schema
+   * definition
+   * via the `patternProperty` "[^\s]+".
+   */
+  [k: string]: null | string | number | boolean;
+}
+
+/**
+ * Internal pointer to a function from the original source or the
+ * source code itself. Encodes arity and if `arguments` is used in
+ * the body. Note - just write normal functions and the system will
+ * encode the pointers for you. Or, provide {source: "return 1 + 2"}
+ * and the system will wrap in a function for you.
+ *
+ * [Docs: FunctionSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FunctionSchema)
+ */
+export type Function =
+  | PerformFunction
+  | string
+  | FunctionRequire
+  | FunctionSource;
 
 /**
  * A representation of a HTTP request - you can use the `{{syntax}}`
@@ -1765,7 +1765,13 @@ export interface Authentication {
    * Fields you can request from the user before they connect your app
    * to Zapier.
    */
-  fields?: AuthFields;
+  inputFields?: AuthFields;
+
+  /**
+   * Fields you can request from the user before they connect your app
+   * to Zapier.
+   */
+  outputFields?: AuthFields;
 
   /**
    * A string with variables, function, or request that returns the

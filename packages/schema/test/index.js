@@ -172,7 +172,7 @@ describe('app', () => {
         test: {
           url: 'https://example.com',
         },
-        fields: [
+        inputFields: [
           {
             key: 'subdomain',
             type: 'string',
@@ -194,7 +194,7 @@ describe('app', () => {
         test: {
           url: 'https://example.com',
         },
-        fields: [
+        inputFields: [
           {
             key: 'subdomain',
             type: 'string',
@@ -237,7 +237,7 @@ describe('app', () => {
         test: {
           url: 'https://example.com',
         },
-        fields: [
+        outputFields: [
           {
             key: 'username',
             type: 'string',
@@ -269,7 +269,7 @@ describe('app', () => {
         test: {
           url: 'https://example.com',
         },
-        fields: [
+        inputFields: [
           {
             key: 'password',
             type: 'string',
@@ -288,7 +288,7 @@ describe('app', () => {
       const [error] = results.errors;
       error.name.should.equal('sensitive');
       error.stack.should.eql(
-        'instance.authentication.fields[0] cannot set isNoSecret as true for the sensitive key "password".',
+        'instance.authentication.inputFields[0] cannot set isNoSecret as true for the sensitive key "password".',
       );
     });
   });

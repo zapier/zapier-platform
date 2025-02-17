@@ -414,7 +414,8 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `type` | **yes** | `string` in (`'basic'`, `'custom'`, `'digest'`, `'oauth1'`, `'oauth2'`, `'session'`) | Choose which scheme you want to use.
 `test` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | A function or request that confirms the authentication is working.
-`fields` | no | [/AuthFieldsSchema](#authfieldsschema) | Fields you can request from the user before they connect your app to Zapier.
+`inputFields` | no | [/AuthFieldsSchema](#authfieldsschema) | Fields you can request from the user before they connect your app to Zapier.
+`outputFields` | no | [/AuthFieldsSchema](#authfieldsschema) | Fields you can request from the user before they connect your app to Zapier.
 `connectionLabel` | no | anyOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema), `string`) | A string with variables, function, or request that returns the connection label for the authenticated user.
 `basicConfig` | no | [/AuthenticationBasicConfigSchema](#authenticationbasicconfigschema) | _No description given._
 `customConfig` | no | [/AuthenticationCustomConfigSchema](#authenticationcustomconfigschema) | _No description given._
@@ -426,7 +427,49 @@ Key | Required | Type | Description
 #### Examples
 
 * `{ type: 'basic', test: '$func$2$f$' }`
-* `{ type: 'custom', test: '$func$2$f$', fields: [ { key: 'abc' } ] }`
+* ```
+  {
+    type: 'custom',
+    test: '$func$2$f$',
+    inputFields: [
+      { key: 'email', type: 'string', isNoSecret: true, required: true },
+      { key: 'password', type: 'password', required: true },
+      { key: 'mfa_token', type: 'string', isNoSecret: false }
+    ]
+  }
+  ```
+* ```
+  {
+    type: 'custom',
+    test: '$func$2$f$',
+    inputFields: [
+      { key: 'username', type: 'string', isNoSecret: true, required: true },
+      { key: 'api_key', type: 'string', isNoSecret: false, required: true }
+    ]
+  }
+  ```
+* ```
+  {
+    type: 'custom',
+    test: '$func$2$f$',
+    outputFields: [
+      { key: 'account_id', type: 'string', isNoSecret: true },
+      { key: 'account_name', type: 'string', isNoSecret: true },
+      { key: 'account_type', type: 'string', isNoSecret: true }
+    ]
+  }
+  ```
+* ```
+  {
+    type: 'custom',
+    test: '$func$2$f$',
+    outputFields: [
+      { key: 'api_version', type: 'string', isNoSecret: true },
+      { key: 'access_level', type: 'string', isNoSecret: true },
+      { key: 'rate_limit', type: 'number', isNoSecret: true }
+    ]
+  }
+  ```
 * `{ type: 'custom', test: '$func$2$f$', connectionLabel: '{{bundle.inputData.abc}}' }`
 * `{ type: 'custom', test: '$func$2$f$', connectionLabel: '$func$2$f$' }`
 * `{ type: 'custom', test: '$func$2$f$', connectionLabel: { url: 'abc' } }`
