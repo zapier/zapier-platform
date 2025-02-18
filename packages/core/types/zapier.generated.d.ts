@@ -251,9 +251,9 @@ export interface Field {
 }
 
 /**
- * Field schema specialized for authentication fields. In addition
- * to the requirements below, the following keys are mutually
- * exclusive:
+ * Field schema specialized for authentication input fields. In
+ * addition to the requirements below, the following keys are
+ * mutually exclusive:
  *
  * * `children` & `list`
  * * `children` & `dict`
@@ -335,9 +335,9 @@ export interface AuthInputField {
 }
 
 /**
- * Field schema specialized for authentication fields. In addition
- * to the requirements below, the following keys are mutually
- * exclusive:
+ * Field schema specialized for authentication output fields. In
+ * addition to the requirements below, the following keys are
+ * mutually exclusive:
  *
  * * `children` & `list`
  * * `children` & `dict`
@@ -556,14 +556,14 @@ export interface RedirectRequest {
 }
 
 /**
- * An array or collection of authentication fields.
+ * An array or collection of authentication input  fields.
  *
  * [Docs: AuthInputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthInputFieldsSchema)
  */
 export type AuthInputFields = AuthInputField[];
 
 /**
- * An array or collection of authentication fields.
+ * An array or collection of authentication output fields.
  *
  * [Docs: AuthOutputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthOutputFieldsSchema)
  */

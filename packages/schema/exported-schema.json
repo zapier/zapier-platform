@@ -208,7 +208,7 @@
     },
     "AuthInputFieldSchema": {
       "id": "/AuthInputFieldSchema",
-      "description": "Field schema specialized for authentication fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
+      "description": "Field schema specialized for authentication input fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "required": ["key"],
       "type": "object",
       "properties": {
@@ -280,7 +280,7 @@
     },
     "AuthOutputFieldSchema": {
       "id": "/AuthOutputFieldSchema",
-      "description": "Field schema specialized for authentication fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
+      "description": "Field schema specialized for authentication output fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "required": ["key"],
       "type": "object",
       "properties": {
@@ -520,7 +520,7 @@
     },
     "AuthInputFieldsSchema": {
       "id": "/AuthInputFieldsSchema",
-      "description": "An array or collection of authentication fields.",
+      "description": "An array or collection of authentication input  fields.",
       "type": "array",
       "items": {
         "oneOf": [
@@ -532,7 +532,7 @@
     },
     "AuthOutputFieldsSchema": {
       "id": "/AuthOutputFieldsSchema",
-      "description": "An array or collection of authentication fields.",
+      "description": "An array or collection of authentication output fields.",
       "type": "array",
       "items": {
         "oneOf": [

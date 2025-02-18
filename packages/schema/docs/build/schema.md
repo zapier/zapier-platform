@@ -151,7 +151,7 @@ Key | Required | Type | Description
 
 ## /AuthInputFieldSchema
 
-Field schema specialized for authentication fields. In addition to the requirements below, the following keys are mutually exclusive:
+Field schema specialized for authentication input fields. In addition to the requirements below, the following keys are mutually exclusive:
 
 * `children` & `list`
 * `children` & `dict`
@@ -202,7 +202,7 @@ Key | Required | Type | Description
 
 ## /AuthInputFieldsSchema
 
-An array or collection of authentication fields.
+An array or collection of authentication input  fields.
 
 #### Details
 
@@ -239,7 +239,7 @@ An array or collection of authentication fields.
 
 ## /AuthOutputFieldSchema
 
-Field schema specialized for authentication fields. In addition to the requirements below, the following keys are mutually exclusive:
+Field schema specialized for authentication output fields. In addition to the requirements below, the following keys are mutually exclusive:
 
 * `children` & `list`
 * `children` & `dict`
@@ -286,7 +286,7 @@ Key | Required | Type | Description
 
 ## /AuthOutputFieldsSchema
 
-An array or collection of authentication fields.
+An array or collection of authentication output fields.
 
 #### Details
 
