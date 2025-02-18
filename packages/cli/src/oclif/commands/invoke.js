@@ -333,9 +333,6 @@ class InvokeCommand extends BaseCommand {
   async promptForAuthFields(authFields) {
     const authData = {};
     for (const field of authFields) {
-      if (field.computed) {
-        continue;
-      }
       const message = formatFieldDisplay(field) + ':';
       let value;
       if (field.type === 'password') {
@@ -519,7 +516,7 @@ class InvokeCommand extends BaseCommand {
       );
     }
     const authData = await this.promptForAuthFields(
-      appDefinition.authentication.fields,
+      appDefinition.authentication.inputFields,
     );
 
     startSpinner('Invoking authentication.sessionConfig.perform');
