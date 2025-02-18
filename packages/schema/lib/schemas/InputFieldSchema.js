@@ -14,6 +14,13 @@ module.exports = makeSchema(
     required: ['key'],
     properties: {
       ...FieldSchema.schema.properties,
+      children: {
+        type: 'array',
+        items: { $ref: '/InputFieldSchema' },
+        description:
+          'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
+        minItems: 1,
+      },
       helpText: {
         description:
           'A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.',
@@ -115,7 +122,7 @@ module.exports = makeSchema(
       {
         example: { key: 'abc', children: ['$func$2$f$'] },
         reason:
-          'Invalid value for key: children (must be array of FieldSchema)',
+          'Invalid value for key: children (must be array of InputFieldSchema)',
       },
     ],
     additionalProperties: false,

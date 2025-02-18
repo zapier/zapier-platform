@@ -361,7 +361,7 @@ export interface AuthField {
    *
    * @minItems 1
    */
-  children?: Field[];
+  children?: AuthField[];
 
   /** Is this field a key/value input? */
   dict?: boolean;
@@ -703,7 +703,7 @@ export interface InputField {
    *
    * @minItems 1
    */
-  children?: Field[];
+  children?: InputField[];
 
   /** Is this field a key/value input? */
   dict?: boolean;
@@ -807,7 +807,7 @@ export interface OutputField {
    *
    * @minItems 1
    */
-  children?: Field[];
+  children?: OutputField[];
 
   /** Is this field a key/value input? */
   dict?: boolean;
