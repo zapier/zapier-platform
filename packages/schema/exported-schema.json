@@ -243,7 +243,7 @@
         "children": {
           "type": "array",
           "items": {
-            "$ref": "/FieldSchema"
+            "$ref": "/AuthFieldSchema"
           },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
@@ -710,7 +710,7 @@
         "children": {
           "type": "array",
           "items": {
-            "$ref": "/FieldSchema"
+            "$ref": "/InputFieldSchema"
           },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
@@ -802,7 +802,7 @@
         "children": {
           "type": "array",
           "items": {
-            "$ref": "/FieldSchema"
+            "$ref": "/OutputFieldSchema"
           },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
