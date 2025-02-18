@@ -8,7 +8,8 @@ const AuthenticationDigestConfigSchema = require('./AuthenticationDigestConfigSc
 const AuthenticationOAuth1ConfigSchema = require('./AuthenticationOAuth1ConfigSchema.js');
 const AuthenticationOAuth2ConfigSchema = require('./AuthenticationOAuth2ConfigSchema.js');
 const AuthenticationSessionConfigSchema = require('./AuthenticationSessionConfigSchema.js');
-const AuthFieldsSchema = require('./AuthFieldsSchema');
+const AuthInputFieldsSchema = require('./AuthInputFieldsSchema');
+const AuthOutputFieldsSchema = require('./AuthOutputFieldsSchema');
 const FunctionSchema = require('./FunctionSchema');
 const RequestSchema = require('./RequestSchema');
 
@@ -32,17 +33,17 @@ module.exports = makeSchema(
       fields: {
         description:
           '**DEPRECATED: use inputFields/outputFields instead** fields requested from the user before they connect the app.',
-        $ref: AuthFieldsSchema.id,
+        $ref: AuthInputFieldsSchema.id,
       },
       inputFields: {
         description:
           'Fields requested from the user before they connect the app.',
-        $ref: AuthFieldsSchema.id,
+        $ref: AuthInputFieldsSchema.id,
       },
       outputFields: {
         description:
           'Fields that will be returned by the app after successful authentication.',
-        $ref: AuthFieldsSchema.id,
+        $ref: AuthOutputFieldsSchema.id,
       },
       connectionLabel: {
         description:
@@ -145,7 +146,8 @@ module.exports = makeSchema(
     ],
   },
   [
-    AuthFieldsSchema,
+    AuthInputFieldsSchema,
+    AuthOutputFieldsSchema,
     FunctionSchema,
     RequestSchema,
     AuthenticationBasicConfigSchema,

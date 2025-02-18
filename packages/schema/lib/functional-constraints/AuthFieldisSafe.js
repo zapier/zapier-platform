@@ -2,8 +2,10 @@
 
 const jsonschema = require('jsonschema');
 
-const AUTH_FIELD_ID = '/AuthFieldSchema';
-const AUTH_FIELDS_ID = '/AuthFieldsSchema';
+const AUTH_INPUT_FIELD_ID = '/AuthInputFieldSchema';
+const AUTH_INPUT_FIELDS_ID = '/AuthInputFieldsSchema';
+const AUTH_OUTPUT_FIELD_ID = '/AuthOutputFieldSchema';
+const AUTH_OUTPUT_FIELDS_ID = '/AuthOutputFieldsSchema';
 
 const FORBIDDEN_KEYS = [
   'access_token',
@@ -58,7 +60,14 @@ const checkAuthField = (field) => {
 module.exports = (definition, mainSchema) => {
   const errors = [];
   // Done to validate anti-examples declaratively defined in the schema
-  if ([AUTH_FIELD_ID, AUTH_FIELDS_ID].includes(mainSchema.id)) {
+  if (
+    [
+      AUTH_INPUT_FIELD_ID,
+      AUTH_INPUT_FIELDS_ID,
+      AUTH_OUTPUT_FIELD_ID,
+      AUTH_OUTPUT_FIELDS_ID,
+    ].includes(mainSchema.id)
+  ) {
     const definitions = Array.isArray(definition) ? definition : [definition];
     definitions.forEach((field, index) => {
       checkAuthField(field).forEach((err) => {

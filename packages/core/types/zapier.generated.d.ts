@@ -265,9 +265,9 @@ export interface Field {
  * * `dynamic` & `dict`
  * * `dynamic` & `choices`
  *
- * [Docs: AuthFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldSchema)
+ * [Docs: AuthInputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthInputFieldSchema)
  */
-export interface AuthField {
+export interface AuthInputField {
   /** A unique machine readable key for this value (IE: "fname"). */
   key: string;
 
@@ -299,7 +299,7 @@ export interface AuthField {
    *
    * @minItems 1
    */
-  children?: AuthField[];
+  children?: AuthInputField[];
 
   /** Is this field a key/value input? */
   dict?: boolean;
@@ -320,17 +320,73 @@ export interface AuthField {
   choices?: FieldChoices;
 
   /**
-   * Is this field automatically populated (and hidden from the user)?
-   * Note: Only OAuth and Session Auth support fields with this key.
-   */
-  computed?: boolean;
-
-  /**
    * Useful when you expect the input to be part of a longer string.
    * Put "{{input}}" in place of the user's input (IE:
    * "https://{{input}}.yourdomain.com").
    */
   inputFormat?: string;
+
+  /**
+   * Indicates if this authentication field is safe to e.g. be stored
+   * without encryption or displayed (not a secret).
+   */
+  isNoSecret?: boolean;
+  [k: string]: unknown;
+}
+
+/**
+ * Field schema specialized for authentication fields. In addition
+ * to the requirements below, the following keys are mutually
+ * exclusive:
+ *
+ * * `children` & `list`
+ * * `children` & `dict`
+ * * `children` & `type`
+ * * `children` & `placeholder`
+ * * `children` & `helpText`
+ * * `children` & `default`
+ * * `dict` & `list`
+ * * `dynamic` & `dict`
+ * * `dynamic` & `choices`
+ *
+ * [Docs: AuthOutputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthOutputFieldSchema)
+ */
+export interface AuthOutputField {
+  /** A unique machine readable key for this value (IE: "fname"). */
+  key: string;
+
+  /** A human readable label for this value (IE: "First Name"). */
+  label?: string;
+
+  /** The type of this value used to be. */
+  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'password';
+
+  /** If this value is required or not. This defaults to `true`. */
+  required?: boolean;
+
+  /**
+   * A default value that is saved the first time a Zap is created.
+   */
+  default?: string;
+
+  /**
+   * Acts differently when used in inputFields vs. when used in
+   * outputFields. In inputFields: Can a user provide multiples of
+   * this field? In outputFields: Does this field return an array of
+   * items of type `type`?
+   */
+  list?: boolean;
+
+  /**
+   * An array of child fields that define the structure of a
+   * sub-object for this field. Usually used for line items.
+   *
+   * @minItems 1
+   */
+  children?: AuthOutputField[];
+
+  /** Is this field a key/value input? */
+  dict?: boolean;
 
   /**
    * Indicates if this authentication field is safe to e.g. be stored
@@ -502,9 +558,16 @@ export interface RedirectRequest {
 /**
  * An array or collection of authentication fields.
  *
- * [Docs: AuthFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldsSchema)
+ * [Docs: AuthInputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthInputFieldsSchema)
  */
-export type AuthFields = AuthField[];
+export type AuthInputFields = AuthInputField[];
+
+/**
+ * An array or collection of authentication fields.
+ *
+ * [Docs: AuthOutputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthOutputFieldsSchema)
+ */
+export type AuthOutputFields = AuthOutputField[];
 
 /**
  * Config for Basic Authentication. No extra properties are required
@@ -1765,16 +1828,16 @@ export interface Authentication {
    * **DEPRECATED: use inputFields/outputFields instead** fields
    * requested from the user before they connect the app.
    */
-  fields?: AuthFields;
+  fields?: AuthInputFields;
 
   /** Fields requested from the user before they connect the app. */
-  inputFields?: AuthFields;
+  inputFields?: AuthInputFields;
 
   /**
    * Fields that will be returned by the app after successful
    * authentication.
    */
-  outputFields?: AuthFields;
+  outputFields?: AuthOutputFields;
 
   /**
    * A string with variables, function, or request that returns the
