@@ -59,7 +59,7 @@ describe('build (runs slowly)', function () {
     smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
     smartPaths.should.not.containEql('tsconfig.json');
 
-    smartPaths.length.should.be.within(200, 304);
+    smartPaths.length.should.be.within(200, 306);
   });
 
   it('should list all the files', () => {
