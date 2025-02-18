@@ -12,6 +12,13 @@ module.exports = makeSchema(
     type: 'object',
     properties: {
       ...FieldSchema.schema.properties,
+      children: {
+        type: 'array',
+        items: { $ref: '/AuthFieldSchema' },
+        description:
+          'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
+        minItems: 1,
+      },
       helpText: {
         description:
           'A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.',
