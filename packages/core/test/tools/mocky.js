@@ -51,10 +51,10 @@ const mockRpcGetPresignedPostCall = (key) => {
     });
 };
 
-const mockRpcFail = (error) => {
+const mockRpcFail = (error, status = 400) => {
   nock(FAKE_ZAPIER_URL)
     .post(RPC_URL_PATH)
-    .reply(400, (uri, requestBody) => {
+    .reply(status, (uri, requestBody) => {
       const id = JSON.parse(requestBody).id;
       return { error, id };
     });
