@@ -33,7 +33,7 @@ const FORBIDDEN_KEYS = [
 const isSensitiveKey = (key = '') =>
   FORBIDDEN_KEYS.some((forbidden) => key.toLowerCase().includes(forbidden));
 
-const checkAuthField = (field) => {
+const checkAuthField = (field, mainSchema) => {
   const errors = [];
 
   // if the field key contains any forbidden substring (case-insensitive),
@@ -46,7 +46,7 @@ const checkAuthField = (field) => {
       new jsonschema.ValidationError(
         `cannot set isNoSecret as true for the sensitive key "${field.key}".`,
         field,
-        '/AuthFieldSchema',
+        'instance.schema',
         'instance.field',
         'sensitive',
         'field',
@@ -70,8 +70,9 @@ module.exports = (definition, mainSchema) => {
   ) {
     const definitions = Array.isArray(definition) ? definition : [definition];
     definitions.forEach((field, index) => {
-      checkAuthField(field).forEach((err) => {
+      checkAuthField(field, mainSchema).forEach((err) => {
         err.property = `instance[${index}]`;
+        err.schema = mainSchema.id;
         err.stack = err.stack.replace('instance.field', err.property);
         errors.push(err);
       });
@@ -85,7 +86,8 @@ module.exports = (definition, mainSchema) => {
 
   if (definition.authentication.inputFields) {
     definition.authentication.inputFields.forEach((field, index) => {
-      checkAuthField(field).forEach((err) => {
+      checkAuthField(field, mainSchema).forEach((err) => {
+        err.schema = AUTH_INPUT_FIELD_ID;
         err.property = `instance.authentication.inputFields[${index}]`;
         err.stack = err.stack.replace('instance.field', err.property);
         errors.push(err);
@@ -94,8 +96,8 @@ module.exports = (definition, mainSchema) => {
   }
   if (definition.authentication.outputFields) {
     definition.authentication.outputFields.forEach((field, index) => {
-      checkAuthField(field).forEach((err) => {
-        err.property = `instance.authentication.outputFields[${index}]`;
+      checkAuthField(field, mainSchema).forEach((err) => {
+        err.schema = AUTH_OUTPUT_FIELD_ID;
         err.stack = err.stack.replace('instance.field', err.property);
         errors.push(err);
       });

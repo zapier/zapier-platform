@@ -284,7 +284,6 @@ describe('app', () => {
       // Expect at least one error because "password" can't have isNoSecret = true
       results.errors.should.have.length(1);
       should(results.valid).eql(false);
-
       const [error] = results.errors;
       error.name.should.equal('sensitive');
       error.stack.should.eql(
