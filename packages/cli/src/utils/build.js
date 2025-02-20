@@ -162,6 +162,7 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
 const makeZip = async (dir, zipPath, disableDependencyDetection) => {
   const entryPoints = [
     path.resolve(dir, 'zapierwrapper.js'),
+    // TODO do not hardcode index.js here!
     path.resolve(dir, 'index.js'),
   ];
 
@@ -398,6 +399,12 @@ const _buildFunc = async ({
     path.join(tmpDir, 'zapierwrapper.js'),
     zapierWrapperBuf.toString(),
   );
+
+  // copy root directory to node_modules, excluding root directory itself
+  // this allows the import in _appCommandZapierWrapper to succeed
+  await copyDir(wdir, path.join(tmpDir, 'node_modules', path.basename(wdir)), {
+    filter: (src) => src !== wdir,
+  });
 
   if (printProgress) {
     endSpinner();

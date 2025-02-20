@@ -2,6 +2,6 @@
 import path from 'node:path';
 import zapier from 'zapier-platform-core';
 
-const appPath = path.resolve(process.cwd(), 'index.js');
+const appPath = path.basename(process.cwd());
 
 export const handler = zapier.createAppHandler(appPath);
