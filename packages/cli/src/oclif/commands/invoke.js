@@ -980,7 +980,7 @@ class InvokeCommand extends BaseCommand {
       );
     }
     const authChoices = auths.map((auth) => ({
-      name: `${auth.title} (${auth.version}) (ID: ${auth.id})`,
+      name: `${auth.title} | ${auth.app_version} | ID: ${auth.id}`,
       value: auth.id,
     }));
     return this.promptWithList(
@@ -991,8 +991,10 @@ class InvokeCommand extends BaseCommand {
   }
 
   async perform() {
+    let authId = this.flags['authentication-id'];
+
     const dotenvResult = dotenv.config({ override: true });
-    if (_.isEmpty(dotenvResult.parsed)) {
+    if (!authId && _.isEmpty(dotenvResult.parsed)) {
       console.warn(
         'The .env file does not exist or is empty. ' +
           'You may need to set some environment variables in there if your code uses process.env.',
@@ -1051,7 +1053,6 @@ class InvokeCommand extends BaseCommand {
     const appId = (await getLinkedAppConfig())?.id;
     const deployKey = (await readCredentials(false))[AUTH_KEY];
 
-    let authId = this.flags['authentication-id'];
     if (authId === '-' || authId === '') {
       if (this.nonInteractive) {
         throw new Error(
@@ -1293,6 +1294,10 @@ InvokeCommand.flags = buildFlags({
       char: 'a',
       description:
         'Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/connections or specify \'-\' to interactively select one from your available authentications. When specified, the code will be still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.',
+    }),
+    inspect: Flags.boolean({
+      description:
+        'Add --inspect flag when running Node.js. This will enable the Node.js inspector and you can use Chrome DevTools to set breakpoints and debug your code.',
     }),
   },
 });
