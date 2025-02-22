@@ -64,6 +64,7 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
     metafile: true,
     logLevel: 'warning',
     external: ['../test/userapp'],
+    format: 'esm',
   });
 
   return Object.keys(result.metafile.inputs).map((path) =>
@@ -160,16 +161,14 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
 };
 
 const makeZip = async (dir, zipPath, disableDependencyDetection) => {
-  const entryPoints = [
-    path.resolve(dir, 'zapierwrapper.js'),
-    path.resolve(dir, 'index.js'),
-  ];
+  const { appPath } = await import(`${dir}/zapierwrapper.mjs`);
+  const entryPoints = [path.resolve(dir, 'zapierwrapper.mjs'), appPath];
 
   let paths;
 
   const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
-    requiredFiles({ cwd: dir, entryPoints: entryPoints }),
+    requiredFiles({ cwd: dir, entryPoints }),
     getLinkedAppConfig(dir).catch(() => ({})),
   ]);
 
@@ -201,12 +200,10 @@ const makeSourceZip = async (dir, zipPath) => {
 };
 
 // Similar to utils.appCommand, but given a ready to go app
-// with a different location and ready to go zapierwrapper.js.
-const _appCommandZapierWrapper = (dir, event) => {
-  const app = require(`${dir}/zapierwrapper.js`);
-  event = Object.assign({}, event, {
-    calledFromCli: true,
-  });
+// with a different location and ready to go zapierwrapper.mjs.
+const _appCommandZapierWrapper = async (dir, event) => {
+  const app = await import(`${dir}/zapierwrapper.mjs`);
+  event = { ...event, calledFromCli: true };
   return new Promise((resolve, reject) => {
     app.handler(event, {}, (err, resp) => {
       if (err) {
@@ -383,7 +380,7 @@ const _buildFunc = async ({
 
   if (printProgress) {
     endSpinner();
-    startSpinner('Applying entry point file');
+    startSpinner('Applying entry point files');
   }
 
   // TODO: should this routine for include exist elsewhere?
@@ -393,11 +390,11 @@ const _buildFunc = async ({
       'node_modules',
       constants.PLATFORM_PACKAGE,
       'include',
-      'zapierwrapper.js',
+      'zapierwrapper.mjs',
     ),
   );
   await writeFile(
-    path.join(tmpDir, 'zapierwrapper.js'),
+    path.join(tmpDir, 'zapierwrapper.mjs'),
     zapierWrapperBuf.toString(),
   );
 

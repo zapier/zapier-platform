@@ -161,28 +161,30 @@ const getAppRawOverride = (rpc, appRawOverride) => {
 
 // Sometimes tests want to pass in an app object defined directly in the test,
 // so allow for that, and an event.appRawOverride for "buildless" apps.
-const loadApp = (event, rpc, appRawOrPath) => {
-  return new ZapierPromise((resolve, reject) => {
-    const appRaw = _.isString(appRawOrPath)
-      ? require(appRawOrPath)
-      : appRawOrPath;
+const loadApp = async (event, rpc, appRawOrPath) => {
+  let appRaw;
+  if (typeof appRawOrPath === 'string') {
+    appRaw = await import(appRawOrPath);
+    if (appRaw.default) {
+      appRaw = appRaw.default;
+    }
+  } else {
+    appRaw = appRawOrPath;
+  }
 
-    if (event && event.appRawOverride) {
-      if (
-        Array.isArray(event.appRawOverride) &&
-        event.appRawOverride.length > 1 &&
-        !event.appRawOverride[0]
-      ) {
-        event.appRawOverride[0] = appRaw;
-      }
-
-      return getAppRawOverride(rpc, event.appRawOverride)
-        .then((appRawOverride) => resolve(appRawOverride))
-        .catch((err) => reject(err));
+  if (event && event.appRawOverride) {
+    if (
+      Array.isArray(event.appRawOverride) &&
+      event.appRawOverride.length > 1 &&
+      !event.appRawOverride[0]
+    ) {
+      event.appRawOverride[0] = appRaw;
     }
 
-    return resolve(appRaw);
-  });
+    return getAppRawOverride(rpc, event.appRawOverride);
+  }
+
+  return appRaw;
 };
 
 const createLambdaHandler = (appRawOrPath) => {

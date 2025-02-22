@@ -111,8 +111,9 @@ describe('build (runs slowly)', function () {
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
     fs.outputFileSync(
-      path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')",
+      path.join(tmpProjectDir, 'zapierwrapper.mjs'),
+      `console.log('hello!');
+      export const appPath = '${tmpProjectDir}/index.js';`,
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
@@ -153,8 +154,9 @@ describe('build (runs slowly)', function () {
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
     fs.outputFileSync(
-      path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')",
+      path.join(tmpProjectDir, 'zapierwrapper.mjs'),
+      `console.log('hello!')
+      export const appPath = '${tmpProjectDir}/index.js';`,
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
@@ -196,8 +198,9 @@ describe('build (runs slowly)', function () {
     const tmpZapierAppPath = path.join(tmpProjectDir, '.zapierapprc');
 
     fs.outputFileSync(
-      path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')",
+      path.join(tmpProjectDir, 'zapierwrapper.mjs'),
+      `console.log('hello!')
+      export const appPath = '${tmpProjectDir}/index.js';`,
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.outputFileSync(tmpReadmePath, 'README');
@@ -251,8 +254,9 @@ describe('build (runs slowly)', function () {
     const tmpEnvironmentPath = path.join(tmpProjectDir, '.environment');
 
     fs.outputFileSync(
-      path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')",
+      path.join(tmpProjectDir, 'zapierwrapper.mjs'),
+      `console.log('hello!')
+      export const appPath = '${tmpProjectDir}/index.js';`,
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
