@@ -157,6 +157,25 @@ describe('smoke tests - setup will take some time', function () {
     fs.existsSync(appPackageJson).should.be.true();
   });
 
+  it('zapier init -t minimal -m esm', () => {
+    runCommand(
+      context.cliBin,
+      ['init', 'awesome-esm-app', '-t', 'minimal', '-m', 'esm'],
+      {
+        cwd: context.workdir,
+      },
+    );
+
+    const newAppDir = path.join(context.workdir, 'awesome-esm-app');
+    fs.existsSync(newAppDir).should.be.true();
+
+    const appIndexJs = path.join(newAppDir, 'index.js');
+    const appPackageJson = path.join(newAppDir, 'package.json');
+    // TODO add a check for the module type
+    fs.existsSync(appIndexJs).should.be.true();
+    fs.existsSync(appPackageJson).should.be.true();
+  });
+
   it('zapier scaffold trigger neat (JS)', () => {
     runCommand(context.cliBin, ['init', 'scaffold-town', '-t', 'minimal'], {
       cwd: context.workdir,

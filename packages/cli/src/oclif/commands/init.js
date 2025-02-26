@@ -30,6 +30,13 @@ InitCommand.flags = buildFlags({
       description: 'The template to start your integration with.',
       options: TEMPLATE_CHOICES,
     }),
+    module: Flags.string({
+      char: 'm',
+      description:
+        'Choose module type: CommonJS or ES Modules. Only enabled for Typescript and Minimal templates.',
+      options: ['commonjs', 'esm'],
+      default: 'commonjs',
+    }),
   },
 });
 InitCommand.args = {
@@ -42,6 +49,7 @@ InitCommand.args = {
 InitCommand.examples = [
   'zapier init myapp',
   'zapier init ./path/myapp --template oauth2',
+  'zapier init ./path/myapp --template minimal --module esm',
 ];
 InitCommand.description = `Initialize a new Zapier integration with a project template.
 
