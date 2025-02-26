@@ -1,3 +1,26 @@
+## 16.3.1
+
+_released `2025-02-26`_
+
+### cli
+
+- :bug: Fix invoke auth label ([#969](https://github.com/zapier/zapier-platform/pull/969))
+
+### core
+
+None!
+
+### schema
+
+None!
+
+### misc
+
+- :nail_care: OpenAI example app ([#971](https://github.com/zapier/zapier-platform/pull/971))
+- :hammer: Bump vitest from 1.6.0 to 1.6.1 in /schema-to-ts ([#967](https://github.com/zapier/zapier-platform/pull/967))
+- :hammer: Bump vitest from 1.6.0 to 1.6.1 ([#966](https://github.com/zapier/zapier-platform/pull/966))
+- :hammer: Bump vite from 5.4.11 to 5.4.14 ([#955](https://github.com/zapier/zapier-platform/pull/955))
+
 ## 16.3.0
 
 _released `2025-01-30`_
