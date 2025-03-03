@@ -337,7 +337,7 @@ export interface AuthField {
   label?: string;
 
   /** The type of this value used to be. */
-  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'password';
+  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'copy' | 'password';
 
   /** If this value is required or not. This defaults to `true`. */
   required?: boolean;
