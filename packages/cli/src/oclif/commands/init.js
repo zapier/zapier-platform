@@ -10,12 +10,12 @@ const { TEMPLATE_CHOICES, ProjectGenerator } = require('../../generators');
 class InitCommand extends BaseCommand {
   async perform() {
     const { path } = this.args;
-    const { template } = this.flags;
+    const { template, module } = this.flags;
 
     const env = yeoman.createEnv();
     env.registerStub(ProjectGenerator, 'zapier:integration');
 
-    await env.run('zapier:integration', { path, template });
+    await env.run('zapier:integration', { path, template, module });
 
     this.log();
     this.log(`A new integration has been created in directory "${path}".`);
@@ -35,7 +35,6 @@ InitCommand.flags = buildFlags({
       description:
         'Choose module type: CommonJS or ES Modules. Only enabled for Typescript and Minimal templates.',
       options: ['commonjs', 'esm'],
-      default: 'commonjs',
     }),
   },
 });

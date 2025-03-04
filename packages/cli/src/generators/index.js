@@ -220,13 +220,12 @@ const writeForStandaloneTypeScriptTemplate = (gen) => {
   if (gen.options.module === 'esm') {
     gen.fs.write(
       gen.destinationPath('index.js'),
-      "module.exports = require('./dist').default;",
+      'export { default } from "./dist/index.js";',
     );
   } else {
-    // TODO test that this works
     gen.fs.write(
       gen.destinationPath('index.js'),
-      'export { default } from "./dist";',
+      "module.exports = require('./dist').default;",
     );
   }
 
@@ -282,7 +281,6 @@ class ProjectGenerator extends Generator {
       this.options.template = this.answers.template;
     }
 
-    // TODO make sure the default doesn't make this irrelevant
     if (
       ESM_SUPPORTED_TEMPLATES.includes(this.options.template) &&
       !this.options.module

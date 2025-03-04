@@ -174,6 +174,14 @@ describe('smoke tests - setup will take some time', function () {
     // TODO add a check for the module type
     fs.existsSync(appIndexJs).should.be.true();
     fs.existsSync(appPackageJson).should.be.true();
+
+    const pkg = JSON.parse(
+      fs.readFileSync(appPackageJson, { encoding: 'utf8' }),
+    );
+    pkg.name.should.containEql('awesome-esm-app');
+    pkg.type.should.containEql('module');
+    pkg.exports.import.should.containEql('./index.js');
+    pkg.exports.require.should.containEql('./index.js');
   });
 
   it('zapier scaffold trigger neat (JS)', () => {
