@@ -143,10 +143,14 @@ describe('smoke tests - setup will take some time', function () {
       .should.be.true();
   });
 
-  it('zapier init -t minimal', () => {
-    runCommand(context.cliBin, ['init', 'awesome-app', '-t', 'minimal'], {
-      cwd: context.workdir,
-    });
+  it('zapier init -t minimal -m commonjs', () => {
+    runCommand(
+      context.cliBin,
+      ['init', 'awesome-app', '-t', 'minimal', '-m', 'commonjs'],
+      {
+        cwd: context.workdir,
+      },
+    );
 
     const newAppDir = path.join(context.workdir, 'awesome-app');
     fs.existsSync(newAppDir).should.be.true();
@@ -185,9 +189,13 @@ describe('smoke tests - setup will take some time', function () {
   });
 
   it('zapier scaffold trigger neat (JS)', () => {
-    runCommand(context.cliBin, ['init', 'scaffold-town', '-t', 'minimal'], {
-      cwd: context.workdir,
-    });
+    runCommand(
+      context.cliBin,
+      ['init', 'scaffold-town', '-t', 'minimal', '-m', 'commonjs'],
+      {
+        cwd: context.workdir,
+      },
+    );
 
     const newAppDir = path.join(context.workdir, 'scaffold-town');
     fs.existsSync(newAppDir).should.be.true();
@@ -222,7 +230,7 @@ describe('smoke tests - setup will take some time', function () {
   it('zapier scaffold trigger neat (TS)', () => {
     runCommand(
       context.cliBin,
-      ['init', 'scaffold-town-ts', '-t', 'typescript'],
+      ['init', 'scaffold-town-ts', '-t', 'typescript', '-m', 'commonjs'],
       { cwd: context.workdir },
     );
 
