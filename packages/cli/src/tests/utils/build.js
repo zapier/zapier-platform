@@ -125,7 +125,6 @@ describe('build (runs slowly)', function () {
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
       .then((files) => {
-        debugger;
         files.length.should.equal(2);
 
         const indexFile = files.find(
