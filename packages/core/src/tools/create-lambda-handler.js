@@ -159,16 +159,15 @@ const getAppRawOverride = (rpc, appRawOverride) => {
   });
 };
 
-// Sometimes tests want to pass in an app object defined directly in the test,
-// so allow for that, and an event.appRawOverride for "buildless" apps.
 const loadApp = async (event, rpc, appRawOrPath) => {
   let appRaw;
   if (typeof appRawOrPath === 'string') {
-    appRaw = await import(appRawOrPath);
-    if (appRaw.default) {
-      appRaw = appRaw.default;
-    }
+    // CommonJS route - most CLI integrations go through here.
+    const appPath = appRawOrPath;
+    appRaw = require(appPath);
   } else {
+    // ESM route - CLI integrations that use ESM go through here.
+    // Some tests and UI "buildless" integrations also use this route.
     appRaw = appRawOrPath;
   }
 
