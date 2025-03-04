@@ -388,11 +388,9 @@ const _buildFunc = async ({
     startSpinner('Applying entry point files');
   }
 
-  // TODO: should this routine for include exist elsewhere?
-
   const wrapperFilename = isESM(tmpDir)
     ? 'zapierwrapper.mjs'
-    : 'zapierwrapper.cjs';
+    : 'zapierwrapper.js';
   const zapierWrapperBuf = await readFile(
     path.join(
       tmpDir,
