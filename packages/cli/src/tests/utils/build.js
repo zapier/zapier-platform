@@ -111,9 +111,8 @@ describe('build (runs slowly)', function () {
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
     fs.outputFileSync(
-      path.join(tmpProjectDir, 'zapierwrapper.mjs'),
-      `console.log('hello!');
-      export const appPath = '${tmpProjectDir}/index.js';`,
+      path.join(tmpProjectDir, 'zapierwrapper.js'),
+      "require('./index');",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
@@ -126,6 +125,7 @@ describe('build (runs slowly)', function () {
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
       .then((files) => {
+        debugger;
         files.length.should.equal(2);
 
         const indexFile = files.find(
@@ -154,9 +154,8 @@ describe('build (runs slowly)', function () {
     const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
 
     fs.outputFileSync(
-      path.join(tmpProjectDir, 'zapierwrapper.mjs'),
-      `console.log('hello!')
-      export const appPath = '${tmpProjectDir}/index.js';`,
+      path.join(tmpProjectDir, 'zapierwrapper.js'),
+      "require('./index');",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
@@ -198,9 +197,8 @@ describe('build (runs slowly)', function () {
     const tmpZapierAppPath = path.join(tmpProjectDir, '.zapierapprc');
 
     fs.outputFileSync(
-      path.join(tmpProjectDir, 'zapierwrapper.mjs'),
-      `console.log('hello!')
-      export const appPath = '${tmpProjectDir}/index.js';`,
+      path.join(tmpProjectDir, 'zapierwrapper.js'),
+      "require('./index');",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.outputFileSync(tmpReadmePath, 'README');
@@ -254,9 +252,8 @@ describe('build (runs slowly)', function () {
     const tmpEnvironmentPath = path.join(tmpProjectDir, '.environment');
 
     fs.outputFileSync(
-      path.join(tmpProjectDir, 'zapierwrapper.mjs'),
-      `console.log('hello!')
-      export const appPath = '${tmpProjectDir}/index.js';`,
+      path.join(tmpProjectDir, 'zapierwrapper.js'),
+      "require('./index');",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
