@@ -75,13 +75,13 @@ const writeTypeScriptPackageJson = (gen, packageJsonExtension) => {
     gen.options.module === 'esm'
       ? {
           exports: {
-            import: './src/index.js',
-            require: './src/index.js',
+            import: './dist/index.js',
+            require: './dist/index.js',
           },
           type: 'module',
         }
       : {
-          main: 'src/index.js',
+          main: 'index.js',
         };
 
   const fullExtension = merge(moduleExtension, packageJsonExtension);
@@ -217,20 +217,11 @@ const writeForStandaloneTypeScriptTemplate = (gen) => {
 
   writeTypeScriptPackageJson(gen, packageJsonExtension);
 
-  if (gen.options.module === 'esm') {
-    gen.fs.write(
-      gen.destinationPath('index.js'),
-      'export { default } from "./dist/index.js";',
-    );
-  } else {
-    gen.fs.write(
-      gen.destinationPath('index.js'),
-      "module.exports = require('./dist').default;",
-    );
-  }
+  const templatePath =
+    gen.options.module === 'esm' ? 'typescript-esm' : gen.options.template;
 
   gen.fs.copy(
-    gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
+    gen.templatePath(templatePath, '**', '*.{js,json,ts}'),
     gen.destinationPath(),
   );
 };

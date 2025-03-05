@@ -2,7 +2,7 @@ import type { App } from 'zapier-platform-core';
 import pkg from 'zapier-platform-core';
 const { version: platformVersion } = pkg;
 
-import packageJson from '../package.json';
+import packageJson from '../package.json' assert { type: 'json' };
 
 import MovieCreate from './creates/movie.js';
 import MovieTrigger from './triggers/movie.js';

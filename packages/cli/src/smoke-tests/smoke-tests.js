@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
+const { captureOutput } = require('@oclif/test');
 const { promisify } = require('util');
 
 require('should');
@@ -186,6 +187,20 @@ describe('smoke tests - setup will take some time', function () {
     pkg.type.should.containEql('module');
     pkg.exports.import.should.containEql('./index.js');
     pkg.exports.require.should.containEql('./index.js');
+  });
+
+  it('should error with a mismatched module type', async () => {
+    await captureOutput(async function () {
+      const { error } = await runCommand(context.cliBin, [
+        'init',
+        'error-app',
+        '-t',
+        'basic-auth',
+        '-m',
+        'esm',
+      ]);
+      error.message.should.containEql(`ESM is not supported for this template`);
+    });
   });
 
   it('zapier scaffold trigger neat (JS)', () => {
