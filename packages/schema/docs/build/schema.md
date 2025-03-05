@@ -172,11 +172,11 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
-`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'password'`) | The type of this value used to be.
+`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'copy'`, `'password'`) | The type of this value used to be.
 `required` | no | `boolean` | If this value is required or not. This defaults to `true`.
 `default` | no | `string` | A default value that is saved the first time a Zap is created.
 `list` | no | `boolean` | Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?
-`children` | no | `array`[undefined] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
+`children` | no | `array`[[/AuthFieldSchema](#authfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
 `placeholder` | no | `string` | An example value that is not saved.
@@ -1229,7 +1229,7 @@ Key | Required | Type | Description
 `required` | no | `boolean` | If this value is required or not.
 `default` | no | `string` | A default value that is saved the first time a Zap is created.
 `list` | no | `boolean` | Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?
-`children` | no | `array`[undefined] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
+`children` | no | `array`[[/InputFieldSchema](#inputfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
 `dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.
@@ -1265,7 +1265,7 @@ Key | Required | Type | Description
 * `{ key: 'abc', choices: [ 3 ] }` - _Invalid value for key: choices (if an array, must be of either string or FieldChoiceWithLabelSchema)_
 * `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }` - _Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)_
 * `{ key: 'abc', choices: 'mobile' }` - _Invalid value for key: choices (must be either object or array)_
-* `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of FieldSchema)_
+* `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of InputFieldSchema)_
 
 -----
 
@@ -1375,7 +1375,7 @@ Key | Required | Type | Description
 `required` | no | `boolean` | If this value is required or not.
 `default` | no | `string` | A default value that is saved the first time a Zap is created.
 `list` | no | `boolean` | Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?
-`children` | no | `array`[undefined] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
+`children` | no | `array`[[/OutputFieldSchema](#outputfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?
 `primary` | no | `boolean` | Use this field as part of the primary key for deduplication. You can set multiple fields as "primary", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).
 `steadyState` | no | `boolean` | Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.
@@ -1396,7 +1396,7 @@ Key | Required | Type | Description
 * `{ key: 'abc', choices: [ 3 ] }` - _Invalid value for key: choices (if an array, must be of either string or FieldChoiceWithLabelSchema)_
 * `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }` - _Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)_
 * `{ key: 'abc', choices: 'mobile' }` - _Invalid value for key: choices (must be either object or array)_
-* `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of FieldSchema)_
+* `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of OutputFieldSchema)_
 
 -----
 

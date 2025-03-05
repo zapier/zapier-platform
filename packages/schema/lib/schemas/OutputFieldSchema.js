@@ -11,6 +11,13 @@ module.exports = makeSchema(
     required: ['key'],
     properties: {
       ...FieldSchema.schema.properties,
+      children: {
+        type: 'array',
+        items: { $ref: '/OutputFieldSchema' },
+        description:
+          'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
+        minItems: 1,
+      },
       type: {
         description:
           'The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.',
@@ -72,7 +79,7 @@ module.exports = makeSchema(
       {
         example: { key: 'abc', children: ['$func$2$f$'] },
         reason:
-          'Invalid value for key: children (must be array of FieldSchema)',
+          'Invalid value for key: children (must be array of OutputFieldSchema)',
       },
     ],
     additionalProperties: false,
