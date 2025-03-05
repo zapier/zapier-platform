@@ -1232,7 +1232,7 @@ Key | Required | Type | Description
 `children` | no | `array`[[/InputFieldSchema](#inputfieldschema)] | An array of child fields that define the structure of a sub-object for this field. Usually used for line items.
 `dict` | no | `boolean` | Is this field a key/value input?
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
-`dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.
+`dynamic` | no | oneOf([/RefResourceSchema](#refresourceschema), [/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | A reference to a trigger, request, or function that will power a dynamic dropdown.
 `search` | no | [/RefResourceSchema](#refresourceschema) | A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.
 `choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
 `placeholder` | no | `string` | An example value that is not saved.
