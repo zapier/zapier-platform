@@ -60,10 +60,11 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
     entryPoints,
     bundle: true,
     platform: 'node',
-    outdir: './build',
     metafile: true,
     logLevel: 'warning',
     external: ['../test/userapp'],
+    format: 'esm',
+    write: false, // no need to write outfile
   });
 
   return Object.keys(result.metafile.inputs).map((path) =>
@@ -160,16 +161,13 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
 };
 
 const makeZip = async (dir, zipPath, disableDependencyDetection) => {
-  const entryPoints = [
-    path.resolve(dir, 'zapierwrapper.js'),
-    path.resolve(dir, 'index.js'),
-  ];
+  const entryPoints = [path.resolve(dir, 'zapierwrapper.js')];
 
   let paths;
 
   const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
-    requiredFiles({ cwd: dir, entryPoints: entryPoints }),
+    requiredFiles({ cwd: dir, entryPoints }),
     getLinkedAppConfig(dir).catch(() => ({})),
   ]);
 
@@ -202,11 +200,9 @@ const makeSourceZip = async (dir, zipPath) => {
 
 // Similar to utils.appCommand, but given a ready to go app
 // with a different location and ready to go zapierwrapper.js.
-const _appCommandZapierWrapper = (dir, event) => {
-  const app = require(`${dir}/zapierwrapper.js`);
-  event = Object.assign({}, event, {
-    calledFromCli: true,
-  });
+const _appCommandZapierWrapper = async (dir, event) => {
+  const app = await import(`${dir}/zapierwrapper.js`);
+  event = { ...event, calledFromCli: true };
   return new Promise((resolve, reject) => {
     app.handler(event, {}, (err, resp) => {
       if (err) {
@@ -281,6 +277,12 @@ const listWorkspaces = (workspaceRoot) => {
   return (packageJson.workspaces || []).map((relpath) =>
     path.resolve(workspaceRoot, relpath),
   );
+};
+
+const isESM = (cwd) => {
+  // Any other ways that the package can be an ESM package?
+  const pJson = require(path.resolve(cwd, 'package.json'));
+  return pJson.type === 'module';
 };
 
 const _buildFunc = async ({
@@ -383,17 +385,19 @@ const _buildFunc = async ({
 
   if (printProgress) {
     endSpinner();
-    startSpinner('Applying entry point file');
+    startSpinner('Applying entry point files');
   }
 
-  // TODO: should this routine for include exist elsewhere?
+  const wrapperFilename = isESM(tmpDir)
+    ? 'zapierwrapper.mjs'
+    : 'zapierwrapper.js';
   const zapierWrapperBuf = await readFile(
     path.join(
       tmpDir,
       'node_modules',
       constants.PLATFORM_PACKAGE,
       'include',
-      'zapierwrapper.js',
+      wrapperFilename,
     ),
   );
   await writeFile(
