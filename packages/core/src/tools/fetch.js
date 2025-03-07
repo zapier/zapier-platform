@@ -79,6 +79,4 @@ const newFetch = (url, opts) => {
   return responsePromise;
 };
 
-newFetch.Promise = require('./promise');
-
 module.exports = newFetch;

@@ -2,30 +2,30 @@
 
 const createLambdaHandler = require('./create-lambda-handler');
 const resolveMethodPath = require('./resolve-method-path');
-const ZapierPromise = require('./promise');
+// const ZapierPromise = require('./promise');
 const { isFunction } = require('lodash');
 const { genId } = require('./data');
 const { shouldPaginate } = require('./should-paginate');
 
 // Convert a app handler to promise for convenience.
-const promisifyHandler = (handler) => {
-  return (event) => {
-    return new ZapierPromise((resolve, reject) => {
-      handler(event, {}, (err, resp) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(resp);
-        }
-      });
-    });
-  };
-};
+// const promisifyHandler = (handler) => {
+//   return (event) => {
+//     return new ZapierPromise((resolve, reject) => {
+//       handler(event, {}, (err, resp) => {
+//         if (err) {
+//           reject(err);
+//         } else {
+//           resolve(resp);
+//         }
+//       });
+//     });
+//   };
+// };
 
 // A shorthand compatible wrapper for testing.
 const createAppTester = (appRaw, { customStoreKey } = {}) => {
   const handler = createLambdaHandler(appRaw);
-  const createHandlerPromise = promisifyHandler(handler);
+  // const createHandlerPromise = promisifyHandler(handler);
 
   const randomSeed = genId();
 
@@ -73,7 +73,8 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       event.detailedLogToStdout = true;
     }
 
-    return createHandlerPromise(event).then((resp) => {
+    // added the {} so that context wasn't undefined
+    return handler(event, {}).then((resp) => {
       delete appRaw._testRequest; // clear adHocFunc so tests can't affect each other
       return resp.results;
     });

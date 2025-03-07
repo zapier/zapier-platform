@@ -3,7 +3,7 @@
 const _ = require('lodash');
 
 const envelope = require('./tools/envelope');
-const ZapierPromise = require('./tools/promise');
+// const ZapierPromise = require('./tools/promise');
 
 /**
    Applies before and after middleware functions, returning
@@ -46,6 +46,11 @@ const applyMiddleware = (befores, afters, app, options) => {
     extraArgs: [],
   });
 
+  console.log('befores', befores);
+  console.log('afters', afters);
+  console.log('app', app);
+  console.log('options', options);
+
   const ensureEnvelope = (maybeEnvelope) => {
     if (!options.skipEnvelope) {
       // they returned just the results; put them back in the envelope
@@ -55,13 +60,15 @@ const applyMiddleware = (befores, afters, app, options) => {
   };
 
   return (input) => {
-    const context = ZapierPromise.makeContext();
-    const resolve = (val) => ZapierPromise.resolve(val).bind(context);
+    // TODO we need to pass contextify here somehow
+    // const context = ZapierPromise.makeContext();
+    // const resolve = (val) => ZapierPromise.resolve(val).bind(context);
+    const context = {};
 
     const beforeMiddleware = (beforeInput) => {
       return befores.reduce((collector, func) => {
         return collector.then((newInput) => {
-          newInput._addContext = context.addContext;
+          newInput._addContext = context.addContext; // TODO remove
           const args = [newInput].concat(options.extraArgs);
           const result = func.apply(undefined, args);
           if (typeof result !== 'object') {
@@ -69,25 +76,25 @@ const applyMiddleware = (befores, afters, app, options) => {
           }
           return result;
         });
-      }, resolve(beforeInput));
+      }, Promise.resolve(beforeInput));
     };
 
     const afterMiddleware = (output) => {
       return afters.reduce((collector, func) => {
         return collector.then((newOutput) => {
-          newOutput._addContext = context.addContext;
+          newOutput._addContext = context.addContext; // TODO remove
           const args = [newOutput].concat(options.extraArgs);
           const maybePromise = func.apply(undefined, args);
           if (typeof maybePromise !== 'object') {
             throw new Error('Middleware should return an object.');
           }
-          return resolve(maybePromise).then(ensureEnvelope);
+          return Promise.resolve(maybePromise).then(ensureEnvelope);
         });
-      }, resolve(output));
+      }, Promise.resolve(output));
     };
 
     const promise = beforeMiddleware(input).then((newInput) => {
-      return resolve(app(newInput))
+      return Promise.resolve(app(newInput))
         .then(ensureEnvelope)
         .then((output) => {
           output.input = newInput;

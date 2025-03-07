@@ -6,7 +6,6 @@ const addQueryParams = require('./http-middlewares/before/add-query-params');
 const ensureArray = require('./tools/ensure-array');
 const injectInput = require('./http-middlewares/before/inject-input');
 const prepareRequest = require('./http-middlewares/before/prepare-request');
-const ZapierPromise = require('./tools/promise');
 
 const constants = require('./constants');
 
@@ -36,7 +35,7 @@ const executeHttpRequest = (input, options) => {
 const executeInputOutputFields = (inputOutputFields, input) => {
   inputOutputFields = ensureArray(inputOutputFields);
 
-  return ZapierPromise.all(
+  return Promise.all(
     inputOutputFields.map((field) =>
       _.isFunction(field) ? field(input.z, input.bundle) : field,
     ),
@@ -44,7 +43,7 @@ const executeInputOutputFields = (inputOutputFields, input) => {
 };
 
 const executeCallbackMethod = (z, bundle, method) => {
-  return new ZapierPromise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const callback = (err, output) => {
       if (err) {
         reject(err);
