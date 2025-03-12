@@ -1,29 +1,24 @@
 const { findCorePackageDir } = require('./misc');
+const { copyZapierWrapper, deleteZapierWrapper } = require('./zapierwrapper');
 
 const getLocalAppHandler = async () => {
   const corePackageDir = findCorePackageDir();
-  let appRaw, zapier;
+  const appDir = process.cwd();
+  const wrapperPath = await copyZapierWrapper(corePackageDir, appDir);
 
+  let app;
   try {
-    appRaw = await import(`${process.cwd()}/index.js`);
-    zapier = require(corePackageDir);
-  } catch (err) {
-    // this err.stack doesn't give a nice traceback at all :-(
-    // maybe we could do require('syntax-error') in the future
-    return (event, ctx, callback) => callback(err);
+    app = await import(wrapperPath);
+  } finally {
+    await deleteZapierWrapper(appDir);
   }
 
-  if (appRaw && appRaw.default) {
-    appRaw = appRaw.default;
-  }
-
-  const handler = zapier.createAppHandler(appRaw);
   return (event, ctx, callback) => {
     event = {
       ...event,
       calledFromCli: true,
     };
-    handler(event, ctx, callback);
+    app.handler(event, ctx, callback);
   };
 };
 

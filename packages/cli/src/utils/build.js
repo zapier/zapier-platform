@@ -19,13 +19,7 @@ const {
 
 const constants = require('../constants');
 
-const {
-  writeFile,
-  readFile,
-  copyDir,
-  ensureDir,
-  removeDir,
-} = require('./files');
+const { writeFile, copyDir, ensureDir, removeDir } = require('./files');
 
 const {
   prettyJSONstringify,
@@ -40,6 +34,8 @@ const {
   upload: _uploadFunc,
   validateApp,
 } = require('./api');
+
+const { copyZapierWrapper } = require('./zapierwrapper');
 
 const checkMissingAppInfo = require('./check-missing-app-info');
 
@@ -279,12 +275,6 @@ const listWorkspaces = (workspaceRoot) => {
   );
 };
 
-const isESM = (cwd) => {
-  // Any other ways that the package can be an ESM package?
-  const pJson = require(path.resolve(cwd, 'package.json'));
-  return pJson.type === 'module';
-};
-
 const _buildFunc = async ({
   skipNpmInstall = false,
   disableDependencyDetection = false,
@@ -388,22 +378,7 @@ const _buildFunc = async ({
     startSpinner('Applying entry point files');
   }
 
-  const wrapperFilename = isESM(tmpDir)
-    ? 'zapierwrapper.mjs'
-    : 'zapierwrapper.js';
-  const zapierWrapperBuf = await readFile(
-    path.join(
-      tmpDir,
-      'node_modules',
-      constants.PLATFORM_PACKAGE,
-      'include',
-      wrapperFilename,
-    ),
-  );
-  await writeFile(
-    path.join(tmpDir, 'zapierwrapper.js'),
-    zapierWrapperBuf.toString(),
-  );
+  await copyZapierWrapper(corePath, tmpDir);
 
   if (printProgress) {
     endSpinner();
