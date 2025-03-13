@@ -28,6 +28,13 @@ const largeResponseCachePointer = async (output) => {
     output.resultsUrl = url;
     output.results = Array.isArray(output.results) ? [] : {};
   }
+
+  if (size > autostashLimit) {
+    console.log(
+      `Oh no! Payload is ${size}, which is larger than ${autostashLimit}.`
+    );
+  }
+
   return output;
 };
 
