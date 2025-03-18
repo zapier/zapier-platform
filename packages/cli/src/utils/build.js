@@ -55,6 +55,7 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
 
   const result = await esbuild.build({
     entryPoints,
+    outdir: './build',
     bundle: true,
     platform: 'node',
     metafile: true,
@@ -158,10 +159,15 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
 };
 
 const makeZip = async (dir, zipPath, disableDependencyDetection) => {
-  const entryPoints = [
-    path.resolve(dir, 'zapierwrapper.js'),
-    path.resolve(dir, 'index.js'), // For CommonJS integration
-  ];
+  const entryPoints = [path.resolve(dir, 'zapierwrapper.js')];
+
+  const indexPath = path.resolve(dir, 'index.js');
+  if (fs.existsSync(indexPath)) {
+    // Necessary for CommonJS integrations. The zapierwrapper they use require()
+    // the index.js file using a variable. esbuild can't detect it, so we need
+    // to add it here specifically.
+    entryPoints.push(indexPath);
+  }
 
   let paths;
 
