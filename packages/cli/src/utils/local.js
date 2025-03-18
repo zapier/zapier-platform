@@ -1,9 +1,9 @@
 const { findCorePackageDir, runCommand } = require('./misc');
 const { copyZapierWrapper, deleteZapierWrapper } = require('./zapierwrapper');
 
-const getLocalAppHandler = async () => {
+const getLocalAppHandler = async (appDir, shouldDeleteWrapper) => {
+  appDir = appDir || process.cwd();
   const corePackageDir = findCorePackageDir();
-  const appDir = process.cwd();
   const wrapperPath = await copyZapierWrapper(corePackageDir, appDir);
 
   let app;
@@ -22,7 +22,9 @@ const getLocalAppHandler = async () => {
     }
     throw err;
   } finally {
-    await deleteZapierWrapper(appDir);
+    if (shouldDeleteWrapper) {
+      await deleteZapierWrapper(appDir);
+    }
   }
 
   return (event, ctx, callback) => {
@@ -35,8 +37,8 @@ const getLocalAppHandler = async () => {
 };
 
 // Runs a local app command (./index.js) like {command: 'validate'};
-const localAppCommand = async (event) => {
-  const handler = await getLocalAppHandler();
+const localAppCommand = async (event, appDir, shouldDeleteWrapper = false) => {
+  const handler = await getLocalAppHandler(appDir, shouldDeleteWrapper);
   return new Promise((resolve, reject) => {
     handler(event, {}, (err, resp) => {
       if (err) {

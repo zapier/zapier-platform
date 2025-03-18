@@ -41,6 +41,7 @@ const checkMissingAppInfo = require('./check-missing-app-info');
 
 const { runCommand, isWindows, findCorePackageDir } = require('./misc');
 const { respectGitIgnore } = require('./ignore');
+const { localAppCommand } = require('./local');
 
 const debug = require('debug')('zapier:build');
 
@@ -157,7 +158,10 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
 };
 
 const makeZip = async (dir, zipPath, disableDependencyDetection) => {
-  const entryPoints = [path.resolve(dir, 'zapierwrapper.js')];
+  const entryPoints = [
+    path.resolve(dir, 'zapierwrapper.js'),
+    path.resolve(dir, 'index.js'), // For CommonJS integration
+  ];
 
   let paths;
 
@@ -192,22 +196,6 @@ const makeSourceZip = async (dir, zipPath) => {
   finalPaths.forEach((filePath) => debug(`  ${filePath}`));
   debug();
   await writeZipFromPaths(dir, zipPath, finalPaths);
-};
-
-// Similar to utils.appCommand, but given a ready to go app
-// with a different location and ready to go zapierwrapper.js.
-const _appCommandZapierWrapper = async (dir, event) => {
-  const app = await import(`${dir}/zapierwrapper.js`);
-  event = { ...event, calledFromCli: true };
-  return new Promise((resolve, reject) => {
-    app.handler(event, {}, (err, resp) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(resp);
-      }
-    });
-  });
 };
 
 const maybeNotifyAboutOutdated = () => {
@@ -385,12 +373,11 @@ const _buildFunc = async ({
     startSpinner('Building app definition.json');
   }
 
-  const rawDefinition = (
-    await _appCommandZapierWrapper(tmpDir, {
-      command: 'definition',
-    })
-  ).results;
-
+  const rawDefinition = await localAppCommand(
+    { command: 'definition' },
+    tmpDir,
+    false,
+  );
   const fileWriteError = await writeFile(
     path.join(tmpDir, 'definition.json'),
     prettyJSONstringify(rawDefinition),
@@ -417,11 +404,11 @@ const _buildFunc = async ({
     if (printProgress) {
       startSpinner('Validating project schema and style');
     }
-    const validateResponse = await _appCommandZapierWrapper(tmpDir, {
-      command: 'validate',
-    });
-
-    const validationErrors = validateResponse.results;
+    const validationErrors = await localAppCommand(
+      { command: 'validate' },
+      tmpDir,
+      false,
+    );
     if (validationErrors.length) {
       debug('\nErrors:\n', validationErrors, '\n');
       throw new Error(
