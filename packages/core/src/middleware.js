@@ -68,7 +68,9 @@ const applyMiddleware = (befores, afters, app, options) => {
     const beforeMiddleware = (beforeInput) => {
       return befores.reduce((collector, func) => {
         return collector.then((newInput) => {
-          newInput._addContext = context.addContext; // TODO remove
+          newInput._addContext = context.addContext; // TODO replace
+          // TODO what needs to get passed here? is func name sufficient?
+          newInput._zapier.whatHappened.push(func.name);
           const args = [newInput].concat(options.extraArgs);
           const result = func.apply(undefined, args);
           if (typeof result !== 'object') {
