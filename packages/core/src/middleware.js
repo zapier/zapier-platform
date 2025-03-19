@@ -46,11 +46,6 @@ const applyMiddleware = (befores, afters, app, options) => {
     extraArgs: [],
   });
 
-  console.log('befores', befores);
-  console.log('afters', afters);
-  console.log('app', app);
-  console.log('options', options);
-
   const ensureEnvelope = (maybeEnvelope) => {
     if (!options.skipEnvelope) {
       // they returned just the results; put them back in the envelope
@@ -60,17 +55,9 @@ const applyMiddleware = (befores, afters, app, options) => {
   };
 
   return (input) => {
-    // TODO we need to pass contextify here somehow
-    // const context = ZapierPromise.makeContext();
-    // const resolve = (val) => ZapierPromise.resolve(val).bind(context);
-    const context = {};
-
     const beforeMiddleware = (beforeInput) => {
       return befores.reduce((collector, func) => {
         return collector.then((newInput) => {
-          newInput._addContext = context.addContext; // TODO replace
-          // TODO what needs to get passed here? is func name sufficient?
-          newInput._zapier.whatHappened.push(func.name);
           const args = [newInput].concat(options.extraArgs);
           const result = func.apply(undefined, args);
           if (typeof result !== 'object') {
@@ -84,7 +71,6 @@ const applyMiddleware = (befores, afters, app, options) => {
     const afterMiddleware = (output) => {
       return afters.reduce((collector, func) => {
         return collector.then((newOutput) => {
-          newOutput._addContext = context.addContext; // TODO remove
           const args = [newOutput].concat(options.extraArgs);
           const maybePromise = func.apply(undefined, args);
           if (typeof maybePromise !== 'object') {
@@ -95,16 +81,15 @@ const applyMiddleware = (befores, afters, app, options) => {
       }, Promise.resolve(output));
     };
 
-    const promise = beforeMiddleware(input).then((newInput) => {
-      return Promise.resolve(app(newInput))
-        .then(ensureEnvelope)
-        .then((output) => {
-          output.input = newInput;
-          return afterMiddleware(output);
-        });
-    });
+    const promise = async (input) => {
+      const newInput = await beforeMiddleware(input);
+      let output = await app(newInput);
+      output = await ensureEnvelope(output);
+      output.input = newInput;
+      return afterMiddleware(output);
+    };
 
-    return promise;
+    return promise(input);
   };
 };
 
