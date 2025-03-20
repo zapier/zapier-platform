@@ -1,46 +1,44 @@
-const _ = require('lodash');
-const path = require('path');
+const { findCorePackageDir, runCommand } = require('./misc');
+const { copyZapierWrapper, deleteZapierWrapper } = require('./zapierwrapper');
 
-const { findCorePackageDir } = require('./misc');
-
-const getLocalAppHandler = ({ reload = false, baseEvent = {} } = {}) => {
-  const entryPath = `${process.cwd()}/index`;
-  const rootPath = path.dirname(require.resolve(entryPath));
+const getLocalAppHandler = async (appDir, shouldDeleteWrapper) => {
+  appDir = appDir || process.cwd();
   const corePackageDir = findCorePackageDir();
+  const wrapperPath = await copyZapierWrapper(corePackageDir, appDir);
 
-  if (reload) {
-    Object.keys(require.cache).forEach((cachePath) => {
-      if (cachePath.startsWith(rootPath)) {
-        delete require.cache[cachePath];
-      }
-    });
-  }
-  let appRaw, zapier;
+  let app;
   try {
-    appRaw = require(entryPath);
-    zapier = require(corePackageDir);
+    app = await import(wrapperPath);
   } catch (err) {
-    // this err.stack doesn't give a nice traceback at all :-(
-    // maybe we could do require('syntax-error') in the future
-    return (event, ctx, callback) => callback(err);
+    if (err.name === 'SyntaxError') {
+      // Run a separate process to print the line number of the SyntaxError.
+      // This workaround is needed because `err` doesn't provide the location
+      // info about the SyntaxError. However, if the error is thrown to
+      // Node.js's built-in error handler, it will print the location info.
+      // See: https://github.com/nodejs/node/issues/49441
+      await runCommand(process.execPath, ['zapierwrapper.js'], {
+        cwd: appDir,
+      });
+    }
+    throw err;
+  } finally {
+    if (shouldDeleteWrapper) {
+      await deleteZapierWrapper(appDir);
+    }
   }
-  const handler = zapier.createAppHandler(appRaw);
+
   return (event, ctx, callback) => {
-    event = _.merge(
-      {},
-      event,
-      {
-        calledFromCli: true,
-      },
-      baseEvent,
-    );
-    handler(event, _, callback);
+    event = {
+      ...event,
+      calledFromCli: true,
+    };
+    app.handler(event, ctx, callback);
   };
 };
 
 // Runs a local app command (./index.js) like {command: 'validate'};
-const localAppCommand = (event) => {
-  const handler = getLocalAppHandler();
+const localAppCommand = async (event, appDir, shouldDeleteWrapper = false) => {
+  const handler = await getLocalAppHandler(appDir, shouldDeleteWrapper);
   return new Promise((resolve, reject) => {
     handler(event, {}, (err, resp) => {
       if (err) {
@@ -53,6 +51,5 @@ const localAppCommand = (event) => {
 };
 
 module.exports = {
-  getLocalAppHandler,
   localAppCommand,
 };

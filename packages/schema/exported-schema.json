@@ -1,5 +1,5 @@
 {
-  "version": "16.3.0",
+  "version": "16.3.1",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -96,188 +96,6 @@
       },
       "additionalProperties": false
     },
-    "FieldChoiceWithLabelSchema": {
-      "id": "/FieldChoiceWithLabelSchema",
-      "description": "An object describing a labeled choice in a static dropdown. Useful if the value a user picks isn't exactly what the zap uses. For instance, when they click on a nickname, but the zap uses the user's full name ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).",
-      "type": "object",
-      "required": ["value", "sample", "label"],
-      "properties": {
-        "value": {
-          "description": "The actual value that is sent into the Zap. This is displayed as light grey text in the editor. Should match sample exactly.",
-          "type": "string",
-          "minLength": 1
-        },
-        "sample": {
-          "description": "A legacy field that is no longer used by the editor, but it is still required for now and should match the value.",
-          "type": "string",
-          "minLength": 1
-        },
-        "label": {
-          "description": "A human readable label for this value.",
-          "type": "string",
-          "minLength": 1
-        }
-      }
-    },
-    "RefResourceSchema": {
-      "id": "/RefResourceSchema",
-      "description": "Reference a resource by key and the data it returns. In the format of: `{resource_key}.{foreign_key}(.{human_label_key})`.",
-      "type": "string",
-      "pattern": "^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_\\s\\[\\]]+(\\.[a-zA-Z0-9_\\s\\[\\]]+(,[a-zA-Z0-9_\\s\\[\\]]+)*)?$"
-    },
-    "FieldChoicesSchema": {
-      "id": "/FieldChoicesSchema",
-      "description": "A static dropdown of options. Which you use depends on your order and label requirements:\n\nNeed a Label? | Does Order Matter? | Type to Use\n---|---|---\nYes | No | Object of value -> label\nNo | Yes | Array of Strings\nYes | Yes | Array of [FieldChoiceWithLabel](#fieldchoicewithlabelschema)",
-      "oneOf": [
-        {
-          "type": "object",
-          "minProperties": 1
-        },
-        {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "$ref": "/FieldChoiceWithLabelSchema"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "FieldMetaSchema": {
-      "id": "/FieldMetaSchema",
-      "type": "object",
-      "description": "Allows for additional metadata to be stored on the field.",
-      "patternProperties": {
-        "[^\\s]+": {
-          "description": "Only string, integer or boolean values are allowed.",
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "integer"
-            },
-            {
-              "type": "boolean"
-            }
-          ]
-        }
-      }
-    },
-    "FieldSchema": {
-      "id": "/FieldSchema",
-      "description": "Defines a field an app either needs as input, or gives as output. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
-      "type": "object",
-      "required": ["key"],
-      "properties": {
-        "key": {
-          "description": "A unique machine readable key for this value (IE: \"fname\").",
-          "type": "string",
-          "minLength": 1
-        },
-        "label": {
-          "description": "A human readable label for this value (IE: \"First Name\").",
-          "type": "string",
-          "minLength": 1
-        },
-        "helpText": {
-          "description": "A human readable description of this value (IE: \"The first part of a full name.\"). You can use Markdown.",
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        },
-        "type": {
-          "description": "The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.",
-          "type": "string",
-          "enum": [
-            "string",
-            "text",
-            "integer",
-            "number",
-            "boolean",
-            "datetime",
-            "file",
-            "password",
-            "copy",
-            "code"
-          ]
-        },
-        "required": {
-          "description": "If this value is required or not.",
-          "type": "boolean"
-        },
-        "placeholder": {
-          "description": "An example value that is not saved.",
-          "type": "string",
-          "minLength": 1
-        },
-        "default": {
-          "description": "A default value that is saved the first time a Zap is created.",
-          "type": "string",
-          "minLength": 1
-        },
-        "primary": {
-          "description": "Use this field as part of the primary key for deduplication. You can set multiple fields as \"primary\", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`; it will be ignored if set in `inputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).",
-          "type": "boolean"
-        },
-        "dynamic": {
-          "description": "A reference to a trigger that will power a dynamic dropdown.",
-          "$ref": "/RefResourceSchema"
-        },
-        "search": {
-          "description": "A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.",
-          "$ref": "/RefResourceSchema"
-        },
-        "choices": {
-          "description": "An object of machine keys and human values to populate a static dropdown.",
-          "$ref": "/FieldChoicesSchema"
-        },
-        "list": {
-          "description": "Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?",
-          "type": "boolean"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "/FieldSchema"
-          },
-          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
-          "minItems": 1
-        },
-        "dict": {
-          "description": "Is this field a key/value input?",
-          "type": "boolean"
-        },
-        "computed": {
-          "description": "Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.",
-          "type": "boolean"
-        },
-        "altersDynamicFields": {
-          "description": "Does the value of this field affect the definitions of other fields in the set?",
-          "type": "boolean"
-        },
-        "steadyState": {
-          "description": "Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.",
-          "type": "boolean"
-        },
-        "inputFormat": {
-          "description": "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
-          "type": "string",
-          "pattern": "^.*{{input}}.*$"
-        },
-        "meta": {
-          "description": "Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).",
-          "$ref": "/FieldMetaSchema"
-        }
-      },
-      "additionalProperties": false
-    },
     "FunctionRequireSchema": {
       "id": "/FunctionRequireSchema",
       "description": "A path to a file that might have content like `module.exports = (z, bundle) => [{id: 123}];`.",
@@ -354,6 +172,199 @@
           "$ref": "/FunctionSourceSchema"
         }
       ]
+    },
+    "FieldChoiceWithLabelSchema": {
+      "id": "/FieldChoiceWithLabelSchema",
+      "description": "An object describing a labeled choice in a static dropdown. Useful if the value a user picks isn't exactly what the zap uses. For instance, when they click on a nickname, but the zap uses the user's full name ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).",
+      "type": "object",
+      "required": ["value", "sample", "label"],
+      "properties": {
+        "value": {
+          "description": "The actual value that is sent into the Zap. This is displayed as light grey text in the editor. Should match sample exactly.",
+          "type": "string",
+          "minLength": 1
+        },
+        "sample": {
+          "description": "A legacy field that is no longer used by the editor, but it is still required for now and should match the value.",
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "description": "A human readable label for this value.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "FieldChoicesSchema": {
+      "id": "/FieldChoicesSchema",
+      "description": "A static dropdown of options. Which you use depends on your order and label requirements:\n\nNeed a Label? | Does Order Matter? | Type to Use\n---|---|---\nYes | No | Object of value -> label\nNo | Yes | Array of Strings\nYes | Yes | Array of [FieldChoiceWithLabel](#fieldchoicewithlabelschema)",
+      "oneOf": [
+        {
+          "type": "object",
+          "minProperties": 1
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "/FieldChoiceWithLabelSchema"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "FieldSchema": {
+      "id": "/FieldSchema",
+      "description": "In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
+      "type": "object",
+      "required": ["key"],
+      "docAnnotation": {
+        "hide": true
+      },
+      "properties": {
+        "key": {
+          "description": "A unique machine readable key for this value (IE: \"fname\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "description": "A human readable label for this value (IE: \"First Name\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "description": "The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.",
+          "type": "string",
+          "enum": [
+            "string",
+            "text",
+            "integer",
+            "number",
+            "boolean",
+            "datetime",
+            "file",
+            "password",
+            "copy",
+            "code"
+          ]
+        },
+        "required": {
+          "description": "If this value is required or not.",
+          "type": "boolean"
+        },
+        "default": {
+          "description": "A default value that is saved the first time a Zap is created.",
+          "type": "string",
+          "minLength": 1
+        },
+        "list": {
+          "description": "Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?",
+          "type": "boolean"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "/FieldSchema"
+          },
+          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
+          "minItems": 1
+        },
+        "dict": {
+          "description": "Is this field a key/value input?",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AuthFieldSchema": {
+      "id": "/AuthFieldSchema",
+      "description": "Field schema specialized for authentication fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
+      "required": ["key"],
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "A unique machine readable key for this value (IE: \"fname\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "description": "A human readable label for this value (IE: \"First Name\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "description": "The type of this value used to be.",
+          "type": "string",
+          "enum": [
+            "string",
+            "number",
+            "boolean",
+            "datetime",
+            "copy",
+            "password"
+          ]
+        },
+        "required": {
+          "description": "If this value is required or not. This defaults to `true`.",
+          "type": "boolean"
+        },
+        "default": {
+          "description": "A default value that is saved the first time a Zap is created.",
+          "type": "string",
+          "minLength": 1
+        },
+        "list": {
+          "description": "Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?",
+          "type": "boolean"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "/AuthFieldSchema"
+          },
+          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
+          "minItems": 1
+        },
+        "dict": {
+          "description": "Is this field a key/value input?",
+          "type": "boolean"
+        },
+        "helpText": {
+          "description": "A human readable description of this value (IE: \"The first part of a full name.\"). You can use Markdown.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "placeholder": {
+          "description": "An example value that is not saved.",
+          "type": "string",
+          "minLength": 1
+        },
+        "choices": {
+          "description": "An object of machine keys and human values to populate a static dropdown.",
+          "$ref": "/FieldChoicesSchema"
+        },
+        "computed": {
+          "description": "Is this field automatically populated (and hidden from the user)? Note: Only OAuth and Session Auth support fields with this key.",
+          "type": "boolean"
+        },
+        "inputFormat": {
+          "description": "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
+          "type": "string",
+          "pattern": "^.*{{input}}.*$"
+        },
+        "isNoSecret": {
+          "description": "Indicates if this authentication field is safe to e.g. be stored without encryption or displayed (not a secret).",
+          "type": "boolean"
+        }
+      }
     },
     "RequestSchema": {
       "id": "/RequestSchema",
@@ -466,12 +477,16 @@
       },
       "additionalProperties": false
     },
-    "FieldsSchema": {
-      "id": "/FieldsSchema",
-      "description": "An array or collection of fields.",
+    "AuthFieldsSchema": {
+      "id": "/AuthFieldsSchema",
+      "description": "An array or collection of authentication fields.",
       "type": "array",
       "items": {
-        "$ref": "/FieldSchema"
+        "oneOf": [
+          {
+            "$ref": "/AuthFieldSchema"
+          }
+        ]
       }
     },
     "AuthenticationBasicConfigSchema": {
@@ -627,20 +642,192 @@
       },
       "additionalProperties": false
     },
-    "FieldOrFunctionSchema": {
-      "id": "/FieldOrFunctionSchema",
-      "description": "Represents an array of fields or functions.",
-      "type": "array",
-      "items": {
-        "oneOf": [
-          {
-            "$ref": "/FieldSchema"
-          },
-          {
-            "$ref": "/FunctionSchema"
-          }
-        ]
+    "RefResourceSchema": {
+      "id": "/RefResourceSchema",
+      "description": "Reference a resource by key and the data it returns. In the format of: `{resource_key}.{foreign_key}(.{human_label_key})`.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_\\s\\[\\]]+(\\.[a-zA-Z0-9_\\s\\[\\]]+(,[a-zA-Z0-9_\\s\\[\\]]+)*)?$"
+    },
+    "FieldMetaSchema": {
+      "id": "/FieldMetaSchema",
+      "type": "object",
+      "description": "Allows for additional metadata to be stored on the field.",
+      "patternProperties": {
+        "[^\\s]+": {
+          "description": "Only string, integer or boolean values are allowed.",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
       }
+    },
+    "InputFieldSchema": {
+      "description": "Field schema specialized for input fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
+      "id": "/InputFieldSchema",
+      "type": "object",
+      "required": ["key"],
+      "properties": {
+        "key": {
+          "description": "A unique machine readable key for this value (IE: \"fname\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "description": "A human readable label for this value (IE: \"First Name\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "description": "The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.",
+          "type": "string",
+          "enum": [
+            "string",
+            "text",
+            "integer",
+            "number",
+            "boolean",
+            "datetime",
+            "file",
+            "password",
+            "copy",
+            "code"
+          ]
+        },
+        "required": {
+          "description": "If this value is required or not.",
+          "type": "boolean"
+        },
+        "default": {
+          "description": "A default value that is saved the first time a Zap is created.",
+          "type": "string",
+          "minLength": 1
+        },
+        "list": {
+          "description": "Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?",
+          "type": "boolean"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "/InputFieldSchema"
+          },
+          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
+          "minItems": 1
+        },
+        "dict": {
+          "description": "Is this field a key/value input?",
+          "type": "boolean"
+        },
+        "helpText": {
+          "description": "A human readable description of this value (IE: \"The first part of a full name.\"). You can use Markdown.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "dynamic": {
+          "description": "A reference to a trigger that will power a dynamic dropdown.",
+          "$ref": "/RefResourceSchema"
+        },
+        "search": {
+          "description": "A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.",
+          "$ref": "/RefResourceSchema"
+        },
+        "choices": {
+          "description": "An object of machine keys and human values to populate a static dropdown.",
+          "$ref": "/FieldChoicesSchema"
+        },
+        "placeholder": {
+          "description": "An example value that is not saved.",
+          "type": "string",
+          "minLength": 1
+        },
+        "altersDynamicFields": {
+          "description": "Does the value of this field affect the definitions of other fields in the set?",
+          "type": "boolean"
+        },
+        "inputFormat": {
+          "description": "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
+          "type": "string",
+          "pattern": "^.*{{input}}.*$"
+        },
+        "meta": {
+          "description": "Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).",
+          "$ref": "/FieldMetaSchema"
+        }
+      },
+      "additionalProperties": false
+    },
+    "OutputFieldSchema": {
+      "description": "Field schema specialized for output fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
+      "id": "/OutputFieldSchema",
+      "type": "object",
+      "required": ["key"],
+      "properties": {
+        "key": {
+          "description": "A unique machine readable key for this value (IE: \"fname\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "description": "A human readable label for this value (IE: \"First Name\").",
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "description": "The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.",
+          "type": "string",
+          "enum": [
+            "string",
+            "number",
+            "boolean",
+            "datetime",
+            "file",
+            "password"
+          ]
+        },
+        "required": {
+          "description": "If this value is required or not.",
+          "type": "boolean"
+        },
+        "default": {
+          "description": "A default value that is saved the first time a Zap is created.",
+          "type": "string",
+          "minLength": 1
+        },
+        "list": {
+          "description": "Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?",
+          "type": "boolean"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "/OutputFieldSchema"
+          },
+          "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
+          "minItems": 1
+        },
+        "dict": {
+          "description": "Is this field a key/value input?",
+          "type": "boolean"
+        },
+        "primary": {
+          "description": "Use this field as part of the primary key for deduplication. You can set multiple fields as \"primary\", provided they are unique together. If no fields are set, Zapier will default to using the `id` field. `primary` only makes sense for `outputFields`. It only works in static `outputFields`; will not work in custom/dynamic `outputFields`. For more information, see [How deduplication works in Zapier](https://platform.zapier.com/build/deduplication).",
+          "type": "boolean"
+        },
+        "steadyState": {
+          "description": "Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
     },
     "ThrottleOverrideObjectSchema": {
       "id": "/ThrottleOverrideObjectSchema",
@@ -668,10 +855,35 @@
       },
       "additionalProperties": false
     },
-    "DynamicFieldsSchema": {
-      "id": "/DynamicFieldsSchema",
-      "description": "Like [/FieldsSchema](#fieldsschema) but you can provide functions to create dynamic or custom fields.",
-      "$ref": "/FieldOrFunctionSchema"
+    "DynamicInputFieldsSchema": {
+      "id": "/DynamicInputFieldsSchema",
+      "description": "An array or collection of input fields.",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "/InputFieldSchema"
+          },
+          {
+            "$ref": "/FunctionSchema"
+          }
+        ]
+      }
+    },
+    "DynamicOutputFieldsSchema": {
+      "id": "/DynamicOutputFieldsSchema",
+      "description": "An array or collection of output fields.",
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "/OutputFieldSchema"
+          },
+          {
+            "$ref": "/FunctionSchema"
+          }
+        ]
+      }
     },
     "KeySchema": {
       "id": "/KeySchema",
@@ -827,11 +1039,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicInputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicOutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -937,11 +1149,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicInputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicOutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -990,11 +1202,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicInputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicOutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1052,11 +1264,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicInputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicOutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1203,7 +1415,7 @@
         },
         "outputFields": {
           "description": "What fields of data will this return?",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicOutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like?",
@@ -1294,11 +1506,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicInputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicOutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1446,11 +1658,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicInputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicFieldsSchema"
+          "$ref": "/DynamicOutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1598,7 +1810,7 @@
         },
         "fields": {
           "description": "Fields you can request from the user before they connect your app to Zapier.",
-          "$ref": "/FieldsSchema"
+          "$ref": "/AuthFieldsSchema"
         },
         "connectionLabel": {
           "description": "A string with variables, function, or request that returns the connection label for the authenticated user.",
