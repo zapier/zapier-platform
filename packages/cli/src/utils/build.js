@@ -19,13 +19,7 @@ const {
 
 const constants = require('../constants');
 
-const {
-  writeFile,
-  readFile,
-  copyDir,
-  ensureDir,
-  removeDir,
-} = require('./files');
+const { writeFile, copyDir, ensureDir, removeDir } = require('./files');
 
 const {
   prettyJSONstringify,
@@ -41,10 +35,13 @@ const {
   validateApp,
 } = require('./api');
 
+const { copyZapierWrapper } = require('./zapierwrapper');
+
 const checkMissingAppInfo = require('./check-missing-app-info');
 
 const { runCommand, isWindows, findCorePackageDir } = require('./misc');
 const { respectGitIgnore } = require('./ignore');
+const { localAppCommand } = require('./local');
 
 const debug = require('debug')('zapier:build');
 
@@ -58,12 +55,14 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
 
   const result = await esbuild.build({
     entryPoints,
+    outdir: './build',
     bundle: true,
     platform: 'node',
-    outdir: './build',
     metafile: true,
     logLevel: 'warning',
     external: ['../test/userapp'],
+    format: 'esm',
+    write: false, // no need to write outfile
   });
 
   return Object.keys(result.metafile.inputs).map((path) =>
@@ -160,16 +159,21 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
 };
 
 const makeZip = async (dir, zipPath, disableDependencyDetection) => {
-  const entryPoints = [
-    path.resolve(dir, 'zapierwrapper.js'),
-    path.resolve(dir, 'index.js'),
-  ];
+  const entryPoints = [path.resolve(dir, 'zapierwrapper.js')];
+
+  const indexPath = path.resolve(dir, 'index.js');
+  if (fs.existsSync(indexPath)) {
+    // Necessary for CommonJS integrations. The zapierwrapper they use require()
+    // the index.js file using a variable. esbuild can't detect it, so we need
+    // to add it here specifically.
+    entryPoints.push(indexPath);
+  }
 
   let paths;
 
   const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
-    requiredFiles({ cwd: dir, entryPoints: entryPoints }),
+    requiredFiles({ cwd: dir, entryPoints }),
     getLinkedAppConfig(dir).catch(() => ({})),
   ]);
 
@@ -198,24 +202,6 @@ const makeSourceZip = async (dir, zipPath) => {
   finalPaths.forEach((filePath) => debug(`  ${filePath}`));
   debug();
   await writeZipFromPaths(dir, zipPath, finalPaths);
-};
-
-// Similar to utils.appCommand, but given a ready to go app
-// with a different location and ready to go zapierwrapper.js.
-const _appCommandZapierWrapper = (dir, event) => {
-  const app = require(`${dir}/zapierwrapper.js`);
-  event = Object.assign({}, event, {
-    calledFromCli: true,
-  });
-  return new Promise((resolve, reject) => {
-    app.handler(event, {}, (err, resp) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(resp);
-      }
-    });
-  });
 };
 
 const maybeNotifyAboutOutdated = () => {
@@ -383,35 +369,21 @@ const _buildFunc = async ({
 
   if (printProgress) {
     endSpinner();
-    startSpinner('Applying entry point file');
+    startSpinner('Applying entry point files');
   }
 
-  // TODO: should this routine for include exist elsewhere?
-  const zapierWrapperBuf = await readFile(
-    path.join(
-      tmpDir,
-      'node_modules',
-      constants.PLATFORM_PACKAGE,
-      'include',
-      'zapierwrapper.js',
-    ),
-  );
-  await writeFile(
-    path.join(tmpDir, 'zapierwrapper.js'),
-    zapierWrapperBuf.toString(),
-  );
+  await copyZapierWrapper(corePath, tmpDir);
 
   if (printProgress) {
     endSpinner();
     startSpinner('Building app definition.json');
   }
 
-  const rawDefinition = (
-    await _appCommandZapierWrapper(tmpDir, {
-      command: 'definition',
-    })
-  ).results;
-
+  const rawDefinition = await localAppCommand(
+    { command: 'definition' },
+    tmpDir,
+    false,
+  );
   const fileWriteError = await writeFile(
     path.join(tmpDir, 'definition.json'),
     prettyJSONstringify(rawDefinition),
@@ -438,11 +410,11 @@ const _buildFunc = async ({
     if (printProgress) {
       startSpinner('Validating project schema and style');
     }
-    const validateResponse = await _appCommandZapierWrapper(tmpDir, {
-      command: 'validate',
-    });
-
-    const validationErrors = validateResponse.results;
+    const validationErrors = await localAppCommand(
+      { command: 'validate' },
+      tmpDir,
+      false,
+    );
     if (validationErrors.length) {
       debug('\nErrors:\n', validationErrors, '\n');
       throw new Error(
