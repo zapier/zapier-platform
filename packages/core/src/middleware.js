@@ -3,7 +3,6 @@
 const _ = require('lodash');
 
 const envelope = require('./tools/envelope');
-// const ZapierPromise = require('./tools/promise');
 
 /**
    Applies before and after middleware functions, returning
@@ -39,6 +38,17 @@ const envelope = require('./tools/envelope');
    should have an wrapper envelope that includes the input, or just return the raw
    output. The default is false.
 */
+
+const enrichErrorMessages = (error, input) => {
+  if (error.doNotContextify) {
+    throw error;
+  }
+  if (input._zapier && input._zapier.whatHappened) {
+    const details = input._zapier.whatHappened.map((f) => `  ${f}`).join('\n');
+    error.message = `${error.message}\nWhat happened:\n${details}\n  ${error.message}`;
+  }
+  throw error;
+};
 
 const applyMiddleware = (befores, afters, app, options) => {
   options = _.defaults({}, options, {
@@ -82,11 +92,16 @@ const applyMiddleware = (befores, afters, app, options) => {
     };
 
     const promise = async (input) => {
-      const newInput = await beforeMiddleware(input);
-      let output = await app(newInput);
-      output = await ensureEnvelope(output);
-      output.input = newInput;
-      return afterMiddleware(output);
+      const newInput = await beforeMiddleware(input); // this returns a new input with new whatHappened
+      try {
+        // the error happens in the below line
+        let output = await app(newInput);
+        output = await ensureEnvelope(output);
+        output.input = newInput;
+        return afterMiddleware(output);
+      } catch (error) {
+        return enrichErrorMessages(error, newInput);
+      }
     };
 
     return promise(input);
