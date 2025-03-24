@@ -290,7 +290,7 @@ const getAuthLabel = async (
   );
   labelTemplate = labelTemplate.replace('__', '.');
   const tpl = _.template(labelTemplate, { interpolate: /{{([\s\S]+?)}}/g });
-  return tpl(testResult);
+  return tpl({ ...testResult, bundle: { authData, inputData: testResult } });
 };
 
 const getLabelForDynamicDropdown = (obj, preferredKey, fallbackKey) => {
