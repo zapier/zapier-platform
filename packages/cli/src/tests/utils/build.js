@@ -545,7 +545,7 @@ describe('build ESM (runs slowly)', function () {
     runCommand('npm', ['run', 'build', '--scripts-prepend-node-path'], {
       cwd: tmpDir,
     });
-    entryPoint = path.resolve(tmpDir, 'index.js');
+    entryPoint = path.resolve(tmpDir, 'dist', 'index.js');
   });
 
   after(() => {
@@ -561,7 +561,6 @@ describe('build ESM (runs slowly)', function () {
       entryPoints: [entryPoint],
     });
     // check that only the required lodash files are grabbed
-    smartPaths.should.containEql('index.js');
     smartPaths.should.containEql('dist/index.js');
     smartPaths.should.containEql('dist/triggers/movie.js');
 
@@ -574,7 +573,6 @@ describe('build ESM (runs slowly)', function () {
   it('should list all the files', () => {
     return build.listFiles(tmpDir).then((dumbPaths) => {
       // check that way more than the required package files are grabbed
-      dumbPaths.should.containEql('index.js');
       dumbPaths.should.containEql('dist/index.js');
       dumbPaths.should.containEql('dist/triggers/movie.js');
 
