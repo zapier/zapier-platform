@@ -6,14 +6,14 @@ import {
 } from './authentication';
 <% } %>
 
-import { version as packageVersion } from './package.json';
-import { version as platformVersion } from '<%= corePackageName %>';
+import packageJson from './package.json' with { type: 'json' };
+import zapier from '<%= corePackageName %>';
 
 export default {
     // This is just shorthand to reference the installed dependencies you have.
     // Zapier will need to know these before we can upload.
-    version: packageVersion,
-    platformVersion: platformVersion,
+    version: packageJson.version,
+    platformVersion: zapier.version,
 
     <% if (hasAuth) { %>
     authentication,

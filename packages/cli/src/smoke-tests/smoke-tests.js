@@ -176,7 +176,6 @@ describe('smoke tests - setup will take some time', function () {
 
     const appIndexJs = path.join(newAppDir, 'index.js');
     const appPackageJson = path.join(newAppDir, 'package.json');
-    // TODO add a check for the module type
     fs.existsSync(appIndexJs).should.be.true();
     fs.existsSync(appPackageJson).should.be.true();
 
@@ -185,8 +184,7 @@ describe('smoke tests - setup will take some time', function () {
     );
     pkg.name.should.containEql('awesome-esm-app');
     pkg.type.should.containEql('module');
-    pkg.exports.import.should.containEql('./index.js');
-    pkg.exports.require.should.containEql('./index.js');
+    pkg.exports.should.eql('./index.js');
   });
 
   it('should error with a mismatched module type', async () => {

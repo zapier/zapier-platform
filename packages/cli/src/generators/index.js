@@ -35,10 +35,7 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
   const moduleExtension =
     gen.options.module === 'esm'
       ? {
-          exports: {
-            import: './index.js',
-            require: './index.js',
-          },
+          exports: './index.js',
           type: 'module',
         }
       : {
@@ -74,10 +71,7 @@ const writeTypeScriptPackageJson = (gen, packageJsonExtension) => {
   const moduleExtension =
     gen.options.module === 'esm'
       ? {
-          exports: {
-            import: './dist/index.js',
-            require: './dist/index.js',
-          },
+          exports: './dist/index.js',
           type: 'module',
         }
       : {

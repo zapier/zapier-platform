@@ -135,7 +135,6 @@ Here are the detailed release notes for this release (**note that ❗ denotes a 
     - Remove `@oclif/command`
     - Remove `@oclif/config`
     - Update `archiver` 5.3.1 to 7.0.1
-    - Update `gulp-prettier` from 4.0.0 to 5.0.0
     - Update `marked` 4.2.12 to 14.1.4
     - Update `marked-terminal` from 5.2.0 to 7.2.1
     - Update `read` from 2.1.0 to 4.0.0
