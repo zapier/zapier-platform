@@ -1,21 +1,17 @@
 {
-    "name": "minimal-esm",
-    "version": "1.0.0",
-    "description": "",
-    "scripts": {
-      "test": "jest --testTimeout 10000"
-    },
-    "dependencies": {
-      "zapier-platform-core": "16.3.0"
-    },
-    "devDependencies": {
-      "jest": "^29.6.0"
-    },
-    "private": true,
-    "exports": {
-      "import": "./index.js",
-      "require": "./index.js"
-    },
-    "type": "module"
-  }
-  
+  "name": "minimal-esm",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "jest --testTimeout 10000",
+  },
+  "dependencies": {
+    "zapier-platform-core": "16.3.1"
+  },
+  "devDependencies": {
+    "jest": "^29.6.0"
+  },
+  "private": true,
+  "exports": "./index.js",
+  "type": "module"
+}

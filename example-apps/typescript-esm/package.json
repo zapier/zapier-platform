@@ -1,5 +1,5 @@
 {
-  "name": "test-init",
+  "name": "typescript-esm",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -9,7 +9,7 @@
     "_zapier-build": "npm run build"
   },
   "dependencies": {
-    "zapier-platform-core": "16.3.0"
+    "zapier-platform-core": "16.3.1"
   },
   "devDependencies": {
     "vitest": "^2.1.2",
@@ -17,9 +17,6 @@
     "typescript": "5.6.2"
   },
   "private": true,
-  "exports": {
-    "import": "./dist/index.js",
-    "require": "./dist/index.js"
-  },
+  "exports": "./dist/index.js",
   "type": "module"
 }

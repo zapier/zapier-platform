@@ -1,8 +1,7 @@
 import type { App } from 'zapier-platform-core';
-import pkg from 'zapier-platform-core';
-const { version: platformVersion } = pkg;
+import zapier from 'zapier-platform-core';
 
-import packageJson from '../package.json' assert { type: 'json' };
+import packageJson from '../package.json' with { type: 'json' };
 
 import MovieCreate from './creates/movie.js';
 import MovieTrigger from './triggers/movie.js';
@@ -11,7 +10,7 @@ import { addBearerHeader } from './middleware.js';
 
 export default {
   version: packageJson.version,
-  platformVersion,
+  platformVersion: zapier.version,
 
   authentication,
   beforeRequest: [addBearerHeader],
