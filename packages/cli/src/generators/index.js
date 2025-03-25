@@ -115,6 +115,23 @@ const writeGenericIndex = (gen, hasAuth) => {
   );
 };
 
+const writeTypeScriptIndex = (gen) => {
+  const templatePath =
+    gen.options.module === 'esm'
+      ? 'index-esm.template.ts'
+      : 'index.template.ts';
+  gen.fs.copyTpl(
+    gen.templatePath(templatePath),
+    gen.destinationPath('src/index.ts'),
+  );
+
+  // create root directory index.js if it's commonjs
+  if (gen.options.module === 'commonjs') {
+    const content = `module.exports = require('./dist').default;`;
+    gen.fs.write(gen.destinationPath('index.js'), content);
+  }
+};
+
 const authTypes = {
   'basic-auth': 'basic',
   'custom-auth': 'custom',
@@ -211,13 +228,11 @@ const writeForStandaloneTypeScriptTemplate = (gen) => {
 
   writeTypeScriptPackageJson(gen, packageJsonExtension);
 
-  const templatePath =
-    gen.options.module === 'esm' ? 'typescript-esm' : gen.options.template;
-
   gen.fs.copy(
-    gen.templatePath(templatePath, '**', '*.{js,json,ts}'),
+    gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
     gen.destinationPath(),
   );
+  writeTypeScriptIndex(gen);
 };
 
 const TEMPLATE_ROUTES = {

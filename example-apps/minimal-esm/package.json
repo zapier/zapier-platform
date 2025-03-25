@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "jest --testTimeout 10000",
+    "test": "jest --testTimeout 10000"
   },
   "dependencies": {
     "zapier-platform-core": "16.3.1"

@@ -1,7 +1,7 @@
 import { createAppTester, tools } from 'zapier-platform-core';
 import { describe, test, expect } from 'vitest';
 
-import App from '../index.ts';
+import App from '../index';
 
 const appTester = createAppTester(App);
 tools.env.inject();
