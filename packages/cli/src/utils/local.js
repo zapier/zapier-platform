@@ -101,7 +101,9 @@ function wrapHttpRequestFuncWithRelay(
     // 3. Decide whether to relay or not
     // If the request is being sent to the same host:port as our relay,
     // we do NOT want to relay again. We just call the original request.
-    const targetHost = options.hostname || options.host;
+    const targetHost = (options.hostname || options.host)
+      .replaceAll('lcurly-', '%7B%7B')
+      .replaceAll('-rcurly', '%7D%7D');
     const targetPort = options.port ? String(options.port) : '';
     const relayHost = parsedRelayUrl.hostname;
     const relayPort = parsedRelayUrl.port ? String(parsedRelayUrl.port) : '';

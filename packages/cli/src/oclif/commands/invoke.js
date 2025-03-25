@@ -949,22 +949,44 @@ class InvokeCommand extends BaseCommand {
     methodName = `${actionTypePlural}.${action.key}.operation.perform`;
 
     startSpinner(`Invoking ${methodName}`);
-    const output = await localAppCommand({
-      command: 'execute',
-      method: methodName,
-      bundle: {
-        inputData,
-        authData,
-        meta,
-      },
-      zcacheTestObj,
-      cursorTestObj,
-      customLogger,
-      calledFromCliInvoke: true,
-      appId,
-      deployKey,
-      relayAuthenticationId: authId,
-    });
+    let output;
+    try {
+      output = await localAppCommand({
+        command: 'execute',
+        method: methodName,
+        bundle: {
+          inputData,
+          authData,
+          meta,
+        },
+        zcacheTestObj,
+        cursorTestObj,
+        customLogger,
+        calledFromCliInvoke: true,
+        appId,
+        deployKey,
+        relayAuthenticationId: authId,
+      });
+    } catch (err) {
+      if (err.name === 'ResponseError') {
+        const response = JSON.parse(err.message);
+        if (response.content) {
+          const match = response.content.match(/domain filter `([^`]+)`/);
+          if (!match) {
+            throw err;
+          }
+          const domainFilter = match[1];
+          const requestUrl = response.request.url
+            .replaceAll('lcurly-', '{{')
+            .replaceAll('-rcurly', '}}');
+          throw new Error(
+            `Request to ${requestUrl} was blocked. ` +
+              `Only these domain names are allowed: ${domainFilter}.`,
+          );
+        }
+      }
+      throw err;
+    }
     endSpinner();
 
     return output;
@@ -1065,6 +1087,10 @@ class InvokeCommand extends BaseCommand {
     const authData = loadAuthDataFromEnv();
     const zcacheTestObj = {};
     const cursorTestObj = {};
+
+    if (authId) {
+      authData.account = 'lcurly-account-rcurly';
+    }
 
     if (actionType === 'auth') {
       const meta = {
