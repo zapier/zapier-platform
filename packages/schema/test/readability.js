@@ -146,8 +146,9 @@ describe('readability', () => {
     results.errors[0].property.should.eql(
       'instance.operation.inputFields[0].choices',
     );
+    console.log(results.errors[0].docLinks[0]);
     should(
-      results.errors[0].docLinks[0].includes('schema#fieldchoicesschema'),
+      results.errors[0].docLinks[0].includes('schema.md#fieldchoicesschema'),
     ).be.true();
     should(results.errors[0].property.endsWith('instance')).be.false();
   });
