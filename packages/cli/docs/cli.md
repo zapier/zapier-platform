@@ -309,6 +309,12 @@ This command also checks the current directory for a linked integration.
 
 This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
 
+Why use this command?
+
+* Fast feedback loop: Write code and run this command to verify if it works immediately
+* Step-by-step debugging: Running locally means you can use a debugger to step through your code
+* Untruncated logs: View complete logs and errors in your terminal
+
 This command loads environment variables and `authData` from the `.env` file in the current directory. If you don't have a `.env` file yet, you can use the `zapier invoke auth start` command to help you initialize it, or you can manually create it.
 
 The `zapier invoke auth start` subcommand will prompt you for the necessary auth fields and save them to the `.env` file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.
@@ -349,6 +355,8 @@ When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the comman
 
 The `--debug` flag will show you the HTTP request logs and any console logs you have in your code.
 
+EXPERIMENTAL: Apart from providing auth data via the `.env` file, you can also use the `--authentication-id` flag to specify which production authentication/connection to use. You can find authentication IDs at https://zapier.com/app/connections.
+
 The following is a non-exhaustive list of current limitations and may be supported in the future:
 
 - Hook triggers, including REST hook subscribe/unsubscribe
@@ -379,6 +387,7 @@ The following is a non-exhaustive list of current limitations and may be support
 * `-z, --timezone` | Set the default timezone for datetime field interpretation. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.  Defaults to `America/Chicago`.
 * `--redirect-uri` | Only used by `auth start` subcommand. The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.  Defaults to `http://localhost:9000`.
 * `--local-port` | Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.  Defaults to `9000`.
+* `-a, --authentication-id` | EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/connections or specify '-' to interactively select one from your available authentications. When specified, the code will be still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**

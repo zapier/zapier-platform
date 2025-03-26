@@ -1368,7 +1368,7 @@ InvokeCommand.flags = buildFlags({
     'authentication-id': Flags.string({
       char: 'a',
       description:
-        'Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/connections or specify \'-\' to interactively select one from your available authentications. When specified, the code will be still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.',
+        'EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/connections or specify \'-\' to interactively select one from your available authentications. When specified, the code will be still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.',
     }),
   },
 });
@@ -1398,6 +1398,12 @@ InvokeCommand.examples = [
 InvokeCommand.description = `Invoke an auth operation, a trigger, or a create/search action locally.
 
 This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
+
+Why use this command?
+
+* Fast feedback loop: Write code and run this command to verify if it works immediately
+* Step-by-step debugging: Running locally means you can use a debugger to step through your code
+* Untruncated logs: View complete logs and errors in your terminal
 
 This command loads environment variables and \`authData\` from the \`.env\` file in the current directory. If you don't have a \`.env\` file yet, you can use the \`zapier invoke auth start\` command to help you initialize it, or you can manually create it.
 
@@ -1438,6 +1444,8 @@ To add input data, use the \`--inputData\` flag. The input data can come from th
 When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the command will prompt you interactively. If you don't want to get interactive prompts, use the \`--non-interactive\` flag.
 
 The \`--debug\` flag will show you the HTTP request logs and any console logs you have in your code.
+
+EXPERIMENTAL: Apart from providing auth data via the \`.env\` file, you can also use the \`--authentication-id\` flag to specify which production authentication/connection to use. You can find authentication IDs at https://zapier.com/app/connections.
 
 The following is a non-exhaustive list of current limitations and may be supported in the future:
 
