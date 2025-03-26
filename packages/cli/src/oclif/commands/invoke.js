@@ -1112,7 +1112,7 @@ class InvokeCommand extends BaseCommand {
       }
     }
 
-    const appId = (await getLinkedAppConfig())?.id;
+    const appId = (await getLinkedAppConfig(null, false))?.id;
     const deployKey = (await readCredentials(false))[AUTH_KEY];
 
     if (authId === '-' || authId === '') {
