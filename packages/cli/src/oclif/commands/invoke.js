@@ -241,6 +241,66 @@ const appendEnv = async (vars, prefix = '') => {
   );
 };
 
+const replaceDoubleCurlies = async (request) => {
+  // Use lcurly-fieldName-rcurly instead of {{fieldName}} to bypass node-fetch's
+  // URL validation in case the variable is used in a URL.
+  if (request.url) {
+    request.url = request.url
+      .replaceAll('{{', 'lcurly-')
+      .replaceAll('}}', '-rcurly');
+  }
+  return request;
+};
+
+const restoreDoubleCurlies = async (response) => {
+  if (response.url) {
+    response.url = response.url
+      .replaceAll('lcurly-', '{{')
+      .replaceAll('-rcurly', '}}');
+  }
+  if (response.request?.url) {
+    response.request.url = response.request.url
+      .replaceAll('lcurly-', '{{')
+      .replaceAll('-rcurly', '}}');
+  }
+  return response;
+};
+
+const localAppCommandWithRelayErrorHandler = async (args) => {
+  let output;
+  try {
+    output = await localAppCommand(args);
+  } catch (outerError) {
+    debugger;
+    if (outerError.name === 'ResponseError') {
+      debugger;
+      let response;
+      try {
+        response = JSON.parse(outerError.message);
+      } catch (innerError) {
+        throw outerError;
+      }
+      if (typeof response.content === 'string') {
+        const match = response.content.match(/domain filter `([^`]+)`/);
+        if (!match) {
+          throw outerError;
+        }
+        const domainFilter = match[1];
+        const requestUrl = response.request.url
+          .replaceAll('lcurly-', '{{')
+          .replaceAll('-rcurly', '}}');
+        throw new Error(
+          `Request to ${requestUrl} was blocked. ` +
+            `Only these domain names are allowed: ${domainFilter}. ` +
+            'Contact Zapier team to verify your domain filter setting.',
+        );
+      }
+    }
+    throw outerError;
+  }
+  return output;
+};
+
 const testAuth = async (
   authId,
   authData,
@@ -250,7 +310,7 @@ const testAuth = async (
   deployKey,
 ) => {
   startSpinner('Invoking authentication.test');
-  const result = await localAppCommand({
+  const result = await localAppCommandWithRelayErrorHandler({
     command: 'execute',
     method: 'authentication.test',
     bundle: {
@@ -909,7 +969,7 @@ class InvokeCommand extends BaseCommand {
     let methodName = `${actionTypePlural}.${action.key}.operation.inputFields`;
     startSpinner(`Invoking ${methodName}`);
 
-    const inputFields = await localAppCommand({
+    const inputFields = await localAppCommandWithRelayErrorHandler({
       command: 'execute',
       method: methodName,
       bundle: {
@@ -924,6 +984,8 @@ class InvokeCommand extends BaseCommand {
       appId,
       deployKey,
       relayAuthenticationId: authId,
+      beforeRequest: [replaceDoubleCurlies],
+      afterResponse: [restoreDoubleCurlies],
     });
     endSpinner();
 
@@ -949,44 +1011,24 @@ class InvokeCommand extends BaseCommand {
     methodName = `${actionTypePlural}.${action.key}.operation.perform`;
 
     startSpinner(`Invoking ${methodName}`);
-    let output;
-    try {
-      output = await localAppCommand({
-        command: 'execute',
-        method: methodName,
-        bundle: {
-          inputData,
-          authData,
-          meta,
-        },
-        zcacheTestObj,
-        cursorTestObj,
-        customLogger,
-        calledFromCliInvoke: true,
-        appId,
-        deployKey,
-        relayAuthenticationId: authId,
-      });
-    } catch (err) {
-      if (err.name === 'ResponseError') {
-        const response = JSON.parse(err.message);
-        if (response.content) {
-          const match = response.content.match(/domain filter `([^`]+)`/);
-          if (!match) {
-            throw err;
-          }
-          const domainFilter = match[1];
-          const requestUrl = response.request.url
-            .replaceAll('lcurly-', '{{')
-            .replaceAll('-rcurly', '}}');
-          throw new Error(
-            `Request to ${requestUrl} was blocked. ` +
-              `Only these domain names are allowed: ${domainFilter}.`,
-          );
-        }
-      }
-      throw err;
-    }
+    const output = await localAppCommandWithRelayErrorHandler({
+      command: 'execute',
+      method: methodName,
+      bundle: {
+        inputData,
+        authData,
+        meta,
+      },
+      zcacheTestObj,
+      cursorTestObj,
+      customLogger,
+      calledFromCliInvoke: true,
+      appId,
+      deployKey,
+      relayAuthenticationId: authId,
+      beforeRequest: [replaceDoubleCurlies],
+      afterResponse: [restoreDoubleCurlies],
+    });
     endSpinner();
 
     return output;
@@ -1084,12 +1126,21 @@ class InvokeCommand extends BaseCommand {
       authId = (await this.promptForAuthentication()).toString();
     }
 
-    const authData = loadAuthDataFromEnv();
     const zcacheTestObj = {};
     const cursorTestObj = {};
 
+    let authData;
     if (authId) {
-      authData.account = 'lcurly-account-rcurly';
+      // Fill authData with curlies if we're in relay mode
+      const authFields = appDefinition.authentication.fields || [];
+      authData = {};
+      for (const field of authFields) {
+        if (field.key) {
+          authData[field.key] = `{{${field.key}}}`;
+        }
+      }
+    } else {
+      authData = loadAuthDataFromEnv();
     }
 
     if (actionType === 'auth') {

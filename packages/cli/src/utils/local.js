@@ -102,8 +102,8 @@ function wrapHttpRequestFuncWithRelay(
     // If the request is being sent to the same host:port as our relay,
     // we do NOT want to relay again. We just call the original request.
     const targetHost = (options.hostname || options.host)
-      .replaceAll('lcurly-', '%7B%7B')
-      .replaceAll('-rcurly', '%7D%7D');
+      .replaceAll('lcurly-', '{{')
+      .replaceAll('-rcurly', '}}');
     const targetPort = options.port ? String(options.port) : '';
     const relayHost = parsedRelayUrl.hostname;
     const relayPort = parsedRelayUrl.port ? String(parsedRelayUrl.port) : '';
@@ -185,6 +185,14 @@ function wrapFetchWithRelay(fetchFunc, relayUrl, relayHeaders) {
       host += `:${parsedOriginalUrl.port}`;
     }
 
+    const isAlreadyRelay =
+      parsedOriginalUrl.hostname === parsedRelayUrl.hostname &&
+      parsedOriginalUrl.port === parsedRelayUrl.port;
+    if (isAlreadyRelay) {
+      // Just call the original fetch function; do *not* re-relay
+      return fetchFunc(originalUrl, originalOptions);
+    }
+
     // Combine the relay's pathname with the "host + path" from the original
     // For example: relayUrl = http://my-relay.test
     //   => parsedRelayUrl.pathname might be '/'
@@ -216,6 +224,8 @@ const getLocalAppHandler = ({
   appId = null,
   deployKey = null,
   relayAuthenticationId = null,
+  beforeRequest = null,
+  afterResponse = null,
 } = {}) => {
   const entryPath = `${process.cwd()}/index`;
   const rootPath = path.dirname(require.resolve(entryPath));
@@ -236,6 +246,13 @@ const getLocalAppHandler = ({
     // this err.stack doesn't give a nice traceback at all :-(
     // maybe we could do require('syntax-error') in the future
     return (event, ctx, callback) => callback(err);
+  }
+
+  if (beforeRequest) {
+    appRaw.beforeRequest = [...(appRaw.beforeRequest || []), ...beforeRequest];
+  }
+  if (afterResponse) {
+    appRaw.afterResponse = [...afterResponse, ...(appRaw.afterResponse || [])];
   }
 
   if (appId && deployKey && relayAuthenticationId) {
@@ -285,6 +302,8 @@ const localAppCommand = (event) => {
     appId: event.appId,
     deployKey: event.deployKey,
     relayAuthenticationId: event.relayAuthenticationId,
+    beforeRequest: event.beforeRequest,
+    afterResponse: event.afterResponse,
   });
   return new Promise((resolve, reject) => {
     handler(event, {}, (err, resp) => {
