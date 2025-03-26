@@ -1,6 +1,6 @@
 import type { Authentication } from 'zapier-platform-core';
 
-import { API_URL, SCOPES } from './constants';
+import { API_URL, SCOPES } from './constants.js';
 
 export default {
   type: 'oauth2',

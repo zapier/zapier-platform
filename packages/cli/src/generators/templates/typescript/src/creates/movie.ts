@@ -1,5 +1,5 @@
 import type { Create, PerformFunction } from 'zapier-platform-core';
-import { API_URL } from '../constants';
+import { API_URL } from '../constants.js';
 
 const perform: PerformFunction = async (z, bundle) => {
   const response = await z.request({
