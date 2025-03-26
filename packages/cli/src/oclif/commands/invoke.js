@@ -271,9 +271,7 @@ const localAppCommandWithRelayErrorHandler = async (args) => {
   try {
     output = await localAppCommand(args);
   } catch (outerError) {
-    debugger;
     if (outerError.name === 'ResponseError') {
-      debugger;
       let response;
       try {
         response = JSON.parse(outerError.message);
@@ -1371,10 +1369,6 @@ InvokeCommand.flags = buildFlags({
       char: 'a',
       description:
         'Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/connections or specify \'-\' to interactively select one from your available authentications. When specified, the code will be still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.',
-    }),
-    inspect: Flags.boolean({
-      description:
-        'Add --inspect flag when running Node.js. This will enable the Node.js inspector and you can use Chrome DevTools to set breakpoints and debug your code.',
     }),
   },
 });
